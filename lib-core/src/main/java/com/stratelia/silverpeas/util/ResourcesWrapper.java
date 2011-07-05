@@ -21,21 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.util;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.ResourceBundle;
-
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.util.ResourceBundle;
 
 /**
  * Class declaration
@@ -54,8 +50,8 @@ public class ResourcesWrapper {
    * @param specificIcons - Icons of component
    * @param language - user's language
    */
-  public ResourcesWrapper(ResourceLocator specificMultilang,
-      ResourceLocator specificIcons, String language) {
+  public ResourcesWrapper(ResourceLocator specificMultilang, ResourceLocator specificIcons,
+          String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
     this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
@@ -68,9 +64,8 @@ public class ResourcesWrapper {
    * @param specificSettings - Settings of component
    * @param language - user's language
    */
-  public ResourcesWrapper(ResourceLocator specificMultilang,
-      ResourceLocator specificIcons, ResourceLocator specificSettings,
-      String language) {
+  public ResourcesWrapper(ResourceLocator specificMultilang, ResourceLocator specificIcons,
+          ResourceLocator specificSettings, String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
     this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
@@ -111,7 +106,6 @@ public class ResourcesWrapper {
    */
   public String getString(String key) {
     String valret = null;
-
     if (key != null) {
       valret = key;
       if (key.startsWith("GML.")) {
@@ -134,7 +128,7 @@ public class ResourcesWrapper {
     String[] params = {param};
     return getStringWithParams(key, params);
   }
-  
+
   public String getStringWithParams(String key, String[] params) {
     String valret = null;
 
@@ -157,9 +151,7 @@ public class ResourcesWrapper {
   }
 
   public String getIcon(String key) {
-    return GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL")
-        + getValue(key, specificIcons);
+    return URLManager.getApplicationURL() + getValue(key, specificIcons);
   }
 
   public String getLanguage() {
@@ -169,7 +161,6 @@ public class ResourcesWrapper {
   /*
    * public String getLanguage(String code) { return I18NHelper.getLanguage(language, code); }
    */
-
   /**
    * We look at the key in the specific settings file.
    * @param key - key in the settings file
@@ -180,15 +171,15 @@ public class ResourcesWrapper {
   }
 
   public String getSetting(String key, String defaultValue) {
-    return SilverpeasSettings.readString(specificSettings, key, defaultValue);
+    return specificSettings.getString(key, defaultValue);
   }
 
   public boolean getSetting(String key, boolean defaultValue) {
-    return SilverpeasSettings.readBoolean(specificSettings, key, defaultValue);
+    return specificSettings.getBoolean(key, defaultValue);
   }
 
   public int getSetting(String key, int defaultValue) {
-    return SilverpeasSettings.readInt(specificSettings, key, defaultValue);
+    return specificSettings.getInteger(key, defaultValue);
   }
 
   public String getOutputDate(Date date) {
@@ -205,16 +196,16 @@ public class ResourcesWrapper {
 
   /**
    * Display first not null date
-   * @param date1 date to display
-   * @param date2 extra date to display if date1 is empty (or null)
+   * @param date date to display
+   * @param defaultDate extra date to display if date1 is empty (or null)
    * @return the formatted date
    */
-  public String getOutputDateAndHour(Date date1, Date date2) {
-    String sDate = DateUtil.getOutputDateAndHour(date1, language);
-    if (!StringUtil.isDefined(sDate)) {
-      sDate = DateUtil.getOutputDateAndHour(date2, language);
+  public String getOutputDateAndHour(Date date, Date defaultDate) {
+    String formatedDate = DateUtil.getOutputDateAndHour(date, language);
+    if (!StringUtil.isDefined(formatedDate)) {
+      formatedDate = DateUtil.getOutputDateAndHour(defaultDate, language);
     }
-    return sDate;
+    return formatedDate;
   }
 
   public String getInputDate(Date date) {
@@ -239,7 +230,6 @@ public class ResourcesWrapper {
 
   private String getValue(String key, ResourceLocator resourceLocator) {
     String valret = null;
-
     if (key != null) {
       valret = key;
       if (resourceLocator != null) {

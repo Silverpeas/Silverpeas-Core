@@ -181,24 +181,17 @@ public class URLManager {
    */
   private static String buildStandardURL(String componentName,
       String sComponentId, boolean isGlobalSearch) {
-    String standardURL = "/" + admin.getRequestRouter(componentName) + "/"
-        + sComponentId + "/";
+    String standardURL = '/' + admin.getRequestRouter(componentName) + '/' + sComponentId + '/';
 
     if (isGlobalSearch) {
-      if (componentName.equals("sources") || componentName.equals("whitePages")
-          || componentName.equals("expertLocator")
-          || componentName.equals("infoTracker")
-          || componentName.equals("documentation")) {
-        standardURL = "/RpdcSearch/" + sComponentId
-            + "/GlobalContentForward?contentURL=Consult?";
+      if ("sources".equals(componentName) || "whitePages".equals(componentName)
+          || "expertLocator".equals(componentName) || "infoTracker".equals(componentName)
+          || "documentation".equals(componentName)) {
+        standardURL = "/RpdcSearch/" + sComponentId + "/GlobalContentForward?contentURL=Consult?";
       }
     } else {
-      if (componentName.equals("sources") /*
-           * || componentName.equals("whitePages")
-           */
-          || componentName.equals("expertLocator")
-          || componentName.equals("infoTracker")
-          || componentName.equals("documentation")) {
+      if ("sources".equals(componentName)  || "expertLocator".equals(componentName)
+          || "infoTracker".equals(componentName) || "documentation".equals(componentName)) {
         standardURL = "/RpdcSearch/" + sComponentId + "/";
       }
     }

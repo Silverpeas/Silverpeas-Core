@@ -23,28 +23,6 @@
  */
 package com.silverpeas.jobDomainPeas.control;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.jobDomainPeas.DomainNavigationStock;
 import com.silverpeas.jobDomainPeas.GroupNavigationStock;
 import com.silverpeas.jobDomainPeas.JobDomainPeasDAO;
@@ -67,10 +45,9 @@ import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
-import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
@@ -82,6 +59,27 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
+import org.apache.commons.fileupload.FileItem;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Class declaration
@@ -285,16 +283,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
 
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
-      int numPropertyRegroup = SilverpeasSettings.readInt(specificRs,
-          "property.Grouping", -1);
+      int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomRegroup = null;
       String theUserIdToRegroup = m_TargetUserId;
       String[] newUserIds;
       List<String> lUserIds;
       List<String> lNewUserIds;
       if (numPropertyRegroup > -1) {
-        String nomPropertyRegroupement = SilverpeasSettings.readString(
-            specificRs, "property_" + numPropertyRegroup + ".Name", null);
+        String nomPropertyRegroupement = specificRs.getString("property_" + numPropertyRegroup + ".Name", null);
 
         if (nomPropertyRegroupement != null) {
           // Suppression de l'appartenance de l'utilisateur au groupe auquel il
@@ -722,12 +718,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         && getTargetDomain().getDriverClassName().equals(
         "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
-      int numPropertyRegroup = SilverpeasSettings.readInt(specificRs,
-          "property.Grouping", -1);
+      int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomLastGroup = null;
       if (numPropertyRegroup > -1) {
-        String nomPropertyRegroupement = SilverpeasSettings.readString(
-            specificRs, "property_" + numPropertyRegroup + ".Name", null);
+        String nomPropertyRegroupement = specificRs.getString("property_" + numPropertyRegroup + ".Name", null);
         if (nomPropertyRegroupement != null) {
           // Recherche du nom du regroupement (nom du groupe)
           String[] keys = theUser.getPropertiesNames();
@@ -1727,12 +1721,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     // properties templateDomainSQL
-    ResourceLocator templateDomainSql = new ResourceLocator(
-        "com.stratelia.silverpeas.domains.templateDomainSQL", "");
-    String cryptMethod = SilverpeasSettings.readString(templateDomainSql,
-        "database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
-    boolean allowPasswordChange = SilverpeasSettings.readBoolean(
-        templateDomainSql, "allowPasswordChange", true);
+    ResourceLocator templateDomainSql = new ResourceLocator("com.stratelia.silverpeas.domains.templateDomainSQL", "");
+    String cryptMethod = templateDomainSql.getString("database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
+    boolean allowPasswordChange = templateDomainSql.getBoolean("allowPasswordChange", true);
 
     BufferedReader readerTemplateDomainSQL = null;
     try {

@@ -24,22 +24,20 @@
 
 package com.silverpeas.wysiwyg.dynamicvalue.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -217,7 +215,7 @@ public class DynamicValueReplacement {
   public static boolean isActivate() {
     ResourceLocator resource =
         new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", "");
-    return SilverpeasSettings.readBoolean(resource, "activateDynamicValue", false);
+    return resource.getBoolean("activateDynamicValue", false);
   }
 
 }

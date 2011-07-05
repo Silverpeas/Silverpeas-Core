@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.searchEngine.model;
 
 import java.io.File;
@@ -55,7 +54,6 @@ import org.apache.lucene.search.TopDocs;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
@@ -72,6 +70,7 @@ import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
  * manages a set of cached lucene IndexSearcher.
  */
 public class WAIndexSearcher {
+
   /**
    * The primary and secondary factor are used to give a better score to entries whose title or
    * abstract match the query.
@@ -89,23 +88,21 @@ public class WAIndexSearcher {
    * The no parameters constructor retrieves all the needed data from the IndexEngine.properties
    * file.
    */
-
   public WAIndexSearcher() {
     indexManager = new IndexManager();
     primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
-    secondaryFactor = getFactorFromProperties("SecondaryFactor",
-        secondaryFactor);
+    secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
     try {
       ResourceLocator resource = new ResourceLocator(
-          "com.silverpeas.searchEngine.searchEngineSettings", "");
-      int paramOperand = Integer.parseInt(resource.getString("defaultOperand", "0"));
+              "com.silverpeas.searchEngine.searchEngineSettings", "");
+      int paramOperand = resource.getInteger("defaultOperand", 0);
       if (paramOperand == 0) {
         defaultOperand = QueryParser.OR_OPERATOR;
       } else {
         defaultOperand = QueryParser.AND_OPERATOR;
       }
 
-      maxNumberResult = SilverpeasSettings.readInt(resource, "maxResults", 100);
+      maxNumberResult = resource.getInteger("maxResults", 100);
     } catch (MissingResourceException e) {
     } catch (NumberFormatException e) {
     }
@@ -114,22 +111,16 @@ public class WAIndexSearcher {
   /**
    * Get the primary factor from the IndexEngine.properties file.
    */
-  public static int getFactorFromProperties(String propertyName,
-      int defaultValue) {
-    int factor = defaultValue;
-
-    try {
-      ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.util.indexEngine.IndexEngine", "");
-
-      String factorString = resource.getString(propertyName);
-
-      factor = Integer.parseInt(factorString);
-    } catch (MissingResourceException e) {
-    } catch (NumberFormatException e) {
-    }
-
-    return factor;
+  /**
+   * 
+   * @param propertyName
+   * @param defaultValue
+   * @return 
+   */
+  public static int getFactorFromProperties(String propertyName, int defaultValue) {
+    ResourceLocator resource = new ResourceLocator(
+            "com.stratelia.webactiv.util.indexEngine.IndexEngine", "");
+    return resource.getInteger(propertyName, defaultValue);
   }
 
   /**
@@ -158,7 +149,7 @@ public class WAIndexSearcher {
       matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
     } catch (IOException ioe) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
+              "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
     } finally {
       try {
         if (searcher != null) {
@@ -166,7 +157,7 @@ public class WAIndexSearcher {
         }
       } catch (IOException ioe) {
         SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-            "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
+                "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
       }
     }
     return matchingIndexEntry;
@@ -177,7 +168,7 @@ public class WAIndexSearcher {
    * reached or whose endDate is passed are pruned from the results set.
    */
   public MatchingIndexEntry[] search(QueryDescription query)
-      throws com.stratelia.webactiv.searchEngine.model.ParseException {
+          throws com.stratelia.webactiv.searchEngine.model.ParseException {
     long startTime = System.nanoTime();
     List<MatchingIndexEntry> results = null;
 
@@ -196,8 +187,8 @@ public class WAIndexSearcher {
           booleanQuery.add(getMultiFieldQuery(query, searcher), BooleanClause.Occur.MUST);
         } else {
           RangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
-          if (!StringUtil.isDefined(query.getQuery()) && query.isSearchBySpace() &&
-              !query.isPeriodDefined()) {
+          if (!StringUtil.isDefined(query.getQuery()) && query.isSearchBySpace()
+                  && !query.isPeriodDefined()) {
             // realizes the search on space without keywords indicated by the user
             String beginDate = "1900/01/01";
             String endDate = "2200/01/01";
@@ -229,21 +220,20 @@ public class WAIndexSearcher {
         }
       }
       SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
-          "Query = " + booleanQuery.toString());
+              "Query = " + booleanQuery.toString());
       topDocs = searcher.search(booleanQuery, maxNumberResult);
 
       results = makeList(topDocs, query, searcher);
     } catch (IOException ioe) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
+              "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
       results = new ArrayList<MatchingIndexEntry>();
     }
     long endTime = System.nanoTime();
 
-    SilverTrace.debug("searchEngine", WAIndexSearcher.class.toString(), " search duration in ms " +
-        (endTime - startTime) / 1000000);
-    return (MatchingIndexEntry[]) results
-        .toArray(new MatchingIndexEntry[results.size()]);
+    SilverTrace.debug("searchEngine", WAIndexSearcher.class.toString(), " search duration in ms "
+            + (endTime - startTime) / 1000000);
+    return results.toArray(new MatchingIndexEntry[results.size()]);
   }
 
   private RangeQuery getVisibilityStartQuery() {
@@ -278,7 +268,7 @@ public class WAIndexSearcher {
       int l = 0;
       Iterator<String> languages = I18NHelper.getLanguages();
       while (languages.hasNext()) {
-        language = (String) languages.next();
+        language = languages.next();
 
         if (I18NHelper.isDefaultLanguage(language)) {
           fields[l] = searchField;
@@ -298,23 +288,21 @@ public class WAIndexSearcher {
 
       QueryParser queryParser = new QueryParser(searchField, analyzer);
       queryParser.setDefaultOperator(defaultOperand);
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
-          "root.MSG_GEN_PARAM_VALUE", "defaultOperand = " + defaultOperand);
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+              "defaultOperand = " + defaultOperand);
       parsedQuery = queryParser.parse(query.getQuery());
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
-          "root.MSG_GEN_PARAM_VALUE", "getOperator() = "
-              + queryParser.getDefaultOperator());
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+              "getOperator() = " + queryParser.getDefaultOperator());
     }
 
-    SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
-        "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-            + parsedQuery.toString());
+    SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+            "parsedQuery = " + parsedQuery.toString());
     return parsedQuery;
   }
 
   private Query getXMLQuery(QueryDescription query, Searcher searcher)
-      throws com.stratelia.webactiv.searchEngine.model.ParseException,
-      IOException {
+          throws com.stratelia.webactiv.searchEngine.model.ParseException,
+          IOException {
 
     try {
       Hashtable<String, String> xmlQuery = query.getXmlQuery();
@@ -325,42 +313,33 @@ public class WAIndexSearcher {
         nbFields++;
       }
 
-      String[] fields = (String[]) xmlQuery.keySet().toArray(
-          new String[nbFields]);
-      String[] queries = (String[]) xmlQuery.values().toArray(
-          new String[nbFields]);
+      String[] fields = xmlQuery.keySet().toArray(new String[nbFields]);
+      String[] queries = xmlQuery.values().toArray(new String[nbFields]);
 
       if (StringUtil.isDefined(xmlTitle)) {
         fields[nbFields - 1] = IndexManager.TITLE;
         queries[nbFields - 1] = xmlTitle;
       }
 
-      Analyzer analyzer = indexManager
-          .getAnalyzer(query.getRequestedLanguage());
+      Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
 
       BooleanClause.Occur[] flags = new BooleanClause.Occur[fields.length];
       for (int f = 0; f < fields.length; f++) {
         flags[f] = BooleanClause.Occur.MUST;
       }
 
-      Query parsedQuery = MultiFieldQueryParser.parse(queries, fields, flags,
-          analyzer);
-      SilverTrace
-          .info("searchEngine", "WAIndexSearcher.getXMLHits",
-              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-                  + parsedQuery.toString());
+      Query parsedQuery = MultiFieldQueryParser.parse(queries, fields, flags, analyzer);
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getXMLHits", "root.MSG_GEN_PARAM_VALUE",
+              "parsedQuery = " + parsedQuery.toString());
 
       return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
-      throw new com.stratelia.webactiv.searchEngine.model.ParseException(
-          "WAIndexSearcher", e);
+      throw new com.stratelia.webactiv.searchEngine.model.ParseException("WAIndexSearcher", e);
     }
   }
 
   private Query getMultiFieldQuery(QueryDescription query, Searcher searcher)
-      throws com.stratelia.webactiv.searchEngine.model.ParseException,
-      IOException {
-
+          throws com.stratelia.webactiv.searchEngine.model.ParseException, IOException {
     try {
       List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
       String keyword = query.getQuery();
@@ -389,19 +368,13 @@ public class WAIndexSearcher {
         queries[f] = fieldQuery.getContent();
       }
 
-      Analyzer analyzer = indexManager
-          .getAnalyzer(query.getRequestedLanguage());
-      Query parsedQuery = MultiFieldQueryParser.parse(queries, fields, flags,
-          analyzer);
-      SilverTrace
-          .info("searchEngine", "WAIndexSearcher.getMultiFieldHits",
-              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-                  + parsedQuery.toString());
-
+      Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
+      Query parsedQuery = MultiFieldQueryParser.parse(queries, fields, flags, analyzer);
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getMultiFieldHits",
+              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = " + parsedQuery.toString());
       return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
-      throw new com.stratelia.webactiv.searchEngine.model.ParseException(
-          "WAIndexSearcher", e);
+      throw new com.stratelia.webactiv.searchEngine.model.ParseException("WAIndexSearcher", e);
     }
 
   }
@@ -414,11 +387,10 @@ public class WAIndexSearcher {
    * @throws IOException if there is a problem when searching Lucene index
    */
   private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
-      Searcher searcher)
-      throws IOException {
+          Searcher searcher) throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
     MatchingIndexEntry indexEntry =
-        new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
+            new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
 
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
@@ -439,10 +411,8 @@ public class WAIndexSearcher {
     indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
     indexEntry.setLastModificationDate(doc.get(IndexManager.LASTUPDATEDATE));
     indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
-    indexEntry.setThumbnailMimeType(doc
-        .get(IndexManager.THUMBNAIL_MIMETYPE));
-    indexEntry.setThumbnailDirectory(doc
-        .get(IndexManager.THUMBNAIL_DIRECTORY));
+    indexEntry.setThumbnailMimeType(doc.get(IndexManager.THUMBNAIL_MIMETYPE));
+    indexEntry.setThumbnailDirectory(doc.get(IndexManager.THUMBNAIL_DIRECTORY));
     indexEntry.setStartDate(doc.get(IndexManager.STARTDATE));
     indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
@@ -475,7 +445,7 @@ public class WAIndexSearcher {
    * reached or whose endDate is passed are pruned from the results list.
    */
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
-      Searcher searcher) throws IOException {
+          Searcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
 
     if (topDocs != null) {
@@ -484,13 +454,12 @@ public class WAIndexSearcher {
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         scoreDoc = topDocs.scoreDocs[i];
         MatchingIndexEntry indexEntry =
-            createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
+                createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
         results.add(indexEntry);
       }
     }
     return results;
   }
-
   /**
    * The manager of all the Web'Activ index.
    */
@@ -511,11 +480,10 @@ public class WAIndexSearcher {
     }
 
     try {
-      return new MultiSearcher((Searcher[]) searcherList
-          .toArray(new Searcher[searcherList.size()]));
+      return new MultiSearcher(searcherList.toArray(new Searcher[searcherList.size()]));
     } catch (IOException e) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
+              "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
       return null;
     }
   }
@@ -545,11 +513,10 @@ public class WAIndexSearcher {
     }
 
     try {
-      return new MultiSearcher((Searcher[]) searcherList
-          .toArray(new Searcher[searcherList.size()]));
+      return new MultiSearcher(searcherList.toArray(new Searcher[searcherList.size()]));
     } catch (IOException e) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
+              "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
       return null;
     }
   }
@@ -643,5 +610,4 @@ public class WAIndexSearcher {
     Term authorTerm = new Term(IndexManager.CREATIONUSER, query.getRequestedAuthor());
     return new TermQuery(authorTerm);
   }
-
 }

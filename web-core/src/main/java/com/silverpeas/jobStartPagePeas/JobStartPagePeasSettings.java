@@ -28,7 +28,6 @@
 
 package com.silverpeas.jobStartPagePeas;
 
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -36,45 +35,33 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @c.bonin
  */
 public class JobStartPagePeasSettings {
-  public static boolean m_IsProfileEditable = false;
-  public static boolean isBackupEnable = false;
-  public static boolean isBasketEnable = false;
-  public static boolean useBasketWhenAdmin = false;
-  public static boolean isInheritanceEnable = false;
-  public static boolean isPublicParameterEnable = false;
-  public static boolean useJSR168Portlets = false;
-  public static boolean useComponentsCopy = false;
-  public static String SPACEDISPLAYPOSITION_AFTER = null;
-  public static String SPACEDISPLAYPOSITION_BEFORE = null;
-  public static String SPACEDISPLAYPOSITION_TODEFINE = null;
-  public static String SPACEDISPLAYPOSITION_CONFIG = null;
+  public static boolean m_IsProfileEditable;
+  public static boolean isBackupEnable;
+  public static boolean isBasketEnable;
+  public static boolean useBasketWhenAdmin;
+  public static boolean isInheritanceEnable;
+  public static boolean isPublicParameterEnable;
+  public static boolean useJSR168Portlets;
+  public static boolean useComponentsCopy;
+  public static String SPACEDISPLAYPOSITION_AFTER;
+  public static String SPACEDISPLAYPOSITION_BEFORE;
+  public static String SPACEDISPLAYPOSITION_TODEFINE;
+  public static String SPACEDISPLAYPOSITION_CONFIG;
 
   static {
     ResourceLocator rs = new ResourceLocator(
         "com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
-
-    m_IsProfileEditable = SilverpeasSettings.readBoolean(rs,
-        "IsProfileEditable", false);
-    isBackupEnable = SilverpeasSettings
-        .readBoolean(rs, "IsBackupEnable", false);
-    isBasketEnable = SilverpeasSettings.readBoolean(rs, "UseBasket", false);
-    useBasketWhenAdmin = SilverpeasSettings.readBoolean(rs,
-        "UseBasketWhenAdmin", false);
-    isInheritanceEnable = SilverpeasSettings.readBoolean(rs,
-        "UseProfileInheritance", false);
-    isPublicParameterEnable = SilverpeasSettings.readBoolean(rs,
-        "UsePublicParameter", true);
-    useJSR168Portlets = SilverpeasSettings.readBoolean(rs, "UseJSR168Portlets",
-        false);
-    useComponentsCopy = SilverpeasSettings.readBoolean(rs, "UseComponentsCopy",
-        false);
-    SPACEDISPLAYPOSITION_CONFIG =
-        SilverpeasSettings.readString(rs, "DisplaySpacePositionConfiguration", "BEFORE");
-    SPACEDISPLAYPOSITION_AFTER =
-        SilverpeasSettings.readString(rs, "DisplaySpacesAfterComponents", "AFTER");
-    SPACEDISPLAYPOSITION_BEFORE =
-        SilverpeasSettings.readString(rs, "DisplaySpacesBeforeComponents", "BEFORE");
-    SPACEDISPLAYPOSITION_TODEFINE =
-        SilverpeasSettings.readString(rs, "DisplaySpacesToDefine", "TODEFINE");
+    m_IsProfileEditable = rs.getBoolean("IsProfileEditable", false);
+    isBackupEnable = rs.getBoolean("IsBackupEnable", false);
+    isBasketEnable = rs.getBoolean("UseBasket", false);
+    useBasketWhenAdmin = rs.getBoolean("UseBasketWhenAdmin", false);
+    isInheritanceEnable = rs.getBoolean("UseProfileInheritance", false);
+    isPublicParameterEnable = rs.getBoolean("UsePublicParameter", true);
+    useJSR168Portlets = rs.getBoolean("UseJSR168Portlets", false);
+    useComponentsCopy = rs.getBoolean("UseComponentsCopy", false);
+    SPACEDISPLAYPOSITION_CONFIG = rs.getString("DisplaySpacePositionConfiguration", "BEFORE");
+    SPACEDISPLAYPOSITION_AFTER = rs.getString("DisplaySpacesAfterComponents", "AFTER");
+    SPACEDISPLAYPOSITION_BEFORE = rs.getString("DisplaySpacesBeforeComponents", "BEFORE");
+    SPACEDISPLAYPOSITION_TODEFINE = rs.getString("DisplaySpacesToDefine", "TODEFINE");
   }
 }

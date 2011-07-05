@@ -24,10 +24,9 @@
 
 package com.silverpeas.util.csv;
 
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public class CSVWriter extends SilverpeasSettings {
+public class CSVWriter {
   protected int m_nbCols = 0;
   protected String[] m_colNames;
   protected String[] m_colTypes;
@@ -53,10 +52,10 @@ public class CSVWriter extends SilverpeasSettings {
       String separator) {
     ResourceLocator rs = new ResourceLocator(propertiesFile, "");
 
-    m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
+    m_colNames = rs.getStringArray(rootPropertyName, ".Name", -1);
     m_nbCols = m_colNames.length;
-    m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
-    m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
+    m_colTypes = rs.getStringArray(rootPropertyName, ".Type", m_nbCols);
+    m_colDefaultValues = rs.getStringArray(rootPropertyName, ".Default",
         m_nbCols);
     m_separator = separator;
   }
@@ -66,19 +65,19 @@ public class CSVWriter extends SilverpeasSettings {
       String specificRootPropertyName) {
     ResourceLocator rs = new ResourceLocator(propertiesFile, "");
 
-    m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
+    m_colNames = rs.getStringArray(rootPropertyName, ".Name", -1);
     m_nbCols = m_colNames.length;
-    m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
-    m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
+    m_colTypes = rs.getStringArray(rootPropertyName, ".Type", m_nbCols);
+    m_colDefaultValues = rs.getStringArray(rootPropertyName, ".Default",
         m_nbCols);
     m_separator = separator;
 
     ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
-    m_specificColNames = readStringArray(specificRs, specificRootPropertyName,
+    m_specificColNames = specificRs.getStringArray(specificRootPropertyName,
         ".Name", -1);
     m_specificNbCols = m_specificColNames.length;
 
-    m_specificColTypes = readStringArray(specificRs, specificRootPropertyName,
+    m_specificColTypes = specificRs.getStringArray(specificRootPropertyName,
         ".Type", m_specificNbCols);
     for (int i = 0; i < m_specificNbCols; i++) {
       if (!Variant.TYPE_STRING.equals(m_specificColTypes[i])
