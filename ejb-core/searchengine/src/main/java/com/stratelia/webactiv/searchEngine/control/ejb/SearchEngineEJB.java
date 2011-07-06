@@ -31,7 +31,6 @@ import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.searchEngine.model.DidYouMeanSearcher;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.ParseException;
@@ -69,8 +68,7 @@ public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkele
           results = new WAIndexSearcher().search(query);
         // spelling word functionality is triggered by a threshold defined in pdcPeasSettings.properties
         // (wordSpellingMinScore).
-        if (SilverpeasSettings.readBoolean(pdcSettings, "enableWordSpelling", false) &&
-            isSpellingNeeded()) {
+        if (pdcSettings.getBoolean("enableWordSpelling", false) && isSpellingNeeded()) {
           DidYouMeanSearcher searcher = new DidYouMeanSearcher();
           spellingWords = searcher.suggest(query);
         }
@@ -160,7 +158,7 @@ public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkele
    * @return true if the max results score is under the defined threshold
    */
   private boolean isSpellingNeeded() {
-    float minScore = SilverpeasSettings.readFloat(pdcSettings, "wordSpellingMinScore", 0.5f);
+    float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
     for (MatchingIndexEntry match : results) {
       if (minScore < match.getScore()) {
         return false;

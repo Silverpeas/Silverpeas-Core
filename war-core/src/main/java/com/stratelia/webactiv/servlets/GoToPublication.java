@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.servlets;
 
 import java.net.URLEncoder;
@@ -44,32 +43,29 @@ public class GoToPublication extends GoTo {
 
   private static final long serialVersionUID = -5940054543777929024L;
 
+  @Override
   public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+          HttpServletResponse res) throws Exception {
     PublicationPK pubPK = new PublicationPK(objectId);
     PublicationDetail pub = getPublicationBm().getDetail(pubPK);
 
     String componentId = req.getParameter("ComponentId"); // in case of an
-    // alias, componentId
-    // is given
+    // alias, componentId is given
     if (!StringUtil.isDefined(componentId)) {
       componentId = pub.getPK().getInstanceId();
     }
 
-    SilverTrace.info("peasUtil", "GoToPublication.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
-
+    SilverTrace.info("peasUtil", "GoToPublication.doPost", "root.MSG_GEN_PARAM_VALUE",
+            "componentId = " + componentId);
     String gotoURL = URLManager.getURL(null, componentId) + pub.getURL();
-
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 
   private PublicationBm getPublicationBm() {
     PublicationBm currentPublicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
+      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
+              JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
       currentPublicationBm = publicationBmHome.create();
     } catch (Exception e) {
       displayError(null);

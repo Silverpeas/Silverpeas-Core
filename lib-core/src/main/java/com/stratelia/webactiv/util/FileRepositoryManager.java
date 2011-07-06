@@ -48,7 +48,7 @@ public class FileRepositoryManager extends Object {
   final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
   static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath +
-      File.pathSeparator + "avatar");
+      File.separatorChar + "avatar");
   static String tempPath = "";
   final static ResourceLocator uploadSettings=  new ResourceLocator(
           "com.stratelia.webactiv.util.uploads.uploadSettings", "");
@@ -267,7 +267,7 @@ public class FileRepositoryManager extends Object {
         fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Lock.gif";
       }
     }
-    if (small) {
+    if (small && fileIcon != null) {
       String newFileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Small.gif";
       if (newFileIcon != null) {
         fileIcon = newFileIcon;
