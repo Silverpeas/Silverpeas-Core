@@ -143,6 +143,12 @@ TD.sommaire {
 /***************************************
 Definition des class de style Silverpeas
 ***************************************/
+
+.clean {
+	padding:0;
+	margin:0;
+}
+
 .peer {
 	color: #033111
 }
@@ -167,6 +173,24 @@ Definition des class de style Silverpeas
 
 }
 
+.bgDegradeGris {
+	border:1px solid #cdcdcd;
+	color:#333;
+		background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
+		background: -moz-linear-gradient(top, #fff, #e5e5e5);
+		/* For Internet Explorer 5.5 - 7 */
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFFFFFFF, endColorstr=#e5e5e5e5);
+		/* For Internet Explorer 8 */
+		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFFFFFFF, endColorstr=#e5e5e5e5)";
+	}
+.bgDegradeGris.header{
+	border-top:0;
+	border-right:0;
+	border-left:0;
+	margin:0;
+	padding:5px;
+	font-size:110%;	
+}
 /* Couleur de l'interface : Frame */
 .couleurCadre {
 	background-color: #DEDEDE
@@ -2238,11 +2262,12 @@ td.browsebar a:hover {
 }
 
 .attachments {
-	width: 150px;
+	min-width: 150px;
 }
 
-.attachments .header {
-	text-align: center;
+.attachments h4 {
+	background:transparent url(/silverpeas/util/icons/attachedFiles.gif)  top right no-repeat;
+	height:16px;
 }
 
 .attachments .dragNdrop {

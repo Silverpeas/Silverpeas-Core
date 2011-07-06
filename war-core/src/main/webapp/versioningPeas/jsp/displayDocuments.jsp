@@ -339,11 +339,10 @@
   DocumentVersion document_version;
   boolean attachmentsDisplayed = false;
   if (iterator.hasNext() || !profile.equals("user")) {
-    Board board = gef.getBoard();
-    out.println(board.printBefore());
-    out.println("<div class=\"attachments\">");
+
+    out.println("<div class=\"attachments bgDegradeGris\">");
     out.println(
-        "<div><img src=\"" + m_context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></div>");
+        "<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">Fichiers Joints</h4></div>");
   
     out.println("<ul id=\"attachmentList\">");
     while (iterator.hasNext()) {
@@ -504,7 +503,6 @@
 
 <% }
   out.println("</div>");
-  out.println(board.printAfter());
 }
 %>
 <div id="attachmentModalDialog" style="display: none"></div>
