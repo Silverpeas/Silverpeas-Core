@@ -284,7 +284,7 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 
 ResourceLocator resourceSearchEngine = new ResourceLocator(
         "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
-        int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
+        int autocompletionMinChars = readInt(resourceSearchEngine.getInteger("autocompletion.minChars", 3);
 
 %>
 
@@ -560,7 +560,7 @@ function deleteUser()
 
  $(document).ready(function(){
 		//used for keywords autocompletion
-	    <%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>
+	    <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
 	    $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
 	            minChars: <%=autocompletionMinChars%>,
 	            max: 50,

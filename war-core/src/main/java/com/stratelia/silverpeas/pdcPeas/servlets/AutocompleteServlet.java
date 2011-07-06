@@ -24,18 +24,16 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
+import com.stratelia.webactiv.searchEngine.model.SearchCompletion;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.stratelia.silverpeas.util.SilverpeasSettings;
-import com.stratelia.webactiv.searchEngine.model.SearchCompletion;
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Set;
 
 /**
  *
@@ -59,12 +57,9 @@ public class AutocompleteServlet extends HttpServlet {
     try {
       ResourceLocator resourceSearchEngine = new ResourceLocator(
           "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
-      if (SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)) {
-
+      if (resourceSearchEngine.getBoolean("enableAutocompletion", false)) {
         SearchCompletion completion = new SearchCompletion();
-
         Set<String> suggestions = completion.getSuggestions(request.getParameter("q"));
-
         for (String item : suggestions) {
           out.println(item);
         }

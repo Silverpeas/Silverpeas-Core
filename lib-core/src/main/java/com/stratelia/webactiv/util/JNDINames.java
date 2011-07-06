@@ -23,13 +23,11 @@
  */
 package com.stratelia.webactiv.util;
 
-import com.stratelia.silverpeas.util.SilverpeasSettings;
-
 /**
  * This class is the central location to store the internal JNDI names of various entities. Any
  * change here should also be reflected in the deployment descriptors.
  */
-public class JNDINames extends SilverpeasSettings {
+public class JNDINames {
 
   /********************************** JNDI names for EJBs Home ************************************/
   public static final String CLIPBOARD_EJBHOME;
@@ -164,134 +162,135 @@ public class JNDINames extends SilverpeasSettings {
   static {
     ResourceLocator rs = new ResourceLocator("com.stratelia.webactiv.util.jndi", "");
 
-    CLIPBOARD_EJBHOME = readString(rs, "CLIPBOARD_EJBHOME", "ejb/ClipboardBm");
-    NODEBM_EJBHOME = readString(rs, "NODEBM_EJBHOME", "ejb/NodeBm");
-    NODE_EJBHOME = readString(rs, "NODE_EJBHOME", "ejb/Node");
-    COMMENT_EJBHOME = readString(rs, "COMMENT_EJBHOME", "ejb/Comment");
-    KMELIABM_EJBHOME = readString(rs, "KMELIABM_EJBHOME", "ejb/KmeliaBm");
-    YELLOWPAGESBM_EJBHOME = readString(rs, "YELLOWPAGESBM_EJBHOME", "ejb/YellowpagesBm");
-    PUBLICATION_EJBHOME = readString(rs, "PUBLICATION_EJBHOME", "ejb/Publication");
-    PUBLICATIONBM_EJBHOME = readString(rs, "PUBLICATIONBM_EJBHOME", "ejb/PublicationBm");
-    CONTACT_EJBHOME = readString(rs, "CONTACT_EJBHOME", "ejb/Contact");
-    CONTACTBM_EJBHOME = readString(rs, "CONTACTBM_EJBHOME", "ejb/ContactBm");
-    FAVORITBM_EJBHOME = readString(rs, "FAVORITBM_EJBHOME", "ejb/FavoritBm");
-    SUBSCRIBEBM_EJBHOME = readString(rs, "SUBSCRIBEBM_EJBHOME", "ejb/SubscribeBm");
-    STATISTICBM_EJBHOME = readString(rs, "STATISTICBM_EJBHOME", "ejb/StatisticBm");
-    NEWSBM_EJBHOME = readString(rs, "NEWSBM_EJBHOME", "ejb/NewsBm");
-    QUICKINFOBM_EJBHOME = readString(rs, "QUICKINFOBM_EJBHOME", "ejb/QuickInfoBm");
-    ALMANACHBM_EJBHOME = readString(rs, "ALMANACHBM_EJBHOME", "ejb/AlmanachBm");
-    AGENDABM_EJBHOME = readString(rs, "AGENDABM_EJBHOME", "ejb/AgendaBm");
-    CALENDARBM_EJBHOME = readString(rs, "CALENDARBM_EJBHOME", "ejb/CalendarBm");
-    POLLBM_EJBHOME = readString(rs, "POLLBM_EJBHOME", "ejb/PollingStationBm");
-    QUESTIONBM_EJBHOME = readString(rs, "QUESTIONBM_EJBHOME", "ejb/QuestionBm");
-    QUESTIONRESULTBM_EJBHOME = readString(rs, "QUESTIONRESULTBM_EJBHOME", "ejb/QuestionResultBm");
-    ANSWERBM_EJBHOME = readString(rs, "ANSWERBM_EJBHOME", "ejb/AnswerBm");
-    TOOLBOXBM_EJBHOME = readString(rs, "TOOLBOXBM_EJBHOME", "ejb/ToolBoxBm");
-    SURVEYBM_EJBHOME = readString(rs, "SURVEYBM_EJBHOME", "ejb/SurveyBm");
-    PERSONALIZATIONBM_EJBHOME = readString(rs, "PERSONALIZATIONBM_EJBHOME", "ejb/PersonalizationBm");
-    QUIZZBM_EJBHOME = readString(rs, "QUIZZBM_EJBHOME", "ejb/QuizzBm");
-    SCOREBM_EJBHOME = readString(rs, "SCOREBM_EJBHOME", "ejb/ScoreBm");
-    QUESTIONCONTAINERBM_EJBHOME = readString(rs, "QUESTIONCONTAINERBM_EJBHOME",
-        "ejb/QuestionContainerBm");
-    ATTACHMENT_EJBHOME = readString(rs, "ATTACHMENT_EJBHOME", "ejb/Attachment");
-    VERSIONING_EJBHOME = readString(rs, "VERSIONING_EJBHOME", "ejb/Versioning");
-    TASKMBM_EJBHOME = readString(rs, "TASKMBM_EJBHOME", "ejb/TaskmBm");
-    COORDINATESBM_EJBHOME = readString(rs, "COORDINATESBM_EJBHOME", "ejb/CoordinatesBm");
-    GALLERYBM_EJBHOME = readString(rs, "GALLERYBM_EJBHOME", "ejb/GalleryBm");
-    CONNECTEURJDBC_EJBHOME = readString(rs, "CONNECTEURJDBC_EJBHOME", "ejb/ConnecteurJDBCBm");
-    SILVERSTATISTICS_EJBHOME = readString(rs, "SILVERSTATISTICS_EJBHOME", "ejb/SilverStatistics");
-    INTEREST_CENTER_EJBHOME = readString(rs, "INTEREST_CENTER_EJBHOME", "ejb/InterestCenter");
-    PDC_SUBSCRIPTION_EJBHOME = readString(rs, "PDC_SUBSCRIPTION_EJBHOME", "ejb/pdcSubscription");
-    FORUMSBM_EJBHOME = readString(rs, "FORUMSBM_EJBHOME", "ejb/ForumsBM");
-    INDEXBM_EJBHOME = readString(rs, "INDEXBM_EJBHOME", "ejb/IndexEngineBm");
-    SEARCHBM_EJBHOME = readString(rs, "SEARCHBM_EJBHOME", "ejb/SearchEngineBm");
-    BOOKMARKBM_EJBHOME = readString(rs, "BOOKMARKBM_EJBHOME", "ejb/BookmarkBm");
-    WEBSITESBM_EJBHOME = readString(rs, "WEBSITESBM_EJBHOME", "ejb/webSitesBm");
-    FORMDESIGNERBM_EJBHOME = readString(rs, "FORMDESIGNERBM_EJBHOME", "ejb/FormDesignerBm");
-    FORMMANAGERBM_EJBHOME = readString(rs, "FORMMANAGERBM_EJBHOME", "ejb/FormManagerBm");
-    KMAXBM_EJBHOME = readString(rs, "KMAXBM_EJBHOME", "ejb/KmaxBm");
-    ADBM_EJBHOME = readString(rs, "ADBM_EJBHOME", "ejb/AdBm");
-    AD_EJBHOME = readString(rs, "AD_EJBHOME", "ejb/Ad");
-    DOCUMENTBM_EJBHOME = readString(rs, "DOCUMENTBM_EJBHOME", "ejb/DocumentBm");
-    BUSREMOTEACCESSBM_EJBHOME = readString(rs, "BUSREMOTEACCESSBM_EJBHOME", "ejb/BusRemoteAccessBm");
-    ADMINBM_EJBHOME = readString(rs, "ADMINBM_EJBHOME", "ejb/AdminBm");
-    PDCBM_EJBHOME = readString(rs, "PDCBM_EJBHOME", "ejb/PdcBm");
-    PLANACTIONSBM_EJBHOME = readString(rs, "PLANACTIONSBM_EJBHOME", "ejb/PlanActionsBm");
-    PROJECTMANAGERBM_EJBHOME = readString(rs, "PROJECTMANAGERBM_EJBHOME", "ejb/ProjectManagerBm");
-    THESAURUSBM_EJBHOME = readString(rs, "THESAURUSBM_EJBHOME", "ejb/ThesaurusBm");
-    AUTHENTICATIONBM_EJBHOME = readString(rs, "AUTHENTICATIONBM_EJBHOME", "ejb/AuthenticationBm");
-    MYDBBM_EJBHOME = readString(rs, "MYDBBM_EJBHOME", "ejb/MyDBBm");
-    FORMTEMPLATEBM_EJBHOME = readString(rs, "FORMTEMPLATEBM_EJBHOME", "ejb/FormTemplateBm");
-    MYLINKSBM_EJBHOME = readString(rs, "MYLINKSBM_EJBHOME", "ejb/MyLinks");
-    WEBPUBMANAGER_EJBHOME = readString(rs, "WEBPUBMANAGER_EJBHOME", "ejb/WebPublicationManagerBm");
-    BLOGBM_EJBHOME = readString(rs, "BLOGBM_EJBHOME", "ejb/BlogBm");
-    TAGCLOUDBM_EJBHOME = readString(rs, "TAGCLOUDBM_EJBHOME", "ejb/TagCloudBm");
-    NOTATIONBM_EJBHOME = readString(rs, "NOTATIONBM_EJBHOME", "ejb/NotationBm");
-    CLASSIFIEDSBM_EJBHOME = readString(rs, "CLASSIFIEDSBM_EJBHOME", "ejb/ClassifiedsBm");
-    SILVERSTATISTICS_JMS_QUEUE = readString(rs, "SILVERSTATISTICS_JMS_QUEUE",
-        "com.stratelia.silverpeas.silverstatistics.jms.SilverStatisticsJMSQUEUE");
-    SILVERSTATISTICS_JMS_FACTORY = readString(rs, "SILVERSTATISTICS_JMS_FACTORY",
-        "com.stratelia.silverpeas.silverstatistics.jms.QueueConnectionFactory");
-    SILVERPEAS_DATASOURCE = readString(rs, "SILVERPEAS_DATASOURCE","Silverpeas");
-    PUBLICATION_DATASOURCE = readString(rs, "PUBLICATION_DATASOURCE","Silverpeas");
-    INTEREST_CENTER_DATASOURCE = readString(rs, "INTEREST_CENTER_DATASOURCE","Silverpeas");
-    VERSIONING_DATASOURCE = readString(rs, "VERSIONING_DATASOURCE","Silverpeas");
-    CONTACT_DATASOURCE = readString(rs, "CONTACT_DATASOURCE","Silverpeas");
-    NODE_DATASOURCE = readString(rs, "NODE_DATASOURCE","Silverpeas");
-    FAVORIT_DATASOURCE = readString(rs, "FAVORIT_DATASOURCE","Silverpeas");
-    SUBSCRIBE_DATASOURCE = readString(rs, "SUBSCRIBE_DATASOURCE","Silverpeas");
-    STATISTIC_DATASOURCE = readString(rs, "STATISTIC_DATASOURCE","Silverpeas");
-    CALENDAR_DATASOURCE = readString(rs, "CALENDAR_DATASOURCE","Silverpeas");
-    ALMANACH_DATASOURCE = readString(rs, "ALMANACH_DATASOURCE","Silverpeas");
-    FORUMS_DATASOURCE = readString(rs, "FORUMS_DATASOURCE","Silverpeas");
-    QUESTION_DATASOURCE = readString(rs, "QUESTION_DATASOURCE","Silverpeas");
-    ANSWER_DATASOURCE = readString(rs, "ANSWER_DATASOURCE","Silverpeas");
-    SURVEY_DATASOURCE = readString(rs, "SURVEY_DATASOURCE","Silverpeas");
-    PERSONALIZATION_DATASOURCE = readString(rs, "PERSONALIZATION_DATASOURCE","Silverpeas");
-    SCORE_DATASOURCE = readString(rs, "SCORE_DATASOURCE","Silverpeas");
-    QUESTIONCONTAINER_DATASOURCE = readString(rs, "QUESTIONCONTAINER_DATASOURCE","Silverpeas");
-    BOOKMARK_DATASOURCE = readString(rs, "BOOKMARK_DATASOURCE","Silverpeas");
-    WEBSITES_DATASOURCE = readString(rs, "WEBSITES_DATASOURCE","Silverpeas");
-    ATTACHMENT_DATASOURCE = readString(rs, "ATTACHMENT_DATASOURCE","Silverpeas");
-    TASKM_DATASOURCE = readString(rs, "TASKM_DATASOURCE","Silverpeas");
-    FORMDESIGNER_DATASOURCE = readString(rs, "FORMDESIGNER_DATASOURCE","Silverpeas");
-    PDC_SUBSCRIPTION_DATASOURCE = readString(rs, "PDC_SUBSCRIPTION_DATASOURCE","Silverpeas");
-    PUZZLE_DATASOURCE = readString(rs, "PUZZLE_DATASOURCE","Silverpeas");
-    SILVERSTATISTICS_DATASOURCE = readString(rs, "SILVERSTATISTICS_DATASOURCE","Silverpeas");
-    CRM_DATASOURCE = readString(rs, "CRM_DATASOURCE","Silverpeas");
-    DATAWARNING_DATASOURCE = readString(rs, "DATAWARNING_DATASOURCE","Silverpeas");
-    THESAURUS_DATASOURCE = readString(rs, "THESAURUS_DATASOURCE","Silverpeas");
-    PDC_BUSIHM_DATASOURCE = readString(rs, "PDC_BUSIHM_DATASOURCE","Silverpeas");
-    FILEBOXPLUS_DATASOURCE = readString(rs, "FILEBOXPLUS_DATASOURCE","Silverpeas");
-    QUESTIONREPLY_DATASOURCE = readString(rs, "QUESTIONREPLY_DATASOURCE","Silverpeas");
-    WHITEPAGES_DATASOURCE = readString(rs, "WHITEPAGES_DATASOURCE","Silverpeas");
-    PERSISTENCE_EJB_DATASOURCE = readString(rs, "PERSISTENCE_EJB_DATASOURCE","Silverpeas");
-    WEBPUBMANAGER_DATASOURCE = readString(rs, "WEBPUBMANAGER_DATASOURCE","Silverpeas");
-    CONTAINERMANAGER_DATASOURCE = readString(rs, "CONTAINERMANAGER_DATASOURCE","Silverpeas");
-    CONTENTMANAGER_DATASOURCE = readString(rs, "CONTENTMANAGER_DATASOURCE","Silverpeas");
-    CLASSIFYENGINE_DATASOURCE = readString(rs, "CLASSIFYENGINE_DATASOURCE","Silverpeas");
-    PDC_DATASOURCE = readString(rs, "PDC_DATASOURCE","Silverpeas");
-    ADMIN_DATASOURCE = readString(rs, "ADMIN_DATASOURCE","Silverpeas");
-    FORMTEMPLATE_DATASOURCE = readString(rs, "FORMTEMPLATE_DATASOURCE","Silverpeas");
-    WORKFLOW_DATASOURCE = readString(rs, "WORKFLOW_DATASOURCE","jdbc/Silverpeas");
-    CHAT_DATASOURCE = readString(rs, "CHAT_DATASOURCE","Silverpeas");
-    INFOLETTER_DATASOURCE = readString(rs, "INFOLETTER_DATASOURCE","Silverpeas");
-    OUTLOOK_DATASOURCE = readString(rs, "OUTLOOK_DATASOURCE","Silverpeas");
-    GENERATOR_DATASOURCE = readString(rs, "GENERATOR_DATASOURCE","Silverpeas");
-    FORMDESIGNER_DB_DATASOURCE = readString(rs, "FORMDESIGNER_DB_DATASOURCE","Silverpeas");
-    DATABASE_DATASOURCE = readString(rs, "DATABASE_DATASOURCE","Silverpeas");
-    PERSISTENCE_DB_DATASOURCE = readString(rs, "PERSISTENCE_DB_DATASOURCE","Silverpeas");
-    WIKI_DATASOURCE = readString(rs, "WIKI_DATASOURCE", "Silverpeas");
-    THUMBNAIL_DATASOURCE = readString(rs, "THUMBNAIL_DATASOURCE", "Silverpeas");
-    DIRECT_DATASOURCE = readString(rs, "DIRECT_DATASOURCE", "serial://datasources/Silverpeas");
-    MAIL_SESSION = readString(rs, "MAIL_SESSION", "java:comp/env/MailSession");
-    USE_CATALOG_EJB = readString(rs, "USE_CATALOG_EJB", "java:comp/env/useCatalogEJB");
-    SECURITY_ADAPTER_CLASSNAME = readString(rs, "SECURITY_ADAPTER_CLASSNAME",
-        "java:comp/env/securityAdapterClassName");
-    SEND_CONFIRMATION_MAIL = readString(rs, "SEND_CONFIRMATION_MAIL", "java:comp/env/sendConfirmationMail");
-    JMS_FACTORY = readString(rs, "JMS_FACTORY",
-        "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
-    JMS_QUEUE = readString(rs, "JMS_QUEUE", "com.stratelia.silverpeas.notificationserver.jms.Queue");
-    JMS_HEADER_CHANNEL = readString(rs, "JMS_HEADER_CHANNEL", "CHANNEL");
+    CLIPBOARD_EJBHOME = rs.getString("CLIPBOARD_EJBHOME", "ejb/ClipboardBm");
+    NODEBM_EJBHOME = rs.getString("NODEBM_EJBHOME", "ejb/NodeBm");
+    NODE_EJBHOME = rs.getString("NODE_EJBHOME", "ejb/Node");
+    COMMENT_EJBHOME = rs.getString("COMMENT_EJBHOME", "ejb/Comment");
+    KMELIABM_EJBHOME = rs.getString("KMELIABM_EJBHOME", "ejb/KmeliaBm");
+    YELLOWPAGESBM_EJBHOME = rs.getString("YELLOWPAGESBM_EJBHOME", "ejb/YellowpagesBm");
+    PUBLICATION_EJBHOME = rs.getString("PUBLICATION_EJBHOME", "ejb/Publication");
+    PUBLICATIONBM_EJBHOME = rs.getString("PUBLICATIONBM_EJBHOME", "ejb/PublicationBm");
+    CONTACT_EJBHOME = rs.getString("CONTACT_EJBHOME", "ejb/Contact");
+    CONTACTBM_EJBHOME = rs.getString("CONTACTBM_EJBHOME", "ejb/ContactBm");
+    FAVORITBM_EJBHOME = rs.getString("FAVORITBM_EJBHOME", "ejb/FavoritBm");
+    SUBSCRIBEBM_EJBHOME = rs.getString("SUBSCRIBEBM_EJBHOME", "ejb/SubscribeBm");
+    STATISTICBM_EJBHOME = rs.getString("STATISTICBM_EJBHOME", "ejb/StatisticBm");
+    NEWSBM_EJBHOME = rs.getString("NEWSBM_EJBHOME", "ejb/NewsBm");
+    QUICKINFOBM_EJBHOME = rs.getString("QUICKINFOBM_EJBHOME", "ejb/QuickInfoBm");
+    ALMANACHBM_EJBHOME = rs.getString("ALMANACHBM_EJBHOME", "ejb/AlmanachBm");
+    AGENDABM_EJBHOME = rs.getString("AGENDABM_EJBHOME", "ejb/AgendaBm");
+    CALENDARBM_EJBHOME = rs.getString("CALENDARBM_EJBHOME", "ejb/CalendarBm");
+    POLLBM_EJBHOME = rs.getString("POLLBM_EJBHOME", "ejb/PollingStationBm");
+    QUESTIONBM_EJBHOME = rs.getString("QUESTIONBM_EJBHOME", "ejb/QuestionBm");
+    QUESTIONRESULTBM_EJBHOME = rs.getString("QUESTIONRESULTBM_EJBHOME", "ejb/QuestionResultBm");
+    ANSWERBM_EJBHOME = rs.getString("ANSWERBM_EJBHOME", "ejb/AnswerBm");
+    TOOLBOXBM_EJBHOME = rs.getString("TOOLBOXBM_EJBHOME", "ejb/ToolBoxBm");
+    SURVEYBM_EJBHOME = rs.getString("SURVEYBM_EJBHOME", "ejb/SurveyBm");
+    PERSONALIZATIONBM_EJBHOME = rs.getString("PERSONALIZATIONBM_EJBHOME", "ejb/PersonalizationBm");
+    QUIZZBM_EJBHOME = rs.getString("QUIZZBM_EJBHOME", "ejb/QuizzBm");
+    SCOREBM_EJBHOME = rs.getString("SCOREBM_EJBHOME", "ejb/ScoreBm");
+    QUESTIONCONTAINERBM_EJBHOME = rs.getString("QUESTIONCONTAINERBM_EJBHOME",
+            "ejb/QuestionContainerBm");
+    ATTACHMENT_EJBHOME = rs.getString("ATTACHMENT_EJBHOME", "ejb/Attachment");
+    VERSIONING_EJBHOME = rs.getString("VERSIONING_EJBHOME", "ejb/Versioning");
+    TASKMBM_EJBHOME = rs.getString("TASKMBM_EJBHOME", "ejb/TaskmBm");
+    COORDINATESBM_EJBHOME = rs.getString("COORDINATESBM_EJBHOME", "ejb/CoordinatesBm");
+    GALLERYBM_EJBHOME = rs.getString("GALLERYBM_EJBHOME", "ejb/GalleryBm");
+    CONNECTEURJDBC_EJBHOME = rs.getString("CONNECTEURJDBC_EJBHOME", "ejb/ConnecteurJDBCBm");
+    SILVERSTATISTICS_EJBHOME = rs.getString("SILVERSTATISTICS_EJBHOME", "ejb/SilverStatistics");
+    INTEREST_CENTER_EJBHOME = rs.getString("INTEREST_CENTER_EJBHOME", "ejb/InterestCenter");
+    PDC_SUBSCRIPTION_EJBHOME = rs.getString("PDC_SUBSCRIPTION_EJBHOME", "ejb/pdcSubscription");
+    FORUMSBM_EJBHOME = rs.getString("FORUMSBM_EJBHOME", "ejb/ForumsBM");
+    INDEXBM_EJBHOME = rs.getString("INDEXBM_EJBHOME", "ejb/IndexEngineBm");
+    SEARCHBM_EJBHOME = rs.getString("SEARCHBM_EJBHOME", "ejb/SearchEngineBm");
+    BOOKMARKBM_EJBHOME = rs.getString("BOOKMARKBM_EJBHOME", "ejb/BookmarkBm");
+    WEBSITESBM_EJBHOME = rs.getString("WEBSITESBM_EJBHOME", "ejb/webSitesBm");
+    FORMDESIGNERBM_EJBHOME = rs.getString("FORMDESIGNERBM_EJBHOME", "ejb/FormDesignerBm");
+    FORMMANAGERBM_EJBHOME = rs.getString("FORMMANAGERBM_EJBHOME", "ejb/FormManagerBm");
+    KMAXBM_EJBHOME = rs.getString("KMAXBM_EJBHOME", "ejb/KmaxBm");
+    ADBM_EJBHOME = rs.getString("ADBM_EJBHOME", "ejb/AdBm");
+    AD_EJBHOME = rs.getString("AD_EJBHOME", "ejb/Ad");
+    DOCUMENTBM_EJBHOME = rs.getString("DOCUMENTBM_EJBHOME", "ejb/DocumentBm");
+    BUSREMOTEACCESSBM_EJBHOME = rs.getString("BUSREMOTEACCESSBM_EJBHOME", "ejb/BusRemoteAccessBm");
+    ADMINBM_EJBHOME = rs.getString("ADMINBM_EJBHOME", "ejb/AdminBm");
+    PDCBM_EJBHOME = rs.getString("PDCBM_EJBHOME", "ejb/PdcBm");
+    PLANACTIONSBM_EJBHOME = rs.getString("PLANACTIONSBM_EJBHOME", "ejb/PlanActionsBm");
+    PROJECTMANAGERBM_EJBHOME = rs.getString("PROJECTMANAGERBM_EJBHOME", "ejb/ProjectManagerBm");
+    THESAURUSBM_EJBHOME = rs.getString("THESAURUSBM_EJBHOME", "ejb/ThesaurusBm");
+    AUTHENTICATIONBM_EJBHOME = rs.getString("AUTHENTICATIONBM_EJBHOME", "ejb/AuthenticationBm");
+    MYDBBM_EJBHOME = rs.getString("MYDBBM_EJBHOME", "ejb/MyDBBm");
+    FORMTEMPLATEBM_EJBHOME = rs.getString("FORMTEMPLATEBM_EJBHOME", "ejb/FormTemplateBm");
+    MYLINKSBM_EJBHOME = rs.getString("MYLINKSBM_EJBHOME", "ejb/MyLinks");
+    WEBPUBMANAGER_EJBHOME = rs.getString("WEBPUBMANAGER_EJBHOME", "ejb/WebPublicationManagerBm");
+    BLOGBM_EJBHOME = rs.getString("BLOGBM_EJBHOME", "ejb/BlogBm");
+    TAGCLOUDBM_EJBHOME = rs.getString("TAGCLOUDBM_EJBHOME", "ejb/TagCloudBm");
+    NOTATIONBM_EJBHOME = rs.getString("NOTATIONBM_EJBHOME", "ejb/NotationBm");
+    CLASSIFIEDSBM_EJBHOME = rs.getString("CLASSIFIEDSBM_EJBHOME", "ejb/ClassifiedsBm");
+    SILVERSTATISTICS_JMS_QUEUE = rs.getString("SILVERSTATISTICS_JMS_QUEUE",
+            "com.stratelia.silverpeas.silverstatistics.jms.SilverStatisticsJMSQUEUE");
+    SILVERSTATISTICS_JMS_FACTORY = rs.getString("SILVERSTATISTICS_JMS_FACTORY",
+            "com.stratelia.silverpeas.silverstatistics.jms.QueueConnectionFactory");
+    SILVERPEAS_DATASOURCE = rs.getString("SILVERPEAS_DATASOURCE", "Silverpeas");
+    PUBLICATION_DATASOURCE = rs.getString("PUBLICATION_DATASOURCE", "Silverpeas");
+    INTEREST_CENTER_DATASOURCE = rs.getString("INTEREST_CENTER_DATASOURCE", "Silverpeas");
+    VERSIONING_DATASOURCE = rs.getString("VERSIONING_DATASOURCE", "Silverpeas");
+    CONTACT_DATASOURCE = rs.getString("CONTACT_DATASOURCE", "Silverpeas");
+    NODE_DATASOURCE = rs.getString("NODE_DATASOURCE", "Silverpeas");
+    FAVORIT_DATASOURCE = rs.getString("FAVORIT_DATASOURCE", "Silverpeas");
+    SUBSCRIBE_DATASOURCE = rs.getString("SUBSCRIBE_DATASOURCE", "Silverpeas");
+    STATISTIC_DATASOURCE = rs.getString("STATISTIC_DATASOURCE", "Silverpeas");
+    CALENDAR_DATASOURCE = rs.getString("CALENDAR_DATASOURCE", "Silverpeas");
+    ALMANACH_DATASOURCE = rs.getString("ALMANACH_DATASOURCE", "Silverpeas");
+    FORUMS_DATASOURCE = rs.getString("FORUMS_DATASOURCE", "Silverpeas");
+    QUESTION_DATASOURCE = rs.getString("QUESTION_DATASOURCE", "Silverpeas");
+    ANSWER_DATASOURCE = rs.getString("ANSWER_DATASOURCE", "Silverpeas");
+    SURVEY_DATASOURCE = rs.getString("SURVEY_DATASOURCE", "Silverpeas");
+    PERSONALIZATION_DATASOURCE = rs.getString("PERSONALIZATION_DATASOURCE", "Silverpeas");
+    SCORE_DATASOURCE = rs.getString("SCORE_DATASOURCE", "Silverpeas");
+    QUESTIONCONTAINER_DATASOURCE = rs.getString("QUESTIONCONTAINER_DATASOURCE", "Silverpeas");
+    BOOKMARK_DATASOURCE = rs.getString("BOOKMARK_DATASOURCE", "Silverpeas");
+    WEBSITES_DATASOURCE = rs.getString("WEBSITES_DATASOURCE", "Silverpeas");
+    ATTACHMENT_DATASOURCE = rs.getString("ATTACHMENT_DATASOURCE", "Silverpeas");
+    TASKM_DATASOURCE = rs.getString("TASKM_DATASOURCE", "Silverpeas");
+    FORMDESIGNER_DATASOURCE = rs.getString("FORMDESIGNER_DATASOURCE", "Silverpeas");
+    PDC_SUBSCRIPTION_DATASOURCE = rs.getString("PDC_SUBSCRIPTION_DATASOURCE", "Silverpeas");
+    PUZZLE_DATASOURCE = rs.getString("PUZZLE_DATASOURCE", "Silverpeas");
+    SILVERSTATISTICS_DATASOURCE = rs.getString("SILVERSTATISTICS_DATASOURCE", "Silverpeas");
+    CRM_DATASOURCE = rs.getString("CRM_DATASOURCE", "Silverpeas");
+    DATAWARNING_DATASOURCE = rs.getString("DATAWARNING_DATASOURCE", "Silverpeas");
+    THESAURUS_DATASOURCE = rs.getString("THESAURUS_DATASOURCE", "Silverpeas");
+    PDC_BUSIHM_DATASOURCE = rs.getString("PDC_BUSIHM_DATASOURCE", "Silverpeas");
+    FILEBOXPLUS_DATASOURCE = rs.getString("FILEBOXPLUS_DATASOURCE", "Silverpeas");
+    QUESTIONREPLY_DATASOURCE = rs.getString("QUESTIONREPLY_DATASOURCE", "Silverpeas");
+    WHITEPAGES_DATASOURCE = rs.getString("WHITEPAGES_DATASOURCE", "Silverpeas");
+    PERSISTENCE_EJB_DATASOURCE = rs.getString("PERSISTENCE_EJB_DATASOURCE", "Silverpeas");
+    WEBPUBMANAGER_DATASOURCE = rs.getString("WEBPUBMANAGER_DATASOURCE", "Silverpeas");
+    CONTAINERMANAGER_DATASOURCE = rs.getString("CONTAINERMANAGER_DATASOURCE", "Silverpeas");
+    CONTENTMANAGER_DATASOURCE = rs.getString("CONTENTMANAGER_DATASOURCE", "Silverpeas");
+    CLASSIFYENGINE_DATASOURCE = rs.getString("CLASSIFYENGINE_DATASOURCE", "Silverpeas");
+    PDC_DATASOURCE = rs.getString("PDC_DATASOURCE", "Silverpeas");
+    ADMIN_DATASOURCE = rs.getString("ADMIN_DATASOURCE", "Silverpeas");
+    FORMTEMPLATE_DATASOURCE = rs.getString("FORMTEMPLATE_DATASOURCE", "Silverpeas");
+    WORKFLOW_DATASOURCE = rs.getString("WORKFLOW_DATASOURCE", "jdbc/Silverpeas");
+    CHAT_DATASOURCE = rs.getString("CHAT_DATASOURCE", "Silverpeas");
+    INFOLETTER_DATASOURCE = rs.getString("INFOLETTER_DATASOURCE", "Silverpeas");
+    OUTLOOK_DATASOURCE = rs.getString("OUTLOOK_DATASOURCE", "Silverpeas");
+    GENERATOR_DATASOURCE = rs.getString("GENERATOR_DATASOURCE", "Silverpeas");
+    FORMDESIGNER_DB_DATASOURCE = rs.getString("FORMDESIGNER_DB_DATASOURCE", "Silverpeas");
+    DATABASE_DATASOURCE = rs.getString("DATABASE_DATASOURCE", "Silverpeas");
+    PERSISTENCE_DB_DATASOURCE = rs.getString("PERSISTENCE_DB_DATASOURCE", "Silverpeas");
+    WIKI_DATASOURCE = rs.getString("WIKI_DATASOURCE", "Silverpeas");
+    THUMBNAIL_DATASOURCE = rs.getString("THUMBNAIL_DATASOURCE", "Silverpeas");
+    DIRECT_DATASOURCE = rs.getString("DIRECT_DATASOURCE", "serial://datasources/Silverpeas");
+    MAIL_SESSION = rs.getString("MAIL_SESSION", "java:comp/env/MailSession");
+    USE_CATALOG_EJB = rs.getString("USE_CATALOG_EJB", "java:comp/env/useCatalogEJB");
+    SECURITY_ADAPTER_CLASSNAME = rs.getString("SECURITY_ADAPTER_CLASSNAME",
+            "java:comp/env/securityAdapterClassName");
+    SEND_CONFIRMATION_MAIL = rs.getString("SEND_CONFIRMATION_MAIL",
+            "java:comp/env/sendConfirmationMail");
+    JMS_FACTORY = rs.getString("JMS_FACTORY",
+            "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
+    JMS_QUEUE = rs.getString("JMS_QUEUE", "com.stratelia.silverpeas.notificationserver.jms.Queue");
+    JMS_HEADER_CHANNEL = rs.getString("JMS_HEADER_CHANNEL", "CHANNEL");
   }
 }
