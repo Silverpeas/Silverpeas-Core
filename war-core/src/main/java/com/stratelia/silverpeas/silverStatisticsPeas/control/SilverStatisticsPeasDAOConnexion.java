@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Class declaration Get connections data from database
@@ -90,20 +90,21 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   private static Collection[] getCollectionArrayFromResultset(ResultSet rs,
       String dateBegin, String dateEnd) throws SQLException, ParseException {
-    Vector<String> dates = new Vector<String>();
-    Vector<String> counts = new Vector<String>();
-    String date = "";
-    long count = 0;
+    List<String> dates = new ArrayList<String>();
+    List<String> counts = new ArrayList<String>();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String dateRef = dateBegin;
     Calendar calDateRef = Calendar.getInstance();
     calDateRef.setTime(sdf.parse(dateRef));
-
+    calDateRef.set(Calendar.HOUR_OF_DAY, 0);
+    calDateRef.set(Calendar.MINUTE, 0);
+    calDateRef.set(Calendar.SECOND, 0);
+    calDateRef.set(Calendar.MILLISECOND, 0);
     while (rs.next()) {
-      date = rs.getString(1);
-      count = rs.getLong(2);
+      String date = rs.getString(1);
+      long count = rs.getLong(2);
 
-      while (dateRef.compareTo(date) <= 0) {
+      while (dateRef.compareTo(date) < 0) {
         dates.add(dateRef);
         counts.add("0");
 
@@ -195,8 +196,7 @@ public class SilverStatisticsPeasDAOConnexion {
         "root.MSG_GEN_ENTER_METHOD");
     String selectQuery = " SELECT datestat, SUM(countConnection)"
         + " FROM SB_Stat_ConnectionCumul" + " WHERE dateStat BETWEEN '"
-        + dateBegin + "' AND '" + dateEnd + "'" + " group by dateStat"
-        + " order by dateStat";
+        + dateBegin + "' AND '" + dateEnd + "' group by dateStat order by dateStat";
 
     return getCollectionArrayFromQuery(selectQuery, dateBegin, dateEnd);
   }
@@ -337,13 +337,13 @@ public class SilverStatisticsPeasDAOConnexion {
    * autant d'elements que de groupes dont le user fait parti
    * @param dateBegin
    * @param dateEnd
-   * @param idUser
+   * @param groupId
    * @return
    * @throws SQLException
    * @see
    */
   public static Collection<String[]> getStatsConnexionGroupUser(String dateBegin,
-      String dateEnd, int idUser) throws SQLException {
+      String dateEnd, int groupId) throws SQLException {
     String selectQuery = "SELECT B.name, SUM(A.countConnection), SUM(A.duration), B.id"
         + " FROM SB_Stat_ConnectionCumul A, ST_Group B, ST_Group_User_Rel C"
         + " WHERE A.dateStat BETWEEN '"
@@ -358,7 +358,7 @@ public class SilverStatisticsPeasDAOConnexion {
         "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupUser",
         "selectQuery=" + selectQuery);
 
-    return getStatsConnexionFromQuery(selectQuery, idUser);
+    return getStatsConnexionFromQuery(selectQuery, groupId);
   }
 
   /**
@@ -399,7 +399,7 @@ public class SilverStatisticsPeasDAOConnexion {
    * @see
    */
   public static Collection<String[]> getStatsConnexionUserUser(String dateBegin,
-      String dateEnd, int idUser) throws SQLException {
+      String dateEnd, int idGroup) throws SQLException {
     String selectQuery = "SELECT B.lastName, sum(A.countConnection), sum(A.duration), B.id"
         + " FROM SB_Stat_ConnectionCumul A,	ST_User B"
         + " WHERE A.dateStat between '"
@@ -413,7 +413,7 @@ public class SilverStatisticsPeasDAOConnexion {
         "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserGroup",
         "selectQuery=" + selectQuery);
 
-    return getStatsConnexionFromQuery(selectQuery, idUser);
+    return getStatsConnexionFromQuery(selectQuery, idGroup);
 
   }
 

@@ -344,8 +344,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title.append(this.getString("silverStatisticsPeas.LoginNumber")).append(" ");
       mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
-        // Aout,
-        // Octobre
+        // Aout, Octobre
         title.append(this.getString("silverStatisticsPeas.FromAprilAugustOctober"));
       } else {
         title.append(this.getString("silverStatisticsPeas.From") + " ");

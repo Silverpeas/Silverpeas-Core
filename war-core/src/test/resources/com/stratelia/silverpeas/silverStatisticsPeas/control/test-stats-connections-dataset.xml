@@ -16,7 +16,6 @@
   <st_group_user_rel groupid="2" userid="3"/>
   <st_group_user_rel groupid="3" userid="4"/>
   <st_group_user_rel groupid="3" userid="5"/>
- 
   
   <sb_stat_connectioncumul datestat="2011-01-01" userid="1" countconnection="34" duration="353282954"/>
   <sb_stat_connectioncumul datestat="2011-01-01" userid="2" countconnection="5" duration="10077813"/>
@@ -24,13 +23,11 @@
   <sb_stat_connectioncumul datestat="2011-01-01" userid="4" countconnection="97" duration="890435611"/>
   <sb_stat_connectioncumul datestat="2011-01-01" userid="5" countconnection="16" duration="33485629"/>
   
-  
   <sb_stat_connectioncumul datestat="2011-02-01" userid="1" countconnection="10" duration="19393516"/>
   <sb_stat_connectioncumul datestat="2011-02-01" userid="2" countconnection="8" duration="17248937"/>
   <sb_stat_connectioncumul datestat="2011-02-01" userid="3" countconnection="49" duration="137319674"/>  
   <sb_stat_connectioncumul datestat="2011-02-01" userid="4" countconnection="57" duration="145001011"/>
-  <sb_stat_connectioncumul datestat="2011-02-01" userid="5" countconnection="5" duration="12604658"/> 
-  
+  <sb_stat_connectioncumul datestat="2011-02-01" userid="5" countconnection="5" duration="12604658"/>
   
   <sb_stat_connectioncumul datestat="2011-03-01" userid="1" countconnection="44" duration="480061201"/>
   <sb_stat_connectioncumul datestat="2011-03-01" userid="2" countconnection="64" duration="795077447"/>
@@ -44,16 +41,15 @@
   <sb_stat_connectioncumul datestat="2011-04-01" userid="4" countconnection="48" duration="333543547"/>
   <sb_stat_connectioncumul datestat="2011-04-01" userid="5" countconnection="288" duration="1589079961"/>
   
-  
   <sb_stat_connectioncumul datestat="2011-05-01" userid="1" countconnection="1" duration="1864859"/>
   <sb_stat_connectioncumul datestat="2011-05-01" userid="2" countconnection="51" duration="119062229"/>
   <sb_stat_connectioncumul datestat="2011-05-01" userid="3" countconnection="12" duration="28180342"/>
   <sb_stat_connectioncumul datestat="2011-05-01" userid="4" countconnection="16" duration="29557344"/>
   <sb_stat_connectioncumul datestat="2011-05-01" userid="5" countconnection="35" duration="133440623"/>
-  
-  <sb_stat_connectioncumul datestat="2011-06-01" userid="5" countconnection="4" duration="7086469"/>
-  <sb_stat_connectioncumul datestat="2011-06-01" userid="4" countconnection="14" duration="65769156"/>
+
   <sb_stat_connectioncumul datestat="2011-06-01" userid="1" countconnection="13" duration="30242735"/>
   <sb_stat_connectioncumul datestat="2011-06-01" userid="2" countconnection="17" duration="85030220"/>
   <sb_stat_connectioncumul datestat="2011-06-01" userid="3" countconnection="67" duration="161696874"/>
+  <sb_stat_connectioncumul datestat="2011-06-01" userid="4" countconnection="14" duration="65769156"/>
+  <sb_stat_connectioncumul datestat="2011-06-01" userid="5" countconnection="4" duration="7086469"/>
 </dataset>
