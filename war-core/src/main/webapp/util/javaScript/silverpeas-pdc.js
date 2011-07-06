@@ -51,52 +51,78 @@
 
   /**
    * The parameter settings of the plugin with, for some, the default value.
+   * - resource: the resource for which the classification on the PdC has to be rendered or edited.
+   * It has the following attributes:
+   *    - context: the web context at which the resource is published (generally 'silverpeas'),
+   *    - component: the identifier of the Silverpeas component instance that manages the resource.
+   *    - content: the identifier of the resource's content that is classified.
    * - url: the base URL from which the classifications on the PdC are located in the web,
    * - title: the title to display with the classification area,
    * - positionLabel: the label to display with the name of a position,
+   * - ok: the label to display with an 'Ok' button,
+   * - cancel: the label to display with a 'Cancel' button,
+   * - mandatory: an object about the information to display when the valuation of an axis is
+   * mandatory: It has the following attributes:
+   *    - icon: the icon representing a mandatory axis,
+   *    - legend: the legend of the icon,
+   * invariant: It has the following attributes:
+   *    - icon: the icon representing an invariant axis,
+   *    - legend: the legend of the icon,
    * - addition: an object about the operation of adding a new position into a given classification.
    * It has the following attributes:
    *    - call: the callback to invoke when the addition of a new position is asked. Returns true if
    *    a new position is added or false if no position is added.
    *    - icon: the icon to display as a new position add invoker,
-   *    - altText: an alternative text to print with the add operation invoker.
+   *    - title: the text associated with the adding operation.
    * - update: an object about the operation of updating a given position. It has the following
    * attributes:
    *    - call: the callback to invoke when the updating of a new position is asked. Returns true if
    *    the position is updated or false if the position is udpated.
    *    - icon: the icon to display as a new position update invoker,
-   *    - altText: an alternative text to print with the update operation invoker.
+   *    - title: the text associated with the update operation.
    * - deletion: an object about the operation of deleting a given position. It has the following
    * attributes:
    *    - call: the callback to invoke when the deleting of a new position is asked,
    *    - icon: the icon to display as a new position deletion invoker,
-   *    - altText: an alternative text to print with the deletion operation invoker.
+   *    - title: the text associated with the deletion operation.
    * - mode: the mode in which the classification on the PdC of a given resource should be rendered.
    * It accepts a value among 'view' or 'edition'. By default, an unknown value is interpreted as
    * a 'view' mode.
    */
   var settings = {
-    url: 'http://localhost:8000/silverpeas/services/pdc/',
+    resource: {
+      context: '/silverpeas',
+      component: '',
+      content: ''
+    },
     title: 'Plan de classement',
     positionLabel: 'Position',
+    edition: {
+      ok: 'Valider',
+      cancel: 'Annuler',
+      mandatoryLegend: 'Obligatoire',
+      mandatoryIcon: '/silverpeas/util/icons/mandatoryField.gif',
+      invariantLegend: 'invariantes',
+      invariantIcon: '/silverpeas/util/icons/buletColoredGreen.gif'
+    },
     addition: {
       call: function() {
         return true;
       },
       icon: '/silverpeas/pdcPeas/jsp/icons/add.gif',
-      altText: 'Ajouter une nouvelle position'
+      title: 'Ajouter une nouvelle position'
     },
     update: {
       call: function( positionId ) {
         return true;
       },
       icon: '/silverpeas/pdcPeas/jsp/icons/edit_button.gif',
-      altText: 'Editer la position'
+      title: 'Editer la position'
     },
     deletion: {
       confirmation: 'Êtes-vous sûr de vouloir supprimer la position ?',
       icon: '/silverpeas/pdcPeas/jsp/icons/delete.gif',
-      altText: 'Supprimer la position'
+      title: 'Supprimer la position'
     },
     mode: 'view'
   };
@@ -130,11 +156,14 @@
     if ($this.is('fillset')) {
       titleTag = '<legend>';
     }
+    if (settings.mode == 'edition') {
+      $("<div id='pdc-edition-box'>").attr("style","display: none;").appendTo($this);
+    }
     $(titleTag).html(settings.title).appendTo($this);
     if (settings.mode == 'edition') {
       $('<a href="#">').append($('<img>').addClass('add').addClass('action').attr( {
         src: settings.addition.icon, 
-        alt: settings.addition.altText
+        alt: settings.addition.title
       }).click(function () {
         addNewPosition($this);
       })).appendTo($this);
@@ -146,14 +175,56 @@
     loadClassification($this);
   }
 
- /**
+  /**
   * Adds a new position on the PdC in the classification of the resource identified by the url in
    * the settings.
   */
   function addNewPosition( $this ) {
-    if (settings.addition.call()) {
-      refreshClassification($this);
-    }
+    $.getJSON(uriOfPdC(), function(pdc) {
+      var selection = [];
+      renderClassificationEditionBox($this, pdc.axis, selection);
+      $("#pdc-edition-box").dialog({
+        width: 640,
+        modal: true,
+        title: settings.addition.title,
+        buttons: [{
+          text: settings.edition.ok,
+          click: function() {
+            var position = new Object();
+            position.values = [];
+            $.each(selection, function(axisId, value) {
+              if(value != null) {
+                position.values.push({
+                  id: value.id, 
+                  axisId: value.axisId, 
+                  treeId: value.treeId
+                });
+              }
+            });
+            $.ajax({
+              url: uriOfClassification(),
+              type: "POST",
+              data: $.toJSON(position),
+              contentType: "application/json",
+              dataType: "json",
+              success: function() {
+                $("#pdc-edition-box").dialog( "destroy" );
+                refreshClassification();
+              }
+            });
+          }
+        }, {
+          text: settings.edition.cancel,
+          click: function() {
+            $( this ).dialog( "destroy" );
+          }
+        }
+        ],
+        close: function() {
+          $( this ).dialog( "destroy" );
+        }
+      })
+    });
   }
   
   /**
@@ -173,7 +244,7 @@
   function deletePosition( $this, positionId ) {
     if (window.confirm( settings.deletion.confirmation )) {
       $.ajax({
-        url: settings.url + "/" + positionId,
+        url: uriOfClassification() + "/" + positionId,
         type: "DELETE",
         success: function(data) {
           refreshClassification($this);
@@ -196,11 +267,11 @@
    * resource.
    */
   function loadClassification( $this ) {
-    $.getJSON(settings.url, function(classification) {
+    $.getJSON(uriOfClassification(), function(classification) {
       $.each(classification.positions, function(posindex, position) {
         var posId = posindex + 1, values =  [];
         var htmlPosition =
-          $('<div>').addClass('pdcposition' + posId ).append($('<span>').html(settings.positionLabel + ' ' + posId));
+        $('<div>').addClass('pdcposition' + posId ).append($('<span>').html(settings.positionLabel + ' ' + posId));
             
         $.each(position.values, function(valindex, value) {
           values.push('<li>' + value.meaning + '<i>' + value.synonyms.join(', ') + '</i></li>');
@@ -208,15 +279,15 @@
             
         if (settings.mode == 'edition') {
           htmlPosition.append(
-          $('<a href="#">').append($('<img>').addClass('update').addClass('action').attr({
+            $('<a href="#">').append($('<img>').addClass('update').addClass('action').attr({
               src: settings.update.icon, 
-              alt: settings.update.altText
+              alt: settings.update.title
             }).click(function () {
               updatePosition($this, position.id);
             }))).append($('<a href="#">').append(
             $('<img>').addClass('delete').addClass('action').attr({
               src: settings.deletion.icon, 
-              alt: settings.deletion.altText
+              alt: settings.deletion.title
             }).click(function () {
               deletePosition($this, position.id);
             })));
@@ -224,6 +295,90 @@
         htmlPosition.append($('<ul>').addClass('pdcvalues').html(values.join(''))).appendTo('#pdcpositions');
       });
     })
+  }
+  
+  /**
+   * Renders an area for displaying the dialog box for editing the classification of the resource.
+   */
+  function renderClassificationEditionBox( $this, theAxis, selectedValues ) {
+    $('#pdc-edition-box').children().remove();
+    $.each(theAxis, function(axisindex, anAxis) {
+      var axisDiv = $('<div>').attr('id', anAxis.name).addClass('pdc-axis').append($('<span class="pdc-axis-name">').html(anAxis.name)).appendTo($('#pdc-edition-box'));
+      var edition = $('<select class="pdc-axis-values" name="' + anAxis.id + '">').change(function() {
+        testOption();
+      }).appendTo(axisDiv);
+      $.each(anAxis.values, function(valueindex, aValue) {
+        if (aValue.id != '/0/') {
+          var level = '', optionAttr = 'value="' + aValue.id + '"';
+          for (var i = 0; i < aValue.level; i++) {
+            level = level + '&nbsp;';
+          }
+          if (!aValue.activated) {
+            optionAttr = 'value="A" class="intfdcolor51" disabled="disabled"';
+          }
+          if ((aValue.id == anAxis.invariantValue) || (aValue.origin && anAxis.mandatory)) {
+            optionAttr = optionAttr + ' selected="selected"';
+            selectedValues[anAxis.id] = aValue;
+          } else if (anAxis.mandatory && selectedValues[anAxis.id] == null) {
+            optionAttr = optionAttr + ' selected="selected"';
+            selectedValues[anAxis.id] = aValue;
+          }
+          $('<option ' + optionAttr + '>').html(level + aValue.term).appendTo(edition).click(function() {
+            selectedValues[anAxis.id] = aValue;
+          });
+        }
+      });
+      if (selectedValues[anAxis.id] == null) {
+        $('<option value="-" selected="selected">').appendTo(edition).appendTo(edition).click(function() {
+          selectedValues[anAxis.id] = null;
+        });
+      }
+      if (selectedValues[anAxis.id] != null) {
+        $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>').appendTo(axisDiv);
+      }
+      if (anAxis.mandatory) {
+        $('<img>').attr({
+          src: settings.edition.mandatoryIcon, 
+          alt: settings.edition.mandatoryLegend
+        }).appendTo(axisDiv);
+      }
+      if (anAxis.invariantValue != null) {
+        $('<img>').attr({
+          src: settings.edition.invariantIcon, 
+          alt: settings.edition.invariantLegend
+        }).appendTo(axisDiv);
+      }
+    });
+    if (theAxis.length > 0) {
+      $('<div id="pdc-icons-legend">').append($('<img>').attr({
+        src: settings.edition.mandatoryIcon, 
+        alt: settings.edition.mandatoryLegend
+      })).
+      append($('<span>').html('&nbsp;' + settings.edition.mandatoryLegend)).append(
+        $('<img>').attr({
+          src: settings.edition.invariantIcon, 
+          alt: settings.edition.invariantLegend
+        })).
+      append($('<span>').html('&nbsp;' + settings.edition.invariantLegend)).appendTo($('#pdc-edition-box'));
+    }
+  }
+  
+  function testOption() {
+    
+  }
+  
+  /**
+   * The URI at which the classification of the resource on the PdC is located.
+   */
+  function uriOfClassification() {
+    return settings.resource.context + '/services/pdc/' + settings.resource.component + '/' + settings.resource.content; 
+  }
+  
+  /**
+   * The URI at which the PdC configured for the resource is located.
+   */
+  function uriOfPdC() {
+    return settings.resource.context + '/services/pdc/' + settings.resource.component + '?contentId=' + settings.resource.content
   }
 })( jQuery );
 

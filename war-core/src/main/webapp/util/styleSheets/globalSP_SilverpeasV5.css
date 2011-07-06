@@ -3942,3 +3942,7 @@ html:not([lang*=""]) .add_position:hover {
   color: #B9B9B9;
   background-color: #EAEAEA;
 }
+
+#pdc-edition-box img {
+  width: 5px;
+}

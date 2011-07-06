@@ -29,7 +29,10 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import edu.emory.mathcs.backport.java.util.Collections;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -188,11 +191,11 @@ public class PdcClassificationEntity implements Exposable {
           final List<ClassifyPosition> positions,
           String inLanguage,
           final URI atBaseURI) {
-    List<PdcPositionEntity> positionEntities = new ArrayList<PdcPositionEntity>(positions.size());
+    SortedSet<PdcPositionEntity> positionEntities = new TreeSet<PdcPositionEntity>(new PositionComparator());
     for (ClassifyPosition position : positions) {
       positionEntities.add(PdcPositionEntity.fromClassifyPosition(position, inLanguage, atBaseURI));
     }
-    return positionEntities;
+    return new ArrayList<PdcPositionEntity>(positionEntities);
   }
 
   private PdcClassificationEntity() {
@@ -205,5 +208,14 @@ public class PdcClassificationEntity implements Exposable {
   public void setClassificationPositions(final List<PdcPositionEntity> positions) {
     this.positions.clear();
     this.positions.addAll(positions);
+  }
+  
+  private static class PositionComparator implements Comparator<PdcPositionEntity> {
+
+    @Override
+    public int compare(PdcPositionEntity t, PdcPositionEntity t1) {
+      return t.getId().compareTo(t1.getId());
+    }
+    
   }
 }

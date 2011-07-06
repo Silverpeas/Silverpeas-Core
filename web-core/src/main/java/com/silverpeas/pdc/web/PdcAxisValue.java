@@ -26,6 +26,7 @@ package com.silverpeas.pdc.web;
 import com.stratelia.silverpeas.pdc.model.Value;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import static com.silverpeas.util.StringUtil.*;;
 
 /**
@@ -94,6 +95,16 @@ public class PdcAxisValue extends PdcValue {
    */
   public boolean isActivated() {
     return activated;
+  }
+  
+  /**
+   * Is this value is the root one of the axis? A value is the root of an axis when its identifier
+   * is equal to /0/ where 0 is the node identifier of the root in an axis.
+   * @return true if this value is a root one, false otherwise.
+   */
+  @XmlTransient
+  public boolean isRootValue() {
+    return getId().equals("/0/");
   }
 
   /**

@@ -50,7 +50,7 @@ public class PdcPositionValue extends PdcValue {
 
   private static final long serialVersionUID = -6826039385078009600L;
   
-  @XmlElement(required=true)
+  @XmlElement(defaultValue="")
   private String meaning;
   
   /**
