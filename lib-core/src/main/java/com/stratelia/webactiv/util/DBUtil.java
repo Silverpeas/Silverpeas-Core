@@ -23,20 +23,19 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.MultilangMessage;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.pool.ConnectionPool;
+
+import javax.ejb.EJBException;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import javax.ejb.EJBException;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.MultilangMessage;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.pool.ConnectionPool;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,12 +77,17 @@ public class DBUtil {
   }
 
   public static DBUtil getInstance() {
-    return getInstance(null);
-  }
-
-  public static DBUtil getInstance(Connection connectionForTest) {
     synchronized (DBUtil.class) {
       if (instance == null) {
+        instance = new DBUtil(null);
+      }
+    }
+    return instance;
+  }
+
+  public static DBUtil getInstanceForTest(Connection connectionForTest) {
+    synchronized (DBUtil.class) {
+      if (connectionForTest != null) {
         instance = new DBUtil(connectionForTest);
       }
     }

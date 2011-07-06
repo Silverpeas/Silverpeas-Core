@@ -25,6 +25,11 @@
 // TODO : reporter dans CVS (done)
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,14 +40,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration Get connections data from database
@@ -97,7 +96,7 @@ public class SilverStatisticsPeasDAOConnexion {
     long count = 0;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String dateRef = dateBegin;
-    Calendar calDateRef = GregorianCalendar.getInstance();
+    Calendar calDateRef = Calendar.getInstance();
     calDateRef.setTime(sdf.parse(dateRef));
 
     while (rs.next()) {
@@ -114,7 +113,7 @@ public class SilverStatisticsPeasDAOConnexion {
       }
 
       dates.add(date);
-      counts.add(Long.toString(count));
+      counts.add(java.lang.Long.toString(count));
 
       // ajoute un mois
       calDateRef.add(Calendar.MONTH, 1);
@@ -593,13 +592,13 @@ public class SilverStatisticsPeasDAOConnexion {
       stat = new String[4];
       stat[INDICE_LIB] = rs.getString(1);
       count = rs.getLong(2);
-      stat[INDICE_COUNTCONNEXION] = Long.toString(count);
+      stat[INDICE_COUNTCONNEXION] = java.lang.Long.toString(count);
       duration = rs.getLong(3);
       if (count != 0) {
         // calcul durée moyenne = durée totale / nb connexions
         duration /= count;
       }
-      stat[INDICE_DURATION] = Long.toString(duration);
+      stat[INDICE_DURATION] = java.lang.Long.toString(duration);
       stat[INDICE_ID] = rs.getString(4);
 
       myList.add(stat);
