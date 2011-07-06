@@ -341,10 +341,10 @@
   if (iterator.hasNext() || !profile.equals("user")) {
     Board board = gef.getBoard();
     out.println(board.printBefore());
-    out.println("<table class=\"attachments\">");
+    out.println("<div class=\"attachments\">");
     out.println(
-        "<tr><td class=\"header\"><img src=\"" + m_context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></td></tr>");
-    out.println("<tr><td>");
+        "<div><img src=\"" + m_context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></div>");
+  
     out.println("<ul id=\"attachmentList\">");
     while (iterator.hasNext()) {
       document = (Document) iterator.next();
@@ -418,20 +418,20 @@
                                                                                    src="/util/icons/masque3D.gif"></a>
   </div>
   <div id="<%=document_version.getPk().getId()%>" style="display: none">
-    <OBJECT classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
+    <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
             width="300" height="200" id="XV">
-      <PARAM NAME="ModelName" VALUE="<%=documentVersionUrl%>">
-      <PARAM NAME="BorderWidth" VALUE="1">
-      <PARAM NAME="ReferenceFrame" VALUE="1">
-      <PARAM NAME="ViewportActiveBorder" VALUE="FALSE">
-      <PARAM NAME="DisplayMessages" VALUE="TRUE">
-      <PARAM NAME="DisplayInfo" VALUE="TRUE">
-      <PARAM NAME="SpinX" VALUE="0">
-      <PARAM NAME="SpinY" VALUE="0">
-      <PARAM NAME="SpinZ" VALUE="0">
-      <PARAM NAME="AnimateTransitions" VALUE="0">
-      <PARAM NAME="ZoomFit" VALUE="1">
-    </OBJECT>
+      <param name="ModelName" value="<%=documentVersionUrl%>">
+      <param name="BorderWidth" value="1">
+      <param name="ReferenceFrame" value="1">
+      <param name="ViewportActiveBorder" value="FALSE">
+      <param name="DisplayMessages" value="TRUE">
+      <param name="DisplayInfo" value="TRUE">
+      <param name="SpinX" value="0">
+      <param name="SpinY" value="0">
+      <param name="SpinZ" value="0">
+      <param name="AnimateTransitions" value="0">
+      <param name="ZoomFit" value="1">
+    </object>
   </div>
   <%
     }
@@ -481,41 +481,29 @@
     }
   }
   out.println("</ul>");
-  out.println("</td></tr>");
   if (contextualMenuEnabled && dragAndDropEnable) { %>
-<tr>
-  <td align="right">
-    <table width="100%">
-      <tr>
-        <td colspan="3" class="dragNdrop"><a href="javascript:showDnD()"
-                                             id="dNdActionLabel"><%=resources.getString(
-            "GML.DragNDropExpand")%>
-        </a></td>
-      </tr>
-      <tr>
-        <td>
-          <div id="DragAndDrop"
+
+    <div>
+    	<div  class="dragNdrop">
+        	<a href="javascript:showDnD()"id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a></div>
+          <div id="DragAndDrop">
+            <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/>
+        </div>
+        
+    </div>
+    <div id="DragAndDropDraft"
                style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%">
             <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
-        </td>
-        <td width="5%">&nbsp;</td>
-        <td>
-          <div id="DragAndDropDraft"
-               style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%">
-            <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
-        </td>
-      </tr>
-    </table>
-  </td>
-</tr>
+       
+    </div>
 <% } %>
 <% if (contextualMenuEnabled && !dragAndDropEnable) { %>
-<tr>
-  <td class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString(
-      "GML.add") %>...</a></td>
-</tr>
+
+  <div class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString(
+      "GML.add") %>...</a></div>
+
 <% }
-  out.println("</TABLE>");
+  out.println("</div>");
   out.println(board.printAfter());
 }
 %>
