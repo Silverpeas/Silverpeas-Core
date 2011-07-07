@@ -225,7 +225,7 @@ if(listResult != null) {
 </table>
 <%
 	} else {
-		ArrayPane arrayPane = gef.getArrayPane("searchResultList", "SearchResult", request, session);
+		ArrayPane arrayPane = gef.getArrayPane("searchResultList", "Main", request, session);
 		arrayPane.setVisibleLineNumber(20);
 		arrayPane.setTitle(resource.getString("JSP.listResult"));
 		arrayPane.addArrayColumn(resource.getString("JSP.name"));

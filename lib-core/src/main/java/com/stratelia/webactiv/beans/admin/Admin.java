@@ -2575,7 +2575,7 @@ public final class Admin {
    * @throws AdminException
    */
   public void indexAllGroups() throws AdminException {
-    Domain[] domains = getAllDomains();
+    Domain[] domains = getAllDomains(); //All domains except Mixt Domain (id -1)
     for (Domain domain :
         domains) {
       try {
@@ -2584,6 +2584,14 @@ public final class Admin {
         SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
             "domainId = " + domain.getId(), e);
       }
+    }
+    
+    //Mixt Domain (id -1)
+    try {
+      indexGroups("-1");
+    } catch (Exception e) {
+      SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
+          "domainId = -1", e);
     }
   }
 
