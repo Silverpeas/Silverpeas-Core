@@ -2263,6 +2263,7 @@ td.browsebar a:hover {
 
 .attachments {
 	min-width: 150px;
+	position:relative;
 }
 
 .attachments h4 {
@@ -3589,11 +3590,11 @@ ul#attachmentList li.ui-state-highlight {
 
 ul#attachmentList li.attachmentListItem .lineSize,
 ul#attachmentList li.attachmentListItem .lineMain {
-    white-space: nowrap;
     display: block;
     position: relative;
     padding: 1px 24px 2px 24px;
 }
+
 
 ul#attachmentList li.attachmentListItem .lineSize img {
 	position: absolute;
