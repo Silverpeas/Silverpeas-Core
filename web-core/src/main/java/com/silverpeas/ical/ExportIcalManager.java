@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- *
- */
 package com.silverpeas.ical;
 
 import com.silverpeas.calendar.Datable;
@@ -31,6 +28,7 @@ import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.ical.ExportableCalendar;
 import com.stratelia.webactiv.util.exception.UtilException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -118,7 +116,7 @@ public class ExportIcalManager {
         + getUserId() + ".ics";
     String filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
 
     try {
       FileWriter fileWriter = new FileWriter(filePath);
@@ -127,7 +125,7 @@ public class ExportIcalManager {
       if (events.isEmpty()) {
         returnCode = AgendaSessionController.EXPORT_EMPTY;
       } else {
-        iCalExporter.export(descriptor, events);
+        iCalExporter.export(descriptor, ExportableCalendar.with(events));
       }
     } catch (Exception ex) {
       try {
@@ -168,7 +166,7 @@ public class ExportIcalManager {
         + getUserId() + ".ics";
     String filePath = null;
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
 
     try {
       List<CalendarEvent> events = getCalendarEvents(null, null);
@@ -176,7 +174,7 @@ public class ExportIcalManager {
         filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
         FileWriter fileWriter = new FileWriter(filePath);
         ExportDescriptor descriptor = ExportDescriptor.withWriter(fileWriter);
-        iCalExporter.export(descriptor, events);
+        iCalExporter.export(descriptor, ExportableCalendar.with(events));
       }
     } catch (Exception ex) {
       try {

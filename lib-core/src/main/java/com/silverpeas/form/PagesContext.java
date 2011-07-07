@@ -31,6 +31,7 @@ public class PagesContext {
   public static final int ON_UPDATE_REPLACE_EMPTY_VALUES = 0;
   public static final int ON_UPDATE_IGNORE_EMPTY_VALUES = 1;
 
+  RenderingContext context = RenderingContext.WEB;
   String formName = "";
   String formIndex = "0";
   String currentFieldIndex = "0";
@@ -57,6 +58,7 @@ public class PagesContext {
   }
 
   public PagesContext(PagesContext pc) {
+    setRenderingContext(pc.getRenderingContext());
     setFormIndex(pc.getFormIndex());
     setFormName(pc.getFormName());
     setLanguage(pc.getLanguage());
@@ -129,6 +131,14 @@ public class PagesContext {
     setComponentId(componentId);
     setUserId(userId);
     setNodeId(nodeId);
+  }
+  
+  public RenderingContext getRenderingContext() {
+    return context;
+  }
+  
+  public final void setRenderingContext(final RenderingContext context) {
+    this.context = context;
   }
 
   public String getFormName() {
