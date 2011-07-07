@@ -24,46 +24,78 @@
 
 package com.silverpeas.export;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import org.apache.commons.io.input.ReaderInputStream;
 
 /**
- * It represents a descriptor about the import of resources from a reader. As such it defines the
- * reader and the format from which the resources have to be imported. With the descriptor parameters,
- * additional information about the impport process can be passed to the importer.
+ * It represents a descriptor about the import of resources from a reader or an input stream.
+ * As such it defines the reader, the input stream and the format from which the resources have to
+ * be imported. With the descriptor parameters, additional information about the import process can
+ * be passed to the importer.
  */
 public class ImportDescriptor extends ImportExportDescriptor {
 
   private Reader reader = null;
+  private InputStream inputStream = null;
 
   /**
-   * Creates and initializes a new descriptor on an export process withReader the specified reader and
+   * Creates and initializes a new descriptor on an import process with the specified reader and
    * import format.
+   * The input stream is initialized with the specified reader.
    * @param reader the reader to use for importing the serializable resources.
    * @return an import descriptor.
    */
   public static ImportDescriptor withReader(final Reader reader) {
-    return new ImportDescriptor(reader);
-  }
-
-  /**
-   * Constructs a new import descriptor withReader the specified reader. No specific format information
-   * will be passed to the importer.
-   * @param reader the reader from wich the resources will be deserialized.
-   */
-  private ImportDescriptor(final Reader reader) {
-    super();
     if (reader == null) {
       throw new IllegalArgumentException("The reader cannot be null!");
     }
-    this.reader = reader;
+    ImportDescriptor descriptor = new ImportDescriptor();
+    descriptor.setReader(reader);
+    descriptor.setInputStream(new ReaderInputStream(reader));
+    return descriptor;
+  }
+  
+  /**
+   * Creates and initializes a new descriptor on an import process with the specified input stream
+   * and import format.
+   * The reader is initialized with the specified input stream.
+   * @param inputStream the input stream to use for importing the serializable resources.
+   * @return an import descriptor.
+   */
+  public static ImportDescriptor withInputStream(final InputStream inputStream) {
+    if (inputStream == null) {
+      throw new IllegalArgumentException("The input stream cannot be null!");
+    }
+    ImportDescriptor descriptor = new ImportDescriptor();
+    descriptor.setInputStream(inputStream);
+    descriptor.setReader(new InputStreamReader(inputStream));
+    return descriptor;
   }
 
   /**
-   * Gets the reader withReader which the resources have to be imported.
+   * Gets the reader with which the resources have to be imported.
    * @return the reader.
    */
   public Reader getReader() {
     return this.reader;
+  }
+  
+  /**
+   * Gets the input stream with which the resources have to be imported.
+   * @return the input stream.
+   */
+  public InputStream getInputStream() {
+    return this.inputStream;
+  }
+  
+  private void setReader(final Reader reader) {
+    this.reader = reader;
+  }
+  
+  private void setInputStream(final InputStream inputStream) {
+    this.inputStream = inputStream;
   }
 
 }
