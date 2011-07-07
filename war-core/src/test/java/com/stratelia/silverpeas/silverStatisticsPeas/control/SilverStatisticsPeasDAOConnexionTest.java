@@ -192,21 +192,24 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
             dateEnd);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(3));
-    Iterator<String[]> iter = result.iterator();
-    String[] aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Parents","720" , "5005423","3"));
-    aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Simpsons", "105", "8517612", "1"));
-    //Should be after refactoring
-    //assertThat(aggregate, arrayContaining("Simpsons", "1265", String.valueOf(5005423 + 8236353), "1"));
-    aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Children","545" , "8236353","2"));
+    for(String[] aggregate : result) {
+      assertNotNull(aggregate);
+      assertThat(aggregate.length, is(4));
+      int id = Integer.parseInt(aggregate[3]);
+      switch(id) {
+        case 1:
+          assertThat(aggregate, arrayContaining("Simpsons", "105", "8517612", "1"));
+          //Should be after refactoring
+          //assertThat(aggregate, arrayContaining("Simpsons", "1265", String.valueOf(5005423 + 8236353), "1"));
+          break;
+        case 2:
+          assertThat(aggregate, arrayContaining("Children","545" , "8236353","2"));
+          break;
+        case 3:
+          assertThat(aggregate, arrayContaining("Parents","720" , "5005423","3"));
+          break;
+      }
+    }
   }
 
   /**
@@ -234,74 +237,77 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
     Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll(dateBegin, dateEnd);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(5));
-    Iterator<String[]> iter = result.iterator();
-    String[] aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Simpson","147" , "7008283","2"));
-    aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Simpson","349" , "5129284","5"));
-    aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Simpson", "105", "8517612", "1"));
-    aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Simpson","371" , "4888906","4"));
-    aggregate = iter.next();
-    assertNotNull(aggregate);
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Simpson","293" , "8751691","3"));
+    for(String[] aggregate : result) {
+      assertNotNull(aggregate);
+      assertThat(aggregate.length, is(4));
+      int id = Integer.parseInt(aggregate[3]);
+      switch(id) {
+        case 1:
+          assertThat(aggregate, arrayContaining("Simpson", "105", "8517612", "1"));
+          break;
+        case 2:
+          assertThat(aggregate, arrayContaining("Simpson","147" , "7008283","2"));
+          break;
+        case 3:
+          assertThat(aggregate, arrayContaining("Simpson","293" , "8751691","3"));
+          break;
+        case 4:
+          assertThat(aggregate, arrayContaining("Simpson","371" , "4888906","4"));
+          break;
+        case 5:
+          assertThat(aggregate, arrayContaining("Simpson","349" , "5129284","5"));
+          break;
+      }
+    }
   }
 
   /**
    * Test of getStatsConnexionUserUser method, of class SilverStatisticsPeasDAOConnexion.
    */
-  // @Test
+  @Test
   public void testGetStatsConnexionUserUser() throws Exception {
-    System.out.println("getStatsConnexionUserUser");
-    String dateBegin = "";
-    String dateEnd = "";
-    int idUser = 0;
-    Collection expResult = null;
-    Collection result = SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser(dateBegin,
-            dateEnd, idUser);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    int idUser = 2;
+    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser(dateBegin, dateEnd, idUser);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.size(), is(1));
+    for(String[] aggregate : result) {
+      assertNotNull(aggregate);
+      assertThat(aggregate.length, is(4));
+      assertThat(aggregate, arrayContaining("Simpson","147" , "7008283","2"));
+    }
   }
 
   /**
    * Test of getYears method, of class SilverStatisticsPeasDAOConnexion.
    */
-  // @Test
+  @Test
   public void testGetYears() throws Exception {
-    System.out.println("getYears");
-    Collection expResult = null;
-    Collection result = SilverStatisticsPeasDAOConnexion.getYears();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+   Collection<String> result = SilverStatisticsPeasDAOConnexion.getYears();
+    assertThat(result, is(notNullValue()));
+    assertThat(result.size(), is(1));
+    assertThat(result, hasItem("2011"));
   }
 
   /**
    * Test of getStatsUserFq method, of class SilverStatisticsPeasDAOConnexion.
    */
-  //@Test
+  @Test
   public void testGetStatsUserFq() throws Exception {
-    System.out.println("getStatsUserFq");
-    String dateBegin = "";
-    String dateEnd = "";
-    int min = 0;
-    int max = 0;
-    Collection[] expResult = null;
+    int min = 50;
+    int max = 100;
     Collection[] result = SilverStatisticsPeasDAOConnexion.getStatsUserFq(dateBegin, dateEnd, min,
             max);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+   assertThat(result, is (notNullValue()));
+    assertThat(result.length, is(2));
+    Collection<String> dates = (Collection<String>)result[0];
+    assertNotNull(dates);
+    assertThat(dates, hasSize(8));
+    assertThat(dates, contains(
+        new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+            "2011-05-01", "2011-06-01", "2011-07-01"}));
+    Collection<String> counts = (Collection<String>)result[1];
+    assertNotNull(counts);
+    assertThat(counts, hasSize(8));
+    assertThat(counts, contains(new String[]{"0", "2", "1", "1", "1", "1", "1", "0"}));
   }
 }
