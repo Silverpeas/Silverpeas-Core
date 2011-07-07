@@ -25,6 +25,8 @@ package com.silverpeas.pdc.web;
 
 import java.util.List;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import com.silverpeas.personalization.UserPreferences;
@@ -35,6 +37,7 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -94,7 +97,8 @@ public class PdcClassificationResource extends RESTWebService {
   public PdcClassificationEntity getPdCClassification() {
     checkUserPriviledges();
     try {
-      return thePdcClassificationOfTheRequestedResource();
+      URI itsURI = getUriInfo().getAbsolutePath();
+      return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (PdcException ex) {
@@ -106,7 +110,8 @@ public class PdcClassificationResource extends RESTWebService {
 
   /**
    * Deletes the specified existing position by its unique identifier.
-   * If the PdC position doesn't exist, a 404 HTTP code is returned.
+   * If the PdC position doesn't exist, nothing is done, so that the HTTP DELETE request remains
+   * indempotent as defined in the HTTP specification.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the resource PdC classification, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
@@ -120,7 +125,7 @@ public class PdcClassificationResource extends RESTWebService {
     try {
       pdcServiceProvider().deletePosition(positionId, inComponentOfId(getComponentId()));
     } catch (PdcException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
+      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -155,8 +160,9 @@ public class PdcClassificationResource extends RESTWebService {
               inComponentOfId(getComponentId()));
       String positionId = String.valueOf(position.getPositionId());
       URI newPositionURI = getUriInfo().getAbsolutePathBuilder().path(positionId).build();
+      URI itsURI = getUriInfo().getAbsolutePath();
       return Response.created(newPositionURI).
-              entity(thePdcClassificationOfTheRequestedResource()).
+              entity(thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI))).
               build();
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -167,7 +173,49 @@ public class PdcClassificationResource extends RESTWebService {
     }
   }
 
-  private PdcClassificationEntity thePdcClassificationOfTheRequestedResource() throws Exception {
+  /**
+   * Updates an existing position on the PdC into the classification of the resource identified by the
+   * requested URI.
+   * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
+   * returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authorized to access the comment, a 403 is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param modifiedPosition a web entity representing the new state of the PdC position to update.
+   * The entity is passed within the request and it is serialized in JSON.
+   * @return the response with the status of the position update and, in the case of a successful
+   * operation, the new PdC classification of the resource resulting of the position update.
+   */
+  @PUT
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Path("{positionId}")
+  public PdcClassificationEntity updatePdcPosition(@PathParam("positionId") String positionId,
+          final PdcPositionEntity modifiedPosition) {
+    checkUserPriviledges();
+    if (!positionId.equals(modifiedPosition.getId())
+            || modifiedPosition.getPositionValues().isEmpty()) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
+    try {
+      ClassifyPosition position = modifiedPosition.toClassifyPosition();
+      pdcServiceProvider().updatePosition(
+              position,
+              forContentOfId(getContentId()),
+              inComponentOfId(getComponentId()));
+      URI itsURI = getUriInfo().getBaseUriBuilder().path("pdc/{componentId}/{contentId}").
+              build(getComponentId(), getContentId());
+      return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
+    } catch (ContentManagerException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (PdcException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  private PdcClassificationEntity thePdcClassificationOfTheRequestedResource(final URI uri) throws Exception {
     UserPreferences userPreferences = getUserPreferences();
     List<ClassifyPosition> contentPositions = pdcServiceProvider().getAllPositions(
             forContentOfId(getContentId()),
@@ -175,9 +223,9 @@ public class PdcClassificationResource extends RESTWebService {
     PdcClassificationEntity theClassificationEntity = aPdcClassificationEntity(
             fromPositions(contentPositions),
             inLanguage(userPreferences.getLanguage()),
-            atURI(getUriInfo().getAbsolutePath()));
+            atURI(uri));
     if (userPreferences.isThesaurusEnabled()) {
-      UserThesaurusHolder theUserThesaurus = 
+      UserThesaurusHolder theUserThesaurus =
               pdcServiceProvider().getThesaurusOfUser(getUserDetail());
       theClassificationEntity.withSynonymsFrom(theUserThesaurus);
     }
@@ -186,5 +234,9 @@ public class PdcClassificationResource extends RESTWebService {
 
   private PdcServiceProvider pdcServiceProvider() {
     return pdcServiceProvider;
+  }
+  
+  private static URI identifiedBy(final URI uri) {
+    return uri;
   }
 }

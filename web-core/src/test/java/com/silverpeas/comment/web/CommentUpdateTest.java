@@ -84,7 +84,7 @@ public class CommentUpdateTest extends ResourceUpdateTest {
 
   @Override
   public String anUnexistingResourceURI() {
-    return RESOURCE_PATH + "/3";
+    return INVALID_RESOURCE_PATH + "/" + theComment.getId();
   }
 
   @Override

@@ -100,6 +100,11 @@ public class PdcBmMock extends PdcBmImpl {
   }
 
   @Override
+  public int updatePosition(ClassifyPosition position, String instanceId, int silverObjectId) throws PdcException {
+    return 0;
+  }
+
+  @Override
   public AxisHeader getAxisHeader(String axisId, boolean setTranslations) {
     ClassificationPlan pdc = aClassificationPlan();
     return pdc.getAxisHeader(axisId);

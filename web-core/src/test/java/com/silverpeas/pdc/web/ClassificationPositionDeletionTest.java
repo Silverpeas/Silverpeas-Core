@@ -29,8 +29,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.silverpeas.rest.ResourceDeletionTest;
 import java.util.List;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -66,14 +64,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
 
   @Test
   public void deletionOfAnUnexistingPositionInAPdcClassification() {
-    try {
-      deleteAt(CONTENT_CLASSIFICATION_PATH + "/1000");
-      fail("A user shouldn't delete an unexisting position in a resource's PdC classification");
-    } catch (UniformInterfaceException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(receivedStatus, is(notFound));
-    }
+    deleteAt(CONTENT_CLASSIFICATION_PATH + "/1000");
   }
 
   @Test

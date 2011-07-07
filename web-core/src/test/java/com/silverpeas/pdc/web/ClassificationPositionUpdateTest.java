@@ -23,12 +23,15 @@
  */
 package com.silverpeas.pdc.web;
 
+import javax.ws.rs.core.MediaType;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
 import com.silverpeas.pdc.web.beans.PdcClassification;
-import com.silverpeas.rest.ResourceCreationTest;
+import com.silverpeas.rest.ResourceUpdateTest;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.sun.jersey.api.client.ClientResponse;
+import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,20 +51,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Unit tests on the adding of a new position within the PdC classification of a resource.
+ * Unit tests on the update of an existing position within the PdC classification of a resource.
  */
-public class ClassificationPositionAddingTest extends ResourceCreationTest {
-  
+public class ClassificationPositionUpdateTest extends ResourceUpdateTest {
+
   @Inject
   private TestResources testResources;
   private String sessionKey;
   private UserDetail theUser;
   private PdcClassification theClassification;
-  
-  public ClassificationPositionAddingTest() {
+
+  public ClassificationPositionUpdateTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
-  
+
   @Before
   public void setUpUserSessionAndPdCClassifications() {
     assertNotNull(testResources);
@@ -72,67 +75,51 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest {
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
     testResources.save(theClassification);
   }
-  
-  @Test
-  public void addingANewPdcPositionToAnUnexistingPdcClassification() {
-    ClientResponse response = post(aNewPdcPosition(), at(anUnexistingResourceURI()));
-    int receivedStatus = response.getStatus();
-    int notFound = Status.NOT_FOUND.getStatusCode();
-    assertThat(receivedStatus, is(notFound));
-  }
-  
-  @Test
-  public void addingANewPdcPositionWithoutAnyValues() {
-    ClientResponse response = post(aPdcPositionWithoutAnyValues(), at(aResourceURI()));
-    int receivedStatus = response.getStatus();
-    int badRequest = Status.BAD_REQUEST.getStatusCode();
-    assertThat(receivedStatus, is(badRequest));
-  }
-  
-  @Test
-  public void addingANewPdcPosition() throws Exception {
-    ClientResponse response = post(aNewPdcPosition(), at(aResourceURI()));
-    int receivedStatus = response.getStatus();
-    int created = Status.CREATED.getStatusCode();
-    assertThat(receivedStatus, is(created));
-    assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(
-            theClassification())));
-  }
 
-  private PdcClassification theClassification() {
-    return testResources.getPdcClassification();
+  @Test
+  public void updateAPdcPositionWithoutAnyValues() {
+    try {
+      putAt(aResourceURI(), aPdcPositionWithoutAnyValues());
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int badRequest = Status.BAD_REQUEST.getStatusCode();
+      assertThat(receivedStatus, is(badRequest));
+    }
+  }
+ 
+  @Test
+  public void updateAnExistingPdcPosition() throws Exception {
+    PdcClassificationEntity classification = resource().path(aResourceURI()).
+        header(HTTP_SESSIONKEY, getSessionKey()).
+        accept(MediaType.APPLICATION_JSON).
+        type(MediaType.APPLICATION_JSON).
+        put(PdcClassificationEntity.class, aResource());
+    assertNotNull(classification);
+    assertThat(classification, equalTo(theWebEntityOf(testResources.getPdcClassification())));
   }
 
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
-    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
-    return PdcPositionEntity.createNewPositionWith(positionsValues);
-  }
-  
-  private PdcPositionEntity aNewPdcPosition() {
-    ClassificationPlan pdc = aClassificationPlan();
-    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
-    List<Value> values = pdc.getValuesOfAxisByName("Période");
-    Value value = values.get(values.size() - 1);
-    PdcPositionValue positionValue = PdcPositionValue.aPositionValue(Integer.valueOf(value.getAxisId()),
-              value.getPath() + value.getPK().getId() + "/");
-    positionValue.setTreeId(value.getTreeId());
-    positionsValues.add(positionValue);
-    return PdcPositionEntity.createNewPositionWith(positionsValues);
+    ClassifyPosition position = theClassification.getPositions().get(0);
+    position.getListClassifyValue().clear();
+    return PdcPositionEntity.fromClassifyPosition(position, FRENCH, URI.create(CLASSIFICATION_URI));
   }
 
   @Override
   public String aResourceURI() {
-    return CONTENT_CLASSIFICATION_PATH;
+    PdcPositionEntity position = aResource();
+    return CONTENT_CLASSIFICATION_PATH + "/" + position.getId();
   }
 
   @Override
   public String anUnexistingResourceURI() {
-    return UNKNOWN_CONTENT_CLASSIFICATION_PATH;
+    PdcPositionEntity position = aResource();
+    return UNKNOWN_CONTENT_CLASSIFICATION_PATH + "/" + position.getId();
   }
 
   @Override
   public PdcPositionEntity aResource() {
-    return aNewPdcPosition();
+    ClassifyPosition position = theClassification.getPositions().get(0);
+    return PdcPositionEntity.fromClassifyPosition(position, FRENCH, URI.create(CLASSIFICATION_URI));
   }
 
   @Override
@@ -144,9 +131,23 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest {
   public Class<?> getWebEntityClass() {
     return PdcClassificationEntity.class;
   }
-  
+
   private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           Exception {
     return testResources.toWebEntity(classification, theUser);
+  }
+
+  @Override
+  public PdcPositionEntity anInvalidResource() {
+    ClassificationPlan pdc = aClassificationPlan();
+    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
+    List<Value> values = pdc.getValuesOfAxisByName("Période");
+    Value value = values.get(values.size() - 1);
+    PdcPositionValue positionValue =
+            PdcPositionValue.aPositionValue(Integer.valueOf(value.getAxisId()),
+            value.getPath() + value.getPK().getId() + "/");
+    positionValue.setTreeId(value.getTreeId());
+    positionsValues.add(positionValue);
+    return PdcPositionEntity.createNewPositionWith(positionsValues);
   }
 }

@@ -101,13 +101,6 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest implements
 
   @Test
   public void deletionOfAnUnexistingResource() throws Exception {
-    try {
-      deleteAt(anUnexistingResourceURI());
-      fail("A user shouldn't delete an unexisting resource");
-    } catch (UniformInterfaceException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(receivedStatus, is(notFound));
-    }
+    deleteAt(anUnexistingResourceURI());
   }
 }

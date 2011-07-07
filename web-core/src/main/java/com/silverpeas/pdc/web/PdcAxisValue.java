@@ -46,8 +46,8 @@ public class PdcAxisValue extends PdcValue {
   private String term;
   @XmlElement(required=true)
   private int level;
-  @XmlElement(defaultValue="true")
-  private boolean activated = true;
+  @XmlElement(defaultValue="false")
+  private boolean ascendant = false;
   @XmlElement(defaultValue="false")
   private boolean origin = false;
   
@@ -89,12 +89,14 @@ public class PdcAxisValue extends PdcValue {
   }
 
   /**
-   * Is this axis value is activated? If true, then it can be used to create a position on the axis.
-   * If false, then the value cannot be choosen and it is just read only.
-   * @return true if this value can be used to create a position on the axis, false otherwise.
+   * Is this value is ascendant from the axis origin ? 
+   * When a PdC is parameterized for a given Silverpeas component instance, the origin of each axis
+   * can be refined. As such, values between the default and the new axis origin become ascendant to
+   * the latter.
+   * @return true if this value is ascendant to the configured axis origin.
    */
-  public boolean isActivated() {
-    return activated;
+  public boolean isAscendant() {
+    return ascendant;
   }
   
   /**
@@ -113,21 +115,6 @@ public class PdcAxisValue extends PdcValue {
    */
   public boolean isOrigin() {
     return origin;
-  }
-  
-  /**
-   * Activates this axis value. So it can be used in the classification of contents on the PdC.
-   */
-  public void activate() {
-    this.activated = true;
-  }
-
-  /**
-   * Deactivates this axis value. So it cannot be used in the classification of contents of the PdC.
-   * It is just in read-only.
-   */
-  public void deactivate() {
-    this.activated = false;
   }
 
   @Override
@@ -148,7 +135,7 @@ public class PdcAxisValue extends PdcValue {
     if (this.level != other.level) {
       return false;
     }
-    if (this.activated != other.activated) {
+    if (this.ascendant != other.ascendant) {
       return false;
     }
     if (this.origin != other.origin) {
@@ -163,7 +150,7 @@ public class PdcAxisValue extends PdcValue {
     hash = 83 * super.hashCode();
     hash = 83 * hash + (this.term != null ? this.term.hashCode() : 0);
     hash = 83 * hash + this.level;
-    hash = 83 * hash + (this.activated ? 1 : 0);
+    hash = 83 * hash + (this.ascendant ? 1 : 0);
     hash = 83 * hash + (this.origin ? 1 : 0);
     return hash;
   }
@@ -180,7 +167,7 @@ public class PdcAxisValue extends PdcValue {
       synonymArray.append("]");
     }
     return "PdcAxisValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() + 
-            "term=" + getTerm() + ", level=" + getLevel() + ", activated=" + isActivated() +
+            "term=" + getTerm() + ", level=" + getLevel() + ", ascendant=" + isAscendant() +
             ", origin=" + isOrigin() + ", synonyms=" + synonymArray.toString() + '}';
   }
   
@@ -209,6 +196,15 @@ public class PdcAxisValue extends PdcValue {
    */
   protected void setAsOriginValue() {
     this.origin = true;
+    this.ascendant = false;
+  }
+  
+  /**
+   * Sets this axis value as ascendant to the axis origin value.
+   */
+  protected void setAsAscendant() {
+    this.ascendant = true;
+    this.origin = false;
   }
   
   private PdcAxisValue(String withId, String withTerm, int inAxisId) {

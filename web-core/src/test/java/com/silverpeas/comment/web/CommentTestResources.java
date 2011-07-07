@@ -42,6 +42,7 @@ public class CommentTestResources {
   public static final String CONTENT_ID = "1";
   public static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/"
           + CONTENT_ID;
+  public static final String INVALID_RESOURCE_PATH = "comments/kmelia100/3";
   @Autowired
   private DefaultCommentServiceMock commentService;
 

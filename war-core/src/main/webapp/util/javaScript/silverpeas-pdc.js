@@ -134,7 +134,7 @@
     return this.each(function() {
       var $this = $(this);
       init( options );
-      renderClassification( $this );
+      loadClassification( $this );
     })
   };
   
@@ -145,6 +145,10 @@
     if ( options ) {
       $.extend( true, settings, options );
     }
+    settings.classificationURI = settings.resource.context + '/services/pdc/' +
+      settings.resource.component + '/' + settings.resource.content;
+    settings.pdcURI = settings.resource.context + '/services/pdc/' + settings.resource.component +
+      '?contentId=' + settings.resource.content;
   }
   
   /**
@@ -172,7 +176,7 @@
       id: "pdcpositions"
     }).appendTo($this);
     
-    loadClassification($this);
+    renderPositions( $this );
   }
 
   /**
@@ -180,7 +184,7 @@
    * the settings.
   */
   function addNewPosition( $this ) {
-    $.getJSON(uriOfPdC(), function(pdc) {
+    $.getJSON(settings.pdcURI, function(pdc) {
       var selection = [];
       renderClassificationEditionBox($this, pdc.axis, selection);
       $("#pdc-edition-box").dialog({
@@ -202,14 +206,15 @@
               }
             });
             $.ajax({
-              url: uriOfClassification(),
+              url: settings.classificationURI,
               type: "POST",
               data: $.toJSON(position),
               contentType: "application/json",
               dataType: "json",
-              success: function() {
+              success: function(classification) {
                 $("#pdc-edition-box").dialog( "destroy" );
-                refreshClassification();
+                $this.data('classification', classification);
+                refreshClassification( $this );
               }
             });
           }
@@ -232,9 +237,62 @@
    * the settings.
    */
   function updatePosition( $this, positionId ) {
-    if (settings.update.call(positionId)) {
-      refreshClassification($this);
-    }
+    $.getJSON(settings.pdcURI, function(pdc) {
+      var selection = [];
+      var positions = $this.data('classification').positions;
+      for(var i = 0; i < positions.length; i++) {
+        if (positions[i].id == positionId) {
+          $.each(positions[i].values, function(valindex, value) {
+            selection[value.axisId] = value;
+          });
+          break;
+        }
+      }
+      renderClassificationEditionBox($this, pdc.axis, selection);
+      $("#pdc-edition-box").dialog({
+        width: 640,
+        modal: true,
+        title: settings.addition.title,
+        buttons: [{
+          text: settings.edition.ok,
+          click: function() {
+            var position = new Object();
+            position.id = positionId;
+            position.values = [];
+            $.each(selection, function(axisId, value) {
+              if(value != null) {
+                position.values.push({
+                  id: value.id, 
+                  axisId: value.axisId, 
+                  treeId: value.treeId
+                });
+              }
+            });
+            $.ajax({
+              url: settings.classificationURI + '/' + positionId,
+              type: "PUT",
+              data: $.toJSON(position),
+              contentType: "application/json",
+              dataType: "json",
+              success: function(classification) {
+                $("#pdc-edition-box").dialog( "destroy" );
+                $this.data('classification', classification);
+                refreshClassification( $this );
+              }
+            });
+          }
+        }, {
+          text: settings.edition.cancel,
+          click: function() {
+            $( this ).dialog( "destroy" );
+          }
+        }
+        ],
+        close: function() {
+          $( this ).dialog( "destroy" );
+        }
+      })
+    });
   }
   
   /**
@@ -244,9 +302,15 @@
   function deletePosition( $this, positionId ) {
     if (window.confirm( settings.deletion.confirmation )) {
       $.ajax({
-        url: uriOfClassification() + "/" + positionId,
+        url: settings.classificationURI + "/" + positionId,
         type: "DELETE",
-        success: function(data) {
+        success: function() {
+          var positions = $this.data('classification').positions;
+          for(var i = 0; i < positions.length; i++) {
+            if (positions[i].id == positionId) {
+              positions.splice(i, 1);
+            }
+          }
           refreshClassification($this);
         }
       });
@@ -259,7 +323,7 @@
    */
   function refreshClassification( $this ) {
     $('#pdcpositions').children().remove();
-    loadClassification($this);
+    renderPositions( $this );
   }
   
   /**
@@ -267,34 +331,42 @@
    * resource.
    */
   function loadClassification( $this ) {
-    $.getJSON(uriOfClassification(), function(classification) {
-      $.each(classification.positions, function(posindex, position) {
-        var posId = posindex + 1, values =  [];
-        var htmlPosition =
-        $('<div>').addClass('pdcposition' + posId ).append($('<span>').html(settings.positionLabel + ' ' + posId));
-            
-        $.each(position.values, function(valindex, value) {
-          values.push('<li>' + value.meaning + '<i>' + value.synonyms.join(', ') + '</i></li>');
-        });
-            
-        if (settings.mode == 'edition') {
-          htmlPosition.append(
-            $('<a href="#">').append($('<img>').addClass('update').addClass('action').attr({
-              src: settings.update.icon, 
-              alt: settings.update.title
-            }).click(function () {
-              updatePosition($this, position.id);
-            }))).append($('<a href="#">').append(
-            $('<img>').addClass('delete').addClass('action').attr({
-              src: settings.deletion.icon, 
-              alt: settings.deletion.title
-            }).click(function () {
-              deletePosition($this, position.id);
-            })));
-        }
-        htmlPosition.append($('<ul>').addClass('pdcvalues').html(values.join(''))).appendTo('#pdcpositions');
-      });
+    $.getJSON(settings.classificationURI, function(classification) {
+      $this.data('classification', classification);
+      renderClassification($this);
     })
+  }
+  
+  /**
+   * Renders the positions of the resource on the PdC.
+   */
+  function renderPositions( $this ) {
+    $.each($this.data('classification').positions, function(posindex, position) {
+      var posId = posindex + 1, values =  [];
+      var htmlPosition =
+      $('<div>').addClass('pdcposition' + posId ).append($('<span>').html(settings.positionLabel + ' ' + posId));
+            
+      $.each(position.values, function(valindex, value) {
+        values.push('<li>' + value.meaning + '<i>' + value.synonyms.join(', ') + '</i></li>');
+      });
+            
+      if (settings.mode == 'edition') {
+        htmlPosition.append(
+          $('<a href="#">').append($('<img>').addClass('update').addClass('action').attr({
+            src: settings.update.icon, 
+            alt: settings.update.title
+          }).click(function () {
+            updatePosition($this, position.id);
+          }))).append($('<a href="#">').append(
+          $('<img>').addClass('delete').addClass('action').attr({
+            src: settings.deletion.icon, 
+            alt: settings.deletion.title
+          }).click(function () {
+            deletePosition($this, position.id);
+          })));
+      }
+      htmlPosition.append($('<ul>').addClass('pdcvalues').html(values.join(''))).appendTo('#pdcpositions');
+    });
   }
   
   /**
@@ -304,22 +376,19 @@
     $('#pdc-edition-box').children().remove();
     $.each(theAxis, function(axisindex, anAxis) {
       var axisDiv = $('<div>').attr('id', anAxis.name).addClass('pdc-axis').append($('<span class="pdc-axis-name">').html(anAxis.name)).appendTo($('#pdc-edition-box'));
-      var edition = $('<select class="pdc-axis-values" name="' + anAxis.id + '">').change(function() {
-        testOption();
-      }).appendTo(axisDiv);
+      var edition = $('<select class="pdc-axis-values" name="' + anAxis.id + '">').appendTo(axisDiv);
       $.each(anAxis.values, function(valueindex, aValue) {
         if (aValue.id != '/0/') {
           var level = '', optionAttr = 'value="' + aValue.id + '"';
           for (var i = 0; i < aValue.level; i++) {
             level = level + '&nbsp;';
           }
-          if (!aValue.activated) {
+          if (aValue.ascendant) {
             optionAttr = 'value="A" class="intfdcolor51" disabled="disabled"';
           }
-          if ((aValue.id == anAxis.invariantValue) || (aValue.origin && anAxis.mandatory)) {
-            optionAttr = optionAttr + ' selected="selected"';
-            selectedValues[anAxis.id] = aValue;
-          } else if (anAxis.mandatory && selectedValues[anAxis.id] == null) {
+          if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id) ||
+            (aValue.id == anAxis.invariantValue) ||
+            (anAxis.mandatory && (aValue.origin || (selectedValues[anAxis.id] == null)))) {
             optionAttr = optionAttr + ' selected="selected"';
             selectedValues[anAxis.id] = aValue;
           }
@@ -361,24 +430,6 @@
         })).
       append($('<span>').html('&nbsp;' + settings.edition.invariantLegend)).appendTo($('#pdc-edition-box'));
     }
-  }
-  
-  function testOption() {
-    
-  }
-  
-  /**
-   * The URI at which the classification of the resource on the PdC is located.
-   */
-  function uriOfClassification() {
-    return settings.resource.context + '/services/pdc/' + settings.resource.component + '/' + settings.resource.content; 
-  }
-  
-  /**
-   * The URI at which the PdC configured for the resource is located.
-   */
-  function uriOfPdC() {
-    return settings.resource.context + '/services/pdc/' + settings.resource.component + '?contentId=' + settings.resource.content
   }
 })( jQuery );
 

@@ -210,13 +210,11 @@ public class PdcAxis {
     for (Value value : values) {
       PdcAxisValue axisValue = PdcAxisValue.fromValue(value, inLanguage);
       if (isFather(axisValue.getId(), originValueId)) {
-        axisValue.activate();
+        axisValue.setAsAscendant();
         if (axisValue.getId().equals(originValueId)) {
           axisValue.setAsOriginValue();
         }
-      } else if(isChild(axisValue.getId(), originValueId)) {
-        axisValue.deactivate();
-      } else {
+      } else if(!isChild(axisValue.getId(), originValueId)) {
         continue;
       }
       if (usingThesaurus != null) {
@@ -234,11 +232,11 @@ public class PdcAxis {
     return axisValue;
   }
 
-  private static boolean isFather(String path, String anotherPath) {
+  private static boolean isChild(String path, String anotherPath) {
     return path.startsWith(anotherPath);
   }
   
-  private static boolean isChild(String path, String anotherPath) {
+  private static boolean isFather(String path, String anotherPath) {
     return anotherPath.startsWith(path);
   }
 

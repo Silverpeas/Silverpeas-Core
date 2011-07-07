@@ -92,6 +92,23 @@ public class PdcServiceProvider {
   }
 
   /**
+   * Updates the specified position of the specified resource content on the PdC configured for the
+   * specified Silverpeas component instance. The position of the content on the PdC whose the
+   * identifier is the one of the specified position is replaced by the passed position.
+   * @param position the classification position to update.
+   * @param contentId the identifier of the  content for which the position is to update on the PdC.
+   * @param componentId the identifier of the component instance that owns the PdC instance.
+   * @throws ContentManagerException if no such content or component instance exists with the
+   * specified identifier.
+   * @throws PdcException if the position update fails.
+   */
+  public void updatePosition(final ClassifyPosition position, String contentId, String componentId)
+          throws ContentManagerException, PdcException {
+    int silverObjectId = getSilverObjectId(contentId, componentId);
+    getPdcBm().updatePosition(position, contentId, silverObjectId);
+  }
+
+  /**
    * Deletes the specified position on the PdC of the specified component instance.
    * @param positionId the identifier of the position to delete.
    * @param componentId the identifier of the component that owns the PdC instance.
@@ -117,7 +134,7 @@ public class PdcServiceProvider {
     int silverObjectId = getSilverObjectId(contentId, componentId);
     return getPdcBm().getPositions(silverObjectId, componentId);
   }
-  
+
   /**
    * Gets the axis used in the PdC configured for the specified component identifier in order to
    * classify the specified resource content. If the resource content is already classified, then
@@ -135,7 +152,7 @@ public class PdcServiceProvider {
     int silverObjectId = getSilverObjectId(contentId, componentId);
     return getPdcBm().getUsedAxisToClassify(componentId, silverObjectId);
   }
-  
+
   /**
    * Gets a holder of the thesaurus for the specified user.
    * @param user the user for which a holder will hold the thesaurus.

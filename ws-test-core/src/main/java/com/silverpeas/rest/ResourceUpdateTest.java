@@ -62,7 +62,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
         type(MediaType.APPLICATION_JSON).
         put(c, newResourceState);
   }
- 
+  
   @Test
   public void updateOfAResourceByANonAuthenticatedUser() {
     try {
@@ -122,7 +122,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   @Test
   public void updateOfAnUnexistingResource() {
     try {
-      putAt(anUnexistingResourceURI(), anInvalidResource());
+      putAt(anUnexistingResourceURI(), aResource());
       fail("A user shouldn't update an unexisting resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
