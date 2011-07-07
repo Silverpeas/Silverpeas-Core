@@ -84,7 +84,7 @@ public class ODTConverterTest {
   public void convertAnODTDocumentToDoc() throws Exception {
     File convertedDocument = converter.convert(document, inFormat(doc));
     assertThat(convertedDocument.exists(), is(true));
-    assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(157184l));
+    assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(155000l));
   }
 
   @Test
