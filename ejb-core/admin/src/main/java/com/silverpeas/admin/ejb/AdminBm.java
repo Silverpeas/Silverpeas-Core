@@ -33,6 +33,7 @@ import javax.ejb.EJBObject;
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
@@ -41,7 +42,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
  * @author neysseri
  */
 public interface AdminBm extends EJBObject {
-  public ArrayList getAllRootSpaceIds() throws RemoteException;
+  public ArrayList<String> getAllRootSpaceIds() throws RemoteException;
 
   public SpaceInst getSpaceInstById(String spaceId) throws RemoteException;
 
@@ -51,16 +52,16 @@ public interface AdminBm extends EJBObject {
 
   public ComponentInstLight getComponentInstLight(String componentId) throws RemoteException;
 
-  public ArrayList getAvailCompoIds(String spaceId, String userId) throws RemoteException;
+  public ArrayList<String> getAvailCompoIds(String spaceId, String userId) throws RemoteException;
 
   public boolean isComponentAvailable(String spaceId, String componentId, String userId)
       throws RemoteException;
 
-  public List getAvailableSpaceIds(String userId) throws RemoteException;
+  public List<String> getAvailableSpaceIds(String userId) throws RemoteException;
 
-  public List getAvailableSubSpaceIds(String spaceId, String userId) throws RemoteException;
+  public List<String> getAvailableSubSpaceIds(String spaceId, String userId) throws RemoteException;
 
-  public Hashtable getTreeView(String userId, String spaceId) throws RemoteException;
+  public Hashtable<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws RemoteException;
 
   public String authenticate(String sKey, String sSessionId) throws RemoteException;
 
@@ -71,4 +72,8 @@ public interface AdminBm extends EJBObject {
 
   public void addSecurityData(String securityId, String userId, String domainId, boolean persistent)
       throws RemoteException;
+  
+  public String addComponentInst(ComponentInst componentInst, String userId) throws RemoteException;
+  
+  public void updateComponentOrderNum(String sComponentId, int orderNum) throws RemoteException;
 }

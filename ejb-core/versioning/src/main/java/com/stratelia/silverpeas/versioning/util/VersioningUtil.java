@@ -23,12 +23,16 @@
  */
 package com.stratelia.silverpeas.versioning.util;
 
+import static com.stratelia.webactiv.SilverpeasRole.admin;
+import static com.stratelia.webactiv.SilverpeasRole.publisher;
+import static com.stratelia.webactiv.SilverpeasRole.user;
+import static com.stratelia.webactiv.SilverpeasRole.writer;
+
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
@@ -47,7 +51,6 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.model.Reader;
 import com.stratelia.silverpeas.versioning.model.Worker;
-import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -67,7 +70,7 @@ public class VersioningUtil {
 
   private VersioningBm versioning_bm = null;
   private AdminController m_AdminCtrl = null;
-  private HashMap noReaderMap = new HashMap();
+  private HashMap<String, Reader> noReaderMap = new HashMap<String, Reader>();
   private VersioningIndexer indexer = new VersioningIndexer();
   private boolean isIndexable = true;
   private String componentId = null;
@@ -158,14 +161,12 @@ public class VersioningUtil {
   public HashMap<String, Reader> getAllUsersReader(Document document, String nameProfile)
       throws RemoteException {
     HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
-    @SuppressWarnings("unchecked")
-    ArrayList<Reader> no_readers = getAllNoReader(document);
+    List<Reader> no_readers = getAllNoReader(document);
     for (int i = 0; i < no_readers.size(); i++) {
       Reader reader = no_readers.get(i);
       mapRead.put(String.valueOf(reader.getUserId()), reader);
     }
-    @SuppressWarnings("unchecked")
-    ArrayList<Reader> readers = document.getReadList();
+    List<Reader> readers = document.getReadList();
     for (int i = 0; i < readers.size(); i++) {
       Reader reader = readers.get(i);
       mapRead.put(String.valueOf(reader.getUserId()), reader);
@@ -173,23 +174,22 @@ public class VersioningUtil {
     return mapRead;
   }
 
-  public ArrayList getAllNoReader(Document document) throws RemoteException {
+  public ArrayList<Reader> getAllNoReader(Document document) throws RemoteException {
     noReaderMap.clear();
     noReaderMap.putAll(getAllUsersForProfile(document, publisher.toString()));
     noReaderMap.putAll(getAllUsersForProfile(document, admin.toString()));
 
-    ArrayList writers = new ArrayList();
+    List<Reader> writers = new ArrayList<Reader>();
     writers.addAll(getAllUsersForProfile(document, writer.toString()).values());
     int creator_id = getDocumentCreator(document.getPk());
     for (int i = 0; i < writers.size(); i++) {
-      Reader user = (Reader) writers.get(i);
+      Reader user = writers.get(i);
       if (user.getUserId() == creator_id) {
         noReaderMap.put(String.valueOf(creator_id), user);
         break;
       }
     }
-    ArrayList users = new ArrayList(noReaderMap.values());
-    return users;
+    return new ArrayList<Reader>(noReaderMap.values());
   }
 
   public String getDocumentVersionIconPath(String physicalName) {
@@ -214,7 +214,7 @@ public class VersioningUtil {
     return FileRepositoryManager.getFileDownloadTime(size);
   }
 
-  public HashMap getAllUsersForProfile(Document document, String nameProfile) {
+  public HashMap<String, Reader> getAllUsersForProfile(Document document, String nameProfile) {
     OrganizationController orgCntr = new OrganizationController();
     ComponentInst componentInst = orgCntr.getComponentInst(document.getForeignKey().getComponentName());
 
@@ -224,8 +224,8 @@ public class VersioningUtil {
     // Get profile instance for given profile
     profileInst = componentInst.getProfileInst(nameProfile);
     if (profileInst != null) {
-      ArrayList groupIds = new ArrayList();
-      ArrayList userIds = new ArrayList();
+      ArrayList<String> groupIds = new ArrayList<String>();
+      ArrayList<String> userIds = new ArrayList<String>();
       groupIds.addAll(profileInst.getAllGroups());
       userIds.addAll(profileInst.getAllUsers());
 
@@ -234,7 +234,7 @@ public class VersioningUtil {
       // For all users of all groups generate UserDetail and then put
       // pair (users id, UsersDetail) to HashTable
       for (int i = 0; i < groupIds.size(); i++) {
-        group = orgCntr.getGroup((String) groupIds.get(i));
+        group = orgCntr.getGroup(groupIds.get(i));
         String[] usersGroup = group.getUserIds();
         for (int j = 0; j < usersGroup.length; j++) {
           // This check avoids duplicate users
@@ -252,9 +252,9 @@ public class VersioningUtil {
       for (int i = 0; i < userIds.size(); i++) {
         // This check avoids duplicate users
         if (!mapRead.containsKey(userIds.get(i)) && !noReaderMap.containsKey(userIds.get(i))) {
-          UserDetail ud = orgCntr.getUserDetail((String) userIds.get(i));
+          UserDetail ud = orgCntr.getUserDetail(userIds.get(i));
           Reader ru = new Reader(Integer.parseInt(ud.getId()), 0, document.getInstanceId(), 0);
-          mapRead.put((String) userIds.get(i), ru);
+          mapRead.put(userIds.get(i), ru);
         }
       }
     }
@@ -326,8 +326,7 @@ public class VersioningUtil {
     if (isWriter(document, userID)) {
       return true;
     }
-    @SuppressWarnings("unchecked")
-    ArrayList<Reader> readList = document.getReadList();
+    List<Reader> readList = document.getReadList();
     for (Reader reader : readList) {
       if (reader.getUserId() == userID) {
         return true;
@@ -565,19 +564,17 @@ public class VersioningUtil {
     setFileRights(WRITER);
 
     // Set file rights in versioning rights
-    ArrayList workers = new ArrayList();
-    ArrayList workersUsers = new ArrayList();
-    ArrayList workersGroups = new ArrayList();
+    ArrayList<Worker> workers = new ArrayList<Worker>();
+    ArrayList<Worker> workersUsers = new ArrayList<Worker>();
+    ArrayList<Worker> workersGroups = new ArrayList<Worker>();
     document.setCurrentWorkListOrder(getSavedListType(document.getInstanceId()));
     document.setWorkList(workers);
 
     if (isAccessListExist(WRITER)) {
-      ArrayList savedWorkersGroups = getAccessListGroups(WRITER);
-      ArrayList savedWorkersUsers = getAccessListUsers(WRITER);
+      List<Worker> savedWorkersGroups = getWorkersAccessListGroups();
+      List<Worker> savedWorkersUsers = getWorkersAccessListUsers();
 
-      Iterator savedWorkersGroupsIterator = savedWorkersGroups.iterator();
-      while (savedWorkersGroupsIterator.hasNext()) {
-        Worker savedWorkerGroup = (Worker) savedWorkersGroupsIterator.next();
+      for (Worker savedWorkerGroup : savedWorkersGroups) {
         Worker newWorkerGroup = (Worker) savedWorkerGroup.clone();
         newWorkerGroup.setDocumentId(new Integer(document.getPk().getId()).intValue());
         newWorkerGroup.setSaved(false);
@@ -585,9 +582,7 @@ public class VersioningUtil {
       }
       workers.addAll(workersGroups);
 
-      Iterator savedWorkersUsersIterator = savedWorkersUsers.iterator();
-      while (savedWorkersUsersIterator.hasNext()) {
-        Worker savedWorkerUser = (Worker) savedWorkersUsersIterator.next();
+      for (Worker savedWorkerUser : savedWorkersUsers) {
         Worker newWorkerUser = (Worker) savedWorkerUser.clone();
         newWorkerUser.setDocumentId(new Integer(document.getPk().getId()).intValue());
         newWorkerUser.setSaved(false);
@@ -609,26 +604,22 @@ public class VersioningUtil {
     if (isAccessListExist(role)) {
       if (role.equals(READER)) {
         // We only get Ids
-        sel.setSelectedElements((String[]) getAccessListUsers(role).toArray(new String[0]));
-        sel.setSelectedSets((String[]) getAccessListGroups(role).toArray(new String[0]));
+        sel.setSelectedElements(getReadersAccessListUsers().toArray(new String[0]));
+        sel.setSelectedSets(getReadersAccessListGroups().toArray(new String[0]));
       } else {
-        ArrayList workersUsers = getAccessListUsers(WRITER);
-        ArrayList workersGroups = getAccessListGroups(WRITER);
+        List<Worker> workersUsers = getWorkersAccessListUsers();
+        List<Worker> workersGroups = getWorkersAccessListGroups();
 
         String[] usersIds = new String[workersUsers.size()];
         String[] groupsIds = new String[workersGroups.size()];
         // Extract only ids from Workers ArrayList
         int i = 0;
-        Iterator workersUsersIterator = workersUsers.iterator();
-        while (workersUsersIterator.hasNext()) {
-          Worker workerUser = (Worker) workersUsersIterator.next();
+        for (Worker workerUser : workersUsers) {
           usersIds[i++] = String.valueOf(workerUser.getId());
         }
 
         i = 0;
-        Iterator workersGroupsIterator = workersGroups.iterator();
-        while (workersGroupsIterator.hasNext()) {
-          Worker workerGroup = (Worker) workersGroupsIterator.next();
+        for (Worker workerGroup : workersGroups) {
           groupsIds[i++] = String.valueOf(workerGroup.getId());
         }
         sel.setSelectedElements(usersIds);
@@ -702,29 +693,29 @@ public class VersioningUtil {
    * @throws RemoteException
    */
   public boolean isAccessListExist(String role) throws RemoteException {
-    return (!getAccessListGroups(role).isEmpty() || !getAccessListUsers(role).isEmpty());
+    if (role.equals(READER)) {
+      return !getReadersAccessListGroups().isEmpty() || !getReadersAccessListUsers().isEmpty();
+    }
+    return !getWorkersAccessListGroups().isEmpty() || !getWorkersAccessListUsers().isEmpty();
   }
 
   /**
    * @param role
    * @throws RemoteException
    */
-  public ArrayList getAccessListUsers(String role) throws RemoteException {
-    if (READER.equals(role)) {
-      return getVersioningBm().getReadersAccessListUsers(getComponentId());
-    } 
+  private List<String> getReadersAccessListUsers() throws RemoteException {
+    return getVersioningBm().getReadersAccessListUsers(getComponentId());
+  }
+  
+  private List<Worker> getWorkersAccessListUsers() throws RemoteException {
     return getVersioningBm().getWorkersAccessListUsers(getComponentId());
   }
-
-  /**
-   * @param role
-   * @return
-   * @throws RemoteException
-   */
-  public ArrayList getAccessListGroups(String role) throws RemoteException {
-    if (READER.equals(role)) {
-      return getVersioningBm().getReadersAccessListGroups(getComponentId());
-    }
+  
+  private List<String> getReadersAccessListGroups() throws RemoteException {
+    return getVersioningBm().getReadersAccessListGroups(getComponentId());
+  }
+  
+  private List<Worker> getWorkersAccessListGroups() throws RemoteException {
     return getVersioningBm().getWorkersAccessListGroups(getComponentId());
   }
 

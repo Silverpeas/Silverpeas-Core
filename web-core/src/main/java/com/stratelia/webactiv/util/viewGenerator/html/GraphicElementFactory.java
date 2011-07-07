@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -84,7 +83,7 @@ public class GraphicElementFactory {
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
-  private String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
+  private final static String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.webactiv.general", I18NHelper.defaultLanguage);
   private final static String iconsPath = URLManager.getApplicationURL() + settings.getString(
@@ -293,6 +292,32 @@ public class GraphicElementFactory {
       code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
           "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
 
+      // define CSS(default and specific) and JS (specific) dedicated to current component
+      StringBuilder defaultComponentCSS = null;
+      StringBuilder specificComponentCSS = null;
+      if (StringUtil.isDefined(componentId) && mainSessionController != null) {
+        ComponentInstLight component =
+            mainSessionController.getOrganizationController().getComponentInstLight(componentId);
+        if (component != null) {
+          String componentName = component.getName();
+          String genericComponentName = getGenericComponentName(componentName);
+          defaultComponentCSS = new StringBuilder(50);
+          defaultComponentCSS.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath).
+              append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
+              genericComponentName).append(".css").append("\"/>\n");
+
+          String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
+          if (StringUtil.isDefined(specificStyle)) {
+            specificComponentCSS = new StringBuilder(50);
+            specificComponentCSS.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+            specificComponentCSS.append(specificStyle).append("\"/>\n");
+          }
+
+          specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
+        }
+      }
+      
+      // append default global CSS
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath);
       code.append(standardStyle).append("\"/>\n");
 
@@ -300,33 +325,22 @@ public class GraphicElementFactory {
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
           contextPath).append(standardStyleForIE).append("\"/>\n");
       code.append("<![endif]-->\n");
-
-      appendSpecificCSS(code);
-
-      // append CSS style sheet dedicated to current component
-      if (StringUtil.isDefined(componentId) && mainSessionController != null) {
-        ComponentInstLight component =
-            mainSessionController.getOrganizationController().getComponentInstLight(componentId);
-        if (component != null) {
-          String componentName = component.getName();
-          String genericComponentName = getGenericComponentName(componentName);
-          code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath).
-              append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
-              genericComponentName).append(".css").append("\"/>\n");
-
-          String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
-          if (StringUtil.isDefined(specificStyle)) {
-            code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-            code.append(specificStyle).append("\"/>\n");
-          }
-
-          specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
-        }
+      
+      // append default CSS of current component
+      if (defaultComponentCSS != null) {
+        code.append(defaultComponentCSS);
       }
-
+      
+      // append specific global CSS
+      appendSpecificCSS(code);
+      
+      // append specific CSS of current component
+      if (specificComponentCSS != null) {
+        code.append(specificComponentCSS);
+      }
     } else {
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet).
-          append("\"/>\n");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet)
+          .append("\"/>\n");
     }
 
     // append javascript

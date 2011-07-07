@@ -24,6 +24,7 @@
 
 package com.silverpeas.calendar;
 
+import com.google.common.collect.Collections2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -104,6 +105,15 @@ public class CalendarEventCategories {
    */
   public List<String> asList() {
     return new ArrayList<String>(categories);
+  }
+  
+  /**
+   * Converts this categories container to an array of category identifiers.
+   * @return an array of category identifiers.
+   */
+  public String[] asArray() {
+    List<String> categoryList = asList();
+    return categoryList.toArray(new String[categoryList.size()]);
   }
 
   /**

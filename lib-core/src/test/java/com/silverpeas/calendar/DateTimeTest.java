@@ -68,6 +68,34 @@ public class DateTimeTest {
     DateTime actual = DateTime.now();
     assertEquals(expected.getTime(), actual.getTime(), 100);
   }
+  
+  @Test
+  public void createsAtASpecifiedDateTime() {
+    Calendar now = getInstance();
+    DateTime expected = new DateTime(now.getTime());
+    DateTime actual = DateTime.dateTimeAt(now.get((Calendar.YEAR)),
+        now.get(Calendar.MONTH),
+        now.get(Calendar.DAY_OF_MONTH),
+        now.get(Calendar.HOUR_OF_DAY),
+        now.get(Calendar.MINUTE),
+        now.get(Calendar.SECOND),
+        now.get(Calendar.MILLISECOND));
+    assertEquals(expected.getTime(), actual.getTime(), 100);
+  }
+  
+  @Test
+  public void createsAtASpecifiedShorterDateTime() {
+    Calendar now = getInstance();
+    now.set(Calendar.SECOND, 0);
+    now.set(Calendar.MILLISECOND, 0);
+    DateTime expected = new DateTime(now.getTime());
+    DateTime actual = DateTime.dateTimeAt(now.get((Calendar.YEAR)),
+        now.get(Calendar.MONTH),
+        now.get(Calendar.DAY_OF_MONTH),
+        now.get(Calendar.HOUR_OF_DAY),
+        now.get(Calendar.MINUTE));
+    assertEquals(expected.getTime(), actual.getTime(), 100);
+  }
 
   /**
    * Test of clone method, of class DateTime.
@@ -176,7 +204,7 @@ public class DateTimeTest {
   }
 
   private String iso8601Text() {
-    return "2011-01-20T11:00+0100";
+    return "2011-01-20T11:00:20+0100";
   }
 
   private String iCalText() {

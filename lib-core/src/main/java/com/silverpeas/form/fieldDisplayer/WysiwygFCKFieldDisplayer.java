@@ -24,17 +24,7 @@
 
 package com.silverpeas.form.fieldDisplayer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import au.id.jericho.lib.html.Source;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -48,7 +38,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -57,6 +47,15 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
@@ -253,7 +252,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out
           .println("oFCKeditor.Config[\"DefaultLanguage\"] = \"" + pageContext.getLanguage() +
           "\";");
-      String configFile = SilverpeasSettings.readString(settings, "configFile",
+      String configFile = settings.getString("configFile",
           Util.getPath() + "/wysiwyg/jsp/javaScript/myconfig.js");
       out.println("oFCKeditor.Config[\"CustomConfigurationsPath\"] = \"" + configFile + "\";");
       out.println("oFCKeditor.ToolbarSet = 'XMLForm';");
@@ -405,6 +404,19 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         fieldValueIndex = fieldValue.trim().replaceAll("##", " ");
       }
       indexEntry.addField(key, fieldValueIndex, language);
+
+      // index embedded linked attachment (links presents in wysiwyg content)
+      try {
+       String content = WysiwygFCKFieldDisplayer.getContentFromFile(indexEntry.getComponent(), indexEntry.getObjectId(), fieldName, language);
+       List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(content);
+       WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
+      } catch (UtilException e) {
+           SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
+                   "Unable to extract linkes files from object" + indexEntry.getObjectId(), e);
+      } catch (WysiwygException e) {
+           SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
+                   "Unable to extract linkes files from object" + indexEntry.getObjectId(), e);
+      }
     }
   }
 
@@ -418,7 +430,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
     String fileName = setContentIntoFile(pageContext.getComponentId(), newObjectId, template.getFieldName(), code, contentLanguage);
     field.setValue(dbKey + fileName, pageContext.getLanguage());
   }
-  
+
   private String getContent(String componentId, String objectId, String fieldName, String code,
       String language) throws
       FormException {

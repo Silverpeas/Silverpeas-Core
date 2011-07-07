@@ -21,41 +21,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.selectionPeas;
 
 import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public class SelectionPeasSettings extends SilverpeasSettings {
-  public static int setBySearchPage = 14;
-  public static int elementBySearchPage = 14;
-  public static int setByBrowsePage = 5;
-  public static int elementByBrowsePage = 8;
-  public static String firstPage = Selection.FIRST_PAGE_DEFAULT;
-  public static String defaultPage = Selection.FIRST_PAGE_SEARCH_ELEMENT;
-  public static boolean displayGroupsUsers = false;
-  public static boolean displayUsersGroups = true;
-  public static boolean displayNbUsersByGroup = true;
-  public static boolean displayAllSearchByDefault = true;
-  public static boolean displayDomains = true;
+public class SelectionPeasSettings {
+
+  public static int setBySearchPage;
+  public static int elementBySearchPage;
+  public static int setByBrowsePage;
+  public static int elementByBrowsePage;
+  public static String firstPage;
+  public static String defaultPage;
+  public static boolean displayGroupsUsers;
+  public static boolean displayUsersGroups;
+  public static boolean displayNbUsersByGroup;
+  public static boolean displayAllSearchByDefault;
+  public static boolean displayDomains;
 
   static {
     ResourceLocator rs = new ResourceLocator(
-        "com.stratelia.silverpeas.selectionPeas.settings.selectionPeasSettings", "");
-
-    setBySearchPage = readInt(rs, "SetBySearchPage", setBySearchPage);
-    elementBySearchPage = readInt(rs, "ElementBySearchPage", elementBySearchPage);
-    setByBrowsePage = readInt(rs, "SetByBrowsePage", setByBrowsePage);
-    elementByBrowsePage = readInt(rs, "ElementByBrowsePage", elementByBrowsePage);
-    firstPage = readString(rs, "FirstPage", firstPage);
-    defaultPage = readString(rs, "DefaultPage", defaultPage);
-    displayGroupsUsers = readBoolean(rs, "DisplayGroupsUsers", displayGroupsUsers);
-    displayUsersGroups = readBoolean(rs, "DisplayUsersGroups", displayUsersGroups);
-    displayNbUsersByGroup = readBoolean(rs, "DisplayNbUsersByGroup", displayNbUsersByGroup);
-    displayAllSearchByDefault = readBoolean(rs, "DisplayAllSearchByDefault",
-        displayAllSearchByDefault);
-    displayDomains = readBoolean(rs, "DisplayDomains", displayDomains);
+            "com.stratelia.silverpeas.selectionPeas.settings.selectionPeasSettings", "");
+    setBySearchPage = rs.getInteger("SetBySearchPage", 14);
+    elementBySearchPage = rs.getInteger("ElementBySearchPage", 14);
+    setByBrowsePage = rs.getInteger("SetByBrowsePage", 5);
+    elementByBrowsePage = rs.getInteger("ElementByBrowsePage", 8);
+    firstPage = rs.getString("FirstPage", Selection.FIRST_PAGE_DEFAULT);
+    defaultPage = rs.getString("DefaultPage", Selection.FIRST_PAGE_SEARCH_ELEMENT);
+    displayGroupsUsers = rs.getBoolean("DisplayGroupsUsers", false);
+    displayUsersGroups = rs.getBoolean("DisplayUsersGroups", true);
+    displayNbUsersByGroup = rs.getBoolean("DisplayNbUsersByGroup", true);
+    displayAllSearchByDefault = rs.getBoolean("DisplayAllSearchByDefault", true);
+    displayDomains = rs.getBoolean("DisplayDomains", true);
   }
 }

@@ -28,6 +28,7 @@ import com.silverpeas.calendar.CalendarEventRecurrence;
 import com.silverpeas.calendar.DateTime;
 import com.silverpeas.calendar.Date;
 import com.silverpeas.export.ExportDescriptor;
+import com.silverpeas.export.ExportException;
 import com.silverpeas.export.ExporterFactory;
 import java.io.IOException;
 import java.util.Arrays;
@@ -65,7 +66,7 @@ import static com.silverpeas.calendar.TimeUnit.*;
 public class ICalExporterTest {
 
   private String icsPath;
-  private Exporter<CalendarEvent> exporter;
+  private Exporter<ExportableCalendar> exporter;
   private ExportDescriptor descriptor;
 
   public ICalExporterTest() {
@@ -100,7 +101,7 @@ public class ICalExporterTest {
   @Test(expected = NoDataToExportException.class)
   public void exportNoEventsThrowsExportException() throws Exception {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
-    exporter.export(descriptor, events);
+    exporter.export(descriptor, ExportableCalendar.with(events));
   }
 
   /**
@@ -110,7 +111,7 @@ public class ICalExporterTest {
   @Test
   public void exportOneEventGenerateAnICalFileWithInfoOnThatEvent() throws Exception {
     CalendarEvent event = generateEventWithTitle("toto", onDay(false));
-    exporter.export(descriptor, event);
+    exporter.export(descriptor, ExportableCalendar.with(event));
 
     File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
@@ -125,7 +126,7 @@ public class ICalExporterTest {
   @Test
   public void exportOneDayEventGenerateAnICalFileWithInfoOnThatEvent() throws Exception {
     CalendarEvent event = generateEventWithTitle("toto", onDay(true));
-    exporter.export(descriptor, event);
+    exporter.export(descriptor, ExportableCalendar.with(event));
 
     File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
@@ -142,7 +143,7 @@ public class ICalExporterTest {
     CalendarEvent event1 = generateEventWithTitle("toto1", onDay(false));
     CalendarEvent event2 = generateEventWithTitle("toto2", onDay(false));
     CalendarEvent event3 = generateEventWithTitle("toto3", onDay(false));
-    exporter.export(descriptor, event1, event2, event3);
+    exporter.export(descriptor, ExportableCalendar.with(event1, event2, event3));
 
     File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
@@ -161,7 +162,7 @@ public class ICalExporterTest {
   public void exportOneRecurringEventGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence() throws
       Exception {
     CalendarEvent event = generateRecurringEventWithTitle("recurring", onDay(false));
-    exporter.export(descriptor, event);
+    exporter.export(descriptor, ExportableCalendar.with(event));
     File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
@@ -180,7 +181,7 @@ public class ICalExporterTest {
     CalendarEventRecurrence recurrence = every(MONTH).
         on(nthOccurrence(2, MONDAY), nthOccurrence(1, THURSDAY));
     CalendarEvent event = generateEventWithTitle("recurring", true).recur(recurrence);
-    exporter.export(descriptor, event);
+    exporter.export(descriptor, ExportableCalendar.with(event));
     File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
@@ -200,7 +201,7 @@ public class ICalExporterTest {
     Calendar endDate = Calendar.getInstance();
     endDate.add(Calendar.YEAR, 1);
     event.getRecurrence().upTo(new Date(endDate.getTime()));
-    exporter.export(descriptor, event);
+    exporter.export(descriptor, ExportableCalendar.with(event));
 
     File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
@@ -221,12 +222,33 @@ public class ICalExporterTest {
     Calendar endDate = Calendar.getInstance();
     endDate.add(Calendar.YEAR, 1);
     event.getRecurrence().upTo(new DateTime(endDate.getTime()));
-    exporter.export(descriptor, event);
+    exporter.export(descriptor, ExportableCalendar.with(event));
 
     File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));
+  }
+  
+  @Test
+  public void exportOneEventOnDayStartingAtAGivenTime() throws Exception {
+    CalendarEvent event = anEventAt(DateTime.now()).withTitle("toto").withPriority(10);
+    exporter.export(descriptor, ExportableCalendar.with(event));
+    File icsFile = new File(icsPath);
+    assertThat(icsFile.exists(), is(true));
+    String content = FileUtils.readFileToString(icsFile);
+    assertThat(content, describes(event));
+  }
+  
+  /**
+   * An event defined on a day cannot have an end date in iCal.
+   * @throws Exception if the ical export of the event failed.
+   */
+  @Test(expected=ExportException.class)
+  public void exportOneEventOnDayEndingAtAGivenTime() throws Exception {
+    CalendarEvent event = anEventAt(Date.today()).endingAt(DateTime.now()).withTitle("toto").
+        withPriority(10);
+    exporter.export(descriptor, ExportableCalendar.with(event));
   }
 
   private CalendarEvent generateEventWithTitle(String title, boolean onDay) {
@@ -237,8 +259,8 @@ public class ICalExporterTest {
     } else {
       Calendar endingDate = Calendar.getInstance();
       endingDate.add(Calendar.HOUR_OF_DAY, 2);
-      event = anEventAt(new DateTime((startingDate.getTime())));
-      event.endingAt(new DateTime(endingDate.getTime()));
+      event = anEventAt(new DateTime((startingDate.getTime()))).
+          endingAt(new DateTime(endingDate.getTime()));
     }
     event.withTitle(title).withPriority(10);
     event.getAttendees().add("emmanuel.hugonnet@silverpeas.com");

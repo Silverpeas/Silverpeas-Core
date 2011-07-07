@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.pdcPeas.model;
 
 import java.io.File;
+import java.util.List;
 
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
@@ -50,6 +51,11 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private int hits = -1;
   private String externalUrl = null;
 
+  /**
+   * List of all linked attachment in wysiwyg content
+   */
+  private List<String> embeddedFileIds;
+
   public GlobalSilverResult(GlobalSilverContent gsc) {
     super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
         gsc.getInstanceId(), gsc.getDate(), gsc.getUserId());
@@ -68,12 +74,29 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     indexEntry = mie;
     super.setType(mie.getObjectType());
     super.setScore(mie.getScore());
+    this.embeddedFileIds = mie.getEmbeddedFileIds();
 
     if (mie.getThumbnail() != null) {
+      String[] dimensions = null;
+      File image = null;
       if (mie.getThumbnail().startsWith("/")) {
         // case of a thumbnail picked up in a gallery
         super.setThumbnailURL(mie.getThumbnail());
-        setThumbnailWidth("60");
+
+        // thumbnail URL is like
+        // /silverpeas/GalleryInWysiwyg/dummy?ImageId=31&ComponentId=gallery6974&UseOriginal=true
+        String url = mie.getThumbnail();
+        url = url.substring(url.indexOf("?"));
+        String[] parameters = url.split("&");
+
+        String imageId = parameters[0].substring(parameters[0].indexOf("=") + 1);
+        String componentId = parameters[1].substring(parameters[1].indexOf("=") + 1);
+
+        String filePath =
+            FileRepositoryManager.getAbsolutePath(componentId) + "image" + imageId +
+                File.separator + imageId + "_preview.jpg";
+
+        image = new File(filePath);
       } else {
         // case of an uploaded image
         super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
@@ -82,17 +105,24 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
         String[] directory = new String[1];
         directory[0] = mie.getThumbnailDirectory();
 
-        File image = new File(FileRepositoryManager.getAbsolutePath(mie.getComponent(), directory)
+        image = new File(FileRepositoryManager.getAbsolutePath(mie.getComponent(), directory)
             + mie.getThumbnail());
-
-        String[] dimensions = ImageUtil.getWidthAndHeightByWidth(image, 60);
-        if (!StringUtil.isDefined(dimensions[0])) {
-          dimensions[0] = "60";
-        }
-        setThumbnailWidth(dimensions[0]);
-        setThumbnailHeight(dimensions[1]);
       }
+      dimensions = ImageUtil.getWidthAndHeightByWidth(image, 60);
+      if (!StringUtil.isDefined(dimensions[0])) {
+        dimensions[0] = "60";
+        dimensions[1] = "45";
+      }
+      setThumbnailWidth(dimensions[0]);
+      setThumbnailHeight(dimensions[1]);
     }
+  }
+
+  /**
+   * @return the embeddedFileIds
+   */
+  public List<String> getEmbeddedFileIds() {
+    return embeddedFileIds;
   }
 
   public MatchingIndexEntry getIndexEntry() {

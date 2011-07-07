@@ -40,7 +40,7 @@ public class DatableTest {
   @Test
   public void aDateTimeToISO8601() {
     java.util.Date now = new java.util.Date();
-    SimpleDateFormat format = new SimpleDateFormat(Datable.SHORT_ISO_8601_PATTERN);
+    SimpleDateFormat format = new SimpleDateFormat(Datable.ISO_8601_PATTERN);
     String expected = format.format(now);
 
     DateTime dateTime = new DateTime(now);

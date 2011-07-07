@@ -42,9 +42,14 @@
   <ctx:component-scan base-package="com.silverpeas.scheduler"/>
   <ctx:component-scan base-package="com.silverpeas.calendar"/>
   <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>
+  <ctx:component-scan base-package="com.silverpeas.domains"/>
   <ctx:component-scan base-package="com.silverpeas.look"/>
   <ctx:component-scan base-package="com.silverpeas.personalization"/>
   <ctx:component-scan base-package="com.silverpeas.delegatednews"/>
+  <ctx:component-scan base-package="com.silverpeas.converter"/>
+  
+  
+  <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
 
   <!-- The Bean Validator (JSR-303) bootstrapping through Spring. The Hibernate implementation is used -->
   <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
@@ -82,6 +87,11 @@
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"
         factory-method="getSilverpeasLook"
         depends-on="organizationController"/>
+        
+  <!-- the factory of the document format converters available in Silverpeas.
+        It wraps and provides an access to the actual converter implementations -->
+  <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterFactory"
+        factory-method="getFactory"/>
 
 </beans>
 

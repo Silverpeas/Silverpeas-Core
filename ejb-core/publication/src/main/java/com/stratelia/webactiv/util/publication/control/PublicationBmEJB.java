@@ -23,20 +23,6 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.NotationBm;
@@ -56,7 +42,7 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -102,6 +88,19 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Class declaration
@@ -194,8 +193,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       pubDetail.setIndexOperation(indexOperation);
       createIndex(pubDetail);
 
-      if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-          false)) {
+      if (publicationSettings.getBoolean("useTagCloud", false)) {
         createTagCloud(pubDetail);
       }
     } catch (Exception re) {
@@ -387,8 +385,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         deleteIndex(detail.getPK());
       }
 
-      if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-          false)) {
+      if (publicationSettings.getBoolean("useTagCloud", false)) {
         updateTagCloud(detail);
       }
     } catch (Exception re) {
@@ -1150,7 +1147,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       return PublicationDAO.getDistributionTree(con, instanceId, statusSubQuery, checkVisibility);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDistributionTree()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED", 
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED",
           "instanceId = " + instanceId, e);
     } finally {
       freeConnection(con);
@@ -1429,6 +1426,15 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
             String wysiwygPath = WysiwygController.getWysiwygPath(pubPK.getInstanceId(),
                 pubPK.getId(), language);
             indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
+
+            // index embedded linked attachment (links presents in wysiwyg content)
+            try {
+              List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(wysiwygContent);
+              WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
+            } catch (WysiwygException e) {
+                  SilverTrace.warn("form", "PublicationBmEJB.updateIndexEntryWithWysiwygContent", "root.MSG_GEN_ENTER_METHOD",
+                          "Unable to extract linked files from object" + indexEntry.getObjectId(), e);
+            }
           }
         }
         /*
@@ -1629,14 +1635,12 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
     // Suppression du nuage de tags lors de la suppression de l'index (et pas
     // lors de l'envoi de la publication dans la corbeille).
-    if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-        false)) {
+    if (publicationSettings.getBoolean("useTagCloud", false)) {
       deleteTagCloud(pubPK);
     }
 
     // idem pour les notations
-    if (SilverpeasSettings.readBoolean(publicationSettings, "useNotation",
-        false)) {
+    if (publicationSettings.getBoolean("useNotation", false)) {
       deleteNotation(pubPK);
     }
   }

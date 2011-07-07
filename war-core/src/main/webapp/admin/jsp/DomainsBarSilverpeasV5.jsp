@@ -30,7 +30,6 @@
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
@@ -64,7 +63,7 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId))
 }
 
 ResourceLocator resourceSearchEngine = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
-int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
+int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.minChars", 3);
 
 //Is "forgotten password" feature active ?
 ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
@@ -257,7 +256,7 @@ out.println(gef.getLookStyleSheet());
 
     
   	//used by keyword autocompletion
-    <%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>
+    <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
     	$(document).ready(function(){
             $("#query").autocomplete("<%=m_sContext%>/AutocompleteServlet", {
                         minChars: <%=autocompletionMinChars%>,

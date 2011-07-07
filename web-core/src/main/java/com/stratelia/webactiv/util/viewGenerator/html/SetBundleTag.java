@@ -24,8 +24,6 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -35,10 +33,14 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.taglibs.standard.tag.common.core.Util;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 public class SetBundleTag extends TagSupport {
+  
+  private static final long serialVersionUID = 7549830839518939649L;
   private int scope = PageContext.PAGE_SCOPE;
   private String var;
   private String basename;

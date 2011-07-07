@@ -21,65 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.util;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.ResourceBundle;
-
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/*
- * CVS Informations
- *
- * $Id: ResourcesWrapper.java,v 1.9 2008/04/16 14:45:00 neysseri Exp $
- *
- * $Log: ResourcesWrapper.java,v $
- * Revision 1.9  2008/04/16 14:45:00  neysseri
- * no message
- *
- * Revision 1.8.2.2  2008/04/14 06:36:12  ehugonnet
- * Les icons sont maintenant dans le properties icons
- * Revision 1.8.2.1 2008/04/09 06:05:18
- * ehugonnet Gestion des Resources comme des ResourceBundle plutot que des
- * properties afin de les rendre disponible pour JSTL Revision 1.8 2008/03/21
- * 12:03:14 neysseri Ajout de la méthode boolean getSetting(String key, boolean
- * defaultValue)
- *
- * Revision 1.7 2007/12/03 15:02:17 neysseri no message
- *
- * Revision 1.6 2007/12/03 13:48:58 neysseri no message
- *
- * Revision 1.5.10.2 2007/10/01 14:07:19 neysseri no message
- *
- * Revision 1.5.10.1 2007/09/14 10:32:45 neysseri no message
- *
- * Revision 1.5 2006/04/28 17:21:47 neysseri no message
- *
- * Revision 1.4 2005/09/30 14:22:36 neysseri Centralisation de la gestion des
- * dates
- *
- * Revision 1.3 2005/08/18 11:14:50 neysseri no message
- *
- * Revision 1.2.8.1 2005/08/10 17:26:23 neysseri Ajout méthode getSetting()
- *
- * Revision 1.2 2003/02/10 14:09:58 neysseri no message
- *
- * Revision 1.1.1.1 2002/08/06 14:48:19 nchaix no message
- *
- * Revision 1.3 2002/02/25 17:10:04 neysseri Maintenant, la méthode getIcon()
- * renvoie le contexte+le contenu du properties
- *
- * Revision 1.2 2002/02/07 10:55:15 tleroi no message
- *
- */
+import java.text.ParseException;
+import java.util.Date;
+import java.util.ResourceBundle;
 
 /**
  * Class declaration
@@ -98,8 +50,8 @@ public class ResourcesWrapper {
    * @param specificIcons - Icons of component
    * @param language - user's language
    */
-  public ResourcesWrapper(ResourceLocator specificMultilang,
-      ResourceLocator specificIcons, String language) {
+  public ResourcesWrapper(ResourceLocator specificMultilang, ResourceLocator specificIcons,
+          String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
     this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
@@ -112,9 +64,8 @@ public class ResourcesWrapper {
    * @param specificSettings - Settings of component
    * @param language - user's language
    */
-  public ResourcesWrapper(ResourceLocator specificMultilang,
-      ResourceLocator specificIcons, ResourceLocator specificSettings,
-      String language) {
+  public ResourcesWrapper(ResourceLocator specificMultilang, ResourceLocator specificIcons,
+          ResourceLocator specificSettings, String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
     this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
@@ -155,7 +106,6 @@ public class ResourcesWrapper {
    */
   public String getString(String key) {
     String valret = null;
-
     if (key != null) {
       valret = key;
       if (key.startsWith("GML.")) {
@@ -175,17 +125,22 @@ public class ResourcesWrapper {
   }
 
   public String getStringWithParam(String key, String param) {
+    String[] params = {param};
+    return getStringWithParams(key, params);
+  }
+
+  public String getStringWithParams(String key, String[] params) {
     String valret = null;
 
     if (key != null) {
       valret = key;
       if (key.startsWith("GML.")) {
         if (genericMultilang != null) {
-          valret = genericMultilang.getStringWithParam(key, param);
+          valret = genericMultilang.getStringWithParams(key, params);
         }
       } else {
         if (specificMultilang != null) {
-          valret = specificMultilang.getStringWithParam(key, param);
+          valret = specificMultilang.getStringWithParams(key, params);
         }
       }
     }
@@ -196,9 +151,7 @@ public class ResourcesWrapper {
   }
 
   public String getIcon(String key) {
-    return GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL")
-        + getValue(key, specificIcons);
+    return URLManager.getApplicationURL() + getValue(key, specificIcons);
   }
 
   public String getLanguage() {
@@ -208,7 +161,6 @@ public class ResourcesWrapper {
   /*
    * public String getLanguage(String code) { return I18NHelper.getLanguage(language, code); }
    */
-
   /**
    * We look at the key in the specific settings file.
    * @param key - key in the settings file
@@ -219,15 +171,15 @@ public class ResourcesWrapper {
   }
 
   public String getSetting(String key, String defaultValue) {
-    return SilverpeasSettings.readString(specificSettings, key, defaultValue);
+    return specificSettings.getString(key, defaultValue);
   }
 
   public boolean getSetting(String key, boolean defaultValue) {
-    return SilverpeasSettings.readBoolean(specificSettings, key, defaultValue);
+    return specificSettings.getBoolean(key, defaultValue);
   }
 
   public int getSetting(String key, int defaultValue) {
-    return SilverpeasSettings.readInt(specificSettings, key, defaultValue);
+    return specificSettings.getInteger(key, defaultValue);
   }
 
   public String getOutputDate(Date date) {
@@ -244,16 +196,16 @@ public class ResourcesWrapper {
 
   /**
    * Display first not null date
-   * @param date1 date to display
-   * @param date2 extra date to display if date1 is empty (or null)
+   * @param date date to display
+   * @param defaultDate extra date to display if date1 is empty (or null)
    * @return the formatted date
    */
-  public String getOutputDateAndHour(Date date1, Date date2) {
-    String sDate = DateUtil.getOutputDateAndHour(date1, language);
-    if (!StringUtil.isDefined(sDate)) {
-      sDate = DateUtil.getOutputDateAndHour(date2, language);
+  public String getOutputDateAndHour(Date date, Date defaultDate) {
+    String formatedDate = DateUtil.getOutputDateAndHour(date, language);
+    if (!StringUtil.isDefined(formatedDate)) {
+      formatedDate = DateUtil.getOutputDateAndHour(defaultDate, language);
     }
-    return sDate;
+    return formatedDate;
   }
 
   public String getInputDate(Date date) {
@@ -278,7 +230,6 @@ public class ResourcesWrapper {
 
   private String getValue(String key, ResourceLocator resourceLocator) {
     String valret = null;
-
     if (key != null) {
       valret = key;
       if (resourceLocator != null) {

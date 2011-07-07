@@ -25,6 +25,7 @@
 package com.silverpeas.export;
 
 import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.export.ical.ICalExporter;
 import javax.inject.Inject;
 
@@ -49,10 +50,10 @@ public class ExporterFactory {
   }
 
   /**
-   * Gets an exporter of calendar events in iCal format.
-   * @return an exporter of calendar events.
+   * Gets an exporter of a calendar in iCal format.
+   * @return an exporter of a calendar.
    */
-  public Exporter<CalendarEvent> getICalExporter() {
+  public Exporter<ExportableCalendar> getICalExporter() {
     return exporter;
   }
 

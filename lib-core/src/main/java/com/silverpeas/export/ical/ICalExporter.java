@@ -30,8 +30,10 @@ import com.silverpeas.export.Exporter;
 import com.silverpeas.export.NoDataToExportException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -39,47 +41,31 @@ import javax.inject.Named;
  * An exporter of calendar events into a file in the iCal format.
  */
 @Named
-public class ICalExporter implements Exporter<CalendarEvent> {
+public class ICalExporter implements Exporter<ExportableCalendar> {
 
   @Inject
   private ICalCodec iCalCodec;
 
   /**
-   * Exports the specified events withWriter a writer in the iCal format.
+   * Exports the specified events with a writer in the iCal format.
    * If no events are specified, then a NoDataToExportException is thrown as no export can be done.
-   * The writer withWriter which the events have to be exported is provided by the specified
+   * The writer with which the events have to be exported is provided by the specified
    * export descriptor.
    * @param events the events of a calendar to export.
-   * @param descriptor the export descriptor in which is passed the writer wih which
+   * @param descriptor the export descriptor in which is passed the writer with which
    * the events should be exported.
-   * @throws ExportException if the export fails (an IO issue occurs withWriter the writer,
+   * @throws ExportException if the export fails (an IO issue occurs with the writer,
    * no events to export, ...).
    */
   @Override
-  public void export(ExportDescriptor descriptor, CalendarEvent... events) throws ExportException {
-    export(descriptor, Arrays.asList(events));
-  }
-
-  /**
-   * Exports the specified events withWriter a writer in the iCal format.
-   * If no events are specified, then a NoDataToExportException is thrown as no export can be done.
-   * The writer withWriter which the events have to be exported is provided by the specified
-   * export descriptor.
-   * @param events the events of a calendar to export.
-   * @param descriptor the export descriptor in which is passed the writer wih which
-   * the events should be exported.
-   * @throws ExportException if the export fails (an IO issue occurs withWriter the writer,
-   * no events to export, ...).
-   */
-  @Override
-  public void export(ExportDescriptor descriptor, List<CalendarEvent> events) throws ExportException {
-    if (events.isEmpty()) {
+  public void export(ExportDescriptor descriptor, ExportableCalendar calendar) throws ExportException {
+    if (calendar.isEmpty()) {
       throw new NoDataToExportException("To export to iCal, the calendar should have at least one"
           + " event");
     }
     Writer writer = descriptor.getWriter();
     try {
-      String iCalCalendar = getICalCodec().encode(events);
+      String iCalCalendar = getICalCodec().encode(calendar.getEvents());
       writer.write(iCalCalendar);
       writer.close();
     } catch (Exception e) {

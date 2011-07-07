@@ -27,7 +27,7 @@
         p:defaultDataSource-ref="silverpeasDataSource">
     <property name="persistenceXmlLocations">
       <list>
-        <value>classpath*:META-INF/silverpeas-persistence.xml</value>
+        <value>classpath*:META-INF/persistence-*.xml</value>
       </list>
     </property>
     <property name="persistenceUnitPostProcessors">

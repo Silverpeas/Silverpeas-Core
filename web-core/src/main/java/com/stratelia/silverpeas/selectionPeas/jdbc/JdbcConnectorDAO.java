@@ -31,10 +31,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * JDBC database access.
@@ -49,7 +51,7 @@ public class JdbcConnectorDAO {
   String password;
   String tableName;
 
-  ArrayList data;
+  ArrayList<String[]> data;
   String[] columnsNames;
   String[] ids;
 
@@ -66,7 +68,7 @@ public class JdbcConnectorDAO {
    */
   public String[] getColumnsNames() {
     if (columnsNames == null) {
-      ArrayList columns = new ArrayList();
+      List<String> columns = new ArrayList<String>();
 
       Connection con = null;
       ResultSet columnsRs = null;
@@ -96,7 +98,7 @@ public class JdbcConnectorDAO {
   /**
    * @return the table's data, after having loading them if needed.
    */
-  public ArrayList getData() {
+  public ArrayList<String[]> getData() {
     if (data == null) {
       loadData();
     }
@@ -125,7 +127,7 @@ public class JdbcConnectorDAO {
       con = getDriver().connect(url, info);
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);
-      data = new ArrayList();
+      data = new ArrayList<String[]>();
       int i;
       while (rs.next()) {
         i = 0;
@@ -149,7 +151,7 @@ public class JdbcConnectorDAO {
    * @return The data of the table's line corresponding to the index.
    */
   public String[] getLine(String index) {
-    return (String[]) getData().get(Integer.parseInt(index));
+    return getData().get(Integer.parseInt(index));
   }
 
   /**
@@ -182,20 +184,8 @@ public class JdbcConnectorDAO {
    * @param rs The result set.
    */
   private void closeConnection(Connection con, Statement stmt, ResultSet rs) {
-    try {
-      if (rs != null) {
-        rs.close();
-      }
-      if (stmt != null) {
-        stmt.close();
-      }
-      if (con != null) {
-        con.close();
-      }
-    } catch (SQLException e) {
-      SilverTrace.warn("selectionPeas", "JdbcConnectorDAO.closeConnection()",
-          "selectionPeas.MSG_CONNECTION_NOT_CLOSED", e);
-    }
+    DBUtil.close(rs, stmt);
+    DBUtil.close(con);
   }
 
 }

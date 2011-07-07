@@ -30,6 +30,9 @@ import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowTag;
 
 public class NeedWindowTag extends TagSupport {
+  
+  private static final long serialVersionUID = 1610658738987330527L;
+
   protected Window getWindow() {
     Window window = (Window) pageContext
         .getAttribute(WindowTag.WINDOW_PAGE_ATT);
