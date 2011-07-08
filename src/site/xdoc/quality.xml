@@ -44,7 +44,6 @@
           <a href="http://www.sonarsource.org/">Sonar</a> is an open platform to manage code quality. At Silverpeas we are running a new analysis every day.
           You can check the results for both the Silverpeas Core and the components on <a href="http://integration.silverpeas.org/sonar/">http://integration.silverpeas.org/sonar/</a>.
         </p>
-        <p>
     </section>
     <section name="Kalistick">
         <p>
@@ -52,7 +51,6 @@
           <a href="http://www.kalistick.com/">Kalistick</a> Kalistick xrays your application to assess release risks so you lead Smarter Testing Strategies that balance test efforts and risk coverage. At Silverpeas we are running a new analysis every week.
           You can check the results for the Silverpeas Core code on <a href="https://cockpit.kalistick.fr">https://cockpit.kalistick.fr</a> using <b>silverpeas/silverpeas</b> to log on.
         </p>
-        <p>
     </section>
   </body>
 </document>
