@@ -24,45 +24,76 @@
 
 package com.silverpeas.export;
 
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import org.apache.commons.io.output.WriterOutputStream;
 
 /**
- * It represents a descriptor about the export of resources into a writer. As such it defines the
- * writer and the format into which the resources have to be exported. With the descriptor parameters,
- * additional information about the export process can be passed to the exporter.
+ * It represents a descriptor about the export of resources into a writer or an output stream.
+ * As such it defines the writer, the output stream and the format into which the resources have to
+ * be exported. With the descriptor parameters, additional information about the export process can
+ * be passed to the exporter.
  */
 public class ExportDescriptor extends ImportExportDescriptor {
 
   private Writer writer = null;
+  private OutputStream outputStream = null;
 
   /**
-   * Creates and initializes a new descriptor on an export process withWriter the specified writer.
+   * Creates and initializes a new descriptor on an export process with the specified writer.
+   * The output stream is initialized with the specified writer.
    * @param writer the writer to use for exporting the serializable resources.
    * @return an export descriptor.
    */
   public static ExportDescriptor withWriter(final Writer writer) {
-    return new ExportDescriptor(writer);
-  }
-
-  /**
-   * Constructs a new export descriptor withWriter the specified writer. No specific format information
-   * will be passed to the exporter.
-   * @param writer the writer into wich the resources will be serialized.
-   */
-  private ExportDescriptor(final Writer writer) {
-    super();
+    ExportDescriptor descriptor = new ExportDescriptor();
     if (writer == null) {
       throw new IllegalArgumentException("The writer cannot be null!");
     }
-    this.writer = writer;
+    descriptor.setWriter(writer);
+    descriptor.setOutputStream(new WriterOutputStream(writer));
+    return descriptor;
+  }
+  
+  /**
+   * Creates and initializes a new descriptor on an export process with the specified output stream.
+   * The writer is initialized with the specified output stream.
+   * @param outputStream the output stream to use for exporting the serializable resources.
+   * @return an export descriptor.
+   */
+  public static ExportDescriptor withOutputStream(final OutputStream outputStream) {
+    ExportDescriptor descriptor = new ExportDescriptor();
+    if (outputStream == null) {
+      throw new IllegalArgumentException("The output stream cannot be null!");
+    }
+    descriptor.setOutputStream(outputStream);
+    descriptor.setWriter(new OutputStreamWriter(outputStream));
+    return descriptor;
   }
 
   /**
-   * Gets the writer withWriter which the resources have to be exported.
+   * Gets the writer with which the resources have to be exported.
    * @return the writer.
    */
   public Writer getWriter() {
     return this.writer;
+  }
+  
+  /**
+   * Gets the output stream with which the resources have to be exported.
+   * @return the output stream.
+   */
+  public OutputStream getOutputStream() {
+    return this.outputStream;
+  }
+  
+  private void setWriter(final Writer writer) {
+    this.writer = writer;
+  }
+
+  private void setOutputStream(final OutputStream outputStream) {
+    this.outputStream = outputStream;
   }
 
 }

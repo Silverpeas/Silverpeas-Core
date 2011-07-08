@@ -24,6 +24,7 @@
 
 package com.silverpeas.export;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public abstract class ImportExportDescriptor {
   public static final String NO_FORMAT = "";
 
   private String format = NO_FORMAT;
-  private Map<String, Object> parameters = new HashMap<String, Object> ();
+  private Map<String, Serializable> parameters = new HashMap<String, Serializable> ();
 
   /**
    * Gets the format in (or from) which the resource has to be exported (or imported).
@@ -61,25 +62,36 @@ public abstract class ImportExportDescriptor {
    * @param format the export/import format to set.
    * @return itself.
    */
-  public ImportExportDescriptor inFormat(String format) {
+  public <O extends ImportExportDescriptor> O inFormat(String format) {
     if (! isDefined(format)) {
       this.format = NO_FORMAT;
     }
     this.format = format;
-    return this;
+    return (O) this;
   }
 
   /**
-   * Adds a new process parameter. If a parameter already exists with the specifed name, the value
+   * Adds a new process parameter. If a parameter already exists with the specified name, the value
    * is replaced.
    * @param <T> the type of the parameter value.
    * @param name the parameter name.
    * @param value the parameter value.
    * @return itself.
    */
-  public <T> ImportExportDescriptor withParameter(String name, final T value) {
+  public <T extends Serializable, O extends ImportExportDescriptor> O withParameter(String name, final T value) {
     this.parameters.put(name, value);
-    return this;
+    return (O) this;
+  }
+  
+  /**
+   * Sets the specified process parameter with the specified value. If the parameter already exists,
+   * the value is replaced with the specified one.
+   * @param <T> the type of the parameter value to set.
+   * @param name the name of the parameter.
+   * @param value the parameter value to set.
+   */
+  public <T extends Serializable> void setParameter(String name, final T value) {
+    this.parameters.put(name, value);
   }
 
   /**
@@ -88,9 +100,9 @@ public abstract class ImportExportDescriptor {
    * @param name the parameter name.
    * @return itself.
    */
-  public ImportExportDescriptor withoutParameter(String name) {
+  public <O extends ImportExportDescriptor> O withoutParameter(String name) {
     this.parameters.remove(name);
-    return this;
+    return (O) this;
   }
 
   /**

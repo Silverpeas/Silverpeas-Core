@@ -24,6 +24,13 @@
 
 package com.silverpeas.util.security;
 
+/**
+ * Component security provides a way to check a user have enough rights to access a given object 
+ * in a Silverpeas component instance.
+ *
+ * Each Silverpeas component should implements this interface according to the objects or resources
+ * it manages.
+ */
 public interface ComponentSecurity {
 
   /**

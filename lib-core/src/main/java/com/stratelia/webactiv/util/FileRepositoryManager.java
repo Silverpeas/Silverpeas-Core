@@ -44,6 +44,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class FileRepositoryManager extends Object {
 
+  static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
   static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath +
@@ -88,6 +89,15 @@ public class FileRepositoryManager extends Object {
 
   static public String getAvatarPath() {
     return avatarPath;
+  }
+  
+  /**
+   * Gets the path of the repository into which attachments and other files are uploaded in
+   * Silverpeas.
+   * @return the path of the root repository for uploads.
+   */
+  static public String getUploadPath() {
+    return upLoadPath + File.separator;
   }
 
   // Add by Jean-Claude Groccia
@@ -390,5 +400,17 @@ public class FileRepositoryManager extends Object {
    */
   public static String getIndexUpLoadPath() {
     return indexUpLoadPath + File.separator;
+  }
+  
+  /**
+   * Gets the path of the repository that contains the templates to use in exports.
+   * @return the path of the export template repository.
+   */
+  public static String getExportTemplateRepository() {
+    String path = exportTemplatePath;
+    if (!path.endsWith("/")) {
+      path += "/";
+    }
+    return path;
   }
 }
