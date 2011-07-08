@@ -129,12 +129,12 @@ public class SilverStatisticsPeasDAOConnexion {
   }
 
   /**
-   * donne les stats sur le nombre d'utilisateurs disctincts par mois
-   * @return
-   * @throws SQLException
-   * @throws ParseException
+   * Returns the number of distinct users connections per month.
    * @param startDate
    * @param endDate
+   * @return the number of distinct users connections per month.
+   * @throws SQLException
+   * @throws ParseException
    */
   public static Collection[] getStatsUser(String startDate, String endDate) throws SQLException, ParseException {
     SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsUser",
@@ -159,9 +159,10 @@ public class SilverStatisticsPeasDAOConnexion {
   }
 
   /**
-   * donne les stats global pour l'enemble de tous les users cad 2 infos, la collection contient
-   * donc un seul element
-   * @return
+   * Returns the total number of connections per month.
+   * @param startDate
+   * @param endDate
+   * @return the total number of connections per month.
    * @throws SQLException
    * @throws ParseException
    */
@@ -262,8 +263,8 @@ public class SilverStatisticsPeasDAOConnexion {
    * @throws SQLException
    * @see
    */
-  public static Collection<String[]> getStatsConnexionAllGroup(String dateBegin,
-      String dateEnd, int idGroup) throws SQLException {
+  public static Collection<String[]> getStatsConnexionAllGroup(String dateBegin, String dateEnd,
+      int idGroup) throws SQLException {
     SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup",
         "root.MSG_GEN_ENTER_METHOD");
 
@@ -337,16 +338,23 @@ public class SilverStatisticsPeasDAOConnexion {
         "root.MSG_GEN_ENTER_METHOD");
 
     String selectQuery = "SELECT B.name, SUM(A.countConnection), SUM(A.duration), B.id"
-        + " FROM SB_Stat_ConnectionCumul A, ST_Group B, ST_Group_User_Rel C"
-        + " WHERE A.dateStat BETWEEN '"
-        + dateBegin
-        + "' AND '"
-        + dateEnd
-        + "'"
-        + " AND A.userId = C.userId AND C.groupId= B.id"
-        + " GROUP BY B.name, B.id";
+        + " FROM SB_Stat_ConnectionCumul A, ST_Group B, ST_Group_User_Rel C WHERE A.dateStat" +
+        " BETWEEN ? AND  ? AND A.userId = C.userId AND C.groupId= B.id GROUP BY B.name, B.id";
 
-    return getStatsConnexionFromQuery(selectQuery);
+     PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = getConnection();
+      stmt = myCon.prepareStatement(selectQuery);
+      stmt.setString(1, dateBegin);
+      stmt.setString(2, dateEnd);
+      rs = stmt.executeQuery();
+      return getStatsConnexion(rs);
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
+    }
   }
 
   /**
@@ -399,16 +407,24 @@ public class SilverStatisticsPeasDAOConnexion {
         "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll",
         "root.MSG_GEN_ENTER_METHOD");
 
-    String selectQuery = "SELECT B.lastName, SUM(A.countConnection), SUM(A.duration), B.id"
-        + " FROM SB_Stat_ConnectionCumul A,	ST_User B"
-        + " WHERE A.dateStat BETWEEN '"
-        + dateBegin
-        + "' AND '"
-        + dateEnd
-        + "'"
-        + " AND A.userId = B.id" + " GROUP BY B.lastName, B.id";
+    String selectQuery = "SELECT B.lastName, SUM(A.countConnection), SUM(A.duration), B.id " +
+        "FROM SB_Stat_ConnectionCumul A,	ST_User B WHERE A.dateStat BETWEEN ? AND ? " +
+        "AND A.userId = B.id GROUP BY B.lastName, B.id";
 
-    return getStatsConnexionFromQuery(selectQuery);
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = getConnection();
+      stmt = myCon.prepareStatement(selectQuery);
+      stmt.setString(1, dateBegin);
+      stmt.setString(2, dateEnd);
+      rs = stmt.executeQuery();
+      return getStatsConnexion(rs);
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
+    }
   }
 
   /**
@@ -521,35 +537,6 @@ public class SilverStatisticsPeasDAOConnexion {
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "DbName="
           + JNDINames.SILVERSTATISTICS_DATASOURCE, e);
     }
-  }
-
-
-  /**
-   * Method declaration
-   * @param selectQuery
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  private static Collection<String[]> getStatsConnexionFromQuery(String selectQuery)
-      throws SQLException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsConnexionFromQuery", "selectQuery=" + selectQuery);
-    Statement stmt = null;
-    ResultSet rs = null;
-    Collection<String[]> list = null;
-    Connection myCon = getConnection();
-
-    try {
-      stmt = myCon.createStatement();
-      rs = stmt.executeQuery(selectQuery);
-      list = getStatsConnexion(rs);
-    } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(myCon);
-    }
-
-    return list;
   }
 
   /**
