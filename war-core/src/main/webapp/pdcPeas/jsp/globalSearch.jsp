@@ -281,10 +281,7 @@ Board board = gef.getBoard();
 ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
-
-ResourceLocator resourceSearchEngine = new ResourceLocator(
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
-        int autocompletionMinChars = readInt(resourceSearchEngine.getInteger("autocompletion.minChars", 3);
+int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 
 %>
 
