@@ -10,6 +10,37 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
+    <description>Tag to print out the classification of a given resource content on the PdC configured
+    for a given component instance. The classification on the PdC can be or not editable.</description>
+    <name>pdcClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource content for which the classification on the PdC
+      has to be rendered.</description>
+      <name>contentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is this classification on the PdC should be editable?.By default, if not set, the
+      classification isn't editable</description>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Tag to print out a date localized from the specified language</description>
     <name>formatDate</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.FormatDateTag</tag-class>

@@ -70,19 +70,14 @@
    *    - legend: the legend of the icon,
    * - addition: an object about the operation of adding a new position into a given classification.
    * It has the following attributes:
-   *    - call: the callback to invoke when the addition of a new position is asked. Returns true if
-   *    a new position is added or false if no position is added.
    *    - icon: the icon to display as a new position add invoker,
    *    - title: the text associated with the adding operation.
    * - update: an object about the operation of updating a given position. It has the following
    * attributes:
-   *    - call: the callback to invoke when the updating of a new position is asked. Returns true if
-   *    the position is updated or false if the position is udpated.
    *    - icon: the icon to display as a new position update invoker,
    *    - title: the text associated with the update operation.
    * - deletion: an object about the operation of deleting a given position. It has the following
    * attributes:
-   *    - call: the callback to invoke when the deleting of a new position is asked,
    *    - icon: the icon to display as a new position deletion invoker,
    *    - title: the text associated with the deletion operation.
    * - mode: the mode in which the classification on the PdC of a given resource should be rendered.
@@ -106,16 +101,10 @@
       invariantIcon: '/silverpeas/util/icons/buletColoredGreen.gif'
     },
     addition: {
-      call: function() {
-        return true;
-      },
       icon: '/silverpeas/pdcPeas/jsp/icons/add.gif',
       title: 'Ajouter une nouvelle position'
     },
     update: {
-      call: function( positionId ) {
-        return true;
-      },
       icon: '/silverpeas/pdcPeas/jsp/icons/edit_button.gif',
       title: 'Editer la position'
     },
@@ -381,7 +370,7 @@
         if (aValue.id != '/0/') {
           var level = '', optionAttr = 'value="' + aValue.id + '"';
           for (var i = 0; i < aValue.level; i++) {
-            level = level + '&nbsp;';
+            level = level + '&nbsp;&nbsp;';
           }
           if (aValue.ascendant) {
             optionAttr = 'value="A" class="intfdcolor51" disabled="disabled"';
