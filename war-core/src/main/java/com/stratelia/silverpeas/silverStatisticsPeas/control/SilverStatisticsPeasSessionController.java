@@ -24,20 +24,6 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.CreateException;
-
-import org.apache.commons.lang.StringUtils;
-import org.jCharts.axisChart.AxisChart;
-import org.jCharts.nonAxisChart.PieChart2D;
-
 import com.silverpeas.pdc.ejb.PdcBmHome;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -78,6 +64,18 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.lang.StringUtils;
+import org.jCharts.axisChart.AxisChart;
+import org.jCharts.nonAxisChart.PieChart2D;
+
+import javax.ejb.CreateException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class declaration
@@ -211,9 +209,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private double[] buildDoubleArrayFromStringCollection(Collection<String> collection) {
     double[] result = new double[collection.size()];
     int i = 0;
-    Iterator<String> it = collection.iterator();
-    while (it.hasNext()) {
-      String value = it.next();
+    for (String value : collection) {
       result[i++] = Double.parseDouble(value);
     }
 
@@ -347,11 +343,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         // Aout, Octobre
         title.append(this.getString("silverStatisticsPeas.FromAprilAugustOctober"));
       } else {
-        title.append(this.getString("silverStatisticsPeas.From") + " ");
+        title.append(this.getString("silverStatisticsPeas.From")).append(" ");
       }
 
-      title.append(formatDate(dateBegin) + " ");
-      title.append(this.getString("silverStatisticsPeas.To") + " ");
+      title.append(formatDate(dateBegin)).append(" ");
+      title.append(this.getString("silverStatisticsPeas.To")).append(" ");
       title.append(formatDate(dateEnd));
 
       axisChart = ChartUtil.buildBarAxisChart(generalMessage
@@ -551,7 +547,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       String dateEnd, String idUser) {
     Collection<String[]> c = null;
     try {
-      c = SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupUser(
+      c = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(
           dateBegin, dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
@@ -652,9 +648,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     List<String> notifiedUsers = new ArrayList<String>();
 
     if (listUserDetail != null) {
-      Iterator<SessionInfo> itListUserDetail = listUserDetail.iterator();
-      while (itListUserDetail.hasNext()) {
-        SessionInfo sessionInfo = (SessionInfo) itListUserDetail.next();
+      for (SessionInfo sessionInfo : listUserDetail) {
         if (!notifiedUsers.contains(sessionInfo.getUserDetail().getId())
             || sessionInfo.getUserDetail().isAccessGuest()) {
           notifySession(sessionInfo.getUserDetail().getId(), message);
@@ -1005,16 +999,15 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       // build stats array collection
       currentStats.clear();
-      String[] kms = (String[]) statsKMsInstances[0].toArray(new String[0]);
-      String[] counts = (String[]) statsKMsInstances[1].toArray(new String[0]);
+      String[] kms = (String[]) statsKMsInstances[0].toArray(new String[statsKMsInstances[0].size()]);
+      String[] counts = (String[]) statsKMsInstances[1].toArray(new String[statsKMsInstances[1].size()]);
       for (int i = 0; i < kms.length; i++) {
         currentStats.add(new String[] { kms[i], counts[i] });
       }
 
-      pieChart = ChartUtil.buildPieChart(this
-          .getString("silverStatisticsPeas.ServicesNumber"),
+      pieChart = ChartUtil.buildPieChart(getString("silverStatisticsPeas.ServicesNumber"),
           buildDoubleArrayFromStringCollection(statsKMsInstances[1]),
-          (String[]) statsKMsInstances[0].toArray(new String[0]));
+          (String[]) statsKMsInstances[0].toArray(new String[statsKMsInstances[0].size()]));
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
           "SilverStatisticsPeasSessionController.getVolumeServicesChart()",
@@ -1517,14 +1510,12 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
             // Add this statistic to list
             stats.add(curStat);
           } else if (!axisFilter && curValue.getLevelNumber() == 1) {
-            String valueId = curAxisValue;
             // Retrieve all the current axis publications
-            gSC = getPdCPublications(Integer.toString(curAxisId), valueId, components);
+            gSC = getPdCPublications(Integer.toString(curAxisId), curAxisValue, components);
             nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
             // Create a new statistic value object
-            StatisticVO curStat =
-                new StatisticVO(Integer.toString(curAxisId), curValue.getName(), curValue
-                    .getDescription(), nbAxisAccess);
+            StatisticVO curStat = new StatisticVO(Integer.toString(curAxisId), curValue.getName(),
+                curValue.getDescription(), nbAxisAccess);
             curStat.setAxisValue(curValue.getFullPath());
             curStat.setAxisLevel(curValue.getLevelNumber());
             // Add this statistic to list
@@ -1544,10 +1535,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * SEARCH ONLY PDC publications on current selected axis
-   * @param themeId
-   * @param subThemeId
+   * @param axisId
+   * @param valueId
    * @param componentIds
-   * @param spaceType String enum pegase or formation (default is pegase if null)
    * @return
    */
   private List<GlobalSilverContent> getPdCPublications(String axisId, String valueId,
@@ -1561,7 +1551,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     List<GlobalSilverContent> silverContentsMetier = null;
     com.silverpeas.pdc.ejb.PdcBm pdcBm = getPdcBmEJB();
     if (pdcBm != null) {
-      if (componentIds.size() > 0) {
+      if (!componentIds.isEmpty()) {
         try {
           silverContentsMetier = pdcBm.findGlobalSilverContents(context, componentIds, true, true);
         } catch (RemoteException e) {
@@ -1574,10 +1564,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * SEARCH ONLY PDC publications on current selected axis
-   * @param themeId
-   * @param subThemeId
+   * @param searchContext
    * @param componentIds
-   * @param spaceType String enum pegase or formation (default is pegase if null)
    * @return
    */
   private List<GlobalSilverContent> getPdCPublications(SearchContext searchContext,
@@ -1615,8 +1603,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * This method allow user to search over multiple component selection
-   * @param space
-   * @param components a list of selected components
    */
   public List<String> buildCustomComponentListWhereToSearch() {
     SilverTrace.info("silverStatisticsPeas",
@@ -1625,9 +1611,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     List<String> componentList = new ArrayList<String>();
     String[] allowedComponentIds = getUserAvailComponentIds();
     // Il n'y a pas de restriction sur un espace particulier
-    for (int i = 0; i < allowedComponentIds.length; i++) {
-      if (isSearchable(allowedComponentIds[i])) {
-        componentList.add(allowedComponentIds[i]);
+    for (String allowedComponentId : allowedComponentIds) {
+      if (isSearchable(allowedComponentId)) {
+        componentList.add(allowedComponentId);
       }
     }
     return componentList;

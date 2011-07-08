@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <st_group id="1" domainid="0" specificid="1" name="Simpsons" description="" synchrorule=""/>
-  <st_group id="2" domainid="0" specificid="2" supergroupid="1" name="Children" description="" synchrorule=""/>
-  <st_group id="3" domainid="0" specificid="3" supergroupid="1" name="Parents" description="" synchrorule=""/>
+  <st_group id="1" domainid="0" specificid="A" supergroupid="[NULL]" name="Simpsons" description="" synchrorule=""/>
+  <st_group id="2" domainid="0" specificid="B" supergroupid="1" name="Children" description="" synchrorule=""/>
+  <st_group id="3" domainid="0" specificid="C" supergroupid="1" name="Parents" description="" synchrorule=""/>
   
   <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.org" login="bart.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
   <st_user id="2" domainid="0" specificid="2" firstname="Lisa" lastname="Simpson" email="lisa.simpson@silverpeas.org" login="lisa.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>

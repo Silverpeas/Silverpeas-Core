@@ -181,6 +181,21 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
     assertNotNull(counts);
     assertThat(counts, hasSize(8));
     assertThat(counts, contains(new String[]{"0", "110", "67", "149", "58", "64", "97", "0"}));
+
+    idGroup = "1";
+    result = SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(dateBegin, dateEnd, idGroup);
+    assertThat(result, is (notNullValue()));
+    assertThat(result.length, is(2));
+    dates = (Collection<String>)result[0];
+    assertNotNull(dates);
+    assertThat(dates, hasSize(8));
+    assertThat(dates, contains(
+        new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+            "2011-05-01", "2011-06-01", "2011-07-01"}));
+    counts = (Collection<String>)result[1];
+    assertNotNull(counts);
+    assertThat(counts, hasSize(8));
+    assertThat(counts, contains(new String[]{"0", "223", "129", "289", "394", "115", "115", "0"}));
   }
 
   /**
@@ -198,9 +213,7 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
       int id = Integer.parseInt(aggregate[3]);
       switch(id) {
         case 1:
-          assertThat(aggregate, arrayContaining("Simpsons", "105", "8517612", "1"));
-          //Should be after refactoring
-          //assertThat(aggregate, arrayContaining("Simpsons", "1265", String.valueOf(5005423 + 8236353), "1"));
+          assertThat(aggregate, arrayContaining("Simpsons", "1265", "6397404", "1"));
           break;
         case 2:
           assertThat(aggregate, arrayContaining("Children","545" , "8236353","2"));
@@ -218,7 +231,7 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
   @Test
   public void testGetStatsConnexionGroupUser() throws Exception {
     int groupId = 3;
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupUser(dateBegin,
+    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin,
             dateEnd, groupId);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
@@ -227,6 +240,15 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
     assertNotNull(aggregate);
     assertThat(aggregate.length, is(4));
     assertThat(aggregate, arrayContaining("Parents","720" , "5005423", String.valueOf(groupId)));
+
+    groupId = 1;
+    result = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin, dateEnd, groupId);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.size(), is(1));
+    aggregate = result.iterator().next();
+    assertNotNull(aggregate);
+    assertThat(aggregate.length, is(4));
+    assertThat(aggregate, arrayContaining("Simpsons","1265" , "6397404", String.valueOf(groupId)));
   }
 
   /**
