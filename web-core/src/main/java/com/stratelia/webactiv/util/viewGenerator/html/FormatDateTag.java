@@ -21,28 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.*;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A tag to print out a localized date and time according to the language of the user.
  */
 public class FormatDateTag extends TagSupport {
-  private static final long serialVersionUID = -3961694293281722454L;
 
+  private static final long serialVersionUID = -3961694293281722454L;
   private Date date = null;
   private String language = null;
 
   @Override
   public int doStartTag() throws JspException {
     try {
-      pageContext.getOut().print(DateUtil.getOutputDate(date, language));
+      pageContext.getOut().print(formatDate(date));
     } catch (IOException e) {
       throw new JspException("Silverpeas Resource URL Tag", e);
     }
@@ -65,4 +67,19 @@ public class FormatDateTag extends TagSupport {
     this.language = language;
   }
 
+  private String formatDate(final Date date) {
+    String formattedDate;
+    if (isDefined(getLanguage())) {
+      formattedDate = DateUtil.getOutputDate(date, getLanguage());
+    } else {
+      ResourcesWrapper resources = (ResourcesWrapper) pageContext.getRequest().getAttribute(
+              RESOURCES_KEY);
+      if (resources != null) {
+        formattedDate = resources.getOutputDate(date);
+      } else {
+        formattedDate = DateUtil.getOutputDate(date, "");
+      }
+    }
+    return formattedDate;
+  }
 }

@@ -77,6 +77,11 @@ import java.util.ArrayList;
  */
 public class GraphicElementFactory {
 
+  /**
+   * The key with which is associated the resources wrapper used by a Silverpeas component instance
+   * and that is carried in each request.
+   */
+  public static final String RESOURCES_KEY = "resources";
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
       "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
