@@ -163,7 +163,7 @@ Board board = gef.getBoard();
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 // keyword autocompletion
-int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletion.minChars", "3"));
+int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 

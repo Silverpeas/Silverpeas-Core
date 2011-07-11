@@ -30,6 +30,7 @@ import java.util.Set;
 public interface MimeTypes {
 
   public final String DEFAULT_MIME_TYPE = "application/octet-stream";
+  public final String RTF_MIME_TYPE = "application/rtf";
   public final String PDF_MIME_TYPE = "application/pdf";
   public final String WORD_MIME_TYPE = "application/msword";
   public final String EXCEL_MIME_TYPE1 = "application/x-msexcel";
