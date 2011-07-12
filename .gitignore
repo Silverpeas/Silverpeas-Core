@@ -28,3 +28,16 @@ target
 /ejb-core/searchengine/.project
 /ejb-core/pdc/src/main/resources/META-INF/MANIFEST.MF
 /ejb-core/searchengine/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/versioning/.settings
+/ejb-core/versioning/.classpath
+/ejb-core/versioning/.project
+/ejb-core/publication/.settings
+/ejb-core/publication/.classpath
+/ejb-core/publication/.project
+/ejb-core/node/.project
+/ejb-core/node/.settings
+/ejb-core/node/.classpath
+/ejb-core/formtemplate/.project
+/ejb-core/formtemplate/.settings
+/ejb-core/formtemplate/.classpath
+/ejb-core/versioning/src/main/resources/META-INF/MANIFEST.MF
