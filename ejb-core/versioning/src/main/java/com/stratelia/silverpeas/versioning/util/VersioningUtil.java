@@ -579,7 +579,7 @@ public class VersioningUtil {
       while (savedWorkersGroupsIterator.hasNext()) {
         Worker savedWorkerGroup = (Worker) savedWorkersGroupsIterator.next();
         Worker newWorkerGroup = (Worker) savedWorkerGroup.clone();
-        newWorkerGroup.setDocumentId(new Integer(document.getPk().getId()).intValue());
+        newWorkerGroup.setDocumentId(Integer.parseInt(document.getPk().getId()));
         newWorkerGroup.setSaved(false);
         workersGroups.add(newWorkerGroup);
       }
@@ -589,7 +589,7 @@ public class VersioningUtil {
       while (savedWorkersUsersIterator.hasNext()) {
         Worker savedWorkerUser = (Worker) savedWorkersUsersIterator.next();
         Worker newWorkerUser = (Worker) savedWorkerUser.clone();
-        newWorkerUser.setDocumentId(new Integer(document.getPk().getId()).intValue());
+        newWorkerUser.setDocumentId(Integer.parseInt(document.getPk().getId()));
         newWorkerUser.setSaved(false);
         workersUsers.add(newWorkerUser);
       }

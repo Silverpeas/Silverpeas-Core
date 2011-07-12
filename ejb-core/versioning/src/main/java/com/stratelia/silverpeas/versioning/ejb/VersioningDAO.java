@@ -1334,7 +1334,7 @@ public class VersioningDAO {
     SilverTrace.debug("versioning",
         "VersioningDAO.insertReadersAccessGroupsList",
         "root.MSG_GEN_EXIT_METHOD");
-    return new Integer(newId).toString();
+    return Integer.toString(newId);
   }
 
   /**
@@ -1352,12 +1352,12 @@ public class VersioningDAO {
     SilverTrace.debug("versioning", "VersioningDAO.insertAccessListContent",
         "root.MSG_GEN_PARAM_VALUE", "accessId = " + accessId);
     for (int i = 0; i < groupsIds.size(); i++) {
-      int groupId = new Integer(groupsIds.get(i)).intValue();
+      int groupId = Integer.parseInt(groupsIds.get(i));
       insertAccessListContentRow(conn, "G", groupId, accessId);
     }
 
     for (int i = 0; i < usersIds.size(); i++) {
-      int userId = new Integer(usersIds.get(i)).intValue();
+      int userId = Integer.parseInt(usersIds.get(i));
       insertAccessListContentRow(conn, "U", userId, accessId);
     }
   }
@@ -1377,11 +1377,11 @@ public class VersioningDAO {
         "VersioningDAO.insertAccessGroupsListContent",
         "root.MSG_GEN_PARAM_VALUE", "accessId = " + accessId);
     for (int i = 0; i < groupsIds.size(); i++) {
-      int groupId = new Integer((String) groupsIds.get(i)).intValue();
+      int groupId = Integer.parseInt(groupsIds.get(i));
       insertAccessListContentRow(conn, "G", groupId, accessId);
     }
     for (int i = 0; i < usersIds.size(); i++) {
-      int userId = new Integer((String) usersIds.get(i)).intValue();
+      int userId = Integer.parseInt(usersIds.get(i));
       insertAccessListContentRow(conn, "U", userId, accessId);
     }
   }

@@ -69,7 +69,7 @@ public class VersioningIndexer {
           + lastVersion.getMajorNumber() + "." + lastVersion.getMinorNumber());
 
       // retrieve user who have upload latest version
-      String userId = new Integer(lastVersion.getAuthorId()).toString();
+      String userId = Integer.toString(lastVersion.getAuthorId());
       indexEntry.setCreationUser(userId);
       indexEntry.setCreationDate(lastVersion.getCreationDate());
 
@@ -82,9 +82,10 @@ public class VersioningIndexer {
 
       indexEntry.addFileContent(path, encoding, format, lang);
 
-      if (StringUtil.isDefined(lastVersion.getXmlForm()))
+      if (StringUtil.isDefined(lastVersion.getXmlForm())) {
         updateIndexEntryWithXMLFormContent(lastVersion.getPk(), lastVersion
             .getXmlForm(), indexEntry);
+      }
 
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {

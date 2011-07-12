@@ -208,7 +208,7 @@ public class VersioningImportExport {
         AttachmentDetail attachment = getAttachmentDetail(document, version);
         if (extensionFilter == null || attachment.getExtension().equalsIgnoreCase(extensionFilter)) {
           attachments.add(copyAttachment(attachment, exportPath, relativeExportPath, componentId));
-          attachments.add(attachment);
+          //attachments.add(attachment);
         }
       }
     }
