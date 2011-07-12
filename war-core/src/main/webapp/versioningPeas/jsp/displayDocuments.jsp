@@ -484,17 +484,17 @@
 
     <div>
     	<div  class="dragNdrop">
-        	<a href="javascript:showDnD()"id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a></div>
-          <div id="DragAndDrop">
+        	<a href="javascript:showDnD()"id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>        	
+    	</div>
+		<div id="DragAndDrop">
             <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/>
         </div>
         
     </div>
-    <div id="DragAndDropDraft"
-               style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%">
-            <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
-       
+    <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%">
+            <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/>
     </div>
+       
 <% } %>
 <% if (contextualMenuEnabled && !dragAndDropEnable) { %>
 

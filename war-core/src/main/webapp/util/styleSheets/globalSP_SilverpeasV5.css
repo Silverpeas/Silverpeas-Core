@@ -3593,7 +3593,6 @@ ul#attachmentList li.attachmentListItem .lineMain {
     display: block;
     position: relative;
     padding: 1px 24px 2px 24px;
-    white-space:nowrap;
 }
 
 
