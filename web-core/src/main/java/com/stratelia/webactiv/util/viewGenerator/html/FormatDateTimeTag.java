@@ -24,11 +24,14 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.*;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A tag to print out a localized date according to the language of the user.
@@ -42,7 +45,7 @@ public class FormatDateTimeTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     try {
-      pageContext.getOut().print(DateUtil.getOutputDateAndHour(dateTime, language));
+      pageContext.getOut().print(formatDateTime(dateTime));
     } catch (IOException e) {
       throw new JspException("Silverpeas Resource URL Tag", e);
     }
@@ -65,4 +68,19 @@ public class FormatDateTimeTag extends TagSupport {
     this.language = language;
   }
 
+  private String formatDateTime(final Date dateTime) {
+    String formattedDateTime;
+    if (isDefined(getLanguage())) {
+      formattedDateTime = DateUtil.getOutputDateAndHour(dateTime, getLanguage());
+    } else {
+      ResourcesWrapper resources = (ResourcesWrapper) pageContext.getRequest().getAttribute(
+              RESOURCES_KEY);
+      if(resources != null) {
+        formattedDateTime = resources.getOutputDateAndHour(dateTime);
+      } else {
+        formattedDateTime = DateUtil.getOutputDateAndHour(dateTime, "");
+      }
+    }
+    return formattedDateTime;
+  }
 }
