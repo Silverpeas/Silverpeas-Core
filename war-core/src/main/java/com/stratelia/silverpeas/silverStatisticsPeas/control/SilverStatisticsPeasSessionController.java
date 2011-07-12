@@ -123,31 +123,24 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   // init attributes
   private void initYears() {
-
     try {
       yearsConnection = SilverStatisticsPeasDAOConnexion.getYears();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getYears",
+      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
 
     try {
-      yearsAccess =
-          SilverStatisticsPeasDAOAccesVolume
-              .getYears(SilverStatisticsPeasDAOAccesVolume.TYPE_ACCES);
+      yearsAccess = SilverStatisticsPeasDAOAccesVolume.getAccessYears();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOAccesVolume.getYears",
+      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAOAccesVolume.getYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
 
     try {
-      yearsVolume = SilverStatisticsPeasDAOAccesVolume
-          .getYears(SilverStatisticsPeasDAOAccesVolume.TYPE_VOLUME);
+      yearsVolume = SilverStatisticsPeasDAOAccesVolume.getVolumeYears();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOAccesVolume.getYears",
+      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAOAccesVolume.getYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
   }
@@ -160,9 +153,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   public SilverStatisticsPeasSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    super(
-        mainSessionCtrl,
-        componentContext,
+    super(mainSessionCtrl, componentContext,
         "com.stratelia.silverpeas.silverStatisticsPeas.multilang.silverStatisticsBundle",
         "com.stratelia.silverpeas.silverStatisticsPeas.settings.silverStatisticsIcons");
     setComponentRootName(URLManager.CMP_SILVERSTATISTICSPEAS);

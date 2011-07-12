@@ -43,20 +43,19 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.LinkedHashSet;
 
 /**
  * Class declaration Get cumul datas from database to access and Volume
  * @author
  */
 public class SilverStatisticsPeasDAOAccesVolume {
-  private static final String dbName = JNDINames.SILVERSTATISTICS_DATASOURCE;
 
   public static final String TYPE_ACCES = "Acces";
   public static final String TYPE_VOLUME = "Volume";
 
   public static Collection<String> getYears(String typeReq) throws SQLException {
-    // String selectQuery = " SELECT DISTINCT LEFT(dateStat,4)";
-    // DLE
     String selectQuery = " SELECT DISTINCT dateStat";
 
     if (typeReq.equals(TYPE_ACCES)) {
@@ -68,6 +67,60 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
     return getYearsFromQuery(selectQuery);
   }
+  
+  public static Collection<String> getVolumeYears() throws SQLException, UtilException {
+    String selectQuery = "SELECT DISTINCT dateStat FROM sb_stat_volumecumul ORDER BY dateStat ASC";
+    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getYearsFromQuery",
+            "selectQuery=" + selectQuery);
+    Statement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.createStatement();
+      rs = stmt.executeQuery(selectQuery);
+      LinkedHashSet<String> years = new LinkedHashSet<String>();
+      while (rs.next()) {
+        String currentYear = extractYearFromDate(rs.getString("dateStat"));
+        if (!years.contains(currentYear)) {
+          years.add(currentYear);
+        }
+      }
+      return years;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
+    }
+  }
+  
+   public static Collection<String> getAccessYears() throws SQLException, UtilException {
+    String selectQuery = "SELECT DISTINCT dateStat FROM sb_stat_accesscumul ORDER BY dateStat";
+    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getYearsFromQuery",
+            "selectQuery=" + selectQuery);
+    Statement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.createStatement();
+      rs = stmt.executeQuery(selectQuery);
+      LinkedHashSet<String> years = new LinkedHashSet<String>();
+      while (rs.next()) {
+        String currentYear = extractYearFromDate(rs.getString("dateStat"));
+        if (!years.contains(currentYear)) {
+          years.add(currentYear);
+        }
+      }
+      return years;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
+    }
+  }
+   
+   private static final String extractYearFromDate(String date) {
+    return date.substring(0, 4);
+   }
 
   /**
    * donne les stats sur le nombre d'accès
@@ -124,7 +177,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
       if (ok) {
         values = new String[3];
-        values[0] = (String) hashTout.get(cmpId);
+        values[0] = hashTout.get(cmpId);
         resultat.put(cmpId, values);
       }
     }
@@ -135,8 +188,8 @@ public class SilverStatisticsPeasDAOAccesVolume {
       // préremplit tout avec 0
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
-        cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
+        cmpId = it.next();
+        values = resultat.get(cmpId);
         values[1] = "0";
         resultat.put(cmpId, values);
       }
@@ -153,9 +206,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
       it = hashGroupe.keySet().iterator();
       while (it.hasNext()) {
-        cmpId = (String) it.next();
+        cmpId = it.next();
 
-        values = (String[]) resultat.get(cmpId);
+        values = resultat.get(cmpId);
         if (values != null) {
           values[1] = (String) hashGroupe.get(cmpId);
           resultat.put(cmpId, values);
@@ -169,8 +222,8 @@ public class SilverStatisticsPeasDAOAccesVolume {
       // préremplit tout avec 0
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
-        cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
+        cmpId = it.next();
+        values = resultat.get(cmpId);
         values[2] = "0";
         resultat.put(cmpId, values);
       }
@@ -184,11 +237,11 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
       it = hashUser.keySet().iterator();
       while (it.hasNext()) {
-        cmpId = (String) it.next();
+        cmpId = it.next();
 
-        values = (String[]) resultat.get(cmpId);
+        values = resultat.get(cmpId);
         if (values != null) {
-          values[2] = (String) hashUser.get(cmpId);
+          values[2] = hashUser.get(cmpId);
           resultat.put(cmpId, values);
         }
       }
@@ -280,15 +333,16 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Statement stmt = null;
     ResultSet rs = null;
     Collection<String[]> list = null;
-    Connection myCon = getConnection();
+    Connection myCon =null;
 
     try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
       list = getStatsUserFromResultSet(rs);
     } finally {
       DBUtil.close(rs, stmt);
-      freeConnection(myCon);
+      DBUtil.close(myCon);
     }
 
     return list;
@@ -360,15 +414,16 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Statement stmt = null;
     ResultSet rs = null;
     Hashtable<String, String> ht = null;
-    Connection myCon = getConnection();
+   Connection myCon =null;
 
     try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
       ht = getHashtableFromResultset(rs);
     } finally {
       DBUtil.close(rs, stmt);
-      freeConnection(myCon);
+      DBUtil.close(myCon);
     }
 
     return ht;
@@ -445,7 +500,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
       if (ok) {
         values = new String[3];
-        values[0] = (String) hashTout.get(cmpId);
+        values[0] = hashTout.get(cmpId);
         resultat.put(cmpId, values);
       }
     }
@@ -457,7 +512,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
         cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
+        values = resultat.get(cmpId);
         values[1] = "0";
         resultat.put(cmpId, values);
       }
@@ -476,9 +531,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       while (it.hasNext()) {
         cmpId = it.next();
 
-        values = (String[]) resultat.get(cmpId);
+        values = resultat.get(cmpId);
         if (values != null) {
-          values[1] = (String) hashGroupe.get(cmpId);
+          values[1] = hashGroupe.get(cmpId);
           resultat.put(cmpId, values);
         }
       }
@@ -490,8 +545,8 @@ public class SilverStatisticsPeasDAOAccesVolume {
       // préremplit tout avec 0
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
-        cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
+        cmpId = it.next();
+        values = resultat.get(cmpId);
         values[2] = "0";
         resultat.put(cmpId, values);
       }
@@ -505,11 +560,11 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
       it = hashUser.keySet().iterator();
       while (it.hasNext()) {
-        cmpId = (String) it.next();
+        cmpId = it.next();
 
-        values = (String[]) resultat.get(cmpId);
+        values = resultat.get(cmpId);
         if (values != null) {
-          values[2] = (String) hashUser.get(cmpId);
+          values[2] = hashUser.get(cmpId);
           resultat.put(cmpId, values);
         }
       }
@@ -531,66 +586,20 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return myList;
   }
 
-  private static Collection<String> getYearsFromQuery(String selectQuery)
-      throws SQLException {
+  private static Collection<String> getYearsFromQuery(String selectQuery) throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
-    Collection<String> years = null;
-    Connection myCon = getConnection();
-
+    Connection myCon = null;
     try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
-      years = getYearsConnexion(rs);
+      return getYearsConnexion(rs);
     } finally {
       DBUtil.close(rs, stmt);
-      freeConnection(myCon);
-    }
-
-    return years;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  private static Connection getConnection() {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccesVolume.getConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    Connection con = null;
-
-    try {
-      con = DBUtil.makeConnection(dbName);
-    } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOAccesVolume.freeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-    }
-    return con;
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @see
-   */
-  private static void freeConnection(Connection con) {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccesVolume.freeConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOAccesVolume.freeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(myCon);
     }
   }
+
 
 }
