@@ -24,7 +24,6 @@
 
 package com.silverpeas.lookV5;
 
-import com.silverpeas.admin.components.WAComponent;
 import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
@@ -40,6 +39,7 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.external.filesharing.model.FileSharingService;
 import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
@@ -56,7 +56,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
@@ -209,10 +208,6 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     return label;
   }
 
-  private JSONObject getToolAsJSONObject(String id, String label, String url) {
-    return getToolAsJSONObject(id, label, url, 0);
-  }
-
   private JSONObject getToolAsJSONObject(String id, String label, String url, int nb) {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("name", "");
@@ -226,121 +221,94 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   }
 
   private String getToolsAsJSONArray(LookHelper helper) {
-    boolean isAnonymousAccess = helper.isAnonymousAccess();
-    ResourceLocator message =
-        new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", helper
-            .getLanguage());
+    ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", helper.getLanguage());
     JSONArray jsonArray = new JSONArray();
-    if (!isAnonymousAccess && helper.getSettings("personnalSpaceVisible", true)) {
-      if (helper.getSettings("agendaVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("agenda", message.getString("Diary"), URLManager
-                .getURL(URLManager.CMP_AGENDA) +
-                "Main");
-        jsonArray.put(tool);
-      }
-      if (helper.getSettings("todoVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("todo", message.getString("ToDo"), URLManager
-                .getURL(URLManager.CMP_TODO) +
-                "todo.jsp");
-        jsonArray.put(tool);
-      }
-      if (helper.getSettings("notificationVisible", true)) {
-        // get number of notifications
-        int nbNotifications = 0;
-        try {
-          Collection<SILVERMAILMessage> notifications =
-              SILVERMAILPersistence.getNotReadMessagesOfFolder(Integer.parseInt(helper.getUserId()),
-                  "INBOX");
-          if (notifications != null) {
-            nbNotifications = notifications.size();
-          }
-        } catch (Exception e) {
-          SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
-              "root.CANT_GET_NOTIFICATIONS", e);
-        }
-
-        JSONObject tool =
-            getToolAsJSONObject("notification", message.getString("Mail"), URLManager
-                .getURL(URLManager.CMP_SILVERMAIL) +
-                "Main", nbNotifications);
-        jsonArray.put(tool);
-      }
-      if (helper.getSettings("interestVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("subscriptions", message.getString("MyInterestCenters"), URLManager
-                .getURL(URLManager.CMP_PDCSUBSCRIPTION) +
-                "subscriptionList.jsp");
-        jsonArray.put(tool);
-      }
-      if (helper.getSettings("favRequestVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("requests", message.getString("FavRequests"), URLManager
-                .getURL(URLManager.CMP_INTERESTCENTERPEAS) +
-                "iCenterList.jsp");
-        jsonArray.put(tool);
-      }
-      if (helper.getSettings("linksVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("links", message.getString("FavLinks"), URLManager
-                .getURL(URLManager.CMP_MYLINKSPEAS) +
-                "Main");
-        jsonArray.put(tool);
-      }
-      // mes tickets
-      if (helper.getSettings("fileSharingVisible", true)) {
-        FileSharingService fileSharing = FileSharingServiceFactory.getFactory().getFileSharingService();
-        try {
-          if (!fileSharing.getTicketsByUser(helper.getUserId()).isEmpty()) {
-            JSONObject tool =
-                getToolAsJSONObject("fileSharing", message.getString("FileSharing"), URLManager
-                    .getURL(URLManager.CMP_FILESHARING) +
-                    "Main");
-            jsonArray.put(tool);
-          }
-        } catch (Exception e) {
-          SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
-              "root.CANT_GET_TICKETS", e);
-        }
-      }
-      // mes connexions
-      if (helper.getSettings("webconnectionsVisible", true)) {
-        WebConnectionsInterface webConnections = new WebConnectionService();
-        try {
-          if (webConnections.listWebConnectionsOfUser(helper.getUserId()).size() > 0) {
-            JSONObject tool =
-                getToolAsJSONObject("webConnections", message.getString("WebConnections"),
-                    URLManager.getURL(URLManager.CMP_WEBCONNECTIONS) + "Main");
-            jsonArray.put(tool);
-          }
-        } catch (RemoteException e) {
-          SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
-              "root.CANT_GET_CONNECTIONS", e);
-        }
-      }
-
-      if (helper.getSettings("customVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("personalize", message.getString("Personalization"), URLManager
-                .getURL(URLManager.CMP_MYPROFILE) +
-                "MyInfos");
-        jsonArray.put(tool);
-      }
-      if (helper.getSettings("mailVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("notifAdmins", message.getString("Feedback"),
-                "javascript:notifyAdministrators()");
-        jsonArray.put(tool);
-      }
-      if (helper.getSettings("clipboardVisible", true)) {
-        JSONObject tool =
-            getToolAsJSONObject("clipboard", message.getString("Clipboard"),
-                "javascript:openClipboard()");
-        jsonArray.put(tool);
-      }
+    if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
+      addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"), URLManager.getURL(URLManager.CMP_AGENDA) + "Main");
+      addTool(jsonArray, helper, "todoVisible", "todo", message.getString("ToDo"), URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp");
+      addNotificationsAsTool(jsonArray, helper, message);
+      addTool(jsonArray, helper, "interestVisible", "subscriptions", message.getString("MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) + "subscriptionList.jsp");
+      addTool(jsonArray, helper, "favRequestVisible", "requests", message.getString("FavRequests"), URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS) + "iCenterList.jsp");
+      addTool(jsonArray, helper, "linksVisible", "links", message.getString("FavLinks"), URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "Main");
+      addFileSharingAsTool(jsonArray, helper, message);
+      addWebConnectionsAsTool(jsonArray, helper, message);
+      addTool(jsonArray, helper, "scheduleEventVisible", "scheduleevent", message.getString("ScheduleEvent"), URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main");
+      addTool(jsonArray, helper, "customVisible", "personalize", message.getString("Personalization"), URLManager.getURL(URLManager.CMP_MYPROFILE) + "MyInfos");
+      addTool(jsonArray, helper, "mailVisible", "notifAdmins", message.getString("Feedback"), "javascript:notifyAdministrators()");
+      addTool(jsonArray, helper, "clipboardVisible", "clipboard", message.getString("Clipboard"), "javascript:openClipboard()");
     }
     return jsonArray.toString();
+  }
+  
+  private void addTool(JSONArray jsonArray, LookHelper helper, String property, String id,
+      String label, String url) {
+    addTool(jsonArray, helper, property, id, label, url, 0);
+  }
+
+  private void addTool(JSONArray jsonArray, LookHelper helper, String property, String id,
+      String label, String url, int nbElements) {
+    if (helper.getSettings(property, true)) {
+      JSONObject tool = getToolAsJSONObject(id, label, url, nbElements);
+      jsonArray.put(tool);
+    }
+  }
+
+  private void addNotificationsAsTool(JSONArray jsonArray, LookHelper helper,
+      ResourceLocator message) {
+    if (helper.getSettings("notificationVisible", true)) {
+      // get number of notifications
+      int nbNotifications = 0;
+      try {
+        Collection<SILVERMAILMessage> notifications =
+            SILVERMAILPersistence.getNotReadMessagesOfFolder(Integer.parseInt(helper.getUserId()),
+                "INBOX");
+        if (notifications != null) {
+          nbNotifications = notifications.size();
+        }
+      } catch (Exception e) {
+        SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
+            "root.CANT_GET_NOTIFICATIONS", e);
+      }
+
+      addTool(jsonArray, helper, "notificationVisible", "notification", message.getString("Mail"),
+          URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main", nbNotifications);
+    }
+  }
+
+  private void addFileSharingAsTool(JSONArray jsonArray, LookHelper helper, ResourceLocator message) {
+    // mes tickets
+    if (helper.getSettings("fileSharingVisible", true)) {
+      FileSharingService fileSharing =
+          FileSharingServiceFactory.getFactory().getFileSharingService();
+      try {
+        if (!fileSharing.getTicketsByUser(helper.getUserId()).isEmpty()) {
+          addTool(jsonArray, helper, "fileSharingVisible", "fileSharing",
+              message.getString("FileSharing"), URLManager.getURL(URLManager.CMP_FILESHARING) +
+                  "Main");
+        }
+      } catch (Exception e) {
+        SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
+            "root.CANT_GET_TICKETS", e);
+      }
+    }
+  }
+
+  private void addWebConnectionsAsTool(JSONArray jsonArray, LookHelper helper,
+      ResourceLocator message) {
+    // mes connexions
+    if (helper.getSettings("webconnectionsVisible", true)) {
+      WebConnectionsInterface webConnections = new WebConnectionService();
+      try {
+        if (!webConnections.listWebConnectionsOfUser(helper.getUserId()).isEmpty()) {
+          addTool(jsonArray, helper, "webconnectionsVisible", "webConnections",
+              message.getString("WebConnections"),
+              URLManager.getURL(URLManager.CMP_WEBCONNECTIONS) + "Main");
+        }
+      } catch (RemoteException e) {
+        SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
+            "root.CANT_GET_CONNECTIONS", e);
+      }
+    }
   }
 
 }
