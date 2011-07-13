@@ -3580,6 +3580,9 @@ a.yuimenuitemlabel-disabled:hover {
 
 ul#attachmentList.ui-sortable {
 	/*cursor:default;*/
+	position:relative;
+	margin:0;
+	padding:0;
 }
 
 ul#attachmentList {
@@ -3591,6 +3594,7 @@ ul#attachmentList {
 ul#attachmentList li.attachmentListItem {
 	margin:0;
     padding:10px;
+    position:relative;
 }
 
 ul#attachmentList li.ui-state-highlight {

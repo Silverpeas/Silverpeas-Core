@@ -342,7 +342,7 @@
 
     out.println("<div class=\"attachments bgDegradeGris\">");
     out.println(
-        "<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">Fichiers Joints</h4></div>");
+        "<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
   
     out.println("<ul id=\"attachmentList\">");
     while (iterator.hasNext()) {
@@ -364,116 +364,117 @@
                 document_version.getPk().getId());
           }
 %>
-<li id="attachment_<%=document.getPk().getId()%>" class="attachmentListItem" <%=iconStyle%>>
-  <% if (contextualMenuEnabled) {
-    displayActions(document, versioning_util.getLastVersion(document.getPk()), profile, false,
-        useFileSharing, webdavEditingEnable, Integer.parseInt(versioningSC.getUserId()),
-        attResources, httpServerBase, versioningSC, showMenuNotif, useContextualMenu, out);
-  }
-  %>
-								<span class="lineMain">
-	                             <img id="img_<%=document.getPk().getId() %>" alt=""
-                                    src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>"
-                                    class="icon"/>
-				                 <a id="url<%=document.getPk().getId() %>" href="<%=documentVersionUrl%>"
-                            target="_blank"><%=document.getName()%>
-                         </a>
-				                 &nbsp;<span class="version-number"
-                                     id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>
-				                 <% if (contextualMenuEnabled && !useContextualMenu) { %>
-          							<img id="edit_<%=document.getPk().getId() %>"
-                             src="<%=m_context %>/util/icons/arrow/open.gif" class="moreActions"/>
-          						 <% } %>
-								</span>
-								
-								<span class="lineSize">
-									<a href="<%=URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId())%>"
-                     target="_blank"><img src="<%=m_context%>/util/icons/link.gif" border="0"
-                                          valign="absmiddle"
-                                          alt="<%=attResources.getString("versioning.CopyLink") %>"
-                                          title="<%=attResources.getString("versioning.CopyLink") %>"></a>
-								<% if (showFileSize && showDownloadEstimation) { %>								  
-									<%= FileRepositoryManager.formatFileSize(
-                      document_version.getSize()) %> / <%= versioning_util.getDownloadEstimation(
-                    document_version.getSize()) %>
-								<% } else if (showFileSize) { %>
-									<%= FileRepositoryManager.formatFileSize(document_version.getSize()) %>
-								<% } else if (showDownloadEstimation) { %>
-									<%= versioning_util.getDownloadEstimation(document_version.getSize()) %>
-								<% } %>
-								 - <%= resources.getOutputDate(document_version.getCreationDate())%>
-								</span>
-
-  <% if (StringUtil.isDefined(document.getDescription()) && showInfo) { %>
-  <span class="description"><%= EncodeHelper.javaStringToHtmlParagraphe(
-      document.getDescription()) %></span>
-  <% } %>
-
-  <% if (document_version.isSpinfireDocument() && spinfireViewerEnable) { %>
-  <div id="switchView" name="switchView" style="display: none">
-    <a href="#" onClick="changeView3d(<%=document_version.getPk().getId()%>)"><img name="iconeView"
-                                                                                   valign="bottom"
-                                                                                   border="0"
-                                                                                   src="/util/icons/masque3D.gif"></a>
-  </div>
-  <div id="<%=document_version.getPk().getId()%>" style="display: none">
-    <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
-            width="300" height="200" id="XV">
-      <param name="ModelName" value="<%=documentVersionUrl%>">
-      <param name="BorderWidth" value="1">
-      <param name="ReferenceFrame" value="1">
-      <param name="ViewportActiveBorder" value="FALSE">
-      <param name="DisplayMessages" value="TRUE">
-      <param name="DisplayInfo" value="TRUE">
-      <param name="SpinX" value="0">
-      <param name="SpinY" value="0">
-      <param name="SpinZ" value="0">
-      <param name="AnimateTransitions" value="0">
-      <param name="ZoomFit" value="1">
-    </object>
-  </div>
-  <%
-    }
-    if (StringUtil.isDefined(document_version.getXmlForm())) {
-      String xmlURL = m_context + "/RformTemplate/jsp/View?width=400&ObjectId=" + document_version.getPk().getId() + "&ComponentId=" + componentId + "&ObjectType=Versioning&XMLFormName=" + URLEncoder.encode(
-          document_version.getXmlForm(), "UTF-8");
-  %>
-  <br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=attMessages.getString(
-    "versioning.xmlForm.View")%>
-</a>
-  <%
-    }
-  %>
-  <%
-    boolean displayAllVersionsLink = false;
-    if ("user".equals(profile) && document_version.getMajorNumber() > 1) {
-      displayAllVersionsLink = true;
-    } else if (!profile.equals("user") && versioning_util.getDocumentVersions(
-        document.getPk()).size() > 1) {
-      displayAllVersionsLink = true;
-    }
-    if (displayAllVersionsLink && !hideAllVersionsLink) { %>
-  <span class="linkAllVersions"><img alt="<%=attMessages.getString("allVersions")%>"
-                                     src="<%=m_context %>/util/icons/bullet_add_1.gif"> <a
-      href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString(
-      "allVersions")%>
-  </a></span>
-  <% } %>
-  <%
-    if (contextualMenuEnabled) {
-      if (document.getStatus() == Document.STATUS_CHECKOUTED) {
-        out.println(
-            "<div class=\"workerInfo\" id=\"worker" + document.getPk().getId() + "\" style=\"visibility:visible\">" + attResources.getString(
-                "lockedBy") + " " + m_MainSessionCtrl.getOrganizationController().getUserDetail(
-                Integer.toString(
-                    document.getOwnerId())).getDisplayedName() + " " + attResources.getString(
-                "at") + " " + resources.getOutputDate(document.getLastCheckOutDate()) + "</div>");
-      } else {
-        out.println(
-            "<div class=\"workerInfo\" id=\"worker" + document.getPk().getId() + "\" style=\"visibility:hidden\"></div>");
-      }
-    }
-  %>
+<li id="attachment_<%=document.getPk().getId()%>" class="attachmentListItem" <%=iconStyle%> >
+				  <% 
+				  	if (contextualMenuEnabled) {
+				    displayActions(document, versioning_util.getLastVersion(document.getPk()), profile, false,
+				        useFileSharing, webdavEditingEnable, Integer.parseInt(versioningSC.getUserId()),
+				        attResources, httpServerBase, versioningSC, showMenuNotif, useContextualMenu, out);
+				  }
+				  %>
+											<span class="lineMain">
+					                             <img id="img_<%=document.getPk().getId() %>" alt=""
+				                                    src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>"
+				                                    class="icon"/>
+								                 <a id="url<%=document.getPk().getId() %>" href="<%=documentVersionUrl%>"
+				                            target="_blank"><%=document.getName()%>
+				                         </a>
+								                 &nbsp;<span class="version-number"
+				                                     id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>
+								                 <% if (contextualMenuEnabled && !useContextualMenu) { %>
+				          							<img id="edit_<%=document.getPk().getId() %>"
+				                             src="<%=m_context %>/util/icons/arrow/open.gif" class="moreActions"/>
+				          						 <% } %>
+												</span>
+												
+												<span class="lineSize">
+													<a href="<%=URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId())%>"
+				                     target="_blank"><img src="<%=m_context%>/util/icons/link.gif" border="0"
+				                                          valign="absmiddle"
+				                                          alt="<%=attResources.getString("versioning.CopyLink") %>"
+				                                          title="<%=attResources.getString("versioning.CopyLink") %>"></a>
+												<% if (showFileSize && showDownloadEstimation) { %>								  
+													<%= FileRepositoryManager.formatFileSize(
+				                      document_version.getSize()) %> / <%= versioning_util.getDownloadEstimation(
+				                    document_version.getSize()) %>
+												<% } else if (showFileSize) { %>
+													<%= FileRepositoryManager.formatFileSize(document_version.getSize()) %>
+												<% } else if (showDownloadEstimation) { %>
+													<%= versioning_util.getDownloadEstimation(document_version.getSize()) %>
+												<% } %>
+												 - <%= resources.getOutputDate(document_version.getCreationDate())%>
+												</span>
+				
+				  <% if (StringUtil.isDefined(document.getDescription()) && showInfo) { %>
+				  <span class="description"><%= EncodeHelper.javaStringToHtmlParagraphe(
+				      document.getDescription()) %></span>
+				  <% } %>
+				
+				  <% if (document_version.isSpinfireDocument() && spinfireViewerEnable) { %>
+				  <div id="switchView" name="switchView" style="display: none">
+				    <a href="#" onClick="changeView3d(<%=document_version.getPk().getId()%>)"><img name="iconeView"
+				                                                                                   valign="bottom"
+				                                                                                   border="0"
+				                                                                                   src="/util/icons/masque3D.gif"></a>
+				  </div>
+				  <div id="<%=document_version.getPk().getId()%>" style="display: none">
+				    <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
+				            width="300" height="200" id="XV">
+				      <param name="ModelName" value="<%=documentVersionUrl%>">
+				      <param name="BorderWidth" value="1">
+				      <param name="ReferenceFrame" value="1">
+				      <param name="ViewportActiveBorder" value="FALSE">
+				      <param name="DisplayMessages" value="TRUE">
+				      <param name="DisplayInfo" value="TRUE">
+				      <param name="SpinX" value="0">
+				      <param name="SpinY" value="0">
+				      <param name="SpinZ" value="0">
+				      <param name="AnimateTransitions" value="0">
+				      <param name="ZoomFit" value="1">
+				    </object>
+				  </div>
+				  <%
+				    }
+				    if (StringUtil.isDefined(document_version.getXmlForm())) {
+				      String xmlURL = m_context + "/RformTemplate/jsp/View?width=400&ObjectId=" + document_version.getPk().getId() + "&ComponentId=" + componentId + "&ObjectType=Versioning&XMLFormName=" + URLEncoder.encode(
+				          document_version.getXmlForm(), "UTF-8");
+				  %>
+				  <br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=attMessages.getString(
+				    "versioning.xmlForm.View")%>
+				</a>
+				  <%
+				    }
+				  %>
+				  <%
+				    boolean displayAllVersionsLink = false;
+				    if ("user".equals(profile) && document_version.getMajorNumber() > 1) {
+				      displayAllVersionsLink = true;
+				    } else if (!profile.equals("user") && versioning_util.getDocumentVersions(
+				        document.getPk()).size() > 1) {
+				      displayAllVersionsLink = true;
+				    }
+				    if (displayAllVersionsLink && !hideAllVersionsLink) { %>
+				  <span class="linkAllVersions"><img alt="<%=attMessages.getString("allVersions")%>"
+				                                     src="<%=m_context %>/util/icons/bullet_add_1.gif"> <a
+				      href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString(
+				      "allVersions")%>
+				  </a></span>
+				  <% } %>
+				  <%
+				    if (contextualMenuEnabled) {
+				      if (document.getStatus() == Document.STATUS_CHECKOUTED) {
+				        out.println(
+				            "<div class=\"workerInfo\" id=\"worker" + document.getPk().getId() + "\" style=\"visibility:visible\">" + attResources.getString(
+				                "lockedBy") + " " + m_MainSessionCtrl.getOrganizationController().getUserDetail(
+				                Integer.toString(
+				                    document.getOwnerId())).getDisplayedName() + " " + attResources.getString(
+				                "at") + " " + resources.getOutputDate(document.getLastCheckOutDate()) + "</div>");
+				      } else {
+				        out.println(
+				            "<div class=\"workerInfo\" id=\"worker" + document.getPk().getId() + "\" style=\"visibility:hidden\"></div>");
+				      }
+				    }
+				  %>
 </li>
 <%
       }
@@ -486,14 +487,10 @@
     	<div  class="dragNdrop">
         	<a href="javascript:showDnD()"id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>        	
     	</div>
-		<div id="DragAndDrop">
-            <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/>
-        </div>
-        
+		<div id="DragAndDrop"> </div>
+        <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
     </div>
-    <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%">
-            <img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/>
-    </div>
+    
        
 <% } %>
 <% if (contextualMenuEnabled && !dragAndDropEnable) { %>
