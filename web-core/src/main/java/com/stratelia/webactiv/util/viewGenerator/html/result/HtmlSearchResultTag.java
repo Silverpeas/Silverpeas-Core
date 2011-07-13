@@ -54,6 +54,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 public class HtmlSearchResultTag extends TagSupport {
   private static final long serialVersionUID = -7747695403360864218L;
+
   /*
    * List of Tag attributes
    */
@@ -67,6 +68,7 @@ public class HtmlSearchResultTag extends TagSupport {
    * object helper
    */
   private OrganizationController orga = new OrganizationController();
+  private ResourcesWrapper settings = null;
 
   @Override
   public int doStartTag() throws JspException {
@@ -177,7 +179,8 @@ public class HtmlSearchResultTag extends TagSupport {
         ResultDisplayer resultDisplayer =
             ResultDisplayerFactory.getResultDisplayerFactory().getResultDisplayer(componentName);
         SilverTrace.debug("viewgenerator", HtmlSearchResultTag.class.getName(),
-            "load specific for current result: instanceid=" + instanceId + ", contentid=" + gsr.getId());
+            "load specific for current result: instanceid=" + instanceId + ", contentid=" +
+                gsr.getId());
         if (resultDisplayer != null) {
           addedInformation =
               resultDisplayer.getResultContent(new SearchResultContentVO(this.userId, this.gsr,
@@ -355,15 +358,17 @@ public class HtmlSearchResultTag extends TagSupport {
    * @throws JspTagException
    */
   private ResourcesWrapper getSettings() throws JspTagException {
-    String language = getUserPreferences().getLanguage();
-    ResourceLocator messages = new ResourceLocator(
-        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
-    ResourcesWrapper resources =
-        new ResourcesWrapper(messages,
-            new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
-            new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
-            language);
-    return resources;
+    if (settings == null) {
+      String language = getUserPreferences().getLanguage();
+      ResourceLocator messages = new ResourceLocator(
+          "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
+      settings =
+          new ResourcesWrapper(messages,
+              new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
+              new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
+              language);
+    }
+    return settings;
   }
 
 }
