@@ -76,6 +76,7 @@ public class InstanciateurTest {
     }
     assertThat(paramWithOption, is(notNullValue()));
     assertThat(paramWithOption.getOptions().size(), is(4));
+    assertThat(result.isSearchTemplating(), is(true));
   }
 
   /**
@@ -112,5 +113,6 @@ public class InstanciateurTest {
     assertThat(paramWithXMLTemplate.getOptions().size(), is(1));
     assertThat(paramWithXMLTemplate.getOptions().get(0).getValue(), is("template.xml"));
     assertThat(paramWithXMLTemplate.getOptions().get(0).getName().get("fr"), is("template"));
+    assertThat(result.isSearchTemplating(), is(false));
   }
 }

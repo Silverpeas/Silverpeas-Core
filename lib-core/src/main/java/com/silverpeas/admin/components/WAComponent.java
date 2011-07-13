@@ -19,9 +19,10 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * <p>Java class for WAComponentType complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for WAComponentType complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="WAComponentType">
@@ -59,28 +60,27 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element name="searchTemplating" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "WAComponentType", propOrder = {
-  "name",
-  "label",
-  "description",
-  "suite",
-  "visible",
-  "visibleInPersonalSpace",
-  "portlet",
-  "router",
-  "instanceClassName",
-  "profiles",
-  "parameters"
-})
+    "name",
+    "label",
+    "description",
+    "suite",
+    "visible",
+    "visibleInPersonalSpace",
+    "portlet",
+    "router",
+    "instanceClassName",
+    "profiles",
+    "parameters",
+    "searchTemplating" })
 public class WAComponent {
   @XmlTransient
   private ParameterSorter sorter = new ParameterSorter();
@@ -102,20 +102,17 @@ public class WAComponent {
   protected String router;
   @XmlElement(required = true)
   protected String instanceClassName;
-  @XmlElementWrapper(name="profiles")
-  @XmlElement(name="profile", required = true) 
+  @XmlElementWrapper(name = "profiles")
+  @XmlElement(name = "profile", required = true)
   protected List<Profile> profiles;
-  @XmlElementWrapper(name="parameters")
-  @XmlElement(name="parameter") 
+  @XmlElementWrapper(name = "parameters")
+  @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
+  protected boolean searchTemplating = false;
 
   /**
    * Gets the value of the name property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getName() {
     return name;
@@ -123,11 +120,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the name property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setName(String value) {
     this.name = value;
@@ -135,14 +128,10 @@ public class WAComponent {
 
   /**
    * Gets the value of the label property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getLabel() {
-    if(label == null){
+    if (label == null) {
       label = new HashMap<String, String>();
     }
     return label;
@@ -150,11 +139,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the label property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setLabel(HashMap<String, String> value) {
     this.label = value;
@@ -162,14 +147,10 @@ public class WAComponent {
 
   /**
    * Gets the value of the description property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getDescription() {
-    if(description == null){
+    if (description == null) {
       description = new HashMap<String, String>();
     }
     return description;
@@ -177,11 +158,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the description property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setDescription(HashMap<String, String> value) {
     this.description = value;
@@ -189,14 +166,10 @@ public class WAComponent {
 
   /**
    * Gets the value of the suite property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getSuite() {
-    if(suite == null){
+    if (suite == null) {
       suite = new HashMap<String, String>();
     }
     return suite;
@@ -204,11 +177,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the suite property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setSuite(HashMap<String, String> value) {
     this.suite = value;
@@ -216,7 +185,6 @@ public class WAComponent {
 
   /**
    * Gets the value of the visible property.
-   * 
    */
   public boolean isVisible() {
     return visible;
@@ -224,7 +192,6 @@ public class WAComponent {
 
   /**
    * Sets the value of the visible property.
-   * 
    */
   public void setVisible(boolean value) {
     this.visible = value;
@@ -232,11 +199,7 @@ public class WAComponent {
 
   /**
    * Gets the value of the visibleInPersonalSpace property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Boolean }
-   *     
+   * @return possible object is {@link Boolean }
    */
   public boolean isVisibleInPersonalSpace() {
     return visibleInPersonalSpace;
@@ -244,11 +207,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the visibleInPersonalSpace property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Boolean }
-   *     
+   * @param value allowed object is {@link Boolean }
    */
   public void setVisibleInPersonalSpace(boolean value) {
     this.visibleInPersonalSpace = value;
@@ -256,7 +215,6 @@ public class WAComponent {
 
   /**
    * Gets the value of the portlet property.
-   * 
    */
   public boolean isPortlet() {
     return portlet;
@@ -264,7 +222,6 @@ public class WAComponent {
 
   /**
    * Sets the value of the portlet property.
-   * 
    */
   public void setPortlet(boolean value) {
     this.portlet = value;
@@ -272,11 +229,7 @@ public class WAComponent {
 
   /**
    * Gets the value of the router property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getRouter() {
     return router;
@@ -284,11 +237,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the router property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setRouter(String value) {
     this.router = value;
@@ -296,11 +245,7 @@ public class WAComponent {
 
   /**
    * Gets the value of the instanceClassName property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getInstanceClassName() {
     return instanceClassName;
@@ -308,11 +253,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the instanceClassName property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setInstanceClassName(String value) {
     this.instanceClassName = value;
@@ -320,19 +261,15 @@ public class WAComponent {
 
   /**
    * Gets the value of the profiles property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link WAComponent.Profiles }
-   *     
+   * @return possible object is {@link WAComponent.Profiles }
    */
   public List<Profile> getProfiles() {
-    if(profiles == null){
+    if (profiles == null) {
       profiles = new ArrayList<Profile>();
     }
     return profiles;
   }
-  
+
   public Profile getProfile(String name) {
     for (Profile profile : getProfiles()) {
       if (profile.getName().equals(name)) {
@@ -344,11 +281,7 @@ public class WAComponent {
 
   /**
    * Sets the value of the profiles property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link WAComponent.Profiles }
-   *     
+   * @param value allowed object is {@link WAComponent.Profiles }
    */
   public void setProfiles(List<Profile> value) {
     this.profiles = value;
@@ -356,14 +289,10 @@ public class WAComponent {
 
   /**
    * Gets the value of the parameters property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link WAComponent.Parameters }
-   *     
+   * @return possible object is {@link WAComponent.Parameters }
    */
   public List<Parameter> getParameters() {
-    if(parameters == null){
+    if (parameters == null) {
       parameters = new ArrayList<Parameter>();
     }
     return parameters;
@@ -371,27 +300,38 @@ public class WAComponent {
 
   /**
    * Sets the value of the parameters property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link WAComponent.Parameters }
-   *     
+   * @param value allowed object is {@link WAComponent.Parameters }
    */
   public void setParameters(List<Parameter> value) {
     this.parameters = value;
   }
-  
+
   public List<Parameter> getSortedParameters() {
     Collections.sort(getParameters(), sorter);
     return this.parameters;
   }
-  
-  public List<Parameter> cloneParameters()  {
+
+  public List<Parameter> cloneParameters() {
     List<Parameter> result = new ArrayList<Parameter>(getParameters().size());
-    for(Parameter param : getParameters()){
+    for (Parameter param : getParameters()) {
       result.add(param.clone());
     }
     Collections.sort(result, sorter);
     return result;
   }
+
+  /**
+   * @return the searchTemplating
+   */
+  public boolean isSearchTemplating() {
+    return searchTemplating;
+  }
+
+  /**
+   * @param searchTemplating the searchTemplating to set
+   */
+  public void setSearchTemplating(boolean searchTemplating) {
+    this.searchTemplating = searchTemplating;
+  }
+
 }

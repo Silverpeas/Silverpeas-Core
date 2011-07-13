@@ -281,14 +281,17 @@ Board board = gef.getBoard();
 ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
-int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
+ResourceLocator resourceSearchEngine = new ResourceLocator(
+    "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+
+int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.minChars", 3);
 
 %>
 
 
 <html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
@@ -570,8 +573,8 @@ function deleteUser()
  });
  
 </script>
-</HEAD>
-<BODY onLoad="onLoadStart();">
+</head>
+<body onLoad="onLoadStart();">
 <%
 if (!isPDCSubscription) {
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
@@ -613,9 +616,9 @@ if (!isPDCSubscription) {
 }
 out.println(window.printBefore());
 %>
-<CENTER>
+<center>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
-  <!-- champs cach� pour voir ou non les axes secondaires -->
+  <!-- champs cache pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
   <input type="hidden" name="showNotOnlyPertinentAxisAndValues" value="<%=showNotOnlyPertinentAxisAndValues%>">
   <input type="hidden" name="AxisId">
@@ -638,12 +641,12 @@ out.println(window.printBefore());
       	out.println(frame.printBefore());
       	out.println(board.printBefore());
   %>
-        <TABLE CELLPADDING="5" CELLSPACING="0" BORDER="0" width="100%">
+        <table cellpadding="5" cellspacing="0" border="0" width="100%">
 		<tr>
         	<td valign="top" nowrap align="left" class="txtlibform" width="30%"><%=resource.getString("pdcSubscription.Name")%> :</td>
             <td align="left"><input type="text" name="scName" size="50" maxlength="100" value="<%=scResName%>"><input type="hidden" name="isPDCSubscription" value="true"></td>
         </tr>
-        </TABLE>
+        </table>
   <%    
   		out.println(board.printAfter());
   		out.println("<br>");
@@ -828,7 +831,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
           </td>
         </tr>
         <tr align="center">
-              <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%></span>
+              <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%>
               </td>
               <td align="left">
                 <select name="iCenterId" size="1" onChange="javascript:loadICenter()">
@@ -903,11 +906,11 @@ if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 }
 out.println(frame.printAfter());
 %>
-</CENTER>
 </form>
+</center>
 <%
 	out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

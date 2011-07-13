@@ -25,12 +25,15 @@
 package com.silverpeas.util.template;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
+
+import com.silverpeas.util.template.renderer.DateRenderer;
 
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
@@ -62,6 +65,7 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
   }
 
   protected String applyAttributes(StringTemplate template) {
+    template.registerRenderer(Date.class, new DateRenderer());
     for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
       template.setAttribute(attribute.getKey(), attribute.getValue());
     }

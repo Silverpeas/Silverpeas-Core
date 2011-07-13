@@ -199,4 +199,5 @@
       </help>
     </parameter>
   </parameters>
+  <searchTemplating>true</searchTemplating>  
 </WAComponent>
