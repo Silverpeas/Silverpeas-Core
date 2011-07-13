@@ -22,7 +22,8 @@
       <type>java.util.Date</type>
     </attribute>
     <attribute>
-      <description>The language to use for localizing the date</description>
+      <description>The language to use for localizing the date. If not set, then the resources wrapper
+      usually carried in the request is used.</description>
       <name>language</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -42,7 +43,8 @@
       <type>java.util.Date</type>
     </attribute>
     <attribute>
-      <description>The language to use for localizing the date and time</description>
+      <description>The language to use for localizing the date and time. If not set, then the
+      resources wrapper usually carried in the request is used.</description>
       <name>language</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>

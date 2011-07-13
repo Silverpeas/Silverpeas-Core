@@ -560,7 +560,7 @@ function deleteUser()
 
  $(document).ready(function(){
 		//used for keywords autocompletion
-	    <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
+	    <%  if(resource.getSetting("enableAutocompletion", false)){ %>
 	    $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
 	            minChars: <%=autocompletionMinChars%>,
 	            max: 50,
