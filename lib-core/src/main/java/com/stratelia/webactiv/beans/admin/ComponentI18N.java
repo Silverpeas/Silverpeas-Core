@@ -37,8 +37,9 @@ public class ComponentI18N extends Translation {
   }
 
   public ComponentI18N(String lang, String name, String description) {
-    if (lang != null)
+    if (lang != null) {
       super.setLanguage(lang);
+    }
     this.name = name;
     this.description = description;
   }

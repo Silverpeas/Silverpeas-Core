@@ -38,7 +38,7 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
 
   public List<UserFavoriteSpaceVO> getListUserFavoriteSpace(String userId) {
     List<UserFavoriteSpaceVO> listUserFavoriteSpaces = new ArrayList<UserFavoriteSpaceVO>();
-    SilverpeasBeanDAO dao;
+    SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
     IdPK pk = new IdPK();
     Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces = null;
     String whereClause = " userid = " + userId;
@@ -65,7 +65,7 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
 
   public boolean addUserFavoriteSpace(UserFavoriteSpaceVO ufsVO) {
     boolean result = false;
-    SilverpeasBeanDAO dao;
+    SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
     try {
       if (isUserFavoriteSpaceAlreadyExist(ufsVO.getUserId(), ufsVO.getSpaceId())) {
         result = true;
@@ -85,7 +85,7 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
 
   private boolean isUserFavoriteSpaceAlreadyExist(int userId, int spaceId) {
     boolean exist = false;
-    SilverpeasBeanDAO dao;
+    SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
     IdPK pk = new IdPK();
     Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces = null;
     String whereClause = " userid = " + userId + " AND spaceId = " + spaceId;
@@ -108,7 +108,7 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
 
   public boolean removeUserFavoriteSpace(UserFavoriteSpaceVO ufsVO) {
     boolean result = false;
-    SilverpeasBeanDAO dao;
+    SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
     StringBuffer whereBuff = new StringBuffer();
     int removedUserId = ufsVO.getUserId();
     int removedSpaceId = ufsVO.getSpaceId();
