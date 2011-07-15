@@ -382,25 +382,24 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       getSearchEngineBm().setSpellingWords(null);
       spellingwords = null;
       if (getQueryParameters() != null &&
-          (getQueryParameters().isDefined() || getQueryParameters().
-              getXmlQuery() != null || StringUtil.isDefined(getQueryParameters().getSpaceId()))) {
+          (getQueryParameters().isDefined() || getQueryParameters().getXmlQuery() != null ||
+              StringUtil.isDefined(getQueryParameters().getSpaceId()) || isDataTypeDefined())) {
         query = getQueryParameters().getQueryDescription(getUserId(), "*");
 
         if (componentList == null) {
           buildComponentListWhereToSearch(null, null);
         }
 
-        for (int i = 0; i < componentList.size(); i++) {
-          String curComp = componentList.get(i);
+        for (String curComp : componentList) {
           if (isDataTypeSearch(curComp)) {
-            query.addComponent(componentList.get(i));
+            query.addComponent(curComp);
           }
         }
 
         // Add external components into QueryDescription
         addExternalComponents(query);
 
-        if (getQueryParameters().getSpaceId() == null && ALL_DATA_TYPE.equals(getDataType())) {
+        if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
           // personnels.
           query.addSpaceComponentPair(null, "user@" + getUserId() + "_mailService");
@@ -411,9 +410,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           query.addSpaceComponentPair(null, "Spaces");
           query.addSpaceComponentPair(null, "Components");
           query.addSpaceComponentPair(null, "users");
-        } else {
+        } else if (getQueryParameters().getSpaceId() != null) {
           // used for search by space without keywords
           query.setSearchBySpace(true);
+        } else if (isDataTypeDefined()) {
+          // used for search by component type without keywords
+          query.setSearchByComponentType(true);
         }
 
         SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
@@ -2799,6 +2801,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public void setDataType(String dataType) {
     this.dataType = dataType;
   }
+  
+  public boolean isDataTypeDefined() {
+    return !ALL_DATA_TYPE.equals(dataType);
+  }
 
   /**
    * Add restriction on advanced search data type
@@ -2807,7 +2813,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   public boolean isDataTypeSearch(String curComp) {
     boolean searchOn = false;
-    if (!getDataType().equals(ALL_DATA_TYPE)) {
+    if (isDataTypeDefined()) {
       List<SearchTypeConfigurationVO> configs = getSearchTypeConfig();
       for (SearchTypeConfigurationVO searchTypeConfigurationVO : configs) {
         if (searchTypeConfigurationVO.getConfigId() == Integer.parseInt(getDataType())) {

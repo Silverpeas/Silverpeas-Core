@@ -573,7 +573,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
             "root.MSG_GEN_PARAM_VALUE", "avant search");
         // the query string contains something
         if (searchParameters.isDefined()
-            || (StringUtil.isDefined(searchParameters.getSpaceId()) && !pdcUsedDuringSearch)) {
+            || (StringUtil.isDefined(searchParameters.getSpaceId()) && !pdcUsedDuringSearch)
+            || pdcSC.isDataTypeDefined()) {
           // We have to search objects from classical search and merge it eventually with result
           // from PDC
           MatchingIndexEntry[] ie = pdcSC.search(); // launch the classical research
