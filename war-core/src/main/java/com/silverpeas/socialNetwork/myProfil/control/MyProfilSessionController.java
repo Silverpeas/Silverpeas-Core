@@ -52,6 +52,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -86,9 +87,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * get all RelationShips ids for this user
+   * get all RelationShips ids for this user.
+   * @param: userId
    * @return:List<String>
-   * @param: int myId
    */
   public List<String> getContactsIdsForUser(String userId) {
     try {
@@ -332,8 +333,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         setNotificationContent(notifMetaData, message, "de");
       }
       notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipient(receiverId);
-      // notifMetaData.setLink("http://localhost:8080/silverpeas/defaultLogin.jsp?%2FRkmelia");
+      notifMetaData.addUserRecipient(new UserRecipient(receiverId));
       notificationSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       SilverTrace.error("MyProfilSessionController", "MyProfilSessionController.sendInvitation",
@@ -402,8 +402,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
             "myProfile.invitations.notification.accept.subject", subject), "");
       }
       notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipient(Integer.toString(curRelation.getInviterId()));
-      // notifMetaData.setLink("http://localhost:8080/silverpeas/defaultLogin.jsp?%2FRkmelia");
+      notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(curRelation.getInviterId())));
       notificationSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       SilverTrace.error("MyProfilSessionController", "MyProfilSessionController.sendInvitation",

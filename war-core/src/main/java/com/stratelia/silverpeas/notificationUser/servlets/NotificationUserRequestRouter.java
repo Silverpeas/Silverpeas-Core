@@ -23,14 +23,17 @@
  */
 package com.stratelia.silverpeas.notificationUser.servlets;
 
-
+import com.stratelia.silverpeas.notificationManager.GroupRecipient;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationUser.control.NotificationUserSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -53,9 +56,9 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
    */
   @Override
   public ComponentSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new NotificationUserSessionController(mainSessionCtrl,
-        componentContext);
+            componentContext);
   }
 
   /**
@@ -79,7 +82,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
    */
   @Override
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+          ComponentSessionController componentSC, HttpServletRequest request) {
     // remarques
     // tous les paramètres des la jsp sont transferé par la request.
     // le UserPanel étant unique par session, il est impératif de récupérér
@@ -92,7 +95,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
     String destination = "";
     NotificationUserSessionController nuSC = (NotificationUserSessionController) componentSC;
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "function=" + function);
+            "root.MSG_GEN_PARAM_VALUE", "function=" + function);
 
     String popupMode = null;
     String editTargets = null;
@@ -118,7 +121,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
           selectedIdUsers = nuSC.initTargetsUsers(theTargetsUsers);
           selectedIdGroups = nuSC.initTargetsGroups(theTargetsGroups);
           destination = "/notificationUser/jsp/notificationSender.jsp?popupMode="
-              + popupMode + "&editTargets=" + editTargets;
+                  + popupMode + "&editTargets=" + editTargets;
         } else {
           // appel standard
           destination = "/notificationUser/jsp/notificationSender.jsp";
@@ -134,7 +137,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         editTargets = request.getParameter("editTargets");
         txtTitle = request.getParameter("txtTitle");
         txtMessage = request.getParameter("txtMessage");
-        notificationId = request.getParameter( "notificationId");
+        notificationId = request.getParameter("notificationId");
         priorityId = request.getParameter("priorityId");
         nuSC.setTxtTitle(txtTitle);
         nuSC.setTxtMessage(txtMessage);
@@ -163,19 +166,29 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         destination = "/notificationUser/jsp/notificationSender.jsp" + paramValue.toString();
       } else if (function.startsWith("sendNotif")) {
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
+                "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
         // récupération des donnés sélélectionnées
         String[] selectedIdUsers = request.getParameterValues("selectedUsers");
+        List<UserRecipient> selectUserRecipients = new ArrayList<UserRecipient>(
+                selectedIdUsers.length);
+        for (String selectedIdUser : selectedIdUsers) {
+          selectUserRecipients.add(new UserRecipient(selectedIdUser));
+        }
         String[] selectedIdGroups = request.getParameterValues("selectedGroups");
-
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
-          String nom = (String) e.nextElement();
+        List<GroupRecipient> selectGroupRecipients = new ArrayList<GroupRecipient>(
+                selectedIdGroups.length);
+        for (String selectedIdGroup : selectedIdGroups) {
+          selectGroupRecipients.add(new GroupRecipient(selectedIdGroup));
+        }
+        for (@SuppressWarnings("unchecked") Enumeration<String> e = request.getParameterNames(); e.
+                hasMoreElements();) {
+          String nom = e.nextElement();
           SilverTrace.debug("notificationUser",
-              "NotificationUserRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "nom=" + nom);
+                  "NotificationUserRequestRouter.getDestination()",
+                  "root.MSG_GEN_PARAM_VALUE", "nom=" + nom);
           SilverTrace.debug("notificationUser",
-              "NotificationUserRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "value=" + request.getParameter(nom));
+                  "NotificationUserRequestRouter.getDestination()",
+                  "root.MSG_GEN_PARAM_VALUE", "value=" + request.getParameter(nom));
         }
         popupMode = request.getParameter("popupMode");
         editTargets = request.getParameter("editTargets");
@@ -185,24 +198,24 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         priorityId = request.getParameter("priorityId");
 
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "notificationId=" + notificationId);
+                "root.MSG_GEN_PARAM_VALUE", "notificationId=" + notificationId);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "priorityId=" + priorityId);
+                "root.MSG_GEN_PARAM_VALUE", "priorityId=" + priorityId);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "txtMessage=" + txtMessage);
+                "root.MSG_GEN_PARAM_VALUE", "txtMessage=" + txtMessage);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "txtTitle=" + txtTitle);
+                "root.MSG_GEN_PARAM_VALUE", "txtTitle=" + txtTitle);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "popupMode=" + popupMode);
+                "root.MSG_GEN_PARAM_VALUE", "popupMode=" + popupMode);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "editTargets=" + editTargets);
-        nuSC.sendMessage("", notificationId, priorityId, txtTitle, txtMessage,
-            selectedIdUsers, selectedIdGroups);
+                "root.MSG_GEN_PARAM_VALUE", "editTargets=" + editTargets);
+        nuSC.sendMessage("", notificationId, priorityId, txtTitle, txtMessage, selectUserRecipients,
+                selectGroupRecipients);
         request.setAttribute("SelectedIdUsers", new String[0]);
         request.setAttribute("SelectedIdGroups", new String[0]);
         destination = "/notificationUser/jsp/notificationSender.jsp?Action=sendNotif&"
-            + "notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
-            + popupMode + "&editTargets=" + editTargets + "&compoId=";
+                + "notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
+                + popupMode + "&editTargets=" + editTargets + "&compoId=";
       } else if (function.startsWith("emptyAll")) {
         request.setAttribute("SelectedIdUsers", new String[0]);
         request.setAttribute("SelectedIdGroups", new String[0]);
@@ -210,8 +223,8 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         editTargets = request.getParameter("editTargets");
         popupMode = request.getParameter("popupMode");
         destination = "/notificationUser/jsp/notificationSender.jsp?Action=emptyAll&notificationId"
-            + "=&priorityId=&txtTitle=&txtMessage=&popupMode="
-            + popupMode + "&editTargets=" + editTargets + "&compoId=";
+                + "=&priorityId=&txtTitle=&txtMessage=&popupMode="
+                + popupMode + "&editTargets=" + editTargets + "&compoId=";
       } else {
         destination = "/notificationUser/jsp/" + function;
       }
@@ -220,8 +233,8 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
       destination = "/admin/jsp/errorpageMain.jsp";
     }
     SilverTrace.info("notificationUser",
-        "NotificationUserRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
+            "NotificationUserRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
     return destination;
   }
 }

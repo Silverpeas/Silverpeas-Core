@@ -57,13 +57,5 @@
 				<jndi-name>Silverpeas</jndi-name>
 			</resource-ref>
         </session>
-        <session>
-            <ejb-name>ejb/SubscribeBm</ejb-name>
-            <jndi-name>ejb/SubscribeBm</jndi-name>
-		    <resource-ref>
-				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>Silverpeas</jndi-name>
-	    	</resource-ref>
-        </session>
     </enterprise-beans>
 </jboss>
