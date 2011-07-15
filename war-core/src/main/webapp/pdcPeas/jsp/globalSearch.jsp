@@ -752,9 +752,9 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 		out.println(board.printBefore());
 %>
         <table border="0" cellspacing="0" cellpadding="5" width="100%">
-        <tr align="center">
-          <td valign="top" nowrap align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.DomainSelect")%></td>
-          <td align="left"><select name="spaces" size="1" onChange="javascript:viewAdvancedSearch()">
+        <tr align="center" id="space-filter">
+          <td valign="top" nowrap="nowrap" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.DomainSelect")%></td>
+          <td align="left"><select name="spaces" size="1" onchange="javascript:viewAdvancedSearch()">
             <%
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
 				String			incr	= "";
@@ -768,7 +768,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 					}
 
 					if (space.getFullId().equals(spaceSelected)) {
-						selected = " selected";
+						selected = " selected=\"selected\"";
 					}
 
 					out.println("<option value=\""+space.getFullId()+"\""+selected+">"+incr+space.getName(language)+"</option>");
@@ -777,7 +777,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
              </select></td>
 	    </tr>
         <!-- Affichage des composants -->
-        <tr align="center">
+        <tr align="center" id="component-filter">
 			<%
 				out.println("<td valign=\"top\" nowrap align=\"left\"><span class=\"txtlibform\">"+resource.getString("pdcPeas.ComponentSelect")+"</span></td>");
 				out.println("<td align=\"left\">");
@@ -797,21 +797,21 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 			%>
         </tr>
         <!-- Affichage du type des publications -->
-        <tr align="center" id="searchDataTypeTRID">
+        <tr align="center" id="contribution-type-filter">
           <td valign="top" nowrap align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.searchType")%></span></td>
           <td align="left">
-    <select name="dataType">
-      <option value="0"></option>
-  <c:if test="${not empty dataTypes}">
-    <c:forEach var="dataType" items="${dataTypes}">
-      <option value="<c:out value="${dataType.configId}"/>"><c:out value="${dataType.name}"/></option>
-    </c:forEach>
-  </c:if>
-    </select>
+    		<select name="dataType">
+      			<option value="0"><%=resource.getString("pdcPeas.AllAuthors")%></option>
+  				<c:if test="${not empty dataTypes}">
+    			<c:forEach var="dataType" items="${dataTypes}">
+      				<option value="<c:out value="${dataType.configId}"/>"><c:out value="${dataType.name}"/></option>
+    			</c:forEach>
+  				</c:if>
+    		</select>
           </td>
         </tr>
         
-          <tr align="center">
+          <tr align="center" id="publisher-filter">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.AuthorSelect")%></td>
 				<td align="left">
             <%
@@ -834,19 +834,19 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 					</tr></table>
 			</td>            
         </tr>
-        <tr align="center">
+        <tr align="center" id="creation-date-filter">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.CreateAfterDate")%></td>
           <td align="left"><input type="text" class="dateToPick" name="createafterdate" size="12" value="<%=createAfterDate%>"/>
             <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="createbeforedate" size="12" value="<%=createBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
-        <tr align="center">
+        <tr align="center" id="update-date-filter">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.UpdateAfterDate")%></td>
           <td align="left"><input type="text" class="dateToPick" name="updateafterdate" size="12" value="<%=updateAfterDate%>">
             <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="updatebeforedate" size="12" value="<%=updateBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
-        <tr align="center">
+        <tr align="center" id="favorite-request-filter">
               <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%>
               </td>
               <td align="left">
