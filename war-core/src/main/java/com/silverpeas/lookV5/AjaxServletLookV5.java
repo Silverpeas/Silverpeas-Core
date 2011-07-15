@@ -779,6 +779,14 @@ public class AjaxServletLookV5 extends HttpServlet {
                   + "Main\"/>");
         }
       }
+      
+      // fonctionnalité "Trouver une date"
+      if (settings.getBoolean("scheduleEventVisible", false)) {
+        writer.write("<item id=\"scheduleevent\" name=\""
+                + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
+                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main\"/>");
+      }
 
       if (settings.getBoolean("customVisible", true)) {
         writer.write("<item id=\"personalize\" name=\""
@@ -798,13 +806,6 @@ public class AjaxServletLookV5 extends HttpServlet {
                 "<item id=\"clipboard\" name=\""
                 + EncodeHelper.escapeXml(message.getString("Clipboard"))
                 + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
-      }
-      // fonctionnalité "Trouver une date"
-      if (settings.getBoolean("scheduleEventVisible", false)) {
-        writer.write("<item id=\"scheduleevent\" name=\""
-                + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main\"/>");
       }
 
       if (settings.getBoolean("PersonalSpaceAddingsEnabled", true)) {
