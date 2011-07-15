@@ -44,11 +44,11 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class FileRepositoryManager extends Object {
 
-  final static String s_sUpLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  static String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
-  final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", s_sUpLoadPath +
-      File.pathSeparator + "avatar");
-  static String s_sTempPath = "";
+  final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
+  static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+  final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath +
+      File.separatorChar + "avatar");
+  static String tempPath = "";
   final static ResourceLocator uploadSettings=  new ResourceLocator(
           "com.stratelia.webactiv.util.uploads.uploadSettings", "");
   static final ResourceLocator utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", "");
@@ -57,9 +57,9 @@ public class FileRepositoryManager extends Object {
 
   static {
     try {
-      s_sTempPath = GeneralPropertiesManager.getString("tempPath");
-      if (!s_sTempPath.endsWith(File.separator)) {
-        s_sTempPath = s_sTempPath + File.separatorChar;
+      tempPath = GeneralPropertiesManager.getString("tempPath");
+      if (!tempPath.endsWith(File.separator)) {
+        tempPath = tempPath + File.separatorChar;
       }
     } catch (Exception e) {
       SilverTrace.error("util", "FileRepositoryManager static",
@@ -77,13 +77,13 @@ public class FileRepositoryManager extends Object {
   static public String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
-    return s_sUpLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + File.separator + sComponentId + File.separator;
   }
 
   static public String getAbsolutePath(String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
-    return s_sUpLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + File.separator + sComponentId + File.separator;
   }
   
   static public String getAvatarPath() {
@@ -141,11 +141,11 @@ public class FileRepositoryManager extends Object {
   }
 
   static public String getTemporaryPath() {
-    return s_sTempPath + File.separator;
+    return tempPath + File.separator;
   }
 
   static public String getTemporaryPath(String sSpaceId, String sComponentId) {
-    return s_sTempPath + File.separator;
+    return tempPath + File.separator;
   }
 
   static public String getComponentTemporaryPath(String sComponentId) {
@@ -159,10 +159,10 @@ public class FileRepositoryManager extends Object {
         + sComponentId);
     if (particularSpace != null
         && (particularSpace.startsWith("user@") || particularSpace.equals("transverse"))) {
-      return s_sIndexUpLoadPath + File.separator + particularSpace
+      return indexUpLoadPath + File.separator + particularSpace
           + File.separator + sComponentId + File.separator + "index";
     } else {
-      return s_sIndexUpLoadPath + File.separator + sComponentId
+      return indexUpLoadPath + File.separator + sComponentId
           + File.separator + "index";
     }
   }
@@ -260,7 +260,7 @@ public class FileRepositoryManager extends Object {
         fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Lock.gif";
       }
     }
-    if (small) {
+    if (small && fileIcon != null) {
       String newFileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Small.gif";
       if (newFileIcon != null) {
         fileIcon = newFileIcon;
@@ -352,12 +352,12 @@ public class FileRepositoryManager extends Object {
     String sec = " s";
     String ms = " ms";
     if (size < 1000) {
-      return new Long(size).toString() + ms;
-    } else if (size < 120000) {
-      return new Long(size / 1000).toString() + sec;
-    } else {
-      return new Long(size / 60000).toString() + min;
-    }
+      return String.valueOf(size) + ms;
+    } 
+    if (size < 120000) {
+      return String.valueOf((size / 1000)) + sec;
+    } 
+    return String.valueOf((size / 60000)) + min;
   }
 
   /**
@@ -392,6 +392,6 @@ public class FileRepositoryManager extends Object {
    * @return
    */
   public static String getIndexUpLoadPath() {
-    return s_sIndexUpLoadPath + File.separator;
+    return indexUpLoadPath + File.separator;
   }
 }
