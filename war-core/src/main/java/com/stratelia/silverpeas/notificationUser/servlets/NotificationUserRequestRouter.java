@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * <p/>
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ * <p/>
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p/>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.notificationUser.servlets;
 
@@ -38,12 +35,13 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
+ * <p/>
  * @author
  */
 public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
   /**
-   * 
+   * <p/>
    */
   private static final long serialVersionUID = -5858231857279380747L;
 
@@ -81,17 +79,15 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-          ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, ComponentSessionController componentSC,
+          HttpServletRequest request) {
     // remarques
     // tous les paramètres des la jsp sont transferé par la request.
     // le UserPanel étant unique par session, il est impératif de récupérér
-    // les
-    // objets selectionnés via userPanel et de transporter
+    // les objets selectionnés via userPanel et de transporter
     // les id des ses de jsp en jsp en soumettant un formulaire.
-    // En effet, la notification peut être utilisé "en même temps" qu' le
-    // client
-    // utiliser userPanelPeas. Cela mélange les objets selectionnée.
+    // En effet, la notification peut être utilisée "en même temps" que le
+    // client  utilises userPanelPeas. Cela mélange les objets selectionnée.
     String destination = "";
     NotificationUserSessionController nuSC = (NotificationUserSessionController) componentSC;
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
@@ -114,8 +110,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
         nuSC.resetNotification();
         if (theTargetsUsers != null || theTargetsGroups != null) {// appel pour
-          // notifier
-          // les targets
+          // notifier les targets
           popupMode = request.getParameter("popupMode");
           editTargets = request.getParameter("editTargets");
           selectedIdUsers = nuSC.initTargetsUsers(theTargetsUsers);
@@ -150,7 +145,6 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         // récupération des objets sélélectionnés
         String[] selectedIdUsers = nuSC.getTargetIdUsers();
         String[] selectedIdGroups = nuSC.getTargetIdGroups();
-
         // paramètres jsp
         popupMode = request.getParameter("popupMode");
         editTargets = request.getParameter("editTargets");
@@ -167,7 +161,6 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("sendNotif")) {
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
-        // récupération des donnés sélélectionnées
         String[] selectedIdUsers = request.getParameterValues("selectedUsers");
         List<UserRecipient> selectUserRecipients = new ArrayList<UserRecipient>(
                 selectedIdUsers.length);
@@ -180,14 +173,11 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         for (String selectedIdGroup : selectedIdGroups) {
           selectGroupRecipients.add(new GroupRecipient(selectedIdGroup));
         }
-        for (@SuppressWarnings("unchecked") Enumeration<String> e = request.getParameterNames(); e.
-                hasMoreElements();) {
+        for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
           String nom = e.nextElement();
-          SilverTrace.debug("notificationUser",
-                  "NotificationUserRequestRouter.getDestination()",
+          SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", "nom=" + nom);
-          SilverTrace.debug("notificationUser",
-                  "NotificationUserRequestRouter.getDestination()",
+          SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", "value=" + request.getParameter(nom));
         }
         popupMode = request.getParameter("popupMode");
@@ -232,8 +222,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("notificationUser",
-            "NotificationUserRequestRouter.getDestination()",
+    SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
     return destination;
   }
