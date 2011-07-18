@@ -48,8 +48,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -62,10 +60,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import javax.activation.MimetypesFileTypeMap;
 
 public class AttachmentController {
 
-  static final AttachmentBm attachmentBm = new AttachmentBmImpl();
+  private static AttachmentBm attachmentBm = new AttachmentBmImpl();
   public final static String CONTEXT_ATTACHMENTS = "Attachment" + File.separatorChar + "Images"
       + File.separatorChar;
   // For Office files direct update
@@ -80,6 +79,15 @@ public class AttachmentController {
    * the constructor.
    */
   public AttachmentController() {
+  }
+  
+  /**
+   * the constructor.
+   */
+  public static AttachmentBm changeAttachmentControllerForTests(AttachmentBm attachmentBmForTests) {
+    AttachmentBm oldAttachmentBm = attachmentBm;
+    attachmentBm = attachmentBmForTests;
+    return oldAttachmentBm;
   }
 
   /**
@@ -1078,7 +1086,7 @@ public class AttachmentController {
           copyFileOnServer(attToCopy, copy);
         }
 
-        copy = AttachmentController.createAttachment(copy);
+        copy = createAttachment(copy);
         ids.put(attToCopy.getPK().getId(), copy.getPK().getId());
 
         // Copy translations
@@ -1103,14 +1111,14 @@ public class AttachmentController {
           translationCopy.setLanguage(translation.getLanguage());
 
           type = FileRepositoryManager.getFileExtension(translation.getLogicalName());
-          physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
+          physicalName = java.lang.Long.toString(System.currentTimeMillis()) + "." + type;
           translationCopy.setPhysicalName(physicalName);
 
           attToCopy.setPhysicalName(translation.getPhysicalName());
 
           copyFileOnServer(attToCopy, translationCopy);
 
-          AttachmentController.updateAttachment(translationCopy);
+          updateAttachment(translationCopy);
         }
       }
     }
@@ -1225,7 +1233,7 @@ public class AttachmentController {
       attachmentDetail.setReservationDate(null);
       attachmentDetail.setAlertDate(null);
       attachmentDetail.setExpiryDate(null);
-      AttachmentController.updateAttachment(attachmentDetail, false, invokeCallback);
+      updateAttachment(attachmentDetail, false, invokeCallback);
     } catch (Exception e) {
       SilverTrace.error("attachment", "AttachmentController.checkinOfficeFile()",
           "attachment.CHECKIN_FAILED", e);
@@ -1353,7 +1361,7 @@ public class AttachmentController {
         }
       }
 
-      AttachmentController.updateAttachment(attachmentDetail, false, false);
+      updateAttachment(attachmentDetail, false, false);
     } catch (Exception e) {
       throw new AttachmentRuntimeException(
           "AttachmentController.checkoutFile()",
@@ -1382,7 +1390,7 @@ public class AttachmentController {
     for (AttachmentDetail a : attachments) {
       AttachmentDetail clone = (AttachmentDetail) a.clone();
       // The file must be copied
-      String physicalName = Long.toString(System.currentTimeMillis()) + "." + a.getExtension();
+      String physicalName = java.lang.Long.toString(System.currentTimeMillis()) + "." + a.getExtension();
       clone.setPhysicalName(physicalName);
       copyFileOnServer(a, clone);
       clone.setForeignKey(toForeignKey);

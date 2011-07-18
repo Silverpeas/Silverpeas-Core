@@ -69,9 +69,9 @@ public class AttachmentEntity implements Exposable {
   private String permalink;
 
   public static AttachmentEntity fromAttachment(AttachmentDetail detail) {
-    AttachmentEntity entity = new AttachmentEntity();
+    AttachmentEntity entity = new AttachmentEntity();   
     try {
-      entity.uri = new URI(URLManager.getApplicationURL() + detail.getWebURL());
+      entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId()));
     } catch (URISyntaxException e) {
       throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
               AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
@@ -91,10 +91,14 @@ public class AttachmentEntity implements Exposable {
     return entity;
   }
 
-  public static AttachmentEntity fromAttachment(AttachmentDetail detail, String lang) throws
-          URISyntaxException {
+  public static AttachmentEntity fromAttachment(AttachmentDetail detail, String lang)  {
     AttachmentEntity entity = new AttachmentEntity();
-    entity.uri = new URI(detail.getWebURL());
+    try {
+      entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId()));
+    } catch (URISyntaxException e) {
+      throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
+              AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
+    }
     entity.id = detail.getPK().getId();
     entity.instanceId = detail.getPK().getComponentName();
     entity.logicalName = detail.getLogicalName(lang);
@@ -109,6 +113,17 @@ public class AttachmentEntity implements Exposable {
     entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId());
     return entity;
   }
+  
+  /**
+   * Sets a URI to this entity.
+   * With this URI, it can then be accessed through the Web.
+   * @param uri the web entity URI.
+   * @return itself.
+   */
+  public AttachmentEntity withURI(final URI uri) {
+    this.uri = uri;
+    return this;
+  } 
 
   @Override
   public URI getURI() {
