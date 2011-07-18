@@ -68,6 +68,9 @@ public class PdcBmMock extends PdcBmImpl {
   @Override
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId) throws
       PdcException {
+    if (silverObjectId < 0) {
+      return new ArrayList<ClassifyPosition>();
+    }
     String contentId = getContentIdOf(silverObjectId);
     assertContentExists(contentId, in(sComponentId));
     return aListOfPositions();
@@ -112,6 +115,9 @@ public class PdcBmMock extends PdcBmImpl {
 
   @Override
   public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
+    if (!instanceId.equals(COMPONENT_INSTANCE_ID)) {
+      return new ArrayList<UsedAxis>();
+    }
     ClassificationPlan pdc = aClassificationPlan();
     return pdc.getAxis();
   }

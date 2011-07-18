@@ -114,6 +114,8 @@ public class PdcClassificationResource extends RESTWebService {
    * indempotent as defined in the HTTP specification.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the resource PdC classification, a 403 is returned.
+   * If the position is the single one for the content on the PdC and the PdC contains at least one
+   * mandatory axis, a 409 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param positionId the unique identifier of the position to delete in the classification of
    * the requested resource.
@@ -123,7 +125,13 @@ public class PdcClassificationResource extends RESTWebService {
   public void deletePdcPosition(@PathParam("positionId") int positionId) {
     checkUserPriviledges();
     try {
-      pdcServiceProvider().deletePosition(positionId, inComponentOfId(getComponentId()));
+      pdcServiceProvider().deletePosition(positionId, forContentOfId(getContentId()),
+              inComponentOfId(getComponentId()));
+    } catch(ContentManagerException ex) {
+      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
+    } catch (PdcPositionDeletionException ex) {
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage());
+      throw new WebApplicationException(Status.CONFLICT);
     } catch (PdcException ex) {
       Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
     } catch (Exception ex) {
@@ -215,7 +223,8 @@ public class PdcClassificationResource extends RESTWebService {
     }
   }
 
-  private PdcClassificationEntity thePdcClassificationOfTheRequestedResource(final URI uri) throws Exception {
+  private PdcClassificationEntity thePdcClassificationOfTheRequestedResource(final URI uri) throws
+          Exception {
     UserPreferences userPreferences = getUserPreferences();
     List<ClassifyPosition> contentPositions = pdcServiceProvider().getAllPositions(
             forContentOfId(getContentId()),
@@ -235,7 +244,7 @@ public class PdcClassificationResource extends RESTWebService {
   private PdcServiceProvider pdcServiceProvider() {
     return pdcServiceProvider;
   }
-  
+
   private static URI identifiedBy(final URI uri) {
     return uri;
   }

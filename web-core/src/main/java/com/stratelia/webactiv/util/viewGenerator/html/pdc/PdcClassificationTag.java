@@ -147,8 +147,8 @@ public class PdcClassificationTag extends TagSupport {
   private String executePlugin() throws JspTagException {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
-    String script = "$('#classification').pdc({resource: {context: '" + context + "', component: '" +
-            getComponentId() + "', content: '" + getContentId() + "'}, title: '" +
+    String script = "$('#classification').pdc('open', {resource: {context: '" + context + "', " +
+            "component: '" + getComponentId() + "', content: '" + getContentId() + "'}, title: '" +
             resources.getString("GML.PDC") + "', positionLabel: '" +
             resources.getString("pdcPeas.position") + "'";
     if (isEditable()) {
@@ -158,7 +158,9 @@ public class PdcClassificationTag extends TagSupport {
               resources.getString("pdcPeas.notVariants") + "'}, addition: {title: '" +
               resources.getString("GML.PDCNewPosition") + "'}, update: {title: '" +
               resources.getString("GML.modify") + "'}, deletion: {confirmation: '" +
-              resources.getString("pdcPeas.confirmDeleteAxis") + "', title: '" +
+              resources.getString("pdcPeas.confirmDeleteAxis") + "', cannotBeDeleted: \"" + 
+              resources.getString("pdcPeas.theContent") + " " +
+              resources.getString("pdcPeas.MustContainsMandatoryAxis") + "\", title: '" +
               resources.getString("GML.PDCDeletePosition") + "'}});";
     } else {
       script += ", mode: 'view'});";

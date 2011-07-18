@@ -27,7 +27,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import static com.silverpeas.pdc.web.TestConstants.*;
 
 /**
  * A matcher of PdcEntity objects to be used in unit tests.

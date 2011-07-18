@@ -25,7 +25,7 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.rest.RESTWebService;
-import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.util.List;
 import javax.inject.Inject;
@@ -89,31 +89,34 @@ public class PdcResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public PdcEntity getPdcForClassification(@QueryParam("contentId") String content) {
     checkUserPriviledges();
-    if (isDefined(content)) {
-      try {
-        List<UsedAxis> axis = pdcServiceProvider().getAxisUsedInPdcToClassify(
+    try {
+      List<UsedAxis> axis;
+      if (isDefined(content)) {
+        axis = pdcServiceProvider().getAxisUsedInPdcToClassify(
                 content,
                 inComponentOfId(getComponentId()));
-        UserPreferences userPreferences = getUserPreferences();
-        UserThesaurusHolder withThesaurus = NoThesaurus;
-        if (userPreferences.isThesaurusEnabled()) {
-          withThesaurus = pdcServiceProvider().getThesaurusOfUser(getUserDetail());
-        }
-        return aPdcEntity(
-                withAxis(axis),
-                inLanguage(userPreferences.getLanguage()),
-                atURI(getUriInfo().getRequestUri()),
-                withThesaurus);
-      } catch (PdcException ex) {
-        throw new WebApplicationException(ex, Status.NOT_FOUND);
-      } catch (Exception ex) {
-        throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+
+      } else {
+        axis = pdcServiceProvider().getAxisUsedInPdcFor(getComponentId());
       }
-    } else {
-      throw new WebApplicationException(Status.BAD_REQUEST);
+
+      UserPreferences userPreferences = getUserPreferences();
+      UserThesaurusHolder withThesaurus = NoThesaurus;
+      if (userPreferences.isThesaurusEnabled()) {
+        withThesaurus = pdcServiceProvider().getThesaurusOfUser(getUserDetail());
+      }
+      return aPdcEntity(
+              withAxis(axis),
+              inLanguage(userPreferences.getLanguage()),
+              atURI(getUriInfo().getRequestUri()),
+              withThesaurus);
+    } catch (ContentManagerException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
-
+  
   @Override
   protected String getComponentId() {
     return componentId;

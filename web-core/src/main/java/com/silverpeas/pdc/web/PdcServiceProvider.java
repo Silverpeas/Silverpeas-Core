@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.List;
 import javax.inject.Inject;
@@ -109,13 +110,25 @@ public class PdcServiceProvider {
   }
 
   /**
-   * Deletes the specified position on the PdC of the specified component instance.
+   * Deletes the specified position of the specified resource content on the PdC configured for the
+   * specified component instance.
    * @param positionId the identifier of the position to delete.
    * @param componentId the identifier of the component that owns the PdC instance.
    * @throws PdcException if the position or the component identifier doesn't exist or if
    * the deletion fails.
    */
-  public void deletePosition(int positionId, String componentId) throws PdcException {
+  public void deletePosition(int positionId, String contentId, String componentId) throws
+          PdcException, ContentManagerException {
+    List<UsedAxis> axis = getAxisUsedInPdcFor(componentId);
+    List<ClassifyPosition> positions = getAllPositions(contentId, componentId);
+    if (positions.size() == 1) {
+      for (UsedAxis anAxis : axis) {
+        if (anAxis.getMandatory() == 1) {
+          throw new PdcPositionDeletionException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR,
+                  "Pdc.CANNOT_DELETE_VALUE");
+        }
+      }
+    }
     getPdcBm().deletePosition(positionId, componentId);
   }
 
@@ -136,21 +149,32 @@ public class PdcServiceProvider {
   }
 
   /**
-   * Gets the axis used in the PdC configured for the specified component identifier in order to
+   * Gets the axis used in the PdC configured for the specified component instance in order to
    * classify the specified resource content. If the resource content is already classified, then
-   * the positions of the resource content on the invariant axis are kept as only possible position. 
+   * the positions of the resource content on the invariant axis are kept as the only possible value
+   * on theses axis. 
    * @param contentId the identifier of the content to classify (or to refine the classification). 
    * It is used to find its previous classification in order to fix the value of the invariant axis.
-   * @param componentId the identifier of the component instance.
+   * @param inComponentId the identifier of the component instance.
    * @return a list of used axis.
    * @throws ContentManagerException if no such content or component instance exists with the
    * specified identifier.
    * @throws PdcException if the axis cannot be fetched.
    */
-  public List<UsedAxis> getAxisUsedInPdcToClassify(String contentId, String componentId)
+  public List<UsedAxis> getAxisUsedInPdcToClassify(String contentId, String inComponentId)
           throws ContentManagerException, PdcException {
-    int silverObjectId = getSilverObjectId(contentId, componentId);
-    return getPdcBm().getUsedAxisToClassify(componentId, silverObjectId);
+    int silverObjectId = getSilverObjectId(contentId, inComponentId);
+    return getPdcBm().getUsedAxisToClassify(inComponentId, silverObjectId);
+  }
+
+  /**
+   * Gets the axis used in the PdC configured for the specified Silverpeas component instance.
+   * @param componentId the unique identifier of the component instance.
+   * @return a list of axis used in the PdC configured for the component instance.
+   * @throws PdcException if the axis cannot be fetched.
+   */
+  public List<UsedAxis> getAxisUsedInPdcFor(String componentId) throws PdcException {
+    return getPdcBm().getUsedAxisToClassify(componentId, -1);
   }
 
   /**

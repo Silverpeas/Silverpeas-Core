@@ -23,6 +23,7 @@
  */
 package com.silverpeas.pdc.web;
 
+import java.util.List;
 import com.silverpeas.pdc.web.beans.PdcClassification;
 import javax.inject.Named;
 import com.silverpeas.pdc.web.mock.PdcBmMock;
@@ -34,11 +35,8 @@ import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import javax.inject.Inject;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
@@ -123,6 +121,44 @@ public class TestResources {
             atURI(URI.create(CLASSIFICATION_URI))).
             withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser));
   }
+  
+  public String toJSON(final PdcClassificationEntity classification) {
+    StringBuilder builder = new StringBuilder("{\"positions\":[");
+    List<PdcPositionEntity> positions = classification.getClassificationPositions();
+    for (int p = 0; p < positions.size(); p++) {
+      PdcPositionEntity position = classification.getClassificationPositions().get(p);
+      List<PdcPositionValue> values = position.getPositionValues();
+      if (p > 0) {
+        builder.append(",");
+      }
+      builder.append("{\"uri\":\"").append(position.getURI()).append("\",\"id\":\"").append(position.
+              getId()).append("\",\"values\": [");
+      for (int v = 0; v < values.size(); v++) {
+        PdcPositionValue value = values.get(v);
+        List<String> synonyms = value.getSynonyms();
+        if (v > 0) {
+          builder.append(",");
+        }
+        builder.append("{\"id\":\"").append(value.getId()).append("\",\"axisId\":\"").append(value.
+                getAxisId()).append("\",\"treeId\":\"").append(value.getTreeId()).append(
+                "\",\"meaning\":\"").append(value.getMeaning()).append("\"");
+        if (!value.getSynonyms().isEmpty()) {
+          builder.append(",\"synonyms\":[");
+          for (int s = 0; s < synonyms.size(); s++) {
+            if (s > 0) {
+              builder.append(",");
+            }
+            builder.append("\"").append(synonyms.get(s)).append("\"");
+          }
+          builder.append("]");
+        }
+        builder.append("}");
+      }
+      builder.append("]}");
+    }
+    builder.append("]}");
+    return builder.toString();
+  }
 
   /**
    * Enables the thesaurus for the users used in the tests. Once enabled, the synonyms for each
@@ -133,11 +169,6 @@ public class TestResources {
     UserPreferences prefs = personalization.getUserSettings(USER_ID);
     prefs.enableThesaurus(true);
     personalization.saveUserSettings(prefs);
-  }
-  
-  private void saveAPdCFor(String componentId) {
-    List<UsedAxis> pdcAxis = new ArrayList<UsedAxis>();
-    UsedAxis axis = new UsedAxis(0, componentId, 0, 0, 0, 1);
   }
 
 }

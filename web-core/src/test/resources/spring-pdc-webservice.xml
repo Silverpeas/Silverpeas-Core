@@ -38,5 +38,8 @@
   <ctx:component-scan base-package="com.silverpeas.pdc.web"/>
   <import resource="spring-personalization.xml" />
   <import resource="spring-jdbc-datasource.xml" />
+  
+  <bean id="pdcWebServiceProvider" class="com.silverpeas.pdc.web.PdcWebServiceProvider"
+        factory-method="aWebServiceProvider"/>
 </beans>
 

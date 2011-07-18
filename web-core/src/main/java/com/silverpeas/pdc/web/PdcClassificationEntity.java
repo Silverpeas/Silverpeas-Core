@@ -36,6 +36,7 @@ import java.util.TreeSet;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * The PdC classification entity represents the web entity of the classification of a Silverpeas's
@@ -214,8 +215,15 @@ public class PdcClassificationEntity implements Exposable {
 
     @Override
     public int compare(PdcPositionEntity t, PdcPositionEntity t1) {
-      return t.getId().compareTo(t1.getId());
+      if (isIdDefined(t) && isIdDefined(t1)) {
+        return t.getId().compareTo(t1.getId());
+      } else {
+       return t.hashCode() - t1.hashCode();
+      }
     }
-    
+  }
+  
+  private static boolean isIdDefined(final PdcPositionEntity position) {
+    return isDefined(position.getId()) && !position.getId().equals("-1");
   }
 }

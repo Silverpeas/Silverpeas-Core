@@ -24,15 +24,15 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import java.util.List;
-import com.silverpeas.pdc.web.mock.PdcBmMock;
-import javax.ws.rs.core.Response.Status;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import org.junit.Test;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import com.silverpeas.rest.ResourceGettingTest;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import java.net.URI;
 import javax.inject.Inject;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -44,40 +44,37 @@ import static com.silverpeas.pdc.web.PdcEntityMatcher.*;
  * Unit tests on the getting of the PdC configured for a given component instance.
  */
 public class PdcGettingTest extends ResourceGettingTest {
-  
+
   @Inject
   private TestResources resources;
   private String sessionKey;
   private UserDetail theUser;
-  
+
   public PdcGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
-  
+
   @Before
   public void setUpUserSessionAndPdC() {
     theUser = aUser();
     sessionKey = authenticate(theUser);
   }
-  
+
   @Test
-  @Override
-  public void gettingAnUnexistingResource() {
-    try {
-      getAt(anUnexistingResourceURI(), getWebEntityClass());
-      fail("A user shouldn't get an unexisting resource");
-    } catch (UniformInterfaceException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int badRequest = Status.BAD_REQUEST.getStatusCode();
-      assertThat(receivedStatus, is(badRequest));
-    }
-  }
-  
-  @Test
-  public void gettingAPdC() {
+  public void gettingThePdcToClassifyAContent() throws Exception {
     PdcEntity pdc = getAt(aResourceURI(), aPdcEntity());
     assertNotNull(pdc);
-    assertThat(pdc, is(equalTo(pdc)));
+    PdcEntity expectedPdc = toWebEntity(theExpectedPdcFor(CONTENT_ID),
+            withURI(PDC_URI + "?contentId=" + CONTENT_ID));
+    assertThat(pdc, is(equalTo(expectedPdc)));
+  }
+
+  @Test
+  public void gettingThePdcOfAComponentInstance() throws Exception {
+    PdcEntity pdc = getAt(PDC_PATH_WITH_NO_CONTENT, aPdcEntity());
+    PdcEntity expectedPdc = toWebEntity(theExpectedPdc(), withURI(PDC_URI));
+    assertNotNull(pdc);
+    assertThat(pdc, is(equalTo(expectedPdc)));
   }
 
   @Override
@@ -104,12 +101,28 @@ public class PdcGettingTest extends ResourceGettingTest {
   public Class<?> getWebEntityClass() {
     return PdcEntity.class;
   }
-  
+
   public Class<PdcEntity> aPdcEntity() {
     return PdcEntity.class;
   }
-  
-  public PdcEntity toWebEntity(List<UsedAxis> axis) throws ThesaurusException {
-    return PdcEntity.aPdcEntity(axis, FRENCH, null, resources.aThesaurusHolderFor(theUser));
+
+  public PdcEntity toWebEntity(List<UsedAxis> axis, String uri) throws ThesaurusException {
+    return PdcEntity.aPdcEntity(axis, FRENCH, URI.create(uri), resources.aThesaurusHolderFor(
+            theUser));
+  }
+
+  protected List<UsedAxis> theExpectedPdcFor(String contentId) throws ContentManagerException,
+          PdcException {
+    int silverObjectId = resources.getContentManager().getSilverContentId(contentId,
+            COMPONENT_INSTANCE_ID);
+    return resources.getPdcService().getUsedAxisToClassify(COMPONENT_INSTANCE_ID, silverObjectId);
+  }
+
+  protected List<UsedAxis> theExpectedPdc() throws PdcException {
+    return resources.getPdcService().getUsedAxisByInstanceId(COMPONENT_INSTANCE_ID);
+  }
+
+  protected static String withURI(String uri) {
+    return uri;
   }
 }

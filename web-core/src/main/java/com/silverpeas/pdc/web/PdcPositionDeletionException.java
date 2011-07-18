@@ -23,23 +23,35 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.rest.RESTWebServiceTest;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 
 /**
- * All the constants that are be used in unit tests.
+ * An exception that is thrown when a position onto a PdC cannot be deleted within a given context
+ * (for example, the PdC contains some mandatory axis and the position is the only one in the 
+ * classification of a resource onto the PdC).
  */
-public interface TestConstants {
-  
-  static final String USER_ID = RESTWebServiceTest.USER_ID_IN_TEST;
-  static final String COMPONENT_INSTANCE_ID = "kmelia2";
-  static final String CONTENT_ID = "1";
-  static final String CONTENT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
-  static final String CONTENT_PDC_PATH = "pdc/" +COMPONENT_INSTANCE_ID + "?contentId=" + CONTENT_ID;
-  static final String PDC_PATH_WITH_NO_CONTENT = "pdc/" +COMPONENT_INSTANCE_ID;
-  static final String UNKNOWN_CONTENT_PDC_PATH = "pdc/kmelia3?contentId=2";
-  static final String UNKNOWN_CONTENT_CLASSIFICATION_PATH = "pdc/kmelia3/2";
-  static final String FRENCH = "fr";
-  static final String CLASSIFICATION_URI = "http://localhost:9998/silverpeas/" + CONTENT_CLASSIFICATION_PATH;
-  static final String PDC_URI = "http://localhost:9998/silverpeas/" + PDC_PATH_WITH_NO_CONTENT;
+public class PdcPositionDeletionException extends PdcException {
+  private static final long serialVersionUID = -8201782942233535224L;
+
+  public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
+          String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
+          Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
+          String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
+
+  public PdcPositionDeletionException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
+
+
   
 }
