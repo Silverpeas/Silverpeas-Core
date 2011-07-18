@@ -16,6 +16,8 @@
   <st_group_user_rel groupid="2" userid="3"/>
   <st_group_user_rel groupid="3" userid="4"/>
   <st_group_user_rel groupid="3" userid="5"/>
+
+  <sb_stat_accesscumul datestat="2010-11-01" userid="5" countaccess="12" peastype="kmelia" spaceid="WA18" componentid="kmelia26"/>
   
   <sb_stat_accesscumul datestat="2011-01-01" userid="1" countaccess="34" peastype="kmelia" spaceid="WA18" componentid="kmelia26"/>
   <sb_stat_accesscumul datestat="2011-01-01" userid="2" countaccess="5" peastype="kmelia" spaceid="WA18" componentid="kmelia26"/>

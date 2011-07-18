@@ -61,7 +61,8 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
   public void testGetVolumeYears() throws Exception {
     Collection<String> result = SilverStatisticsPeasDAOAccesVolume.getAccessYears();
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(1));
+    assertThat(result.size(), is(2));
+    assertThat(result, hasItem("2010"));
     assertThat(result, hasItem("2011"));
   }
 
@@ -246,8 +247,8 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
     List<String[]> result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("SPACE",
             entityId, groupId, userId);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    String[] stats = result.get(1);
+    assertThat(result.size(), is(8));
+    String[] stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
     assertThat(stats[1], is("5"));
   }
@@ -259,17 +260,17 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
     List<String[]> result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("SPACE",
             entityId, groupId, null);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    String[] stats = result.get(1);
+    assertThat(result.size(), is(8));
+    String[] stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
-    assertThat(stats[1], is("18"));
+    assertThat(stats[1], is("137"));
 
     groupId = "3";
     result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("SPACE", entityId, groupId,
             null);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    stats = result.get(1);
+    assertThat(result.size(), is(8));
+    stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
     assertThat(stats[1], is("62"));
   }
@@ -280,8 +281,8 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
     List<String[]> result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("",
             entityId, null, null);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    String[] stats = result.get(1);
+    assertThat(result.size(), is(8));
+    String[] stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
     assertThat(stats[1], is("129"));
   }
@@ -294,8 +295,8 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
     List<String[]> result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("",
             entityId, groupId, userId);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    String[] stats = result.get(1);
+    assertThat(result.size(), is(8));
+    String[] stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
     assertThat(stats[1], is("5"));
   }
@@ -307,16 +308,16 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
     List<String[]> result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("",
             entityId, groupId, null);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    String[] stats = result.get(1);
+    assertThat(result.size(), is(8));
+    String[] stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
-    assertThat(stats[1], is("10"));
+    assertThat(stats[1], is("129"));
 
     groupId = "3";
     result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("", entityId, groupId, null);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    stats = result.get(1);
+    assertThat(result.size(), is(8));
+    stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
     assertThat(stats[1], is("62"));
   }
@@ -327,8 +328,8 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
     List<String[]> result = SilverStatisticsPeasDAOAccesVolume.getStatsUserEvolution("SPACE",
             entityId, null, null);
     assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(6));
-    String[] stats = result.get(1);
+    assertThat(result.size(), is(8));
+    String[] stats = result.get(3);
     assertThat(stats[0], is("2011-02-01"));
     assertThat(stats[1], is("137"));
   }
