@@ -29,6 +29,7 @@ import java.util.Set;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 
 /**
  * Interface declaration
@@ -36,7 +37,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
  */
 public interface SendedNotificationInterface {
 
-  public void saveNotifUser(NotificationMetaData metaData, Set<String> usersSet)
+  public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
       throws NotificationManagerException;
 
   public List<SendedNotificationDetail> getAllNotifByUser(String userId)

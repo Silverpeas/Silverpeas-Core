@@ -85,6 +85,7 @@ import com.stratelia.silverpeas.pdcPeas.vo.ComponentVO;
 import com.stratelia.silverpeas.pdcPeas.vo.ExternalSPConfigVO;
 import com.stratelia.silverpeas.pdcPeas.vo.ResultFilterVO;
 import com.stratelia.silverpeas.pdcPeas.vo.ResultGroupFilter;
+import com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -183,6 +184,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<ExternalSPConfigVO> externalServers = null;
   private String curServerName = null;
 
+  // Component search type
+  public static final String ALL_DATA_TYPE = "0";
+  private String dataType = null;
+  private List<SearchTypeConfigurationVO> dataSearchTypes = null;
+
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
@@ -232,7 +238,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String url = getSettings().getString(prefixKey + cptSrv + urlKey);
         String components = getSettings().getString(prefixKey + cptSrv + filterKey);
         String[] componentsArray = components.split(",");
-        externalServers.add(new ExternalSPConfigVO(srvName, cptSrv, path, 
+        externalServers.add(new ExternalSPConfigVO(srvName, cptSrv, path,
             Arrays.asList(componentsArray), url));
         // Loop increase
         cptSrv++;
@@ -376,22 +382,24 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       getSearchEngineBm().setSpellingWords(null);
       spellingwords = null;
       if (getQueryParameters() != null &&
-          (getQueryParameters().isDefined() || getQueryParameters().
-              getXmlQuery() != null || StringUtil.isDefined(getQueryParameters().getSpaceId()))) {
+          (getQueryParameters().isDefined() || getQueryParameters().getXmlQuery() != null ||
+              StringUtil.isDefined(getQueryParameters().getSpaceId()) || isDataTypeDefined())) {
         query = getQueryParameters().getQueryDescription(getUserId(), "*");
 
         if (componentList == null) {
           buildComponentListWhereToSearch(null, null);
         }
 
-        for (int i = 0; i < componentList.size(); i++) {
-          query.addComponent(componentList.get(i));
+        for (String curComp : componentList) {
+          if (isDataTypeSearch(curComp)) {
+            query.addComponent(curComp);
+          }
         }
 
         // Add external components into QueryDescription
         addExternalComponents(query);
 
-        if (getQueryParameters().getSpaceId() == null) {
+        if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
           // personnels.
           query.addSpaceComponentPair(null, "user@" + getUserId() + "_mailService");
@@ -402,9 +410,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           query.addSpaceComponentPair(null, "Spaces");
           query.addSpaceComponentPair(null, "Components");
           query.addSpaceComponentPair(null, "users");
-        } else {
+        } else if (getQueryParameters().getSpaceId() != null) {
           // used for search by space without keywords
           query.setSearchBySpace(true);
+        } else if (isDataTypeDefined()) {
+          // used for search by component type without keywords
+          query.setSearchByComponentType(true);
         }
 
         SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
@@ -414,8 +425,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         query.setQuery(getSynonymsQueryString(originalQuery));
 
         getSearchEngineBm().search(query);
-        plainSearchResults = getSearchEngineBm().getRange(0,
-            getSearchEngineBm().getResultLength());
+        plainSearchResults = getSearchEngineBm().getRange(0, getSearchEngineBm().getResultLength());
         // spelling words
         if (getSettings().getBoolean("enableWordSpelling", false)) {
           spellingwords = getSearchEngineBm().getSpellingWords();
@@ -1094,109 +1104,113 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return new ArrayList<GlobalSilverResult>();
     }
 
+    // Initialize loop variables
     String title = null;
     String place = null;
-
     LinkedList<String> returnedObjects = new LinkedList<String>();
     Hashtable<String, String> places = null;
-
     List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
-
     String componentId = null;
     MatchingIndexEntry result = null;
+
+    // Retrieve list of object type filter
+    List<String> objectTypeFilter = getListObjectTypeFilter();
     for (int i = 0; i < matchingIndexEntries.size(); i++) {
       result = matchingIndexEntries.get(i);
+      boolean processThisResult = processResult(result, objectTypeFilter);
 
-      // reinitialisation
-      title = result.getTitle();
-      componentId = result.getComponent();
+      if (processThisResult) {
+        // reinitialisation
+        title = result.getTitle();
+        componentId = result.getComponent();
 
-      GlobalSilverResult gsr = new GlobalSilverResult(result);
+        GlobalSilverResult gsr = new GlobalSilverResult(result);
 
-      SilverTrace.info("pdcPeas",
-          "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
-          "root.MSG_GEN_PARAM_VALUE", "title= " + title);
+        SilverTrace.info("pdcPeas",
+            "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
+            "root.MSG_GEN_PARAM_VALUE", "title= " + title);
 
-      // WARNING : LINE BELOW HAS BEEN ADDED TO NOT SHOW WYSIWYG ALONE IN SEARCH
-      // RESULT PAGE
-      if (title.endsWith("wysiwyg.txt")
-          && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
-        continue;
-      }
-
-      // Added by NEY - 22/01/2004
-      // Some explanations to lines below
-      // If a publication have got the word "truck" in its title and an
-      // associated wysiwyg which content the same word
-      // The search engine will return 2 same lines (One for the publication and
-      // the other for the wysiwyg)
-      // Following lines filters one and only one line. The choice between both
-      // lines is not important.
-      if ("Wysiwyg".equals(result.getObjectType())) {
-        // We must search if the eventual associated Publication have not been
-        // already added to the result
-        String objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
-              + result.getComponent();
-        if (returnedObjects.contains(objectIdAndObjectType)) {
-          // the Publication have already been added
+        // WARNING : LINE BELOW HAS BEEN ADDED TO NOT SHOW WYSIWYG ALONE IN SEARCH
+        // RESULT PAGE
+        if (title.endsWith("wysiwyg.txt")
+            && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
           continue;
-        } else {
-          objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
-                + result.getComponent();
-          returnedObjects.add(objectIdAndObjectType);
         }
-      } else if ("Publication".equals(result.getObjectType())) {
-        // We must search if the eventual associated Wysiwyg have not been
-        // already added to the result
-        String objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
-              + result.getComponent();
-        if (returnedObjects.contains(objectIdAndObjectType)) {
-          // the Wysiwyg have already been added
-          continue;
-        } else {
-          objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
-                + result.getComponent();
-          returnedObjects.add(objectIdAndObjectType);
-        }
-      }
 
-      // Check if it's an external search before searching components information
-      if (isExternalComponent(result.getServerName())) {
-        place = getString("pdcPeas.external.search.label") + " ";
-        place += getExternalServerLabel(result.getServerName());
-      } else {
-        // preparation sur l'emplacement du document
-        if (componentId.startsWith("user@")) {
-          UserDetail user = getOrganizationController().getUserDetail(
-              componentId.substring(5, componentId.indexOf("_")));
-          String component = componentId.substring(componentId.indexOf("_") + 1);
-          place = user.getDisplayedName() + " / " + component;
-        } else if (componentId.equals("pdc")) {
-          place = getString("pdcPeas.pdc");
-        } else if (componentId.equals("users")) {
-          place = "";
-        } else {
-          if (places == null) {
-            places = new Hashtable<String, String>();
+        // Added by NEY - 22/01/2004
+        // Some explanations to lines below
+        // If a publication have got the word "truck" in its title and an
+        // associated wysiwyg which content the same word
+        // The search engine will return 2 same lines (One for the publication and
+        // the other for the wysiwyg)
+        // Following lines filters one and only one line. The choice between both
+        // lines is not important.
+        if ("Wysiwyg".equals(result.getObjectType())) {
+          // We must search if the eventual associated Publication have not been
+          // already added to the result
+          String objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
+                + result.getComponent();
+          if (returnedObjects.contains(objectIdAndObjectType)) {
+            // the Publication have already been added
+            continue;
+          } else {
+            objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
+                  + result.getComponent();
+            returnedObjects.add(objectIdAndObjectType);
           }
+        } else if ("Publication".equals(result.getObjectType())) {
+          // We must search if the eventual associated Wysiwyg have not been
+          // already added to the result
+          String objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
+                + result.getComponent();
+          if (returnedObjects.contains(objectIdAndObjectType)) {
+            // the Wysiwyg have already been added
+            continue;
+          } else {
+            objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
+                  + result.getComponent();
+            returnedObjects.add(objectIdAndObjectType);
+          }
+        }
 
-          place = places.get(componentId);
+        // Check if it's an external search before searching components information
+        if (isExternalComponent(result.getServerName())) {
+          place = getString("pdcPeas.external.search.label") + " ";
+          place += getExternalServerLabel(result.getServerName());
+        } else {
+          // preparation sur l'emplacement du document
+          if (componentId.startsWith("user@")) {
+            UserDetail user = getOrganizationController().getUserDetail(
+                componentId.substring(5, componentId.indexOf("_")));
+            String component = componentId.substring(componentId.indexOf("_") + 1);
+            place = user.getDisplayedName() + " / " + component;
+          } else if (componentId.equals("pdc")) {
+            place = getString("pdcPeas.pdc");
+          } else if (componentId.equals("users")) {
+            place = "";
+          } else {
+            if (places == null) {
+              places = new Hashtable<String, String>();
+            }
 
-          if (place == null) {
-            ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
-                componentId);
-            if (componentInst != null) {
-              place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
-                  + componentInst.getLabel(getLanguage());
-              places.put(componentId, place);
+            place = places.get(componentId);
+
+            if (place == null) {
+              ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+                  componentId);
+              if (componentInst != null) {
+                place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
+                    + componentInst.getLabel(getLanguage());
+                places.put(componentId, place);
+              }
             }
           }
+          String userId = result.getCreationUser();
+          gsr.setCreatorName(getCompleteUserName(userId));
         }
-        String userId = result.getCreationUser();
-        gsr.setCreatorName(getCompleteUserName(userId));
+        gsr.setLocation(place);
+        results.add(gsr);
       }
-      gsr.setLocation(place);
-      results.add(gsr);
     }
     if (places != null) {
       places.clear();
@@ -1204,15 +1218,56 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return results;
   }
 
+  /**
+   * @return list of current object type filter if exists, null else if
+   */
+  private List<String> getListObjectTypeFilter() {
+    // Retrieve object type filter
+    List<String> objectTypeFilter = null;
+    if (!PdcSearchSessionController.ALL_DATA_TYPE.equals(this.dataType)) {
+      for (SearchTypeConfigurationVO configVO : this.dataSearchTypes) {
+        if (configVO.getConfigId() == Integer.parseInt(getDataType())) {
+          return configVO.getTypes();
+        }
+      }
+    }
+    return objectTypeFilter;
+  }
+
+  /**
+   * @param result the MatchingIndexEntry to process
+   * @param objectTypeFilter the list of objectTypeFilter string
+   * @return true if we process this result and add the GlobalSilverResult to the result list
+   */
+  private boolean processResult(MatchingIndexEntry result, List<String> objectTypeFilter) {
+    // Default loop variable
+    boolean processThisResult = true;
+
+    // Check if we filter this object type or not before doing any data processing
+    if (objectTypeFilter != null && objectTypeFilter.size() > 0) {
+      // If object type filter is defined, change processThisResult default value.
+      processThisResult = false;
+      for (String objType : objectTypeFilter) {
+        if (result.getObjectType().equalsIgnoreCase(objType)) {
+          processThisResult = true;
+        }
+      }
+    }
+    return processThisResult;
+  }
+
+  /**
+   * @param serverName the server name
+   * @return true if it's an external component, false else if
+   */
   private boolean isExternalComponent(String serverName) {
     if (StringUtil.isDefined(curServerName) && !curServerName.equalsIgnoreCase(serverName)) {
       return true;
     }
     return false;
   }
-  
+
   /**
-   * 
    * @param serverName
    * @return the server label
    */
@@ -1220,13 +1275,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String srvLabel = "";
     boolean srvFound = false;
     if (StringUtil.isDefined(serverName)) {
-      for (ExternalSPConfigVO extSrv: externalServers) {
+      for (ExternalSPConfigVO extSrv : externalServers) {
         if (serverName.equalsIgnoreCase(extSrv.getName())) {
           srvLabel = getString("external.search.server." + extSrv.getConfigOrder() + ".label");
           srvFound = true;
         }
       }
-    } 
+    }
     if (!srvFound) {
       srvLabel = getString("pdcPeas.external.search.unknown");
     }
@@ -1417,8 +1472,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<String> getCurrentComponentIds() {
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.getCurrentComponentIds()",
+    SilverTrace.info("pdcPeas", "PdcSearchSessionController.getCurrentComponentIds()",
         "root.MSG_GEN_ENTER_METHOD");
     String componentId = null;
     for (int i = 0; componentList != null && i < componentList.size(); i++) {
@@ -2695,8 +2749,86 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public boolean isEnableExternalSearch() {
     return isEnableExternalSearch;
   }
-  
+
   private List<String> getCopyOfInstanceIds() {
     return new ArrayList<String>(componentList);
   }
+
+  /**
+   * Retrieve configuration from properties file
+   * @return a list of search type configuration value object
+   */
+  public List<SearchTypeConfigurationVO> getSearchTypeConfig() {
+    if (dataSearchTypes == null) {
+      List<SearchTypeConfigurationVO> configs = new ArrayList<SearchTypeConfigurationVO>();
+
+      int cpt = 1;
+      String postConfigKey = "search.type.";
+      String componentsValue = getSettings().getString(postConfigKey + cpt + ".components", "");
+      while (StringUtil.isDefined(componentsValue)) {
+        String typesValue = getSettings().getString(postConfigKey + cpt + ".types", "");
+        String nameValue = getString(postConfigKey + cpt + ".label");
+
+        List<String> listComponents = Arrays.asList(componentsValue.split(","));
+        List<String> listTypes = new ArrayList<String>();
+        if (StringUtil.isDefined(typesValue)) {
+          listTypes = Arrays.asList(typesValue.split(","));
+        }
+        configs.add(new SearchTypeConfigurationVO(cpt, nameValue, listComponents, listTypes));
+
+        // Loop variable update
+        cpt++;
+        componentsValue = getSettings().getString(postConfigKey + cpt + ".components", "");
+      }
+      dataSearchTypes = configs;
+    }
+    return dataSearchTypes;
+  }
+
+  /**
+   * @return the dataType search
+   */
+  public String getDataType() {
+    if (!StringUtil.isDefined(dataType)) {
+      dataType = ALL_DATA_TYPE;
+    }
+    return dataType;
+  }
+
+  /**
+   * @param dataType the dataType search to set
+   */
+  public void setDataType(String dataType) {
+    this.dataType = dataType;
+  }
+  
+  public boolean isDataTypeDefined() {
+    return !ALL_DATA_TYPE.equals(dataType);
+  }
+
+  /**
+   * Add restriction on advanced search data type
+   * @param curComp the current component identifier
+   * @return true if search engine must search through this component, false else if
+   */
+  public boolean isDataTypeSearch(String curComp) {
+    boolean searchOn = false;
+    if (isDataTypeDefined()) {
+      List<SearchTypeConfigurationVO> configs = getSearchTypeConfig();
+      for (SearchTypeConfigurationVO searchTypeConfigurationVO : configs) {
+        if (searchTypeConfigurationVO.getConfigId() == Integer.parseInt(getDataType())) {
+          List<String> components = searchTypeConfigurationVO.getComponents();
+          for (String authorizedComponent : components) {
+            if (curComp.startsWith(authorizedComponent)) {
+              return true;
+            }
+          }
+        }
+      }
+    } else {
+      searchOn = true;
+    }
+    return searchOn;
+  }
+
 }
