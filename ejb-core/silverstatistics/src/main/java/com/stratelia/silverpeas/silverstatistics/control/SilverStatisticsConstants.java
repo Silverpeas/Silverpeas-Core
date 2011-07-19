@@ -28,6 +28,4 @@ public interface SilverStatisticsConstants {
   
   public static final String SEPARATOR = "&&&";
 
-  public static final int ACCESS_TYPE_READ = 0;
-  public static final int ACCESS_TYPE_WRITE = 1;
 }
