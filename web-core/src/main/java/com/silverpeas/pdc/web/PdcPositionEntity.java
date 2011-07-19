@@ -51,7 +51,7 @@ import static com.silverpeas.util.StringUtil.*;
 public class PdcPositionEntity implements Exposable {
 
   private static final long serialVersionUID = 6314816355055147378L;
-  @XmlElement
+  @XmlElement(required=true)
   private List<PdcPositionValue> values = new ArrayList<PdcPositionValue>();
   @XmlElement(defaultValue="")
   private URI uri;

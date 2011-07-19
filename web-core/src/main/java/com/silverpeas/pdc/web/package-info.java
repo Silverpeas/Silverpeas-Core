@@ -23,8 +23,9 @@
  */
 
 /**
- * Provides the REST web service that handle requests about positions of a given resource in
- * the classification plan in Silverpeas (PdC).
- * The resource is one managed by Silverpeas: a publication, an event, ...
+ * Provides the REST web services to perform some operations onto the classification plan (named PdC)
+ * for a Silverpeas component instance. Currently, two web resources are published: one to manage 
+ * the classification of a content and another one to handle the axis used for the classification in
+ * a given component instance.
  */
 package com.silverpeas.pdc.web;

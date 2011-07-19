@@ -35,8 +35,8 @@ import static com.silverpeas.util.StringUtil.*;;
  * A value of an axis is a term in the vocabulary of the concept represented by the axis, and it is
  * related to the base value of the axis; It can be either a parent or a child of the axis base value. 
  * 
- * As the axis can be made up of hierarchical semantic trees, a term can belong to a such tree. In
- * that case, its level attribute indicates its position in the tree from the root.
+ * As the axis is a tree, its values can be refined by its branches. As such, the value can also be
+ * a part of an axis branch whose its level attribute indicates its position in the tree from the root.
  */
 @XmlRootElement
 public class PdcAxisValue extends PdcValue {

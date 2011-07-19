@@ -340,6 +340,17 @@ public interface PdcBm {
    */
   public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
 
+  /**
+   * Gets the axis used by the specified component instance to classify the specified Silverpeas
+   * object. If there is no axis configured to be used in the component instance, then all PdC axis
+   * are returned as axis that can be used for classifying a content. If the content is already
+   * classified, then the values on invariant axis are used as invariant values.
+   * @param instanceId the unique identifier of the component instance.
+   * @param silverObjectId the Silverpeas object identifier representing the content to classify.
+   * @return a list of axis to use in the classification of a content.
+   * @throws PdcException if an error occurs while getting the PdC axis for the specified component
+   * instance.
+   */
   public List<UsedAxis> getUsedAxisToClassify(String instanceId, int silverObjectId)
       throws PdcException;
 

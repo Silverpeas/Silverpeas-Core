@@ -37,8 +37,8 @@ import java.util.List;
 /**
  * A web entity representing the classification plan (named PdC). The classification plan can be
  * either the one modeled for the Silverpeas system or the one parametrized for a given Silverpeas
- * component instance. In the last case, it defines the axis that can be used in the classification
- * of a resource managed by the component instance.
+ * component instance. It defines the axis that can be used in the classification
+ * of a resource managed by a component instance.
  */
 @XmlRootElement
 public class PdcEntity implements Exposable {

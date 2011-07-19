@@ -187,7 +187,8 @@
     /**
      * Gets the positions of the resource on the PdC. If no positions were set during the use of
      * this plugin, then fetch them from the remote web service. The positions are sent back as
-     * the attribute of an object (a classification): {positions: [...]}
+     * the attribute of an object (a classification): {positions: [...]}. If the resource isn't
+     * classified onto the PdC, then null is returned.
      */
     positions: function( options ) {
       var $this = $(this);
@@ -197,7 +198,11 @@
           $this.data('classification', classification);
         })
       }
-      return $this.data('classification');
+      var classification = $this.data('classification');
+      if (classification.positions.length == 0) {
+        classification = null;
+      }
+      return classification;
     },
     
     /**
@@ -299,8 +304,8 @@
       name: settings.edition.ok
     }).html(settings.edition.ok).click(function() {
       var position = aPositionWith(selection);
-      if (isNotAlreadyInClassification($this, position)) {
-        var classification = $this.data('classification');
+      var classification = $this.data('classification');
+      if (isNotAlreadyInClassification(position, classification) && position.values.length > 0) {
         classification.positions.push(position);
         refreshClassification($this);
       }
@@ -324,7 +329,8 @@
           text: settings.edition.ok,
           click: function() {
             var position = aPositionWith(selection);
-            if(isNotAlreadyInClassification($this, position)) {
+            if(isNotAlreadyInClassification(position, $this.data('classification')) &&
+                position.values.length > 0) {
               submitPosition( $this, position );
             }
           }
@@ -413,7 +419,7 @@
   }
   
   /**
-   * Submit a set of new or updated positions into the classification of the resource on the PdC.
+   * Submit a new or an updated position into the classification of the resource on the PdC.
    */
   function submitPosition( $this, position ) {
     var method = "POST", uri = settings.classificationURI;
@@ -458,9 +464,9 @@
   /**
    * Checks if the specified position is already defined in the classification.
    */
-  function isNotAlreadyInClassification( $this, thePosition) {
+  function isNotAlreadyInClassification( thePosition, inClassification) {
     var isNotFound = true;
-    var positions = $this.data('classification').positions;
+    var positions = inClassification.positions;
     for (var p = 0; p < positions.length; p++) {
       if (positions[p].values.length == thePosition.values.length) {
         for (var v = 0; v < thePosition.values.length; v++) {

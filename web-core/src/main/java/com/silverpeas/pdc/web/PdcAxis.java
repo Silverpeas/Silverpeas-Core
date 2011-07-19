@@ -34,11 +34,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
- * An axis of the classification plan (named PdC). A PdC axis is defined by an identifier and
- * it is made up of a set of values. An axis in the PdC generally defines  a concept (a meaning) or
- * a categorization of resources. As such, axis' values are either some terms of the concept or an
- * hierarchic semantic tree in which the meaning of a concept can be refined in one or more branches.
- * For example, the values in the concept geography can be a tree in which each geographic area are
+ * An axis of the classification plan (named PdC). A PdC axis is defined by an identifier and it is
+ * made up of a set of values.
+ * 
+ * An axis in the PdC generally defines a concept (a meaning) or a categorization of contents in
+ * Silverpeas. An axis of the PdC is a tree whose the leaves are the values. The axis can have several
+ * branches, each of them representing then an hierarchic semantic tree carrying a refinement of a
+ * meaning (of a value).
+ * For example, the values in the concept 'geography' can be a tree in which each geographic area are
  * divided into countries -> regions or states -> departments or regions -> towns.
  */
 @XmlRootElement

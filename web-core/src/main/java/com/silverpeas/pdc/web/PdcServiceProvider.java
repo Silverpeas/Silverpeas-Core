@@ -152,7 +152,9 @@ public class PdcServiceProvider {
    * Gets the axis used in the PdC configured for the specified component instance in order to
    * classify the specified resource content. If the resource content is already classified, then
    * the positions of the resource content on the invariant axis are kept as the only possible value
-   * on theses axis. 
+   * on theses axis.
+   * In the case no axis are specifically used for the component instance, then all the PdC axis
+   * are sent back as axis that can be used to classify the specified content.
    * @param contentId the identifier of the content to classify (or to refine the classification). 
    * It is used to find its previous classification in order to fix the value of the invariant axis.
    * @param inComponentId the identifier of the component instance.
