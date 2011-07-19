@@ -164,7 +164,6 @@ public class CommentAuthorEntity implements Serializable {
     } else {
       this.avatar = userDetail.getAvatar();
     }
-    this.avatar = userDetail.getAvatar();
     UserPreferences prefs = getUserPreferences();
     if (prefs != null) {
       this.language = prefs.getLanguage();

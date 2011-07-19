@@ -21,43 +21,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.personalization.service;
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-package com.stratelia.webactiv.util.subscribe.control;
-
-import javax.ejb.EJBHome;
-import javax.ejb.CreateException;
-import java.rmi.RemoteException;
-
-/*
- * CVS Informations
- * 
- * $Id: SubscribeBmHome.java,v 1.1.1.1 2002/08/06 14:47:53 nchaix Exp $
- * 
- * $Log: SubscribeBmHome.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.2  2001/12/26 14:27:42  nchaix
- * no message
- *
- */
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.util.Default;
+import javax.inject.Named;
 
 /**
- * Interface declaration
- * @author
+ *
+ * @author emmanuel.hugonnet@silverpeas.org
  */
-public interface SubscribeBmHome extends EJBHome {
+@Named
+@Default
+public class MockablePersonalizationService implements PersonalizationService {
+private PersonalizationService service;
 
-  /**
-   * Method declaration
-   * @return
-   * @throws CreateException
-   * @throws RemoteException
-   * @see
-   */
-  SubscribeBm create() throws RemoteException, CreateException;
+  public void setPersonalizationService(PersonalizationService questionManager) {
+    this.service = questionManager;
+  }
+
+  public PersonalizationService getPersonalizationService() {
+    return service;
+  }
+  @Override
+  public void saveUserSettings(UserPreferences userPreferences) {
+    service.saveUserSettings(userPreferences);
+  }
+
+  @Override
+  public UserPreferences getUserSettings(String userId) {
+    return service.getUserSettings(userId);
+  }
 
 }

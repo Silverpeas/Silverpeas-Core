@@ -24,12 +24,16 @@
 
 package com.stratelia.silverpeas.alertUserPeas.control;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import java.util.Arrays;
 
 import com.stratelia.silverpeas.alertUser.AlertUser;
+import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -49,7 +53,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 public class AlertUserPeasSessionController extends AbstractComponentSessionController {
   protected AlertUser m_AlertUser = null;
   protected Selection m_Selection = null;
-  protected NotificationSender m_NotificationSender = null;
+  protected NotificationSender notificationSender = null;
   protected String m_Context = "";
   protected UserDetail[] m_userRecipients;
   protected Group[] m_groupRecipients;
@@ -70,7 +74,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
         "ApplicationURL");
     m_AlertUser = getAlertUser();
     m_Selection = getSelection();
-    m_NotificationSender = new NotificationSender(null);
+    notificationSender = new NotificationSender(null);
   }
 
   public void init() {
@@ -146,14 +150,16 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
 
   public void prepareNotification(String message) {
     NotificationMetaData notifMetaData = getNotificationMetaData();
-    notifMetaData.addUserRecipients(SelectionUsersGroups
-        .getUserIds(getUserRecipients()));
-    notifMetaData.addGroupRecipients(SelectionUsersGroups
-        .getGroupIds(getGroupRecipients()));
-    if (message != null && message.trim().length() > 0
-        && (getUserRecipients().length > 0 || getGroupRecipients().length > 0)) {
-      setNotificationContent(message, "fr");
-      setNotificationContent(message, "en");
+    for(String userId : SelectionUsersGroups.getUserIds(getUserRecipients())) {
+      notifMetaData.addUserRecipient(new UserRecipient(userId));
+    }    
+    for(String groupId : SelectionUsersGroups.getGroupIds(getGroupRecipients())) {
+      notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
+    }
+    if (StringUtil.isDefined(message)&& (getUserRecipients().length > 0 || getGroupRecipients().length > 0)) {
+      for (String language : I18NHelper.getAllSupportedLanguages()) {
+         setNotificationContent(message, language);
+      }
     }
   }
   
@@ -163,14 +169,11 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
 
   public void sendNotification() {
     try {
-      SilverTrace.info("alertUserPeas",
-          "AlertUserPeasSessionController.sendNotification()",
-          "root.MSG_GEN_PARAM_VALUE", "content_en = "
-              + getNotificationMetaData().getContent("en"));
-      m_NotificationSender.notifyUser(getNotificationMetaData());
+      SilverTrace.info("alertUserPeas", "AlertUserPeasSessionController.sendNotification()",
+          "root.MSG_GEN_PARAM_VALUE", "content_en = " + getNotificationMetaData().getContent("en"));
+      notificationSender.notifyUser(getNotificationMetaData());
     } catch (NotificationManagerException e) {
-      SilverTrace.warn("alertUserPeas",
-          "AlertUserPeasSessionController.sendNotification()",
+      SilverTrace.warn("alertUserPeas", "AlertUserPeasSessionController.sendNotification()",
           "root.EX_NOTIFY_USERS_FAILED", e);
     }
   }

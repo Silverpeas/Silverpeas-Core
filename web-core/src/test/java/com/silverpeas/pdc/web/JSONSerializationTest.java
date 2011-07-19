@@ -61,6 +61,7 @@ public class JSONSerializationTest {
   @Before
   public void setUp() {
     assertNotNull(resources);
+    resources.init();
   }
 
   @After

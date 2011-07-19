@@ -56,6 +56,8 @@ public class PdcGettingTest extends ResourceGettingTest {
 
   @Before
   public void setUpUserSessionAndPdC() {
+    resources.init();
+    resources.enableThesaurus();
     theUser = aUser();
     sessionKey = authenticate(theUser);
   }

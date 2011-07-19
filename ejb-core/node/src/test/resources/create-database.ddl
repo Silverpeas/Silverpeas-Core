@@ -59,3 +59,10 @@ ALTER TABLE sb_coordinates_coordinates ADD
 		instanceId
 	)   
 ;
+
+CREATE TABLE subscribe (
+	actorId varchar(100) NOT NULL ,
+	nodeId int NOT NULL ,
+	space varchar(50) NOT NULL ,
+	componentName varchar(50) NOT NULL
+);

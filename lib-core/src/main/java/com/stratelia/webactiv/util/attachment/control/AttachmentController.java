@@ -65,7 +65,7 @@ import java.util.Vector;
 
 public class AttachmentController {
 
-  private static final AttachmentBm attachmentBm = new AttachmentBmImpl();
+  static final AttachmentBm attachmentBm = new AttachmentBmImpl();
   public final static String CONTEXT_ATTACHMENTS = "Attachment" + File.separatorChar + "Images"
       + File.separatorChar;
   // For Office files direct update
@@ -609,7 +609,10 @@ public class AttachmentController {
     try {
       AttachmentDetail attachDetail = attachmentBm.
           getAttachmentByPrimaryKey(pk);
-      deleteAttachment(attachDetail, invokeCallback);
+      if(attachDetail != null) {
+        //l'attachment existe bien toujours en base
+        deleteAttachment(attachDetail, invokeCallback);
+      }
 
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(

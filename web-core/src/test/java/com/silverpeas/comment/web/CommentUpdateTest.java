@@ -53,6 +53,7 @@ public class CommentUpdateTest extends ResourceUpdateTest {
   @Before
   public void createAUserAndAComment() {
     assertNotNull(testResources);
+    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
     Comment commentToUseInTest = theUser(user).commentTheResource(CONTENT_ID).inComponent(

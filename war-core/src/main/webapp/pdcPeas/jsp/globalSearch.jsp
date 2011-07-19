@@ -28,14 +28,19 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<c:set var="dataTypes" value="${requestScope.ComponentSearchType}"></c:set>
+
 <%!
 
 String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, int axisId) throws ThesaurusException {
 	String synonyms = "";
 	boolean first = true;
-	if (jargon != null && activeThesaurus.booleanValue()) {//activ�
+	if (jargon != null && activeThesaurus.booleanValue()) {//activated
 		//synonymes du terme
 		String				idUser			= jargon.getIdUser();
 		ThesaurusManager	thesaurus		= new ThesaurusManager();
@@ -61,7 +66,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, Value value)
 	boolean first		= true;
 	String	idTree		= value.getTreeId();
 	String	idTerm		= value.getPK().getId();
-	if (jargon != null && activeThesaurus.booleanValue()) {//activ�
+	if (jargon != null && activeThesaurus.booleanValue()) {//activated
 		//synonymes du terme
 		String				idUser			= jargon.getIdUser();
 		ThesaurusManager	thesaurus		= new ThesaurusManager();
@@ -202,8 +207,9 @@ String			sortOrder			= (String) request.getAttribute("SortOrder");
 List			webTabs				= (List) request.getAttribute("WebTabs");
 
 boolean isXmlSearchVisible = false;
-if (XmlSearch != null)
+if (XmlSearch != null) {
 	isXmlSearchVisible = XmlSearch.booleanValue();
+}
 
 if (activeSelection == null) {
 	activeSelection = new Boolean(false);
@@ -255,7 +261,7 @@ if (updateBeforeDate == null)
   	updateBeforeDate = "";
 
 
-//r�cup�ration des donn�es pour l'espace de recherche
+// Retrieve data search space
 Vector searchDomains			= (Vector) request.getAttribute("searchDomains");
 String currentSearchDomainId	= (String) request.getAttribute("currentSearchDomainId");
 currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
@@ -263,8 +269,9 @@ currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSe
 boolean			isEmptySearchContext = true;
 SearchCriteria	searchCriteria		= null;
 
-if (showSndSearchAxis == null)
+if (showSndSearchAxis == null) {
     showSndSearchAxis = "NO";
+}
 
 // l'objet SearchContext n'est pas vide
 if (searchContext != null && searchContext.getCriterias().size() > 0){
@@ -282,16 +289,13 @@ ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
-
 %>
 
 
 <html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel />
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -557,7 +561,7 @@ function deleteUser()
 
  $(document).ready(function(){
 		//used for keywords autocompletion
-	    <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
+	    <%  if(resource.getSetting("enableAutocompletion", false)){ %>
 	    $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
 	            minChars: <%=autocompletionMinChars%>,
 	            max: 50,
@@ -570,8 +574,8 @@ function deleteUser()
  });
  
 </script>
-</HEAD>
-<BODY onLoad="onLoadStart();">
+</head>
+<body onLoad="onLoadStart();">
 <%
 if (!isPDCSubscription) {
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
@@ -613,7 +617,7 @@ if (!isPDCSubscription) {
 }
 out.println(window.printBefore());
 %>
-<CENTER>
+<center>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
   <!-- champs cach� pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
@@ -638,12 +642,12 @@ out.println(window.printBefore());
       	out.println(frame.printBefore());
       	out.println(board.printBefore());
   %>
-        <TABLE CELLPADDING="5" CELLSPACING="0" BORDER="0" width="100%">
+        <table cellpadding="5" cellspacing="0" border="0" width="100%">
 		<tr>
         	<td valign="top" nowrap align="left" class="txtlibform" width="30%"><%=resource.getString("pdcSubscription.Name")%> :</td>
             <td align="left"><input type="text" name="scName" size="50" maxlength="100" value="<%=scResName%>"><input type="hidden" name="isPDCSubscription" value="true"></td>
         </tr>
-        </TABLE>
+        </table>
   <%    
   		out.println(board.printAfter());
   		out.println("<br>");
@@ -748,9 +752,9 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 		out.println(board.printBefore());
 %>
         <table border="0" cellspacing="0" cellpadding="5" width="100%">
-        <tr align="center">
-          <td valign="top" nowrap align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.DomainSelect")%></td>
-          <td align="left"><select name="spaces" size="1" onChange="javascript:viewAdvancedSearch()">
+        <tr align="center" id="space-filter">
+          <td valign="top" nowrap="nowrap" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.DomainSelect")%></td>
+          <td align="left"><select name="spaces" size="1" onchange="javascript:viewAdvancedSearch()">
             <%
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
 				String			incr	= "";
@@ -764,7 +768,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 					}
 
 					if (space.getFullId().equals(spaceSelected)) {
-						selected = " selected";
+						selected = " selected=\"selected\"";
 					}
 
 					out.println("<option value=\""+space.getFullId()+"\""+selected+">"+incr+space.getName(language)+"</option>");
@@ -772,9 +776,9 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
              %>
              </select></td>
 	    </tr>
+        <!-- Affichage des composants -->
+        <tr align="center" id="component-filter">
 			<%
-				// Affichage des composants
-				out.println("<tr align=\"center\">");
 				out.println("<td valign=\"top\" nowrap align=\"left\"><span class=\"txtlibform\">"+resource.getString("pdcPeas.ComponentSelect")+"</span></td>");
 				out.println("<td align=\"left\">");
 				out.println("<select name=\"componentSearch\" size=1 onChange=\"javascript:viewAdvancedSearch()\">");
@@ -790,9 +794,24 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 				}
 				out.println("</select>");
 				out.println("</td>");
-				out.println("</tr>");
 			%>
-          <tr align="center">
+        </tr>
+        <!-- Affichage du type des publications -->
+        <tr align="center" id="contribution-type-filter">
+          <td valign="top" nowrap align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.searchType")%></span></td>
+          <td align="left">
+    		<select name="dataType">
+      			<option value="0"><%=resource.getString("pdcPeas.AllAuthors")%></option>
+  				<c:if test="${not empty dataTypes}">
+    			<c:forEach var="dataType" items="${dataTypes}">
+      				<option value="<c:out value="${dataType.configId}"/>"><c:out value="${dataType.name}"/></option>
+    			</c:forEach>
+  				</c:if>
+    		</select>
+          </td>
+        </tr>
+        
+          <tr align="center" id="publisher-filter">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.AuthorSelect")%></td>
 				<td align="left">
             <%
@@ -815,20 +834,20 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 					</tr></table>
 			</td>            
         </tr>
-        <tr align="center">
+        <tr align="center" id="creation-date-filter">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.CreateAfterDate")%></td>
           <td align="left"><input type="text" class="dateToPick" name="createafterdate" size="12" value="<%=createAfterDate%>"/>
             <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="createbeforedate" size="12" value="<%=createBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
-        <tr align="center">
+        <tr align="center" id="update-date-filter">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.UpdateAfterDate")%></td>
           <td align="left"><input type="text" class="dateToPick" name="updateafterdate" size="12" value="<%=updateAfterDate%>">
             <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="updatebeforedate" size="12" value="<%=updateBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
-        <tr align="center">
-              <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%></span>
+        <tr align="center" id="favorite-request-filter">
+              <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%>
               </td>
               <td align="left">
                 <select name="iCenterId" size="1" onChange="javascript:loadICenter()">
@@ -903,11 +922,11 @@ if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 }
 out.println(frame.printAfter());
 %>
-</CENTER>
 </form>
+</center>
 <%
 	out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

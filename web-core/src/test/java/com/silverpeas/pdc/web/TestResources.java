@@ -29,7 +29,9 @@ import javax.inject.Named;
 import com.silverpeas.pdc.web.mock.PdcBmMock;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.pdc.web.mock.ContentManagerMock;
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
@@ -41,6 +43,7 @@ import javax.inject.Inject;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Resources required by the unit tests on the PdC web resources.
@@ -63,7 +66,9 @@ public class TestResources {
   private ThesaurusManager thesaurusManager;
   @Inject
   ContentManagerMock contentManager;
-
+  @Inject
+  MockablePersonalizationService personalizationService;
+  
   /**
    * Gets the PdC business service used in tests.
    * @return a PdcBm object.
@@ -87,6 +92,17 @@ public class TestResources {
    */
   public UserThesaurusHolder aThesaurusHolderFor(final UserDetail user) {
     return UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser(user));
+  }
+  
+  /**
+   * Initializes the resources required for tests.
+   */
+  public void init() {
+    PersonalizationService personalization = mock(PersonalizationService.class);
+    UserPreferences preferences = new UserPreferences(USER_ID, "", "", false, true, true,
+            UserMenuDisplay.DISABLE);
+    when(personalization.getUserSettings(USER_ID)).thenReturn(preferences);
+    personalizationService.setPersonalizationService(personalization);
   }
 
   /**
@@ -165,10 +181,10 @@ public class TestResources {
    * value of the PdC axis will be fetched from the users thesaurus.
    */
   public void enableThesaurus() {
-    PersonalizationService personalization = SilverpeasServiceProvider.getPersonalizationService();
-    UserPreferences prefs = personalization.getUserSettings(USER_ID);
-    prefs.enableThesaurus(true);
-    personalization.saveUserSettings(prefs);
+    PersonalizationService personalization = personalizationService.getPersonalizationService();
+    UserPreferences preferences = new UserPreferences(USER_ID, "", "", true, true, true,
+            UserMenuDisplay.DISABLE);
+    when(personalization.getUserSettings(USER_ID)).thenReturn(preferences);
   }
 
 }

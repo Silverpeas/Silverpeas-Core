@@ -24,11 +24,17 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.personalization.service.MockablePersonalizationService;
+import javax.inject.Inject;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.web.mock.DefaultCommentServiceMock;
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.mockito.Mockito.*;
 
 /**
  * Resources required by all the unit tests on the comment web resource.
@@ -45,6 +51,8 @@ public class CommentTestResources {
   public static final String INVALID_RESOURCE_PATH = "comments/kmelia100/3";
   @Autowired
   private DefaultCommentServiceMock commentService;
+  @Inject
+  private MockablePersonalizationService personalisationService;
 
   /**
    * Gets the comment service used in tests.
@@ -52,6 +60,17 @@ public class CommentTestResources {
    */
   public CommentService getCommentService() {
     return commentService;
+  }
+
+  /**
+   * Initializes the resources required by the unit tests.
+   */
+  public void init() {
+    PersonalizationService personalization = mock(PersonalizationService.class);
+    UserPreferences prefs = new UserPreferences("fr", "", "", false, true, true,
+            UserMenuDisplay.DISABLE);
+    when(personalization.getUserSettings(anyString())).thenReturn(prefs);
+    personalisationService.setPersonalizationService(personalization);
   }
 
   /**
@@ -63,7 +82,7 @@ public class CommentTestResources {
     return new CommentBuilder().withUser(user);
   }
 
-  public void save(final Comment ... comments) {
+  public void save(final Comment... comments) {
     for (Comment comment : comments) {
       commentService.createComment(comment);
     }

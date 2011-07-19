@@ -187,8 +187,9 @@ public class WAIndexSearcher {
           booleanQuery.add(getMultiFieldQuery(query, searcher), BooleanClause.Occur.MUST);
         } else {
           RangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
-          if (!StringUtil.isDefined(query.getQuery()) && query.isSearchBySpace()
-                  && !query.isPeriodDefined()) {
+          if (!StringUtil.isDefined(query.getQuery()) &&
+              (query.isSearchBySpace() || query.isSearchByComponentType()) &&
+              !query.isPeriodDefined()) {
             // realizes the search on space without keywords indicated by the user
             String beginDate = "1900/01/01";
             String endDate = "2200/01/01";

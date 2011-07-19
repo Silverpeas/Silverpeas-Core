@@ -65,6 +65,7 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest {
   @Before
   public void setUpUserSessionAndPdCClassifications() {
     assertNotNull(testResources);
+    testResources.init();
     theUser = aUser();
     sessionKey = authenticate(theUser);
     testResources.enableThesaurus();

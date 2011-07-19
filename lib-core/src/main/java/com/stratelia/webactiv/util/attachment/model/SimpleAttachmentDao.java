@@ -43,33 +43,25 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.UtilException;
 
-public class AttachmentDAO {
+public class SimpleAttachmentDao implements AttachmentDao {
 
   private static String attachmentTableName = "SB_Attachment_Attachment";
   private static String attachmentTableColumns =
-      " attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, "
+          " attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, "
           + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
           + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
   private final static int nameMaxLength = 100;
+  private static final String SELECT_BY_PRIMARY_KEY = "SELECT attachmentId, attachmentPhysicalName,"
+          + " attachmentLogicalName, attachmentDescription, attachmentType, attachmentSize, "
+          + "attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, "
+          + "attachmentAuthor, attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, "
+          + "lang, reservationDate, alertDate, expiryDate, xmlForm FROM sb_attachment_attachment WHERE "
+          + "attachmentId = ? ";
 
-  private static final String SELECT_BY_PRIMARY_KEY =
-      "SELECT attachmentId, attachmentPhysicalName,"
-          +
-          " attachmentLogicalName, attachmentDescription, attachmentType, attachmentSize, "
-          +
-          "attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, "
-          +
-          "attachmentAuthor, attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, "
-          +
-          "lang, reservationDate, alertDate, expiryDate, xmlForm FROM sb_attachment_attachment WHERE "
-          +
-          "attachmentId = ? ";
-
-  public AttachmentDAO() {
+  public SimpleAttachmentDao() {
   }
 
-  private static AttachmentDetail result2AttachmentDetail(ResultSet rs)
-      throws SQLException {
+  private AttachmentDetail result2AttachmentDetail(ResultSet rs) throws SQLException {
     String instanceId = rs.getString("instanceId");
     String id = Integer.toString(rs.getInt("attachmentId"));
     AttachmentPK pk = new AttachmentPK(id, instanceId);
@@ -88,9 +80,8 @@ public class AttachmentDAO {
         attachDetail.setCreationDate(DateUtil.parse(rs.getString("attachmentCreationDate")));
       } catch (java.text.ParseException e) {
         throw new SQLException(
-            "AttachmentDAO.result2AttachmentDetail() : internal error : creationDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+                "AttachmentDAO.result2AttachmentDetail() : internal error : creationDate format unknown for attachment.pk = "
+                + pk + " : " + e.toString());
       }
     } else {
       attachDetail.setCreationDate(new Date());
@@ -103,7 +94,7 @@ public class AttachmentDAO {
     attachDetail.setInstanceId(instanceId);
 
     AttachmentPK fk = new AttachmentPK(rs.getString("attachmentForeignKey"),
-        instanceId);
+            instanceId);
     attachDetail.setForeignKey(fk);
 
     attachDetail.setCloneId(rs.getString("cloneId"));
@@ -116,9 +107,8 @@ public class AttachmentDAO {
         attachDetail.setReservationDate(DateUtil.parse(rs.getString("reservationDate")));
       } catch (java.text.ParseException e) {
         throw new SQLException(
-            "AttachmentDAO.result2AttachmentDetail() : internal error : reservationDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+                "AttachmentDAO.result2AttachmentDetail() : internal error : reservationDate format unknown for attachment.pk = "
+                + pk + " : " + e.toString());
       }
     } else {
       attachDetail.setReservationDate(null);
@@ -131,9 +121,8 @@ public class AttachmentDAO {
         attachDetail.setAlertDate(DateUtil.parse(rs.getString("alertDate")));
       } catch (java.text.ParseException e) {
         throw new SQLException(
-            "AttachmentDAO.result2AttachmentDetail() : internal error : alertDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+                "AttachmentDAO.result2AttachmentDetail() : internal error : alertDate format unknown for attachment.pk = "
+                + pk + " : " + e.toString());
       }
     } else {
       attachDetail.setAlertDate(null);
@@ -146,9 +135,8 @@ public class AttachmentDAO {
         attachDetail.setExpiryDate(DateUtil.parse(rs.getString("expiryDate")));
       } catch (java.text.ParseException e) {
         throw new SQLException(
-            "AttachmentDAO.result2AttachmentDetail() : internal error : expiryDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+                "AttachmentDAO.result2AttachmentDetail() : internal error : expiryDate format unknown for attachment.pk = "
+                + pk + " : " + e.toString());
       }
     } else {
       attachDetail.setExpiryDate(null);
@@ -159,8 +147,9 @@ public class AttachmentDAO {
     return attachDetail;
   }
 
-  public static AttachmentDetail insertRow(Connection con,
-      AttachmentDetail attach) throws SQLException, UtilException {
+  @Override
+  public AttachmentDetail insertRow(Connection con, AttachmentDetail attach) throws SQLException,
+          UtilException {
     int id = DBUtil.getNextId(attachmentTableName, "attachmentId");
 
     attach.getPK().setId(String.valueOf(id));
@@ -172,8 +161,8 @@ public class AttachmentDAO {
     }
 
     String insertQuery = "insert into "
-        + attachmentTableName
-        + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ?, ?, ?, ?, ?)";
+            + attachmentTableName
+            + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ?, ?, ?, ?, ?)";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(insertQuery);
@@ -193,7 +182,7 @@ public class AttachmentDAO {
 
       prepStmt.setString(11, attach.getAuthor());
       prepStmt.setString(12, StringUtil.truncate(attach.getTitle(),
-          nameMaxLength));
+              nameMaxLength));
       prepStmt.setString(13, attach.getInfo());
       prepStmt.setInt(14, attach.getOrderNum());
       prepStmt.setString(15, attach.getWorkerId());
@@ -228,12 +217,12 @@ public class AttachmentDAO {
     return attach;
   }
 
-  public static void updateRow(Connection con, AttachmentDetail attach)
-      throws SQLException {
+  @Override
+  public void updateRow(Connection con, AttachmentDetail attach)
+          throws SQLException {
     StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("UPDATE ").append(attachmentTableName).append(" SET attachmentTitle = ?, ");
-    updateQuery
-        .append("attachmentInfo = ?, attachmentPhysicalName = ?, attachmentLogicalName = ?, ");
+    updateQuery.append("attachmentInfo = ?, attachmentPhysicalName = ?, attachmentLogicalName = ?, ");
     updateQuery.append("attachmentDescription = ?, attachmentSize = ?, attachmentType = ?, ");
     updateQuery.append("attachmentContext = ?, attachmentCreationDate = ?, attachmentAuthor = ?, ");
     updateQuery.append("attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, ");
@@ -261,7 +250,7 @@ public class AttachmentDAO {
       prepStmt.setString(13, attach.getInstanceId());
 
       if (!StringUtil.isDefined(attach.getLanguage())
-          || I18NHelper.isDefaultLanguage(attach.getLanguage())) {
+              || I18NHelper.isDefaultLanguage(attach.getLanguage())) {
         prepStmt.setNull(14, Types.VARCHAR);
       } else {
         prepStmt.setString(14, attach.getLanguage());
@@ -289,10 +278,11 @@ public class AttachmentDAO {
     }
   }
 
-  public static void updateXmlForm(Connection con, AttachmentPK pk,
-      String xmlFormName) throws SQLException {
+  @Override
+  public void updateXmlForm(Connection con, AttachmentPK pk,
+          String xmlFormName) throws SQLException {
     String updateQuery = "update " + attachmentTableName + " set xmlForm = ? "
-        + " where attachmentId = ? ";
+            + " where attachmentId = ? ";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(updateQuery);
@@ -306,10 +296,11 @@ public class AttachmentDAO {
     }
   }
 
-  public static void updateForeignKey(Connection con, AttachmentPK pk,
-      String foreignKey) throws SQLException {
+  @Override
+  public void updateForeignKey(Connection con, AttachmentPK pk,
+          String foreignKey) throws SQLException {
     String updateQuery = "update " + attachmentTableName
-        + " set attachmentForeignkey = ? where attachmentId = ? ";
+            + " set attachmentForeignkey = ? where attachmentId = ? ";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(updateQuery);
@@ -323,15 +314,16 @@ public class AttachmentDAO {
     }
   }
 
-  public static AttachmentDetail findByPrimaryKey(Connection con,
-      AttachmentPK pk) throws SQLException {
+  @Override
+  public AttachmentDetail findByPrimaryKey(Connection con,
+          AttachmentPK pk) throws SQLException {
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
     AttachmentDetail attachDetail = null;
     try {
       SilverTrace.info("attachment", "AttachmentDAO.loadRow()",
-          "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + SELECT_BY_PRIMARY_KEY
-          + " with attachmentId = " + pk.getId());
+              "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + SELECT_BY_PRIMARY_KEY
+              + " with attachmentId = " + pk.getId());
       prepStmt = con.prepareStatement(SELECT_BY_PRIMARY_KEY);
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       rs = prepStmt.executeQuery();
@@ -355,9 +347,10 @@ public class AttachmentDAO {
    * @throws SQLException
    * @see
    */
-  public static Vector<AttachmentDetail> findByForeignKey(Connection con, WAPrimaryKey foreignKey)
-      throws SQLException {
-    StringBuffer selectStatement = new StringBuffer();
+  @Override
+  public Vector<AttachmentDetail> findByForeignKey(Connection con, WAPrimaryKey foreignKey)
+          throws SQLException {
+    StringBuilder selectStatement = new StringBuilder();
     selectStatement.append("select ").append(attachmentTableColumns);
     selectStatement.append(" from ").append(attachmentTableName);
     selectStatement.append(" where attachmentForeignKey= ? and instanceId= ? ");
@@ -365,7 +358,6 @@ public class AttachmentDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     Vector<AttachmentDetail> attachments;
     try {
       attachments = new Vector<AttachmentDetail>();
@@ -392,23 +384,22 @@ public class AttachmentDAO {
     return attachments;
   }
 
-  private static void setTranslations(Connection con,
-      AttachmentDetail attachmentDetail) throws SQLException {
+  private void setTranslations(Connection con,
+          AttachmentDetail attachmentDetail) throws SQLException {
     AttachmentDetailI18N translation = new AttachmentDetailI18N(
-        attachmentDetail);
+            attachmentDetail);
     attachmentDetail.addTranslation(translation);
 
     if (I18NHelper.isI18N) {
-      List translations = AttachmentI18NDAO.getTranslations(con,
-          attachmentDetail.getPK());
-
+      List translations = AttachmentI18NDAO.getTranslations(con, attachmentDetail.getPK());
       attachmentDetail.setTranslations(translations);
     }
   }
 
-  public static Vector<AttachmentDetail> findByWorkerId(Connection con, String workerId)
-      throws SQLException {
-    StringBuffer selectStatement = new StringBuffer();
+  @Override
+  public Vector<AttachmentDetail> findByWorkerId(Connection con, String workerId)
+          throws SQLException {
+    StringBuilder selectStatement = new StringBuilder();
     selectStatement.append("select ").append(attachmentTableColumns);
     selectStatement.append(" from ").append(attachmentTableName);
     selectStatement.append(" where workerId = ? ");
@@ -449,10 +440,11 @@ public class AttachmentDAO {
    * @throws SQLException
    * @see
    */
-  public static Vector<AttachmentDetail> findByPKAndParam(Connection con,
-      WAPrimaryKey foreignKey, String nameAttribut, String valueAttribut)
-      throws SQLException {
-    StringBuffer selectQuery = new StringBuffer();
+  @Override
+  public Vector<AttachmentDetail> findByPKAndParam(Connection con,
+          WAPrimaryKey foreignKey, String nameAttribut, String valueAttribut)
+          throws SQLException {
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
@@ -461,7 +453,6 @@ public class AttachmentDAO {
     selectQuery.append(" order by attachmentOrderNum, attachmentId ");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     Vector<AttachmentDetail> attachments = new Vector<AttachmentDetail>();
 
     try {
@@ -496,9 +487,10 @@ public class AttachmentDAO {
    * @throws SQLException
    * @see
    */
-  public static Vector<AttachmentDetail> findByPKAndContext(Connection con,
-      WAPrimaryKey foreignKey, String context) throws SQLException {
-    StringBuffer selectQuery = new StringBuffer();
+  @Override
+  public Vector<AttachmentDetail> findByPKAndContext(Connection con,
+          WAPrimaryKey foreignKey, String context) throws SQLException {
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
@@ -509,7 +501,7 @@ public class AttachmentDAO {
     selectQuery.append(" order by attachmentOrderNum, attachmentId ");
 
     SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -538,8 +530,8 @@ public class AttachmentDAO {
       }
 
       SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
-          "root.MSG_GEN_PARAM_VALUE", "attachments.size() = "
-          + attachments.size());
+              "root.MSG_GEN_PARAM_VALUE", "attachments.size() = "
+              + attachments.size());
     } finally {
       DBUtil.close(rs, prepStmt);
     }
@@ -547,23 +539,22 @@ public class AttachmentDAO {
     return attachments;
   }
 
-  public static AttachmentDetail findPrevious(Connection con,
-      AttachmentDetail ad) throws SQLException {
+  @Override
+  public AttachmentDetail findPrevious(Connection con, AttachmentDetail ad) throws SQLException {
     WAPrimaryKey foreignKey = ad.getForeignKey();
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
     if (ad.getContext() != null) {
-      selectQuery.append(" and attachmentContext like '").append(
-          ad.getContext()).append("%'");
+      selectQuery.append(" and attachmentContext like '").append(ad.getContext()).append("%'");
     }
     selectQuery.append(" and instanceId = ? ");
     selectQuery.append(" and attachmentOrderNum < ?");
     selectQuery.append(" order by attachmentOrderNum DESC, attachmentId DESC");
 
     SilverTrace.info("attachment", "AttachmentDAO.findPrevious()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -571,7 +562,6 @@ public class AttachmentDAO {
 
     try {
       prepStmt = con.prepareStatement(selectQuery.toString());
-
       prepStmt.setString(1, foreignKey.getId());
       prepStmt.setString(2, foreignKey.getComponentName());
       prepStmt.setInt(3, ad.getOrderNum());
@@ -587,23 +577,23 @@ public class AttachmentDAO {
     return attachmentDetail;
   }
 
-  public static AttachmentDetail findNext(Connection con, AttachmentDetail ad)
-      throws SQLException {
+  @Override
+  public AttachmentDetail findNext(Connection con, AttachmentDetail ad) throws SQLException {
     WAPrimaryKey foreignKey = ad.getForeignKey();
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
     if (ad.getContext() != null) {
       selectQuery.append(" and attachmentContext like '").append(
-          ad.getContext()).append("%'");
+              ad.getContext()).append("%'");
     }
     selectQuery.append(" and instanceId = ? ");
     selectQuery.append(" and attachmentOrderNum > ?");
     selectQuery.append(" order by attachmentOrderNum, attachmentId");
 
     SilverTrace.info("attachment", "AttachmentDAO.findNext()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -627,22 +617,22 @@ public class AttachmentDAO {
     return attachmentDetail;
   }
 
-  public static AttachmentDetail findLast(Connection con, AttachmentDetail ad)
-      throws SQLException {
+  @Override
+  public AttachmentDetail findLast(Connection con, AttachmentDetail ad) throws SQLException {
     WAPrimaryKey foreignKey = ad.getForeignKey();
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
     if (ad.getContext() != null) {
       selectQuery.append(" and attachmentContext like '").append(
-          ad.getContext()).append("%'");
+              ad.getContext()).append("%'");
     }
     selectQuery.append(" and instanceId = ? ");
     selectQuery.append(" order by attachmentOrderNum DESC, attachmentId DESC");
 
     SilverTrace.info("attachment", "AttachmentDAO.findNext()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -665,14 +655,12 @@ public class AttachmentDAO {
     return attachmentDetail;
   }
 
-  public static void deleteAttachment(Connection con, AttachmentPK pk)
-      throws SQLException {
+  @Override
+  public void deleteAttachment(Connection con, AttachmentPK pk)
+          throws SQLException {
     PreparedStatement prepStmt = null;
-
     try {
-      String deleteQuery = "delete from " + attachmentTableName
-          + " where attachmentId = ? ";
-
+      String deleteQuery = "delete from " + attachmentTableName + " where attachmentId = ? ";
       prepStmt = con.prepareStatement(deleteQuery);
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       prepStmt.executeUpdate();
@@ -681,9 +669,10 @@ public class AttachmentDAO {
     }
   }
 
-  public static Collection<AttachmentDetail> getAllAttachmentByDate(Connection con, Date date,
-      boolean alert) throws SQLException {
-    StringBuffer selectQuery = new StringBuffer();
+  @Override
+  public Collection<AttachmentDetail> getAllAttachmentByDate(Connection con, Date date,
+          boolean alert) throws SQLException {
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     if (alert) {
@@ -693,79 +682,63 @@ public class AttachmentDAO {
     }
 
     SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     Collection<AttachmentDetail> attachments;
     try {
       attachments = new ArrayList<AttachmentDetail>();
       prepStmt = con.prepareStatement(selectQuery.toString());
-
       prepStmt.setString(1, DateUtil.date2SQLDate(date));
-
       rs = prepStmt.executeQuery();
-
       while (rs.next()) {
         AttachmentDetail attachmentDetail = result2AttachmentDetail(rs);
         setTranslations(con, attachmentDetail);
-
         attachments.add(attachmentDetail);
       }
-
       SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
-          "root.MSG_GEN_PARAM_VALUE", "attachments.size() = "
-          + attachments.size());
+              "root.MSG_GEN_PARAM_VALUE", "attachments.size() = " + attachments.size());
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-
     return attachments;
   }
 
-  public static Collection<AttachmentDetail> getAllAttachmentToLib(Connection con, Date date)
-      throws SQLException {
-    StringBuffer selectQuery = new StringBuffer();
+  @Override
+  public Collection<AttachmentDetail> getAllAttachmentToLib(Connection con, Date date)
+          throws SQLException {
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where expiryDate < ? ");
-
     SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
-
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     Collection<AttachmentDetail> attachments;
     try {
       attachments = new ArrayList<AttachmentDetail>();
       prepStmt = con.prepareStatement(selectQuery.toString());
-
       prepStmt.setString(1, DateUtil.date2SQLDate(date));
-
       rs = prepStmt.executeQuery();
-
       while (rs.next()) {
         AttachmentDetail attachmentDetail = result2AttachmentDetail(rs);
         setTranslations(con, attachmentDetail);
 
         attachments.add(attachmentDetail);
       }
-
       SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
-          "root.MSG_GEN_PARAM_VALUE", "attachments.size() = "
-          + attachments.size());
+              "root.MSG_GEN_PARAM_VALUE", "attachments.size() = " + attachments.size());
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-
     return attachments;
   }
 
-  public static void sortAttachments(Connection con, List<AttachmentPK> attachmentPKs)
-      throws SQLException {
-    StringBuffer updateQuery = new StringBuffer();
+  @Override
+  public void sortAttachments(Connection con, List<AttachmentPK> attachmentPKs) throws SQLException {
+    StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("update ").append(attachmentTableName);
     updateQuery.append(" set attachmentOrderNum = ? ");
     updateQuery.append(" where attachmentId = ? ");

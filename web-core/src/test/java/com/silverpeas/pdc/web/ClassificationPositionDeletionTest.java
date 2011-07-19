@@ -55,6 +55,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
   @Before
   public void prepareAPdcClassification() {
     assertNotNull(testResources);
+    testResources.init();
     theUser = aUser();
     sessionKey = authenticate(theUser);
     testResources.enableThesaurus();

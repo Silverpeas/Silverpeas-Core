@@ -54,6 +54,7 @@ public class CommentCreationTest extends ResourceCreationTest {
   @Before
   public void createAUserAndPrepareAComment() {
     assertNotNull(testResources);
+    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
     theComment = CommentEntity.fromComment(theUser(user).commentTheResource(CONTENT_ID).

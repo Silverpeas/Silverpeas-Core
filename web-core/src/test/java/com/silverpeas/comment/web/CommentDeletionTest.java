@@ -52,6 +52,7 @@ public class CommentDeletionTest extends ResourceDeletionTest {
   @Before
   public void createAUserAndAComment() {
     assertNotNull(testResources);
+    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
     theComment = theUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).

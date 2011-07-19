@@ -576,7 +576,7 @@ public class VersioningUtil {
 
       for (Worker savedWorkerGroup : savedWorkersGroups) {
         Worker newWorkerGroup = (Worker) savedWorkerGroup.clone();
-        newWorkerGroup.setDocumentId(new Integer(document.getPk().getId()).intValue());
+        newWorkerGroup.setDocumentId(Integer.parseInt(document.getPk().getId()));
         newWorkerGroup.setSaved(false);
         workersGroups.add(newWorkerGroup);
       }
@@ -584,7 +584,7 @@ public class VersioningUtil {
 
       for (Worker savedWorkerUser : savedWorkersUsers) {
         Worker newWorkerUser = (Worker) savedWorkerUser.clone();
-        newWorkerUser.setDocumentId(new Integer(document.getPk().getId()).intValue());
+        newWorkerUser.setDocumentId(Integer.parseInt(document.getPk().getId()));
         newWorkerUser.setSaved(false);
         workersUsers.add(newWorkerUser);
       }

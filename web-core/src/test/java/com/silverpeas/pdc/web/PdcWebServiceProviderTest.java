@@ -74,6 +74,7 @@ public class PdcWebServiceProviderTest {
   @Before
   public void setUp() {
     assertNotNull(resources);
+    resources.init();
     assertNotNull(pdcWebServiceProvider);
   }
 
