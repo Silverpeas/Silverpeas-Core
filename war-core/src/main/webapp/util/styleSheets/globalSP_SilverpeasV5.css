@@ -180,10 +180,12 @@ Definition des class de style Silverpeas
 		background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
 		background: -moz-linear-gradient(top, #fff, #e5e5e5);
 		/* For Internet Explorer 5.5 - 7 */
-		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFFFFFFF, endColorstr=#e5e5e5e5);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
 		/* For Internet Explorer 8 */
-		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFFFFFFF, endColorstr=#e5e5e5e5)";
+		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
+		min-height:14px;
 	}
+
 .bgDegradeGris.header{
 	border-top:0;
 	border-right:0;
@@ -192,12 +194,21 @@ Definition des class de style Silverpeas
 	padding:5px;
 	font-size:110%;	
 }
+
+* html 	.bgDegradeGris {
+	background-color:#e9e9e9;
+}
+* html 	.bgDegradeGris.header {
+	background-color:#efefef;
+}
+	
 .bgDegradeGris p, .bgDegradeGris .paragraphe {
 	padding:11px 17px 0 17px;
 	margin:0;
 	font-size:100%;
 	line-height:140%;
 	color:#666;
+	position:relative;
 }
 
 .bgDegradeGris p b, .bgDegradeGris .paragraphe b {
@@ -239,9 +250,11 @@ Definition des class de style Silverpeas
 }
 
 .bgDegradeGris .profilPhoto {
-	float:right;
+	position:absolute;
 	width:30px;
 	height:30px;
+	top:10px;
+	right:10px;
 }
 
 .bgDegradeGris .profilPhoto img{
