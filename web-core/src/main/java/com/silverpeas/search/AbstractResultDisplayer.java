@@ -44,7 +44,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
    * @param componentTemplate the silverpeas template where we set attributes
    * @return a SilverpeasTemplate with additional common attributes.
    */
-  protected SilverpeasTemplate setCommonAttribute(SearchResultContentVO searchResult,
+  protected SilverpeasTemplate setCommonAttributes(SearchResultContentVO searchResult,
       SilverpeasTemplate componentTemplate) {
 
     GlobalSilverResult silverResult = searchResult.getGsr();
