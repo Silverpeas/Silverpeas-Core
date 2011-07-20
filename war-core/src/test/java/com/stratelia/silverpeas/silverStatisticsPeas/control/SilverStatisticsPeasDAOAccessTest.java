@@ -1,32 +1,30 @@
 /*
- *  Copyright (C) 2000 - 2011 Silverpeas
- * 
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- * 
- *  As a special exception to the terms and conditions of version 3.0 of
- *  the GPL, you may redistribute this Program in connection with Free/Libre
- *  Open Source Software ("FLOSS") applications as described in Silverpeas's
- *  FLOSS exception.  You should have recieved a copy of the text describing
- *  the FLOSS exception, and it is also available here:
- *  "http://www.silverpeas.com/legal/licensing"
- * 
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- * 
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ * Copyright (C) 2000 - 2011 Silverpeas
+ * <p/>
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
+ * <p/>
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of
+ * the text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.com/legal/licensing"
+ * <p/>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
+ * <p/>
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.components.model.AbstractTestDao;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -83,7 +81,7 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
       assertThat(result, is(notNullValue()));
       assertThat(result.size(), is(3));
       assertThat(result, hasKey("kmelia26"));
-      assertThat(result, hasKey("kmelia38"));      
+      assertThat(result, hasKey("kmelia38"));
       assertThat(result, hasKey("kmelia40"));
       String[] data = result.get("kmelia26");
       assertThat(data.length, is(3));
@@ -102,7 +100,7 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
       assertThat(result, is(notNullValue()));
       assertThat(result.size(), is(3));
       assertThat(result, hasKey("kmelia26"));
-      assertThat(result, hasKey("kmelia38"));      
+      assertThat(result, hasKey("kmelia38"));
       assertThat(result, hasKey("kmelia40"));
       data = result.get("kmelia26");
       assertThat(data.length, is(3));
@@ -135,7 +133,7 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
       assertThat(result, is(notNullValue()));
       assertThat(result.size(), is(3));
       assertThat(result, hasKey("kmelia26"));
-      assertThat(result, hasKey("kmelia38"));      
+      assertThat(result, hasKey("kmelia38"));
       assertThat(result, hasKey("kmelia40"));
       String[] data = result.get("kmelia26");
       assertThat(data.length, is(3));
@@ -155,7 +153,7 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
       assertThat(result, is(notNullValue()));
       assertThat(result.size(), is(3));
       assertThat(result, hasKey("kmelia26"));
-      assertThat(result, hasKey("kmelia38"));      
+      assertThat(result, hasKey("kmelia38"));
       assertThat(result, hasKey("kmelia40"));
       data = result.get("kmelia26");
       assertThat(data.length, is(3));
@@ -215,17 +213,7 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
       String groupId = "2";
       String userId = "5";
       String currentUserId = "1";
-      AdminController controller = mock(AdminController.class);
-      ComponentInst kmelia26 = new ComponentInst();
-    kmelia26.setDomainFatherId("WA18");
-    when(controller.getComponentInst("kmelia26")).thenReturn(kmelia26);
-    ComponentInst kmelia38 = new ComponentInst();
-    kmelia38.setDomainFatherId("WA18");
-    when(controller.getComponentInst("kmelia38")).thenReturn(kmelia38);
-    when(controller.getUserManageableSpaceClientIds(currentUserId)).thenReturn(new String[]{"WA18", "WA19"});
-    ComponentInst kmelia40 = new ComponentInst();
-    kmelia40.setDomainFatherId("WA19");
-    when(controller.getComponentInst("kmelia40")).thenReturn(kmelia40);
+      AdminController controller = prepareAdminController(currentUserId);
       when(controller.getUserManageableSpaceClientIds(currentUserId)).thenReturn(new String[]{
                 "WA100"});
       SilverStatisticsPeasDAOAccesVolume.myAdminController = controller;
@@ -342,11 +330,22 @@ public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
     ComponentInst kmelia38 = new ComponentInst();
     kmelia38.setDomainFatherId("WA18");
     when(controller.getComponentInst("kmelia38")).thenReturn(kmelia38);
-    when(controller.getUserManageableSpaceClientIds(currentUserId)).thenReturn(new String[]{"WA18", "WA19"});
+    when(controller.getUserManageableSpaceClientIds(currentUserId)).thenReturn(new String[]{"WA18",
+              "WA19"});
     ComponentInst kmelia40 = new ComponentInst();
     kmelia40.setDomainFatherId("WA19");
     when(controller.getComponentInst("kmelia40")).thenReturn(kmelia40);
-    when(controller.getUserManageableSpaceClientIds(currentUserId)).thenReturn(new String[]{"WA18", "WA19"});
+    when(controller.getUserManageableSpaceClientIds(currentUserId)).thenReturn(new String[]{"WA18",
+              "WA19"});
+    UserDetail user1 = new UserDetail();
+    user1.setId("1");
+    UserDetail user2 = new UserDetail();
+    user2.setId("2");
+    UserDetail user3 = new UserDetail();
+    user3.setId("3");
+    when(controller.getAllUsersOfGroup("1")).thenReturn(new UserDetail[]{user1});
+    when(controller.getAllUsersOfGroup("2")).thenReturn(new UserDetail[]{user1, user2, user3});
+
     return controller;
   }
 }
