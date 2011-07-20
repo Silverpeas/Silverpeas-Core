@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 import com.silverpeas.util.StringUtil;
@@ -42,7 +41,7 @@ import java.util.Map;
 
 /**
  * Class declaration Get cumul datas from database to access and Volume <p/> <p/> <p/> <p/> <p/>
- * <p/>
+ * <p/> <p/>
  * <p/>
  * @author
  */
@@ -131,6 +130,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Returns the access statistics.
+   *
    * @param dateStat
    * @param currentUserId
    * @param filterIdGroup
@@ -138,18 +138,17 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @return the access statistics.
    * @throws SQLException 
    */
-  public static Hashtable<String, String[]> getStatsUserVentil(String dateStat,
+  public static Map<String, String[]> getStatsUserVentil(String dateStat,
           String currentUserId, String filterIdGroup, String filterIdUser)
           throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
             "SilverStatisticsPeasDAOAccessVolume.getStatsUserVentil",
             "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId,
-    // value=new
-    // String[3] {tout, groupe, user}
+    Map<String, String[]> resultat = new HashMap<String, String[]>();
+    // key=componentId,value = new String[3] {tout, groupe, user}
 
-    Hashtable<String, String> hashTout = selectAccessForAllComponents(dateStat);
+    Map<String, String> hashTout = selectAccessForAllComponents(dateStat);
     filterVisibleComponents(currentUserId, resultat, hashTout);
 
     // Query Groupe
@@ -158,11 +157,11 @@ public class SilverStatisticsPeasDAOAccesVolume {
         componentStatistic.getValue()[1] = "0";
       }
 
-      Hashtable<String, String> hashGroupe = selectAccessForGroup(dateStat, filterIdGroup);
+      Map<String, String> e = selectAccessForGroup(dateStat, filterIdGroup);
 
       for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
         if (componentStatistic.getValue() != null) {
-          componentStatistic.getValue()[1] = hashGroupe.get(componentStatistic.getKey());
+          componentStatistic.getValue()[1] = e.get(componentStatistic.getKey());
         }
       }
     }
@@ -173,7 +172,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
         componentStatistic.getValue()[2] = "0";
       }
-      Hashtable<String, String> hashUser = selectAccessForUser(dateStat, filterIdUser);
+      Map<String, String> hashUser = selectAccessForUser(dateStat, filterIdUser);
       for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
         if (componentStatistic.getValue() != null) {
           componentStatistic.getValue()[2] = hashUser.get(componentStatistic.getKey());
@@ -411,16 +410,16 @@ public class SilverStatisticsPeasDAOAccesVolume {
  * @return
  * @throws SQLException 
  */
-  public static Hashtable<String, String[]> getStatsPublicationsVentil(String dateStat,
+  public static Map<String, String[]> getStatsPublicationsVentil(String dateStat,
           String currentUserId, String filterIdGroup, String filterIdUser)
           throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
             "SilverStatisticsPeasDAOAccessVolume.getStatsPublicationsVentil",
             "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId, value=new
+    Map<String, String[]> resultat = new HashMap<String, String[]>(); // key=componentId, value=new
     // String[3] {tout, groupe, user}
-    Hashtable<String, String> hashTout = selectVolumeForAllComponents(dateStat);
+    Map<String, String> hashTout = selectVolumeForAllComponents(dateStat);
     filterVisibleComponents(currentUserId, resultat, hashTout);
 
     // Query Group
@@ -429,11 +428,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
         componentStatistic.getValue()[1] = "0";
       }
 
-      Hashtable<String, String> hashGroupe = selectVolumeForGroup(dateStat, filterIdGroup);
-
+      Map<String, String> e = selectVolumeForGroup(dateStat, filterIdGroup);
       for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
         if (componentStatistic.getValue() != null) {
-          componentStatistic.getValue()[1] = hashGroupe.get(componentStatistic.getKey());
+          componentStatistic.getValue()[1] = e.get(componentStatistic.getKey());
         }
       }
     }
@@ -444,7 +442,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
         componentStatistic.getValue()[2] = "0";
       }
 
-      Hashtable<String, String> hashUser = selectVolumeForUser(dateStat, filterIdUser);
+      Map<String, String> hashUser = selectVolumeForUser(dateStat, filterIdUser);
       for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
         if (componentStatistic.getValue() != null) {
           componentStatistic.getValue()[2] = hashUser.get(componentStatistic.getKey());
@@ -455,7 +453,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return resultat;
   }
 
-  static Hashtable<String, String> selectVolumeForUser(String dateStat, String filterIdUser)
+  static Map<String, String> selectVolumeForUser(String dateStat, String filterIdUser)
           throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -466,7 +464,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt.setString(1, dateStat);
       stmt.setInt(2, Integer.parseInt(filterIdUser));
       rs = stmt.executeQuery();
-      Hashtable<String, String> result = new Hashtable<String, String>();
+      Map<String, String> result = new HashMap<String, String>();
       while (rs.next()) {
         addNewStatistic(result, rs.getString("componentId"), rs.getLong("volume"));
       }
@@ -477,7 +475,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     }
   }
 
-  static Hashtable<String, String> selectAccessForAllComponents(String dateStat)
+  static Map<String, String> selectAccessForAllComponents(String dateStat)
           throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -487,7 +485,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_ALL_COMPONENTS);
       stmt.setString(1, dateStat);
       rs = stmt.executeQuery();
-      Hashtable<String, String> result = new Hashtable<String, String>();
+      Map<String, String> result = new HashMap<String, String>();
       while (rs.next()) {
         addNewStatistic(result, rs.getString("componentId"), rs.getLong("accesses"));
       }
@@ -498,7 +496,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     }
   }
 
-  static Hashtable<String, String> selectAccessForUser(String dateStat, String filterIdUser)
+  static Map<String, String> selectAccessForUser(String dateStat, String filterIdUser)
           throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -509,7 +507,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt.setString(1, dateStat);
       stmt.setInt(2, Integer.parseInt(filterIdUser));
       rs = stmt.executeQuery();
-      Hashtable<String, String> result = new Hashtable<String, String>();
+      Map<String, String> result = new HashMap<String, String>();
       while (rs.next()) {
         addNewStatistic(result, rs.getString("componentId"), rs.getLong("accesses"));
       }
@@ -520,12 +518,12 @@ public class SilverStatisticsPeasDAOAccesVolume {
     }
   }
 
-  static Hashtable<String, String> selectAccessForGroup(String dateStat, String groupId)
+  static Map<String, String> selectAccessForGroup(String dateStat, String groupId)
           throws SQLException {
     UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
-    Hashtable<String, String> allAccesses = new Hashtable<String, String>();
+    Map<String, String> allAccesses = new HashMap<String, String>();
     for (UserDetail user : users) {
-      Hashtable<String, String> userStats = selectAccessForUser(dateStat, user.getId());
+      Map<String, String> userStats = selectAccessForUser(dateStat, user.getId());
       for (Map.Entry<String, String> stat : userStats.entrySet()) {
         if (allAccesses.containsKey(stat.getKey())) {
           allAccesses.put(stat.getKey(), String.valueOf(Integer.parseInt(
@@ -538,12 +536,12 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return allAccesses;
   }
 
-  static Hashtable<String, String> selectVolumeForGroup(String dateStat, String groupId) throws
+  static Map<String, String> selectVolumeForGroup(String dateStat, String groupId) throws
           SQLException {
     UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
-    Hashtable<String, String> allVolumes = new Hashtable<String, String>();
+    Map<String, String> allVolumes = new HashMap<String, String>();
     for (UserDetail user : users) {
-      Hashtable<String, String> userStats = selectVolumeForUser(dateStat, user.getId());
+      Map<String, String> userStats = selectVolumeForUser(dateStat, user.getId());
       for (Map.Entry<String, String> stat : userStats.entrySet()) {
         if (allVolumes.containsKey(stat.getKey())) {
           allVolumes.put(stat.getKey(), String.valueOf(Integer.parseInt(
@@ -556,7 +554,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return allVolumes;
   }
 
-  static Hashtable<String, String> selectVolumeForAllComponents(String dateStat) throws SQLException {
+  static Map<String, String> selectVolumeForAllComponents(String dateStat) throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -565,7 +563,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       stmt = myCon.prepareStatement(SELECT_VOLUME_FOR_ALL_COMPONENTS);
       stmt.setString(1, dateStat);
       rs = stmt.executeQuery();
-      Hashtable<String, String> result = new Hashtable<String, String>();
+      Map<String, String> result = new HashMap<String, String>();
       while (rs.next()) {
         addNewStatistic(result, rs.getString("componentId"), rs.getLong("volume"));
       }
@@ -576,13 +574,12 @@ public class SilverStatisticsPeasDAOAccesVolume {
     }
   }
 
-  static void filterVisibleComponents(String currentUserId,
-          Hashtable<String, String[]> resultat, Hashtable<String, String> hashTout) {
+  static void filterVisibleComponents(String currentUserId, Map<String, String[]> resultat,
+          Map<String, String> hashTout) {
     for (String cmpId : hashTout.keySet()) {
       boolean ok = false;
       ComponentInst compInst = myAdminController.getComponentInst(cmpId);
       String spaceId = compInst.getDomainFatherId();
-
       String[] tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(
               currentUserId);
       for (String tabManageableSpaceId : tabManageableSpaceIds) {
