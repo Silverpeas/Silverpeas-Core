@@ -33,7 +33,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
