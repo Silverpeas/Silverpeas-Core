@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.silverpeas.util.ConfigurationControl;
 import org.apache.commons.lang.StringUtils;
 
 import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
@@ -222,9 +223,9 @@ public class DynamicValueDAO {
    */
   private static void initTableInfos() {
     try {
-      ResourceBundle bundle =
-          ResourceBundle
-          .getBundle("com.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings");
+      ResourceBundle bundle = ResourceBundle.getBundle(
+          "com.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings",
+          new ConfigurationControl());
       DynamicValueDAO.tableName = bundle.getString("tableName").trim();
       DynamicValueDAO.keyColumnName = bundle.getString("keyColumnName").trim();
       DynamicValueDAO.valueColumnName = bundle.getString("valueColumnName").trim();

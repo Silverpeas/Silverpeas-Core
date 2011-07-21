@@ -39,10 +39,12 @@
       <Collection name="displayNameMap">
         <String name="fr" value="Mes Tâches"/>
         <String name="en" value="My Todos"/>
+		<String name="de" value="Meine Aufgaben"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="MyTodosPortlet"/>
         <String name="en" value="MyTodosPortlet"/>
+		<String name="de" value="MyTodosPortlet"/>
       </Collection>
       <Collection name="supportsMap">
         <Collection name="text/html">
@@ -64,6 +66,7 @@
       <Collection name="displayNameMap">
         <String name="fr" value="Bienvenue"/>
         <String name="en" value="Welcome"/>
+		<String name="de" value="Willkommen"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="HelloSilverpeasPortlet"/>
@@ -87,6 +90,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Dernières publications"/>
+		<String name="de" value="Letzte Veröffentlichung"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="LastPublicationsPortlet"/>
@@ -112,6 +116,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes prochains événements"/>
+		<String name="de" value="Meine nächsten Ereignisse"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="NextEventsPortlet"/>
@@ -137,6 +142,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Un composant"/>
+		<String name="de" value="Eine Komponente"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="ComponentInstancePortlet"/>
@@ -162,6 +168,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes requêtes préférées"/>
+		<String name="de" value="Meine Lieblings-Queries"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="FavoriteQueriesPortlet"/>
@@ -185,6 +192,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes favoris"/>
+		<String name="de" value="Meine Favoriten"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="MyBookmarksPortlet"/>
@@ -208,6 +216,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Actualités"/>
+		<String name="de" value="Neuigkeiten"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="QuickInfosPortlet"/>
@@ -231,6 +240,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes notifications"/>
+		<String name="de" value="Meine Benachrichtigungen"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="MyNotificationsPortlet"/>
@@ -254,6 +264,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes fichiers réservés"/>
+		<String name="de" value="Meine Reservierte Dateien"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="MyCheckOutFiles"/>
@@ -277,6 +288,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Portlet IFrame"/>
+		<String name="de" value="IFrame Portlet"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="IFramePortlet"/>
