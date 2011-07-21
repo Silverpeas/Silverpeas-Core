@@ -23,14 +23,8 @@
  */
 package com.silverpeas.subscribe.web;
 
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import javax.ws.rs.core.MultivaluedMap;
-import java.util.List;
-import com.silverpeas.subscribe.service.Subscription;
 import com.silverpeas.subscribe.MockableSubscriptionService;
 import org.junit.Before;
-import java.util.Collection;
-import com.google.common.collect.Lists;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.rest.mock.UserDetailWithProfiles;
@@ -41,14 +35,12 @@ import com.silverpeas.rest.RESTWebServiceTest;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.junit.Test;
-import org.mockito.Mockito;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -67,6 +59,11 @@ public class SubscribePostTest extends RESTWebServiceTest {
 
   public SubscribePostTest() {
     super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
+  }
+  
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] {COMPONENT_ID};
   }
 
   @Before
