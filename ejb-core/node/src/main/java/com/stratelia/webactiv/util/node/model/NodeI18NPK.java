@@ -24,8 +24,8 @@
 
 package com.stratelia.webactiv.util.node.model;
 
-import java.io.Serializable;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.io.Serializable;
 
 /**
  * It's the Node PrimaryKey object It identify a Node
@@ -33,13 +33,14 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @version 1.0
  */
 public class NodeI18NPK extends WAPrimaryKey implements Serializable {
+  private static final long serialVersionUID = 4343441299362454324L;
 
-  private static final long serialVersionUID = 1L;
   // to apply the fat key pattern
   transient public NodeI18NDetail nodeI18NDetail = null;
 
   /**
    * Constructor which set only the id
+   * @param id 
    * @since 1.0
    */
   public NodeI18NPK(String id) {
@@ -48,6 +49,9 @@ public class NodeI18NPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set id, space and component name
+   * @param id 
+   * @param space 
+   * @param componentName 
    * @since 1.0
    */
   public NodeI18NPK(String id, String space, String componentName) {
@@ -60,6 +64,8 @@ public class NodeI18NPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
+   * @param id 
+   * @param pk 
    * @since 1.0
    */
   public NodeI18NPK(String id, WAPrimaryKey pk) {
@@ -71,6 +77,7 @@ public class NodeI18NPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "NodeI18N";
   }
@@ -80,6 +87,7 @@ public class NodeI18NPK extends WAPrimaryKey implements Serializable {
    * @return the table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
     return "SB_Node_NodeI18N";
   }
@@ -90,9 +98,11 @@ public class NodeI18NPK extends WAPrimaryKey implements Serializable {
    * @param other the object to compare to this NodePK
    * @since 1.0
    */
+  @Override
   public boolean equals(Object other) {
-    if (!(other instanceof NodeI18NPK))
+    if (!(other instanceof NodeI18NPK)) {
       return false;
+    }
     return (id.equals(((NodeI18NPK) other).getId()))
         && (componentName.equals(((NodeI18NPK) other).getComponentName()));
   }
@@ -101,6 +111,7 @@ public class NodeI18NPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return this.id.hashCode() ^ this.componentName.hashCode();
   }

@@ -82,6 +82,7 @@ public class QueryDescription implements Serializable {
   private String xmlTitle = null;
   private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
+  private boolean searchByComponentType = false;
 
   /**
    * The external searched components are build empty. This is a set of ExternalComponent
@@ -398,6 +399,14 @@ public class QueryDescription implements Serializable {
         "server = " + server + ", component=" + component);
     //TODO add all needed information
     extComponents.add(new ExternalComponent(server, component, path, url));
+  }
+  
+  public boolean isSearchByComponentType() {
+    return searchByComponentType;
+  }
+
+  public void setSearchByComponentType(boolean searchByComponentType) {
+    this.searchByComponentType = searchByComponentType;
   }
   
 }

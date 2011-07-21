@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.model;
 
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.clipboard.SilverpeasKeyData;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
@@ -36,74 +36,54 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 public class NodeSelection extends ClipboardSelection implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -6462797069972573255L;
   static public DataFlavor NodeDetailFlavor;
-  static {
-    try {
-      NodeDetailFlavor = new DataFlavor(Class
-          .forName("com.stratelia.webactiv.util.node.model.NodeDetail"), "Node");
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
 
+  static {
+    NodeDetailFlavor = new DataFlavor(NodeDetail.class, "Node");
+  }
   private NodeDetail nodeDetail;
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Constructor
-   */
   public NodeSelection(NodeDetail node) {
     super();
     nodeDetail = node;
     super.addFlavor(NodeDetailFlavor);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
+  @Override
   public synchronized Object getTransferData(DataFlavor parFlavor)
-      throws UnsupportedFlavorException {
+          throws UnsupportedFlavorException {
     Object transferedData;
 
     try {
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
-      if (parFlavor.equals(NodeDetailFlavor))
+      if (parFlavor.equals(NodeDetailFlavor)) {
         transferedData = nodeDetail;
-      else
+      } else {
         throw e;
+      }
     }
     return transferedData;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
+  @Override
   public IndexEntry getIndexEntry() {
     NodePK pk = nodeDetail.getNodePK();
-    IndexEntry indexEntry = new IndexEntry(pk.getInstanceId(), "Node", pk
-        .getId());
+    IndexEntry indexEntry = new IndexEntry(pk.getInstanceId(), "Node", pk.getId());
     indexEntry.setTitle(nodeDetail.getName());
     return indexEntry;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Tranformation obligatoire en SilverpeasKeyData
-   */
+  @Override
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();
-
     keyData.setTitle(nodeDetail.getName());
     keyData.setAuthor(nodeDetail.getCreatorId());
     try {
       keyData.setCreationDate(DateUtil.parse(nodeDetail.getCreationDate()));
     } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.error("node", "NodeSelection.getKeyData()", "root.EX_NO_MESSAGE", e);
     }
     keyData.setDesc(nodeDetail.getDescription());
     return keyData;

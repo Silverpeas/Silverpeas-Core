@@ -40,6 +40,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -59,6 +60,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   /**
    * Adds a new task in the user's todos. Returns the external id given by the external todo system.
    */
+  @Override
   public void assignTask(Task task, User delegator) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
     ComponentInst compoInst = null;
@@ -113,6 +115,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   /**
    * Removes a task.
    */
+  @Override
   public void unAssignTask(Task task) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
     ComponentInst compoInst = null;
@@ -144,6 +147,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   /**
    * Get the process instance Id referred by the todo with the given todo id
    */
+  @Override
   public String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
       throws WorkflowException {
     return getProcessId(externalTodoId);
@@ -152,6 +156,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   /**
    * Get the role name of task referred by the todo with the given todo id
    */
+  @Override
   public String getRoleNameFromExternalTodoId(String externalTodoId)
       throws WorkflowException {
     return getRoleName(externalTodoId);
@@ -161,6 +166,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
    * Notify user that an action has been done
    * @throws WorkflowException
    */
+  @Override
   public void notifyActor(Task task, User sender, User user, String text) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
     List<String> userIds = new ArrayList<String>();
@@ -179,8 +185,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
       }
     }
 
-    NotificationSender notifSender = (NotificationSender) notificationSenders
-        .get(componentId);
+    NotificationSender notifSender = notificationSenders.get(componentId);
     if (notifSender == null) {
       notifSender = new NotificationSender(componentId);
       notificationSenders.put(componentId, notifSender);
@@ -191,17 +196,18 @@ public class TaskManagerImpl extends AbstractTaskManager {
         String title = task.getProcessInstance().getTitle(task.getUserRoleName(),
             "");
 
-        DataRecord data = task.getProcessInstance().getAllDataRecord(
-            task.getUserRoleName(), "");
+        DataRecord data = task.getProcessInstance().getAllDataRecord(task.getUserRoleName(), "");
         text = DataRecordUtil.applySubstitution(text, data, "");
 
         NotificationMetaData notifMetaData = new NotificationMetaData(
             NotificationParameters.NORMAL, title, text);
-        if (sender != null)
+        if (sender != null) {
           notifMetaData.setSender(sender.getUserId());
-        else
+        }
+        else {
           notifMetaData.setSender(userId);
-        notifMetaData.addUserRecipient(userId);
+        }
+        notifMetaData.addUserRecipient(new UserRecipient(userId));
         String link = "/RprocessManager/" + componentId
             + "/searchResult?Type=ProcessInstance&Id="
             + task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();

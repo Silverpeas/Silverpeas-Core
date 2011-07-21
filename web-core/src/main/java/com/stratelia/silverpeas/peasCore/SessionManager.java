@@ -52,6 +52,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverLog;
@@ -499,7 +500,7 @@ public class SessionManager
         "EndOfSessionNotificationMsgText"));
     notifMetaData.setSender(null);
     notifMetaData.setSessionId(sessionId);
-    notifMetaData.addUserRecipient(userId);
+    notifMetaData.addUserRecipient(new UserRecipient(userId));
     notifMetaData.setSource(m_Multilang.getString("administrator"));
 
     notifSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP,

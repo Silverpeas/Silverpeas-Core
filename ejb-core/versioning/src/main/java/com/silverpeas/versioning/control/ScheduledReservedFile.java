@@ -35,6 +35,7 @@ import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
@@ -264,7 +265,7 @@ public class ScheduledReservedFile
         "root.MSG_GEN_PARAM_VALUE", " notifMetaData.getLanguages() = "
         + notifMetaData.getLanguages());
 
-    notifMetaData.addUserRecipient(Integer.toString(doc.getOwnerId()));
+    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(doc.getOwnerId())));
 
     String url = URLManager.getURL(null, null, doc.getInstanceId())
         + "GoToFilesTab?Id=" + doc.getForeignKey().getId();

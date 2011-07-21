@@ -45,6 +45,7 @@ import com.silverpeas.ical.SynchroIcalManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -253,7 +254,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       notifMetaData.setSource(getString("agenda"));
 
       for (Attendee attendee : attendees) {
-        notifMetaData.addUserRecipient(attendee.getUserId());
+        notifMetaData.addUserRecipient(new UserRecipient(attendee.getUserId()));
       }
 
       if (url != null) {
