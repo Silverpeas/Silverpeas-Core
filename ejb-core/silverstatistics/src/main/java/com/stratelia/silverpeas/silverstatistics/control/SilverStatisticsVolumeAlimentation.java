@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.silverpeas.util.ConfigurationControl;
 import com.silverpeas.util.FileUtil;
 import java.util.ArrayList;
 import java.util.Arrays;import java.util.Collection;
@@ -48,11 +49,10 @@ public class SilverStatisticsVolumeAlimentation {
 
   static {
       try {
-        resources = FileUtil.loadBundle(
-            "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
+        resources = FileUtil.loadBundle("com.stratelia.silverpeas.silverstatistics.SilverStatistics",
+            Locale.getDefault());
       } catch (Exception ex) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsVolumeAlimentation",
+        SilverTrace.error("silverstatistics", "SilverStatisticsVolumeAlimentation",
             "root.EX_CLASS_NOT_INITIALIZED", ex);
       }
   }

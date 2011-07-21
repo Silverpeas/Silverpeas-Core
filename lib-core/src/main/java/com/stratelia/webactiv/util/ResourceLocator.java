@@ -52,12 +52,11 @@ public class ResourceLocator implements Serializable {
   private static final long serialVersionUID = -2389291572691404932L;
   private static ClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
-  final static String m_DefaultExtension = ".properties";
-  private String m_sPropertiesFile = null;
-  private Locale m_sPropertiesLocale = null;
+  final static String DEFAULT_EXTENSION = ".properties";
+  private String propertyFile = null;
+  private Locale propertyLocale = null;
   private ResourceLocator defaultResource = null;
-  static private Map<String, Map<Locale, ResourceBundle>> m_hPropertiesCache =
-      new HashMap<String, Map<Locale, ResourceBundle>>();
+  //static private Map<String, Map<Locale, ResourceBundle>> cache = new HashMap<String, Map<Locale, ResourceBundle>>();
 
   // --------------------------------------------------------------------------------------------
   // METHODS for .properties
@@ -78,11 +77,11 @@ public class ResourceLocator implements Serializable {
 
   public ResourceLocator(String sPropertyFile, String sLanguage, ResourceLocator defaultResource) {
     this.defaultResource = defaultResource;
-    m_sPropertiesFile = sPropertyFile;
+    propertyFile = sPropertyFile;
     if (sLanguage != null) {
-      m_sPropertiesLocale = new Locale(sLanguage);
+      propertyLocale = new Locale(sLanguage);
     } else {
-      m_sPropertiesLocale = Locale.getDefault();
+      propertyLocale = Locale.getDefault();
     }
   }
 
@@ -92,11 +91,11 @@ public class ResourceLocator implements Serializable {
    * @deprecated
    */
   public ResourceLocator(String sPropertyFile, Locale sLocale) {
-    m_sPropertiesFile = sPropertyFile;
+    propertyFile = sPropertyFile;
     if (sLocale != null) {
-      m_sPropertiesLocale = sLocale;
+      propertyLocale = sLocale;
     } else {
-      m_sPropertiesLocale = Locale.getDefault();
+      propertyLocale = Locale.getDefault();
     }
   }
 
@@ -106,11 +105,11 @@ public class ResourceLocator implements Serializable {
    * @param sLanguage
    */
   public void setPropertyLocation(String sPropertyFile, String sLanguage) {
-    m_sPropertiesFile = sPropertyFile;
+    propertyFile = sPropertyFile;
     if (sLanguage != null) {
-      m_sPropertiesLocale = new Locale(sLanguage);
+      propertyLocale = new Locale(sLanguage);
     } else {
-      m_sPropertiesLocale = Locale.getDefault();
+      propertyLocale = Locale.getDefault();
     }
   }
 
@@ -120,48 +119,47 @@ public class ResourceLocator implements Serializable {
    */
   public void setLanguage(final String sLanguage) {
     if (sLanguage != null) {
-      m_sPropertiesLocale = new Locale(sLanguage);
+      propertyLocale = new Locale(sLanguage);
     } else {
-      m_sPropertiesLocale = Locale.getDefault();
+      propertyLocale = Locale.getDefault();
     }
   }
 
   private ResourceBundle getResourceBundle(String sPropertyFile, Locale locale) {
-    boolean bLoadPropertyInCache = true;
+    boolean isNotCached = true;
     ResourceBundle bundle = null;
-    // Print Cache
     // Look in the cache first
-    Map<Locale, ResourceBundle> hOneProperty = m_hPropertiesCache.get(sPropertyFile);
-    if (hOneProperty != null) {
+   /* Map<Locale, ResourceBundle> propertiesInCache = cache.get(sPropertyFile);
+    if (propertiesInCache != null) {
       // Load the property only if the language is not in the cache
-      bundle = hOneProperty.get(m_sPropertiesLocale);
+      bundle = propertiesInCache.get(propertyLocale);
       if (bundle != null) {
-        bLoadPropertyInCache = false;
+        isNotCached = false;
       }
     }
 
     // Load the property if not in the cache
-    if (bLoadPropertyInCache) {
-      bundle = new ResourceBundleWrapper(sPropertyFile, m_sPropertiesLocale);
-      if (bundle != null) {
-        if (hOneProperty == null) {
+    if (isNotCached) {     */
+      bundle = new ResourceBundleWrapper(sPropertyFile, propertyLocale);
+      /*if (bundle != null) {
+        if (propertiesInCache == null) {
           // No hash for this property, create it
           Map<Locale, ResourceBundle> hash = new HashMap<Locale, ResourceBundle>();
-          m_hPropertiesCache.put(sPropertyFile, hash);
+          cache.put(sPropertyFile, hash);
           // Set the bundle for the given language
-          hash.put(m_sPropertiesLocale, bundle);
+          hash.put(propertyLocale, bundle);
         } else {
           // Set the property for the given language
-          hOneProperty.put(m_sPropertiesLocale, bundle);
+          propertiesInCache.put(propertyLocale, bundle);
         }
       } else {
         Exception e = new Exception();
         SilverTrace.error("util", "ResourceLocator.getProperties",
             "util.MSG_NO_PROPERTY_FILE",
-            (sPropertyFile + "_" + m_sPropertiesLocale.getLanguage()), e);
+            (sPropertyFile + "_" + propertyLocale.getLanguage()), e);
         return null;
       }
-    }
+    }       */
     return bundle;
   }
 
@@ -172,7 +170,7 @@ public class ResourceLocator implements Serializable {
    * @return
    */
   public String getString(String sAttribut) {
-    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
+    ResourceBundle bundle = this.getResourceBundle(propertyFile, propertyLocale);
     try {
       if (!bundle.containsKey(sAttribut) && this.defaultResource != null) {
         return this.defaultResource.getString(sAttribut);
@@ -180,7 +178,7 @@ public class ResourceLocator implements Serializable {
       return bundle.getString(sAttribut);
     } catch (MissingResourceException msrex) {
       SilverTrace.warn("util", "ResourceLocator.getString",
-          "util.MSG_NO_ATTR_VALUE", "File : " + m_sPropertiesFile
+          "util.MSG_NO_ATTR_VALUE", "File : " + propertyFile
           + " | Attribut : " + sAttribut, msrex);
       return null;
     }
@@ -331,19 +329,19 @@ public class ResourceLocator implements Serializable {
    * @return
    */
   public Enumeration<String> getKeys() {
-    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
+    ResourceBundle bundle = this.getResourceBundle(propertyFile, propertyLocale);
     return bundle.getKeys();
   }
 
   public ResourceBundle getResourceBundle() {
-    return this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
+    return this.getResourceBundle(propertyFile, propertyLocale);
   }
 
   /** Return the properties *
    * @return
    */
   public Properties getProperties() {
-    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
+    ResourceBundle bundle = this.getResourceBundle(propertyFile, propertyLocale);
     Properties props;
     if (this.defaultResource != null) {
       props = new Properties(this.defaultResource.getProperties());
@@ -359,13 +357,13 @@ public class ResourceLocator implements Serializable {
   }
 
   public String getLanguage() {
-    return m_sPropertiesLocale.getLanguage();
+    return propertyLocale.getLanguage();
   }
 
   public static void resetResourceLocator() {
     SilverTrace.info("util", "ResourceLocator.resetResourceLocator",
         "root.MSG_GEN_ENTER_METHOD", "Reset Cache Resource Locator");
-    m_hPropertiesCache.clear();
+    //cache.clear();
   }
 
   // --------------------------------------------------------------------------------------------
@@ -374,7 +372,7 @@ public class ResourceLocator implements Serializable {
   public static URL getResource(Object object, Locale loc, String configFile, String extension) {
     String ext = extension;
     if (ext == null) {
-      ext = m_DefaultExtension;
+      ext = DEFAULT_EXTENSION;
     }
     if (!ext.startsWith(".")) {
       ext = '.' + ext;
@@ -400,7 +398,7 @@ public class ResourceLocator implements Serializable {
       String extension) {
     String fileExtension = extension;
     if (extension == null) {
-      fileExtension = m_DefaultExtension;
+      fileExtension = DEFAULT_EXTENSION;
     }
     if (!fileExtension.startsWith(".")) {
       fileExtension = '.' + fileExtension;
