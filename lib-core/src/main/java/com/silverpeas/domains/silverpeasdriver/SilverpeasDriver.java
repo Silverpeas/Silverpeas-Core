@@ -208,6 +208,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       userFull.seteMail(user.getEmail());
       userFull.setPassword(user.getPassword());
       userFull.setPasswordValid(user.isPasswordValid());
+      userFull.setPasswordAvailable(true);
     }
     return userFull;
   }

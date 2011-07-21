@@ -24,18 +24,22 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
 
-<script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/upload_applet.js"></script>
+<script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
 
-<script type="text/javascript" src="<%=m_Context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/yui/container/container_core-min.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/yui/animation/animation-min.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/yui/menu/menu-min.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=m_Context%>/util/yui/menu/assets/menu.css"/>
+<script type="text/javascript" src='<c:url value="/util/yui/yahoo-dom-event/yahoo-dom-event.js" /> '></script>
+<script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
+<link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
 <%
       //initialisation des variables
@@ -114,11 +118,9 @@
       boolean indexIt = StringUtil.getBooleanValue(sIndexIt);
       session.setAttribute("Silverpeas_Attachment_IndexIt", Boolean.valueOf(indexIt));
 
-      //Example: http://myserver
-
       AttachmentPK foreignKey = new AttachmentPK(id, componentId);
 
-      Vector attachments = AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
+      Collection attachments = AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
       Iterator itAttachments = attachments.iterator();
 
       if (itAttachments.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
@@ -134,21 +136,18 @@
          	 out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
         }
 
-        AttachmentDetail attachmentDetail = null;
-        String author = "";
-        String title = "";
-        String info = "";
-        String url = "";
+
         int a = 1;
   
         out.println("<ul id=\"attachmentList\">");
         while (itAttachments.hasNext()) {
-          attachmentDetail = (AttachmentDetail) itAttachments.next();
-          title = attachmentDetail.getTitle(contentLanguage);
+          String author = "";
+          AttachmentDetail attachmentDetail = (AttachmentDetail) itAttachments.next();
+          String title = attachmentDetail.getTitle(contentLanguage);
           if (!StringUtil.isDefined(title) || !showTitle) {
             title = attachmentDetail.getLogicalName(contentLanguage);
           }
-          info = attachmentDetail.getInfo(contentLanguage);
+          String info = attachmentDetail.getInfo(contentLanguage);
           if (StringUtil.isDefined(attachmentDetail.getAuthor(contentLanguage))) {
             author = "<br/><i>" + attachmentDetail.getAuthor(contentLanguage) + "</i>";
           }
@@ -173,7 +172,7 @@
                 getAttachmentIcon(contentLanguage) + "\" class=\"icon\"/>");
           }
 
-          url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
+          String url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
           if (fromAlias) {
             url = attachmentDetail.getAliasURL(contentLanguage);
           }
@@ -237,7 +236,7 @@
           }
 
           if (attachmentDetail.isSpinfireDocument(contentLanguage) && spinfireViewerEnable) {
-					%>
+			%>		
 					
 					<div id="switchView" name="switchView" style="display: none">
 					  <a href="#" onClick="changeView3d(<%=attachmentDetail.getPK().getId()%>)"><img name="iconeView<%=attachmentDetail.getPK().getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
@@ -260,7 +259,7 @@
 					</div>
 					<br/>
 					<%
-        }
+		}
 
         if ("bottom".equals(attachmentPosition) && a < nbAttachmentPerLine) {
           /*out.println("<td width=\"30\">&nbsp;</td>");*/
@@ -612,7 +611,6 @@
 
     function sortAttachments(orderedList)
     {
-      //alert(orderedList);
       $.get('<%=m_Context%>/Attachment', { orderedList:orderedList,Action:'Sort'},
       function(data){
         data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
@@ -622,7 +620,6 @@
         }
       }, 'text');
       if (pageMustBeReloadingAfterSorting) {
-	      //force page reloading to reinit menus
 	      reloadIncludingPage();
       }
     }

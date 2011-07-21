@@ -34,22 +34,18 @@ package com.stratelia.webactiv.util.fileFolder;
  * @author  cbonin
  * @version
  */
-import com.silverpeas.util.MimeTypes;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
+import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.io.FilenameUtils;
 
 public class FileFolderManager {
 
@@ -293,14 +289,7 @@ public class FileFolderManager {
       try {
         /* Création d'un nouveau fichier sous la bonne arborescence */
         File file = new File(directory, nomFichier);
-
-        /* ecriture du contenu du fichier */
-        /* si le fichier etait deja existant : ecrasement du contenu */
-        FileWriter file_write = new FileWriter(file);
-        BufferedWriter flux_out = new BufferedWriter(file_write);
-        flux_out.write(contenuFichier);
-        flux_out.close();
-        file_write.close();
+        FileUtils.writeStringToFile(file, contenuFichier, "UTF-8");
       } catch (IOException e) {
         throw new UtilException("FileFolderManager.createFile",
             "util.EX_CREATE_FILE_ERROR", e);
@@ -360,34 +349,11 @@ public class FileFolderManager {
    */
   public static String getCode(String cheminFichier, String nomFichier)
       throws UtilException {
-    /* res = contenu du fichier : "<HTML> ..." */
-    String ligne;
-    String res = "";
-
     File directory = new File(cheminFichier);
     if (directory.isDirectory()) {
       try {
         File file = new File(directory, nomFichier);
-
-        /* lecture du contenu du fichier */
-        FileReader file_read = new FileReader(file);
-        BufferedReader flux_in = new BufferedReader(file_read);
-        boolean firstLine = true;
-        while ((ligne = flux_in.readLine()) != null) {
-          // as readline dont include any line-termination characters, we must add it
-          if (firstLine) {
-            firstLine = false;
-          }
-          else {
-            res = res + "\n";
-          }
-
-          res = res + ligne;
-          // Debug.debug(700, "util fileFolderManager", "getCode : res = "+res,
-          // null, null);
-        }
-        flux_in.close();
-        // file_read.close();
+        return FileUtils.readFileToString(file, "UTF-8");
       } catch (IOException e) {
         SilverTrace.debug("util", "FileFolderManager.getCode",
             "result = null, fichier absent", e);
@@ -399,7 +365,6 @@ public class FileFolderManager {
       throw new UtilException("fileFolderManager.getCode",
           "util.util.EX_WRONG_CHEMLIN_SPEC", cheminFichier);
     }
-    return res;
   }
 
   private FileFolderManager() {

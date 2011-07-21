@@ -37,7 +37,7 @@ import java.util.Map;
 public class UserDetailWithProfiles extends UserDetail {
 
   private static final long serialVersionUID = -7401547950445412571L;
-  private Map<String, List<SilverpeasRole>> profiles = new HashMap<String, List<SilverpeasRole>>();
+  private final Map<String, List<SilverpeasRole>> profiles = new HashMap<String, List<SilverpeasRole>>();
 
   /**
    * Adds a new profile for tests.

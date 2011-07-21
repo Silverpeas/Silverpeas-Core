@@ -34,9 +34,11 @@ target
 /ejb-core/publication/.settings
 /ejb-core/publication/.classpath
 /ejb-core/publication/.project
+/ejb-core/publication/src/main/resources/META-INF/MANIFEST.MF
 /ejb-core/node/.project
 /ejb-core/node/.settings
 /ejb-core/node/.classpath
+/ejb-core/node/src/main/resources/META-INF/MANIFEST.MF
 /ejb-core/formtemplate/.project
 /ejb-core/formtemplate/.settings
 /ejb-core/formtemplate/.classpath

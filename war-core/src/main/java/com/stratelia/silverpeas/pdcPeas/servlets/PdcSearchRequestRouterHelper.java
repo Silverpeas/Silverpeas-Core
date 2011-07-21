@@ -206,7 +206,7 @@ public class PdcSearchRequestRouterHelper {
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
 
     // List of user favorite requests
-    List favoriteRequests = buildICentersList(pdcSC);
+    List<InterestCenter> favoriteRequests = buildICentersList(pdcSC);
     String requestSelected = request.getParameter("iCenterId");
     request.setAttribute("RequestList", favoriteRequests);
     if (requestSelected != null) {
@@ -394,7 +394,6 @@ public class PdcSearchRequestRouterHelper {
           // on creait un axis
           axis = pdcSC.getAxisDetail(String.valueOf(searchAxisId));
           treeId = String.valueOf(axis.getAxisHeader().getRootId());
-          @SuppressWarnings("unchecked")
           List<Value> fullPath = pdcSC.getFullPath(searchValue, treeId);
           pathCriteria.add(fullPath);
         }
@@ -423,7 +422,7 @@ public class PdcSearchRequestRouterHelper {
     return newValueId;
   }
 
-  private static List buildICentersList(PdcSearchSessionController pdcSC) {
+  private static List<InterestCenter> buildICentersList(PdcSearchSessionController pdcSC) {
     return pdcSC.getICenters();
   }
 

@@ -48,6 +48,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
   public static final int FATAL = SilverTrace.TRACE_LEVEL_FATAL;
   public static final int ERROR = SilverTrace.TRACE_LEVEL_ERROR;
   public static final int WARNING = SilverTrace.TRACE_LEVEL_WARN;
+  private static final long serialVersionUID = -981770983716177578L;
 
   private int errorLevel = ERROR;
   private Exception nested = null;
