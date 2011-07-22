@@ -124,23 +124,21 @@
       Iterator itAttachments = attachments.iterator();
 
       if (itAttachments.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
-        Board board = gef.getBoard();
-        out.println(board.printBefore());
+        
 
         int nbAttachmentPerLine = 3;
 
         if (attachmentPosition != null && "right".equals(attachmentPosition)) {
-          out.println("<table class=\"attachments\">");
-          out.println("<tr><td class=\"header\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></td></tr>");
+          out.println("<div class=\"attachments bgDegradeGris\">");
+          out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
         } else {
-          out.println("<TABLE border=\"0\">");
-          out.println(
-              "<tr><td align=\"center\" colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\"/></td></tr>");
+     		 out.println("<div class=\"attachments bgDegradeGris\">");
+         	 out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
         }
 
 
         int a = 1;
-        out.println("<tr><td>");
+  
         out.println("<ul id=\"attachmentList\">");
         while (itAttachments.hasNext()) {
           String author = "";
@@ -155,7 +153,7 @@
           }
 
           if ("bottom".equals(attachmentPosition) && a == 1) {
-            out.println("<tr id=\"attachment" + attachmentDetail.getPK().getId() + "\">");
+           /* out.println("<tr id=\"attachment" + attachmentDetail.getPK().getId() + "\">");*/
           } else if ("right".equals(attachmentPosition)) {
             out.println(
                 "<li id=\"attachment_" + attachmentDetail.getPK().getId() + "\" class=\"attachmentListItem\" "+iconStyle+">");
@@ -226,53 +224,54 @@
           
           if (contextualMenuEnabled) {
            	if (attachmentDetail.isReadOnly()) {
-              out.println("<div class=\"workerInfo\" id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:visible\">" + attResources.
+              out.println("<div class=\"workerInfo\" id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:visible\"> " + attResources.
                   getString("readOnly") + " " + m_MainSessionCtrl.getOrganizationController().
                   getUserDetail(attachmentDetail.getWorkerId()).getDisplayedName() + " " + attResources.
                   getString("at") + " " + attResources.getOutputDate(attachmentDetail.
                   getReservationDate()) + "</div>");
             } else {
               out.println(
-                  "<div class=\"workerInfo\" class=\"\" id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:hidden\"></div>");
+                  "<div class=\"workerInfo\"  id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:hidden\"> </div>");
             }
           }
 
           if (attachmentDetail.isSpinfireDocument(contentLanguage) && spinfireViewerEnable) {
-%>
-
-<div id="switchView" name="switchView" style="display: none">
-  <a href="#" onClick="changeView3d(<%=attachmentDetail.getPK().getId()%>)"><img name="iconeView<%=attachmentDetail.getPK().getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
-</div>
-<div id="<%=attachmentDetail.getPK().getId()%>" style="display: none">
-  <OBJECT classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
-    <PARAM NAME="ModelName" VALUE="<%=url%>">
-    <PARAM NAME="BorderWidth" VALUE="1">
-    <PARAM NAME="ReferenceFrame" VALUE="1">
-    <PARAM NAME="ViewportActiveBorder" VALUE="FALSE">
-    <PARAM NAME="DisplayMessages" VALUE="TRUE">
-    <PARAM NAME="DisplayInfo" VALUE="TRUE">
-    <PARAM NAME="SpinX" VALUE="0">
-    <PARAM NAME="SpinY" VALUE="0">
-    <PARAM NAME="SpinZ" VALUE="0">
-    <PARAM NAME="AnimateTransitions" VALUE="0">
-    <PARAM NAME="ZoomFit" VALUE="1">
-  </OBJECT>
-</div>
-<br/>
-<%
-        }
+			%>		
+					
+					<div id="switchView" name="switchView" style="display: none">
+					  <a href="#" onClick="changeView3d(<%=attachmentDetail.getPK().getId()%>)"><img name="iconeView<%=attachmentDetail.getPK().getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
+					</div>
+					<div id="<%=attachmentDetail.getPK().getId()%>" style="display: none">
+						  <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
+						          width="300" height="200" id="XV" >
+								    <param name="ModelName" value="<%=url%>">
+								    <param name="BorderWidth" value="1">
+								    <param name="ReferenceFrame" value="1">
+								    <param name="ViewportActiveBorder" value="FALSE">
+								    <param name="DisplayMessages" value="TRUE">
+								    <param name="DisplayInfo" value="TRUE">
+								    <param name="SpinX" value="0">
+								    <param name="SpinY" value="0">
+								    <param name="SpinZ" value="0">
+								    <param name="AnimateTransitions" value="0">
+								    <param name="ZoomFit" value="1">
+						  </object>
+					</div>
+					<br/>
+					<%
+		}
 
         if ("bottom".equals(attachmentPosition) && a < nbAttachmentPerLine) {
-          out.println("<td width=\"30\">&nbsp;</td>");
+          /*out.println("<td width=\"30\">&nbsp;</td>");*/
         } else if ("right".equals(attachmentPosition)) {
             out.println("</li>");
           }
 
         if ("bottom".equals(attachmentPosition) && a == nbAttachmentPerLine) {
-          out.println("</tr>");
+          /* out.println("</tr>");*/
           if (itAttachments.hasNext()) {
-            out.println(
-                "<tr><td colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\">&nbsp;</td></tr>");
+             /*out.println(
+                "<tr><td colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\">&nbsp;</td></tr>");*/
           }
         }
           
@@ -284,24 +283,24 @@
         }
       }
       out.println("</ul>");
-      out.println("</td></tr>");
+
 %>
 <% if (contextualMenuEnabled && dragAndDropEnable) {
       ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
       String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 %>
-<tr><td class="dragNdrop">
-    <a href="javascript:showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
-    <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
-  </td>
-</tr>
+
+	<div class="dragNdrop">
+    	<a href="javascript:showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=attResources.getString("GML.DragNDropExpand")%></a>
+    	<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
+	</div>
+
   <% }%>
   <% if (contextualMenuEnabled && !dragAndDropEnable) {%>
-<tr><td class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add")%>...</a></td></tr>
+		<div class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add")%>...</a></div>
     <% }%>
     <%
-            out.println("</table>");
-            out.println(board.printAfter());
+            out.println("</div><!--/ATTACHMENTS -->");
           }
     %>
 <div id="attachmentModalDialog" style="display: none"></div>
