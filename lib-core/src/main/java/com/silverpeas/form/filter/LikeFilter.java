@@ -56,7 +56,7 @@ public class LikeFilter implements FieldFilter {
     }
 
     String normalized = tested.getValue("");
-    if (normalized == null){
+    if (normalized == null) {
       return false;
     } else {
       normalized = normalized.trim().toLowerCase();
