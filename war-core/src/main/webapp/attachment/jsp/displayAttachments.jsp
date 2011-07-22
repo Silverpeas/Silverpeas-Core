@@ -304,7 +304,7 @@
             out.println(board.printAfter());
           }
     %>
-<div id="attachmentModalDialog" style="display: none"/>
+<div id="attachmentModalDialog" style="display: none"></div>
 <% if (spinfireViewerEnable) {%>
 <script type="text/javascript">
   if (navigator.appName=='Microsoft Internet Explorer')
