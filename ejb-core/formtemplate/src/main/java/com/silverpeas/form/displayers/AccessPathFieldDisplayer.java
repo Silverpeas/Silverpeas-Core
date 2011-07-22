@@ -73,9 +73,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out,
-      FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext) throws java.io.IOException {
     // not applicable
   }
 
@@ -88,48 +86,39 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
    * </UL>
    */
   @Override
-  public void display(PrintWriter out,
-      Field field,
-      FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+  public void display(PrintWriter out, Field field, FieldTemplate template, PagesContext PagesContext) throws FormException {
     String value = null;
-    String html = "";
+    StringBuilder html = new StringBuilder();
 
     String fieldName = template.getFieldName();
-    AccessPathField accessPathField = null;
-
+     String currentAccessPath = "";
     if (!AccessPathField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "AccessPathFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           AccessPathField.TYPE);
     } else {
-      accessPathField = (AccessPathField) field;
+      currentAccessPath = ((AccessPathField)field).getAccessPath(PagesContext.getComponentId(),
+        PagesContext.getNodeId(), PagesContext.getContentLanguage());
     }
 
     if (!field.isNull()) {
       value = field.getValue(PagesContext.getLanguage());
     }
-
-    String currentAccessPath = accessPathField.getAccessPath(PagesContext.getComponentId(),
-        PagesContext.getNodeId(),
-        PagesContext.getContentLanguage());
-
-    html += "<input id=\"" + fieldName + "\" name=\"" + fieldName + "\" type=\"text\" size=\"80\"";
+    html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName).append(
+        "\" type=\"text\" size=\"80\"");
     if (value != null) {
-      html += " value=\"" + value + "\"";
+      html.append(" value=\"").append(value).append("\"");
     } else {
-      html += " value=\"" + currentAccessPath + "\"";
+      html.append(" value=\"").append(currentAccessPath).append("\"");
     }
     if (template.isDisabled() || template.isReadOnly()) {
-      html += " disabled=\"disabled\"";
+      html.append(" disabled=\"disabled\"");
     }
-    html += "/>\n";
+    html.append("/>\n");
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-        !template.isHidden() && PagesContext.
-        useMandatory()) {
-      html += Util.getMandatorySnippet();
+        !template.isHidden() && PagesContext.useMandatory()) {
+      html.append(Util.getMandatorySnippet());
     }
-
     out.println(html);
   }
 
