@@ -383,7 +383,7 @@
 				                                     id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>
 								                 <% if (contextualMenuEnabled && !useContextualMenu) { %>
 				          							<img id="edit_<%=document.getPk().getId() %>"
-				                             src="<%=m_context %>/util/icons/arrow/open.gif" class="moreActions"/>
+				                             src="<%=m_context %>/util/icons/arrow/menuAttachment.gif" class="moreActions"/>
 				          						 <% } %>
 												</span>
 												
