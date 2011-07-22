@@ -34,7 +34,7 @@ import com.silverpeas.form.FormException;
  * @see FieldDisplayer
  */
 public class FileField implements Field {
-  
+
   private static final long serialVersionUID = -6926466281028971482L;
   /**
    * The text field type name.
@@ -214,8 +214,9 @@ public class FileField implements Field {
     if (o instanceof FileField) {
       String t = ((FileField) o).getAttachmentId();
       return ((s == null && t == null) || s.equals(t));
-    } else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -224,26 +225,31 @@ public class FileField implements Field {
   @Override
   public int compareTo(Object o) {
     String s = getValue();
-    if (s == null)
+    if (s == null) {
       s = "";
+    }
 
     if (o instanceof FileField) {
       String t = ((FileField) o).getValue();
-      if (t == null)
+      if (t == null) {
         t = "";
+      }
 
       if (s.equals(t)) {
         s = getAttachmentId();
-        if (s == null)
+        if (s == null) {
           s = "";
+        }
         t = ((FileField) o).getAttachmentId();
-        if (t == null)
+        if (t == null) {
           t = "";
+        }
       }
 
       return s.compareTo(t);
-    } else
+    } else {
       return -1;
+    }
   }
 
   @Override
