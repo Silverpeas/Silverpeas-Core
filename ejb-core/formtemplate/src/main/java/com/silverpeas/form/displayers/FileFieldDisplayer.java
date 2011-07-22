@@ -317,7 +317,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
             mimeType = "application/xview3d-3d";
           }
         }
-        physicalName = new Long(new Date().getTime()).toString() + "." + type;
+        physicalName = System.currentTimeMillis() + "." + type;
         String path = "";
         if (pagesContext.isVersioningUsed()) {
           path = versioningUtil.createPath("useless", componentId, "useless");
@@ -449,7 +449,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
       workers.add(worker);
     }
 
-    Worker lastWorker = (Worker) workers.get(workers.size() - 1);
+    Worker lastWorker = workers.get(workers.size() - 1);
     lastWorker.setApproval(true);
 
     return workers;
@@ -458,9 +458,8 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
   private VersioningBm getVersioningBm() {
     if (versioningBm == null) {
       try {
-        VersioningBmHome vscEjbHome =
-            (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-                VersioningBmHome.class);
+        VersioningBmHome vscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
+            VersioningBmHome.class);
         versioningBm = vscEjbHome.create();
       } catch (Exception e) {
         // NEED

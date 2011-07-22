@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -42,18 +36,18 @@ import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 
 /**
+ * <p/>
  * @author ehugonnet
  */
 public abstract class AbstractFieldDisplayer implements FieldDisplayer {
 
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    String value =
-        FileUploadUtil
-        .getParameter(items, template.getFieldName(), null, pageContext.getEncoding());
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-        !StringUtil.isDefined(value)) {
+          PagesContext pageContext) throws FormException {
+    String value = FileUploadUtil.getParameter(items, template.getFieldName(), null, pageContext.
+            getEncoding());
+    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
+            && !StringUtil.isDefined(value)) {
       return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
@@ -61,7 +55,7 @@ public abstract class AbstractFieldDisplayer implements FieldDisplayer {
 
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, Field field,
-      String language) {
+          String language) {
     if (field != null) {
       String value = field.getStringValue();
       if (value != null) {
@@ -71,5 +65,4 @@ public abstract class AbstractFieldDisplayer implements FieldDisplayer {
       }
     }
   }
-
 }

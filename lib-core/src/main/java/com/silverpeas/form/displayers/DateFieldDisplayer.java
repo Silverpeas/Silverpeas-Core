@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import java.io.IOException;
@@ -52,6 +51,7 @@ import com.stratelia.webactiv.util.DateUtil;
 /**
  * A DateFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
  * to a end user and can retrieve via HTTP any updated value.
+ * <p/>
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -69,7 +69,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[] { DateField.TYPE };
+    return new String[]{DateField.TYPE};
   }
 
   /**
@@ -84,36 +84,36 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws IOException {
+          throws IOException {
     String language = pagesContext.getLanguage();
 
     if (!template.getTypeName().equals(DateField.TYPE)) {
       SilverTrace.info("form", "DateFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          DateField.TYPE);
+              DateField.TYPE);
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("			errorMsg+=\"  - '" +
-          EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n \";");
+      out.println("			errorMsg+=\"  - '"
+              + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+              + Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("			errorNb++;");
       out.println("		}");
     }
     out.println("		if (! isWhitespace(stripInitialWhitespace(field.value))) {");
-    out.println("			if (! isCorrectDate(extractYear(field.value, '" + language +
-        "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language +
-        "'))) {");
-    out.println("				errorMsg+=\"  - '" +
-        EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " +
-        Util.getString("GML.MustContainsCorrectDate", language) + "\\n \";");
+    out.println("			if (! isCorrectDate(extractYear(field.value, '" + language
+            + "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language
+            + "'))) {");
+    out.println("				errorMsg+=\"  - '"
+            + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+            + Util.getString("GML.MustContainsCorrectDate", language) + "\\n \";");
     out.println("				errorNb++;");
     out.println("		}}");
 
     out.println("		if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
-    out.println("			errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-        Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " " +
-        Util.getString("Characters", language) + "\\n \";");
+    out.println("			errorMsg+=\"  - '" + template.getLabel(language) + "' "
+            + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
+            + Util.getString("Characters", language) + "\\n \";");
     out.println("			errorNb++;");
     out.println("		}");
 
@@ -130,10 +130,10 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    */
   @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
+          PagesContext pagesContext) throws FormException {
     if (!field.getTypeName().equals(DateField.TYPE)) {
       SilverTrace.info("form", "DateFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          DateField.TYPE);
+              DateField.TYPE);
     }
 
     String language = pagesContext.getLanguage();
@@ -143,18 +143,21 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
 
     if (parameters.containsKey("class")) {
       cssClass = parameters.get("class");
-      if (StringUtil.isDefined(cssClass))
+      if (StringUtil.isDefined(cssClass)) {
         cssClass = "class=\"" + cssClass + "\"";
+      }
     }
 
     String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
     String defaultValue = "";
-    if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues())
+    if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues()) {
       defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
+    }
 
     String value = (!field.isNull() ? field.getValue(language) : defaultValue);
-    if (pagesContext.isBlankFieldsUse())
+    if (pagesContext.isBlankFieldsUse()) {
       value = "";
+    }
 
     input inputField = new input();
     inputField.setID(fieldName);
@@ -162,7 +165,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
     inputField.setType(template.isHidden() ? input.hidden : input.text);
     inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
-        : "10");
+            : "10");
     inputField.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
     if (parameters.containsKey("border")) {
       inputField.setBorder(Integer.parseInt(parameters.get("border")));
@@ -213,12 +216,12 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    */
   @Override
   public List<String> update(String newValue, Field field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
+          PagesContext pagesContext) throws FormException {
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
       throw new FormException("DateFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          DateField.TYPE);
+              DateField.TYPE);
     }
     return new ArrayList<String>();
   }
@@ -232,5 +235,4 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }
-
 }

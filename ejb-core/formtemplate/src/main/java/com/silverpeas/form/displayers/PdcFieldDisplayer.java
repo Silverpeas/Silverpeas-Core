@@ -231,15 +231,10 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     // Header
     TR headerLine = new TR();
     ResourceLocator resource = GeneralPropertiesManager.getGeneralMultilang(language);
-    ResourcesWrapper pdcResource = new ResourcesWrapper(
-        new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
-        new ResourceLocator(ICONS_RESOURCE_PATH, language),
-        language);
+    ResourcesWrapper pdcResource = new ResourcesWrapper(new ResourceLocator(MULTILANG_RESOURCE_PATH, language), new ResourceLocator(ICONS_RESOURCE_PATH, language), language);
     String[] headerLabelsData = {
         "GML.type", "GML.name", "pdcPeas.baseValue", "GML.requiredField", "pdcPeas.variant" };
-    String headerLabelKey;
-    for (int i = 0; i < headerLabelsData.length; i++) {
-      headerLabelKey = headerLabelsData[i];
+    for (String headerLabelKey : headerLabelsData) {
       TD headerCell = new TD();
       headerCell.setClass("ArrayColumn");
       headerCell.addElement(headerLabelKey.startsWith("pdc")
@@ -259,7 +254,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     if (value != null && value.length() > 0) {
       ArrayList<UsedAxis> usedAxisList = getUsedAxisList(value);
       usedAxisCount = usedAxisList.size();
-      if (usedAxisCount > 0) {
+      if (!usedAxisList.isEmpty()) {
         // Axis list.
         UsedAxis usedAxis;
         String usedAxisId;
@@ -576,8 +571,8 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
 
         UL valuesUl = new UL();
         List<ClassifyValue> classifyValues = position.getValues();
-        for (int j = 0; j < classifyValues.size(); j++) {
-          value = (ClassifyValue) classifyValues.get(j);
+        for (ClassifyValue classifyValue : classifyValues) {
+          value = classifyValue;
           LI valueLi = new LI();
           valueLi.addElement(getValuesPath(value, language));
           valuesUl.addElement(valueLi);
@@ -607,7 +602,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
    */
   private String getValuesPath(ClassifyValue value, String language) {
     String pathSeparator = " / ";
-    List<Value> values = (List<Value>) value.getFullPath();
+    List<Value> values = value.getFullPath();
     if (values.isEmpty()) {
       return pathSeparator;
     }
@@ -683,7 +678,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
    */
   private PdcBm getPdcBm() {
     if (pdcBm == null) {
-      pdcBm = (PdcBm) new PdcBmImpl();
+      pdcBm = new PdcBmImpl();
     }
     return pdcBm;
   }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
@@ -47,7 +46,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can
- * retrieve via HTTP any updated value.
+ * retrieve via HTTP any updated value. <p/> <p/>
+ * <p/>
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -59,10 +59,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-
-    s[0] = GroupField.TYPE;
-    return s;
+    return new String[]{GroupField.TYPE};
   }
 
   /**
@@ -70,30 +67,29 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the fieldName is unknown by the template.</li>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
    */
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
+          PagesContext PagesContext) throws java.io.IOException {
     String language = PagesContext.getLanguage();
 
-    if (!template.getTypeName().equals(GroupField.TYPE)) {
+    if (!GroupField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "GroupFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
-
+              "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
     }
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '"
-          + EncodeHelper.javaStringToJsString(template.getLabel(language))
-          + "' " + Util.getString("GML.MustBeFilled", language)
-          + "\\n \";");
+              + EncodeHelper.javaStringToJsString(template.getLabel(language))
+              + "' " + Util.getString("GML.MustBeFilled", language)
+              + "\\n \";");
       out.println("      errorNb++;");
       out.println("   }");
     }
-
     Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
   }
 
@@ -101,15 +97,16 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
    */
+  @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+          PagesContext PagesContext) throws FormException {
     SilverTrace.info("form", "GroupFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
-        ", fieldType = " + field.getTypeName());
+            "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
+            + ", fieldType = " + field.getTypeName());
 
     String language = PagesContext.getLanguage();
     String selectGroupImg = Util.getIcon("groupPanel");
@@ -119,80 +116,71 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
 
     String groupName = "";
     String groupId = "";
-    String html = "";
+    StringBuilder html = new StringBuilder();
 
     String fieldName = template.getFieldName();
 
-    if (!field.getTypeName().equals(GroupField.TYPE)) {
+    if (!GroupField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "GroupFieldDisplayer.display",
-          "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
+              "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
     } else {
       groupId = ((GroupField) field).getGroupId();
     }
     if (!field.isNull()) {
       groupName = field.getValue();
     }
-    html +=
-        "<input type=\"hidden\""
-        + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
-        EncodeHelper.javaStringToHtmlString(groupId) + "\" />";
+    html.append("<input type=\"hidden\"" + " id=\"").append(fieldName).append("\" name=\"").
+            append(fieldName).append("\" value=\"").
+            append(EncodeHelper.javaStringToHtmlString(groupId)).append("\" />");
 
     if (!template.isHidden()) {
-      html +=
-          "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
-          + " id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\"" +
-          EncodeHelper.javaStringToHtmlString(groupName) + "\" />";
+      html.append("<input type=\"text\" disabled=\"disabled\" size=\"50\" " + " id=\"").
+              append(fieldName).append("_name\" name=\"").append(fieldName).
+              append("$$name\" value=\"").
+              append(EncodeHelper.javaStringToHtmlString(groupName)).append("\" />");
     }
 
-    if (!template.isHidden() && !template.isDisabled()
-        && !template.isReadOnly()) {
-      html +=
-          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
-          URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
-          + "?formName=" + PagesContext.getFormName()
-          + "&elementId=" + fieldName
-          + "&elementName=" + fieldName + "_name"
-          + "&selectable=" + SelectionUsersGroups.GROUP
-          + "&selectedGroup=" + ((groupId == null) ? "" : groupId)
-          + "','selectGroup',800,600,'');\" >";
-      html += "<img src=\""
-          + selectGroupImg
-          + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + selectGroupLab + "\" align=\"top\" title=\""
-          + selectGroupLab + "\"/></a>";
-      html +=
-          "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document." + PagesContext.getFormName() + "." + fieldName + ".value='';"
-          + "document." + PagesContext.getFormName() + "." + fieldName + "$$name" +
-          ".value='';"
-          + "\">";
-      html += "<img src=\""
-          + deleteImg
-          + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + deleteLab + "\" align=\"top\" title=\""
-          + deleteLab + "\"/></a>";
+    if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
+      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('").
+              append(URLManager.getApplicationURL()).
+              append("/RselectionPeasWrapper/jsp/open" + "?formName=").
+              append(PagesContext.getFormName()).append("&elementId=").append(fieldName).
+              append("&elementName=").append(fieldName).append("_name" + "&selectable=").
+              append(SelectionUsersGroups.GROUP).append("&selectedGroup=").
+              append((groupId == null) ? "" : groupId).append("','selectGroup',800,600,'');\" >");
+      html.append("<img src=\"").append(selectGroupImg).
+              append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(selectGroupLab).
+              append("\" align=\"top\" title=\"").append(selectGroupLab).append("\"/></a>");
+      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.").
+              append(PagesContext.getFormName()).append(".").append(fieldName).
+              append(".value='';" + "document.").append(PagesContext.getFormName()).append(".").
+              append(fieldName).append("$$name"
+              + ".value='';"
+              + "\">");
+      html.append("<img src=\"").append(deleteImg).append(
+              "\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).append(
+              "\" align=\"top\" title=\"").append(deleteLab).append("\"/></a>");
 
       if (template.isMandatory() && PagesContext.useMandatory()) {
-        html += Util.getMandatorySnippet();
+        html.append(Util.getMandatorySnippet());
       }
     }
 
     out.println(html);
   }
 
-  public List<String> update(String newId, Field field,
-      FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
-
+  @Override
+  public List<String> update(String newId, Field field, FieldTemplate template,
+          PagesContext pagesContext) throws FormException {
     if (field.getTypeName().equals(GroupField.TYPE)) {
-      if (newId == null || newId.trim().equals("")) {
+      if (!StringUtil.isDefined(newId)) {
         field.setNull();
       } else {
         ((GroupField) field).setGroupId(newId);
       }
     } else {
       throw new FormException("GroupFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          GroupField.TYPE);
+              GroupField.TYPE);
     }
     return new ArrayList<String>();
   }
@@ -201,6 +189,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
@@ -209,20 +198,20 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 2;
   }
 
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
+          PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-        !StringUtil.isDefined(value)) {
+    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
+            && !StringUtil.isDefined(value)) {
       return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
   }
-
 }

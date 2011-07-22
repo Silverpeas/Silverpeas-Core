@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
@@ -39,6 +38,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
@@ -46,6 +46,7 @@ import org.apache.commons.fileupload.FileItem;
 /**
  * A CheckBoxDisplayer is an object which can display a checkbox in HTML the content of a checkbox
  * to a end user and can retrieve via HTTP any updated value.
+ * <p/>
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -73,34 +74,38 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the fieldName is unknown by the template.
+   * <li>the field type is not a managed type.
+   * </ul>
+   * @param out 
+   * @param template
+   * @param pagesContext 
+   * @throws IOException  
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws java.io.IOException {
+          throws IOException {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "CheckBoxDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+              TextField.TYPE);
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println(" var checked = false;\n");
-      out.println(" for (var i = 0; i < " + getNbHtmlObjectsDisplayed(template, pagesContext) +
-          "; i++) {\n");
+      out.println(" for (var i = 0; i < " + getNbHtmlObjectsDisplayed(template, pagesContext)
+              + "; i++) {\n");
       out.println("   if (document.getElementsByName('" + fieldName + "')[i].checked) {\n");
       out.println("     checked = true;\n");
       out.println("   }\n");
       out.println(" }\n");
       out.println(" if(checked == false) {\n");
-      out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled",
-          language) + "\\n \";");
+      out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' "
+              + Util.getString("GML.MustBeFilled",
+              language) + "\\n \";");
       out.println("   errorNb++;");
       out.println(" }");
     }
@@ -112,18 +117,23 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
+   * @param out
+   * @param field 
+   * @param template
+   * @param PagesContext
+   * @throws FormException  
    */
   @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+          PagesContext PagesContext) throws FormException {
     String selectedValues = "";
     List<String> valuesFromDB = new ArrayList<String>();
     String keys = "";
     String values = "";
-    String html = "";
+    StringBuilder html = new StringBuilder();
     int cols = 1;
     String language = PagesContext.getLanguage();
     String cssClass = null;
@@ -133,7 +143,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "CheckBoxDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+              TextField.TYPE);
     }
 
     if (!field.isNull()) {
@@ -155,8 +165,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
     if (parameters.containsKey("class")) {
       cssClass = parameters.get("class");
-      if (StringUtil.isDefined(cssClass))
+      if (StringUtil.isDefined(cssClass)) {
         cssClass = "class=\"" + cssClass + "\"";
+      }
     }
 
     try {
@@ -165,16 +176,16 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
-          parameters.get("cols"));
+              parameters.get("cols"));
       cols = 1;
     }
 
     // if either keys or values is not filled
     // take the same for keys and values
-    if (keys.equals("") && !values.equals("")) {
+    if ("".equals(keys) && !"".equals(values)) {
       keys = values;
     }
-    if (values.equals("") && !keys.equals("")) {
+    if ("".equals(values) && !"".equals(keys)) {
       values = keys;
     }
 
@@ -186,65 +197,56 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
     if (stKeys.countTokens() != stValues.countTokens()) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
-          "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
+              "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
     } else {
-      html += "<table border=\"0\">";
+      html.append("<table border=\"0\">");
       int col = 0;
       for (int i = 0; i < nbTokens; i++) {
         if (col == 0) {
-          html += "<tr>";
+          html.append("<tr>");
         }
 
         col++;
-        html += "<td>";
+        html.append("<td>");
         optKey = stKeys.nextToken();
         optValue = stValues.nextToken();
-
-        html +=
-            "<input type=\"checkbox\" id=\"" + fieldName + "_" + i + "\" name=\"" + fieldName +
-            "\" value=\"" + optKey + "\" ";
-
+        html.append("<input type=\"checkbox\" id=\"").append(fieldName).append("_").append(i);
+        html.append("\" name=\"").append(fieldName).append("\" value=\"").append(optKey).append("\" ");
         if (template.isDisabled() || template.isReadOnly()) {
-          html += " disabled=\"disabled\" ";
+          html.append(" disabled=\"disabled\" ");
         }
-
         if (valuesFromDB.contains(optKey)) {
-          html += " checked=\"checked\" ";
+          html.append(" checked=\"checked\" ");
         }
-
-        html += "/>&nbsp;" + optValue;
+        html.append("/>&nbsp;").append(optValue);
 
         // last checkBox
         if (i == nbTokens - 1) {
-          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-              !template.isHidden() && PagesContext.useMandatory()) {
-            html += Util.getMandatorySnippet();
+          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+                  && !template.isHidden() && PagesContext.useMandatory()) {
+            html.append(Util.getMandatorySnippet());
           }
         }
-        html += "</td>";
-
-        html += "\n";
-
+        html.append("</td>");
+        html.append("\n");
         if (col == cols) {
-          html += "</tr>";
+          html.append("</tr>");
           col = 0;
         }
       }
-
       if (col != 0) {
-        html += "</tr>";
+        html.append("</tr>");
       }
-
-      html += "</table>";
+      html.append("</table>");
     }
     out.println(html);
   }
 
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
+          PagesContext pageContext) throws FormException {
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
-        "parameterName = " + template.getFieldName());
+            "parameterName = " + template.getFieldName());
     String value = "";
     Iterator<FileItem> iter = items.iterator();
     String parameterName = template.getFieldName();
@@ -258,9 +260,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       }
     }
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_EXIT_METHOD",
-        "parameterValue = " + value);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-        !StringUtil.isDefined(value)) {
+            "parameterValue = " + value);
+    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
+            && !StringUtil.isDefined(value)) {
       return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
@@ -268,11 +270,10 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
   @Override
   public List<String> update(String values, Field field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
-
+          PagesContext PagesContext) throws FormException {
     if (!field.getTypeName().equals(TextField.TYPE)) {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+              TextField.TYPE);
     }
 
     String valuesToInsert = values;
@@ -281,7 +282,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       field.setValue(valuesToInsert, PagesContext.getLanguage());
     } else {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          TextField.TYPE);
+              TextField.TYPE);
     }
     return new ArrayList<String>();
   }
