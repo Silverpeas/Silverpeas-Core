@@ -2331,7 +2331,7 @@ td.browsebar a:hover {
 }
 
 .attachments {
-	min-width: 150px;
+	min-width: 310px;
 	position:relative;
 }
 
@@ -3696,7 +3696,7 @@ ul#attachmentList li.attachmentListItem .workerInfo {
 ul#attachmentList li.attachmentListItem .fileName {
     margin-left: 24px;
     padding-left: 5px;
-    border-left: 3px solid #EAEAEA;
+    border-left: 3px solid #9BD94A;
     display: block;
     color: #666;
 }
@@ -3705,7 +3705,7 @@ ul#attachmentList li.attachmentListItem .description {
     margin-left: 24px;
     padding-left: 5px;
     margin-top: 2px;
-    border-left: 3px solid #EAEAEA;
+    border-left: 3px solid #9BD94A;
     display: block;
     color: #666;
 }
