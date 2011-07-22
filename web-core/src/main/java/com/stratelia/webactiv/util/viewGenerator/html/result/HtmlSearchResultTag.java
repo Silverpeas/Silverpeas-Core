@@ -24,14 +24,14 @@
 package com.stratelia.webactiv.util.viewGenerator.html.result;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.ResultDisplayerFactory;
@@ -55,6 +55,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class HtmlSearchResultTag extends TagSupport {
   private static final long serialVersionUID = -7747695403360864218L;
 
+  private static final String PDC_BUNDLE_PREFIX_KEY = "result.template.";
+  protected static final String RESULT_TEMPLATE_ALL = "ALL";
+  protected static final String RESULT_TEMPLATE_NONE = "NONE";
+
   /*
    * List of Tag attributes
    */
@@ -69,6 +73,7 @@ public class HtmlSearchResultTag extends TagSupport {
    */
   private OrganizationController orga = new OrganizationController();
   private ResourcesWrapper settings = null;
+  private Map<String, Boolean> componentSettings = new HashMap<String, Boolean>();
 
   @Override
   public int doStartTag() throws JspException {
@@ -172,9 +177,9 @@ public class HtmlSearchResultTag extends TagSupport {
       // Check if this component has a specific template result
       ComponentInstLight component = orga.getComponentInstLight(instanceId);
       componentName = component.getName();
-      WAComponent waComp = Instanciateur.getWAComponent(componentName);
 
-      if (waComp.isSearchTemplating()) {
+      boolean processResultTemplating = isResultTemplating(instanceId, componentName);
+      if (processResultTemplating) {
         // Retrieve the component result displayer class from a factory
         ResultDisplayer resultDisplayer =
             ResultDisplayerFactory.getResultDisplayerFactory().getResultDisplayer(componentName);
@@ -189,6 +194,36 @@ public class HtmlSearchResultTag extends TagSupport {
       }
     }
     return generateHTMLSearchResult(settings, componentName, addedInformation);
+  }
+
+  /**
+   * Check if a component instance must process a specific result template. Then this method adds
+   * the result of this check inside a cache.
+   * @param instanceId : the component instance identifier
+   * @param componentName : the component name
+   * @return true if this instance need to generate a specific result template, false else if
+   * @throws JspTagException
+   */
+  private boolean isResultTemplating(String instanceId, String componentName)
+      throws JspTagException {
+    boolean doResultTemplating = false;
+    Boolean cacheResult = componentSettings.get(componentName);
+    if (cacheResult != null) {
+      return cacheResult.booleanValue();
+    } else {
+      String compConfig = PDC_BUNDLE_PREFIX_KEY + componentName;
+      String listComponent = getSettings().getSetting(compConfig, "");
+      if (StringUtil.isDefined(listComponent)) {
+        for (String curInstanceId : listComponent.split(",")) {
+          if (curInstanceId.equals(instanceId) || RESULT_TEMPLATE_ALL.equals(curInstanceId)) {
+            componentSettings.put(instanceId, Boolean.TRUE);
+            return true;
+          }
+        }
+      }
+      componentSettings.put(instanceId, Boolean.FALSE);
+      return doResultTemplating;
+    }
   }
 
   /**
