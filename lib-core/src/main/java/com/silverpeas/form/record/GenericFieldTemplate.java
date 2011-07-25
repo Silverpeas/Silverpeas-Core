@@ -161,10 +161,10 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public String getLabel() {
-    if (defaultLabel == null)
-      return ""/* fieldName */;
-    else
+    if (defaultLabel != null) {
       return defaultLabel;
+    } 
+    return "";
   }
 
   /**
@@ -173,13 +173,15 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @Override
   public String getLabel(String language) {
     String label = null;
-    if (getLabels() != null)
-      label = (String) getLabels().get(language);
+    if (getLabels() != null) {
+      label = getLabels().get(language);
+    }
 
-    if (label == null)
+    if (label == null) {
       return getLabel();
-    else
+    } else {
       return label;
+    }
   }
 
   /**
@@ -191,10 +193,11 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       parameter = (String) getParameters(language).get(name);
     }
 
-    if (parameter == null)
+    if (parameter == null) {
       return "";
-    else
+    } else {
       return parameter;
+    }
   }
 
   /**
@@ -208,11 +211,12 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Adds a local label.
    */
   public void addLabel(String label, String language) {
-    if (language == null || language.trim().equals(""))
+    if (language == null || language.trim().equals("")) {
       setLabel(label);
-    else {
-      if (labels == null)
+    } else {
+      if (labels == null) {
         labels = new HashMap<String, String>();
+      }
       labels.put(language, label);
     }
   }
@@ -221,8 +225,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Adds a local parameter.
    */
   public void addParameter(String name, String value) {
-    if (parameters == null)
+    if (parameters == null) {
       parameters = new HashMap<String, String>();
+    }
     parameters.put(name, value);
   }
 
@@ -310,8 +315,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     Map<String, String> keyValuePairs = new HashMap<String, String>();
     Map<String, String> theParameters = getParameters(language);
 
-    if (theParameters == null)
+    if (theParameters == null) {
       return keyValuePairs;
+    }
 
     String keys = theParameters.get("keys");
     String values = theParameters.get("values");
@@ -380,11 +386,12 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     try {
       if (obj instanceof String) {
         return obj.equals(this.getFieldName());
-      } else if (obj instanceof GenericFieldTemplate)
+      } else if (obj instanceof GenericFieldTemplate) {
         return ((GenericFieldTemplate) obj).getFieldName().equals(
             this.getFieldName());
-      else
+      } else {
         return false;
+      }
     } catch (Exception e) {
       return false;
     }
@@ -397,8 +404,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   @Override
   public String[] getLanguages() {
-    if (labels == null)
+    if (labels == null) {
       return new String[0];
+    }
 
     List<String> langs = new ArrayList<String>();
     Iterator<String> iter = labels.keySet().iterator();

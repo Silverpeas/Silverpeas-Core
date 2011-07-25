@@ -89,15 +89,18 @@ public class GroupField implements Field {
   public String getValue() {
     SilverTrace.info("form", "GroupField.getValue", "root.MSG_GEN_PARAM_VALUE",
         "groupId = " + getGroupId());
-    if (getGroupId() == null)
+    if (getGroupId() == null) {
       return null;
-    if (getGroupId().equals(""))
+    }
+    if (getGroupId().equals("")) {
       return "";
+    }
 
     Group group = organizationController.getGroup(getGroupId());
 
-    if (group == null)
+    if (group == null) {
       return "group(" + getGroupId() + ")";
+    }
 
     return group.getName();
   }
@@ -140,8 +143,9 @@ public class GroupField implements Field {
    * Returns the Group referenced by this field.
    */
   public Object getObjectValue() {
-    if (getGroupId() == null)
+    if (getGroupId() == null) {
       return null;
+    }
 
     return organizationController.getGroup(getGroupId());
   }
@@ -163,10 +167,11 @@ public class GroupField implements Field {
    * Returns true if the value is a String and this field isn't read only.
    */
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof Group)
+    if (value instanceof Group) {
       return !isReadOnly();
-    else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -227,26 +232,30 @@ public class GroupField implements Field {
    */
   public int compareTo(Object o) {
     String s = getValue();
-    if (s == null)
+    if (s == null) {
       s = "";
+    }
 
     if (o instanceof GroupField) {
       String t = ((GroupField) o).getValue();
-      if (t == null)
+      if (t == null) {
         t = "";
+      }
 
       if (s.equals(t)) {
         s = getGroupId();
-        if (s == null)
+        if (s == null) {
           s = "";
+        }
         t = ((GroupField) o).getGroupId();
-        if (t == null)
+        if (t == null) {
           t = "";
+        }
       }
-
       return s.compareTo(t);
-    } else
+    } else {
       return -1;
+    }
   }
 
   public int hashCode() {

@@ -24,7 +24,8 @@
 
 package com.silverpeas.form.filter;
 
-import com.silverpeas.form.*;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FormException;
 
 /**
  * RecordFilter

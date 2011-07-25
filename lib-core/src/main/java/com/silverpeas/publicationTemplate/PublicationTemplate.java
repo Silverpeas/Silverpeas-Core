@@ -31,13 +31,14 @@ import com.silverpeas.form.RecordTemplate;
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A
  * PublicationTemplate groups :
- * <OL>
- * <LI>a RecordTemplate which describes the built records.</LI>
- * <LI>a RecordSet of records built on this template,</LI>
- * <LI>an update Form used to create and update the publication items</LI>
- * <LI>a view Form used to show the publications.</LI>
- * <LI>a search form used to search the publication records.</LI>
- * </OL>
+ * <ol>
+ * <li>a RecordTemplate which describes the built records.</li>
+ * <li>a RecordSet of records built on this template,</li>
+ * <li>an update Form used to create and update the publication items</li>
+ * <li>a view Form used to show the publications.</li>
+ * <li>a search form used to search the publication records.</li>
+ * <li>a result search view form to add publication records inside search result display</li>
+ * </ol>
  */
 public interface PublicationTemplate {
 
@@ -93,4 +94,10 @@ public interface PublicationTemplate {
    * @return true if the records are searchable, false othersise.
    */
   public boolean isSearchable();
+
+  /**
+   * Returns the Form used to view the search result records built from this template.
+   */
+  public Form getSearchResultForm() throws PublicationTemplateException;
+
 }

@@ -97,8 +97,8 @@ public class TextFieldImpl extends TextField {
 
       SilverTrace.debug("formTemplate", "TextFieldImpl.getSuggestions",
           "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-          + ", componentId = " + componentId + ", templateName = "
-          + templateName);
+              + ", componentId = " + componentId + ", templateName = "
+              + templateName);
 
       rs = statement.executeQuery();
 
@@ -126,8 +126,8 @@ public class TextFieldImpl extends TextField {
 
   public static void printSuggestionsIncludes(PagesContext pageContext,
       String fieldName, PrintWriter out) {
-    int zindex = (pageContext.getLastFieldIndex() - new Integer(pageContext
-        .getCurrentFieldIndex()).intValue()) * 9000;
+    int zindex =
+        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex())) * 9000;
     out.println("<style type=\"text/css\">\n");
     out.println("	#listAutocomplete" + fieldName + " {\n");
     out.println("		width:15em;\n");
@@ -136,8 +136,8 @@ public class TextFieldImpl extends TextField {
     out.println("	#listAutocomplete" + fieldName + " {\n");
     out
         .println("		z-index:"
-        + zindex
-        + "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
+            + zindex
+            + "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
     out.println("	}\n");
     out.println("	#" + fieldName + " {\n");
     out.println("		_position:absolute; /* abs pos needed for ie quirks */\n");
@@ -170,20 +170,17 @@ public class TextFieldImpl extends TextField {
     out.println("	this.oAutoComp" + fieldName
         + " = new YAHOO.widget.AutoComplete('" + fieldName + "','container"
         + fieldName + "', this.oACDS" + fieldName + ");\n");
-    out.println("	this.oAutoComp" + fieldName
-        + ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
+    out.println("	this.oAutoComp" + fieldName +
+        ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
     out.println("	this.oAutoComp" + fieldName + ".typeAhead = true;\n");
     out.println("	this.oAutoComp" + fieldName + ".useShadow = true;\n");
     out.println("	this.oAutoComp" + fieldName + ".minQueryLength = 0;\n");
 
-    out.println("	this.oAutoComp" + fieldName
-        + ".textboxFocusEvent.subscribe(function(){\n");
-    out.println("		var sInputValue = YAHOO.util.Dom.get('" + fieldName
-        + "').value;\n");
+    out.println("	this.oAutoComp" + fieldName + ".textboxFocusEvent.subscribe(function(){\n");
+    out.println("		var sInputValue = YAHOO.util.Dom.get('" + fieldName + "').value;\n");
     out.println("		if(sInputValue.length == 0) {\n");
     out.println("			var oSelf = this;\n");
-    out
-        .println("			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
+    out.println("			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
     out.println("		}\n");
     out.println("	});\n");
     out.println("</script>\n");
