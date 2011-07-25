@@ -43,10 +43,11 @@ public class LessThenFilter implements FieldFilter {
    * Returns true if the given field is less then the reference.
    */
   public boolean match(Field tested) {
-    if (reference.isNull())
+    if (reference.isNull()) {
       return true;
-    else
+    } else {
       return tested.compareTo(reference) <= 0;
+    }
   }
 
   /**

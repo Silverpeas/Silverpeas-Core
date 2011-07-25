@@ -29,6 +29,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
+import com.silverpeas.util.StringUtil;
 
 /**
  * A PdcUserField stores a the users references
@@ -85,12 +86,9 @@ public class PdcUserField implements Field {
   public String getValue() {
     String theUserCardIds = getUserCardIds(); // userCardId-userId,userCardId-userId
     // ....
-
-    if (theUserCardIds == null)
-      return null;
-
-    if (theUserCardIds.equals(""))
-      return "";
+    if (!StringUtil.isDefined(theUserCardIds)) {
+      return theUserCardIds;
+    }
 
     try {
 
@@ -112,10 +110,11 @@ public class PdcUserField implements Field {
         userId = userCardIdUserId.substring(index + 1);
 
         user = organizationController.getUserDetail(userId);
-        if (user == null)
-          names.append("userCardId(" + userCardId + ")");
-        else
-          names.append(user.getFirstName() + " " + user.getLastName());
+        if (user == null) {
+          names.append("userCardId(").append(userCardId).append(")");
+        } else {
+          names.append(user.getFirstName()).append(" ").append(user.getLastName());
+        }
         names.append(",");
         begin = end + 1;
         end = theUserCardIds.indexOf(',', begin);
@@ -171,9 +170,9 @@ public class PdcUserField implements Field {
    * Returns the userCardIds referenced by this field.
    */
   public Object getObjectValue() {
-    if (getUserCardIds() == null)
+    if (getUserCardIds() == null) {
       return null;
-
+    }
     return getUserCardIds();
   }
 
@@ -193,10 +192,11 @@ public class PdcUserField implements Field {
    * Returns true if the value is a String and this field isn't read only.
    */
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof String)
+    if (value instanceof String) {
       return !isReadOnly();
-    else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -245,8 +245,9 @@ public class PdcUserField implements Field {
     if (o instanceof PdcUserField) {
       String t = ((PdcUserField) o).getUserCardIds();
       return ((s == null && t == null) || s.equals(t));
-    } else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -254,26 +255,29 @@ public class PdcUserField implements Field {
    */
   public int compareTo(Object o) {
     String s = getValue();
-    if (s == null)
+    if (s == null) {
       s = "";
-
+    }
     if (o instanceof PdcUserField) {
       String t = ((PdcUserField) o).getValue();
-      if (t == null)
+      if (t == null) {
         t = "";
-
+      }
       if (s.equals(t)) {
         s = getUserCardIds();
-        if (s == null)
+        if (s == null) {
           s = "";
+        }
         t = ((PdcUserField) o).getUserCardIds();
-        if (t == null)
+        if (t == null) {
           t = "";
+        }
       }
 
       return s.compareTo(t);
-    } else
+    } else {
       return -1;
+    }
   }
 
   public int hashCode() {

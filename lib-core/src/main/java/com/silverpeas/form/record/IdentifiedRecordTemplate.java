@@ -111,8 +111,9 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
    * Gives an external id to the template.
    */
   public void setExternalId(String externalId) {
-    if (this.externalId == null)
+    if (this.externalId == null) {
       this.externalId = externalId;
+    }
   }
 
   /**
@@ -126,8 +127,9 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
    * Sets the internal id.
    */
   public void setInternalId(int id) {
-    if (this.id == -1)
+    if (this.id == -1){
       this.id = id;
+    }
   }
 
   public String getTemplateName() {

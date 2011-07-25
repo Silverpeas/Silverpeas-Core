@@ -52,11 +52,13 @@ public class Parameter implements Serializable {
       ParameterValue pValue = null;
       while (values.hasNext()) {
         pValue = values.next();
-        if (language != null && pValue.getLang().equalsIgnoreCase(language))
+        if (language != null && pValue.getLang().equalsIgnoreCase(language)) {
           return pValue.getValue();
+        }
       }
-      if (pValue != null)
+      if (pValue != null) {
         return pValue.getValue();
+      }
     }
     return "";
   }
