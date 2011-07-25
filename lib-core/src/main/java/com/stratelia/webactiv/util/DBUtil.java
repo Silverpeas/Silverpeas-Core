@@ -23,25 +23,25 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.MultilangMessage;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.pool.ConnectionPool;
+
+import javax.ejb.EJBException;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import javax.ejb.EJBException;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.MultilangMessage;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.pool.ConnectionPool;
 import java.util.HashMap;
 import java.util.Map;
+import javax.naming.NamingException;
 
 public class DBUtil {
-
+  
   private static DBUtil instance;
 
   /**
@@ -72,18 +72,23 @@ public class DBUtil {
     return getInstance().textFieldLength;
   }
   private Connection connectionForTest;
-
+  
   private DBUtil(Connection connectionForTest) {
     this.connectionForTest = connectionForTest;
   }
-
+  
   public static DBUtil getInstance() {
-    return getInstance(null);
-  }
-
-  public static DBUtil getInstance(Connection connectionForTest) {
     synchronized (DBUtil.class) {
       if (instance == null) {
+        instance = new DBUtil(null);
+      }
+    }
+    return instance;
+  }
+  
+  public static DBUtil getInstanceForTest(Connection connectionForTest) {
+    synchronized (DBUtil.class) {
+      if (connectionForTest != null) {
         instance = new DBUtil(connectionForTest);
       }
     }
@@ -117,20 +122,18 @@ public class DBUtil {
    * @return a new connection to the database.
    * @throws UtilException  
    */
-  public static Connection makeConnection(String dbName) throws UtilException {
+  public static Connection makeConnection(String dbName) {
     return getInstance().openConnection(dbName);
   }
-
-  private synchronized Connection openConnection(String dbName) throws UtilException {
+  
+  private synchronized Connection openConnection(String dbName) {
     SilverTrace.debug("util", "DBUtil makeConnection", "DBUtil : makeConnection : entree");
     DataSource ds = null;
     if (ic == null) {
       try {
         ic = new InitialContext();
-      } catch (Exception e) {
-        UtilException ue = new UtilException("DBUtil.makeConnection",
-            "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
-        throw ue;
+      } catch (NamingException e) {
+        throw new UtilException("DBUtil.makeConnection", "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
       }
     }
     try {
@@ -139,18 +142,16 @@ public class DBUtil {
         ds = (DataSource) ic.lookup(dbName);
         dsStock.put(dbName, ds);
       }
-    } catch (Exception e) {
-      UtilException ue = new UtilException("DBUtil.makeConnection",
-          new MultilangMessage("util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
-      throw ue;
+    } catch (NamingException e) {
+      throw new UtilException("DBUtil.makeConnection", new MultilangMessage(
+              "util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
     }
-
+    
     try {
       return ds.getConnection();
-    } catch (Exception e) {
-      UtilException ue = new UtilException("DBUtil.makeConnection", new MultilangMessage(
-          "util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
-      throw ue;
+    } catch (SQLException e) {
+      throw new UtilException("DBUtil.makeConnection", new MultilangMessage(
+              "util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
     }
   }
 
@@ -187,7 +188,7 @@ public class DBUtil {
         }
       }
       throw new UtilException("DBUtil.getNextId", new MultilangMessage(
-          "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), exe);
+              "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), exe);
     } finally {
       try {
         if (privateConnection != null && !testingMode) {
@@ -208,12 +209,12 @@ public class DBUtil {
    * @throws SQLException
    */
   public static int getNextId(Connection connection, String tableName, String idName) throws
-      SQLException {
+          SQLException {
     return getMaxId(connection, tableName, idName);
   }
-
+  
   protected static int getMaxId(Connection privateConnection, String tableName, String idName)
-      throws SQLException {
+          throws SQLException {
     int max = 0;
     // tentative d'update
     SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
@@ -224,8 +225,8 @@ public class DBUtil {
     } catch (Exception e) {
       // l'update n'a rien fait, il faut recuperer une valeur par defaut.
       // on recupere le max (depuis la table existante du composant)
-      SilverTrace.debug("util", "DBUtil.getNextId", 
-          "impossible d'updater, if faut recuperer la valeur initiale", e);
+      SilverTrace.debug("util", "DBUtil.getNextId",
+              "impossible d'updater, if faut recuperer la valeur initiale", e);
     }
     max = getMaxFromTable(privateConnection, tableName, idName);
     PreparedStatement createStmt = null;
@@ -233,14 +234,14 @@ public class DBUtil {
       // on enregistre le max
       String createStatement = "INSERT INTO UniqueId (maxId, tableName) VALUES (?, ?)";
       createStmt = privateConnection.prepareStatement(createStatement);
-      createStmt.setInt(1,  max);
+      createStmt.setInt(1, max);
       createStmt.setString(2, tableName);
       createStmt.executeUpdate();
       return max;
     } catch (Exception e) {
       // impossible de creer, on est en concurence, on reessaye l'update.
       SilverTrace.debug("util", "DBUtil.getNextId",
-          "impossible de creer, if faut reessayer l'update", e);
+              "impossible de creer, if faut reessayer l'update", e);
     } finally {
       close(createStmt);
       privateConnection.commit();
@@ -249,7 +250,7 @@ public class DBUtil {
     privateConnection.commit();
     return max;
   }
-
+  
   private static int updateMaxFromTable(Connection con, String tableName) throws SQLException {
     int max = 0;
     PreparedStatement prepStmt = null;
@@ -261,7 +262,7 @@ public class DBUtil {
     } finally {
       prepStmt.close();
     }
-
+    
     if (count == 1) {
       PreparedStatement selectStmt = null;
       ResultSet rs = null;
@@ -284,9 +285,9 @@ public class DBUtil {
       throw new SQLException("Update impossible : Ligne non existante");
     }
   }
-
+  
   public static int getMaxFromTable(Connection con, String tableName, String idName)
-      throws SQLException {
+          throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -302,7 +303,7 @@ public class DBUtil {
       close(rs, prepStmt);
     }
   }
-
+  
   public static String convertToBD(String date) {
     String jour = "";
     String mois = "";
@@ -316,7 +317,7 @@ public class DBUtil {
     }
     return (annee + '/' + mois + '/' + jour);
   }
-
+  
   public static String convertToClient(String date) {
     String jour = "";
     String mois = "";
@@ -358,7 +359,7 @@ public class DBUtil {
   public static void close(ResultSet rs) {
     close(rs, null);
   }
-
+  
   public static void close(Connection connection) {
     if (connection != null) {
       try {
@@ -368,7 +369,7 @@ public class DBUtil {
       }
     }
   }
-
+  
   public static void rollback(Connection connection) {
     if (connection != null) {
       try {

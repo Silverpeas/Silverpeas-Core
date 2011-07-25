@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.silverstatistics.model;
 
-import com.stratelia.silverpeas.silverstatistics.control.StatType;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

@@ -35,6 +35,7 @@ import javax.ejb.SessionContext;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -49,7 +50,6 @@ public class SilverStatisticsEJB implements SessionBean {
 
   private static final String dbName = JNDINames.SILVERSTATISTICS_DATASOURCE;
   private static final long serialVersionUID = -2084739513469943886L;
-  private SessionContext ctx;
   private StatisticsConfig myStatsConfig;
 
   /**
@@ -157,7 +157,7 @@ public class SilverStatisticsEJB implements SessionBean {
    */
   @Override
   public void setSessionContext(SessionContext sc) {
-    ctx = sc;
+    SessionContext ctx = sc;
     myStatsConfig = new StatisticsConfig();
     try {
       myStatsConfig.init();

@@ -1,195 +1,181 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2000 - 2011 Silverpeas <p/> This program is free software: you can redistribute
+ * it and/or modify it under the terms of the GNU Affero General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version. <p/> As a special exception to the terms and conditions of version 3.0 of the GPL, you
+ * may redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the text describing the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing" <p/> This program is distributed in the hope
+ * that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details. <p/> You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * Class declaration Get cumul datas from database to access and Volume
+ * Class declaration Get cumul datas from database to access and Volume <p/> <p/> <p/> <p/> <p/>
+ * <p/> <p/>
+ * <p/>
  * @author
  */
 public class SilverStatisticsPeasDAOAccesVolume {
-  private static final String dbName = JNDINames.SILVERSTATISTICS_DATASOURCE;
 
-  public static final String TYPE_ACCES = "Acces";
-  public static final String TYPE_VOLUME = "Volume";
+  static AdminController myAdminController = new AdminController("");
+  private static final String SELECT_VOLUME_YEARS = "SELECT DISTINCT dateStat "
+          + "FROM sb_stat_volumecumul ORDER BY dateStat ASC";
+  private static final String SELECT_VOLUME_BY_USER = "SELECT componentId, SUM(countVolume) "
+          + "AS volume FROM sb_stat_volumecumul WHERE datestat= ? AND userId = ? GROUP BY "
+          + "datestat, componentId ORDER BY datestat ASC, volume DESC";
+  private static final String SELECT_VOLUME_FOR_ALL_COMPONENTS = "SELECT componentId, "
+          + "SUM(countVolume) AS volume FROM SB_Stat_VolumeCumul WHERE dateStat = ? "
+          + "GROUP BY dateStat, componentId ORDER BY dateStat ASC, volume DESC";
+  private static final String SELECT_ACCESS_YEARS = "SELECT DISTINCT dateStat "
+          + "FROM sb_stat_accesscumul ORDER BY dateStat ASC";
+  private static final String SELECT_ACCESS_EVOL_FOR_SPACE = "SELECT dateStat, SUM(countAccess) AS "
+          + "accesses FROM sb_stat_accessCumul WHERE spaceId = ? GROUP BY dateStat ORDER BY dateStat ASC";
+  private static final String SELECT_ACCESS_EVOL_FOR_COMPONENT = "SELECT dateStat, SUM(countAccess) "
+          + "AS accesses FROM sb_stat_accessCumul WHERE componentId = ? GROUP BY dateStat "
+          + "ORDER BY dateStat ASC";
+  private static final String SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER = "SELECT dateStat, "
+          + "SUM(countAccess) AS accesses FROM sb_stat_accessCumul WHERE spaceId = ? AND userId = ? "
+          + "GROUP BY dateStat ORDER BY dateStat ASC";
+  private static final String SELECT_ACCESS_EVOL_FOR_COMPONENT_BY_USER = "SELECT dateStat, "
+          + "SUM(countAccess) AS accesses FROM sb_stat_accessCumul WHERE componentId = ? "
+          + "AND userId = ? GROUP BY dateStat ORDER BY dateStat ASC";
+  private static final String SELECT_ACCESS_FOR_ALL_COMPONENTS = "SELECT componentId, "
+          + "SUM(countAccess) AS accesses FROM sb_stat_accesscumul WHERE datestat=? GROUP BY "
+          + "dateStat, componentId ORDER BY dateStat ASC, accesses DESC";
+  private static final String SELECT_ACCESS_FOR_USER = "SELECT componentId, SUM(countAccess) AS "
+          + "accesses  FROM sb_stat_accesscumul WHERE dateStat= ? AND userId = ? GROUP BY dateStat, "
+          + "componentId ORDER BY dateStat ASC, accesses DESC";
 
-  public static Collection<String> getYears(String typeReq) throws SQLException {
-    // String selectQuery = " SELECT DISTINCT LEFT(dateStat,4)";
-    // DLE
-    String selectQuery = " SELECT DISTINCT dateStat";
-
-    if (typeReq.equals(TYPE_ACCES)) {
-      selectQuery += " FROM SB_Stat_AccessCumul";
-    } else if (typeReq.equals(TYPE_VOLUME)) {
-      selectQuery += " FROM SB_Stat_VolumeCumul";
+  public static Collection<String> getVolumeYears() throws SQLException, UtilException {
+    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getVolumeYears",
+            "selectQuery=" + SELECT_VOLUME_YEARS);
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.prepareStatement(SELECT_VOLUME_YEARS);
+      rs = stmt.executeQuery();
+      LinkedHashSet<String> years = new LinkedHashSet<String>();
+      while (rs.next()) {
+        String currentYear = extractYearFromDate(rs.getString("dateStat"));
+        if (!years.contains(currentYear)) {
+          years.add(currentYear);
+        }
+      }
+      return years;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
     }
-    selectQuery += " ORDER BY dateStat ASC";
+  }
 
-    return getYearsFromQuery(selectQuery);
+  public static Collection<String> getAccessYears() throws SQLException, UtilException {
+    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getAccessYears",
+            "selectQuery=" + SELECT_ACCESS_YEARS);
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.prepareStatement(SELECT_ACCESS_YEARS);
+      rs = stmt.executeQuery();
+      LinkedHashSet<String> years = new LinkedHashSet<String>();
+      while (rs.next()) {
+        String currentYear = extractYearFromDate(rs.getString("dateStat"));
+        if (!years.contains(currentYear)) {
+          years.add(currentYear);
+        }
+      }
+      return years;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
+    }
+  }
+
+  private static String extractYearFromDate(String date) {
+    return date.substring(0, 4);
   }
 
   /**
-   * donne les stats sur le nombre d'accès
-   * @return
-   * @throws SQLException
+   * Returns the access statistics.
+   *
+   * @param dateStat
+   * @param currentUserId
+   * @param filterIdGroup
+   * @param filterIdUser
+   * @return the access statistics.
+   * @throws SQLException 
    */
-  public static Hashtable<String, String[]> getStatsUserVentil(String dateStat,
-      String currentUserId, String filterIdGroup, String filterIdUser)
-      throws SQLException {
+  public static Map<String, String[]> getStatsUserVentil(String dateStat,
+          String currentUserId, String filterIdGroup, String filterIdUser)
+          throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.getStatsUserVentil",
-        "root.MSG_GEN_ENTER_METHOD");
+            "SilverStatisticsPeasDAOAccessVolume.getStatsUserVentil",
+            "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId,
-                                                                              // value=new
-    // String[3] {tout, groupe, user}
+    Map<String, String[]> resultat = new HashMap<String, String[]>();
+    // key=componentId,value = new String[3] {tout, groupe, user}
 
-    // Query Tout
-    String selectQuery = "SELECT componentId, SUM(countAccess)"
-        + " FROM SB_Stat_accessCumul" + " WHERE dateStat='" + dateStat + "'"
-        + " GROUP BY dateStat, componentId"
-        + " ORDER BY dateStat ASC, SUM(countAccess) DESC";
-
-    Hashtable<String, String> hashTout = getHashtableFromQuery(selectQuery);
-
-    Iterator<String> it = hashTout.keySet().iterator();
-    AdminController myAdminController = new AdminController("");
-
-    String cmpId;
-    ComponentInst compInst;
-    String[] values;
-    String[] tabManageableSpaceIds;
-    String spaceId;
-    boolean ok = false;
-
-    while (it.hasNext()) {
-      ok = false;
-      cmpId = it.next();
-
-      compInst = myAdminController.getComponentInst(cmpId);
-      spaceId = compInst.getDomainFatherId(); // ex : WA123
-
-      tabManageableSpaceIds = myAdminController
-          .getUserManageableSpaceClientIds(currentUserId);
-
-      // filtre les composants autorisés selon les droits de l'utilisateur
-      // (Admin ou Gestionnaire d'espace)
-      for (int i = 0; i < tabManageableSpaceIds.length; i++) {
-        if (spaceId.equals(tabManageableSpaceIds[i])) {
-          ok = true;
-          break;
-        }
-      }
-
-      if (ok) {
-        values = new String[3];
-        values[0] = (String) hashTout.get(cmpId);
-        resultat.put(cmpId, values);
-      }
-    }
+    Map<String, String> hashTout = selectAccessForAllComponents(dateStat);
+    filterVisibleComponents(currentUserId, resultat, hashTout);
 
     // Query Groupe
-    if (!filterIdGroup.equals("")) {
-
-      // préremplit tout avec 0
-      it = resultat.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
-        values[1] = "0";
-        resultat.put(cmpId, values);
+    if (StringUtil.isDefined(filterIdGroup)) {
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        componentStatistic.getValue()[1] = "0";
       }
 
-      selectQuery = "SELECT componentId, SUM(countAccess)"
-          + " FROM SB_Stat_AccessCumul, ST_Group_User_Rel"
-          + " WHERE dateStat='" + dateStat + "'" + " AND groupId="
-          + filterIdGroup
-          + " AND SB_Stat_AccessCumul.userId=ST_Group_User_Rel.userId"
-          + " GROUP BY dateStat, componentId"
-          + " ORDER BY dateStat ASC, SUM(countAccess) DESC";
+      Map<String, String> e = selectAccessForGroup(dateStat, filterIdGroup);
 
-      Hashtable<String, String> hashGroupe = getHashtableFromQuery(selectQuery);
-
-      it = hashGroupe.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = (String) it.next();
-
-        values = (String[]) resultat.get(cmpId);
-        if (values != null) {
-          values[1] = (String) hashGroupe.get(cmpId);
-          resultat.put(cmpId, values);
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        if (componentStatistic.getValue() != null) {
+          componentStatistic.getValue()[1] = e.get(componentStatistic.getKey());
         }
       }
     }
 
     // Query User
-    if (!filterIdUser.equals("")) {
+    if (StringUtil.isDefined(filterIdUser)) {
 
-      // préremplit tout avec 0
-      it = resultat.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
-        values[2] = "0";
-        resultat.put(cmpId, values);
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        componentStatistic.getValue()[2] = "0";
       }
-
-      selectQuery = "SELECT componentId, SUM(countAccess)"
-          + " FROM SB_Stat_AccessCumul" + " WHERE dateStat='" + dateStat + "'"
-          + " AND userId=" + filterIdUser + " GROUP BY dateStat, componentId"
-          + " ORDER BY dateStat ASC, SUM(countAccess) DESC";
-
-      Hashtable<String, String> hashUser = getHashtableFromQuery(selectQuery);
-
-      it = hashUser.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = (String) it.next();
-
-        values = (String[]) resultat.get(cmpId);
-        if (values != null) {
-          values[2] = (String) hashUser.get(cmpId);
-          resultat.put(cmpId, values);
+      Map<String, String> hashUser = selectAccessForUser(dateStat, filterIdUser);
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        if (componentStatistic.getValue() != null) {
+          componentStatistic.getValue()[2] = hashUser.get(componentStatistic.getKey());
         }
       }
     }
@@ -198,319 +184,268 @@ public class SilverStatisticsPeasDAOAccesVolume {
   }
 
   /**
-   * donne les stats sur le nombre d'accès
-   * @return
-   * @throws SQLException
-   * @throws ParseException
-   */
-  public static Collection<String[]> getStatsUserEvolution(String entite,
-      String entiteId, String filterIdGroup, String filterIdUser)
-      throws SQLException, ParseException {
+  * 
+  * @param entite
+  * @param entiteId
+  * @param filterIdGroup
+  * @param filterIdUser
+  * @return
+  * @throws SQLException
+  * @throws ParseException 
+  */
+  public static List<String[]> getStatsUserEvolution(String entite,
+          String entiteId, String filterIdGroup, String filterIdUser)
+          throws SQLException, ParseException {
     SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.getStatsUserEvolution",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String selectQuery = null;
+            "SilverStatisticsPeasDAOAccessVolume.getStatsUserEvolution",
+            "root.MSG_GEN_ENTER_METHOD");
     if ("SPACE".equals(entite)) {
-
-      // Query Tout
-      selectQuery = "SELECT dateStat, SUM(countAccess)"
-          + " FROM SB_Stat_accessCumul" + " WHERE spaceId ='" + entiteId + "'"
-          + " GROUP BY dateStat" + " ORDER BY dateStat ASC";
-
-      // Query Groupe
-      if (!filterIdGroup.equals("")) {
-
-        selectQuery = "SELECT A.dateStat, SUM(A.countAccess)"
-            + " FROM SB_Stat_accessCumul A, ST_Group_User_Rel C"
-            + " WHERE A.spaceId ='" + entiteId + "'"
-            + " AND A.userId = C.userId" + " AND C.groupId ='" + filterIdGroup
-            + "'" + " GROUP BY A.dateStat" + " ORDER BY A.dateStat ASC";
+      if (StringUtil.isDefined(filterIdUser)) {
+        return selectUserAccessEvolutionForSpace(entiteId, filterIdUser);
       }
-
-      // Query User
-      if (!filterIdUser.equals("")) {
-        selectQuery = "SELECT dateStat, SUM(countAccess)"
-            + " FROM SB_Stat_accessCumul" + " WHERE spaceId ='" + entiteId
-            + "'" + " AND userId ='" + filterIdUser + "'"
-            + " GROUP BY dateStat" + " ORDER BY dateStat ASC";
+      if (StringUtil.isDefined(filterIdGroup)) {
+        return selectGroupAccessEvolutionForSpace(entiteId, filterIdGroup);
       }
-    } else { // component
-
-      // Query Tout
-      selectQuery = "SELECT dateStat, SUM(countAccess)"
-          + " FROM SB_Stat_accessCumul" + " WHERE componentId ='" + entiteId
-          + "'" + " GROUP BY dateStat" + " ORDER BY dateStat ASC";
-
-      // Query Groupe
-      if (!filterIdGroup.equals("")) {
-
-        selectQuery = "SELECT A.dateStat, SUM(A.countAccess)"
-            + " FROM SB_Stat_accessCumul A, ST_Group_User_Rel C"
-            + " WHERE A.componentId ='" + entiteId + "'"
-            + " AND A.userId = C.userId" + " AND C.groupId ='" + filterIdGroup
-            + "'" + " GROUP BY A.dateStat" + " ORDER BY A.dateStat ASC";
-      }
-
-      // Query User
-      if (!filterIdUser.equals("")) {
-        selectQuery = "SELECT dateStat, SUM(countAccess)"
-            + " FROM SB_Stat_accessCumul" + " WHERE componentId ='" + entiteId
-            + "'" + " AND userId ='" + filterIdUser + "'"
-            + " GROUP BY dateStat" + " ORDER BY dateStat ASC";
-      }
+      return selectAccessEvolutionForSpace(entiteId);
     }
-
-    return getStatsUserFromQuery(selectQuery);
+    if (StringUtil.isDefined(filterIdUser)) {
+      return selectUserAccessEvolutionForComponent(entiteId, filterIdUser);
+    }
+    if (StringUtil.isDefined(filterIdGroup)) {
+      return selectGroupAccessEvolutionForComponent(entiteId, filterIdGroup);
+    }
+    return selectAccessEvolutionForComponent(entiteId);
   }
 
-  /**
-   * Method declaration
-   * @param selectQuery
-   * @return
-   * @throws SQLException
-   * @throws ParseException
-   * @see
-   */
-  private static Collection<String[]> getStatsUserFromQuery(String selectQuery)
-      throws SQLException, ParseException {
+  public static List<String[]> selectAccessEvolutionForSpace(String spaceId) throws SQLException,
+          ParseException {
     SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.getStatsUserFromQuery",
-        "selectQuery=" + selectQuery);
-    Statement stmt = null;
+            "SilverStatisticsPeasDAOAccessVolume.selectAccessEvolutionForSpace",
+            "selectQuery=" + SELECT_ACCESS_EVOL_FOR_SPACE);
+    PreparedStatement pstmt = null;
     ResultSet rs = null;
-    Collection<String[]> list = null;
-    Connection myCon = getConnection();
-
+    Connection myCon = null;
     try {
-      stmt = myCon.createStatement();
-      rs = stmt.executeQuery(selectQuery);
-      list = getStatsUserFromResultSet(rs);
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_SPACE);
+      pstmt.setString(1, spaceId);
+      rs = pstmt.executeQuery();
+      return getStatsUserFromResultSet(rs);
     } finally {
-      DBUtil.close(rs, stmt);
-      freeConnection(myCon);
+      DBUtil.close(rs, pstmt);
+      DBUtil.close(myCon);
     }
-
-    return list;
   }
 
-  /**
-   * Method declaration
-   * @param rs
-   * @return
-   * @throws SQLException
-   * @throws ParseException
-   * @see
-   */
-  private static Collection<String[]> getStatsUserFromResultSet(ResultSet rs)
-      throws SQLException, ParseException {
-    List<String[]> myList = new ArrayList<String[]>();
-    String stat[] = null;
-    String date;
-    long count = 0;
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    String dateRef = null;
-    Calendar calDateRef = null;
-
-    while (rs.next()) {
-      date = rs.getString(1);
-      count = rs.getLong(2);
-
-      if (calDateRef == null) {// initialisation
-        dateRef = date;
-        calDateRef = GregorianCalendar.getInstance();
-        calDateRef.setTime(sdf.parse(date));
-      }
-
-      while (dateRef.compareTo(date) < 0) {
-        stat = new String[2];
-        stat[0] = dateRef; // date
-        stat[1] = "0"; // nb Accès
-        myList.add(stat);
-
-        // ajoute un mois
-        calDateRef.add(Calendar.MONTH, 1);
-        dateRef = sdf.format(calDateRef.getTime());
-      }
-
-      stat = new String[2];
-      stat[0] = date; // date
-      stat[1] = Long.toString(count); // nb Accès
-      myList.add(stat);
-
-      // ajoute un mois
-      calDateRef.add(Calendar.MONTH, 1);
-      dateRef = sdf.format(calDateRef.getTime());
-    }
-    return myList;
-  }
-
-  /**
-   * Method declaration
-   * @param selectQuery
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  private static Hashtable<String, String> getHashtableFromQuery(String selectQuery)
-      throws SQLException {
+  public static List<String[]> selectUserAccessEvolutionForSpace(String spaceId, String userId)
+          throws SQLException, ParseException {
     SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.getHashtableFromQuery",
-        "selectQuery=" + selectQuery);
-    Statement stmt = null;
+            "SilverStatisticsPeasDAOAccessVolume.selectUserAccessEvolutionForSpace",
+            "selectQuery=" + SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER);
+    PreparedStatement pstmt = null;
     ResultSet rs = null;
-    Hashtable<String, String> ht = null;
-    Connection myCon = getConnection();
-
+    Connection myCon = null;
     try {
-      stmt = myCon.createStatement();
-      rs = stmt.executeQuery(selectQuery);
-      ht = getHashtableFromResultset(rs);
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER);
+      pstmt.setString(1, spaceId);
+      pstmt.setInt(2, Integer.parseInt(userId));
+      rs = pstmt.executeQuery();
+      return getStatsUserFromResultSet(rs);
     } finally {
-      DBUtil.close(rs, stmt);
-      freeConnection(myCon);
+      DBUtil.close(rs, pstmt);
+      DBUtil.close(myCon);
     }
-
-    return ht;
   }
 
-  /**
-   * Method declaration
-   * @param rs
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  private static Hashtable<String, String> getHashtableFromResultset(ResultSet rs)
-      throws SQLException {
-    Hashtable<String, String> result = new Hashtable<String, String>();
-    long count = 0;
+  public static List<String[]> selectGroupAccessEvolutionForSpace(String spaceId, String groupId)
+          throws SQLException, ParseException {
+    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    Map<String, String[]> allAccesses = new HashMap<String, String[]>();
+    for (UserDetail user : users) {
+      List<String[]> userStats = selectUserAccessEvolutionForSpace(spaceId, user.getId());
+      for (String[] stats : userStats) {
+        if (allAccesses.containsKey(stats[0])) {
+          String[] currentData = allAccesses.get(stats[0]);
+          currentData[1] = String.valueOf(Integer.parseInt(currentData[1]) + Integer.parseInt(
+                  stats[1]));
+        } else {
+          allAccesses.put(stats[0], stats);
+        }
+      }
+    }
+    List<String> dates = new ArrayList<String>(allAccesses.keySet());
+    Collections.sort(dates);
+    List<String[]> result = new ArrayList<String[]>(dates.size());
+    for (String date : dates) {
+      result.add(allAccesses.get(date));
+    }
+    return result;
+  }
 
-    while (rs.next()) {
-      count = rs.getLong(2);
-      result.put(rs.getString(1), String.valueOf(count));
+  public static List<String[]> selectAccessEvolutionForComponent(String componentId) throws
+          SQLException, ParseException {
+    SilverTrace.debug("silverStatisticsPeas",
+            "SilverStatisticsPeasDAOAccessVolume.selectAccessEvolutionForComponent",
+            "selectQuery=" + SELECT_ACCESS_EVOL_FOR_COMPONENT);
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_COMPONENT);
+      pstmt.setString(1, componentId);
+      rs = pstmt.executeQuery();
+      return getStatsUserFromResultSet(rs);
+    } finally {
+      DBUtil.close(rs, pstmt);
+      DBUtil.close(myCon);
+    }
+  }
+
+  public static List<String[]> selectUserAccessEvolutionForComponent(String componentId,
+          String userId) throws SQLException, ParseException {
+    SilverTrace.debug("silverStatisticsPeas",
+            "SilverStatisticsPeasDAOAccessVolume.selectAccessEvolutionForComponent",
+            "selectQuery=" + SELECT_ACCESS_EVOL_FOR_COMPONENT_BY_USER);
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      pstmt = myCon.prepareStatement(SELECT_ACCESS_EVOL_FOR_COMPONENT_BY_USER);
+      pstmt.setString(1, componentId);
+      pstmt.setInt(2, Integer.parseInt(userId));
+      rs = pstmt.executeQuery();
+      return getStatsUserFromResultSet(rs);
+    } finally {
+      DBUtil.close(rs, pstmt);
+      DBUtil.close(myCon);
+    }
+  }
+
+  public static List<String[]> selectGroupAccessEvolutionForComponent(String componentId,
+          String groupId) throws SQLException, ParseException {
+    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    Map<String, String[]> allAccesses = new HashMap<String, String[]>();
+    for (UserDetail user : users) {
+      List<String[]> userStats = selectUserAccessEvolutionForComponent(componentId, user.getId());
+      for (String[] stats : userStats) {
+        if (allAccesses.containsKey(stats[0])) {
+          String[] currentData = allAccesses.get(stats[0]);
+          currentData[1] = String.valueOf(Integer.parseInt(currentData[1]) + Integer.parseInt(
+                  stats[1]));
+        } else {
+          allAccesses.put(stats[0], stats);
+        }
+      }
+    }
+    List<String> dates = new ArrayList<String>(allAccesses.keySet());
+    Collections.sort(dates);
+    List<String[]> result = new ArrayList<String[]>(dates.size());
+    for (String date : dates) {
+      result.add(allAccesses.get(date));
     }
     return result;
   }
 
   /**
-   * donne les stats sur le nombre de publications
+   * Method declaration
+   * @param rs
    * @return
    * @throws SQLException
+   * @throws ParseException
+   * @see
    */
-  public static Hashtable<String, String[]> getStatsPublicationsVentil(String dateStat,
-      String currentUserId, String filterIdGroup, String filterIdUser)
-      throws SQLException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.getStatsPublicationsVentil",
-        "root.MSG_GEN_ENTER_METHOD");
+  private static List<String[]> getStatsUserFromResultSet(ResultSet rs)
+          throws SQLException, ParseException {
+    List<String[]> myList = new ArrayList<String[]>();
+    Calendar calDateRef = null;
 
-    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId, value=new
-    // String[3] {tout, groupe, user}
+    while (rs.next()) {
+      String date = rs.getString(1);
+      long count = rs.getLong(2);
 
-    // Query Tout
-    String selectQuery = "SELECT componentId, SUM(countVolume)"
-        + " FROM SB_Stat_VolumeCumul" + " WHERE dateStat='" + dateStat + "'"
-        + " GROUP BY dateStat, componentId"
-        + " ORDER BY dateStat ASC, SUM(countVolume) DESC";
-
-    Hashtable<String, String> hashTout = getHashtableFromQuery(selectQuery);
-
-    Iterator<String> it = hashTout.keySet().iterator();
-    String cmpId;
-    AdminController myAdminController = new AdminController("");
-    String[] values;
-    ComponentInst compInst;
-    String spaceId;
-    String[] tabManageableSpaceIds;
-    boolean ok = false;
-
-    while (it.hasNext()) {
-      ok = false;
-      cmpId = it.next();
-
-      compInst = myAdminController.getComponentInst(cmpId);
-      spaceId = compInst.getDomainFatherId(); // ex : WA123
-
-      tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(currentUserId);
-
-      // filtre les composants autorisés selon les droits de l'utilisateur
-      // (Admin ou Gestionnaire d'espace)
-      for (int i = 0; i < tabManageableSpaceIds.length; i++) {
-        if (spaceId.equals(tabManageableSpaceIds[i])) {
-          ok = true;
-          break;
-        }
+      if (calDateRef == null) {// initialisation
+        calDateRef = GregorianCalendar.getInstance();
+        calDateRef.setTime(DateUtil.parseISO8601Date(date));
+        calDateRef.set(Calendar.HOUR, 0);
+        calDateRef.set(Calendar.MINUTE, 0);
+        calDateRef.set(Calendar.SECOND, 0);
+        calDateRef.set(Calendar.MILLISECOND, 0);
       }
+      Calendar currentDate = GregorianCalendar.getInstance();
+      currentDate.setTime(DateUtil.parseISO8601Date(date));
+      currentDate.set(Calendar.HOUR, 0);
+      currentDate.set(Calendar.MINUTE, 0);
+      currentDate.set(Calendar.SECOND, 0);
+      currentDate.set(Calendar.MILLISECOND, 0);
 
-      if (ok) {
-        values = new String[3];
-        values[0] = (String) hashTout.get(cmpId);
-        resultat.put(cmpId, values);
+      while (calDateRef.before(currentDate)) {
+        String[] stat = new String[2];
+        stat[0] = DateUtil.formatAsISO8601Day(calDateRef.getTime());
+        stat[1] = "0";
+        myList.add(stat);
+        calDateRef.add(Calendar.MONTH, 1);
       }
+      String[] stat = new String[2];
+      stat[0] = date;
+      stat[1] = Long.toString(count);
+      myList.add(stat);
+      calDateRef.add(Calendar.MONTH, 1);
     }
+    return myList;
+  }
 
-    // Query Groupe
-    if (!filterIdGroup.equals("")) {
+  static void addNewStatistic(Map<String, String> result, String date, long count) {
+    result.put(date, String.valueOf(count));
+  }
 
-      // préremplit tout avec 0
-      it = resultat.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
-        values[1] = "0";
-        resultat.put(cmpId, values);
+  /**
+ * 
+ * @param dateStat
+ * @param currentUserId
+ * @param filterIdGroup
+ * @param filterIdUser
+ * @return
+ * @throws SQLException 
+ */
+  public static Map<String, String[]> getStatsPublicationsVentil(String dateStat,
+          String currentUserId, String filterIdGroup, String filterIdUser)
+          throws SQLException {
+    SilverTrace.info("silverStatisticsPeas",
+            "SilverStatisticsPeasDAOAccessVolume.getStatsPublicationsVentil",
+            "root.MSG_GEN_ENTER_METHOD");
+
+    Map<String, String[]> resultat = new HashMap<String, String[]>(); // key=componentId, value=new
+    // String[3] {tout, groupe, user}
+    Map<String, String> hashTout = selectVolumeForAllComponents(dateStat);
+    filterVisibleComponents(currentUserId, resultat, hashTout);
+
+    // Query Group
+    if (StringUtil.isDefined(filterIdGroup)) {
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        componentStatistic.getValue()[1] = "0";
       }
 
-      selectQuery = "SELECT componentId, SUM(countVolume)"
-          + " FROM SB_Stat_VolumeCumul, ST_Group_User_Rel"
-          + " WHERE dateStat='" + dateStat + "'" + " AND groupId="
-          + filterIdGroup
-          + " AND SB_Stat_VolumeCumul.userId=ST_Group_User_Rel.userId"
-          + " GROUP BY dateStat, componentId"
-          + " ORDER BY dateStat ASC, SUM(countVolume) DESC";
-
-      Hashtable<String, String> hashGroupe = getHashtableFromQuery(selectQuery);
-
-      it = hashGroupe.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = it.next();
-
-        values = (String[]) resultat.get(cmpId);
-        if (values != null) {
-          values[1] = (String) hashGroupe.get(cmpId);
-          resultat.put(cmpId, values);
+      Map<String, String> e = selectVolumeForGroup(dateStat, filterIdGroup);
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        if (componentStatistic.getValue() != null) {
+          componentStatistic.getValue()[1] = e.get(componentStatistic.getKey());
         }
       }
     }
 
     // Query User
-    if (!filterIdUser.equals("")) {
-
-      // préremplit tout avec 0
-      it = resultat.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = (String) it.next();
-        values = (String[]) resultat.get(cmpId);
-        values[2] = "0";
-        resultat.put(cmpId, values);
+    if (StringUtil.isDefined(filterIdUser)) {
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        componentStatistic.getValue()[2] = "0";
       }
 
-      selectQuery = "SELECT componentId, SUM(countVolume)"
-          + " FROM SB_Stat_VolumeCumul" + " WHERE dateStat='" + dateStat + "'"
-          + " AND userId=" + filterIdUser + " GROUP BY dateStat, componentId"
-          + " ORDER BY dateStat ASC, SUM(countVolume) DESC";
-
-      Hashtable<String, String> hashUser = getHashtableFromQuery(selectQuery);
-
-      it = hashUser.keySet().iterator();
-      while (it.hasNext()) {
-        cmpId = (String) it.next();
-
-        values = (String[]) resultat.get(cmpId);
-        if (values != null) {
-          values[2] = (String) hashUser.get(cmpId);
-          resultat.put(cmpId, values);
+      Map<String, String> hashUser = selectVolumeForUser(dateStat, filterIdUser);
+      for (Map.Entry<String, String[]> componentStatistic : resultat.entrySet()) {
+        if (componentStatistic.getValue() != null) {
+          componentStatistic.getValue()[2] = hashUser.get(componentStatistic.getKey());
         }
       }
     }
@@ -518,79 +453,147 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return resultat;
   }
 
-  private static Collection<String> getYearsConnexion(ResultSet rs) throws SQLException {
-    List<String> myList = new ArrayList<String>();
-    String year = "";
-
-    while (rs.next()) {
-      if (!year.equals(rs.getString(1).substring(0, 4))) {
-        year = rs.getString(1).substring(0, 4);
-        myList.add(year);
-      }
-    }
-    return myList;
-  }
-
-  private static Collection<String> getYearsFromQuery(String selectQuery)
-      throws SQLException {
-    Statement stmt = null;
+  static Map<String, String> selectVolumeForUser(String dateStat, String filterIdUser)
+          throws SQLException {
+    PreparedStatement stmt = null;
     ResultSet rs = null;
-    Collection<String> years = null;
-    Connection myCon = getConnection();
-
+    Connection myCon = null;
     try {
-      stmt = myCon.createStatement();
-      rs = stmt.executeQuery(selectQuery);
-      years = getYearsConnexion(rs);
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.prepareStatement(SELECT_VOLUME_BY_USER);
+      stmt.setString(1, dateStat);
+      stmt.setInt(2, Integer.parseInt(filterIdUser));
+      rs = stmt.executeQuery();
+      Map<String, String> result = new HashMap<String, String>();
+      while (rs.next()) {
+        addNewStatistic(result, rs.getString("componentId"), rs.getLong("volume"));
+      }
+      return result;
     } finally {
       DBUtil.close(rs, stmt);
-      freeConnection(myCon);
+      DBUtil.close(myCon);
     }
-
-    return years;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  private static Connection getConnection() {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccesVolume.getConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    Connection con = null;
-
+  static Map<String, String> selectAccessForAllComponents(String dateStat)
+          throws SQLException {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
     try {
-      con = DBUtil.makeConnection(dbName);
-    } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOAccesVolume.freeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_ALL_COMPONENTS);
+      stmt.setString(1, dateStat);
+      rs = stmt.executeQuery();
+      Map<String, String> result = new HashMap<String, String>();
+      while (rs.next()) {
+        addNewStatistic(result, rs.getString("componentId"), rs.getLong("accesses"));
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
     }
-    return con;
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @see
-   */
-  private static void freeConnection(Connection con) {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccesVolume.freeConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
+  static Map<String, String> selectAccessForUser(String dateStat, String filterIdUser)
+          throws SQLException {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.prepareStatement(SELECT_ACCESS_FOR_USER);
+      stmt.setString(1, dateStat);
+      stmt.setInt(2, Integer.parseInt(filterIdUser));
+      rs = stmt.executeQuery();
+      Map<String, String> result = new HashMap<String, String>();
+      while (rs.next()) {
+        addNewStatistic(result, rs.getString("componentId"), rs.getLong("accesses"));
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
+    }
+  }
 
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOAccesVolume.freeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+  static Map<String, String> selectAccessForGroup(String dateStat, String groupId)
+          throws SQLException {
+    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    Map<String, String> allAccesses = new HashMap<String, String>();
+    for (UserDetail user : users) {
+      Map<String, String> userStats = selectAccessForUser(dateStat, user.getId());
+      for (Map.Entry<String, String> stat : userStats.entrySet()) {
+        if (allAccesses.containsKey(stat.getKey())) {
+          allAccesses.put(stat.getKey(), String.valueOf(Integer.parseInt(
+                  allAccesses.get(stat.getKey())) + Integer.parseInt(stat.getValue())));
+        } else {
+          allAccesses.put(stat.getKey(), stat.getValue());
+        }
+      }
+    }
+    return allAccesses;
+  }
+
+  static Map<String, String> selectVolumeForGroup(String dateStat, String groupId) throws
+          SQLException {
+    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    Map<String, String> allVolumes = new HashMap<String, String>();
+    for (UserDetail user : users) {
+      Map<String, String> userStats = selectVolumeForUser(dateStat, user.getId());
+      for (Map.Entry<String, String> stat : userStats.entrySet()) {
+        if (allVolumes.containsKey(stat.getKey())) {
+          allVolumes.put(stat.getKey(), String.valueOf(Integer.parseInt(
+                  allVolumes.get(stat.getKey())) + Integer.parseInt(stat.getValue())));
+        } else {
+          allVolumes.put(stat.getKey(), stat.getValue());
+        }
+      }
+    }
+    return allVolumes;
+  }
+
+  static Map<String, String> selectVolumeForAllComponents(String dateStat) throws SQLException {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Connection myCon = null;
+    try {
+      myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
+      stmt = myCon.prepareStatement(SELECT_VOLUME_FOR_ALL_COMPONENTS);
+      stmt.setString(1, dateStat);
+      rs = stmt.executeQuery();
+      Map<String, String> result = new HashMap<String, String>();
+      while (rs.next()) {
+        addNewStatistic(result, rs.getString("componentId"), rs.getLong("volume"));
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, stmt);
+      DBUtil.close(myCon);
+    }
+  }
+
+  static void filterVisibleComponents(String currentUserId, Map<String, String[]> resultat,
+          Map<String, String> hashTout) {
+    for (String cmpId : hashTout.keySet()) {
+      boolean ok = false;
+      ComponentInst compInst = myAdminController.getComponentInst(cmpId);
+      String spaceId = compInst.getDomainFatherId();
+      String[] tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(
+              currentUserId);
+      for (String tabManageableSpaceId : tabManageableSpaceIds) {
+        if (spaceId.equals(tabManageableSpaceId)) {
+          ok = true;
+          break;
+        }
+      }
+
+      if (ok) {
+        String[] values = new String[3];
+        values[0] = hashTout.get(cmpId);
+        resultat.put(cmpId, values);
       }
     }
   }
-
 }

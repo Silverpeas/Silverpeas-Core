@@ -34,6 +34,7 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;

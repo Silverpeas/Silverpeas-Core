@@ -135,7 +135,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-project-info-reports-plugin</artifactId>
-              <version>2.3.1</version>
+              <version>2.4</version>
               <reportSets>
                 <reportSet>
                   <reports>
@@ -161,7 +161,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
-              <version>2.7</version>
+              <version>2.8</version>
             </plugin>
           </reportPlugins>
         </configuration>
@@ -218,7 +218,7 @@
   </modules>
 
   <properties>
-    <installer_stable_version>5.6</installer_stable_version>
+    <installer_stable_version>5.5.6</installer_stable_version>
     <installer_version>${project.version}</installer_version>
   </properties>
 

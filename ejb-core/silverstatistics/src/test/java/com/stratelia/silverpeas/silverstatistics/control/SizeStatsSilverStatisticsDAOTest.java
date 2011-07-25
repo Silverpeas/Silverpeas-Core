@@ -23,8 +23,7 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsDAO;
-import com.stratelia.silverpeas.silverstatistics.control.StatType;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockResultSet;
 import java.util.Map;
