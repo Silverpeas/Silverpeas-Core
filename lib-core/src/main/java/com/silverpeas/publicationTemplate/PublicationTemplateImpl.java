@@ -481,6 +481,9 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     if (searchTemplate != null) {
       saveRecordTemplate(searchTemplate, subDir, "search.xml");
     }
+    if (searchResultTemplate != null) {
+      saveRecordTemplate(searchResultTemplate, subDir, "searchresult.xml");
+    }
   }
 
   /**

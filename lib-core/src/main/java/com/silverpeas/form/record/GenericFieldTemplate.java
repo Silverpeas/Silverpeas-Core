@@ -46,20 +46,19 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   private static final long serialVersionUID = 1L;
   private String fieldName = null;
-  @SuppressWarnings("unchecked")
   private Class fieldImpl = null;
   private String typeName = null;
   private String displayerName = "";
-  private boolean isMandatory = false;
-  private boolean isReadOnly = false;
-  private boolean isDisabled = false;
-  private boolean isHidden = false;
+  private boolean mandatory = false;
+  private boolean readOnly = false;
+  private boolean disabled = false;
+  private boolean hidden = false;
   private String defaultLabel = null;
   private Map<String, String> labels = new HashMap<String, String>();
   private Map<String, String> parameters = new HashMap<String, String>();
   private List<Label> labelsObj = new ArrayList<Label>();
   private List<Parameter> parametersObj = new ArrayList<Parameter>();
-  private boolean isSearchable = false;
+  private boolean searchable = false;
   private String templateName = null;
 
   /**
@@ -236,21 +235,21 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isMandatory() {
-    return isMandatory;
+    return mandatory;
   }
 
   /**
    * Set or unset the isMandatory flag
    */
   public void setMandatory(boolean isMandatory) {
-    this.isMandatory = isMandatory;
+    this.mandatory = isMandatory;
   }
 
   /**
    * Set or unset the isMandatory flag
    */
   public void setMandatory(Boolean isMandatory) {
-    this.isMandatory = isMandatory.booleanValue();
+    this.mandatory = isMandatory.booleanValue();
   }
 
   /**
@@ -258,14 +257,14 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isReadOnly() {
-    return isReadOnly;
+    return readOnly;
   }
 
   /**
    * Set or unset the isReadOnly flag
    */
   public void setReadOnly(boolean isReadOnly) {
-    this.isReadOnly = isReadOnly;
+    this.readOnly = isReadOnly;
   }
 
   /**
@@ -273,14 +272,14 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isDisabled() {
-    return isDisabled;
+    return disabled;
   }
 
   /**
    * Set or unset the isDisabled flag
    */
   public void setDisabled(boolean isDisabled) {
-    this.isDisabled = isDisabled;
+    this.disabled = isDisabled;
   }
 
   /**
@@ -288,26 +287,24 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isHidden() {
-    return isHidden;
+    return hidden;
   }
 
   /**
    * Set or unset the isHidden flag
    */
   public void setHidden(boolean isHidden) {
-    this.isHidden = isHidden;
+    this.hidden = isHidden;
   }
 
   @Override
   public Map<String, String> getParameters(String language) {
-    // if ((parameters == null) || (parameters.size()==0)) {
     Iterator<Parameter> parametersIter = parametersObj.iterator();
 
     while (parametersIter.hasNext()) {
       Parameter parameter = parametersIter.next();
       addParameter(parameter.getName(), parameter.getValue(language));
     }
-    // }
     return parameters;
   }
 
@@ -371,13 +368,13 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       return field;
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
-          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldImpl.getName());
+          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldImpl.getName(), e);
     } catch (ClassCastException e) {
       throw new FormFatalException("TypeManager", "form.EXP_NOT_A_FIELD",
-          fieldImpl.getName());
+          fieldImpl.getName(), e);
     } catch (Exception e) {
       throw new FormFatalException("TypeManager",
-          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldImpl.getName());
+          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldImpl.getName(), e);
     }
   }
 
@@ -449,11 +446,11 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   @Override
   public boolean isSearchable() {
-    return isSearchable;
+    return searchable;
   }
 
   public void setSearchable(boolean searchable) {
-    isSearchable = searchable;
+    this.searchable = searchable;
   }
 
   @Override

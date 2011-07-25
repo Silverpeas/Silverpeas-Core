@@ -47,10 +47,11 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   PublicationTemplateImpl template = null;
   boolean updateInProgress = false;
-  private static int SCOPE_DATA = 0;
-  private static int SCOPE_VIEW = 1;
-  private static int SCOPE_UPDATE = 2;
-  private static int SCOPE_SEARCH = 3;
+  private final static int SCOPE_DATA = 0;
+  private final static int SCOPE_VIEW = 1;
+  private final static int SCOPE_UPDATE = 2;
+  private final static int SCOPE_SEARCH = 3;
+  private final static int SCOPE_SEARCHRESULT = 4;
   private List<String> languages = null;
 
   /**
@@ -132,7 +133,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     this.template.setDataFileName(fileName + File.separator + "data.xml");
     this.template.setViewFileName(fileName + File.separator + "view.xml");
     this.template.setUpdateFileName(fileName + File.separator + "update.xml");
-
+    this.template.setSearchResultFileName(fileName + File.separator + "searchresult.xml");
     if (template.isSearchable()) {
       this.template.setSearchFileName(fileName + File.separator + "search.xml");
     } else {
@@ -285,6 +286,12 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
           recordTemplate = new GenericRecordTemplate();
           template.setSearchTemplate(recordTemplate);
         }
+      } else if (scope == SCOPE_SEARCHRESULT) {
+        recordTemplate = (GenericRecordTemplate) template.getSearchResultTemplate();
+        if (recordTemplate == null) {
+          recordTemplate = new GenericRecordTemplate();
+          template.setSearchResultTemplate(recordTemplate);
+        }
       } else {
         recordTemplate = (GenericRecordTemplate) template.getDataTemplate();
         if (recordTemplate == null) {
@@ -312,6 +319,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       getRecordTemplate(SCOPE_UPDATE).getFieldList().clear();
       getRecordTemplate(SCOPE_VIEW).getFieldList().clear();
       getRecordTemplate(SCOPE_SEARCH).getFieldList().clear();
+      getRecordTemplate(SCOPE_SEARCHRESULT).getFieldList().clear();
 
       getRecordTemplate(SCOPE_UPDATE).getFieldList().addAll(fields);
 
@@ -337,6 +345,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         }
         getRecordTemplate(SCOPE_VIEW).getFieldList().add(cloneField);
       }
+      
+      // Using same content as view to search result extra information
+      getRecordTemplate(SCOPE_SEARCHRESULT).getFieldList().addAll(
+          getRecordTemplate(SCOPE_VIEW).getFieldList());
 
       // Save others xml files (data.xml, view.xml, update.xml
       ((PublicationTemplateImpl) template).saveRecordTemplates();
