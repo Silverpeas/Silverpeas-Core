@@ -26,7 +26,7 @@ package com.silverpeas.wysiwyg.dynamicvalue.pool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.StringUtils;
+import com.silverpeas.util.StringUtil;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;
@@ -91,7 +91,7 @@ public class ConnectionPoolFactory {
         // check the class to instantiate the correct class.
         // this code must be replace by the use of a properties file or connectionSettings.xml if
         // there are more than 2 pool implementations
-        if (poolInfo != null && StringUtils.isNotEmpty(poolInfo.getConnectionType())) {
+        if (StringUtil.isDefined(poolInfo.getConnectionType())) {
           String className = "com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolWithJDBC";
           if ("JNDI".equalsIgnoreCase(poolInfo.getConnectionType())) {
             className = "com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolWithJNDI";

@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.lang.time.FastDateFormat;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import com.google.common.collect.Sets;
 import com.silverpeas.admin.components.ComponentPasteInterface;

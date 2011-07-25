@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import com.silverpeas.util.StringUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -76,7 +76,7 @@ public class DidYouMeanSearcher {
     // The variable field is only used to parse the query String and to obtain the words that will
     // be used for the search
     final String field = "content";
-    if (queryDescription != null && StringUtils.isNotEmpty(queryDescription.getQuery())) {
+    if (StringUtil.isDefined(queryDescription.getQuery())) {
 
       // parses the query string to prepare the search
       Analyzer analyzer = new IndexManager().getAnalyzer(queryDescription.getRequestedLanguage());

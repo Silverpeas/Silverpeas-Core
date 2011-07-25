@@ -26,7 +26,7 @@ package com.silverpeas.calendar;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Calendar;
 import java.util.TimeZone;
-import org.apache.commons.lang.time.FastDateFormat;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * A date and time.
