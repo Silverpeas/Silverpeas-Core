@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +37,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +46,6 @@ import java.util.Map;
  * Preferences - Java - Code Style - Code Templates
  */
 public class SilverStatisticsPeasDAOVolumeServices {
-  private static final String DB_NAME = JNDINames.ADMIN_DATASOURCE;
 
   /**
    * donne les stats global pour l'enemble de tous les users cad 2 infos, la collection contient
@@ -54,13 +53,12 @@ public class SilverStatisticsPeasDAOVolumeServices {
    * @return
    * @throws SQLException
    */
-  public static Collection[] getStatsInstancesServices() throws SQLException {
+  public static Collection[] getStatsInstancesServices() throws SQLException, UtilException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServices.getStatsInstancesServices",
         "root.MSG_GEN_ENTER_METHOD");
-    String selectQuery = " SELECT componentname, count(*)"
-        + " FROM st_componentinstance" + " GROUP BY componentname"
-        + " ORDER BY count(*) DESC";
+    String selectQuery = " SELECT componentname, count(*) AS nbcomponent FROM st_componentinstance GROUP BY "
+            + "componentname ORDER BY nbcomponent DESC";
 
     return getCollectionArrayFromQuery(selectQuery);
   }
@@ -101,60 +99,24 @@ public class SilverStatisticsPeasDAOVolumeServices {
    * @see
    */
   private static Collection[] getCollectionArrayFromQuery(String selectQuery)
-      throws SQLException {
+      throws SQLException, UtilException {
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServices.getCollectionArrayFromQuery",
         "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
     Collection[] list = null;
-    Connection myCon = getConnection();
-
+    Connection myCon = null;
     try {
+      myCon = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
       list = getCollectionArrayFromResultset(rs);
     } finally {
       DBUtil.close(rs, stmt);
-      freeConnection(myCon);
+      DBUtil.close(myCon);
     }
-
     return list;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  private static Connection getConnection() {
-    try {
-      Connection con = DBUtil.makeConnection(DB_NAME);
-
-      return con;
-    } catch (Exception e) {
-      throw new SilverStatisticsPeasRuntimeException(
-          "SilverStatisticsPeasDAOVolumeServices.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
-          "DbName=" + DB_NAME, e);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @see
-   */
-  private static void freeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServices.freeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
-    }
   }
 
   private SilverStatisticsPeasDAOVolumeServices() {

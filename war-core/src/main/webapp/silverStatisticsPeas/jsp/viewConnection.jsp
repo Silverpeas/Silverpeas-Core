@@ -71,12 +71,9 @@
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel />
-
-<!--[ JAVASCRIPT ]-->
 <script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/checkForm.js"></script>
-
-<script language="javascript">
+<script type="text/javascript">
 
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -105,14 +102,12 @@
 	
 	function validerForm(){
 		connexionFormulaire.FilterLib.disabled = false;
+		$.progressMessage();
 		document.connexionFormulaire.submit();
 	}
-	
-
 </script>
-
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
+<body>
 <view:window>
 <%
           if (userProfile.equals("A")) {
@@ -363,5 +358,6 @@
 </view:window>
 <form name="cancelConnectionForm" action="ViewConnections" method="post">
 </form>
+<view:progressMessage/>
 </body>
 </html>

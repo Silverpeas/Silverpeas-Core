@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 //Recuperation des parametres
@@ -49,23 +50,19 @@ Iterator   iter1 = null;
 %>
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<!--[ JAVASCRIPT ]-->
-<SCRIPT LANGUAGE="JAVASCRIPT">
-
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
+<script type="text/javascript">
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
+		$.progressMessage();
 		document.volumeServerFormulaire.submit();		
 	}
-
-</SCRIPT>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
- <FORM name="volumeServerFormulaire" action="ViewVolumeServer" method="post">
+</script>
+</head>
+<body>
+ <form name="volumeServerFormulaire" action="ViewVolumeServer" method="post">
 <%	
 
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes") + " > "+resources.getString("GML.attachments"));
@@ -95,7 +92,7 @@ Iterator   iter1 = null;
     out.println(frame.printBefore());
 %>
 
-<BR>
+<br/>
 	<div align="right">
 		<%=resources.getString("silverStatisticsPeas.Display")%>&nbsp;:
 		<select name="Display" size="1" onChange="changeDisplay()">
@@ -118,12 +115,12 @@ Iterator   iter1 = null;
    	{
 %>
 <div align="center">
-	<img src="<%=m_context%>/ChartServlet/?chart=DOC_VENTIL_CHART&random=<%=(new Date()).getTime()%>">
+	<img src="<%=m_context%>/ChartServlet/?chart=DOC_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
 </div>
 <%
 	}
 %>
-<br>
+<br/>
 <%
 
 		  // Tableau
@@ -159,10 +156,11 @@ Iterator   iter1 = null;
 	    }
   %>
 
- </FORM>
+ </form>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+<view:progressMessage/>
+</body>
+</html>

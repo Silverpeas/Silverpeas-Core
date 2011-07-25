@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 //Recuperation des parametres
 	ArrayLine  arrayLine = null;
@@ -52,13 +52,11 @@
 %>
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
+</head>
+<body>
 <%
           out.println(window.printBefore());          
           if (userProfile.equals("A")) {
@@ -67,9 +65,9 @@
           out.println(frame.printBefore());
           out.println(board.printBefore());
 %>
-<CENTER>
+<center>
   <table width="100%" border="0" cellspacing="0" cellpadding="4">
-    <FORM name="frequenceFormulaire" action="ValidateViewFrequence" method="post">
+    <form name="frequenceFormulaire" action="ValidateViewFrequence" method="post">
       <tr> 
         <td width="300" nowrap class=txtlibform><%=resources.getString("silverStatisticsPeas.since")%>&nbsp;:</td>
         <td nowrap> 
@@ -137,14 +135,14 @@
           </select> <%=resources.getString("silverStatisticsPeas.Connections")%>
         </td> 
       </tr>
-	</FORM>    
+	</form>    
   </table>
   
   <%
   	out.println(board.printAfter());
   
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:document.frequenceFormulaire.submit()", false));
+    buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:$.progressMessage();document.frequenceFormulaire.submit()", false));
 	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:document.cancelFrequenceForm.submit()", false));
     out.println("<br><center>"+buttonPane.print()+"</center><br>");
         
@@ -152,13 +150,13 @@
       %>
       
       <div align=center>
-		<img src="<%=m_context%>/ChartServlet/?chart=USER_FQ_CHART&random=<%=(new Date()).getTime()%>">
+		<img src="<%=m_context%>/ChartServlet/?chart=USER_FQ_CHART&random=<%=(new Date()).getTime()%>"/>
 	  </div>
 	  
       <%
 		}
   %> 
-</CENTER>
+</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
@@ -166,5 +164,6 @@ out.println(window.printAfter());
 	
 <form name="cancelFrequenceForm" action="ViewFrequence" method="post">
 </form>
-</BODY>
-</HTML>
+<view:progressMessage/>
+</body>
+</html>

@@ -25,6 +25,7 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -45,9 +46,7 @@ import java.util.StringTokenizer;
 public class SilverStatisticsMessageDriven implements MessageDrivenBean, MessageListener {
 
   private static final long serialVersionUID = -7349058052737871887L;
-  private StatisticsConfig myStatsConfig;
   private SilverStatistics silverStatistics = null;
-  private MessageDrivenContext ctx;
 
   /**
    * Method declaration
@@ -73,8 +72,7 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
   public void setMessageDrivenContext(MessageDrivenContext sc) {
     SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.setMessageDrivenContext",
         "root.MSG_GEN_PARAM_VALUE", "MessageDrivenContext=" + sc);
-    ctx = sc;
-    myStatsConfig = new StatisticsConfig();
+    StatisticsConfig myStatsConfig = new StatisticsConfig();
     try {
       myStatsConfig.init();
     } catch (SilverStatisticsConfigException e) {
