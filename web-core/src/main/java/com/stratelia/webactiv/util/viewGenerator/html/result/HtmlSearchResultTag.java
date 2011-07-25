@@ -370,7 +370,9 @@ public class HtmlSearchResultTag extends TagSupport {
           EncodeHelper.javaStringToHtmlString(sLocation) + "</span>");
     }
     if (StringUtil.isDefined(extraInformation)) {
+      result.append("<div class=\"extra\">");
       result.append(extraInformation);
+      result.append("</div>");
     }
     result.append("<td>");
     result.append("</tr></table>");
