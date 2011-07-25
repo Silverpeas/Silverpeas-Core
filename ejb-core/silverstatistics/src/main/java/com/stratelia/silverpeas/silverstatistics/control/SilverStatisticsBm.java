@@ -23,6 +23,8 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
+
 /**
  *
  * @author ehugonnet

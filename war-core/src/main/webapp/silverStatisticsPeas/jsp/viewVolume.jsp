@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 //Recuperation des parametres
@@ -57,15 +58,12 @@ Iterator   iter1 = null;
 %>
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<!--[ JAVASCRIPT ]-->
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script type="text/javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
 		fonction = fonction + "?MonthBegin=" + volumePublication.MonthBegin.value;
@@ -91,12 +89,13 @@ Iterator   iter1 = null;
 	function validerForm(){
 		volumePublication.FilterLibGroup.disabled = false;
 		volumePublication.FilterLibUser.disabled = false;
+		$.progressMessage();
 		document.volumePublication.submit()
 	}
 	
-</SCRIPT>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
+</script>
+</head>
+<body>
 <%
 
 	String optionsMonthBegin = "";
@@ -152,12 +151,12 @@ Iterator   iter1 = null;
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
-<CENTER>
+<center>
   <table width="100%" border="0" cellspacing="0" cellpadding="4">
     <form name="volumePublication" action="ValidateViewVolume" method="post">
       <tr> 
-        <td width="40%" nowrap><span class=txtlibform><%=resources.getString("GML.date")%>&nbsp;:&nbsp;</span></td>
-        <td nowrap> 
+        <td width="40%" nowrap="nowrap"><span class="txtlibform"><%=resources.getString("GML.date")%>&nbsp;:&nbsp;</span></td>
+        <td nowrap="nowrap"> 
           <select name="MonthBegin" size="1">
 		    <%
         	 out.print(optionsMonthBegin);
@@ -168,11 +167,10 @@ Iterator   iter1 = null;
 		    <%
         	out.print(optionsYearBegin);
           	%>
-
           </select>
         </td>
       </tr>
-      <tr> 
+      <tr>
         <td nowrap><span class=txtlibform><%=resources.getString("silverStatisticsPeas.group")%>&nbsp;:&nbsp;</span></td>
         <td nowrap colspan="2"> 
           <input type="text" name="FilterLibGroup" value="<%=filterLibGroup%>" size="25" disabled>
@@ -190,7 +188,7 @@ Iterator   iter1 = null;
           <a href=javascript:clearFilterUser()><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
         </td>
       </tr>
-      <input type="hidden" name="SpaceId" value="<%=(spaceId==null) ? "" : spaceId%>">
+      <input type="hidden" name="SpaceId" value="<%=(spaceId==null) ? "" : spaceId%>"/>
       </form>
   </table>
   <%
@@ -199,14 +197,14 @@ Iterator   iter1 = null;
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:validerForm()", false));
 	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:document.cancelForm.submit()", false));
-    out.println("<br><center>"+buttonPane.print()+"</center><br>");
+    out.println("<br/><center>"+buttonPane.print()+"</center><br>");
 
 	//Graphiques
    	if (vStatsData != null)
    	{
   %>
 		   	<div align="center">
-				<img src="<%=m_context%>/ChartServlet/?chart=PUBLI_VENTIL_CHART&random=<%=(new Date()).getTime()%>">
+				<img src="<%=m_context%>/ChartServlet/?chart=PUBLI_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
 			</div>
   <%
   	}
@@ -266,12 +264,13 @@ Iterator   iter1 = null;
 	        out.println("");
     }
   %>
-</CENTER>
+</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <form name="cancelForm" action="ViewVolumePublication" method="post">
 </form>
-</BODY>
-</HTML>
+<view:progressMessage/>
+</body>
+</html>
