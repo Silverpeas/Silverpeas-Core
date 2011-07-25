@@ -181,7 +181,7 @@
             <version>3.1.2</version>
             <configuration>
               <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
-              <version>${project.version}-${build.timestamp}</version>
+<!--              <version>${project.version}-${build.timestamp}</version>-->
               <excludes>
                 <exclude>*.iml</exclude>
               </excludes>
