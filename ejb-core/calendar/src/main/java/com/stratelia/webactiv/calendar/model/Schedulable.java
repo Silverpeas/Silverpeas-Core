@@ -24,8 +24,9 @@
 
 package com.stratelia.webactiv.calendar.model;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import static com.silverpeas.util.StringUtil.*;
+import static com.stratelia.webactiv.util.DateUtil.*;
 
 public abstract class Schedulable implements java.io.Serializable {
 
@@ -42,22 +43,22 @@ public abstract class Schedulable implements java.io.Serializable {
   private Priority priority = null;
   private String externalId = null;
 
-  protected static final java.text.SimpleDateFormat completeFormat =
-      new java.text.SimpleDateFormat(
-      "yyyy/MM/dd HH:mm");
-  protected static final java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(
-      "yyyy/MM/dd");
-  protected static final java.text.SimpleDateFormat hourFormat = new java.text.SimpleDateFormat(
-      "HH:mm");
+//  protected static final java.text.SimpleDateFormat completeFormat =
+//      new java.text.SimpleDateFormat(
+//      "yyyy/MM/dd HH:mm");
+//  protected static final java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(
+//      "yyyy/MM/dd");
+//  protected static final java.text.SimpleDateFormat hourFormat = new java.text.SimpleDateFormat(
+//      "HH:mm");
 
   public Schedulable() {
   }
 
   public Schedulable(String name, String delegatorId) {
-    if (StringUtil.isDefined(name)) {
+    if (isDefined(name)) {
       this.name = name;
     }
-    if (StringUtil.isDefined(delegatorId)) {
+    if (isDefined(delegatorId)) {
       this.delegatorId = delegatorId;
     }
   }
@@ -74,7 +75,7 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public void setName(String name) {
-    if (StringUtil.isDefined(name)) {
+    if (isDefined(name)) {
       this.name = name;
     } else {
       this.name = null;
@@ -86,7 +87,7 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public void setId(String id) {
-    if (StringUtil.isDefined(id)) {
+    if (isDefined(id)) {
       this.id = id;
     } else {
       this.id = null;
@@ -94,7 +95,7 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public void setDelegatorId(String delegatorId) {
-    if (StringUtil.isDefined(delegatorId)) {
+    if (isDefined(delegatorId)) {
       this.delegatorId = delegatorId;
     } else {
       this.delegatorId = null;
@@ -137,7 +138,7 @@ public abstract class Schedulable implements java.io.Serializable {
       return; // this is also a normal case
     }
 
-    dateFormat.parse(date);
+    parseDate(date);
 
     this.startDate = date;
   }
@@ -151,7 +152,7 @@ public abstract class Schedulable implements java.io.Serializable {
       startHour = null;
       return; // this is also a normal case
     }
-    hourFormat.parse(hour);
+    parseTime(hour);
     this.startHour = hour;
   }
 
@@ -165,10 +166,10 @@ public abstract class Schedulable implements java.io.Serializable {
     }
     try {
       if (getStartHour() == null) {
-        return dateFormat.parse(getStartDay());
+        return parseDate(getStartDay());
       }
       else {
-        return completeFormat.parse(getStartDay() + " " + getStartHour());
+        return parseDateTime(getStartDay() + " " + getStartHour());
       }
     } catch (java.text.ParseException e) {
       return null;
@@ -181,7 +182,7 @@ public abstract class Schedulable implements java.io.Serializable {
       return;
     }
     try {
-      setStartDay(dateFormat.format(start));
+      setStartDay(formatDate(start));
     } catch (java.text.ParseException e) {
       SilverTrace.warn("calendar",
           "Schedulable.setStartDate(setStartDate(java.util.Date start)",
@@ -194,11 +195,11 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public void setEndDay(String date) throws java.text.ParseException {
-    if (!StringUtil.isDefined(date)) {
+    if (!isDefined(date)) {
       endDate = null;
       return;
     }
-    dateFormat.parse(date);
+    parseDate(date);
     this.endDate = date;
   }
 
@@ -211,7 +212,7 @@ public abstract class Schedulable implements java.io.Serializable {
       endHour = null;
       return; // this is also a normal case
     }
-    hourFormat.parse(hour);
+    parseTime(hour);
 
     this.endHour = hour;
   }
@@ -230,10 +231,10 @@ public abstract class Schedulable implements java.io.Serializable {
     }
     try {
       if (getEndHour() != null) {
-        return completeFormat.parse(getEndDay() + " " + getEndHour());
+        return parseDateTime(getEndDay() + " " + getEndHour());
       }
       else {
-        return dateFormat.parse(getEndDay());
+        return parseDate(getEndDay());
       }
     } catch (java.text.ParseException e) {
       return null;
@@ -246,7 +247,7 @@ public abstract class Schedulable implements java.io.Serializable {
       return;
     }
     try {
-      setEndDay(dateFormat.format(end));
+      setEndDay(formatDate(end));
     } catch (java.text.ParseException e) {
       SilverTrace.warn("calendar",
           "Schedulable.setStartDate(setStartDate(java.util.Date start)",
@@ -256,9 +257,9 @@ public abstract class Schedulable implements java.io.Serializable {
 
   public String getStringDuration() {
     try {
-      java.util.Date aStartDate = completeFormat.parse(getStartDay() + " "
+      java.util.Date aStartDate = parseDateTime(getStartDay() + " "
           + getStartHour());
-      java.util.Date anEndDate = completeFormat.parse(getEndDay() + " "
+      java.util.Date anEndDate = parseDateTime(getEndDay() + " "
           + getEndHour());
       long ms = anEndDate.getTime() - aStartDate.getTime();
       return Schedulable.hourMinuteToString((int) ((ms / (60000)) % 60),
@@ -272,9 +273,9 @@ public abstract class Schedulable implements java.io.Serializable {
 
   public int getMinuteDuration() {
     try {
-      java.util.Date aStartDate = completeFormat.parse(getStartDay() + " "
+      java.util.Date aStartDate = parseDateTime(getStartDay() + " "
           + getStartHour());
-      java.util.Date anEndDate = completeFormat.parse(getEndDay() + " "
+      java.util.Date anEndDate = parseDateTime(getEndDay() + " "
           + getEndHour());
       long ms = anEndDate.getTime() - aStartDate.getTime();
       return (int) (ms / (60000));
