@@ -21,5 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://silverpeas.org/xml/ns/component", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package com.silverpeas.admin.components;
+package com.silverpeas.util.template.renderer;
+
+import java.util.Date;
+
+import org.antlr.stringtemplate.AttributeRenderer;
+
+import com.stratelia.webactiv.util.DateUtil;
+
+public class DateRenderer implements AttributeRenderer {
+
+  @Override
+  public String toString(Object o) {
+    return DateUtil.formatDate((Date) o);
+  }
+
+  @Override
+  public String toString(Object o, String formatName) {
+    return DateUtil.formatDate((Date) o, formatName);
+  }
+
+}

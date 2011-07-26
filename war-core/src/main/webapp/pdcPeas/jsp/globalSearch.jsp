@@ -619,7 +619,7 @@ out.println(window.printBefore());
 %>
 <center>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
-  <!-- champs cach� pour voir ou non les axes secondaires -->
+  <!-- champs cache pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
   <input type="hidden" name="showNotOnlyPertinentAxisAndValues" value="<%=showNotOnlyPertinentAxisAndValues%>">
   <input type="hidden" name="AxisId">

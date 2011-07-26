@@ -131,11 +131,12 @@ public abstract class TextField implements Field {
     if (value instanceof String) {
       setStringValue((String) value);
     } else {
-      if (value != null)
+      if (value != null) {
         throw new FormException("TextField.setObjectValue",
             "form.EXP_NOT_A_STRING");
-      else
+      } else {
         setNull();
+      }
     }
   }
 
@@ -143,10 +144,11 @@ public abstract class TextField implements Field {
    * Returns true if the value is a String and this field isn't read only.
    */
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof String)
+    if (value instanceof String) {
       return !isReadOnly();
-    else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -170,23 +172,25 @@ public abstract class TextField implements Field {
    */
   public boolean equals(Object o) {
     String s = getStringValue();
-    if (s == null)
+    if (s == null) {
       s = "";
+    }
 
     if (o instanceof TextField) {
       String t = ((TextField) o).getStringValue();
-      if (t == null)
+      if (t == null) {
         t = "";
-
+      }
       return s.equalsIgnoreCase(t);
     } else if (o instanceof Field) {
       String t = ((Field) o).getValue("");
-      if (t == null)
+      if (t == null) {
         t = "";
-
+      }
       return s.equalsIgnoreCase(t);
-    } else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -194,23 +198,24 @@ public abstract class TextField implements Field {
    */
   public int compareTo(Object o) {
     String s = getStringValue();
-    if (s == null)
+    if (s == null) {
       s = "";
-
+    }
     if (o instanceof TextField) {
       String t = ((TextField) o).getStringValue();
-      if (t == null)
+      if (t == null) {
         t = "";
-
+      }
       return s.compareTo(t);
     } else if (o instanceof Field) {
       String t = ((Field) o).getValue("");
-      if (t == null)
+      if (t == null) {
         t = "";
-
+      }
       return s.compareTo(t);
-    } else
+    } else {
       return -1;
+    }
   }
 
   public int hashCode() {

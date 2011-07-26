@@ -91,8 +91,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public DataRecord getRecord(String recordId, String language)
       throws FormException {
-    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language))
+    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
       language = null;
+    }
     return getGenericRecordSetManager().getRecord(recordTemplate, recordId, language);
   }
 
@@ -129,10 +130,11 @@ public class GenericRecordSet implements RecordSet, Serializable {
    */
   @Override
   public void save(DataRecord record) throws FormException {
-    if (record.isNew())
+    if (record.isNew()) {
       insert(record);
-    else
+    } else {
       update(record);
+    }
   }
 
   private void indexRecord(String recordId, String formName,
@@ -156,8 +158,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
             String fieldType = fieldTemplate.getTypeName();
             String fieldDisplayerName = fieldTemplate.getDisplayerName();
             try {
-              if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
+              if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
                 fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
+              }
               FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
                   fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
@@ -181,9 +184,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
       throws FormException {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       indexRecord(recordId, formName, indexEntry, null);
-    else {
+    } else {
       List<String> languages =
           getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, recordId);
       for (int l = 0; l < languages.size(); l++) {

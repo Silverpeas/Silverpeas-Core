@@ -24,8 +24,11 @@
 
 package com.silverpeas.form.filter;
 
-import java.util.*;
-import com.silverpeas.form.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FormException;
 
 /**
  * A simple record filter built from a list of fieldFilter whose criteria must all match to accept a

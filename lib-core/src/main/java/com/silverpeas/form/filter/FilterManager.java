@@ -24,11 +24,23 @@
 
 package com.silverpeas.form.filter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.silverpeas.form.*;
-import com.silverpeas.form.record.*;
-import com.silverpeas.form.form.*;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.Util;
+import com.silverpeas.form.form.XmlForm;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.form.record.GenericRecordTemplate;
 
 /**
  * FilterManager
@@ -137,8 +149,9 @@ public class FilterManager {
 
     while (records.hasNext()) {
       record = records.next();
-      if (filter.match(record))
+      if (filter.match(record)) {
         result.add(record);
+      }
     }
 
     return result;
@@ -162,8 +175,9 @@ public class FilterManager {
       criteria = criteriaRecord.getField(criteriaName);
 
       // skip null criterium
-      if (criteria.isNull())
+      if (criteria.isNull()) {
         continue;
+      }
 
       filteredName = getFilteredName(criteriaName);
       filterKind = getFilterKind(criteriaName);
@@ -176,8 +190,9 @@ public class FilterManager {
         fieldFilter = new GreaterThenFilter(criteria);
       } else if ("equal".equals(filterKind)) {
         fieldFilter = new EqualityFilter(criteria);
-      } else
+      } else {
         fieldFilter = null;
+      }
 
       if (fieldFilter != null) {
         filter.addFieldFilter(filteredName, fieldFilter);
@@ -193,18 +208,20 @@ public class FilterManager {
 
   private String getFilteredName(String criteriaName) {
     int sep = criteriaName.lastIndexOf("__");
-    if (sep == -1)
+    if (sep == -1) {
       return criteriaName;
-    else
+    } else {
       return criteriaName.substring(0, sep);
+    }
   }
 
   private String getFilterKind(String criteriaName) {
     int sep = criteriaName.lastIndexOf("__");
-    if (sep == -1 || sep + 2 >= criteriaName.length())
+    if (sep == -1 || sep + 2 >= criteriaName.length()) {
       return "";
-    else
+    } else {
       return criteriaName.substring(sep + 2);
+    }
   }
 
   /**
