@@ -24,7 +24,8 @@
 
 package com.silverpeas.form.filter;
 
-import com.silverpeas.form.*;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FormException;
 
 /**
  * FieldFilter

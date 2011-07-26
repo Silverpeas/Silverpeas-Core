@@ -43,10 +43,11 @@ public class EqualityFilter implements FieldFilter {
    * Returns true if the given field equals the reference.
    */
   public boolean match(Field tested) {
-    if (reference.isNull())
+    if (reference.isNull()) {
       return tested.isNull();
-    else
+    } else {
       return tested.equals(reference);
+    }
   }
 
   /**

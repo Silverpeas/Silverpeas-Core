@@ -21,5 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://silverpeas.org/xml/ns/component", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package com.silverpeas.admin.components;
+package com.silverpeas.search;
+
+public interface ResultDisplayer {
+  /**
+   * If parameters are missing, add them inside SearchResultContentVO in order to keep the same
+   * interface.
+   * @param searchResult a SearchResultContent value object which is initialized from search result
+   * data.
+   * @return an HTML string representation of the result with additional informations about current
+   * search result content
+   */
+  public String getResultContent(SearchResultContentVO searchResult);
+}

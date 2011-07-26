@@ -243,7 +243,7 @@ public class PublicationTemplateManager {
   }
 
   /**
-   * save a publicationTemplate definition from java objects to xml file
+   * Save a publicationTemplate definition from java objects to xml file
    * @param template the PublicationTemplate to save
    * @throws PublicationTemplateException  
    */
@@ -304,6 +304,12 @@ public class PublicationTemplateManager {
     }
   }
 
+  /**
+   * Retrieve Publication Templates
+   * @param onlyVisibles only visible templates boolean 
+   * @return only visible PublicationTemplates if onlyVisible is true, all the publication templates else if
+   * @throws PublicationTemplateException
+   */
   public List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
       throws PublicationTemplateException {
     List<PublicationTemplate> publicationTemplates = new ArrayList<PublicationTemplate>();
@@ -339,11 +345,20 @@ public class PublicationTemplateManager {
     return publicationTemplates;
   }
 
+  /**
+   * @return only the visible PublicationTemplates
+   * @throws PublicationTemplateException
+   */
   public List<PublicationTemplate> getPublicationTemplates()
       throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
 
+  /**
+   * 
+   * @return the list of PublicationTemplate which contains a search form
+   * @throws PublicationTemplateException
+   */
   public List<PublicationTemplate> getSearchablePublicationTemplates()
       throws PublicationTemplateException {
     List<PublicationTemplate> searchableTemplates = new ArrayList<PublicationTemplate>();
@@ -368,6 +383,9 @@ public class PublicationTemplateManager {
     return searchableTemplates;
   }
 
+  /**
+   * @param fileName the file name of the template to remove from cache
+   */
   public void removePublicationTemplateFromCaches(String fileName) {
     SilverTrace.info("form", "PublicationTemplateManager.removePublicationTemplateFromCaches",
         "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);

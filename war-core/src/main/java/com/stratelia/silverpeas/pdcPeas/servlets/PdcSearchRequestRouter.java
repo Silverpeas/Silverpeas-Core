@@ -1266,6 +1266,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
     request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC.
         getSortOrder(), pdcSC.getXmlFormSortValue(), pdcSC.getSortImplemtor(), filter));
+    request.setAttribute("UserId", pdcSC.getUserId());
 
     if (filter != null) {
       // Add filtered data
