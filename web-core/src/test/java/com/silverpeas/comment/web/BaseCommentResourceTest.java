@@ -23,10 +23,6 @@
  */
 package com.silverpeas.comment.web;
 
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
-import javax.inject.Inject;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.web.mock.DefaultCommentServiceMock;
 import com.silverpeas.comment.model.Comment;
@@ -38,7 +34,6 @@ import com.silverpeas.rest.RESTWebServiceTest;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * A builder of Sivlerpeas objects required for test fixture preparation.
@@ -50,8 +45,6 @@ public abstract class BaseCommentResourceTest extends RESTWebServiceTest {
   protected static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
   @Autowired
   private DefaultCommentServiceMock commentService;
-  @Inject
-  private MockablePersonalizationService personalisationService;
 
   /**
    * Gets the comment service used in tests.
@@ -62,18 +55,17 @@ public abstract class BaseCommentResourceTest extends RESTWebServiceTest {
   }
 
   public BaseCommentResourceTest() {
-    super("com.silverpeas.comment.web", "spring-comment-webservice.xml");    
+    super("com.silverpeas.comment.web", "spring-comment-webservice.xml");
+  }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] {COMPONENT_INSTANCE_ID};
   }
 
   @Before
   public void checkCommentServiceMocking() {
     assertNotNull(commentService);
-    assertNotNull(personalisationService);
-    PersonalizationService mockService = mock(PersonalizationService.class);
-    UserPreferences settings = new UserPreferences();
-    settings.setLanguage("fr");
-    when(mockService.getUserSettings(anyString())).thenReturn(settings);
-    personalisationService.setPersonalizationService(mockService);
   }
 
   /**
