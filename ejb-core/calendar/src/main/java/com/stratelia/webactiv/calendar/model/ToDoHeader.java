@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.calendar.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import static com.stratelia.webactiv.util.DateUtil.*;
 
 public class ToDoHeader extends Schedulable implements Cloneable {
 
@@ -68,7 +69,7 @@ public class ToDoHeader extends Schedulable implements Cloneable {
 
   public void setCompletedDay(String day) {
     try {
-      completedDate = dateFormat.parse(day);
+      completedDate = parseDate(day);
     } catch (Exception e) {
       SilverTrace.warn("calendar", "ToDoHeader.setCompletedDay(String day)",
           "calendar_MSG_NOT_PARSE_DATE", "return => completedDate=null");
@@ -80,7 +81,7 @@ public class ToDoHeader extends Schedulable implements Cloneable {
     if (completedDate == null) {
       return null;
     }
-    return dateFormat.format(completedDate);
+    return formatDate(completedDate);
   }
 
   public int getDuration() {

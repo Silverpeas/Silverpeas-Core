@@ -31,7 +31,7 @@ import javax.inject.Inject;
  */
 public class DocumentFormatConverterFactory {
 
-  private static DocumentFormatConverterFactory instance = new DocumentFormatConverterFactory();
+  private static final DocumentFormatConverterFactory instance = new DocumentFormatConverterFactory();
 
   @Inject
   private ODTConverter odtConverter;
