@@ -9,7 +9,7 @@
 <form name="fieldForm" action="<%=m_context%>/RtemplateDesigner/jsp/<%=actionForm%>" method="POST">
 <table CELLSPACING="5" WIDTH="100%">
 <tr>
-<td class="txtlibform" width="10"><%=resource.getString("GML.name")%> :</td>
+<td class="txtlibform" width="10" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
 <td>
 	<% if (!nameDisabled) { %>
 		<input type="text" name="FieldName" size="30" value="<%=name%>"/>&nbsp;<img src="<%=resource.getIcon("templateDesigner.mandatory")%>" width="5" height="5"/>
@@ -27,7 +27,7 @@
 			label = field.getLabel(lang);
 %>
 		<tr>
-			<td class="txtlibform"><%=resource.getString("GML.label")%> (<%=lang%>) :</td><td><input type="text" name="Label_<%=lang%>" size="30" value="<%=label%>"/></td>
+			<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.label")%> (<%=lang%>) :</td><td><input type="text" name="Label_<%=lang%>" size="30" value="<%=label%>"/></td>
 		</tr>
 <% } %>
 <tr>

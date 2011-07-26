@@ -8,7 +8,7 @@
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(validateButton);
 	buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println("<br/><center>"+buttonPane.print()+"</center>");
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

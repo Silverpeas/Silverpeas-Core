@@ -37,7 +37,7 @@ Iterator fields = (Iterator) request.getAttribute("Fields");
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 	function openWindow(displayer) {
 	    openFieldWindow("NewField?Displayer=" + displayer, displayer);
 	}
@@ -59,7 +59,7 @@ Iterator fields = (Iterator) request.getAttribute("Fields");
 			height = "450";
 			width = "700";
 		}
-		SP_openWindow(url, "fieldWindow", width, height, "directories=0, menubar=0, toolbar=0, alwaysRaised");
+		SP_openWindow(url, "fieldWindow", width, height, "directories=0, menubar=0, toolbar=0, scrollbars=yes, alwaysRaised");
 	}
 	
 	function move(direction, fieldName) {
