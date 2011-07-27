@@ -31,7 +31,6 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -191,7 +190,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
         SilverTrace.error("admin", "OrganizationController.getAvailDriverCompoIds",
             "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", null, e);
       }
-      return new Hashtable<String, WAComponent>();
+      return new HashMap<String, WAComponent>();
     }
   }
 
@@ -883,6 +882,16 @@ public class OrganizationController extends AdminReference implements java.io.Se
     }
   }
   
+  public boolean isComponentExist(String componentId) {
+    try {
+      return m_Admin.getComponentInstLight(componentId) != null;
+    } catch (AdminException ex) {
+      SilverTrace.error("admin", "OrganizationController.isComponentExist",
+          "admin.EX_ERR_GET_COMPONENT", "componentId: '" + componentId + "'", ex);
+      return false;
+    }
+  }
+  
   public boolean isComponentManageable(String componentId, String userId) {
     try {
       return m_Admin.isComponentManageable(componentId, userId);
@@ -1083,7 +1092,6 @@ public class OrganizationController extends AdminReference implements java.io.Se
       return m_Admin.getAllDomains();
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllDomain", "admin.EX_ERR_GET_DOMAIN", e);
-      e.printStackTrace();
       return null;
     }
   }

@@ -130,14 +130,6 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Return the space of the indexed document or the userId if the space is a private working space.
-   * @deprecated - to use this method is forbidden
-   */
-  public String getSpace() {
-    return pk.getSpace();
-  }
-
-  /**
    * Return the name of the component's instance which handles the object.
    */
   public String getComponent() {

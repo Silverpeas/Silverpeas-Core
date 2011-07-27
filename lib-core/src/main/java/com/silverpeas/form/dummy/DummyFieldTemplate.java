@@ -42,6 +42,10 @@ public class DummyFieldTemplate implements FieldTemplate {
     field = new TextFieldImpl();
   }
 
+  public DummyFieldTemplate(Field field) {
+    this.field = field;
+  }
+
   /**
    * Returns the field name of the Field built on this template.
    */

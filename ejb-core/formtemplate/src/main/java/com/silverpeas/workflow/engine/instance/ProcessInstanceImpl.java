@@ -53,7 +53,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.Workflow;
