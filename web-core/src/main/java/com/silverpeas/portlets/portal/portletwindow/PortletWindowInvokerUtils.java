@@ -37,7 +37,7 @@ import com.sun.portal.portletcontainer.invoker.InvokerException;
  * PortletWindowInvokerUtils is a utility class used by the PortletWindowInvoker
  */
 public class PortletWindowInvokerUtils {
-  private static Logger logger = Logger.getLogger(
+  private static final Logger logger = Logger.getLogger(
       "com.silverpeas.portlets.portal.portletwindow",
       "com.silverpeas.portlets.PCDLogMessages");
 

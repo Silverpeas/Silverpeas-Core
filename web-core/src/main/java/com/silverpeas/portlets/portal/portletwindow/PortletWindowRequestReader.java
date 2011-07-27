@@ -36,6 +36,7 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 
 public class PortletWindowRequestReader implements WindowRequestReader {
 
+  @Override
   public ChannelMode readNewPortletWindowMode(HttpServletRequest request) {
     String newChannelMode =
         request.getParameter(WindowInvokerConstants.NEW_PORTLET_WINDOW_MODE_KEY);
@@ -45,6 +46,7 @@ public class PortletWindowRequestReader implements WindowRequestReader {
     return null;
   }
 
+  @Override
   public ChannelState readNewWindowState(HttpServletRequest request) {
     String newWindowState =
         request.getParameter(WindowInvokerConstants.NEW_PORTLET_WINDOW_STATE_KEY);
@@ -54,20 +56,24 @@ public class PortletWindowRequestReader implements WindowRequestReader {
     return null;
   }
 
+  @Override
   public ChannelURLType readURLType(HttpServletRequest request) {
     return new ChannelURLType(request.getParameter(WindowInvokerConstants.PORTLET_ACTION));
   }
 
+  @Override
   public Map<String, String[]> readParameterMap(HttpServletRequest request) {
     Map<String, String[]> params =
         (Map) request.getAttribute(WindowInvokerConstants.PORTLET_PARAM_MAP);
     return params;
   }
 
+  @Override
   public String getCacheLevel(HttpServletRequest request) {
     return request.getParameter(WindowInvokerConstants.RESOURCE_URL_CACHE_LEVEL_KEY);
   }
 
+  @Override
   public String getResourceID(HttpServletRequest request) {
     return request.getParameter(WindowInvokerConstants.RESOURCE_ID_KEY);
   }
