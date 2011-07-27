@@ -56,7 +56,7 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
  */
 public class DriverUtil {
 
-  private static Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
+  private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
       "com.silverpeas.portlets.PCDLogMessages");
   private static int renderParameterPrefixLength =
       PortletContainerConstants.RENDER_PARAM_PREFIX.length();
@@ -69,51 +69,51 @@ public class DriverUtil {
   }
 
   public static String getAdminURL(HttpServletRequest request) {
-    StringBuffer urlBuffer = new StringBuffer();
-    urlBuffer.append(request.getScheme());
-    urlBuffer.append("://");
-    urlBuffer.append(request.getServerName());
-    urlBuffer.append(":");
-    urlBuffer.append(request.getServerPort());
-    urlBuffer.append(request.getContextPath());
-    urlBuffer.append("/portletAdmin");
-    return urlBuffer.toString();
+    StringBuilder urlBuilder = new StringBuilder();
+    urlBuilder.append(request.getScheme());
+    urlBuilder.append("://");
+    urlBuilder.append(request.getServerName());
+    urlBuilder.append(":");
+    urlBuilder.append(request.getServerPort());
+    urlBuilder.append(request.getContextPath());
+    urlBuilder.append("/portletAdmin");
+    return urlBuilder.toString();
   }
 
   public static String getDeployerURL(HttpServletRequest request) {
-    StringBuffer urlBuffer = new StringBuffer();
-    urlBuffer.append(request.getScheme());
-    urlBuffer.append("://");
-    urlBuffer.append(request.getServerName());
-    urlBuffer.append(":");
-    urlBuffer.append(request.getServerPort());
-    urlBuffer.append(request.getContextPath());
-    urlBuffer.append("/portletDeployer");
-    return urlBuffer.toString();
+    StringBuilder urlBuilder = new StringBuilder();
+    urlBuilder.append(request.getScheme());
+    urlBuilder.append("://");
+    urlBuilder.append(request.getServerName());
+    urlBuilder.append(":");
+    urlBuilder.append(request.getServerPort());
+    urlBuilder.append(request.getContextPath());
+    urlBuilder.append("/portletDeployer");
+    return urlBuilder.toString();
   }
 
   public static String getPortletsURL(HttpServletRequest request) {
-    StringBuffer urlBuffer = new StringBuffer();
-    urlBuffer.append(request.getScheme());
-    urlBuffer.append("://");
-    urlBuffer.append(request.getServerName());
-    urlBuffer.append(":");
-    urlBuffer.append(request.getServerPort());
-    urlBuffer.append(request.getContextPath());
-    urlBuffer.append("/dt");
-    return urlBuffer.toString();
+    StringBuilder urlBuilder = new StringBuilder();
+    urlBuilder.append(request.getScheme());
+    urlBuilder.append("://");
+    urlBuilder.append(request.getServerName());
+    urlBuilder.append(":");
+    urlBuilder.append(request.getServerPort());
+    urlBuilder.append(request.getContextPath());
+    urlBuilder.append("/dt");
+    return urlBuilder.toString();
   }
 
   public static String getWSRPURL(HttpServletRequest request) {
-    StringBuffer urlBuffer = new StringBuffer();
-    urlBuffer.append(request.getScheme());
-    urlBuffer.append("://");
-    urlBuffer.append(request.getServerName());
-    urlBuffer.append(":");
-    urlBuffer.append(request.getServerPort());
-    urlBuffer.append(request.getContextPath());
-    urlBuffer.append("/rdt");
-    return urlBuffer.toString();
+    StringBuilder urlBuilder = new StringBuilder();
+    urlBuilder.append(request.getScheme());
+    urlBuilder.append("://");
+    urlBuilder.append(request.getServerName());
+    urlBuilder.append(":");
+    urlBuilder.append(request.getServerPort());
+    urlBuilder.append(request.getContextPath());
+    urlBuilder.append("/rdt");
+    return urlBuilder.toString();
   }
 
   public static String getWSRPTabName() {
