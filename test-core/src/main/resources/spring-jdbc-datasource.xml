@@ -27,4 +27,6 @@
       </list>
     </property>
   </bean>
+  
+  <import resource="spring-silverpeas.xml"/>
 </beans>

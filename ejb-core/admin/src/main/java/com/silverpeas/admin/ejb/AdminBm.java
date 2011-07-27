@@ -27,7 +27,6 @@ package com.silverpeas.admin.ejb;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Hashtable;
 
 import javax.ejb.EJBObject;
 
@@ -36,6 +35,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import java.util.Map;
 
 /**
  * Interface declaration
@@ -61,7 +61,7 @@ public interface AdminBm extends EJBObject {
 
   public List<String> getAvailableSubSpaceIds(String spaceId, String userId) throws RemoteException;
 
-  public Hashtable<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws RemoteException;
+  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws RemoteException;
 
   public String authenticate(String sKey, String sSessionId) throws RemoteException;
 

@@ -35,12 +35,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.time.FastDateFormat;
 
@@ -3703,7 +3701,7 @@ public final class Admin {
     }
   }
 
-  public Hashtable<String, SpaceAndChildren> getTreeView(String userId, String spaceId)
+  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId)
       throws AdminException {
     SilverTrace.info("admin", "Admin.getTreeView", "root.MSG_GEN_ENTER_METHOD",
         "userId = " + userId + ", spaceId = " + spaceId);
@@ -3717,7 +3715,7 @@ public final class Admin {
         "SQL Queries done !");
 
     // Step 2 - build HashTable
-    Hashtable<String, SpaceAndChildren> spaceTrees = new Hashtable<String, SpaceAndChildren>();
+    Map<String, SpaceAndChildren> spaceTrees = new HashMap<String, SpaceAndChildren>();
     Iterator<SpaceInstLight> it = spacesLight.iterator();
     while (it.hasNext()) {
       SpaceInstLight space = it.next();
@@ -5294,9 +5292,9 @@ public final class Admin {
     }
   }
 
-  private Vector<String> translateGroupIds(String sDomainId, String[] groupSpecificIds,
+  private List<String> translateGroupIds(String sDomainId, String[] groupSpecificIds,
       boolean recursGroups) throws Exception {
-    Vector<String> convertedGroupIds = new Vector<String>();
+    List<String> convertedGroupIds = new ArrayList<String>();
     String groupId;
 
     for (String groupSpecificId : groupSpecificIds) {
@@ -5535,14 +5533,14 @@ public final class Admin {
       // Synchronize the user's groups
       String[] incGroupsSpecificId = synchroDomain.getUserMemberGroupIds(
           theUserDetail.getSpecificId());
-      Vector<String> incGroupsId = translateGroupIds(theUserDetail.getDomainId(),
+      List<String> incGroupsId = translateGroupIds(theUserDetail.getDomainId(),
           incGroupsSpecificId, recurs);
       String[] oldGroupsId = groupManager.getDirectGroupsOfUser(domainDriverManager, userId);
       for (i = 0; i < oldGroupsId.length; i++) {
         if (incGroupsId.contains(oldGroupsId[i])) { // No changes have to be
           // performed to the group ->
           // Remove it
-          incGroupsId.removeElement(oldGroupsId[i]);
+          incGroupsId.remove(oldGroupsId[i]);
         } else {
           Group grpToRemove = groupManager.getGroup(domainDriverManager,
               oldGroupsId[i]);
@@ -5557,8 +5555,8 @@ public final class Admin {
       // Now the remaining groups of the vector are the groups where the user is
       // newly added
       for (i = 0; i < incGroupsId.size(); i++) {
-        groupManager.addUserInGroup(domainDriverManager, userId, incGroupsId.elementAt(i));
-        cache.opAddUserInGroup(userId, incGroupsId.elementAt(i));
+        groupManager.addUserInGroup(domainDriverManager, userId, incGroupsId.get(i));
+        cache.opAddUserInGroup(userId, incGroupsId.get(i));
       }
 
       // traitement spécifique des users selon l'interface implémentée
@@ -5622,7 +5620,7 @@ public final class Admin {
     return synchroDomain.getPropertiesToImport(language);
   }
 
-  public UserDetail[] searchUsers(String domainId, Hashtable<String, String> query)
+  public UserDetail[] searchUsers(String domainId, Map<String, String> query)
       throws Exception {
     SilverTrace.info("admin", "admin.searchUsers", "root.MSG_GEN_ENTER_METHOD",
         "domainId=" + domainId);
