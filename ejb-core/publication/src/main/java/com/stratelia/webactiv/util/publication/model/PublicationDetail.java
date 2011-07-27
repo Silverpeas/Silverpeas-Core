@@ -770,7 +770,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return getXmlFields(null);
   }
 
-  @SuppressWarnings("unchecked")
   public List<XMLField> getXmlFields(String language) {
     if (xmlFields == null) {
       try {
