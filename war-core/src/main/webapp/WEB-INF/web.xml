@@ -346,10 +346,6 @@
     <servlet-class>com.stratelia.webactiv.agenda.servlets.SubscribeAgenda</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>PortletRequestRooter</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.portlet.control.PortletRequestRooter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>PortletContainerDesktopServlet</servlet-name>
     <servlet-class>com.silverpeas.portlets.portal.SPDesktopServlet</servlet-class>
         <!-- <load-on-startup>1</load-on-startup> -->
@@ -741,10 +737,6 @@
   <servlet-mapping>
     <servlet-name>SubscribeAgenda</servlet-name>
     <url-pattern>/SubscribeAgenda/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>PortletRequestRooter</servlet-name>
-    <url-pattern>/Rportlet/jsp/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>PortletContainerDesktopServlet</servlet-name>
