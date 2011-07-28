@@ -65,6 +65,7 @@ public class URLManager {
   public final static String CMP_JOBDOMAINPEAS = "jobDomainPeas";
   public final static String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";
   public final static String CMP_JOBORGANIZATIONPEAS = "jobOrganizationPeas";
+  public final static String CMP_JOBSEARCHPEAS = "jobSearchPeas";
   public final static String CMP_JOBREPORTPEAS = "jobReportPeas";
   public final static String CMP_JOBTOOLSPEAS = "jobToolsPeas";
   public final static String CMP_SELECTIONPEAS = "selectionPeas";
