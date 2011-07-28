@@ -176,20 +176,22 @@ public class HtmlSearchResultTag extends TagSupport {
 
       // Check if this component has a specific template result
       ComponentInstLight component = orga.getComponentInstLight(instanceId);
-      componentName = component.getName();
-
-      boolean processResultTemplating = isResultTemplating(instanceId, componentName);
-      if (processResultTemplating) {
-        // Retrieve the component result displayer class from a factory
-        ResultDisplayer resultDisplayer =
-            ResultDisplayerFactory.getResultDisplayerFactory().getResultDisplayer(componentName);
-        SilverTrace.debug("viewgenerator", HtmlSearchResultTag.class.getName(),
-            "load specific for current result: instanceid=" + instanceId + ", contentid=" +
-                gsr.getId());
-        if (resultDisplayer != null) {
-          addedInformation =
-              resultDisplayer.getResultContent(new SearchResultContentVO(this.userId, this.gsr,
-                  this.sortValue, this.activeSelection, this.exportEnabled, settings));
+      if (component != null) {
+        componentName = component.getName();
+  
+        boolean processResultTemplating = isResultTemplating(instanceId, componentName);
+        if (processResultTemplating) {
+          // Retrieve the component result displayer class from a factory
+          ResultDisplayer resultDisplayer =
+              ResultDisplayerFactory.getResultDisplayerFactory().getResultDisplayer(componentName);
+          SilverTrace.debug("viewgenerator", HtmlSearchResultTag.class.getName(),
+              "load specific for current result: instanceid=" + instanceId + ", contentid=" +
+                  gsr.getId());
+          if (resultDisplayer != null) {
+            addedInformation =
+                resultDisplayer.getResultContent(new SearchResultContentVO(this.userId, this.gsr,
+                    this.sortValue, this.activeSelection, this.exportEnabled, settings));
+          }
         }
       }
     }
