@@ -80,6 +80,7 @@ public class LoginServlet extends HttpServlet {
       sKey = (String) session.getAttribute("svplogin_Key");
     }
     String sPassword = (String) session.getAttribute("Silverpeas_pwdForHyperlink");
+    String redirectURL = null;
 
     try {
       // Get the user profile from the admin
@@ -97,8 +98,8 @@ public class LoginServlet extends HttpServlet {
           Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
       if ((alertUserAboutPwdExpiration != null)
           && (alertUserAboutPwdExpiration.booleanValue())) {
-        alertUserAboutPwdExpiration(controller.getUserId(), controller.getOrganizationController().
-            getAdministratorUserIds(controller.getUserId())[0], controller.getFavoriteLanguage());
+        redirectURL = alertUserAboutPwdExpiration(controller.getUserId(), controller.getOrganizationController().
+            getAdministratorUserIds(controller.getUserId())[0], controller.getFavoriteLanguage(), getBooleanValue(allowPasswordChange));
       }
 
     } catch (Exception e) {
@@ -150,6 +151,8 @@ public class LoginServlet extends HttpServlet {
 
       if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
         absoluteUrl.append("/admin/jsp/appInMaintenance.jsp");
+      } else if (redirectURL != null) {
+        absoluteUrl.append(redirectURL);
       } else if (isDefined(sDirectAccessSpace)
           && isDefined(sDirectAccessCompo)) {
         absoluteUrl.append(URLManager.getURL(sDirectAccessSpace, sDirectAccessCompo)).append("Main");
@@ -171,22 +174,38 @@ public class LoginServlet extends HttpServlet {
     response.sendRedirect(response.encodeRedirectURL(absoluteUrl.toString()));
   }
 
-  private void alertUserAboutPwdExpiration(String userId, String fromUserId,
-      String language) {
+  private String alertUserAboutPwdExpiration(String userId, String fromUserId,
+      String language, boolean allowPasswordChange) {
     try {
-      ResourceLocator messages = new ResourceLocator(
-          "com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle", language);
-      NotificationSender sender = new NotificationSender(null);
-      NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, messages.getString("passwordExpirationAlert"), messages.
-          getString("passwordExpirationMessage"));
-      notifMetaData.setSender(fromUserId);
-      notifMetaData.addUserRecipient(userId);
-      sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
+      ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+      String notificationType = settings.getString("notificationType", "POPUP");
+      String passwordChangeURL = settings.getString("passwordChangeURL", "defaultPasswordAboutToExpire.jsp");
+
+      if ( (notificationType.equalsIgnoreCase("POPUP")) || (!allowPasswordChange) ) {
+        sendPopupNotificationAboutPwdExpiration(userId, fromUserId, language);
+        return null;
+      }
+      else {
+        return passwordChangeURL;
+      }
     } catch (NotificationManagerException e) {
       SilverTrace.warn("peasCore", "LoginServlet.alertUserAboutPwdExpiration",
           "peasCore.EX_CANT_SEND_PASSWORD_EXPIRATION_ALERT", "userId = " + userId, e);
+      return null;
     }
+  }
+
+  private void sendPopupNotificationAboutPwdExpiration(String userId, String fromUserId,
+      String language) throws NotificationManagerException {
+    ResourceLocator messages = new ResourceLocator(
+        "com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle", language);
+    NotificationSender sender = new NotificationSender(null);
+    NotificationMetaData notifMetaData = new NotificationMetaData(
+        NotificationParameters.NORMAL, messages.getString("passwordExpirationAlert"), messages.
+        getString("passwordExpirationMessage"));
+    notifMetaData.setSender(fromUserId);
+    notifMetaData.addUserRecipient(userId);
+    sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
   }
 
   /**

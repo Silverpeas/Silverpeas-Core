@@ -58,6 +58,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -167,7 +168,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isUserDomainRW() {
-    return (getDomainActions() & DomainDriver.ACTION_CREATE_USER) != 0;
+    return (getDomainActions() & DomainDriver.ACTION_UPDATE_USER) != 0;
+  }
+
+  public boolean isAdmin() {
+    return ( getUserDetail().isAccessAdmin() );
   }
 
   public long getDomainActions() {
@@ -421,6 +426,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
         .getString("customersTemplatePath"));
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfig);
+  }
+
+  public boolean updatablePropertyExists() {
+    UserFull userFull = getUserFul(getUserId());
+    return ( (userFull.isAtLeastOnePropertyUpdatableByUser()) || (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()) );
   }
 
 }

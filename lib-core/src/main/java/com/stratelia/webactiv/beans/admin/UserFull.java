@@ -185,6 +185,18 @@ public class UserFull extends UserDetail {
     return false;
   }
 
+  public boolean isAtLeastOnePropertyUpdatableByUser() {
+    if (m_pDomainDriver != null) {
+      String[] properties = m_pDomainDriver.getPropertiesNames();
+      for (String property : properties) {
+        if (isPropertyUpdatableByUser(property)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public DomainProperty getProperty(String property) {
     if (m_pDomainDriver != null) {
       return m_pDomainDriver.getProperty(property);
