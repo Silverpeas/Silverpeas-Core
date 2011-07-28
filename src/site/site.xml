@@ -79,6 +79,7 @@ pageTracker._trackPageview();
     <menu name="SilverpeasConfiguration" collapse="true" inherit="none">
       <item name="Security" href="securing.html"/>
       <item name="Migration" href="migration.html"/>
+      <item name="Configuring a reverse-proxy" href="proxy.html"/>
     </menu>
     <menu name="CAS" collapse="true" inherit="none">
       <item name="Introduction" href="cas/SSO-CAS.html" collapse="true"/>

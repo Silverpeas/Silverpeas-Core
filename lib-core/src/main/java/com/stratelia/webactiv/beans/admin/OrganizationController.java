@@ -36,6 +36,7 @@ import java.util.Map;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
@@ -93,7 +94,9 @@ public class OrganizationController extends AdminReference implements java.io.Se
   }
 
   /**
-   * Return the the spaces name corresponding to the given space ids
+   * Return the the spaces name corresponding to the given space ids.
+   * @param asSpaceIds
+   * @return 
    */
   public String[] getSpaceNames(String[] asSpaceIds) {
     try {
@@ -109,6 +112,8 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   /**
    * Return the space light corresponding to the given space id
+   * @param spaceId
+   * @return 
    */
   public SpaceInstLight getSpaceInstLightById(String spaceId) {
     try {
@@ -1020,7 +1025,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
       if (!profileIds.isEmpty()) {
         String[] pIds = profileIds.toArray(new String[profileIds.size()]);
         SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
-            "root.MSG_GEN_PARAM_VALUE", "pIds = " + pIds);
+            "root.MSG_GEN_PARAM_VALUE", "pIds = " + Arrays.toString(pIds));
         return getAdminService().searchUsersIds(null, null, pIds, new UserDetail());
       }
       return new String[0];
