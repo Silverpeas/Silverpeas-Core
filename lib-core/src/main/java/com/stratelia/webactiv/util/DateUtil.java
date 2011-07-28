@@ -34,8 +34,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.lang.time.FastDateFormat;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * DateUtil is an helper class for date manipulation.
@@ -46,11 +46,9 @@ public class DateUtil {
   private static final long millisPerHour = 60l * 60l * 1000l;
   private static final long millisPerMinute = 60l * 1000l;
   private static Map<String, FastDateFormat> outputFormatters =
-      new HashMap<String, FastDateFormat>(
-      5);
+      new HashMap<String, FastDateFormat>(5);
   private static Map<String, SimpleDateFormat> inputParsers =
-      new HashMap<String, SimpleDateFormat>(
-      5);
+      new HashMap<String, SimpleDateFormat>(5);
   /**
    * Format and parse dates.
    */

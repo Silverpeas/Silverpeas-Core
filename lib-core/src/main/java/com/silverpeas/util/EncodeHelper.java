@@ -24,7 +24,7 @@
 package com.silverpeas.util;
 
 import java.io.UnsupportedEncodingException;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.codec.binary.Base64;
@@ -45,7 +45,7 @@ public class EncodeHelper {
     if (javastring == null) {
       return "";
     }
-    return StringEscapeUtils.escapeJavaScript(javastring);
+    return StringEscapeUtils.escapeEcmaScript(javastring);
   }
 
   /**
@@ -57,7 +57,7 @@ public class EncodeHelper {
     if (javastring == null) {
       return "";
     }
-    return StringEscapeUtils.escapeHtml(javastring).replace("œ", "&oelig;");
+    return StringEscapeUtils.escapeHtml4(javastring).replace("œ", "&oelig;");
   }
 
   public static String javaStringToXmlString(String javastring) {
@@ -114,7 +114,7 @@ public class EncodeHelper {
     if (htmlstring == null) {
       return "";
     }
-    return StringEscapeUtils.unescapeHtml(htmlstring);
+    return StringEscapeUtils.unescapeHtml4(htmlstring);
   }
 
   /**
@@ -128,7 +128,7 @@ public class EncodeHelper {
     SilverTrace.info("util", "Encode.transformHtmlCode()",
         "root.MSG_GEN_PARAM_VALUE", " text recu " + text);
 
-    return StringEscapeUtils.unescapeHtml(text);
+    return StringEscapeUtils.unescapeHtml4(text);
   }
 
   /**
@@ -183,7 +183,7 @@ public class EncodeHelper {
   public static String convertHTMLEntities(String text) {
     SilverTrace.info("util", "Encode.convertHTMLEntities()",
         "root.MSG_GEN_PARAM_VALUE", " text recu " + text);
-    String result = StringEscapeUtils.escapeHtml(text);
+    String result = StringEscapeUtils.escapeHtml4(text);
     SilverTrace.info("util", "Encode.convertHTMLEntities()",
         "root.MSG_GEN_PARAM_VALUE", "text sortant = " + result);
     return result;

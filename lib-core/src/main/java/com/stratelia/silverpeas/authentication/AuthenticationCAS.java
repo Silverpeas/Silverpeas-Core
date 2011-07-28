@@ -38,94 +38,81 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class AuthenticationCAS extends Authentication {
 
-  protected String m_JDBCUrl;
-  protected String m_AccessLogin;
-  protected String m_AccessPasswd;
-  protected String m_DriverClass;
+  protected String jdbcUrl;
+  protected String jdbcLogin;
+  protected String jdbcPasswd;
+  protected String jdbcDriver;
+  protected String loginTableName;
+  protected String loginColumnName;
+  private String loginQuery;
 
-  protected String m_UserTableName;
-  protected String m_UserLoginColumnName;
+  protected Connection connection;
 
-  protected Connection m_Connection;
-
+  @Override
   public void init(String authenticationServerName, ResourceLocator propFile) {
-    // Lecture du fichier de proprietes
-    m_JDBCUrl = propFile.getString(authenticationServerName + ".SQLJDBCUrl");
-    m_AccessLogin = propFile.getString(authenticationServerName
-        + ".SQLAccessLogin");
-    m_AccessPasswd = propFile.getString(authenticationServerName
-        + ".SQLAccessPasswd");
-    m_DriverClass = propFile.getString(authenticationServerName
-        + ".SQLDriverClass");
-    m_UserTableName = propFile.getString(authenticationServerName
-        + ".SQLUserTableName");
-    m_UserLoginColumnName = propFile.getString(authenticationServerName
-        + ".SQLUserLoginColumnName");
+    jdbcUrl = propFile.getString(authenticationServerName + ".SQLJDBCUrl");
+    jdbcLogin = propFile.getString(authenticationServerName + ".SQLAccessLogin");
+    jdbcPasswd = propFile.getString(authenticationServerName + ".SQLAccessPasswd");
+    jdbcDriver = propFile.getString(authenticationServerName + ".SQLDriverClass");
+    loginTableName = propFile.getString(authenticationServerName + ".SQLUserTableName");
+    loginColumnName = propFile.getString(authenticationServerName + ".SQLUserLoginColumnName");
+    loginQuery = "SELECT " + loginColumnName + " FROM " + loginTableName + " WHERE " + loginColumnName + " = ?";
   }
 
+  @Override
   protected void openConnection() throws AuthenticationException {
     Properties info = new Properties();
     Driver driverSQL = null;
-
     try {
-      info.setProperty("user", m_AccessLogin);
-      info.setProperty("password", m_AccessPasswd);
-      driverSQL = (Driver) Class.forName(m_DriverClass).newInstance();
-    } catch (Exception iex) {
-      throw new AuthenticationHostException(
-          "AuthenticationCAS.openConnection()", SilverpeasException.ERROR,
-          "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" + m_DriverClass, iex);
+      info.setProperty("user", jdbcLogin);
+      info.setProperty("password", jdbcPasswd);
+      driverSQL = (Driver) Class.forName(jdbcDriver).newInstance();
+    } catch (InstantiationException ex) {
+      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
+              SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
+              "Driver=" + jdbcDriver, ex);
+    } catch (IllegalAccessException ex) {
+      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
+              SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
+              "Driver=" + jdbcDriver, ex);
+    } catch (ClassNotFoundException ex) {
+      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
+              SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
+              "Driver=" + jdbcDriver, ex);
     }
     try {
-      m_Connection = driverSQL.connect(m_JDBCUrl, info);
+      connection = driverSQL.connect(jdbcUrl, info);
     } catch (SQLException ex) {
-      throw new AuthenticationHostException(
-          "AuthenticationCAS.openConnection()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + m_JDBCUrl, ex);
+      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
+              SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + jdbcUrl, ex);
     }
   }
 
-  protected void internalAuthentication(String login, String passwd)
-      throws AuthenticationException {
+  @Override
+  protected void internalAuthentication(String login, String passwd) throws AuthenticationException {
     ResultSet rs = null;
     PreparedStatement stmt = null;
     try {
-      String loginQuery = "SELECT " + m_UserLoginColumnName + " FROM "
-          + m_UserTableName + " WHERE " + m_UserLoginColumnName + " = ?";
-
-      stmt = m_Connection.prepareStatement(loginQuery);
+      stmt = connection.prepareStatement(loginQuery);
       stmt.setString(1, login);
       rs = stmt.executeQuery();
       if (!rs.next()) {
-        throw new AuthenticationBadCredentialException(
-            "AuthenticationCAS.internalAuthentication()",
-            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND",
-            "User=" + login);
+        throw new AuthenticationBadCredentialException("AuthenticationCAS.internalAuthentication()",
+                SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
-      SilverTrace.info("authentication",
-          "AuthenticationCAS.internalAuthentication()",
-          "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
+      SilverTrace.info("authentication", "AuthenticationCAS.internalAuthentication()",
+              "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (SQLException ex) {
-      throw new AuthenticationHostException(
-          "AuthenticationCAS.internalAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
+      throw new AuthenticationHostException("AuthenticationCAS.internalAuthentication()",
+              SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
     } finally {
       DBUtil.close(rs, stmt);
     }
   }
 
+  @Override
   protected void closeConnection() throws AuthenticationException {
-    try {
-      if (m_Connection != null) {
-        m_Connection.close();
-        m_Connection = null;
-      }
-    } catch (SQLException ex) {
-      m_Connection = null;
-      throw new AuthenticationHostException(
-          "AuthenticationCAS.closeConnection()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_CLOSE_FAILED", "JDBCUrl=" + m_JDBCUrl, ex);
-    }
+    DBUtil.close(connection);
   }
 
 }

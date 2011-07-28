@@ -8,11 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 
 /**
@@ -52,7 +50,7 @@ public class AjaxServletRSS extends HttpServlet {
       IOException {
     String enc = getEncodingParameter(req);
     res.setContentType("text/xml;charset=" + enc);
-    String loadedUrl = StringEscapeUtils.unescapeHtml(req.getParameter("loadedUrl"));
+    String loadedUrl = EncodeHelper.transformHtmlCode(req.getParameter("loadedUrl"));
     InputStream rss = null;
     try {
       URL url = new URL(loadedUrl);

@@ -26,7 +26,7 @@ package com.silverpeas.admin.ejb;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.SessionContext;
@@ -38,6 +38,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import java.util.Map;
 
 public class AdminBmEJB implements javax.ejb.SessionBean {
 
@@ -57,10 +58,7 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   public ArrayList<String> getAllRootSpaceIds() throws RemoteException {
     String[] spaceIds = getAdminController().getAllRootSpaceIds();
     ArrayList<String> result = new ArrayList<String>();
-
-    for (String spaceId : spaceIds) {
-      result.add(spaceId);
-    }
+    result.addAll(Arrays.asList(spaceIds));
 
     return result;
   }
@@ -84,10 +82,7 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   public ArrayList<String> getAvailCompoIds(String spaceId, String userId) throws RemoteException {
     String[] compoIds = getAdminController().getAvailCompoIds(spaceId, userId);
     ArrayList<String> result = new ArrayList<String>();
-
-    for (String compoId : compoIds) {
-      result.add(compoId);
-    }
+    result.addAll(Arrays.asList(compoIds));
 
     return result;
   }
@@ -100,10 +95,7 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   public List<String> getAvailableSpaceIds(String userId) throws RemoteException {
     String[] spaceIds = getAdminController().getAllSpaceIds(userId);
     List<String> result = new ArrayList<String>();
-
-    for (String spaceId : spaceIds) {
-      result.add(spaceId);
-    }
+    result.addAll(Arrays.asList(spaceIds));
 
     return result;
   }
@@ -111,15 +103,12 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   public List<String> getAvailableSubSpaceIds(String spaceId, String userId) throws RemoteException {
     String[] subSpaceIds = getAdminController().getAllSubSpaceIds(spaceId, userId);
     List<String> result = new ArrayList<String>();
-
-    for (String subSpaceId : subSpaceIds) {
-      result.add(subSpaceId);
-    }
+    result.addAll(Arrays.asList(subSpaceIds));
 
     return result;
   }
 
-  public Hashtable<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws RemoteException {
+  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws RemoteException {
     return getAdminController().getTreeView(userId, spaceId);
   }
 
@@ -157,15 +146,19 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   public void ejbCreate() {
   }
 
+  @Override
   public void ejbRemove() {
   }
 
+  @Override
   public void ejbActivate() {
   }
 
+  @Override
   public void ejbPassivate() {
   }
 
+  @Override
   public void setSessionContext(SessionContext sc) {
   }
 
