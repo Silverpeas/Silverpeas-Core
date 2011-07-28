@@ -217,7 +217,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     String emplacement = "";
     try {
       //Espace > Sous-espace
-      List<SpaceInstLight> spaceList = getAdminController().getPathToSpace(spaceId, true);
+      List<SpaceInstLight> spaceList = getAdminController().getPathToSpace(spaceId, false);
       boolean first = true;
       for (SpaceInstLight space : spaceList) {
         if(!first) {
@@ -381,11 +381,14 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     String emplacement = "";
     //Espace > Sous-espace
     List<SpaceInstLight> spaceList = getAdminController().getPathToComponent(componentId);
+    boolean first = true;
     for (SpaceInstLight space : spaceList) {
-      emplacement += space.getName(getLanguage()) + " > ";
+      if (!first) {
+        emplacement += " > ";
+      }
+      emplacement += space.getName(getLanguage());
+      first = false;
     }
-    //Composant
-    emplacement += getAdminController().getComponentInstLight(componentId).getLabel(getLanguage());
     return emplacement;
   }
   
@@ -601,8 +604,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     for (String elementGroupId : groupList) {
       emplacement += " > "+ getAdminController().getGroupName(elementGroupId);
     }
-    //nom du groupe
-    emplacement += " > "+ group.getName();
     return emplacement;
   }
   

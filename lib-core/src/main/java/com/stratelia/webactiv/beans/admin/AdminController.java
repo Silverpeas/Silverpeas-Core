@@ -353,7 +353,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   }
   
   public void indexSpace(int spaceId) {
-    m_Admin.createSpaceIndex(spaceId);
+    getAdminService().createSpaceIndex(spaceId);
   }
 
   // ----------------------------------------------
@@ -537,7 +537,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   }
   
   public void indexComponent(String componentId) {
-    m_Admin.createComponentIndex(componentId);
+    getAdminService().createComponentIndex(componentId);
   }
 
   // ----------------------------------------------
@@ -1496,7 +1496,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   
   public void indexGroups(String domainId) {
     try {
-      m_Admin.indexGroups(domainId);
+      getAdminService().indexGroups(domainId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.indexGroups",
           "admin.CANT_INDEX_GROUPS", "domainId = " + domainId, e);
@@ -1505,7 +1505,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
 
   public void indexAllGroups() {
     try {
-      m_Admin.indexAllGroups();
+      getAdminService().indexAllGroups();
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.indexAllGroups",
           "admin.CANT_INDEX_ALL_USERS", e);
