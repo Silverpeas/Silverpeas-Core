@@ -352,6 +352,10 @@ public class AdminController extends AdminReference implements java.io.Serializa
           "admin.MSG_ERR_UPDATE_SPACE", e);
     }
   }
+  
+  public void indexSpace(int spaceId) {
+    m_Admin.createSpaceIndex(spaceId);
+  }
 
   // ----------------------------------------------
   // Component Instances related functions
@@ -531,6 +535,10 @@ public class AdminController extends AdminReference implements java.io.Serializa
       SilverTrace.error("admin", "AdminController.updateComponentOrderNum",
           "admin.MSG_ERR_UPDATE_COMPONENT", e);
     }
+  }
+  
+  public void indexComponent(String componentId) {
+    m_Admin.createComponentIndex(componentId);
   }
 
   // ----------------------------------------------

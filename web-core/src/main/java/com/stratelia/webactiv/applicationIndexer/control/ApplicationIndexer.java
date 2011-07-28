@@ -28,7 +28,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+
 import org.apache.commons.lang.StringUtils;
 
 public class ApplicationIndexer extends AbstractIndexer {
@@ -54,9 +55,14 @@ public class ApplicationIndexer extends AbstractIndexer {
     }
   }
 
-  public void indexComponent(String spaceId, ComponentInst compoInst) {
+  public void indexComponent(String spaceId, ComponentInstLight compoInst) {
     SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexComponent()",
         "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + compoInst.getLabel());
+    
+    // index component info
+    admin.indexComponent(compoInst.getId());
+    
+    // index component content
     ComponentIndexerInterface componentIndexer = getIndexer(compoInst);
     if (componentIndexer != null) {
       try {
@@ -106,7 +112,7 @@ public class ApplicationIndexer extends AbstractIndexer {
 
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    ComponentInst compoInst = organizationController.getComponentInst(componentId);
+    ComponentInstLight compoInst = organizationController.getComponentInstLight(componentId);
     indexComponent(spaceId, compoInst);
   }
 
@@ -124,7 +130,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     return StringUtils.uncapitalize(str);
   }
 
-  ComponentIndexerInterface getIndexer(ComponentInst compoInst) {
+  ComponentIndexerInterface getIndexer(ComponentInstLight compoInst) {
     ComponentIndexerInterface componentIndexer = null;
     String compoName= firstLetterToUpperCase(compoInst.getName());
     String className = getClassName(compoInst);
@@ -163,7 +169,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     }
   }
 
-  String getClassName(ComponentInst compoInst) {
+  String getClassName(ComponentInstLight compoInst) {
     String name = compoInst.getName();
     String className = firstLetterToUpperCase(name);
     if ("toolbox".equalsIgnoreCase(name)) {
@@ -184,7 +190,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     return className;
   }
 
-  String getPackage(ComponentInst compoInst) {    
+  String getPackage(ComponentInstLight compoInst) {    
     String packageName  = firstLetterToLowerCase(compoInst.getName());
     if ("toolbox".equalsIgnoreCase(packageName)) {
       return "kmelia";

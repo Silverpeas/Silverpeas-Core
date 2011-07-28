@@ -34,7 +34,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
@@ -53,7 +53,7 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationCon
     String 			compoDesc 	= null;
     String 			compoId 	= null;
     String 			label 		= null;
-    SpaceInst 		spaceInst 	= m_OrganizationController.getSpaceInstById(spaceId);
+    SpaceInstLight 	spaceInst 	= m_OrganizationController.getSpaceInstLightById(spaceId);
     StringBuffer	result 		= new StringBuffer();
     if (spaceInst!=null) {
         result.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"3\">\n");
@@ -61,11 +61,11 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationCon
         if (depth==0) result.append("<tr><td class=\"txtnote\">&nbsp;</td></tr>\n");
 
         result.append("<tr>\n");
-        result.append("<td class=\"txttitrecol\">&#149; <A HREF=\"javaScript:index('Index','', '"+spaceId+"');\">").append(spaceInst.getName()).append("</a></td></tr>\n");
+        result.append("<td class=\"txttitrecol\">&#149; <A HREF=\"javaScript:index('Index','', '"+spaceInst.getShortId()+"');\">").append(spaceInst.getName()).append("</a></td></tr>\n");
 
         result.append("<tr><td class=\"txtnote\">\n");
 
-        String[] asAvailCompoForCurUser = m_OrganizationController.getAllComponentIds(spaceInst.getId());
+        String[] asAvailCompoForCurUser = m_OrganizationController.getAllComponentIds(spaceInst.getShortId());
         for(int nI = 0; nI <asAvailCompoForCurUser.length; nI++) {
 
             compoInst = m_OrganizationController.getComponentInst(asAvailCompoForCurUser[nI]);

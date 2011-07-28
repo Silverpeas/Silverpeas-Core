@@ -40,6 +40,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -214,15 +215,20 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    */
   private String getPathSpace(String spaceId) {
     String emplacement = "";
-    //Espace > Sous-espace
-    List<SpaceInstLight> spaceList = getAdminController().getPathToSpace(spaceId, true);
-    boolean first = true;
-    for (SpaceInstLight space : spaceList) {
-      if(!first) {
-        emplacement += " > ";
+    try {
+      //Espace > Sous-espace
+      List<SpaceInstLight> spaceList = getAdminController().getPathToSpace(spaceId, true);
+      boolean first = true;
+      for (SpaceInstLight space : spaceList) {
+        if(!first) {
+          emplacement += " > ";
+        }
+        emplacement += space.getName(getLanguage());
+        first = false;
       }
-      emplacement += space.getName(getLanguage());
-      first = false;
+    } catch (Exception e) {
+      SilverTrace.warn("admin", "JobSearchPeasSessionController.getPathSpace()",
+          "admin.CANT_GET_SPACE_PATH", "spaceId = " + spaceId, e);
     }
     return emplacement;
   }
@@ -289,8 +295,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
       
-      MatchingIndexEntry result = null;
-      String creationDate = null;
       String nomCrea = null;
       String objectId = null;
       String spaceId = null;
@@ -299,21 +303,19 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       SpaceInstLight spaceInstLight = null;
       SpaceInstLight rootSpaceInstLight = null;
       String url = null;
-      for (int i = 0; i < plainSearchResults.length; i++) {
-        result = plainSearchResults[i];
+      for (MatchingIndexEntry result : plainSearchResults) {
 
-        creationDate = result.getCreationDate();
         nomCrea = getAdminController().getUserDetail(result.getCreationUser()).getDisplayedName();
         
         objectId = result.getObjectId(); // WA3
         spaceId = objectId.substring(2);
-        listEmplacement = new ArrayList<String>();
-        emplacement = getPathSpace(spaceId);
-        listEmplacement.add(emplacement);
         
         url = "";
         spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
         if(spaceInstLight != null) {
+          listEmplacement = new ArrayList<String>();
+          emplacement = getPathSpace(spaceId);
+          listEmplacement.add(emplacement);
           if(spaceInstLight.isRoot()) {
             url = "openSpace('"+spaceInstLight.getFullId()+"')";
           } else {
@@ -323,17 +325,17 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
               rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
             }
             url = "openSubSpace('"+rootSpaceInstLight.getFullId()+"', '"+spaceInstLight.getFullId()+"')";
-          }  
+          }
+          
+          SearchResult searchResult = new SearchResult();
+          searchResult.setName(result.getTitle(getLanguage()));
+          searchResult.setDesc(result.getPreview(getLanguage()));
+          searchResult.setCreaDate(DateUtil.parse(result.getCreationDate(), "yyyy/MM/dd"));
+          searchResult.setCreaName(nomCrea);
+          searchResult.setPath(listEmplacement);
+          searchResult.setUrl(url);
+          listSearchResult.add(searchResult);
         }
-        
-        SearchResult searchResult = new SearchResult();
-        searchResult.setName(result.getTitle(getLanguage()));
-        searchResult.setDesc(result.getPreview(getLanguage()));
-        searchResult.setCreaDate(DateUtil.parse(creationDate, "yyyy/MM/dd"));
-        searchResult.setCreaName(nomCrea);
-        searchResult.setPath(listEmplacement);
-        searchResult.setUrl(url);
-        listSearchResult.add(searchResult);
       }
     } catch (NoSuchObjectException nsoe) {
       // an error occurs on searchEngine statefull EJB
