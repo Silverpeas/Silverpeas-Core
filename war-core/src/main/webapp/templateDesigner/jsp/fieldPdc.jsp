@@ -27,7 +27,7 @@
 
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.UsedAxis"%>
-<%@ page import="com.silverpeas.form.fieldDisplayer.PdcFieldDisplayer"%>
+<%@ page import="com.silverpeas.form.displayers.PdcFieldDisplayer"%>
 
 <%@ include file="includeParamsField.jsp.inc" %>
 

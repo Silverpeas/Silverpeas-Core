@@ -3295,9 +3295,12 @@ caption {
   	width:100%;
   	color:#26334A;
   	font-size:11px;
-  	padding:5px 5px 14px;
+  	padding:5px 0 14px;
 	}
-.sousNavBulle p { margin:0; padding:0;}
+.sousNavBulle p { 
+	margin:0; 
+  	padding:0 5px 0;
+	}
 
 
 .sousNavBulle a {

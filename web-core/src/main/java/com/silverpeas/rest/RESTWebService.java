@@ -42,6 +42,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
@@ -72,6 +73,8 @@ public abstract class RESTWebService {
   @Inject
   @Named("componentAccessController")
   private AccessController<String> accessController;
+  @Inject
+  private OrganizationController organizationController;
   @Context
   private UriInfo uriInfo;
   @Context
@@ -166,16 +169,32 @@ public abstract class RESTWebService {
 
   /**
    * Checks the user that requested this web service has the correct priviledges to access the
-   * underlying referenced resource that belongs to a Silverpeas component instance. This method
-   * should be called at each incoming request processing to ensure a strong security. User
+   * underlying referenced resource that belongs to a Silverpeas component instance. For doing, the
+   * resource should exists, otherwise a WebApplicationException is thrown with a status code NOT
+   * FOUND (404).
+   * 
+   * This method should be called at each incoming request processing to ensure a strong security. User
    * information is retreived from the context of the incoming HTTP request. If no user information
    * can be retrieved, then a WebApplicationException is thrown with a status code UNAUTHORIZED
    * (401). When the check fails, a WebApplicationException is thrown with the HTTP status code set
    * according to the failure.
    */
   protected void checkUserPriviledges() {
+    checkComponentInstanceExistance(getComponentId());
     checkUserAuthentication();
     checkUserAuthorizationOnComponent(getComponentId());
+  }
+  
+  /**
+   * Checks the component instance requested in the URI exists in Silverpeas.
+   * If no such component exists, then a WebApplicationException is thrown with a HTTP status code
+   * NOT FOUND (404).
+   * @param componentId the unique identifier of the component instance.
+   */
+  private void checkComponentInstanceExistance(String componentId) {
+    if (!getOrganizationController().isComponentExist(componentId)) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
   }
 
   /**
@@ -289,6 +308,14 @@ public abstract class RESTWebService {
    */
   private AccessController<String> getAccessController() {
     return accessController;
+  }
+  
+  /**
+   * Gets the organization controller.
+   * @return an OrganizationController instance.
+   */
+  protected OrganizationController getOrganizationController() {
+    return organizationController;
   }
 
   /**

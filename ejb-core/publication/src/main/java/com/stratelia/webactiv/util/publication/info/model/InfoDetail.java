@@ -60,21 +60,6 @@ public class InfoDetail implements Serializable {
     setContent(content);
   }
 
-  /**
-   * module info doesn't manage attachments
-   * @deprecated
-   */
-  public InfoDetail(InfoPK pk, Collection<InfoTextDetail> textList, Collection attachmentList,
-      Collection<InfoImageDetail> imageList, Collection<InfoLinkDetail> linkList, String content) {
-    setPK(pk);
-    setInfoTextList(textList);
-    setInfoImageList(imageList);
-    setInfoLinkList(linkList);
-    setContent(content);
-  }
-
-  // set get on attributes
-  // id
   public InfoPK getPK() {
     return pk;
   }

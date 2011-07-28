@@ -62,7 +62,9 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 
@@ -85,6 +87,9 @@ public class VersioningUtil {
   public static final String PUBLISHER = publisher.toString();
   public static final String READER = user.toString();
   public static final String WRITER = writer.toString();
+  
+  private final static ResourceLocator resources = new ResourceLocator(
+      "com.stratelia.webactiv.util.attachment.Attachment", "");
 
   public VersioningUtil() {
   }
@@ -344,6 +349,24 @@ public class VersioningUtil {
       createIndex(currentDocument, version);
     }
   }
+  
+  public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
+    if (resources.getBoolean("attachment.index.incorporated", true)) {
+      ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
+      try {
+        List<Document> documents = getVersioningBm().getDocuments(pk);
+        for (Document currentDocument : documents) {
+          DocumentVersion version =
+              getVersioningBm().getLastPublicDocumentVersion(currentDocument.getPk());
+          indexEntry.addFileContent(version.getDocumentPath(), null, version.getMimeType(), null);
+        }
+      } catch (RemoteException e) {
+        SilverTrace.error("versioning", "VersioningUtil.updateIndexEntryWithDocuments",
+            "versioning.CANT_INDEX_DOCUMENTS",
+            "objectId = " + pk.getId() + ", component = " + pk.getInstanceId(), e);
+      }
+    }
+  }
 
   public void unindexDocumentsByForeignKey(ForeignPK foreignPK)
       throws RemoteException {
@@ -356,9 +379,11 @@ public class VersioningUtil {
 
   public void createIndex(Document documentToIndex, DocumentVersion lastVersion)
       throws RemoteException {
-    SilverTrace.info("versioningPeas", "VersioningUtil.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "documentToIndex = " + documentToIndex.toString());
-    indexer.createIndex(documentToIndex, lastVersion);
+    if (resources.getBoolean("attachment.index.separately", true)) {
+      SilverTrace.info("versioningPeas", "VersioningUtil.createIndex()",
+          "root.MSG_GEN_ENTER_METHOD", "documentToIndex = " + documentToIndex.toString());
+      indexer.createIndex(documentToIndex, lastVersion);
+    }
   }
 
   public String createPath(String spaceId, String componentId, String context) {

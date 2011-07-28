@@ -31,7 +31,6 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +40,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
  * provides access functions to query and modify the domains as well as the company organization It
- * should be used only by a client that has the administrator rights
- * @author
+ * should be used only by a client that has the administrator rights.
+ * 
+ * The OrganizationController extends AdminReference that maintains a static references to an Admin
+ * instance. During the initialization of the Admin instance, some computations require services
+ * published by the underlying IoC container. So, an instance of OrganizationController is created by
+ * the IoC container and published under the name 'organizationController' so that the initialization
+ * of the static Admin instance can be performed correctly within the execution context of IoC
+ * container.
  */
 public class OrganizationController extends AdminReference implements java.io.Serializable {
 
@@ -63,7 +68,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllSpaceIds() {
     try {
-      return m_Admin.getAllSpaceIds();
+      return getAdminService().getAllSpaceIds();
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
           "admin.MSG_ERR_GET_ALL_SPACE_IDS", e);
@@ -76,7 +81,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllSubSpaceIds(String sSpaceId) {
     try {
-      String[] asSubSpaceIds = m_Admin.getAllSubSpaceIds(sSpaceId);
+      String[] asSubSpaceIds = getAdminService().getAllSubSpaceIds(sSpaceId);
 
       return asSubSpaceIds;
     } catch (Exception e) {
@@ -92,7 +97,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getSpaceNames(String[] asSpaceIds) {
     try {
-      String[] asSpaceNames = m_Admin.getSpaceNames(asSpaceIds);
+      String[] asSpaceNames = getAdminService().getSpaceNames(asSpaceIds);
 
       return asSpaceNames;
     } catch (Exception e) {
@@ -107,7 +112,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public SpaceInstLight getSpaceInstLightById(String spaceId) {
     try {
-      SpaceInstLight spaceLight = m_Admin.getSpaceInstLightById(spaceId);
+      SpaceInstLight spaceLight = getAdminService().getSpaceInstLightById(spaceId);
 
       return spaceLight;
     } catch (Exception e) {
@@ -125,7 +130,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String getGeneralSpaceId() {
     try {
-      String sGeneralSpaceId = m_Admin.getGeneralSpaceId();
+      String sGeneralSpaceId = getAdminService().getGeneralSpaceId();
 
       return sGeneralSpaceId;
     } catch (Exception e) {
@@ -140,7 +145,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public SpaceInst getSpaceInstById(String sSpaceId) {
     try {
-      SpaceInst spaceInst = m_Admin.getSpaceInstById(sSpaceId);
+      SpaceInst spaceInst = getAdminService().getSpaceInstById(sSpaceId);
       return spaceInst;
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getSpaceInstById",
@@ -154,7 +159,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAvailCompoIds(String sClientSpaceId, String sUserId) {
     try {
-      String[] asCompoIds = m_Admin.getAvailCompoIds(sClientSpaceId, sUserId);
+      String[] asCompoIds = getAdminService().getAvailCompoIds(sClientSpaceId, sUserId);
       return asCompoIds;
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAvailCompoIds",
@@ -169,7 +174,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId) {
     try {
-      String[] asCompoIds = m_Admin.getAvailCompoIdsAtRoot(sClientSpaceId,
+      String[] asCompoIds = getAdminService().getAvailCompoIdsAtRoot(sClientSpaceId,
           sUserId);
 
       return asCompoIds;
@@ -185,20 +190,20 @@ public class OrganizationController extends AdminReference implements java.io.Se
   /** Return all the components of silverpeas read in the xmlComponent directory */
   public Map<String, WAComponent> getAllComponents() {
     try {
-      return m_Admin.getAllComponents();
+      return getAdminService().getAllComponents();
     } catch (Exception e) {
       if (!(e instanceof AdminException && ((AdminException) e).isAlreadyPrinted())) {
         SilverTrace.error("admin", "OrganizationController.getAvailDriverCompoIds",
             "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", null, e);
       }
-      return new Hashtable<String, WAComponent>();
+      return new HashMap<String, WAComponent>();
     }
   }
 
   /** Return all the components names available in webactiv */
   public Map<String, String> getAllComponentsNames() {
     try {
-      return m_Admin.getAllComponentsNames();
+      return getAdminService().getAllComponentsNames();
     } catch (Exception e) {
       if (!(e instanceof AdminException && ((AdminException) e).isAlreadyPrinted())) {
         SilverTrace.error("admin",
@@ -214,7 +219,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId) {
     try {
-      return m_Admin.getAvailDriverCompoIds(sClientSpaceId, sUserId);
+      return getAdminService().getAvailDriverCompoIds(sClientSpaceId, sUserId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAvailDriverCompoIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '"
@@ -231,7 +236,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public CompoSpace[] getCompoForUser(String sUserId, String sCompoName) {
     try {
-      return m_Admin.getCompoForUser(sUserId, sCompoName);
+      return getAdminService().getCompoForUser(sUserId, sCompoName);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getCompoForUser",
           "admin.MSG_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
@@ -248,7 +253,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public List<ComponentInstLight> getAvailComponentInstLights(String userId, String componentName) {
     try {
-      return m_Admin.getAvailComponentInstLights(userId, componentName);
+      return getAdminService().getAvailComponentInstLights(userId, componentName);
     } catch (AdminException e) {
       SilverTrace.error("admin",
           "getAvailComponentInstLights", "admin.MSG_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
@@ -260,7 +265,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public String[] getComponentIdsForUser(String sUserId, String sCompoName) {
     try {
-      return m_Admin.getComponentIdsByNameAndUserId(sUserId, sCompoName);
+      return getAdminService().getComponentIdsByNameAndUserId(sUserId, sCompoName);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getComponentIdsForUser",
           "admin.MSG_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
@@ -276,7 +281,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   */
     public String[] getCompoId(String sCompoName) {
       try {
-        return m_Admin.getCompoId(sCompoName);
+        return getAdminService().getCompoId(sCompoName);
       } catch (Exception e) {
         SilverTrace.error("admin", "OrganizationController.getCompoId",
             "admin.MSG_ERR_GET_AVAILABLE_INSTANCES_OF_COMPONENT",
@@ -287,7 +292,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public String getComponentParameterValue(String sComponentId,
       String parameterName) {
-    return m_Admin.getComponentParameterValue(sComponentId, parameterName);
+    return getAdminService().getComponentParameterValue(sComponentId, parameterName);
   }
 
   // -------------------------------------------------------------------
@@ -298,7 +303,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public ComponentInst getComponentInst(String sComponentId) {
     try {
-      ComponentInst compoInst = m_Admin.getComponentInst(sComponentId);
+      ComponentInst compoInst = getAdminService().getComponentInst(sComponentId);
 
       return compoInst;
     } catch (Exception e) {
@@ -328,7 +333,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   private List<SpaceInst> getSpacePath(List<SpaceInst> path, String spaceId) {
     try {
-      SpaceInst spaceInst = m_Admin.getSpaceInstById(spaceId);
+      SpaceInst spaceInst = getAdminService().getSpaceInstById(spaceId);
       path.add(0, spaceInst);
       if (!spaceInst.getDomainFatherId().equals("0")) {
         path = getSpacePath(path, spaceInst.getDomainFatherId());
@@ -345,7 +350,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public ComponentInstLight getComponentInstLight(String sComponentId) {
     try {
-      ComponentInstLight compoInst = m_Admin.getComponentInstLight(sComponentId);
+      ComponentInstLight compoInst = getAdminService().getComponentInstLight(sComponentId);
 
       return compoInst;
     } catch (Exception e) {
@@ -379,7 +384,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public UserFull getUserFull(String sUserId) {
     try {
-      return m_Admin.getUserFull(sUserId);
+      return getAdminService().getUserFull(sUserId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserFull",
           "admin.EX_ERR_GET_USER_DETAIL", "user Id : '" + sUserId + "'", e);
@@ -392,7 +397,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public UserDetail getUserDetail(String sUserId) {
     try {
-      UserDetail userDetail = m_Admin.getUserDetail(sUserId);
+      UserDetail userDetail = getAdminService().getUserDetail(sUserId);
 
       return userDetail;
     } catch (Exception e) {
@@ -407,7 +412,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public UserDetail[] getUserDetails(String[] asUserIds) {
     try {
-      UserDetail[] asUserDetails = m_Admin.getUserDetails(asUserIds);
+      UserDetail[] asUserDetails = getAdminService().getUserDetails(asUserIds);
 
       return asUserDetails;
     } catch (Exception e) {
@@ -424,7 +429,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public UserDetail[] getAllUsers(String sPrefixTableName, String sComponentName) {
     try {
       if (sComponentName != null) {
-        return m_Admin.getUsers(true, null, sPrefixTableName, sComponentName);
+        return getAdminService().getUsers(true, null, sPrefixTableName, sComponentName);
       }
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsers",
@@ -441,7 +446,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public UserDetail[] getAllUsers(String componentId) {
     try {
       if (componentId != null) {
-        return m_Admin.getUsers(true, null, null, componentId);
+        return getAdminService().getUsers(true, null, null, componentId);
       }
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsers",
@@ -456,7 +461,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public UserDetail[] getFiltredDirectUsers(String sGroupId,
       String sUserLastNameFilter) {
     try {
-      return m_Admin.getFiltredDirectUsers(sGroupId, sUserLastNameFilter);
+      return getAdminService().getFiltredDirectUsers(sGroupId, sUserLastNameFilter);
     } catch (Exception e) {
       SilverTrace.error("admin",
           "OrganizationController.getFiltredDirectUsers",
@@ -470,7 +475,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd) {
     try {
-      return m_Admin.searchUsers(modelUser, isAnd);
+      return getAdminService().searchUsers(modelUser, isAnd);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.searchUsers",
           "admin.EX_ERR_GET_USER_DETAILS", e);
@@ -483,7 +488,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public Group[] searchGroups(Group modelGroup, boolean isAnd) {
     try {
-      return m_Admin.searchGroups(modelGroup, isAnd);
+      return getAdminService().searchGroups(modelGroup, isAnd);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.searchGroups",
           "admin.EX_ERR_GET_USER_DETAILS", e);
@@ -496,7 +501,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public int getAllSubUsersNumber(String sGroupId) {
     try {
-      return m_Admin.getAllSubUsersNumber(sGroupId);
+      return getAdminService().getAllSubUsersNumber(sGroupId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSubUsersNumber",
           "admin.EX_ERR_GET_USER_DETAILS", e);
@@ -509,7 +514,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public Group[] getAllSubGroups(String parentGroupId) {
     try {
-      return m_Admin.getAllSubGroups(parentGroupId);
+      return getAdminService().getAllSubGroups(parentGroupId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSubGroups",
           "admin.EX_ERR_GET_USER_DETAILS", e);
@@ -523,10 +528,10 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public UserDetail[] getAllUsers() {
     try {
       UserDetail[] aUserDetail = null;
-      String[] asUserIds = m_Admin.getAllUsersIds();
+      String[] asUserIds = getAdminService().getAllUsersIds();
 
       if (asUserIds != null) {
-        aUserDetail = m_Admin.getUserDetails(asUserIds);
+        aUserDetail = getAdminService().getUserDetails(asUserIds);
 
       }
       return aUserDetail;
@@ -547,7 +552,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
       UserDetail[] aUserDetail = null;
 
       if (sPrefixTableName != null && sComponentName != null) {
-        aUserDetail = m_Admin.getUsers(false, sProfile, sPrefixTableName,
+        aUserDetail = getAdminService().getUsers(false, sProfile, sPrefixTableName,
             sComponentName);
 
       }
@@ -563,7 +568,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public String[] getUserProfiles(String userId, String componentId) {
     try {
-      return m_Admin.getCurrentProfiles(userId, componentId);
+      return getAdminService().getCurrentProfiles(userId, componentId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '"
@@ -575,7 +580,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public String[] getUserProfiles(String userId, String componentId,
       int objectId, ObjectType objectType) {
     try {
-      return m_Admin.getProfilesByObjectAndUserId(objectId, objectType.getCode(),
+      return getAdminService().getProfilesByObjectAndUserId(objectId, objectType.getCode(),
           componentId, userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
@@ -591,7 +596,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAdministratorUserIds(String fromUserId) {
     try {
-      return m_Admin.getAdministratorUserIds(fromUserId);
+      return getAdminService().getAdministratorUserIds(fromUserId);
     } catch (Exception e) {
       SilverTrace.error("admin",
           "OrganizationController.getAdministratorUserIds",
@@ -608,7 +613,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public Group getGroup(String sGroupId) {
     try {
-      Group group = m_Admin.getGroup(sGroupId);
+      Group group = getAdminService().getGroup(sGroupId);
 
       return group;
     } catch (Exception e) {
@@ -624,7 +629,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public Group[] getGroups(String[] groupsId) {
     Group[] retour = null;
     try {
-      retour = m_Admin.getGroups(groupsId);
+      retour = getAdminService().getGroups(groupsId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getGroups",
           "admin.EX_ERR_GET_GROUP", "", e);
@@ -638,10 +643,10 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public Group[] getAllGroups() {
     try {
       Group[] aGroup = null;
-      String[] asGroupIds = m_Admin.getAllGroupIds();
+      String[] asGroupIds = getAdminService().getAllGroupIds();
 
       if (asGroupIds != null) {
-        aGroup = m_Admin.getGroups(asGroupIds);
+        aGroup = getAdminService().getGroups(asGroupIds);
 
       }
       return aGroup;
@@ -658,9 +663,9 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public Group[] getAllRootGroups() {
     try {
       Group[] aGroup = null;
-      String[] asGroupIds = m_Admin.getAllRootGroupIds();
+      String[] asGroupIds = getAdminService().getAllRootGroupIds();
       if (asGroupIds != null) {
-        aGroup = m_Admin.getGroups(asGroupIds);
+        aGroup = getAdminService().getGroups(asGroupIds);
       }
       return aGroup;
     } catch (Exception e) {
@@ -677,7 +682,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
     SilverTrace.info("admin", "OrganizationController.getAllUsersOfGroup",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
     try {
-      return m_Admin.getAllUsersOfGroup(groupId);
+      return getAdminService().getAllUsersOfGroup(groupId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsersOfGroup",
           "admin.MSG_ERR_GET_ALL_DOMAINS", e);
@@ -692,7 +697,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
     SilverTrace.info("admin", "OrganizationController.getPathToGroup",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
     try {
-      return m_Admin.getPathToGroup(groupId);
+      return getAdminService().getPathToGroup(groupId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getPathToGroup",
           "admin.EX_ERR_GET_ALL_GROUPS", e);
@@ -727,7 +732,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   // -------------------------------------------------------------------
   public String[] getAllSpaceIds(String sUserId) {
     try {
-      return m_Admin.getAllSpaceIds(sUserId);
+      return getAdminService().getAllSpaceIds(sUserId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + sUserId
@@ -741,7 +746,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getUserManageableSpaceIds(String sUserId) {
     try {
-      String[] asSpaceIds = m_Admin.getUserManageableSpaceIds(sUserId);
+      String[] asSpaceIds = getAdminService().getUserManageableSpaceIds(sUserId);
 
       return asSpaceIds;
     } catch (Exception e) {
@@ -758,7 +763,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllRootSpaceIds() {
     try {
-      return m_Admin.getAllRootSpaceIds();
+      return getAdminService().getAllRootSpaceIds();
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", e);
@@ -771,7 +776,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllRootSpaceIds(String sUserId) {
     try {
-      return m_Admin.getAllRootSpaceIds(sUserId);
+      return getAdminService().getAllRootSpaceIds(sUserId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + sUserId
@@ -785,7 +790,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllSubSpaceIds(String sSpaceId, String sUserId) {
     try {
-      String[] asSubSpaceIds = m_Admin.getAllSubSpaceIds(sSpaceId, sUserId);
+      String[] asSubSpaceIds = getAdminService().getAllSubSpaceIds(sSpaceId, sUserId);
 
       return asSubSpaceIds;
     } catch (Exception e) {
@@ -801,7 +806,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllComponentIds(String sSpaceId) {
     try {
-      return m_Admin.getAllComponentIds(sSpaceId);
+      return getAdminService().getAllComponentIds(sSpaceId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllComponentIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space id="
@@ -815,7 +820,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllComponentIdsRecur(String sSpaceId) {
     try {
-      return m_Admin.getAllComponentIdsRecur(sSpaceId);
+      return getAdminService().getAllComponentIdsRecur(sSpaceId);
     } catch (Exception e) {
       SilverTrace.error("admin",
           "OrganizationController.getAllComponentIdsRecur",
@@ -839,7 +844,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId,
       String sComponentRootName, boolean inCurrentSpace, boolean inAllSpaces) {
     try {
-      String[] asComponentsIds = m_Admin.getAllComponentIdsRecur(sSpaceId,
+      String[] asComponentsIds = getAdminService().getAllComponentIdsRecur(sSpaceId,
           sUserId, sComponentRootName, inCurrentSpace, inAllSpaces);
       return asComponentsIds;
     } catch (Exception e) {
@@ -849,7 +854,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName) {
     try {
-      return m_Admin.getRootSpacesContainingComponent(userId, componentName);
+      return getAdminService().getRootSpacesContainingComponent(userId, componentName);
     } catch (AdminException e) {
       SilverTrace.error("admin",
           "OrganizationController.getRootSpacesContainingComponent",
@@ -862,7 +867,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public List<SpaceInstLight> getSubSpacesContainingComponent(String spaceId, String userId,
       String componentName) {
     try {
-      return m_Admin.getSubSpacesContainingComponent(spaceId, userId, componentName);
+      return getAdminService().getSubSpacesContainingComponent(spaceId, userId, componentName);
     } catch (AdminException e) {
       SilverTrace.error("admin",
           "OrganizationController.getSubSpacesContainingComponent",
@@ -874,7 +879,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public boolean isComponentAvailable(String componentId, String userId) {
     try {
-      return m_Admin.isComponentAvailable(componentId, userId);
+      return getAdminService().isComponentAvailable(componentId, userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isComponentAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id: '"
@@ -883,9 +888,19 @@ public class OrganizationController extends AdminReference implements java.io.Se
     }
   }
   
+  public boolean isComponentExist(String componentId) {
+    try {
+      return getAdminService().getComponentInstLight(componentId) != null;
+    } catch (AdminException ex) {
+      SilverTrace.error("admin", "OrganizationController.isComponentExist",
+          "admin.EX_ERR_GET_COMPONENT", "componentId: '" + componentId + "'", ex);
+      return false;
+    }
+  }
+  
   public boolean isComponentManageable(String componentId, String userId) {
     try {
-      return m_Admin.isComponentManageable(componentId, userId);
+      return getAdminService().isComponentManageable(componentId, userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isComponentManageable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id: '"
@@ -896,7 +911,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public boolean isSpaceAvailable(String spaceId, String userId) {
     try {
-      return m_Admin.isSpaceAvailable(userId, spaceId);
+      return getAdminService().isSpaceAvailable(userId, spaceId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isSpaceAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + userId
@@ -908,7 +923,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public boolean isObjectAvailable(int objectId, ObjectType objectType,
       String componentId, String userId) {
     try {
-      return m_Admin.isObjectAvailable(componentId, objectId, objectType.getCode(), userId);
+      return getAdminService().isObjectAvailable(componentId, objectId, objectType.getCode(), userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isObjectAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_OBJECT", "userId = " + userId
@@ -920,7 +935,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public List<SpaceInstLight> getSpaceTreeview(String userId) {
     try {
-      return m_Admin.getUserSpaceTreeview(userId);
+      return getAdminService().getUserSpaceTreeview(userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getSpaceTreeview",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACES", "user Id = " + userId, e);
@@ -930,7 +945,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public String[] getAllowedSubSpaceIds(String userId, String spaceFatherId) {
     try {
-      return m_Admin.getAllowedSubSpaceIds(userId, spaceFatherId);
+      return getAdminService().getAllowedSubSpaceIds(userId, spaceFatherId);
     } catch (AdminException e) {
       SilverTrace.error("admin", "OrganizationController.getSpaceTreeview",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SUBSPACE_IDS", "user Id = " + userId + ", spaceId = "
@@ -941,7 +956,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public SpaceInstLight getRootSpace(String spaceId) {
     try {
-      return m_Admin.getRootSpace(spaceId);
+      return getAdminService().getRootSpace(spaceId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getRootSpace",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE", "spaceId = " + spaceId, e);
@@ -957,7 +972,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public String[] getAllUsersIds() {
     try {
-      return m_Admin.getAllUsersIds();
+      return getAdminService().getAllUsersIds();
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsersIds",
           "admin.MSG_ERR_GET_ALL_USERS", e);
@@ -971,7 +986,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public String[] searchUsersIds(String groupId, String componentId,
       String[] profileId, UserDetail filterUser) {
     try {
-      return m_Admin.searchUsersIds(groupId, componentId, profileId, filterUser);
+      return getAdminService().searchUsersIds(groupId, componentId, profileId, filterUser);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.searchUsersIds",
           "admin.MSG_ERR_GET_ALL_USERS", e);
@@ -1006,7 +1021,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
         String[] pIds = profileIds.toArray(new String[profileIds.size()]);
         SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
             "root.MSG_GEN_PARAM_VALUE", "pIds = " + pIds);
-        return m_Admin.searchUsersIds(null, null, pIds, new UserDetail());
+        return getAdminService().searchUsersIds(null, null, pIds, new UserDetail());
       }
       return new String[0];
     } catch (Exception e) {
@@ -1023,7 +1038,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
         "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId
         + ", objectId = " + objectId);
     try {
-      List<ProfileInst> profiles = m_Admin.getProfilesByObject(objectId, objectType.getCode(),
+      List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, objectType.getCode(),
           componentId);
       List<String> profileIds = new ArrayList<String>();
       for (ProfileInst profile : profiles) {
@@ -1040,7 +1055,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
         return new String[0];
       } // else return all users !!
 
-      return m_Admin.searchUsersIds(null, null, profileIds.toArray(new String[profileIds.size()]),
+      return getAdminService().searchUsersIds(null, null, profileIds.toArray(new String[profileIds.size()]),
           new UserDetail());
     } catch (Exception e) {
       SilverTrace.error("admin",
@@ -1053,7 +1068,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public String[] searchGroupsIds(boolean isRootGroup, String componentId,
       String[] profileId, Group modelGroup) {
     try {
-      return m_Admin.searchGroupsIds(isRootGroup, componentId, profileId,
+      return getAdminService().searchGroupsIds(isRootGroup, componentId, profileId,
           modelGroup);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.searchGroupsIds",
@@ -1067,7 +1082,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public Domain getDomain(String domainId) {
     try {
-      return m_Admin.getDomain(domainId);
+      return getAdminService().getDomain(domainId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getDomain",
           "admin.EX_ERR_GET_DOMAIN", e);
@@ -1080,17 +1095,16 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public Domain[] getAllDomains() {
     try {
-      return m_Admin.getAllDomains();
+      return getAdminService().getAllDomains();
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllDomain", "admin.EX_ERR_GET_DOMAIN", e);
-      e.printStackTrace();
       return null;
     }
   }
 
   public String[] getDirectGroupIdsOfUser(String userId) {
     try {
-      return m_Admin.getDirectGroupsIdsOfUser(userId);
+      return getAdminService().getDirectGroupsIdsOfUser(userId);
     } catch (Exception e) {
       SilverTrace.error("admin",
           "OrganizationController.getDirectGroupIdsOfUser",
@@ -1112,7 +1126,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public String[] getAllGroupIdsOfUser(String userId) {
     try {
       ArrayList<String> listRes = new ArrayList<String>();
-      String[] tabGroupIds = m_Admin.getDirectGroupsIdsOfUser(userId);
+      String[] tabGroupIds = getAdminService().getDirectGroupsIdsOfUser(userId);
       for (String groupId : tabGroupIds) {
         listRes = recursiveMajListGroupId(groupId, listRes);
       }
@@ -1125,7 +1139,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   }
 
   public void reloadAdminCache() {
-    m_Admin.reloadCache();
+    getAdminService().reloadCache();
   }
 
   /**
@@ -1140,7 +1154,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   
   public String[] getAllowedComponentIds(String userId) {
     try {
-      return m_Admin.getAvailCompoIds(userId);
+      return getAdminService().getAvailCompoIds(userId);
     } catch (AdminException e) {
       SilverTrace.error("admin", "OrganizationController.getAllowedComponentIds",
           "admin.MSG_ERR_GET_AVAILABLE_COMPONENTIDS", e);

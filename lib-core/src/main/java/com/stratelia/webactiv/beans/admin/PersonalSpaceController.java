@@ -32,6 +32,8 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.admin.components.Instanciateur;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class PersonalSpaceController extends AdminReference {
@@ -87,12 +89,12 @@ public class PersonalSpaceController extends AdminReference {
 
       // add component to space
       space.addComponentInst(component);
-      m_Admin.addSpaceInst(userId, space);
+      getAdminService().addSpaceInst(userId, space);
 
     } else {
       // if user has his personal space, just add component in it
       component.setDomainFatherId(space.getId());
-      m_Admin.addComponentInst(userId, component);
+      getAdminService().addComponentInst(userId, component);
     }
     return componentName + component.getId();
   }
@@ -102,7 +104,7 @@ public class PersonalSpaceController extends AdminReference {
     if (space != null) {
       ComponentInst component = getComponent(space, componentId);
       if (component != null) {
-        m_Admin.deleteComponentInst(userId, componentId, true, true);
+        getAdminService().deleteComponentInst(userId, componentId, true, true);
         return component.getName();
       }
     }
@@ -111,10 +113,9 @@ public class PersonalSpaceController extends AdminReference {
 
   public SpaceInst getPersonalSpace(String userId) {
     try {
-      return m_Admin.getPersonalSpace(userId);
+      return getAdminService().getPersonalSpace(userId);
     } catch (AdminException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getLogger(getClass().getName()).log(Level.WARNING, e.getMessage(), e);
       return null;
     }
   }

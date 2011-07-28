@@ -30,9 +30,38 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-public class AdminReference {
-  protected static final Admin m_Admin = new Admin();
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+/**
+ * AdminReference represents the reference to an Admin instance. It manages the access to this
+ * instance.
+ * The Admin objects gathers all the operations that create the organizational resources for a
+ * Silverpeas server instance.
+ * All objects requiring a reference to an Admin instance should use an instance of this class.
+ */
+public class AdminReference implements ApplicationContextAware {
+  private static Admin m_Admin = null;
 
   public AdminReference() {
+  }
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    m_Admin = applicationContext.getBean("adminController", Admin.class);
+  }
+  
+  /**
+   * Gets the administration service refered by this AdminReference.
+   * @return the admin service instance.
+   */
+  protected Admin getAdminService() {
+    if (m_Admin == null) {
+      // case where the admin reference is used in tests running out of an IoC container context.
+      // maintained for compatibility reason.
+      m_Admin = new Admin();
+    }
+    return m_Admin;
   }
 }

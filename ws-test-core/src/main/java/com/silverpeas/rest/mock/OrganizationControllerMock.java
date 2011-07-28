@@ -27,7 +27,9 @@ package com.silverpeas.rest.mock;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Named;
 
 /**
@@ -38,6 +40,7 @@ public class OrganizationControllerMock extends OrganizationController {
   private static final long serialVersionUID = -3271734262141821655L;
 
   private Map<String, UserDetail> users = new HashMap<String, UserDetail>();
+  private Set<String> components = new HashSet<String>();
 
   @Override
   public UserDetail getUserDetail(String sUserId) {
@@ -64,4 +67,17 @@ public class OrganizationControllerMock extends OrganizationController {
     return ((UserDetailWithProfiles) users.get(userId)).getUserProfiles(componentId);
   }
 
+  @Override
+  public boolean isComponentExist(String componentId) {
+    return components.contains(componentId);
+  }
+
+  /**
+   * Adds a component instance to use on tests. All component instances others than the added ones
+   * are considered as non existing.
+   * @param componentId the unique identifier of the component instance to take into account in tests.
+   */
+  public void addComponentInstance(String componentId) {
+    components.add(componentId);
+  }
 }

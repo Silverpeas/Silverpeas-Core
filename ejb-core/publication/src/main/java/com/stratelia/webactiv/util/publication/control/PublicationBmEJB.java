@@ -23,6 +23,20 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.NotationBm;
@@ -42,6 +56,7 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -88,19 +103,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Class declaration
@@ -1371,21 +1373,16 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * ************************* INDEXING METHODS *********************************
    * *******************************************************************
    */
-  private FullIndexEntry updateIndexEntryWithModelContent(
-      FullIndexEntry indexEntry, Collection<InfoTextDetail> textList) {
+  private void updateIndexEntryWithModelContent(FullIndexEntry indexEntry,
+      Collection<InfoTextDetail> textList) {
     SilverTrace.info("publication",
         "PublicationBmEJB.updateIndexEntryWithModelContent()",
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
     if (textList != null) {
-      Iterator<InfoTextDetail> it = textList.iterator();
-
-      while (it.hasNext()) {
-        InfoTextDetail textDetail = it.next();
-
+      for (InfoTextDetail textDetail : textList) {
         indexEntry.addTextContent(textDetail.getContent());
       }
     }
-    return indexEntry;
   }
 
   /**
@@ -1395,21 +1392,19 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * @return
    * @see
    */
-  private FullIndexEntry updateIndexEntryWithInfoDetail(
-      FullIndexEntry indexEntry, InfoDetail infoDetail) {
+  private void updateIndexEntryWithInfoDetail(FullIndexEntry indexEntry, InfoDetail infoDetail) {
     SilverTrace.info("publication",
         "PublicationBmEJB.updateIndexEntryWithInfoDetail()",
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
         + ", infoDetail = " + infoDetail.toString());
     if (infoDetail != null) {
       // Index the text includes in the model
-      indexEntry = updateIndexEntryWithModelContent(indexEntry, infoDetail.getInfoTextList());
+      updateIndexEntryWithModelContent(indexEntry, infoDetail.getInfoTextList());
     }
-    return indexEntry;
   }
 
-  private FullIndexEntry updateIndexEntryWithWysiwygContent(
-      FullIndexEntry indexEntry, PublicationDetail pubDetail) {
+  private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry,
+      PublicationDetail pubDetail) {
     PublicationPK pubPK = pubDetail.getPK();
     SilverTrace.info("publication",
         "PublicationBmEJB.updateIndexEntryWithWysiwygContent()",
@@ -1437,21 +1432,14 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
             }
           }
         }
-        /*
-         * String wysiwygContent = WysiwygController.loadFileAndAttachment(pubPK.getSpace(),
-         * pubPK.getComponentName(), pubPK.getId()); if (wysiwygContent != null) { String
-         * wysiwygPath = WysiwygController.getWysiwygPath(pubPK.getInstanceId(), pubPK.getId());
-         * indexEntry.addFileContent(wysiwygPath, null, "text/html", "fr"); }
-         */
       }
     } catch (Exception e) {
       // No wysiwyg associated
     }
-    return indexEntry;
   }
 
-  private FullIndexEntry updateIndexEntryWithXMLFormContent(
-      FullIndexEntry indexEntry, PublicationDetail pubDetail) {
+  private void updateIndexEntryWithXMLFormContent(FullIndexEntry indexEntry,
+      PublicationDetail pubDetail) {
     SilverTrace.info("publication",
         "PublicationBmEJB.updateIndexEntryWithXMLFormContent()",
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
@@ -1459,18 +1447,15 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     if (!isInteger(pubDetail.getInfoId())) {
       try {
         PublicationTemplate pub = PublicationTemplateManager.getInstance().getPublicationTemplate(pubDetail.
-            getPK().getInstanceId() + ":"
-            + pubDetail.getInfoId());
+            getPK().getInstanceId() + ":" + pubDetail.getInfoId());
 
         RecordSet set = pub.getRecordSet();
-        set.indexRecord(pubDetail.getPK().getId(), pubDetail.getInfoId(),
-            indexEntry);
+        set.indexRecord(pubDetail.getPK().getId(), pubDetail.getInfoId(), indexEntry);
       } catch (Exception e) {
         SilverTrace.error("publication",
             "PublicationBmEJB.updateIndexEntryWithXMLFormContent()", "", e);
       }
     }
-    return indexEntry;
   }
 
   private static boolean isInteger(String id) {
@@ -1514,8 +1499,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     createIndex(pubPK, true);
   }
 
-  private void createIndex(PublicationPK pubPK, boolean processWysiwygContent,
-      int indexOperation) {
+  private void createIndex(PublicationPK pubPK, boolean processWysiwygContent, int indexOperation) {
     SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
         "root.MSG_GEN_ENTER_METHOD", "processWysiwygContent = "
         + processWysiwygContent + ", indexOperation = " + indexOperation);
@@ -1524,7 +1508,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
           "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
       try {
-        CompletePublication completePublication = this.getCompletePublication(pubPK);
+        CompletePublication completePublication = getCompletePublication(pubPK);
         FullIndexEntry indexEntry = null;
         PublicationDetail pubDetail = null;
         InfoDetail infoDetail = null;
@@ -1537,16 +1521,17 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
             // Index the Publication Content
             infoDetail = completePublication.getInfoDetail();
-            indexEntry = this.updateIndexEntryWithInfoDetail(indexEntry,
-                infoDetail);
+            updateIndexEntryWithInfoDetail(indexEntry, infoDetail);
 
             if (processWysiwygContent) {
-              indexEntry = updateIndexEntryWithWysiwygContent(indexEntry,
-                  pubDetail);
-              indexEntry = updateIndexEntryWithXMLFormContent(indexEntry,
-                  pubDetail);
+              updateIndexEntryWithWysiwygContent(indexEntry, pubDetail);
+              updateIndexEntryWithXMLFormContent(indexEntry, pubDetail);
             }
-
+            
+            // add versioning documents to publication's index
+            // Note : attachments are added directly from indexing layer (IndexManager)
+            new VersioningUtil().updateIndexEntryWithDocuments(indexEntry);
+            
             IndexEngineProxy.addIndexEntry(indexEntry);
           }
         }
