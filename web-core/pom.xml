@@ -171,6 +171,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>searchengine</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.metaparadigm</groupId>
       <artifactId>json-rpc</artifactId>
       <scope>provided</scope>

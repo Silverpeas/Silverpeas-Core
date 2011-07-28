@@ -52,6 +52,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainDriverManager;
@@ -284,6 +285,45 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           jobDomainSC.synchroUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userUnSynchro")) {
           jobDomainSC.unsynchroUser(request.getParameter("Iduser"));
+        } else if(function.equals("userOpen")) {
+          String userId = request.getParameter("userId");
+
+          OrganizationController orgaController = jobDomainSC.getOrganizationController();
+          UserDetail user = orgaController.getUserDetail(userId);
+          String domainId = user.getDomainId();
+          if (domainId == null) {
+            domainId = "-1";
+          }
+
+          //not refresh the domain
+          jobDomainSC.setRefreshDomain(false);
+
+          //domaine
+          jobDomainSC.setTargetDomain(domainId);
+          
+          //réinitialise les groupes
+          jobDomainSC.returnIntoGroup(null);
+
+          //groupe d'appartenance
+          AdminController adminController = new AdminController(jobDomainSC.getUserId());
+          String[] groupIds = adminController.getDirectGroupsIdsOfUser(userId);
+          if (groupIds != null && groupIds.length > 0) {
+            for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
+              Group group = orgaController.getGroup(groupIds[iGrp]);
+              
+              String groupDomainId = group.getDomainId();
+              if(groupDomainId == null) {
+                groupDomainId = "-1";
+              }
+              if(groupDomainId != "-1") {
+                jobDomainSC.goIntoGroup(group.getId());
+                break;
+              }
+            }
+          }
+
+          //user  
+          jobDomainSC.setTargetUser(userId);
         }
         if (destination.length() <= 0) {
           if (jobDomainSC.getTargetUserDetail() != null) {
