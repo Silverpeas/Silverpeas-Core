@@ -2570,6 +2570,43 @@ public final class Admin {
   public String[] getAllRootGroupIds() throws AdminException {
     return groupManager.getAllRootGroupIds(domainDriverManager);
   }
+  
+  /**
+   * @throws AdminException
+   */
+  public void indexAllGroups() throws AdminException {
+    Domain[] domains = getAllDomains(); //All domains except Mixt Domain (id -1)
+    for (Domain domain :
+        domains) {
+      try {
+        indexGroups(domain.getId());
+      } catch (Exception e) {
+        SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
+            "domainId = " + domain.getId(), e);
+      }
+    }
+    
+    //Mixt Domain (id -1)
+    try {
+      indexGroups("-1");
+    } catch (Exception e) {
+      SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
+          "domainId = -1", e);
+    }
+  }
+
+  /**
+   * @param domainId
+   * @throws AdminException
+   */
+  public void indexGroups(String domainId) throws AdminException {
+    try {
+      domainDriverManager.indexAllGroups(domainId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.indexGroups",
+          SilverpeasException.ERROR, "admin.CANT_INDEX_GROUPS", "domainId = " + domainId, e);
+    }
+  }
 
   //
   // --------------------------------------------------------------------------------------------------------
@@ -3016,6 +3053,35 @@ public final class Admin {
       throw new AdminException("Admin.updateUserFull",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "user id : '"
           + user.getId() + "'", e);
+    }
+  }
+  
+  /**
+   * @throws AdminException
+   */
+  public void indexAllUsers() throws AdminException {
+    Domain[] domains = getAllDomains();
+    for (Domain domain :
+        domains) {
+      try {
+        indexUsers(domain.getId());
+      } catch (Exception e) {
+        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS",
+            "domainId = " + domain.getId(), e);
+      }
+    }
+  }
+
+  /**
+   * @param domainId
+   * @throws AdminException
+   */
+  public void indexUsers(String domainId) throws AdminException {
+    try {
+      domainDriverManager.indexAllUsers(domainId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.indexUsers",
+          SilverpeasException.ERROR, "admin.CANT_INDEX_USERS", "domainId = " + domainId, e);
     }
   }
 
@@ -6472,28 +6538,6 @@ public final class Admin {
       return spaceInst.getId();
     }
     return SPACE_KEY_PREFIX + spaceInst.getId();
-  }
-
-  public void indexAllUsers() throws AdminException {
-    Domain[] domains = getAllDomains();
-    for (Domain domain :
-        domains) {
-      try {
-        indexUsers(domain.getId());
-      } catch (Exception e) {
-        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS",
-            "domainId = " + domain.getId(), e);
-      }
-    }
-  }
-
-  public void indexUsers(String domainId) throws AdminException {
-    try {
-      domainDriverManager.indexAllUsers(domainId);
-    } catch (Exception e) {
-      throw new AdminException("Admin.indexUsers",
-          SilverpeasException.ERROR, "admin.CANT_INDEX_USERS", "domainId = " + domainId, e);
-    }
   }
 
   public String copyAndPasteComponent(String componentId, String spaceId, String userId) throws

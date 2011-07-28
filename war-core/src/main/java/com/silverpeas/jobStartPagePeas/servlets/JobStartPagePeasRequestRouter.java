@@ -24,6 +24,7 @@
 package com.silverpeas.jobStartPagePeas.servlets;
 
 import com.silverpeas.admin.components.Parameter;
+
 import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterSorter;
 import com.silverpeas.admin.components.WAComponent;
@@ -919,6 +920,29 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       File file = new File(path + File.separator + fileName);
       file.delete();
       destination = getDestination("SpaceLook", jobStartPageSC, request);
+    } else if(function.equals("OpenSpace")) {
+      jobStartPageSC.init();
+      
+      if (StringUtil.isDefined(request.getParameter("Espace"))) {
+          jobStartPageSC.setSpaceId(request.getParameter("Espace"));
+      } else {
+        jobStartPageSC.setSpaceId(null);
+      }
+      
+      destination = getDestination("StartPageInfo", jobStartPageSC, request);
+    } else if(function.equals("OpenSubSpace")) {
+      jobStartPageSC.init();
+      
+      if (StringUtil.isDefined(request.getParameter("Espace"))) {
+        jobStartPageSC.setSpaceId(request.getParameter("Espace"));
+        if (StringUtil.isDefined(request.getParameter("SousEspace"))) {
+          jobStartPageSC.setSubSpaceId(request.getParameter("SousEspace"));
+        } 
+      } else {
+        jobStartPageSC.setSpaceId(null);
+      }
+      
+      destination = getDestination("StartPageInfo", jobStartPageSC, request);
     }
 
     return destination;
