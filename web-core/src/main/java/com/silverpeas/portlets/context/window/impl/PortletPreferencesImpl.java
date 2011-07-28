@@ -46,8 +46,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletID;
-import com.sun.portal.portletcontainer.common.PortletActions;
-import com.sun.portal.portletcontainer.common.PortletContainerConstants;
 import com.sun.portal.portletcontainer.common.PortletPreferencesUtility;
 import com.sun.portal.portletcontainer.common.PreferencesValidatorSetter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
@@ -84,7 +82,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
   protected Set modifiedList;
   protected static final String[] EMPTY_STRING_ARRAY = new String[0];
   // Create a logger for this class
-  private static Logger logger = Logger.getLogger("com.silverpeas.portlets.context.window.impl",
+  private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.context.window.impl",
       "com.silverpeas.portlets.PCCTXLogMessages");
 
   public PortletPreferencesImpl(HttpServletRequest request,
@@ -121,7 +119,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
       predefinedPrefReadOnlyMap =
           portletRegistryContext.getPreferencesReadOnly(this.portletWindowName, this.userID);
     } catch (Exception ioe) {
-      logger.log(Level.SEVERE, "PSPL_PCCTXCSPPCI0013", ioe);
+      logger.log(Level.WARNING, "PSPL_PCCTXCSPPCI0013 : {0}", ioe.getMessage());
     }
 
     try {
@@ -134,6 +132,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
   }
 
+  @Override
   public boolean isReadOnly(String key) {
     if (key == null) {
       throw new IllegalArgumentException();
@@ -141,6 +140,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     return getIsReadOnly(key);
   }
 
+  @Override
   public String getValue(String key, String def) {
     String defs[] = {def};
     String values[] = getValues(key, defs);
@@ -152,6 +152,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
   }
 
+  @Override
   public String[] getValues(String key, String[] def) {
     String value = getPrefValue(key, arrayToString(def));
     String prefs[] = stringToArray(value);
@@ -181,6 +182,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
   }
 
+  @Override
   public void setValue(String key, String value) throws ReadOnlyException {
     if (key == null) {
       throw new IllegalArgumentException();
@@ -198,10 +200,12 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
   }
 
+  @Override
   public void setValues(String key, String[] values) throws ReadOnlyException {
     setValue(key, arrayToString(values));
   }
 
+  @Override
   public Enumeration<String> getNames() {
     Set<String> names = userPrefMap.keySet();
     List list = new ArrayList();
@@ -215,6 +219,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     return Collections.enumeration(list);
   }
 
+  @Override
   public Map<String, String[]> getMap() {
     Map prefMap = new HashMap();
 
@@ -240,6 +245,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
   }
 
+  @Override
   public void reset(String key) throws ReadOnlyException {
 
     if (key == null) {
@@ -262,6 +268,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
   }
 
+  @Override
   public void store() throws IOException, ValidatorException {
     String lifecyclePhase = (String) request.getAttribute(PortletRequest.LIFECYCLE_PHASE);
     if (PortletRequest.RENDER_PHASE.equals(lifecyclePhase)) {
@@ -274,6 +281,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
   }
 
+  @Override
   public void setPreferencesValidator(PreferencesValidator pv) {
     preferencesValidator = pv;
   }
@@ -302,7 +310,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     if (!useRBPreferenceName) {
       return key;
     }
-    StringBuffer attribute = new StringBuffer();
+    StringBuilder attribute = new StringBuilder();
     attribute.append(PortletResourceBundle.RB_PREFERENCE_NAME);
     attribute.append(key);
     try {
@@ -316,7 +324,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     if (!useRBPreferenceValue) {
       return value;
     }
-    StringBuffer attribute = new StringBuffer();
+    StringBuilder attribute = new StringBuilder();
     attribute.append(PortletResourceBundle.RB_PREFERENCE_VALUE);
     attribute.append(key);
     attribute.append(".");

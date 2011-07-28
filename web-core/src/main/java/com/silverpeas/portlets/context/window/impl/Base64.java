@@ -32,7 +32,7 @@ package com.silverpeas.portlets.context.window.impl;
 class Base64 {
 
   private static byte[] DecodeMap;
-  private static byte[] theMap = { (byte) 'A', (byte) 'B', (byte) 'C',
+  private static final byte[] theMap = { (byte) 'A', (byte) 'B', (byte) 'C',
       (byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H', (byte) 'I',
       (byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N', (byte) 'O',
       (byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T', (byte) 'U',
