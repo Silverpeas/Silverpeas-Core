@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.Map;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -106,8 +107,7 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
    * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getCmpStats()
    */
-  Hashtable<String, String[]> getCmpStats() {
-    // Hashtable key=componentId, value=new String[3] {tout, groupe, user}
+  Map<String, String[]> getCmpStats() {
 
     Hashtable<String, String[]> cmpStats = new Hashtable<String, String[]>();
     try {

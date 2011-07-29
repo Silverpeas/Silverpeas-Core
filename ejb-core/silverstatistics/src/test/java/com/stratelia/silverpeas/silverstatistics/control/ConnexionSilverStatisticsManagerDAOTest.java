@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import com.mockrunner.jdbc.JDBCTestModule;
 import com.mockrunner.mock.jdbc.JDBCMockObjectFactory;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import org.junit.Before;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import java.util.Calendar;

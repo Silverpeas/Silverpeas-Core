@@ -143,6 +143,12 @@ TD.sommaire {
 /***************************************
 Definition des class de style Silverpeas
 ***************************************/
+
+.clean {
+	padding:0;
+	margin:0;
+}
+
 .peer {
 	color: #033111
 }
@@ -167,6 +173,94 @@ Definition des class de style Silverpeas
 
 }
 
+.bgDegradeGris {
+	border:1px solid #cdcdcd;
+	color:#333;
+	margin-bottom:10px;
+		background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
+		background: -moz-linear-gradient(top, #fff, #e5e5e5);
+		/* For Internet Explorer 5.5 - 7 */
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
+		/* For Internet Explorer 8 */
+		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
+		min-height:14px;
+	}
+
+.bgDegradeGris.header{
+	border-top:0;
+	border-right:0;
+	border-left:0;
+	margin:0;
+	padding:5px;
+	font-size:110%;	
+}
+
+* html 	.bgDegradeGris {
+	background-color:#e9e9e9;
+}
+* html 	.bgDegradeGris.header {
+	background-color:#efefef;
+}
+	
+.bgDegradeGris p, .bgDegradeGris .paragraphe {
+	padding:11px 17px 0 17px;
+	margin:0;
+	font-size:100%;
+	line-height:140%;
+	color:#666;
+	position:relative;
+}
+
+.bgDegradeGris p b, .bgDegradeGris .paragraphe b {
+	color:#333;
+	font-weight:100;
+}
+
+.principalContent{
+	margin-right:320px;
+	margin-top:10px;
+}
+.rightContent{
+	width:310px;
+	clear:right;
+	float:right;
+	margin-top:10px;
+}
+
+.clearAll {
+	clear:both;
+}
+
+.linkUser {
+	color: #3A5998;
+}
+.linkUser:hover {
+	color: #666699;
+}
+
+.inputPermalink {
+	border: 1px solid #CACACA;
+    color: #333333;
+    width: 90%;
+}
+
+.profilPhoto {
+ 	border:1px solid #CCCCCC;
+	overflow:hidden;
+}
+
+.bgDegradeGris .profilPhoto {
+	position:absolute;
+	width:30px;
+	height:30px;
+	top:10px;
+	right:10px;
+	text-align: center;
+}
+
+.bgDegradeGris .profilPhoto img{
+	height:30px;
+}
 /* Couleur de l'interface : Frame */
 .couleurCadre {
 	background-color: #DEDEDE
@@ -2238,11 +2332,13 @@ td.browsebar a:hover {
 }
 
 .attachments {
-	width: 150px;
+	min-width: 310px;
+	position:relative;
 }
 
-.attachments .header {
-	text-align: center;
+.attachments h4 {
+	background:transparent url(/silverpeas/util/icons/attachedFiles.gif)  top right no-repeat;
+	height:16px;
 }
 
 .attachments .dragNdrop {
@@ -2430,11 +2526,9 @@ caption {
 }
 
 #directory #users .profilPhoto {
- 	border:1px solid #CCCCCC;
 	float:left;
 	height:113px;
 	margin:7px;
-	overflow:hidden;
 	width:87px;
 }
 #directory #users .profilPhoto img {
@@ -2973,10 +3067,8 @@ caption {
 }
 
 #myProfile .profilPhoto {
- 	border:1px solid #CCCCCC;
 	height:140px;
 	margin:7px 6px;
-	overflow:hidden;
 	width:108px;
 }
 #myProfile .profilPhoto img {
@@ -3134,10 +3226,8 @@ caption {
 }
 
 #publicProfile .profilPhoto {
- 	border:1px solid #CCCCCC;
 	height:140px;
 	margin:7px 6px;
-	overflow:hidden;
 	width:108px;
 }
 #publicProfile .profilPhoto img {
@@ -3205,9 +3295,12 @@ caption {
   	width:100%;
   	color:#26334A;
   	font-size:11px;
-  	padding:5px 5px 14px;
+  	padding:5px 0 14px;
 	}
-.sousNavBulle p { margin:0; padding:0;}
+.sousNavBulle p { 
+	margin:0; 
+  	padding:0 5px 0;
+	}
 
 
 .sousNavBulle a {
@@ -3275,7 +3368,6 @@ caption {
 #newsFeedProfil .profilPhoto {
 	width:50px;
 	height:50px;
-	overflow:hidden;
 	display: inline;
 	border:0;
 	float:left;
@@ -3302,7 +3394,6 @@ caption {
 #newsFeedProfil .txt .detail .profilPhoto {
 	width:25px;
 	height:25px;
-	overflow:hidden;
 	border:0;
 	float:inherit;
 	clear:none;
@@ -3416,11 +3507,9 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 */
 
 #invitationProfil .profilPhoto, #contactProfil  .profilPhoto{
-    border: 1px solid #CCCCCC;
     float: left;
     height: auto;
     margin: 7px;
-    overflow: hidden;
     width: 64px;
 	float:left;
 	clear:both;
@@ -3541,6 +3630,9 @@ a.yuimenuitemlabel-disabled:hover {
 
 ul#attachmentList.ui-sortable {
 	/*cursor:default;*/
+	position:relative;
+	margin:0;
+	padding:0;
 }
 
 ul#attachmentList {
@@ -3551,7 +3643,8 @@ ul#attachmentList {
 
 ul#attachmentList li.attachmentListItem {
 	margin:0;
-    padding:10px;
+    padding: 10px 5px 10px 10px;
+    position:relative;
 }
 
 ul#attachmentList li.ui-state-highlight {
@@ -3564,11 +3657,11 @@ ul#attachmentList li.ui-state-highlight {
 
 ul#attachmentList li.attachmentListItem .lineSize,
 ul#attachmentList li.attachmentListItem .lineMain {
-    white-space: nowrap;
     display: block;
     position: relative;
-    padding: 1px 24px 2px 24px;
+    padding: 1px 44px 2px 24px;
 }
+
 
 ul#attachmentList li.attachmentListItem .lineSize img {
 	position: absolute;
@@ -3607,7 +3700,7 @@ ul#attachmentList li.attachmentListItem .workerInfo {
 ul#attachmentList li.attachmentListItem .fileName {
     margin-left: 24px;
     padding-left: 5px;
-    border-left: 3px solid #EAEAEA;
+    border-left: 3px solid #9BD94A;
     display: block;
     color: #666;
 }
@@ -3616,7 +3709,7 @@ ul#attachmentList li.attachmentListItem .description {
     margin-left: 24px;
     padding-left: 5px;
     margin-top: 2px;
-    border-left: 3px solid #EAEAEA;
+    border-left: 3px solid #9BD94A;
     display: block;
     color: #666;
 }
@@ -3893,6 +3986,7 @@ button {
 	color:#4d4d4d;
 	border-bottom:1px solid #e9e9e9;
 }
+
 
 .list_pdc_position ul li {
 	background:transparent url(../icons/list-puce-green.gif) 20px 8px no-repeat;

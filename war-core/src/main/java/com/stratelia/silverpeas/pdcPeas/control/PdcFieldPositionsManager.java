@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.pdcPeas.control;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.form.fieldDisplayer.PdcFieldDisplayer;
+import com.silverpeas.form.displayers.PdcFieldDisplayer;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;

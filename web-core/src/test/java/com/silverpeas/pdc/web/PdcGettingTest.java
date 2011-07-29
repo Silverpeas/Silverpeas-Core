@@ -80,6 +80,14 @@ public class PdcGettingTest extends ResourceGettingTest {
   }
 
   @Override
+  @Test
+  public void gettingAResourceByANonAuthenticatedUser() {
+    super.gettingAResourceByANonAuthenticatedUser();
+  }
+  
+  
+
+  @Override
   public String aResourceURI() {
     return CONTENT_PDC_PATH;
   }
@@ -126,5 +134,10 @@ public class PdcGettingTest extends ResourceGettingTest {
 
   protected static String withURI(String uri) {
     return uri;
+  }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
   }
 }

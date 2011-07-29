@@ -121,4 +121,9 @@ public class CommentCreationTest extends ResourceCreationTest {
   public Class<?> getWebEntityClass() {
     return CommentEntity.class;
   }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
+  }
 }

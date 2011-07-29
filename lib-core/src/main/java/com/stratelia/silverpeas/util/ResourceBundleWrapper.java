@@ -31,15 +31,17 @@ import java.util.ResourceBundle;
 
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.silverpeas.util.ConfigurationClassLoader;
+import com.silverpeas.util.ConfigurationControl;
 
 public class ResourceBundleWrapper extends ResourceBundle {
   private ResourceBundle bundle;
   private ResourceBundle parentBundle;
   private static ClassLoader loader =
       new ConfigurationClassLoader(ResourceBundleWrapper.class.getClassLoader());
+  private static ResourceBundle.Control control = new ConfigurationControl();
 
   public ResourceBundleWrapper(String file, Locale locale, boolean hasParent) {
-    this.bundle = java.util.ResourceBundle.getBundle(file, locale, loader);
+    this.bundle = java.util.ResourceBundle.getBundle(file, locale, loader, control);
     if (hasParent) {
       this.parentBundle = GeneralPropertiesManager.getGeneralMultilang(
           locale.getLanguage()).getResourceBundle();

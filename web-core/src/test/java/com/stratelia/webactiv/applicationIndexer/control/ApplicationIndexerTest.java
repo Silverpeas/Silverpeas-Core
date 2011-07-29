@@ -23,13 +23,18 @@
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
+
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
 /**
  *
@@ -74,54 +79,54 @@ public class ApplicationIndexerTest {
 
   @Test
   public void testGetPackageName() {
-    ComponentInst kmelia = mock(ComponentInst.class);
+    ComponentInstLight kmelia = mock(ComponentInstLight.class);
     when(kmelia.getName()).thenReturn("Kmelia");
     assertThat(instance.getPackage(kmelia), is("kmelia"));
 
-    ComponentInst toolbox = mock(ComponentInst.class);
+    ComponentInstLight toolbox = mock(ComponentInstLight.class);
     when(toolbox.getName()).thenReturn("toolbox");
     assertThat(instance.getPackage(toolbox), is("kmelia"));
 
-    ComponentInst bookmark = mock(ComponentInst.class);
+    ComponentInstLight bookmark = mock(ComponentInstLight.class);
     when(bookmark.getName()).thenReturn("bookmark");
     assertThat(instance.getPackage(bookmark), is("webSites"));
 
-    ComponentInst pollingStation = mock(ComponentInst.class);
+    ComponentInstLight pollingStation = mock(ComponentInstLight.class);
     when(pollingStation.getName()).thenReturn("pollingStation");
     assertThat(instance.getPackage(pollingStation), is("survey"));
 
-    ComponentInst webPages = mock(ComponentInst.class);
+    ComponentInstLight webPages = mock(ComponentInstLight.class);
     when(webPages.getName()).thenReturn("webPages");
     assertThat(instance.getPackage(webPages), is("webpages"));
 
-    ComponentInst mydb = mock(ComponentInst.class);
+    ComponentInstLight mydb = mock(ComponentInstLight.class);
     when(mydb.getName()).thenReturn("MyDB");
     assertThat(instance.getPackage(mydb), is("mydb"));
   }
   
   @Test
   public void testGetClassName() {
-    ComponentInst kmelia = mock(ComponentInst.class);
+    ComponentInstLight kmelia = mock(ComponentInstLight.class);
     when(kmelia.getName()).thenReturn("Kmelia");
     assertThat(instance.getClassName(kmelia), is("Kmelia"));
 
-    ComponentInst toolbox = mock(ComponentInst.class);
+    ComponentInstLight toolbox = mock(ComponentInstLight.class);
     when(toolbox.getName()).thenReturn("toolbox");
     assertThat(instance.getClassName(toolbox), is("Kmelia"));
 
-    ComponentInst bookmark = mock(ComponentInst.class);
+    ComponentInstLight bookmark = mock(ComponentInstLight.class);
     when(bookmark.getName()).thenReturn("bookmark");
     assertThat(instance.getClassName(bookmark), is("WebSites"));
 
-    ComponentInst pollingStation = mock(ComponentInst.class);
+    ComponentInstLight pollingStation = mock(ComponentInstLight.class);
     when(pollingStation.getName()).thenReturn("pollingStation");
     assertThat(instance.getClassName(pollingStation), is("Survey"));
 
-    ComponentInst webPages = mock(ComponentInst.class);
+    ComponentInstLight webPages = mock(ComponentInstLight.class);
     when(webPages.getName()).thenReturn("webPages");
     assertThat(instance.getClassName(webPages), is("WebPages"));
 
-    ComponentInst mydb = mock(ComponentInst.class);
+    ComponentInstLight mydb = mock(ComponentInstLight.class);
     when(mydb.getName()).thenReturn("MyDB");
     assertThat(instance.getClassName(mydb), is("MyDB"));
   }
@@ -129,7 +134,7 @@ public class ApplicationIndexerTest {
   
   @Test
   public void testGetIndexer() {
-    ComponentInst stub = mock(ComponentInst.class);
+    ComponentInstLight stub = mock(ComponentInstLight.class);
     when(stub.getName()).thenReturn("stub");
     assertThat(instance.getClassName(stub), is("Stub"));
     assertThat(instance.getPackage(stub), is("stub"));

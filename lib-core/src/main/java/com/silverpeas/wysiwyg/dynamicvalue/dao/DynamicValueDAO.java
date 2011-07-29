@@ -33,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.apache.commons.lang.StringUtils;
+import com.silverpeas.util.ConfigurationControl;
+import com.silverpeas.util.StringUtil;
 
 import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
@@ -222,9 +223,9 @@ public class DynamicValueDAO {
    */
   private static void initTableInfos() {
     try {
-      ResourceBundle bundle =
-          ResourceBundle
-          .getBundle("com.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings");
+      ResourceBundle bundle = ResourceBundle.getBundle(
+          "com.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings",
+          new ConfigurationControl());
       DynamicValueDAO.tableName = bundle.getString("tableName").trim();
       DynamicValueDAO.keyColumnName = bundle.getString("keyColumnName").trim();
       DynamicValueDAO.valueColumnName = bundle.getString("valueColumnName").trim();
@@ -241,8 +242,8 @@ public class DynamicValueDAO {
    */
   private static void checkTableInfos() throws PropertyNotFoundRuntimeException {
 
-    if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(keyColumnName) ||
-        StringUtils.isEmpty(valueColumnName) || StringUtils.isEmpty(startDateColumnName)) {
+    if (!StringUtil.isDefined(tableName) || !StringUtil.isDefined(keyColumnName) ||
+        !StringUtil.isDefined(valueColumnName) || !StringUtil.isDefined(startDateColumnName)) {
       throw new PropertyNotFoundRuntimeException("DynamicValueDAO", SilverpeasException.ERROR,
           "wysiwyg.DAO_INITILIZATION_FAILED");
     }
@@ -255,8 +256,7 @@ public class DynamicValueDAO {
    */
   private static java.sql.Date getTodayDate() {
     java.util.Date today = new java.util.Date();
-    java.sql.Date sqlToday = new java.sql.Date(today.getTime());
-    return sqlToday;
+    return new java.sql.Date(today.getTime());
   }
 
 }

@@ -30,10 +30,8 @@ import org.junit.Before;
 import java.util.Collection;
 import com.google.common.collect.Lists;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.rest.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
 import javax.inject.Inject;
 import com.silverpeas.rest.RESTWebServiceTest;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
@@ -53,8 +51,6 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
 
   @Inject
   private MockableSubscriptionService subscriptionService;
-  @Inject
-  private MockablePersonalizationService personalisationService;
   protected static final String COMPONENT_ID = "questionReply12";
   protected static final String KMELIA_ID = "kmelia12";
   protected static final String RESOURCE_PATH = "subscriptions/" + COMPONENT_ID;
@@ -62,6 +58,11 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
 
   public SubscriptionGettingTest() {
     super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
+  }
+  
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] {COMPONENT_ID};
   }
 
   @Before
@@ -95,7 +96,6 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    personalisationService.setPersonalizationService(mock(PersonalizationService.class));
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     ComponentSubscription subscription = new ComponentSubscription("10", COMPONENT_ID);
     Collection<ComponentSubscription> subscriptions = Lists.newArrayList(subscription);
@@ -121,7 +121,6 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    personalisationService.setPersonalizationService(mock(PersonalizationService.class));
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     List<String> subscribers = Lists.newArrayList("5", "6", "7", "20");
     when(mockedSubscriptionService.getSubscribers(new ForeignPK("0", COMPONENT_ID))).thenReturn(subscribers);

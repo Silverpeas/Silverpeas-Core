@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.Dictionary;
@@ -36,6 +35,7 @@ import org.apache.lucene.search.spell.LuceneDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -69,8 +69,8 @@ public class DidYouMeanIndexer {
   public static void createSpellIndex(String field, String originalIndexDirectory,
       String spellIndexDirectory) {
     // stop the process if method parameters is null or empty
-    if (StringUtils.isEmpty(field) || StringUtils.isEmpty(originalIndexDirectory) ||
-        StringUtils.isEmpty(spellIndexDirectory)) {
+    if (!StringUtil.isDefined(field) || !StringUtil.isDefined(originalIndexDirectory) ||
+        !StringUtil.isDefined(spellIndexDirectory)) {
       SilverTrace.error("indexEngine", DidYouMeanIndexer.class.toString(), "root.EX_INVALID_ARG");
       return;
     }

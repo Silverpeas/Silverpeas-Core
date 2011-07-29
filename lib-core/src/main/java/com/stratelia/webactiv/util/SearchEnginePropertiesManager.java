@@ -27,8 +27,6 @@ package com.stratelia.webactiv.util;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Class used to realize some treatment with SearchEngineSetting.properties file.
  * @author David Derigent
@@ -53,7 +51,7 @@ public class SearchEnginePropertiesManager {
       ResourceLocator resource = new ResourceLocator(
           "com.silverpeas.searchEngine.searchEngineSettings", "");
       String property = resource.getString("sorting.formXML.fields");
-      if (StringUtils.isNotEmpty(property)) {
+      if (com.silverpeas.util.StringUtil.isDefined(property)) {
         StringTokenizer tokens = new StringTokenizer(property, ",");
         while (tokens.hasMoreTokens()) {
           fieldsNameList.add(tokens.nextToken());

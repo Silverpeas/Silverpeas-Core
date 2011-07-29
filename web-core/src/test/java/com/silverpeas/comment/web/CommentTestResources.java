@@ -49,10 +49,10 @@ public class CommentTestResources {
   public static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/"
           + CONTENT_ID;
   public static final String INVALID_RESOURCE_PATH = "comments/kmelia100/3";
-  @Autowired
+  @Inject
   private DefaultCommentServiceMock commentService;
   @Inject
-  private MockablePersonalizationService personalisationService;
+  private MockablePersonalizationService personalizationService;
 
   /**
    * Gets the comment service used in tests.
@@ -70,7 +70,7 @@ public class CommentTestResources {
     UserPreferences prefs = new UserPreferences("fr", "", "", false, true, true,
             UserMenuDisplay.DISABLE);
     when(personalization.getUserSettings(anyString())).thenReturn(prefs);
-    personalisationService.setPersonalizationService(personalization);
+    personalizationService.setPersonalizationService(personalization);
   }
 
   /**

@@ -119,6 +119,10 @@ public class PdcResource extends RESTWebService {
   
   @Override
   protected String getComponentId() {
+    int index = componentId.indexOf("?contentId");
+    if (index > 0) {
+      return componentId.substring(0, index);
+    }
     return componentId;
   }
 

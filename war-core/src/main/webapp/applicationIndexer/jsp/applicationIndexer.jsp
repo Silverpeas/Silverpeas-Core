@@ -34,7 +34,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
@@ -53,7 +53,7 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationCon
     String 			compoDesc 	= null;
     String 			compoId 	= null;
     String 			label 		= null;
-    SpaceInst 		spaceInst 	= m_OrganizationController.getSpaceInstById(spaceId);
+    SpaceInstLight 	spaceInst 	= m_OrganizationController.getSpaceInstLightById(spaceId);
     StringBuffer	result 		= new StringBuffer();
     if (spaceInst!=null) {
         result.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"3\">\n");
@@ -61,11 +61,11 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationCon
         if (depth==0) result.append("<tr><td class=\"txtnote\">&nbsp;</td></tr>\n");
 
         result.append("<tr>\n");
-        result.append("<td class=\"txttitrecol\">&#149; <A HREF=\"javaScript:index('Index','', '"+spaceId+"');\">").append(spaceInst.getName()).append("</a></td></tr>\n");
+        result.append("<td class=\"txttitrecol\">&#149; <A HREF=\"javaScript:index('Index','', '"+spaceInst.getShortId()+"');\">").append(spaceInst.getName()).append("</a></td></tr>\n");
 
         result.append("<tr><td class=\"txtnote\">\n");
 
-        String[] asAvailCompoForCurUser = m_OrganizationController.getAllComponentIds(spaceInst.getId());
+        String[] asAvailCompoForCurUser = m_OrganizationController.getAllComponentIds(spaceInst.getShortId());
         for(int nI = 0; nI <asAvailCompoForCurUser.length; nI++) {
 
             compoInst = m_OrganizationController.getComponentInst(asAvailCompoForCurUser[nI]);
@@ -140,6 +140,8 @@ if (action != null) {
     	ai.indexAll();
     } else if (action.equals("IndexPdc")) {
     	ai.indexPdc();
+    } else if (action.equals("IndexGroups")) {
+    	ai.indexGroups();
     } else if (action.equals("IndexUsers")) {
     	ai.indexUsers();
     }
@@ -173,6 +175,8 @@ function index(action, compo, space)
 		message += "tout le portail";
 	} else if (action == "IndexPdc") {
 		message += "le plan de classement";
+	} else if (action == "IndexGroups") {
+		message += "les groupes d'utilisateurs";
 	} else if (action == "IndexUsers") {
 		message += "les utilisateurs";
 	}
@@ -187,7 +191,7 @@ function index(action, compo, space)
 <TABLE WIDTH="95%"><TR><TD>
 <%
     Frame frame=gef.getFrame();
-    frame.addTitle(message.getString("MyMap")+" - <a href=\"javaScript:index('IndexAll','','');\">INDEXER TOUT (espaces collaboratifs, espaces personnels, plan de classement)</a>");
+    frame.addTitle("<a href=\"javaScript:index('IndexAll','','');\">INDEXER TOUT (espaces collaboratifs, espaces personnels, plan de classement, groupes, utilisateurs)</a>");
     out.println(frame.printBefore());
 %>
 <BR>&nbsp;
@@ -232,7 +236,7 @@ function index(action, compo, space)
                 <tr>
                 <td colspan="2">
                 	<span class="txtnav" nowrap>Plan de classement</span><br><br>
-                	<a href="javaScript:index('IndexPdc','','');">INDEXER PDC</a>
+                	<a href="javaScript:index('IndexPdc','','');">INDEXER TOUT LE PDC</a>
                 </td>
                 </tr>
                 <tr>
@@ -241,8 +245,15 @@ function index(action, compo, space)
                 <tr>
                 <td colspan="2">
                 	<br/>
+                	<span class="txtnav" nowrap="nowrap">Groupes</span><br/><br/>
+                	<a href="javaScript:index('IndexGroups','','');">INDEXER TOUS LES GROUPES D'UTILISATEURS</a>
+                </td>
+                </tr>
+                <tr>
+                <td colspan="2">
+                	<br/>
                 	<span class="txtnav" nowrap="nowrap">Utilisateurs</span><br/><br/>
-                	<a href="javaScript:index('IndexUsers','','');">Indexer tous les utilisateurs</a>
+                	<a href="javaScript:index('IndexUsers','','');">INDEXER TOUS LES UTILISATEURS</a>
                 </td>
                 </tr>
               </table>

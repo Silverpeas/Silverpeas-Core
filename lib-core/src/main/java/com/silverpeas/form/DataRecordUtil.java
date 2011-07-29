@@ -44,8 +44,9 @@ public class DataRecordUtil {
       updatedField = updatedRecord.getField(fieldNames[i]);
       try {
         copiedField = copiedRecord.getField(fieldNames[i]);
-        if (copiedField == null)
+        if (copiedField == null) {
           continue;
+        }
       } catch (FormException ignored) {
         continue;
       }
@@ -103,8 +104,9 @@ public class DataRecordUtil {
                 "form.INFO_NOT_CORRECT_TYPE", "value = " + field.getValue(), e);
           }
         }
-        if (value == null)
+        if (value == null) {
           value = "";
+        }
       }
     } catch (FormException e) {
       value = "${" + var + "}";

@@ -41,7 +41,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.dummy.DummyRecordSet;
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -53,19 +53,18 @@ import com.stratelia.webactiv.util.JNDINames;
 import java.util.Map;
 
 /**
- * The GenericRecordSetManage all the GenericRecordSet.
- * It is a singleton.
+ * The GenericRecordSetManage all the GenericRecordSet. It is a singleton.
  */
 public class GenericRecordSetManager {
-  
+
   private static final GenericRecordSetManager instance = new GenericRecordSetManager();
-  
+
   private final Map<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
-  
+
   private GenericRecordSetManager() {
-    
+
   }
-  
+
   /**
    * Gets the single instance of this manager.
    * @return the single instance of GenericRecordSetManager.
@@ -127,12 +126,10 @@ public class GenericRecordSetManager {
 
   /**
    * Get value of a field record directly from database.
-   * 
-   * @param templateExternalId  template external id
-   * @param recordExternalId    record external id
-   * @param fieldName           field name
+   * @param templateExternalId template external id
+   * @param recordExternalId record external id
+   * @param fieldName field name
    * @return the field record value
-   * 
    * @throws FormException
    */
   public String getRawValue(String templateExternalId,
@@ -146,20 +143,20 @@ public class GenericRecordSetManager {
       return selectRecordFieldsRow(con, templateExternalId, recordExternalId, fieldName);
     } catch (SQLException e) {
       throw new FormException("GenericRecordSetManager.getRawValues",
-          "form.EXP_INSERT_FAILED", "templateExternalId : " + templateExternalId + ", recordExternalId : "+recordExternalId, e);
+          "form.EXP_INSERT_FAILED", "templateExternalId : " + templateExternalId +
+              ", recordExternalId : " + recordExternalId, e);
     } finally {
       closeConnection(con);
     }
   }
-  
-  
+
   /**
    * Return the record set known be its external id.
    * @param externalId
    * @return
    * @throws FormException when the id is unknown.
    */
-   public RecordSet getRecordSet(String externalId) throws FormException {
+  public RecordSet getRecordSet(String externalId) throws FormException {
 
     SilverTrace.debug("form", "GenericRecordSetManager.getRecordSet",
         "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId);
@@ -203,7 +200,7 @@ public class GenericRecordSetManager {
    * @param externalId
    * @throws FormException when the id is unknown.
    */
-   public void removeRecordSet(String externalId) throws FormException {
+  public void removeRecordSet(String externalId) throws FormException {
     removeCachedRecordSet(externalId);
 
     Connection con = null;
@@ -235,19 +232,19 @@ public class GenericRecordSetManager {
   /*
    * Cache manipulation
    */
-   private GenericRecordSet getCachedRecordSet(String externalId) {
+  private GenericRecordSet getCachedRecordSet(String externalId) {
     return (GenericRecordSet) cache.get(externalId);
   }
 
-   private void cacheRecordSet(String externalId, GenericRecordSet set) {
+  private void cacheRecordSet(String externalId, GenericRecordSet set) {
     cache.put(externalId, set);
   }
 
-   private void removeCachedRecordSet(String externalId) {
+  private void removeCachedRecordSet(String externalId) {
     cache.remove(externalId);
   }
 
-   public void removeTemplateFromCache(String templateName) {
+  public void removeTemplateFromCache(String templateName) {
     SilverTrace.debug("form", "GenericRecordSetManager.removeTemplateFromCache",
         "root.MSG_GEN_ENTER_METHOD", "templateName = " + templateName);
 
@@ -276,17 +273,17 @@ public class GenericRecordSetManager {
    * @return the form record or <code>null</code> if not found.
    * @throws FormException if the (templateId, recordId) pair is unknown.
    */
-   public DataRecord getRecord(IdentifiedRecordTemplate template,
+  public DataRecord getRecord(IdentifiedRecordTemplate template,
       String recordId) throws FormException {
     return getRecord(template, recordId, null);
   }
 
-   public DataRecord getRecord(IdentifiedRecordTemplate template,
+  public DataRecord getRecord(IdentifiedRecordTemplate template,
       String recordId, String language) throws FormException {
 
     SilverTrace.debug("form", "GenericRecordSetManager.getRecord",
         "root.MSG_GEN_PARAM_VALUE", "recordId = " + recordId + ", language = "
-        + language);
+            + language);
 
     Connection con = null;
     GenericDataRecord record = null;
@@ -309,7 +306,7 @@ public class GenericRecordSetManager {
     }
   }
 
-   public List<String> getLanguagesOfRecord(IdentifiedRecordTemplate template,
+  public List<String> getLanguagesOfRecord(IdentifiedRecordTemplate template,
       String externalId) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.getLanguagesOfRecord",
         "root.MSG_GEN_PARAM_VALUE", "externalId = " + externalId);
@@ -333,7 +330,7 @@ public class GenericRecordSetManager {
    * @throws FormException if the (templateId, recordId) pair is already known or if the given
    * template is unknown.
    */
-   public void insertRecord(IdentifiedRecordTemplate template,
+  public void insertRecord(IdentifiedRecordTemplate template,
       DataRecord insertedRecord) throws FormException {
     Connection con = null;
 
@@ -355,12 +352,12 @@ public class GenericRecordSetManager {
     }
   }
 
-   public void cloneRecord(IdentifiedRecordTemplate templateFrom,
+  public void cloneRecord(IdentifiedRecordTemplate templateFrom,
       String recordIdFrom, IdentifiedRecordTemplate templateTo,
       String recordIdTo, Map<String, String> fileIds) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.cloneRecord",
         "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom
-        + ", recordIdTo = " + recordIdTo);
+            + ", recordIdTo = " + recordIdTo);
 
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
@@ -406,7 +403,7 @@ public class GenericRecordSetManager {
    * @param updatedRecord
    * @throws FormException when the (templateId, recordId) pair is unknown.
    */
-   public void updateRecord(IdentifiedRecordTemplate template,
+  public void updateRecord(IdentifiedRecordTemplate template,
       DataRecord updatedRecord) throws FormException {
     Connection con = null;
 
@@ -433,7 +430,7 @@ public class GenericRecordSetManager {
    * @param deletedRecord
    * @throws FormException when the (templateId, recordId) pair is unknown.
    */
-   public void deleteRecord(IdentifiedRecordTemplate template,
+  public void deleteRecord(IdentifiedRecordTemplate template,
       DataRecord deletedRecord) throws FormException {
     Connection con = null;
 
@@ -458,7 +455,7 @@ public class GenericRecordSetManager {
   /**
    * Get the template field declarations directly from the XML file.
    */
-   private void selectTemplateFieldsFromXML(
+  private void selectTemplateFieldsFromXML(
       IdentifiedRecordTemplate template) throws FormException {
 
     GenericRecordTemplate genericRecordTemplate = null;
@@ -497,7 +494,7 @@ public class GenericRecordSetManager {
   /**
    * Returns a connection.
    */
-   private Connection getConnection() throws FormException {
+  private Connection getConnection() throws FormException {
 
     SilverTrace.info("formTemplate", "GenericRecordSetManager.getConnection()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -513,7 +510,7 @@ public class GenericRecordSetManager {
   /**
    * Returns the next id in the named table.
    */
-   private int getNextId(String tableName, String idColumn)
+  private int getNextId(String tableName, String idColumn)
       throws SQLException {
     int nextId = 0;
 
@@ -524,16 +521,17 @@ public class GenericRecordSetManager {
       throw new SQLException(e.toString());
     }
 
-    if (nextId == 0)
+    if (nextId == 0) {
       return 1;
-    else
+    } else {
       return nextId;
+    }
   }
 
   /**
    * Creates the template declaration row in SB_FormTemplate_Template.
    */
-   private void insertTemplateRow(Connection con,
+  private void insertTemplateRow(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement insert = null;
 
@@ -556,7 +554,7 @@ public class GenericRecordSetManager {
   /**
    * Creates a row for each template_fields.
    */
-   private void insertTemplateFieldRows(Connection con,
+  private void insertTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException, FormException {
     PreparedStatement insert = null;
 
@@ -572,14 +570,12 @@ public class GenericRecordSetManager {
         insert.setString(4, fields[i].getTypeName());
         if (fields[i].isMandatory()) {
           insert.setInt(5, 1);
-        }
-        else {
+        } else {
           insert.setInt(5, 0);
         }
         if (fields[i].isReadOnly()) {
           insert.setInt(6, 1);
-        }
-        else {
+        } else {
           insert.setInt(6, 0);
         }
         insert.setInt(7, 1);
@@ -593,7 +589,7 @@ public class GenericRecordSetManager {
   /**
    * Select the template header.
    */
-   private IdentifiedRecordTemplate selectTemplateRow(Connection con,
+  private IdentifiedRecordTemplate selectTemplateRow(Connection con,
       String externalId) throws SQLException {
     PreparedStatement select = null;
     ResultSet rs = null;
@@ -603,8 +599,9 @@ public class GenericRecordSetManager {
       select.setString(1, externalId);
       rs = select.executeQuery();
 
-      if (!rs.next())
+      if (!rs.next()) {
         return null;
+      }
       int internalId = rs.getInt(1);
       String templateName = rs.getString(3);
 
@@ -622,7 +619,7 @@ public class GenericRecordSetManager {
   /**
    * Select the template field declarations.
    */
-   private void selectTemplateFieldRows(Connection con,
+  private void selectTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException, FormException {
     PreparedStatement select = null;
     ResultSet rs = null;
@@ -664,7 +661,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes all the fields of the records built on this template.
    */
-   private void deleteFieldRows(Connection con,
+  private void deleteFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -682,7 +679,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes all the records built on this template.
    */
-   private void deleteRecordRows(Connection con,
+  private void deleteRecordRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -700,7 +697,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the templatefields.
    */
-   private void deleteTemplateFieldRows(Connection con,
+  private void deleteTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -718,7 +715,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the template.
    */
-   private void deleteTemplateRow(Connection con,
+  private void deleteTemplateRow(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -736,7 +733,7 @@ public class GenericRecordSetManager {
   /**
    * Creates the record declaration row in SB_FormTemplate_Record.
    */
-   private void insertRecordRow(Connection con,
+  private void insertRecordRow(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException {
     PreparedStatement insert = null;
@@ -749,18 +746,19 @@ public class GenericRecordSetManager {
 
       SilverTrace.debug("form", "GenericRecordSetManager.insertRecordRow",
           "root.MSG_GEN_PARAM_VALUE", "internalId = " + internalId
-          + ", templateId = " + templateId + ", externalId = " + externalId
-          + ", language = " + record.getLanguage());
+              + ", templateId = " + templateId + ", externalId = " + externalId
+              + ", language = " + record.getLanguage());
 
       insert = con.prepareStatement(INSERT_RECORD);
       insert.setInt(1, internalId);
       insert.setInt(2, templateId);
       insert.setString(3, externalId);
       if (!I18NHelper.isI18N
-          || I18NHelper.isDefaultLanguage(record.getLanguage()))
+          || I18NHelper.isDefaultLanguage(record.getLanguage())) {
         insert.setNull(4, Types.VARCHAR);
-      else
+      } else {
         insert.setString(4, record.getLanguage());
+      }
       insert.execute();
     } finally {
       DBUtil.close(insert);
@@ -770,7 +768,7 @@ public class GenericRecordSetManager {
   /**
    * Creates a row for each template_fields.
    */
-   private void insertFieldRows(Connection con,
+  private void insertFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException, FormException {
     PreparedStatement insert = null;
@@ -806,34 +804,38 @@ public class GenericRecordSetManager {
   /**
    * Select the template header.
    */
-   private GenericDataRecord selectRecordRow(Connection con,
+  private GenericDataRecord selectRecordRow(Connection con,
       IdentifiedRecordTemplate template, String externalId, String language)
       throws SQLException, FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.selectRecordRow",
         "root.MSG_GEN_ENTER_METHOD", "templateId = " + template.getInternalId()
-        + ", externalId = " + externalId + ", language = " + language);
+            + ", externalId = " + externalId + ", language = " + language);
     PreparedStatement select = null;
     ResultSet rs = null;
 
     try {
-      if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language))
+      if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
         language = null;
+      }
 
-      if (language != null)
-        select = con.prepareStatement(SELECT_RECORD + " and lang = ? ");
-      else
-        select = con.prepareStatement(SELECT_RECORD + " and lang is null");
+      if (language != null) {
+        select = con.prepareStatement(SELECT_RECORD + " AND lang = ? ");
+      } else {
+        select = con.prepareStatement(SELECT_RECORD + " AND lang is null");
+      }
 
       select.setInt(1, template.getInternalId());
       select.setString(2, externalId);
 
-      if (language != null)
+      if (language != null) {
         select.setString(3, language);
+      }
 
       rs = select.executeQuery();
 
-      if (!rs.next())
+      if (!rs.next()) {
         return null;
+      }
 
       int internalId = rs.getInt(1);
 
@@ -851,7 +853,7 @@ public class GenericRecordSetManager {
   /**
    * Select the template field declarations.
    */
-   private void selectFieldRows(Connection con,
+  private void selectFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException, FormException {
     PreparedStatement select = null;
@@ -877,7 +879,7 @@ public class GenericRecordSetManager {
     }
   }
 
-   private List<String> selectLanguagesOfRecord(Connection con,
+  private List<String> selectLanguagesOfRecord(Connection con,
       IdentifiedRecordTemplate template, String externalId)
       throws SQLException, FormException {
     PreparedStatement select = null;
@@ -904,7 +906,7 @@ public class GenericRecordSetManager {
   /**
    * Updates the records fields.
    */
-   private void updateFieldRows(Connection con,
+  private void updateFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException, FormException {
     PreparedStatement update = null;
@@ -927,9 +929,9 @@ public class GenericRecordSetManager {
 
         SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
             "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-            + ", fieldValue = " + fieldValue
-            + ", recordId = " + recordId);
-        
+                + ", fieldValue = " + fieldValue
+                + ", recordId = " + recordId);
+
         update.setString(1, fieldValue);
         update.setInt(2, recordId);
         update.setString(3, fieldName);
@@ -958,7 +960,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the record fields.
    */
-   private void deleteFieldRows(Connection con,
+  private void deleteFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException {
     PreparedStatement delete = null;
@@ -977,7 +979,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the record.
    */
-   private void deleteRecordRows(Connection con,
+  private void deleteRecordRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException {
     PreparedStatement delete = null;
@@ -993,29 +995,29 @@ public class GenericRecordSetManager {
     }
   }
 
-   private String selectRecordFieldsRow(Connection con,
-       String templateExternalId, String recordExternalId, String fieldName) throws SQLException{
-     PreparedStatement select = null;
-     ResultSet rs = null;
+  private String selectRecordFieldsRow(Connection con,
+       String templateExternalId, String recordExternalId, String fieldName) throws SQLException {
+    PreparedStatement select = null;
+    ResultSet rs = null;
 
-     try {
-       select = con.prepareStatement(SELECT_TEMPLATE_RECORD_VALUES);
-       select.setString(1, fieldName);
-       select.setString(2, recordExternalId);
-       select.setString(3, templateExternalId);
-       rs = select.executeQuery();
+    try {
+      select = con.prepareStatement(SELECT_TEMPLATE_RECORD_VALUES);
+      select.setString(1, fieldName);
+      select.setString(2, recordExternalId);
+      select.setString(3, templateExternalId);
+      rs = select.executeQuery();
 
-       if (!rs.next()) {
-         return null;
-       }
-       
-       return rs.getString("fieldValue");
-     } finally {
-       DBUtil.close(rs, select);
-     }  
-   }
-   
-   private void closeConnection(Connection con) throws FormException {
+      if (!rs.next()) {
+        return null;
+      }
+
+      return rs.getString("fieldValue");
+    } finally {
+      DBUtil.close(rs, select);
+    }
+  }
+
+  private void closeConnection(Connection con) throws FormException {
     if (con != null) {
       try {
         con.close();
@@ -1065,8 +1067,9 @@ public class GenericRecordSetManager {
 
   static final private String RECORD_COLUMNS = "recordId,templateId,externalId,lang";
 
-  static final private String SELECT_RECORD = "SELECT recordId, templateId, externalId, lang FROM " +
-      "sb_formtemplate_record WHERE templateId=? AND externalId=?";
+  static final private String SELECT_RECORD =
+      "SELECT recordId, templateId, externalId, lang FROM " +
+          "sb_formtemplate_record WHERE templateId=? AND externalId=?";
 
   static final private String INSERT_RECORD = "insert into " + RECORD_TABLE
       + "(" + RECORD_COLUMNS + ")" + " values (?,?,?,?)";
@@ -1098,9 +1101,16 @@ public class GenericRecordSetManager {
 
   static final private String DELETE_RECORD_FIELDS = "delete from "
       + FIELDS_TABLE + " where recordId=?";
-  
-  static final private String SELECT_TEMPLATE_RECORD_VALUES = "select fieldValue from " 
-    + FIELDS_TABLE + " tf, "
-    + RECORD_TABLE + " rec, "
-    + TEMPLATE_TABLE + " tpl where tf.fieldName= ? and tf.recordId = rec.recordId and rec.externalId = ? and rec.templateId = tpl.templateId and tpl.externalId = ?";
+
+  static final private String SELECT_TEMPLATE_RECORD_VALUES =
+      "select fieldValue from "
+          +
+          FIELDS_TABLE +
+          " tf, "
+          +
+          RECORD_TABLE +
+          " rec, "
+          +
+          TEMPLATE_TABLE +
+          " tpl where tf.fieldName= ? and tf.recordId = rec.recordId and rec.externalId = ? and rec.templateId = tpl.templateId and tpl.externalId = ?";
 }

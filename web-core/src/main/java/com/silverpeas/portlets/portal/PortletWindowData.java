@@ -45,7 +45,7 @@ public interface PortletWindowData {
 
   public String getTitle();
 
-  public StringBuffer getContent();
+  public CharSequence getContent();
 
   public boolean isView();
 

@@ -951,4 +951,47 @@
       <type>java.lang.String</type>
     </attribute>
   </tag>
+  <tag>
+    <description>Generate HTML search result element.</description>
+    <name>displayResult</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.result.HtmlSearchResultTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>User identifier</description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Global Silver Result</description>
+      <name>gsr</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult</type>
+    </attribute>
+    <attribute>
+      <description>Sort value</description>
+      <name>sortValue</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>Active selection</description>
+      <name>activeSelection</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Export enabled</description>
+      <name>exportEnabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
 </taglib>

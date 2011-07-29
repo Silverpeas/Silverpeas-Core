@@ -102,4 +102,9 @@ public class CommentUpdateTest extends ResourceUpdateTest {
   public Class<?> getWebEntityClass() {
     return CommentEntity.class;
   }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
+  }
 }

@@ -151,4 +151,9 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest {
     positionsValues.add(positionValue);
     return PdcPositionEntity.createNewPositionWith(positionsValues);
   }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
+  }
 }

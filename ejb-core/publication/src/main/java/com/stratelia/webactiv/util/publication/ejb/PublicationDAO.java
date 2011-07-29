@@ -497,13 +497,12 @@ public class PublicationDAO {
       }
       prepStmt.setString(15, detail.getPK().getComponentName());
       prepStmt.setString(16, detail.getCreatorId());
-      if ("Valid".equals(detail.getStatus())) {
-        prepStmt.setString(18, detail.getCreatorId());
-        prepStmt.setString(17, DateUtil.formatDate(detail.getCreationDate()));
-      } else {
+      if (detail.getValidateDate() == null) {
         prepStmt.setString(17, null);
-        prepStmt.setString(18, null);
+      } else {
+        prepStmt.setString(17, DateUtil.formatDate(detail.getValidateDate()));
       }
+      prepStmt.setString(18, detail.getValidatorId());
       if (isUndefined(detail.getBeginHour())) {
         prepStmt.setString(19, nullBeginHour);
       } else {

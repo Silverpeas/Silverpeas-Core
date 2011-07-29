@@ -25,6 +25,8 @@ package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
@@ -34,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 public abstract class AbstractIndexer {
 
   final OrganizationController organizationController = new OrganizationController();
+  final AdminController admin = new AdminController(null);
 
   void setSilverTraceLevel() {
     SilverTrace.setTraceLevel(this.getClass().getName(), SilverTrace.TRACE_LEVEL_INFO);
@@ -74,10 +77,26 @@ public abstract class AbstractIndexer {
   public void indexSpace(String spaceId) throws Exception {
     SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
         "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + spaceId);
-    String[] componentIds = organizationController.getAllComponentIdsRecur(spaceId);
+    
+    if (spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+      spaceId = spaceId.substring(2);
+    }
+    
+    // index space info
+    admin.indexSpace(Integer.parseInt(spaceId));
+    
+    // index components
+    String[] componentIds = organizationController.getAllComponentIds(spaceId);
     for (String componentId : componentIds) {
       indexComponent(spaceId, componentId);
     }
+    
+    // index sub spaces
+    String[] subSpaceIds = organizationController.getAllSubSpaceIds(spaceId);
+    for (String subSpaceId : subSpaceIds) {
+      indexSpace(subSpaceId);
+    }
+    
     SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
         "applicationIndexer.MSG_END_INDEXING_SPACE", "spaceId = " + spaceId);
   }

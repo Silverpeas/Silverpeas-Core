@@ -25,6 +25,7 @@ package com.silverpeas.util.cryptage;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -32,7 +33,9 @@ import javax.crypto.NoSuchPaddingException;
 public class SilverCryptFactorySymetric {
 
   public static final String ALGORITHM = "Blowfish";
-  // Singleton pour gèrer une seule Map de trousseaux de clés
+  /**
+   * Singleton managing the keyring. 
+   **/
   private static SilverCryptFactorySymetric factory = null;
   private static Cipher cipher = null;
   private SilverCryptKeysSymetric silverCryptKeysSymetric = null;
@@ -45,10 +48,10 @@ public class SilverCryptFactorySymetric {
       cipher = Cipher.getInstance(ALGORITHM);
     } catch (NoSuchAlgorithmException e) {
       SilverTrace.error("util", "SilverCryptFactorySymetric.NoSuchAlgorithm",
-          "root.MSG_GEN_PARAM_VALUE", "In init", e);
+              "root.MSG_GEN_PARAM_VALUE", "In init", e);
     } catch (NoSuchPaddingException e) {
       SilverTrace.error("util", "SilverCryptFactorySymetric.NoSuchPadding",
-          "root.MSG_GEN_PARAM_VALUE", "In init", e);
+              "root.MSG_GEN_PARAM_VALUE", "In init", e);
     }
   }
 
@@ -66,29 +69,26 @@ public class SilverCryptFactorySymetric {
   }
 
   public synchronized byte[] goCrypting(String stringUnCrypted, SilverCryptKeysSymetric symetricKeys)
-      throws CryptageException {
-    SilverTrace.info("util", "SilverCryptFactorySymetric.goCrypting",
-        "root.MSG_GEN_ENTER_METHOD", "stringUnCrypted = " + stringUnCrypted);
-    // String crypted = "";
+          throws CryptageException {
+    SilverTrace.info("util", "SilverCryptFactorySymetric.goCrypting", "root.MSG_GEN_ENTER_METHOD",
+            "stringUnCrypted = " + stringUnCrypted);
     byte[] cipherText = null;
     try {
       byte[] cipherBytes = stringUnCrypted.getBytes();
       SilverCryptKeysSymetric keys = symetricKeys;
-      // encrypt using the key and the plaintext
       if (symetricKeys == null) {
         keys = this.getSymetricKeys();
       }
       cipher.init(Cipher.ENCRYPT_MODE, keys.getKey());
-      SilverTrace.debug("util", "SilverCryptFactorySymetric.goCrypting",
-          "root.MSG_GEN_PARAM_VALUE", "After init");
+      SilverTrace.debug("util", "SilverCryptFactorySymetric.goCrypting", "root.MSG_GEN_PARAM_VALUE",
+              "After init");
       cipherText = cipher.doFinal(cipherBytes);
     } catch (Exception e) {
-      throw new CryptageException("SilverCryptFactory.goCrypting",
-          SilverpeasException.ERROR, "util.CRYPT_FAILED", e);
+      throw new CryptageException("SilverCryptFactory.goCrypting", SilverpeasException.ERROR,
+              "util.CRYPT_FAILED", e);
     }
-    SilverTrace.info("util", "SilverCryptFactorySymetric.goCrypting",
-        "root.MSG_GEN_EXIT_METHOD", "cipherText = " + cipherText);
-    // return crypted;
+    SilverTrace.info("util", "SilverCryptFactorySymetric.goCrypting", "root.MSG_GEN_EXIT_METHOD",
+            "cipherText = " + Arrays.toString(cipherText));
     return cipherText;
   }
 
@@ -97,9 +97,8 @@ public class SilverCryptFactorySymetric {
   }
 
   public synchronized String goUnCrypting(byte[] cipherBytes, SilverCryptKeysSymetric symetricKeys)
-      throws CryptageException {
-    SilverTrace.info("util", "SilverCryptFactorySymetric.goUnCrypting",
-        "root.MSG_GEN_ENTER_METHOD");
+          throws CryptageException {
+    SilverTrace.info("util", "SilverCryptFactorySymetric.goUnCrypting", "root.MSG_GEN_ENTER_METHOD");
     String uncrypted = "";
     try {
       SilverCryptKeysSymetric keys = symetricKeys;
@@ -107,24 +106,27 @@ public class SilverCryptFactorySymetric {
         keys = this.getSymetricKeys();
       }
       cipher.init(Cipher.DECRYPT_MODE, keys.getKey());
-
       SilverTrace.debug("util", "SilverCryptFactorySymetric.goUnCrypting",
-          "root.MSG_GEN_PARAM_VALUE", "After init");
+              "root.MSG_GEN_PARAM_VALUE", "After init");
 
       byte[] newPlainText = cipher.doFinal(cipherBytes);
       uncrypted = new String(newPlainText, "UTF8");
 
     } catch (Exception e) {
-      throw new CryptageException("SilverCryptFactory.goUnCrypting",
-          SilverpeasException.ERROR, "util.UNCRYPT_FAILED", e);
+      throw new CryptageException("SilverCryptFactory.goUnCrypting", SilverpeasException.ERROR,
+              "util.UNCRYPT_FAILED", e);
     }
     SilverTrace.info("util", "SilverCryptFactorySymetric.goUnCrypting",
-        "root.MSG_GEN_EXIT_METHOD", "uncrypted = " + uncrypted);
+            "root.MSG_GEN_EXIT_METHOD", "uncrypted = " + uncrypted);
     return uncrypted;
   }
 
+  /**
+   * Returns the keyring.
+   * @return the keyring.
+   * @throws CryptageException 
+   */
   public SilverCryptKeysSymetric getSymetricKeys() throws CryptageException {
-    // récupération du trousseau de clé!
     if (silverCryptKeysSymetric == null) {
       silverCryptKeysSymetric = new SilverCryptKeysSymetric();
     }

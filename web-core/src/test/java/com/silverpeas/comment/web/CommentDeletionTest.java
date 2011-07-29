@@ -91,4 +91,9 @@ public class CommentDeletionTest extends ResourceDeletionTest {
     return CommentEntity.class;
   }
 
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
+  }
+
 }

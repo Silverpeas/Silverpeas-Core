@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import javax.activation.MimetypesFileTypeMap;
 
 public class AttachmentController {
 
@@ -71,9 +70,8 @@ public class AttachmentController {
   public final static String NO_UPDATE_MODE = "0";
   public final static String UPDATE_DIRECT_MODE = "1";
   public final static String UPDATE_SHORTCUT_MODE = "2";
-  private static ResourceLocator resources = new ResourceLocator(
+  private final static ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
-  private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
 
   /**
    * the constructor.
@@ -873,84 +871,72 @@ public class AttachmentController {
    * @see
    */
   public static void createIndex(AttachmentDetail detail) {
-
-    // index the uploaded or linked file
-    int attGroup = detail.getAttachmentGroup();
-
-    if ((attGroup == AttachmentDetail.GROUP_FILE)
-        || (attGroup == AttachmentDetail.GROUP_FILE_LINK)
-        || (attGroup == AttachmentDetail.GROUP_DIR)) {
-      String component = detail.getPK().getComponentName();
-      String fk = detail.getForeignKey().getId();
-
-      try {
-        Iterator<String> languages = detail.getLanguages();
-
-        while (languages.hasNext()) {
-          String language = languages.next();
-          AttachmentDetailI18N translation = (AttachmentDetailI18N) detail.getTranslation(language);
-
-          String objectType = "Attachment" + detail.getPK().getId();
-
-          if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
-            objectType += "_" + language;
-          }
-
-          FullIndexEntry indexEntry = new FullIndexEntry(component, objectType,
-              fk);
-
-          indexEntry.setLang(language);
-          indexEntry.setCreationDate(translation.getCreationDate());
-          indexEntry.setCreationUser(translation.getAuthor());
-
-          indexEntry.setTitle(translation.getLogicalName(), language);
-
-          String title = translation.getTitle();
-
-          if (StringUtil.isDefined(title)) {
-            indexEntry.setKeywords(title, language);
-          }
-
-          String info = translation.getInfo();
-
-          if (StringUtil.isDefined(info)) {
-            indexEntry.setPreview(info, language);
-          }
-
-          /*
-           * le champs description est utilisé pour savoir si c'est un lien ou une copie sur le
-           * fichier
-           */
-          String path;
-
-          if (detail.getAttachmentGroup() == AttachmentDetail.GROUP_FILE_LINK) {
-
+    
+    if (resources.getBoolean("attachment.index.separately", true)) {
+      // index the uploaded or linked file
+      int attGroup = detail.getAttachmentGroup();
+  
+      if ((attGroup == AttachmentDetail.GROUP_FILE)
+          || (attGroup == AttachmentDetail.GROUP_FILE_LINK)
+          || (attGroup == AttachmentDetail.GROUP_DIR)) {
+        String component = detail.getPK().getComponentName();
+        String fk = detail.getForeignKey().getId();
+  
+        try {
+          Iterator<String> languages = detail.getLanguages();
+          while (languages.hasNext()) {
+            String language = languages.next();
+            AttachmentDetailI18N translation = (AttachmentDetailI18N) detail.getTranslation(language);
+  
+            String objectType = "Attachment" + detail.getPK().getId();
+            if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
+              objectType += "_" + language;
+            }
+  
+            FullIndexEntry indexEntry = new FullIndexEntry(component, objectType, fk);
+  
+            indexEntry.setLang(language);
+            indexEntry.setCreationDate(translation.getCreationDate());
+            indexEntry.setCreationUser(translation.getAuthor());
+  
+            indexEntry.setTitle(translation.getLogicalName(), language);
+  
+            String title = translation.getTitle();
+            if (StringUtil.isDefined(title)) {
+              indexEntry.setKeywords(title, language);
+            }
+  
+            String info = translation.getInfo();
+            if (StringUtil.isDefined(info)) {
+              indexEntry.setPreview(info, language);
+            }
+  
             /*
-             * c'est un lien, le chemin est contenu dans la colonne physicalName(complet) un lien,
-             * le chemin est contenu dans la colonne physicalName(complet)
+             * le champs description est utilisé pour savoir si c'est un lien ou une copie sur le
+             * fichier
              */
-            path = detail.getPhysicalName();
-          } else {
-            path = createPath(component, detail.getContext()) + File.separator
-                + translation.getPhysicalName();
+            String path;
+            if (detail.getAttachmentGroup() == AttachmentDetail.GROUP_FILE_LINK) {
+              // it's a link, the complete path is contained in the column physicalName
+              path = detail.getPhysicalName();
+            } else {
+              path = createPath(component, detail.getContext()) + File.separator
+                  + translation.getPhysicalName();
+            }
+  
+            indexEntry.addFileContent(path, null, translation.getType(), translation.getLanguage());
+  
+            if (StringUtil.isDefined(detail.getXmlForm())) {
+              updateIndexEntryWithXMLFormContent(detail.getPK(), detail.getXmlForm(), indexEntry);
+            }
+  
+            IndexEngineProxy.addIndexEntry(indexEntry);
           }
-
-          String encoding = null;
-          String format = translation.getType();
-          String lang = translation.getLanguage();
-
-          indexEntry.addFileContent(path, encoding, format, lang);
-
-          if (StringUtil.isDefined(detail.getXmlForm())) {
-            updateIndexEntryWithXMLFormContent(detail.getPK(), detail.getXmlForm(), indexEntry);
-          }
-
-          IndexEngineProxy.addIndexEntry(indexEntry);
+        } catch (Exception e) {
+          SilverTrace.warn("attachment",
+              "AttachmentController.createIndex((AttachmentDetail attachDetail)",
+              "root.EX_INDEX_FAILED");
         }
-      } catch (Exception e) {
-        SilverTrace.warn("attachment",
-            "AttachmentController.createIndex((AttachmentDetail attachDetail)",
-            "root.EX_INDEX_FAILED");
       }
     }
   }
@@ -970,6 +956,24 @@ public class AttachmentController {
     } catch (Exception e) {
       SilverTrace.error("attachment",
           "AttachmentController.updateIndexEntryWithXMLFormContent()", "", e);
+    }
+  }
+  
+  public static void updateIndexEntryWithAttachments(FullIndexEntry indexEntry) {
+    if (resources.getBoolean("attachment.index.incorporated", true)) {
+      if (!indexEntry.getObjectType().startsWith("Attachment")) {
+        // index attachments
+        WAPrimaryKey pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
+        Vector<AttachmentDetail> attachments = searchAttachmentByPKAndContext(pk, "Images");
+        for (AttachmentDetail attachment : attachments) {
+          Iterator<String> languages = attachment.getLanguages();
+          while (languages.hasNext()) {
+            String language = languages.next();
+            indexEntry.addFileContent(attachment.getAttachmentPath(language), null,
+                attachment.getType(language), language);
+          }
+        }
+      }
     }
   }
 

@@ -150,4 +150,9 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest {
           Exception {
     return testResources.toWebEntity(classification, theUser);
   }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
+  }
 }

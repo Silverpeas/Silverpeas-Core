@@ -58,6 +58,9 @@
 		<field name="dataFileName" type="string">
 			<bind-xml name="dataFileName" node="element"/>
 		</field>
+		<field name="searchResultFileName" type="string">
+			<bind-xml name="searchResultFileName" node="element"/>
+		</field>
 		<field name="templatesObj" type="com.silverpeas.publicationTemplate.TemplateFile" collection="arraylist">
 			<bind-xml name="template" node="element"/>
 		</field>

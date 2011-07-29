@@ -113,7 +113,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
 
   @Override
   public String anUnexistingResourceURI() {
-    return UNKNOWN_CONTENT_CLASSIFICATION_PATH + "/" + aPdcPositionId();
+    return CONTENT_CLASSIFICATION_PATH + "/" + 100;
   }
 
   @Override
@@ -136,5 +136,10 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
   @Override
   public Class<?> getWebEntityClass() {
     return PdcClassificationEntity.class;
+  }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
   }
 }

@@ -25,7 +25,7 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.google.common.base.Joiner;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silverstatistics.control.StatType;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;

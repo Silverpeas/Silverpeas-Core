@@ -51,6 +51,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
 
@@ -499,6 +500,8 @@ public class IndexManager {
         }
       }
     }
+    
+    AttachmentController.updateIndexEntryWithAttachments(indexEntry);
 
     List<FileDescription> list2 = indexEntry.getFileContentList();
     for (FileDescription f : list2) {
@@ -563,7 +566,7 @@ public class IndexManager {
     doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, Index.NOT_ANALYZED));
     return doc;
   }
-
+  
   private String getFieldName(String name, String language) {
     if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
       return name;

@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * <p/>
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ * <p/>
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p/>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldType;
 
 import java.rmi.RemoteException;
@@ -44,18 +40,17 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * An AccessPathField stores the current access path of the form
+ * <p/>
  * @see Field
  * @see FieldDisplayer
  */
 public class AccessPathField extends TextField {
 
   private static final long serialVersionUID = 9112703938534783673L;
-
   /**
    * The text field type name.
    */
   static public final String TYPE = "accessPath";
-
   private String value = "";
 
   /**
@@ -96,7 +91,7 @@ public class AccessPathField extends TextField {
    * Returns the access path of the object.
    */
   public String getAccessPath(String componentId, String nodeId,
-      String contentLanguage) {
+          String contentLanguage) {
     String currentAccessPath = "";
 
     // Space > SubSpace
@@ -114,12 +109,12 @@ public class AccessPathField extends TextField {
       if (nodeId != null) {
         NodeBm nodeBm = null;
         try {
-          NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-              JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+          NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+                  NodeBmHome.class);
           nodeBm = nodeBmHome.create();
         } catch (Exception e) {
           SilverTrace.error("form", "AccessPathFieldDisplayer.display",
-              "form.EX_CANT_CREATE_NODEBM_HOME");
+                  "form.EX_CANT_CREATE_NODEBM_HOME");
         }
 
         if (nodeBm != null) {
@@ -129,7 +124,7 @@ public class AccessPathField extends TextField {
             listPath = nodeBm.getPath(nodePk);
           } catch (RemoteException e) {
             SilverTrace.error("form", "AccessPathFieldDisplayer.display",
-                "form.EX_CANT_GET_PATH_NODE", nodeId);
+                    "form.EX_CANT_GET_PATH_NODE", nodeId);
           }
 
           if (listPath != null) {
@@ -145,9 +140,9 @@ public class AccessPathField extends TextField {
               }
             }
 
-            if (StringUtil.isDefined(pathString))
+            if (StringUtil.isDefined(pathString)) {
               pathString = pathString.substring(0, pathString.length() - 3); // remove
-            // last
+            }            // last
             // '>'
           }
         }
@@ -160,7 +155,6 @@ public class AccessPathField extends TextField {
 
     return currentAccessPath;
   }
-
   /**
    * The main access to the users set.
    */

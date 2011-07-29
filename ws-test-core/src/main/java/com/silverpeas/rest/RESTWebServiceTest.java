@@ -25,11 +25,14 @@
 package com.silverpeas.rest;
 
 import javax.inject.Inject;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.rest.mock.OrganizationControllerMock;
 import com.silverpeas.session.SessionInfo;
 import java.util.UUID;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.riffpie.common.testing.AbstractSpringAwareJerseyTest;
+import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.rest.mock.AccessControllerMock;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -43,6 +46,7 @@ import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.junit.Before;
 import org.springframework.web.context.ContextLoaderListener;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * The base class for testing REST web services in Silverpeas.
@@ -57,6 +61,7 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
   public static final String USER_ID_IN_TEST = "2";
   
   protected static final String CONTEXT_NAME = "silverpeas";
+  protected static final String DEFAULT_LANGUAGE = "fr";
 
   @Inject
   private SessionManagement sessionManager;
@@ -64,6 +69,8 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
   private AccessControllerMock accessController;
   @Inject
   private OrganizationControllerMock organizationController;
+  @Inject
+  private MockablePersonalizationService personalizationService;
   private Client webClient;
 
   /**
@@ -86,6 +93,14 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
     config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
     webClient = Client.create(config);
   }
+  
+  /**
+   * Gets the component instances to take into account in tests. Theses component instances will be
+   * considered as existing. Others than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+   * @return an array with the identifier of the component instances to take into account in tests.
+   * The array cannot be null but it can be empty.
+   */
+  abstract public String[] getExistingComponentInstances();
 
   @Override
   public WebResource resource() {
@@ -93,9 +108,18 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
   }
 
   @Before
-  public void checkDependencyInjection() {
+  public void checkDependencyInjectionAndMockResources() {
     assertNotNull(sessionManager);
     assertNotNull(accessController);
+    assertNotNull(personalizationService);
+    PersonalizationService mockedPersonalizationService = mock(PersonalizationService.class);
+    UserPreferences settings = new UserPreferences();
+    settings.setLanguage(DEFAULT_LANGUAGE);
+    when(mockedPersonalizationService.getUserSettings(anyString())).thenReturn(settings);
+    personalizationService.setPersonalizationService(mockedPersonalizationService);
+    for (String componentId : getExistingComponentInstances()) {
+      organizationController.addComponentInstance(componentId);
+    }
   }
 
   /**
@@ -114,6 +138,17 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
    */
   public OrganizationController getMockedOrganizationController() {
     return organizationController;
+  }
+  
+  /**
+   * Gets a mock of the personalization service. This mock is to be used in tests.
+   * This mock is created with Mockito, so you can use it for adding some behaviour to the returned
+   * mocked service. By default, the mock is configured to returns a UserPreferences object for any
+   * user with as prefered language the french (fr).
+   * @return a mock of the PersonalizationService.
+   */
+  public PersonalizationService getMockedPersonalizationService() {
+    return personalizationService.getPersonalizationService();
   }
 
   /**
@@ -135,6 +170,14 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
     accessController.setAuthorization(false);
   }
   
+  /**
+   * Adds the specified component instance among the existing ones and that will be used in tests.
+   * @param componentId the unique identifier of the component instance to use in tests.
+   */
+  public void addComponentInstance(String componentId) {
+    organizationController.addComponentInstance(componentId);
+  }
+
   /**
    * Creates a new user.
    * @return a new user.

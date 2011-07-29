@@ -38,4 +38,6 @@
             p:generateDdl="false"/>
     </property>
   </bean>
+  
+  <import resource="spring-silverpeas.xml"/>
 </beans>

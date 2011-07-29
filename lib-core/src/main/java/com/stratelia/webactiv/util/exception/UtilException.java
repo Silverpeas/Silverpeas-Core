@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,24 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.exception;
 
-public class UtilException extends SilverpeasException {
+public class UtilException extends SilverpeasRuntimeException {
 
-  /**
-   * @deprecated
-   */
-  public UtilException(String msg) {
-    super(msg);
-  }
-
-  /**
-   * @deprecated
-   */
-  public UtilException(String msg, Exception e) {
-    super(msg, e);
-  }
+  private static final long serialVersionUID = 2723478088296885119L;
 
   public UtilException(String callingClass, String message) {
     super(callingClass, ERROR, message);
@@ -49,7 +36,7 @@ public class UtilException extends SilverpeasException {
   }
 
   public UtilException(String callingClass, String message, String extraParams,
-      Exception nested) {
+          Exception nested) {
     super(callingClass, ERROR, message, extraParams, nested);
   }
 
@@ -61,23 +48,21 @@ public class UtilException extends SilverpeasException {
     super(callingClass, errorLevel, message);
   }
 
-  public UtilException(String callingClass, int errorLevel, String message,
-      String extraParams) {
+  public UtilException(String callingClass, int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public UtilException(String callingClass, int errorLevel, String message,
-      Exception nested) {
+  public UtilException(String callingClass, int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public UtilException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
+  public UtilException(String callingClass, int errorLevel, String message, String extraParams,
+          Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
+  @Override
   public String getModule() {
     return "util";
   }
-
 }

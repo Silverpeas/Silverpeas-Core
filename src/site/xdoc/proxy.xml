@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Configuring Silverpeas behind an Apache reverse-proxy</title>
+    <author>Emmanuel Hugonnet</author>
+  </properties>
+  <head>
+    <title>Configuring Silverpeas behind an Apache reverse-proxy</title>
+  </head>
+  <body>
+    <section name="Introduction">
+      <p>The configuration of Silverpeas behind an Apache reverse-proxy is quite straightforward.<br/>
+In this example we want to configure a reverse-proxy that is handling SSL and proxyfying a JBoss server on port 80.</p>
+    </section>
+    <section name="Apache Configuration">
+      <p>You should have the following elements in your Apache configuration :
+      <source>
+ProxyTimeout 600
+ProxyRequests off
+ProxyPreserveHost on
+ProxyPass / http://internal.domain.tld/ keepalive=on
+ProxyPassReverse / http://internal.domain.tld/
+     </source></p>
+      <p>Using the parameter <emp>ProxyPreserveHost</emp> doesn't seem to have any effect on the configuration.<br/>
+The parameter <code>keepalive=on</code> is usefull if you have a firewall standing between the Apache server and the JBoss server.<br/>
+Notice that we didn't write the SSL configuration. Also the value <code>internal.domain.tld</code> must be replaced by the effective name of your JBoss server that can be resolved.</p>
+    </section>
+    <section name="Configuring JBoss">
+      <p>For JBoss 6 the configuration takes place in the <code>$JBOSS_HOME/server/default/deploy/jbossweb.sar/server.xml</code>, edit this file and change the bold values<br/>
+      <source><![CDATA[<Connector URIEncoding="UTF-8" address="${jboss.bind.address}" port="${jboss.web.http.port}" 
+        protocol="HTTP/1.1" redirectPort="${jboss.web.https.port}" 
+        ]]><b>proxyName="external.domain.tld" proxyPort="443" scheme="https"</b> /&gt;</source></p>
+      <p>If Apache is not using SSL, you don't have to define the <code>scheme</code> and <code>proxyPort</code>.<br/>
+      The value of <code>external.domain.tld</code> must be replaced by the external resolved name of the Apache server.</p>
+    </section>
+  </body>
+</document>

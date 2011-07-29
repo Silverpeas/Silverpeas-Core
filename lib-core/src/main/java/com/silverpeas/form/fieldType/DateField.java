@@ -128,19 +128,21 @@ public abstract class DateField implements Field {
     if (value instanceof String) {
       setStringValue((String) value);
     } else {
-      if (value != null)
+      if (value != null) {
         throw new FormException("DateField.setObjectValue",
             "form.EXP_NOT_A_STRING");
-      else
+      } else {
         setNull();
+      }
     }
   }
 
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof String)
+    if (value instanceof String) {
       return !isReadOnly();
-    else
+    } else {
       return false;
+    }
   }
 
   public boolean isNull() {
@@ -156,17 +158,20 @@ public abstract class DateField implements Field {
    */
   public boolean equals(Object o) {
     String s = getStringValue();
-    if (s == null)
+    if (s == null) {
       s = "";
+    }
 
     if (o instanceof DateField) {
       String t = ((DateField) o).getStringValue();
-      if (t == null)
+      if (t == null) {
         t = "";
+      }
 
       return s.equals(t);
-    } else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -174,17 +179,20 @@ public abstract class DateField implements Field {
    */
   public int compareTo(Object o) {
     String s = getStringValue();
-    if (s == null)
+    if (s == null) {
       s = "";
+    }
 
     if (o instanceof DateField) {
       String t = ((DateField) o).getStringValue();
-      if (t == null)
+      if (t == null) {
         t = "";
+      }
 
       return s.compareTo(t);
-    } else
+    } else {
       return -1;
+    }
   }
 
   public int hashCode() {
