@@ -44,6 +44,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class ComponentInstancePortlet extends GenericPortlet implements FormNames {
 
+  @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
@@ -62,12 +63,14 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
     include(request, response, "portlet.jsp");
   }
 
+  @Override
   public void doEdit(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "edit.jsp");
   }
 
   /** Include "help" JSP. */
+  @Override
   public void doHelp(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "help.jsp");
@@ -76,6 +79,7 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
   /*
    * Process Action.
    */
+  @Override
   public void processAction(ActionRequest request, ActionResponse response)
       throws PortletException {
     if (request.getParameter(SUBMIT_FINISHED) != null) {

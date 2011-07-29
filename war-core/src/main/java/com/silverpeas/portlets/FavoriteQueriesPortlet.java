@@ -41,6 +41,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 public class FavoriteQueriesPortlet extends GenericPortlet implements FormNames {
 
+  @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
@@ -56,12 +57,14 @@ public class FavoriteQueriesPortlet extends GenericPortlet implements FormNames 
     include(request, response, "portlet.jsp");
   }
 
+  @Override
   public void doEdit(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "edit.jsp");
   }
 
   /** Include "help" JSP. */
+  @Override
   public void doHelp(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "help.jsp");

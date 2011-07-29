@@ -36,6 +36,7 @@ import com.silverpeas.util.StringUtil;
 
 public class HelloSilverpeasPortlet extends GenericPortlet {
 
+  @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     include(request, response, "portlet.jsp");

@@ -75,7 +75,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class AgendaAccess {
   static private CalendarBm calendarBm = null;
-  static private Calendar currentCalendar = null;
 
   /**
    * getEJB
@@ -112,23 +111,8 @@ public class AgendaAccess {
     }
   }
 
-  /**
-   * Method declaration
-   * @param date
-   * @see
-   */
-  static public void setCurrentDay(Date date) {
-    if (currentCalendar == null) {
-      currentCalendar = Calendar.getInstance();
-    }
-    currentCalendar.setTime(date);
-  }
-
   static public Date getCurrentDay() {
-    if (currentCalendar == null) {
-      currentCalendar = Calendar.getInstance();
-    }
-    return currentCalendar.getTime();
+    return new Date();
   }
 
   static public Collection<JournalHeader> getDaySchedulables(String userId)
