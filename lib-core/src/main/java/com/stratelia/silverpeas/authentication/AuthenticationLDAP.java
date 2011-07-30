@@ -270,7 +270,7 @@ public class AuthenticationLDAP extends Authentication {
 
       case FORMAT_TIMESTAMP:
         try {
-          DateFormat format = new SimpleDateFormat("yyyyDDmmhhMMss");
+          DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
           String ldapValue = pwdLastSetAttr.getStringValue();
           if (ldapValue == null) {
             SilverTrace.error("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
