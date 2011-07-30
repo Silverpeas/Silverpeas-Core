@@ -24,14 +24,26 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
+import com.google.common.base.Charsets;
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPModification;
+import com.novell.ldap.LDAPSearchResults;
+import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
+import com.stratelia.silverpeas.authentication.AuthenticationException;
+import com.stratelia.silverpeas.authentication.AuthenticationHostException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
+import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -103,9 +115,9 @@ public class LDAPDriver extends AbstractDomainDriver {
    */
   public long getDriverActions() {
     if (x509Enabled)
-      return ACTION_MASK_RO | ACTION_X509_USER;
+      return ACTION_MASK_RO | ACTION_X509_USER | ACTION_UPDATE_USER;
     else
-      return ACTION_MASK_RO;
+      return ACTION_MASK_RO | ACTION_UPDATE_USER;
   }
 
   public boolean isSynchroOnLoginEnabled() {
@@ -294,22 +306,73 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   @Override
   public String createUser(UserDetail user) throws Exception {
-    return null;  
+    return null;
   }
 
   @Override
   public void deleteUser(String userId) throws Exception {
-    
+
   }
 
   @Override
   public void updateUserFull(UserFull user) throws Exception {
-    
+    String userFullDN = null;
+    String ld = null;
+
+    try {
+      ld = LDAPUtility.openConnection(driverSettings);
+      LDAPConnection connection = LDAPUtility.getConnection(ld);
+
+      LDAPEntry theEntry = null;
+      theEntry = LDAPUtility.getFirstEntryFromSearch(ld, driverSettings
+          .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
+          .getUsersIdFilter(user.getSpecificId()), driverSettings.getUserAttributes());
+
+
+      if (theEntry==null) {
+        throw new AuthenticationBadCredentialException(
+            "LDAPDriver.updateUserFull()", SilverpeasException.ERROR,
+            "admin.EX_USER_NOT_FOUND", "User=" + user.getSpecificId()
+            + ";IdField=" + driverSettings.getUsersIdField());
+      }
+
+      userFullDN = theEntry.getDN();
+
+      // prepare properties update
+      List<LDAPModification> modifications = new ArrayList<LDAPModification>();
+      for (String propertyName : user.getPropertiesNames()) {
+        DomainProperty property = user.getProperty(propertyName);
+        if (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser() ) {
+          LDAPModification modification = new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute(property.getMapParameter(),
+          user.getValue(propertyName)));
+          modifications.add(modification);
+        }
+      }
+
+      // Perform the update
+      connection.modify(userFullDN, (LDAPModification[]) modifications.toArray(new LDAPModification[0]));
+    } catch (Exception ex) {
+      throw new AdminException(
+          "LDAPDriver.updateUserFull()",
+          SilverpeasException.ERROR, "admin.EX_LDAP_ACCESS_ERROR", ex);
+    } finally {
+      try {
+        if (ld != null) {
+          LDAPUtility.closeConnection(ld);
+        }
+      } catch (AdminException closeEx) {
+        // The exception that could
+        // occur in the emergency stop is not interesting
+        SilverTrace.error("admin", "LDAPDriver.updateUserFull",
+            "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
+      }
+    }
+
   }
 
   @Override
   public void updateUserDetail(UserDetail user) throws Exception {
-    
+
   }
 
   /**
@@ -466,17 +529,17 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   @Override
   public String createGroup(Group m_Group) throws Exception {
-    return null;  
+    return null;
   }
 
   @Override
   public void deleteGroup(String groupId) throws Exception {
-    
+
   }
 
   @Override
   public void updateGroup(Group m_Group) throws Exception {
-    
+
   }
 
   /**
@@ -500,7 +563,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   @Override
   public Group getGroupByName(String groupName) throws Exception {
-    return null;  
+    return null;
   }
 
   /**
@@ -594,7 +657,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   public void rollback() throws Exception {
     // Access in read only -> no need to support transaction mode
   }
-  
+
   public List<String> getUserAttributes() throws Exception {
    return Arrays.asList(userTranslator.getUserAttributes());
   }
