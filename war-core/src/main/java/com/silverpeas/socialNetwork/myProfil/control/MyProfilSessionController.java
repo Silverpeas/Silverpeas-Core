@@ -168,7 +168,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isUserDomainRW() {
-    return (getDomainActions() & DomainDriver.ACTION_CREATE_USER) != 0;
+    return (getDomainActions() & DomainDriver.ACTION_UPDATE_USER) != 0;
+  }
+
+  public boolean isAdmin() {
+    return ( getUserDetail().isAccessAdmin() );
   }
 
   public long getDomainActions() {
@@ -420,6 +424,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
         .getString("customersTemplatePath"));
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfig);
+  }
+
+  public boolean updatablePropertyExists() {
+    UserFull userFull = getUserFul(getUserId());
+    return ( (userFull.isAtLeastOnePropertyUpdatableByUser()) || (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()) );
   }
 
 }

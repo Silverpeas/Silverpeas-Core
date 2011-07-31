@@ -99,18 +99,23 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       if (route == MyInfos) {
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
-        if (domainRW) {
+
+        boolean updateIsAllowed = domainRW &&
+            (myProfilSC.isPasswordChangeAllowed()
+            || (snUserFull.getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable())
+            || myProfilSC.updatablePropertyExists());
+
+        if (updateIsAllowed) {
           request.setAttribute("Action", "userModify");
         } else {
           request.setAttribute("Action", "userMS");
         }
 
-        boolean updateIsAllowed = domainRW
-            || myProfilSC.isPasswordChangeAllowed()
-            || (snUserFull.getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable());
 
         request.setAttribute("userObject", snUserFull.getUserFull());
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
+        request.setAttribute("isAdmin", myProfilSC.isAdmin());
+        request.setAttribute("isPasswordChangeAllowed", myProfilSC.isPasswordChangeAllowed());
         request.setAttribute("minLengthPwd", myProfilSC.getMinLengthPwd());
         request.setAttribute("blanksAllowedInPwd", myProfilSC.isBlanksAllowedInPwd());
         request.setAttribute("View", "MyInfos");

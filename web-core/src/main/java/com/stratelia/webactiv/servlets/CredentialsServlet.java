@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.stratelia.webactiv.servlets.credentials.ChangePasswordHandler;
 import com.stratelia.webactiv.servlets.credentials.ChangeQuestionHandler;
+import com.stratelia.webactiv.servlets.credentials.EffectiveChangePasswordBeforeExpirationHandler;
 import com.stratelia.webactiv.servlets.credentials.EffectiveChangePasswordHandler;
 import com.stratelia.webactiv.servlets.credentials.ForcePasswordChangeHandler;
 import com.stratelia.webactiv.servlets.credentials.ForgotPasswordHandler;
@@ -67,6 +68,7 @@ public class CredentialsServlet extends HttpServlet {
     //Password change management
     handlers.put("ForcePasswordChange", new ForcePasswordChangeHandler());
     handlers.put("EffectiveChangePassword", new EffectiveChangePasswordHandler());
+    handlers.put("EffectiveChangePasswordBeforeExpiration", new EffectiveChangePasswordBeforeExpirationHandler());
     handlers.put("ChangeQuestion", new ChangeQuestionHandler());
     handlers.put("ValidateQuestion", new ValidationQuestionHandler());
     handlers.put("LoginQuestion", new LoginQuestionHandler());
