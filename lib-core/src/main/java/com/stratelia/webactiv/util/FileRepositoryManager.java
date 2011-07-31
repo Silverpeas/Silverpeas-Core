@@ -182,13 +182,13 @@ public class FileRepositoryManager extends Object {
    * @deprecated
    */
   static public void createAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId)
         + sDirectoryName);
   }
 
   static public void createAbsolutePath(String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId)
         + sDirectoryName);
   }
@@ -201,39 +201,37 @@ public class FileRepositoryManager extends Object {
    * @deprecated
    */
   static public void createTempPath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId));
   }
 
-  static public void createTempPath(String sComponentId, String sDirectoryName)
-      throws Exception {
+  static public void createTempPath(String sComponentId, String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId));
   }
 
-  static public void createGlobalTempPath(String sDirectoryName)
-      throws Exception {
+  static public void createGlobalTempPath(String sDirectoryName) {
     FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
 
   static public void createAbsoluteIndexPath(String particularSpace,
-      String sComponentId) throws Exception {
+      String sComponentId) {
     FileFolderManager.createFolder(getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
 
   static public void deleteAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId)
         + sDirectoryName);
   }
 
   static public void deleteTempPath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
   }
 
   static public void deleteAbsoluteIndexPath(String particularSpace,
-      String sComponentId) throws Exception {
+      String sComponentId) {
     FileFolderManager.deleteFolder(getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
@@ -269,9 +267,7 @@ public class FileRepositoryManager extends Object {
     }
     if (small && fileIcon != null) {
       String newFileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Small.gif";
-      if (newFileIcon != null) {
-        fileIcon = newFileIcon;
-      }
+      fileIcon = newFileIcon;
     }
 
     return path + fileIcon;
@@ -339,8 +335,7 @@ public class FileRepositoryManager extends Object {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  static public void copyFile(String from, String to)
-      throws FileNotFoundException, IOException {
+  static public void copyFile(String from, String to) throws IOException {
     BufferedInputStream input = new BufferedInputStream(new FileInputStream(
         from));
     BufferedOutputStream output = new BufferedOutputStream(
@@ -359,11 +354,11 @@ public class FileRepositoryManager extends Object {
     String sec = " s";
     String ms = " ms";
     if (size < 1000) {
-      return new Long(size).toString() + ms;
+      return Long.toString(size) + ms;
     } else if (size < 120000) {
-      return new Long(size / 1000).toString() + sec;
+      return Long.toString(size / 1000) + sec;
     } else {
-      return new Long(size / 60000).toString() + min;
+      return Long.toString(size / 60000) + min;
     }
   }
 
