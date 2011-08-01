@@ -142,9 +142,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   private void initEJB() {
     if (versioning_bm == null) {
       try {
-        VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.VERSIONING_EJBHOME,
-            VersioningBmHome.class);
+        VersioningBmHome vscEjbHome = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
         versioning_bm = vscEjbHome.create();
       } catch (Exception e) {
         throw new VersioningRuntimeException(
@@ -456,11 +455,11 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       // pair (users id, UsersDetail) to HashTable
       for (String groupId : groupIds) {
         UserDetail[] usersGroup = orgCntr.getAllUsersOfGroup(groupId);
-        for (int j = 0; j < usersGroup.length; j++) {
-          String userId = usersGroup[j].getId();
+        for (UserDetail anUsersGroup : usersGroup) {
+          String userId = anUsersGroup.getId();
           // This check avoids duplicate users
           if (!mapRead.containsKey(userId) && !noReaderMap.containsKey(userId)) {
-            UserDetail ud = usersGroup[j];
+            UserDetail ud = anUsersGroup;
             ru = new Reader(Integer.parseInt(userId), 0, document.getInstanceId(), 0);
             mapRead.put(ud.getId(), ru);
           }
@@ -494,8 +493,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     ArrayList<Reader> writers = new ArrayList<Reader>();
     writers.addAll(getAllUsersForProfile(document, WRITER).values());
     int creatorId = getDocumentCreator(document.getPk());
-    for (int i = 0; i < writers.size(); i++) {
-      Reader user = writers.get(i);
+    for (Reader user : writers) {
       if (user.getUserId() == creatorId) {
         noReaderMap.put(String.valueOf(creatorId), user);
         break;
@@ -973,7 +971,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @version 1.0
    */
   public boolean isReader(Document document, int userId) throws RemoteException {
-    return isReader(document, new Integer(userId).toString());
+    return isReader(document, Integer.toString(userId));
   }
 
   /**
@@ -1042,7 +1040,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (!useRights()) {
       return true;
     }
-    return isWriter(document, new Integer(userId).toString());
+    return isWriter(document, Integer.toString(userId));
   }
 
   /**
@@ -1165,7 +1163,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     sel.setSetSelectable(true);
     if (role.equals(WRITER)) {
       hostPath[0] = new PairObject(getString("versioning.SelectWriters"), "");
-      if (new Integer(getEditingDocument().getCurrentWorkListOrder()).toString().equals(
+      if (Integer.toString(getEditingDocument().getCurrentWorkListOrder()).equals(
           WRITERS_LIST_ORDERED)) {
         sel.setSetSelectable(false);
       }
@@ -1229,10 +1227,12 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     ProfileInst fileProfile = getCurrentProfile(role);
 
     if (fileProfile != null) {
-      sel.setSelectedElements(fileProfile.getAllUsers().toArray(new String[0]));
+      List<String> users = fileProfile.getAllUsers();
+      sel.setSelectedElements(users.toArray(new String[users.size()]));
       if (READER.equals(role) || !WRITERS_LIST_ORDERED.equals(String.valueOf(
           getEditingDocument().getCurrentWorkListOrder()))) {
-        sel.setSelectedSets(fileProfile.getAllGroups().toArray(new String[0]));
+        List<String> groups = fileProfile.getAllGroups();
+        sel.setSelectedSets(groups.toArray(new String[groups.size()]));
       }
     }
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
@@ -1278,7 +1278,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
@@ -1418,7 +1418,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (profileInst == null) {
       profileInst = new ProfileInst();
       profileInst.setObjectType(ObjectType.DOCUMENT.getCode());
-      profileInst.setObjectId(new Integer(documentId).intValue());
+      profileInst.setObjectId(Integer.parseInt(documentId));
       profileInst.setComponentFatherId(getComponentId());
       profileInst.setName(role);
       getAdmin().addProfileInst(profileInst);
@@ -1569,7 +1569,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
       for (Worker savedWorkerGroup : savedWorkersGroups) {
         Worker newWorkerGroup = (Worker) savedWorkerGroup.clone();
-        newWorkerGroup.setDocumentId(new Integer(doc.getPk().getId()).intValue());
+        newWorkerGroup.setDocumentId(Integer.parseInt(doc.getPk().getId()));
         newWorkerGroup.setSaved(false);
         workersGroups.add(newWorkerGroup);
       }
@@ -1577,7 +1577,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
       for (Worker savedWorkerUser : savedWorkersUsers) {
         Worker newWorkerUser = (Worker) savedWorkerUser.clone();
-        newWorkerUser.setDocumentId(new Integer(doc.getPk().getId()).intValue());
+        newWorkerUser.setDocumentId(Integer.parseInt(doc.getPk().getId()));
         newWorkerUser.setSaved(false);
         workersUsers.add(newWorkerUser);
       }
@@ -1597,8 +1597,10 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (isAccessListExist(role)) {
       if (role.equals(READER)) {
         // We only get Ids
-        sel.setSelectedElements((String[]) getAccessListUsers(role).toArray(new String[0]));
-        sel.setSelectedSets((String[]) getAccessListGroups(role).toArray(new String[0]));
+        List<String> usersAuthorized = getAccessListUsers(role);
+        List<String> groupsAuthorized = getAccessListGroups(role);
+        sel.setSelectedElements(usersAuthorized.toArray(new String[usersAuthorized.size()]));
+        sel.setSelectedSets(groupsAuthorized.toArray(new String[groupsAuthorized.size()]));
       } else {
         List<Worker> workersUsers = getAccessListUsers(WRITER);
         List<Worker> workersGroups = getAccessListGroups(WRITER);
@@ -1760,7 +1762,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     // 1. Keep users from Workers
     for (Worker worker : workers) {
       if (worker.getType().equals(SET_TYPE_USER)) {
-        mapWork.put(new Integer(worker.getId()), worker);
+        mapWork.put(worker.getId(), worker);
       } else {
         // Extract users from group
         UserDetail[] usersFromGroup = getOrganizationController().getAllUsersOfGroup(Integer.
@@ -1770,8 +1772,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         while (i < usersFromGroup.length) {
           userId = Integer.getInteger(usersFromGroup[i].getId());
           if (!mapWork.containsKey(userId)) {
-            Worker newWorker = new Worker(userId.intValue(), new Integer(
-                getEditingDocument().getPk().getId()).intValue(),
+            Worker newWorker = new Worker(userId,
+                Integer.parseInt(getEditingDocument().getPk().getId()),
                 lastIndexWorkers + i, worker.isApproval(), worker.isWriter(),
                 document.getInstanceId(), SET_TYPE_USER, worker.isSaved(),
                 worker.isUsed(), document.getCurrentWorkListOrder());

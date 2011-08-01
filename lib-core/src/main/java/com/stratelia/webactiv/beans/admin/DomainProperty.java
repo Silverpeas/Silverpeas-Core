@@ -33,6 +33,7 @@ public class DomainProperty {
 
   final static public String PROPERTY_UPDATEALLOWED_ADMIN = "A";
   final static public String PROPERTY_UPDATEALLOWED_USER = "U";
+  final static public String PROPERTY_UPDATE_NOT_ALLOWED = "N";
 
   private String m_sName = null;
   private String m_iType = PROPERTY_TYPE_STRING;
@@ -40,7 +41,7 @@ public class DomainProperty {
   private boolean usedToImport = false;
   private String redirectOU = null;
   private String redirectAttribute = null;
-  private String updateAllowedTo = PROPERTY_UPDATEALLOWED_USER;
+  private String updateAllowedTo = PROPERTY_UPDATE_NOT_ALLOWED;
 
   private String label = null;
   private String description = null;
@@ -66,7 +67,7 @@ public class DomainProperty {
     redirectOU = rs.getString("property_" + num + ".RedirectOU");
     redirectAttribute = rs.getString("property_" + num + ".RedirectAttribute");
     updateAllowedTo = rs.getString("property_" + num + ".UpdateAllowedTo",
-        PROPERTY_UPDATEALLOWED_USER);
+        PROPERTY_UPDATE_NOT_ALLOWED);
   }
 
   public void setName(String propertyName) {

@@ -244,7 +244,7 @@ public class I18NHelper {
     return tr.toString();
   }
 
-  static private String getHTMLSelectObject(String userLanguage, I18NBean bean,
+  static public String getHTMLSelectObject(String userLanguage, I18NBean bean,
       String selectedTranslation) {
     List<I18NLanguage> languages = getAllLanguages(userLanguage);
 

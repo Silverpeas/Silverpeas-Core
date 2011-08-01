@@ -471,8 +471,7 @@ public class SilverTrace {
    * @param messageID the name of the message to display (ex : "root.MSG_GEN_FILE_NOT_FOUND")
    * @param ex the exception to trace
    */
-  static public void warn(String module, String classe, String messageID,
-      Throwable ex) {
+  static public void warn(String module, String classe, String messageID, Throwable ex) {
     warn(module, classe, messageID, null, ex);
   }
 
@@ -487,8 +486,7 @@ public class SilverTrace {
    * @param extraInfos some extra-informations that are displayed after the message in parentesis
    * @param ex the exception to trace
    */
-  static public void warn(String module, String classe, String messageID,
-      String extraInfos, Throwable ex) {
+  static public void warn(String module, String classe, String messageID, String extraInfos, Throwable ex) {
     if (initFinished) {
       try {
         Category cat = getCategory(module, classe);
@@ -582,7 +580,7 @@ public class SilverTrace {
           }
         }
       } catch (RuntimeException e) {
-        if (module.equals("silvertrace") == false) {
+        if (!module.equals("silvertrace")) {
           SilverTrace.error("silvertrace", "SilverTrace.error()",
               "silvertrace.ERR_RUNTIME_ERROR_OCCUR", "MsgId=" + messageID, e);
         }
@@ -692,10 +690,7 @@ public class SilverTrace {
       String instanceId, String objectId, String userId, String actionId) {
     if (initFinished) {
       try {
-        Category cat = getCategory(module, classe);
-
-        // Spy traces
-        cat = getCategory(MODULE_SPY, null);
+        Category cat =  getCategory(MODULE_SPY, null);
         if (cat != null) {
           if (cat.isEnabledFor(Priority.FATAL)) {
             cat.fatal(formatSpyMessage(spaceId, instanceId, objectId, userId,
@@ -745,7 +740,7 @@ public class SilverTrace {
       nbFiles = theFiles.size();
       for (i = 0; i < nbFiles; i++) {
         try {
-          is = new FileInputStream((File) theFiles.get(i));
+          is = new FileInputStream(theFiles.get(i));
           currentFileProperties = new Properties();
           currentFileProperties.load(is);
           initFromProperties(currentFileProperties);
@@ -753,11 +748,11 @@ public class SilverTrace {
           if (initFinished) {
             SilverTrace.error("silvertrace", "SilverTrace.resetAll()",
                 "silvertrace.ERR_INIT_TRACE_FROM_PROP", "File:["
-                + ((File) theFiles.get(i)).getAbsolutePath() + "]", e);
+                + (theFiles.get(i)).getAbsolutePath() + "]", e);
           } else {
             emergencyTrace(
                 "Error in SilverTrace initialization : Cant load property file : '"
-                + ((File) theFiles.get(i)).getAbsolutePath() + "'", e);
+                + (theFiles.get(i)).getAbsolutePath() + "'", e);
           }
         }
       }
@@ -787,12 +782,10 @@ public class SilverTrace {
       initFromProperties(currentFileProperties);
     } catch (Exception e) {
       if (initFinished) {
-        SilverTrace.error("silvertrace", "SilverTrace.resetAll()",
-            "silvertrace.ERR_INIT_TRACE_FROM_PROP", "File:[" + filePath + "]",
-            e);
+        SilverTrace.error("silvertrace", "SilverTrace.resetAll()", 
+                "silvertrace.ERR_INIT_TRACE_FROM_PROP", "File:[" + filePath + "]", e);
       } else {
-        emergencyTrace(
-            "Error in SilverTrace applyProperties(" + filePath + ")", e);
+        emergencyTrace("Error in SilverTrace applyProperties(" + filePath + ")", e);
       }
     }
   }
@@ -855,8 +848,7 @@ public class SilverTrace {
           addAppenderFromProperties(fileProperties, i, appenderTypeInt);
         }
         i++;
-        appenderTypeStr = fileProperties.getProperty("appender"
-            + Integer.toString(i) + ".type");
+        appenderTypeStr = fileProperties.getProperty("appender" + Integer.toString(i) + ".type");
       }
 
       // Third, enumerate all modules and look if there are special trace levels

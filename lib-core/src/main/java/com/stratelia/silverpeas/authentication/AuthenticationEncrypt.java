@@ -38,9 +38,9 @@ public class AuthenticationEncrypt implements EncryptionInterface {
         "root.MSG_PARAM_ENTER_METHOD", "stringToEncode=" + stringToEncode);
     StringBuilder hashString = new StringBuilder();
     char[] uniqueKey = stringToEncode.toCharArray();
-    for (int i = 0; i < uniqueKey.length; ++i) {
-      String carInt = new Integer(uniqueKey[i] * 3).toString();
-      String lg = new Integer(carInt.length()).toString();
+    for (char anUniqueKey : uniqueKey) {
+      String carInt = Integer.toString(anUniqueKey * 3);
+      String lg = Integer.toString(carInt.length());
       hashString.append(lg).append(carInt);
     }
     hashString.reverse();
@@ -51,18 +51,17 @@ public class AuthenticationEncrypt implements EncryptionInterface {
 
   /**
    * Simple decode for cookie value
-   * @param key : la chaine à décoder
+   * @param encodedText : la chaine à décoder
    */
   public String decode(String encodedText) {
     SilverTrace.info("authentication", "AuthenticationEncrypt.decode()",
         "root.MSG_PARAM_ENTER_METHOD", "encodedText=" + encodedText);
-    int lg = 0;
     int pos = 0;
     String reverseEncodedText = new StringBuffer(encodedText).reverse()
         .toString();
     StringBuilder hashString = new StringBuilder();
     for (int i = 0; i + pos < reverseEncodedText.length(); i++) {
-      lg = Integer.parseInt(reverseEncodedText.substring(i + pos, i + pos + 1));
+      int lg = Integer.parseInt(reverseEncodedText.substring(i + pos, i + pos + 1));
       String car = reverseEncodedText.substring(i + pos + 1, i + pos + 1 + lg);
       pos = pos + lg;
       hashString.append((char) (Integer.parseInt(car) / 3));
@@ -81,14 +80,12 @@ public class AuthenticationEncrypt implements EncryptionInterface {
   public String decode(String str, String key, boolean extraCrypt) {
     // SilverTrace.info("authentication", "AuthenticationEncrypt.decode1()",
     // "root.MSG_PARAM_ENTER_VALUE", "str à décoder="+str+" clé="+key);
-    String decStr = "";
-    String prand = "";
     String asciiChar_string = "";
     for (int i = 0; i < key.length(); i++) {
       int asciiCode = key.charAt(i);
       asciiChar_string += asciiCode;
     }
-    prand = asciiChar_string;
+    String prand = asciiChar_string;
 
     int sPos = new Double(Math.floor(prand.length() / 5)).intValue();
     StringBuilder stringMult = new StringBuilder();
@@ -105,7 +102,7 @@ public class AuthenticationEncrypt implements EncryptionInterface {
 
     str = str.substring(0, str.length() - 8);
     prand += salt;
-    double prandInt = new Double(prand).doubleValue();
+    double prandInt = Double.parseDouble(prand);
     prandInt = (mult * prandInt + incr) % modu;
 
     int dec_chrInt;
@@ -117,7 +114,7 @@ public class AuthenticationEncrypt implements EncryptionInterface {
       hashString.append((char) dec_chrInt);
       prandInt = (mult * prandInt + incr) % modu;
     }
-    decStr = hashString.toString();
+    String decStr = hashString.toString();
     String decStrFinal = decStr;
     if (extraCrypt) {
       decStrFinal = decode(decStr);
