@@ -35,7 +35,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class NodeInstanciator extends SQLRequest {
 
-  /** Creates new NewsInstanciator */
+  /**
+   * Creates new NewsInstanciator
+   */
   public NodeInstanciator() {
   }
 
@@ -51,21 +53,20 @@ public class NodeInstanciator extends SQLRequest {
           InstanciationException {
     SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "spaceId = " + spaceId + ", componentId = " + componentId);
-    // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
     deleteDataOfInstance(con, componentId, "Node");
-    deleteFavorites(con, spaceId, componentId);
+    deleteFavorites(con, componentId);
     SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD",
             "spaceId = " + spaceId + ", componentId = " + componentId);
   }
 
-  private void deleteFavorites(Connection con, String spaceId, String componentId) throws
+  private void deleteFavorites(Connection con, String componentId) throws
           InstanciationException {
     PreparedStatement prepStmt = null;
-    String deleteStatement = "delete from favorit where componentName = '"
-            + componentId + "'";
+    String deleteStatement = "delete from favorit where componentName = ?";
     try {
       prepStmt = con.prepareStatement(deleteStatement);
+      prepStmt.setString(1, componentId);
       prepStmt.executeUpdate();
     } catch (SQLException se) {
       throw new InstanciationException("NodeInstanciator.deleteFavorites()",
