@@ -28,42 +28,22 @@ import org.apache.ecs.ElementContainer;
 import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
 
 /**
- * A tag that renders the classification of a content on the PdC configured for the Silverpeas
- * component instance.
+ * A tag that renders an HTML/javascript section with which a classification onto the PdC can be
+ * created for a new/already existing content in a given component instance.
+ * The positions that are created for the classification of the underlying content are not done
+ * automatically (as the content can be not already existed). To set them, please use in conjonction
+ * with this tag the PdcClassificationValidationTag one.
  */
-public class PdcClassificationTag extends BaseClassificationPdCTag {
+public class PdcNewClassificationTag extends BaseClassificationPdCTag {
 
   private static final long serialVersionUID = 3377113335947703561L;
-  
-  private boolean editable = false;
-
-  /**
-   * Is the classification on the PdC can be edited?
-   * @return true if the classification of the content can be edited (to add a new position, to
-   * update or to delete an existing position. False otherwise.
-   */
-  public boolean isEditable() {
-    return editable;
-  }
-
-  /**
-   * Sets the edition mode of the PdC classification.
-   * @param editable true or false. If true the classification on the PdC can be edited, otherwise
-   * it will be read-only rendered.
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
-  }
 
   @Override
   public int doStartTag() throws JspException {
-    ElementContainer container;
-    if (isEditable()) {
-      container = invoke(OPEN_CLASSIFICATION);
-    } else {
-      container = invoke(READ_CLASSIFICATION);
-    }
+    ElementContainer container = invoke(CREATE_CLASSIFICATION);
     container.output(pageContext.getOut());
     return SKIP_BODY;
   }
+
+  
 }

@@ -1,0 +1,127 @@
+/**mise en page g�n�rale pour les fieldset & formulaire de ce genre **/
+
+html, body {
+	height:100%;
+	}
+
+form {
+	margin:0;
+	padding:0;
+	height:100%;
+}
+	
+fieldset.skinFieldset {
+	position:relative;
+	margin:10px;
+	padding-bottom:15px;
+	background-color :#CCC;
+	border:1px solid #CCC;
+	border-radius:10px;
+	min-height:80px;
+	display:block;
+	background: -webkit-gradient(linear, left top, right top, from(#fff), to(#e5e5e5));
+	background: -moz-linear-gradient(left, #fff, #e5e5e5);
+	/* For Internet Explorer 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
+	/* For Internet Explorer 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
+		
+ }
+ 
+ .table {
+	display:table;
+	width:100%;
+	height:auto;
+	}	
+
+ :root *> .table {
+	height:10%; 
+	}	
+
+.cell {
+	display:inline !ie;
+	float:left !ie;
+	width:49.9% !ie;
+	}
+	
+.cell {
+	display:table-cell;
+	height:100%;
+	}
+
+	
+* html .cell { width:49.4%; }
+
+.cell fieldset.skinFieldset{
+	height:80%;
+	}
+ 
+.skinFieldset label {
+	color:#444;
+}
+
+.skinFieldset legend {
+	color:#333;
+	font-size:12px;
+	line-height:16px;
+	padding-left:36px;
+	margin-left:5px;
+}
+ 
+.champs {
+	margin-left:180px;
+}
+
+.fields {
+	margin: 10px 15px 0;
+	position:relative;
+	clear: both;
+}
+
+.field {
+	height: auto;
+	display:inline;
+	position:relative;
+	float:left;
+	width:46%;
+	padding:5px 3% 5px 0px;
+}
+
+label.txtlibform {
+padding-right:0;
+}
+
+label {
+	width:180px;
+	float:left;
+}
+.row {
+	clear:both ; 
+}
+
+.champs input {
+	width:96%; 
+	margin:0;
+}
+.champs select {
+	width:96%; 
+	margin:0;
+}
+
+#languageArea .champs select {
+	width:auto; 
+}
+
+input.dateToPick{
+	width:68px; 
+	margin:0;
+}
+
+input.inputHour{
+	width:48px; 
+	margin:0;
+}
+
+
+
+

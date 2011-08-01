@@ -210,20 +210,6 @@
     },
     
     /**
-     * Gets the axis used in the PdC configured for the resource.
-     */
-    usedAxis: function( options ) {
-      var $this = $(this);
-      if ($this.data('pdc') == null) {
-        init( options );
-        $.getJSON(settings.pdcURI, function(pdc) {
-          $this.data('pdc', pdc);
-        });
-      }
-      return $this.data('pdc').axis;
-    },
-    
-    /**
      * Is the classification of the resource valid? The classification is valid if there is at least
      * one position onto the PdC having mandatory axis.
      */
@@ -623,7 +609,7 @@
         });
       }
       if (selectedValues[anAxis.id] != null) {
-        $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>').appendTo(currentAxisDiv);
+        $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);
       }
       if (anAxis.mandatory) {
         $('<img>', {

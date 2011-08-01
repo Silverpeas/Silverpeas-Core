@@ -25,45 +25,38 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
-import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
 
 /**
- * A tag that renders the classification of a content on the PdC configured for the Silverpeas
- * component instance.
+ * A tag that renders the use of the JQuery PdC plugin to get the possibly new classification for
+ * a new content in Silverpeas.
  */
-public class PdcClassificationTag extends BaseClassificationPdCTag {
+public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
 
   private static final long serialVersionUID = 3377113335947703561L;
   
-  private boolean editable = false;
-
-  /**
-   * Is the classification on the PdC can be edited?
-   * @return true if the classification of the content can be edited (to add a new position, to
-   * update or to delete an existing position. False otherwise.
-   */
-  public boolean isEditable() {
-    return editable;
+  private String jsFunctionToCall;
+  
+  public String getFunctionToCall() {
+    return jsFunctionToCall;
   }
-
-  /**
-   * Sets the edition mode of the PdC classification.
-   * @param editable true or false. If true the classification on the PdC can be edited, otherwise
-   * it will be read-only rendered.
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
+  
+  public void setFunctionToCall(String function) {
+    this.jsFunctionToCall = function;
   }
+  
 
   @Override
   public int doStartTag() throws JspException {
-    ElementContainer container;
-    if (isEditable()) {
-      container = invoke(OPEN_CLASSIFICATION);
-    } else {
-      container = invoke(READ_CLASSIFICATION);
-    }
-    container.output(pageContext.getOut());
+    ElementContainer xhtmlcontainer = new ElementContainer();
+    String script = "if ($('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID +
+            "').pdc('isClassificationValid')) { var pdcClassification = $('#" +
+            PDC_CLASSIFICATION_WIDGET_TAG_ID + "').pdc('positions'); " + getFunctionToCall() +
+            "($.toJSON(pdcClassification)) } else { " + getFunctionToCall() + "(null); window.alert(\"" +
+            getResources().getString("pdcPeas.theContent") + " " +
+              getResources().getString("pdcPeas.MustContainsMandatoryAxis") + "\") }";
+    xhtmlcontainer.addElement(script);
+    xhtmlcontainer.output(pageContext.getOut());
     return SKIP_BODY;
   }
+  
 }
