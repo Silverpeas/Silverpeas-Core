@@ -30,7 +30,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.ElementContainer;
+import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
+import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
 
 /**
@@ -45,9 +47,9 @@ public class PdcClassificationTag extends TagSupport {
    */
   private static final String RESOURCES_KEY = "resources";
   /**
-   * The identifier of the XHTML div tag within which the PdC classification will be displayed.
+   * The identifier of the XHTML tag within which the PdC classification will be displayed.
    */
-  public static final String PDC_CLASSIFICATION_WIDGET_DIV_ID = "classification";
+  public static final String PDC_CLASSIFICATION_WIDGET_TAG_ID = "classification";
   private String componentId;
   private String contentId;
   private boolean editable = false;
@@ -115,18 +117,22 @@ public class PdcClassificationTag extends TagSupport {
   }
 
   /**
-   * Sets up the widget with all required information. It initializes the JQuery comment plugin with
-   * and it parameterizes from Silverpeas settings and from the resource for which the comments
-   * should be rendered.
-   *
+   * Sets up the widget with all required information. It initializes the PdC classification JQuery
+   * plugin and it calls it to render the classification of the refered content onto the PdC.
    * @return a container of rendering elements.
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
   private ElementContainer initWidget() throws JspException {
     String context = URLManager.getApplicationURL();
     ElementContainer xhtmlcontainer = new ElementContainer();
-    div classification = new div();
-    classification.setID(PDC_CLASSIFICATION_WIDGET_DIV_ID);
+    MultiPartElement classification;
+    if (isEditable()) {
+      classification = new fieldset();
+    } else {
+      classification = new div();
+    }
+    classification.setID(PDC_CLASSIFICATION_WIDGET_TAG_ID);
+    classification.setClass("skinFieldset");
     script jqueryPlugin = new script().setType("text/javascript").
             setSrc(context + "/util/javaScript/silverpeas-pdc.js");
     script pluginExecution = new script().setType("text/javascript").
@@ -138,24 +144,27 @@ public class PdcClassificationTag extends TagSupport {
   }
 
   /**
-   * This method generates the Javascript instructions to retrieve in AJAX the comments on the given
-   * resource and to display them. The generated code is built upon the JQuery toolkit, so that it
-   * is required to be included within the the XHTML header section.
-   *
-   * @return the javascript code to handle a list of comments on a given resource.
+   * This method generates the Javascript instructions to retrieve and to change in AJAX the
+   * classification of the refered content onto the PdC, and to render it. The generated code is
+   * built upon the JQuery toolkit, so that it is required to be included within the the XHTML
+   * header section.
+   * @return the javascript code to handle the classification onto the PdC.
+   * @throws if an error occurs during the processing of the plugin.
    */
   private String executePlugin() throws JspTagException {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
     String script = "$('#classification').pdc('open', {resource: {context: '" + context + "', " +
             "component: '" + getComponentId() + "', content: '" + getContentId() + "'}, title: '" +
-            resources.getString("GML.PDC") + "', positionLabel: '" +
-            resources.getString("pdcPeas.position") + "'";
+            resources.getString("pdcPeas.classifyPublication") + "', positionLabel: '" +
+            resources.getString("pdcPeas.position") + "', positionsLabel: '" +
+            resources.getString("pdcPeas.positions") + "'";
     if (isEditable()) {
       script += ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "'," +
               "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '" +
               resources.getString("GML.requiredField") + "', invariantLegend: '" +
-              resources.getString("pdcPeas.notVariants") + "'}, addition: {title: '" +
+              resources.getString("pdcPeas.notVariants") + "', mandatoryMessage: \"" +
+              resources.getString("pdcPeas.MustBeClassified") + "\"}, addition: {title: '" +
               resources.getString("GML.PDCNewPosition") + "'}, update: {title: '" +
               resources.getString("GML.modify") + "'}, deletion: {confirmation: '" +
               resources.getString("pdcPeas.confirmDeleteAxis") + "', cannotBeDeleted: \"" + 
@@ -168,6 +177,11 @@ public class PdcClassificationTag extends TagSupport {
     return script;
   }
 
+  /**
+   * Gets the resources from which translated text and PdC settings can be get.
+   * @return a resources wrapper instance.
+   * @throws JspTagException  if an error occurs while fetching the resources.
+   */
   private ResourcesWrapper getResources() throws JspTagException {
     ResourcesWrapper resources = (ResourcesWrapper) pageContext.getRequest().getAttribute(
             RESOURCES_KEY);

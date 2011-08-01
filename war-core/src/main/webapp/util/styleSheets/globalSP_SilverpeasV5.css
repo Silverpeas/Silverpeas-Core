@@ -4037,6 +4037,37 @@ html:not([lang*=""]) .add_position:hover {
   background-color: #EAEAEA;
 }
 
-#pdc-edition-box img {
-  width: 5px;
+#classification legend{
+	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
+}
+
+#pdc-edition-box .field {
+	width:70%;
+}
+
+#pdc-edition-box .inlineMessage {
+	position:absolute;
+	top:-5px;
+	right:-5px;
+	width:28%;
+}
+
+* html #pdc-edition-box .inlineMessage {
+	top:-35px;
+	right:5px;
+}
+
+#pdc-edition-box #valid_position {
+	margin:10px 10px 10px  180px;
+	float:left;
+}
+#classification .legende { 
+	margin:10px 0 0;
+	float:left;
+	line-height:18px
+}
+
+#classification .list_pdc_position {
+	border:1px solid #C6CDBF;
+	width:96%;
 }
