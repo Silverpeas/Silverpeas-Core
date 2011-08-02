@@ -87,7 +87,7 @@ import org.quartz.CronExpression;
 public final class CronJobTrigger extends JobTrigger {
 
   private static final String CRON_SYNTAX_TO_FIX =
-      "[0-9,/\\-\\*]+[ ]+[0-9,/\\-\\*]+[ ]+\\*[ ]+[0-9,/\\-\\*]+[ ]+\\*";
+          "[0-9,/\\-\\*]+[ ]+[0-9,/\\-\\*]+[ ]+\\*[ ]+[0-9,/\\-\\*]+[ ]+\\*";
   private String cron;
 
   /**
@@ -108,12 +108,14 @@ public final class CronJobTrigger extends JobTrigger {
     // if the day-of-week and the day-of-month are set with '*', replace one by '?'.
     // It is a workaround of the 'every' support for  both day-of-month and day-of-week parameters
     // as usualy that means whatever for the user (they are not set explicitly).
-    String trimedCronExpression = cronExpression.trim();
-    if (trimedCronExpression.matches(CRON_SYNTAX_TO_FIX)) {
-      this.cron = trimedCronExpression.substring(0, trimedCronExpression.length() - 1) + "?";
-    } else {
-      this.cron = trimedCronExpression;
+    String[] cronExpressionParts = cronExpression.trim().split("[ ]+");
+    if (cronExpressionParts[2].equals("*") && cronExpressionParts[4].matches("[0-9,/\\-,\\*]+")) {
+      cronExpressionParts[2] = "?";
+    } else if (cronExpressionParts[4].equals("*") && cronExpressionParts[2].matches("[0-9,/\\-]+")) {
+      cronExpressionParts[4] = "?";
     }
+    this.cron = cronExpressionParts[0] + " " + cronExpressionParts[1] + " " + cronExpressionParts[2]
+            + " " + cronExpressionParts[3] + " " + cronExpressionParts[4];
     CronExpression exp = new CronExpression("* " + this.cron);
   }
 

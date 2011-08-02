@@ -108,6 +108,7 @@ public class GraphicElementFactory {
   private static final String FLOWPLAYER_CSS = "flowplayer.css";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
   private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
+  private static final String FIELDSET_CSS = "fieldset.css";
 
   /**
    * Constructor declaration
@@ -296,6 +297,9 @@ public class GraphicElementFactory {
 
       code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
           "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
+      
+      code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
+          "/util/styleSheets/").append(FIELDSET_CSS).append("\" rel=\"stylesheet\"/>\n");
 
       // define CSS(default and specific) and JS (specific) dedicated to current component
       StringBuilder defaultComponentCSS = null;

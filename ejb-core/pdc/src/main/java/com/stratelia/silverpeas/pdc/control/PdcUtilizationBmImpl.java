@@ -57,6 +57,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * SilverPeas which map the database.
    */
   private SilverpeasBeanDAO dao = null;
+  private PdcUtilizationDAO utilizationDAO = new PdcUtilizationDAO();
 
   public PdcUtilizationBmImpl() {
     try {
@@ -73,6 +74,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * @param usedAxisId - the whished used axis.
    * @return an UsedAxis
    */
+  @Override
   public UsedAxis getUsedAxis(String usedAxisId) throws PdcException {
     UsedAxis usedAxis = null;
 
@@ -89,12 +91,13 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * Returns a list of used axis sorted.
    * @return a list sorted or null otherwise
    */
+  @Override
   public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
     List<UsedAxis> usedAxis = null;
     Connection con = openConnection();
 
     try {
-      usedAxis = PdcUtilizationDAO.getUsedAxisByInstanceId(con, instanceId);
+      usedAxis = utilizationDAO.getUsedAxisByInstanceId(con, instanceId);
     } catch (Exception e) {
       throw new PdcException("PdcUtilizationBmImpl.getUsedAxisByInstanceId",
           SilverpeasException.ERROR, "Pdc.CANNOT_FIND_USED_AXIS", e);
@@ -109,6 +112,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * Returns a list of axis header sorted.
    * @return a list sorted or null otherwise
    */
+  @Override
   public List<AxisHeader> getAxisHeaderUsedByInstanceId(String instanceId)
       throws PdcException {
     List<String> instanceIds = new ArrayList<String>();
@@ -116,18 +120,20 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
     return getAxisHeaderUsedByInstanceIds(instanceIds);
   }
 
+  @Override
   public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds)
       throws PdcException {
     return getAxisHeaderUsedByInstanceIds(instanceIds, new AxisFilter());
   }
 
+  @Override
   public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds, AxisFilter filter)
       throws PdcException {
     List<AxisHeader> axisHeaders = null;
     Connection con = openConnection();
 
     try {
-      axisHeaders = PdcUtilizationDAO.getAxisUsedByInstanceId(con, instanceIds,
+      axisHeaders = utilizationDAO.getAxisUsedByInstanceId(con, instanceIds,
           filter);
     } catch (Exception e) {
       throw new PdcException("PdcUtilizationBmImpl.getUsedAxisByInstanceId",
@@ -160,11 +166,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * @param usedAxis - the object which contains all data about utilization of an axis
    * @return usedAxisId
    */
+  @Override
   public int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException {
     Connection con = openConnection();
 
     try {
-      if (PdcUtilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
+      if (utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
           new Integer(usedAxis.getPK().getId()).intValue(), usedAxis
           .getAxisId(), usedAxis.getBaseValue(), treeId)) {
         return 1;
@@ -189,6 +196,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * Update an used axis into the data base.
    * @param usedAxis - the object which contains all data about utilization of the axis
    */
+  @Override
   public int updateUsedAxis(UsedAxis usedAxis, String treeId)
       throws PdcException {
     Connection con = openConnection();
@@ -199,7 +207,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
       int oldBaseValue = (getUsedAxis(usedAxis.getPK().getId())).getBaseValue();
       // si elle a été modifiée alors on reporte la modification.
       if (newBaseValue != oldBaseValue) {
-        if (PdcUtilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
+        if (utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
             new Integer(usedAxis.getPK().getId()).intValue(), usedAxis
             .getAxisId(), usedAxis.getBaseValue(), treeId))
           return 1;
@@ -208,7 +216,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
       // une fois cette axe modifié, il faut tenir compte de la propagation des
       // choix aux niveaux
       // obligatoire/facultatif et variant/invariante
-      PdcUtilizationDAO.updateAllUsedAxis(con, usedAxis);
+      utilizationDAO.updateAllUsedAxis(con, usedAxis);
       return 0;
     } catch (Exception exce_create) {
       throw new PdcException("PdcUtilizationBmImpl.updateUsedAxis",
@@ -222,6 +230,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * delete the used axis from the data base
    * @param usedAxisId - the id of the used axe
    */
+  @Override
   public void deleteUsedAxis(String usedAxisId) throws PdcException {
     try {
       dao.remove(new UsedAxisPK(usedAxisId));
@@ -237,6 +246,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * @throws PdcException
    * @see
    */
+  @Override
   public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException {
     try {
       Iterator<String> it = usedAxisIds.iterator();
@@ -260,6 +270,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * @throws PdcException
    * @see
    */
+  @Override
   public void deleteUsedAxisByAxisId(Connection con, String axisId)
       throws PdcException {
     try {
@@ -294,6 +305,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * @see
    */
 
+  @Override
   public void deleteUsedAxisByMotherValue(Connection con, String valueId,
       String axisId, String treeId) throws PdcException {
     try {
@@ -315,7 +327,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
       int newBaseValue, int axisId, String treeId, String instanceId)
       throws PdcException {
     try {
-      PdcUtilizationDAO.updateBaseValue(con, oldBaseValue, newBaseValue,
+      utilizationDAO.updateBaseValue(con, oldBaseValue, newBaseValue,
           axisId, treeId, instanceId);
     } catch (Exception exce_update) {
       throw new PdcException("PdcUtilizationBmImpl.updateUsedAxis",
@@ -323,6 +335,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
     }
   }
 
+  @Override
   public void updateOrDeleteBaseValue(Connection con, int baseValueToUpdate,
       int newBaseValue, int axisId, String treeId) throws PdcException {
     SilverTrace.info("Pdc", "PdcBmImpl.updateOrDeleteBaseValue",
@@ -349,7 +362,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
         try {
           // test si la nouvelle valeur est autorisée comme nouvelle valeur de
           // base
-          updateAllowed = !PdcUtilizationDAO.isAlreadyAdded(con, instanceId,
+          updateAllowed = !utilizationDAO.isAlreadyAdded(con, instanceId,
               new Integer(usedAxis.getPK().getId()).intValue(), axisId,
               newBaseValue, treeId);
         } catch (Exception e) {

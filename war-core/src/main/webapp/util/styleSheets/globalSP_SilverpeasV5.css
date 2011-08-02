@@ -186,13 +186,21 @@ Definition des class de style Silverpeas
 		min-height:14px;
 	}
 
-.bgDegradeGris.header{
+.bgDegradeGris.header, .bgDegradeGris .header {
+    border-bottom:1px solid #cdcdcd;
 	border-top:0;
 	border-right:0;
 	border-left:0;
 	margin:0;
 	padding:5px;
 	font-size:110%;	
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
+	background: -moz-linear-gradient(top, #fff, #e5e5e5);
+	/* For Internet Explorer 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
+	/* For Internet Explorer 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
+	min-height:14px;
 }
 
 * html 	.bgDegradeGris {
@@ -4035,4 +4043,53 @@ html:not([lang*=""]) .add_position:hover {
 .disabled {
   color: #B9B9B9;
   background-color: #EAEAEA;
+}
+
+#classification legend {
+	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
+}
+
+#pdc-edition-box .field {
+	width:70%;
+}
+
+#pdc-edition-box .inlineMessage {
+	position:absolute;
+	top:-5px;
+	right:-5px;
+	width:28%;
+}
+
+* html #pdc-edition-box .inlineMessage {
+	top:-35px;
+	right:5px;
+}
+
+#pdc-edition-box #valid_position {
+	margin:10px 10px 10px  180px;
+	float:left;
+}
+#classification .legende { 
+	margin:10px 0 0;
+	float:left;
+	line-height:18px
+}
+
+#classification .list_pdc_position {
+	border:1px solid #C6CDBF;
+	width:94%;
+}
+
+#classification #list_pdc_position.field {
+  width: 98%;
+}
+
+#classification.preview .list_pdc_position {
+	border:0;
+	width:100%;
+}
+
+#classification.preview .header h4 {
+    background: url("/silverpeas/util/icons/component/pdcPeasSmall.gif") no-repeat scroll right top transparent;
+    height: 16px;
 }

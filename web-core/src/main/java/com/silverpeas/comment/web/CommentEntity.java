@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * The comment entity is a comment object that is exposed in the web as an entity (web entity).
- * As such, it publishes only some od its attributes
+ * As such, it publishes only some of its attributes
  * It represents a comment in Silverpeas plus some additional information such as the URI for
  * accessing it.
  */

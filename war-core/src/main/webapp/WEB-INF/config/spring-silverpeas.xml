@@ -46,6 +46,7 @@
   <ctx:component-scan base-package="com.silverpeas.look"/>
   <ctx:component-scan base-package="com.silverpeas.personalization"/>
   <ctx:component-scan base-package="com.silverpeas.delegatednews"/>
+  <ctx:component-scan base-package="com.stratelia.silverpeas.contentManager"/>
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
   

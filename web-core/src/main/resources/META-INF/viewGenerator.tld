@@ -10,6 +10,86 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
+    <description>Tag to print out the classification of a given resource content on the PdC configured
+    for a given component instance. The classification on the PdC can be or not editable.
+    </description>
+    <name>pdcClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource content for which the classification on the PdC
+      has to be rendered.
+      </description>
+      <name>contentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is this classification on the PdC should be editable?.By default, if not set, the
+      classification isn't editable
+      </description>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out an HTML section and javascript code dedicated to the creation of
+    a new classification of a given resource content on the PdC configured
+    for a given component instance. It is mainly to be used for new content. This tag is to be
+    used in conjonction with the pdcValidateClassification one.
+    </description>
+    <name>pdcNewClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewClassificationTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource content for which the classification on the PdC
+      has to be rendered.
+      </description>
+      <name>contentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out javascript code to validate the classification onto the PdC of a
+    new content. The validation instructions call the passed javascript function with as parameter
+    the positions that made the classification once validated.
+    </description>
+    <name>pdcValidateClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationValidationTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The javascript function that will be called once the validation is ok.
+      The function should accept one argument: the new positions to create for the content. The positions
+      are passed in JSON.
+      </description>
+      <name>functionToCall</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Tag to print out a date localized from the specified language</description>
     <name>formatDate</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.FormatDateTag</tag-class>
@@ -23,7 +103,8 @@
     </attribute>
     <attribute>
       <description>The language to use for localizing the date. If not set, then the resources wrapper
-      usually carried in the request is used.</description>
+      usually carried in the request is used.
+      </description>
       <name>language</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -44,7 +125,8 @@
     </attribute>
     <attribute>
       <description>The language to use for localizing the date and time. If not set, then the
-      resources wrapper usually carried in the request is used.</description>
+      resources wrapper usually carried in the request is used.
+      </description>
       <name>language</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>

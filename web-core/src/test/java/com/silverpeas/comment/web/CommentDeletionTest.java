@@ -25,108 +25,75 @@ package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.rest.ResourceDeletionTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import java.util.UUID;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.rest.RESTWebService.*;
+import static com.silverpeas.comment.web.CommentTestResources.*;
 
 /**
  * Tests on the comment deletion by the CommentResource web service.
  */
-public class CommentDeletionTest extends BaseCommentResourceTest {
+public class CommentDeletionTest extends ResourceDeletionTest {
 
   private UserDetail user;
   private String sessionKey;
   private Comment theComment;
+  
+  @Inject
+  private CommentTestResources testResources;
 
   public CommentDeletionTest() {
-    super();
+    super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
 
   @Before
   public void createAUserAndAComment() {
+    assertNotNull(testResources);
+    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
-    theComment = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
-        andSaveItWithAsText("ceci est un commentaire");
-  }
-
-  @Test
-  public void deleteACommentByANonAuthenticatedUser() {
-    WebResource resource = resource();
-    try {
-      resource.path(RESOURCE_PATH + "/3").accept(MediaType.APPLICATION_JSON).delete();
-      fail("A non authenticated user shouldn't delete the comment");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(recievedStatus, is(unauthorized));
-    }
-  }
-
-  @Test
-  public void deleteACommentWithADeprecatedSession() {
-    WebResource resource = resource();
-    try {
-      resource.path(RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-          accept(MediaType.APPLICATION_JSON).delete();
-      fail("A user shouldn't delete the comment through an expired session");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(recievedStatus, is(unauthorized));
-    }
-  }
-
-  @Test
-  public void deleteANonAuthorizedComment() {
-    denieAuthorizationToUsers();
-
-    WebResource resource = resource();
-    try {
-      resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
-          header(HTTP_SESSIONKEY, sessionKey).
-          accept(MediaType.APPLICATION_JSON).
-          delete();
-      fail("A user shouldn't delete a non authorized comment");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int forbidden = Status.FORBIDDEN.getStatusCode();
-      assertThat(recievedStatus, is(forbidden));
-    }
-  }
-
-  @Test
-  public void deleteAnUnexistingComment() {
-    WebResource resource = resource();
-    try {
-      resource.path(RESOURCE_PATH + "/3").
-          header(HTTP_SESSIONKEY, sessionKey).
-          accept(MediaType.APPLICATION_JSON).
-          delete();
-      fail("A user shouldn't delete an unexisting comment");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(recievedStatus, is(notFound));
-    }
+    theComment = theUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
+        withAsText("ceci est un commentaire");
+    testResources.save(theComment);
   }
 
   @Test(expected=CommentRuntimeException.class)
   public void deleteAnExistingComment(){
-    WebResource resource = resource();
-    resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
-        header(HTTP_SESSIONKEY, sessionKey).
-        accept(MediaType.APPLICATION_JSON).
-        delete();
-    getCommentService().getComment(theComment.getCommentPK());
+    deleteAt(aResourceURI());
+    testResources.getCommentService().getComment(theComment.getCommentPK());
+  }
+
+  @Override
+  public String aResourceURI() {
+    return RESOURCE_PATH + "/"  + theComment.getCommentPK().getId();
+  }
+
+  @Override
+  public String anUnexistingResourceURI() {
+    return RESOURCE_PATH + "/3";
+  }
+
+  @Override
+  public Comment aResource() {
+    return theComment;
+  }
+
+  @Override
+  public String getSessionKey() {
+    return sessionKey;
+  }
+
+  @Override
+  public Class<?> getWebEntityClass() {
+    return CommentEntity.class;
+  }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
   }
 
 }

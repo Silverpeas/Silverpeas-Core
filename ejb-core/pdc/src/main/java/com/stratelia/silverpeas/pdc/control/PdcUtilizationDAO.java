@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdc.control;
 
 import java.sql.*;
@@ -51,17 +50,17 @@ public class PdcUtilizationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param instanceId
-   * @return
-   * @throws SQLException
-   * @see
+   * Gets the PdC axis that are used in a content classification in the specified Silverpeas
+   * component instance.
+   * @param con a connection to the data source.
+   * @param instanceId the unique identifier of the component instance.
+   * @return a list of axis that can be used in a content classification.
+   * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static List<UsedAxis> getUsedAxisByInstanceId(Connection con, String instanceId)
-      throws SQLException {
+  public List<UsedAxis> getUsedAxisByInstanceId(Connection con, String instanceId)
+          throws SQLException {
     String selectStatement =
-        "select U.id, U.instanceId, U.axisId, U.baseValue, U.mandatory, U.variant, A.Name, A.AxisType, A.RootId, T.name "
+            "select U.id, U.instanceId, U.axisId, U.baseValue, U.mandatory, U.variant, A.Name, A.AxisType, A.RootId, T.name "
             + "from SB_Pdc_Utilization U, SB_Pdc_Axis A, SB_Tree_Tree T "
             + "where U.axisId = A.id "
             + "and A.RootId = T.treeId "
@@ -101,7 +100,7 @@ public class PdcUtilizationDAO {
         axisRootId = rs.getInt(9);
         valueName = rs.getString(10);
         axis = new UsedAxis(id, instanceId, axisId, baseValue, mandatory,
-            variant);
+                variant);
         axis._setAxisName(axisName);
         axis._setAxisType(axisType);
         axis._setBaseValueName(valueName);
@@ -115,25 +114,29 @@ public class PdcUtilizationDAO {
   }
 
   /**
-   * Update a base value from the PdcUtilizationDAO
-   * @param con - the connection to the database
-   * @param valueId - the base value that must be updated
-   * @return the number of rows affected
+   * Updates the base value of the specified hierarchical tree of the given axis.
+   * @param con the connection to the database.
+   * @param oldBaseValue the old base value of the tree.
+   * @param newBaseValue the base value with which the old is replaced.
+   * @param axisId the identifier of the axis.
+   * @param treeId the identifier of the axis tree.
+   * @param instanceId the unique identifier of the Silverpeas component instance that uses the axis.
+   * @return the number of rows affected by the update.
    */
-  public static int updateBaseValue(Connection con, int oldBaseValue,
-      int newBaseValue, int axisId, String treeId, String instanceId)
-      throws SQLException {
+  public int updateBaseValue(Connection con, int oldBaseValue,
+          int newBaseValue, int axisId, String treeId, String instanceId)
+          throws SQLException {
     // String updateQuery =
     // " update "+PdcUtilizationTable+" set baseValue = ( select fatherId from "+TreeTable+" where treeId = "+treeId+" and id = ? ) where instanceId = ? and axisId = ? and baseValue = ? ";
     String updateQuery = " update "
-        + PdcUtilizationTable
-        + " set baseValue = ? where instanceId = ? and axisId = ? and baseValue = ? ";
+            + PdcUtilizationTable
+            + " set baseValue = ? where instanceId = ? and axisId = ? and baseValue = ? ";
 
     SilverTrace.info("Pdc", "PdcBmImpl.updateBaseValue",
-        "root.MSG_GEN_PARAM_VALUE", "updateQuery = update "
-        + PdcUtilizationTable + " set baseValue = " + newBaseValue
-        + " where instanceId = " + instanceId + " and axisId = " + axisId
-        + " and baseValue = " + oldBaseValue);
+            "root.MSG_GEN_PARAM_VALUE", "updateQuery = update "
+            + PdcUtilizationTable + " set baseValue = " + newBaseValue
+            + " where instanceId = " + instanceId + " and axisId = " + axisId
+            + " and baseValue = " + oldBaseValue);
 
     PreparedStatement prepStmt = null;
     int nbAffectedRows = 0;
@@ -153,14 +156,17 @@ public class PdcUtilizationDAO {
   }
 
   /**
-   * Test if the base value can be updated. No new sisters ou new "niece"s are used in the
-   * utilisation
-   * @param con - the connection to the database
-   * @param baseValue - the base value that must be updated
+   * Tests if the base value can be updated. No new sisters ou new "niece"s are used in the
+   * use of the axis.
+   * @param con the connection to the database.
+   * @param baseValue the base value to test.
+   * @param axisId the identifier of the axis.
+   * @param treeId the identifier of the axis tree.
+   * @param instanceId the unique identifier of the Silverpeas component instance that uses the axis.
    * @return true if this base value has no new sisters ... not used otherwise false
    */
-  public static boolean canUpdateBaseValue(Connection con, int baseValue,
-      String axisId, String treeId, String instanceId) throws SQLException {
+  public boolean canUpdateBaseValue(Connection con, int baseValue,
+          String axisId, String treeId, String instanceId) throws SQLException {
 
     boolean canUpdate = true;
     // recherche des valeurs soeurs ou nieces qui sont utilisées
@@ -168,7 +174,7 @@ public class PdcUtilizationDAO {
     // recherche du chemin de la mere de cette valeur de base
     // et construction de son chemin complet
     String selectQuery = " select path from " + TreeTable + " where treeId = "
-        + treeId + " and id = " + baseValue;
+            + treeId + " and id = " + baseValue;
     Statement stmt = null;
     ResultSet rs = null;
     String motherPath = "";
@@ -191,11 +197,11 @@ public class PdcUtilizationDAO {
     // soit des nieces
     // de la valeur que l'on veut effacer
     selectQuery = " select baseValue from " + PdcUtilizationTable
-        + " where instanceId = '" + instanceId + "' and axisId = " + axisId
-        + " and baseValue in " + " ( " + "	select id from " + TreeTable
-        + " where treeId = " + treeId + " and path like '" + motherPath
-        + "%' and path not like '" + valuePath + "%' and id <> " + baseValue
-        + " ) " + " and baseValue <> " + baseValue;
+            + " where instanceId = '" + instanceId + "' and axisId = " + axisId
+            + " and baseValue in " + " ( " + "	select id from " + TreeTable
+            + " where treeId = " + treeId + " and path like '" + motherPath
+            + "%' and path not like '" + valuePath + "%' and id <> " + baseValue
+            + " ) " + " and baseValue <> " + baseValue;
 
     try {
       stmt = con.createStatement();
@@ -225,28 +231,27 @@ public class PdcUtilizationDAO {
    * @throws SQLException
    * @see
    */
-  public static boolean isAlreadyAdded(Connection con, String instanceId,
-      int usedAxisId, int axisId, int baseValue, String treeId)
-      throws SQLException {
-    Vector<String> forbiddenValues = new Vector<String>(); // il s'agit du vecteur contenant
-    // toutes les valeurs interdites
+  public boolean isAlreadyAdded(Connection con, String instanceId,
+          int usedAxisId, int axisId, int baseValue, String treeId)
+          throws SQLException {
+    List<String> forbiddenValues = new ArrayList<String>();
     boolean isAdded = false;
 
     // Récupération dans un 1er temps de toutes les valeurs de base
     // qui sont contenues dans l'axe -axisId- du composant -instanceId-
-    Vector<Integer> allBaseValues = getAllBaseValues(con, usedAxisId, instanceId, axisId);
-
+    List<Integer> allBaseValues = getAllBaseValues(con, usedAxisId, instanceId, axisId);
     isAdded = allBaseValues.contains(new Integer(baseValue));
-    if (isAdded)
+    if (isAdded) {
       SilverTrace.info("Pdc", "PdcBmImpl.isAlreadyAdded",
-          "root.MSG_GEN_PARAM_VALUE", "baseValue " + baseValue
-          + " is already exist for instanceId = " + instanceId
-          + " and axisId = " + axisId);
-    else
+              "root.MSG_GEN_PARAM_VALUE", "baseValue " + baseValue
+              + " is already exist for instanceId = " + instanceId
+              + " and axisId = " + axisId);
+    } else {
       SilverTrace.info("Pdc", "PdcBmImpl.isAlreadyAdded",
-          "root.MSG_GEN_PARAM_VALUE", "baseValue " + baseValue
-          + " does not exist for instanceId = " + instanceId
-          + " and axisId = " + axisId);
+              "root.MSG_GEN_PARAM_VALUE", "baseValue " + baseValue
+              + " does not exist for instanceId = " + instanceId
+              + " and axisId = " + axisId);
+    }
 
     // ensuite, pour chaque valeur de base récupérée, on cherche toute la
     // filiation
@@ -255,17 +260,17 @@ public class PdcUtilizationDAO {
     if ((!allBaseValues.isEmpty()) && (!isAdded)) {
 
       // On cherche d'abord le chemin complet de chaque valeur de base
-      String whereClause = " where treeId = " + treeId + " and (1=0 ";
-      for (Enumeration<Integer> e = allBaseValues.elements(); e.hasMoreElements();) {
-        whereClause += " or id = " + (e.nextElement()).toString();
+      StringBuilder whereClause = new StringBuilder(" where treeId = " + treeId + " and (1=0 ");
+      for (Integer value : allBaseValues) {
+        whereClause.append(" or id = ").append(value.toString());
       }
       String selectQuery = " select path, id from " + TreeTable + " "
-          + whereClause + ")";
+              + whereClause.toString() + ")";
 
       SilverTrace.info("Pdc", "PdcBmImpl.isAlreadyAdded",
-          "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
+              "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
 
-      whereClause = "where treeId = " + treeId + " and (1=0 "; // on prépare la
+      whereClause = new StringBuilder("where treeId = " + treeId + " and (1=0 "); // on prépare la
       // prochaine
       // clause Where
       String allCompletPathes = "";
@@ -284,10 +289,10 @@ public class PdcUtilizationDAO {
           path = rs.getString(1);
           node = new Integer(rs.getInt(2)).toString();
           allCompletPathes += path;
-          whereClause += " or path like '" + path + node + "/%'";
+          whereClause.append(" or path like '").append(path).append(node).append("/%'");
           // on construit la clause Where pour le prochain accès en base
         }
-        whereClause += ")";
+        whereClause.append(")");
       } finally {
         DBUtil.close(rs, stmt);
       }
@@ -299,14 +304,14 @@ public class PdcUtilizationDAO {
       while (st.hasMoreTokens()) {
         forbiddenValue = st.nextToken();
         SilverTrace.info("Pdc", "PdcBmImpl.isAlreadyAdded",
-            "root.MSG_GEN_PARAM_VALUE", "forbiddenValue = " + forbiddenValue);
+                "root.MSG_GEN_PARAM_VALUE", "forbiddenValue = " + forbiddenValue);
         forbiddenValues.add(forbiddenValue);
       }
 
       // maintenant on prepare la requete SQL qui va récupérer toutes les
       // valeurs filles
       // et on va les mettre dans le vecteur de valeurs interdites
-      forbiddenValues = getAllDaughterValues(con, forbiddenValues, whereClause);
+      forbiddenValues = getAllDaughterValues(con, forbiddenValues, whereClause.toString());
 
       // on détermine si la valeur que l'on reçoit appartient au vecteur
       isAdded = forbiddenValues.contains(new Integer(baseValue).toString());
@@ -315,15 +320,15 @@ public class PdcUtilizationDAO {
   }
 
   /**
-   * Updates into the SB_Pdc_Utilization table all usedAxis. Set the mandatory and variant values
-   * @param con - the connection to the database
-   * @param usedAxis - the new or modified used axis
+   * Updates the specified used axis.
+   * @param con the connection to the database
+   * @param usedAxis the new or modified used axis.
    */
-  public static void updateAllUsedAxis(Connection con, UsedAxis usedAxis)
-      throws SQLException {
+  public void updateAllUsedAxis(Connection con, UsedAxis usedAxis)
+          throws SQLException {
     String updateQuery = " update "
-        + PdcUtilizationTable
-        + " set mandatory = ?, variant = ? where instanceId = ? and axisId = ? ";
+            + PdcUtilizationTable
+            + " set mandatory = ?, variant = ? where instanceId = ? and axisId = ? ";
     PreparedStatement prepStmt = null;
 
     try {
@@ -338,15 +343,15 @@ public class PdcUtilizationDAO {
     }
   }
 
-  public static List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds)
-      throws SQLException {
+  public List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds)
+          throws SQLException {
     return getAxisUsedByInstanceId(con, instanceIds, new AxisFilter());
   }
 
-  public static List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds,
-      AxisFilter filter) throws SQLException {
+  public List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds,
+          AxisFilter filter) throws SQLException {
     SilverTrace.info("Pdc", "PdcBmImpl.getAxisUsedByInstanceId",
-        "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
+            "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
 
     List<AxisHeader> axisUsed = new ArrayList<AxisHeader>();
 
@@ -355,9 +360,9 @@ public class PdcUtilizationDAO {
     }
 
     String selectStatement =
-        "select distinct(A.id), A.RootId, A.Name, A.AxisType, A.AxisOrder, A.description "
-        + "from SB_Pdc_Utilization U, SB_Pdc_Axis A "
-        + "where U.axisId = A.id ";
+            "select distinct(A.id), A.RootId, A.Name, A.AxisType, A.AxisOrder, A.description "
+            + "from SB_Pdc_Utilization U, SB_Pdc_Axis A "
+            + "where U.axisId = A.id ";
 
     // la liste instanceIds n'est jamais nulle
     selectStatement += "  and U.instanceId IN (";
@@ -366,11 +371,11 @@ public class PdcUtilizationDAO {
       if (!first) {
         selectStatement += ",";
       }
-      selectStatement += "'"+instanceId+"'";
+      selectStatement += "'" + instanceId + "'";
       first = false;
     }
     selectStatement += " ) ";
-    
+
     AxisFilterNode condition;
     String property;
 
@@ -407,7 +412,7 @@ public class PdcUtilizationDAO {
     selectStatement += " order by A.AxisType Asc, A.AxisOrder ASC";
 
     SilverTrace.info("Pdc", "PdcBmImpl.getAxisUsedByInstanceId",
-        "root.MSG_GEN_PARAM_VALUE", "selectStatement = " + selectStatement);
+            "root.MSG_GEN_PARAM_VALUE", "selectStatement = " + selectStatement);
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -426,7 +431,7 @@ public class PdcUtilizationDAO {
         }
         property = condition.getPriperty();
         if (AxisFilter.NAME.equals(property)
-            || AxisFilter.DESCRIPTION.equals(property)) {
+                || AxisFilter.DESCRIPTION.equals(property)) {
           prepStmt.setString(index++, condition.getValue());
         }
       }
@@ -450,7 +455,7 @@ public class PdcUtilizationDAO {
         axisDescription = rs.getString(6);
 
         axisHeader = new AxisHeader(new Integer(axisId).toString(), axisName,
-            axisType, axisOrder, axisRootId, axisDescription);
+                axisType, axisOrder, axisRootId, axisDescription);
         axisUsed.add(axisHeader);
       }
     } finally {
@@ -460,26 +465,25 @@ public class PdcUtilizationDAO {
   }
 
   /**
-   * Returns all basevalue from the SB_Pdc_Utilization table for an axis and an instance of the
-   * component
-   * @param con - The connection to the database
-   * @param usedAxisId - the id of the axis used
-   * @param instanceId - the id of the instance of the component
-   * @param axisId - the id of the axis
-   * @return a vector containing all base values
+   * Returns all base values for an axis and an instance of a Silverpeas component.
+   * @param con the connection to the database
+   * @param usedAxisId the identifier of the axis used by the component instance.
+   * @param instanceId the identifier of the instance of the component
+   * @param axisId the identifier of the axis.
+   * @return a list containing all base values.
    */
-  private static Vector<Integer> getAllBaseValues(Connection con, int usedAxisId,
-      String instanceId, int axisId) throws SQLException {
+  private List<Integer> getAllBaseValues(Connection con, int usedAxisId,
+          String instanceId, int axisId) throws SQLException {
 
     String selectQuery = "select baseValue from " + PdcUtilizationTable
-        + " where instanceId = ? and axisId = ? and id <> ? ";
+            + " where instanceId = ? and axisId = ? and id <> ? ";
 
     SilverTrace.info("Pdc", "PdcBmImpl.getAllBaseValues",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = select baseValue from "
-        + PdcUtilizationTable + " where instanceId = " + instanceId
-        + " and axisId = " + axisId + " and id <> " + usedAxisId);
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = select baseValue from "
+            + PdcUtilizationTable + " where instanceId = " + instanceId
+            + " and axisId = " + axisId + " and id <> " + usedAxisId);
 
-    Vector<Integer> allBaseValues = new Vector<Integer>();
+    List<Integer> allBaseValues = new ArrayList<Integer>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -494,9 +498,9 @@ public class PdcUtilizationDAO {
       while (rs.next()) {
         baseValue = rs.getInt(1);
         SilverTrace.info("Pdc", "PdcBmImpl.getAllBaseValues",
-            "root.MSG_GEN_PARAM_VALUE", "another baseValue which is "
-            + baseValue + " for instanceId = " + instanceId
-            + " and axisId = " + axisId);
+                "root.MSG_GEN_PARAM_VALUE", "another baseValue which is "
+                + baseValue + " for instanceId = " + instanceId
+                + " and axisId = " + axisId);
         allBaseValues.add(Integer.valueOf(baseValue)); // get and stock the result
       }
     } finally {
@@ -513,11 +517,11 @@ public class PdcUtilizationDAO {
    * @param whereClause - the string of the SQL WHERE clause
    * @return the forbiddenValues updated
    */
-  private static Vector<String> getAllDaughterValues(Connection con,
-      Vector<String> forbiddenValues, String whereClause) throws SQLException {
+  private List<String> getAllDaughterValues(Connection con,
+          List<String> forbiddenValues, String whereClause) throws SQLException {
     String selectQuery = "select id from " + TreeTable + " " + whereClause;
     SilverTrace.info("Pdc", "PdcBmImpl.getAllDaughterValues",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
+            "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
     try {
@@ -537,5 +541,4 @@ public class PdcUtilizationDAO {
 
     return forbiddenValues;
   }
-
 }
