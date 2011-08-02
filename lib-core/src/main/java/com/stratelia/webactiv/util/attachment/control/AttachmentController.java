@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -478,11 +479,21 @@ public class AttachmentController {
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void attachmentIndexer(WAPrimaryKey fk) {
-
     try {
-
       for (AttachmentDetail detail : searchAttachmentByCustomerPK(fk)) {
         createIndex(detail);
+      }
+    } catch (Exception fe) {
+      throw new AttachmentRuntimeException(
+          "AttachmentController.attachmentIndexer(WAPrimaryKey foreignKey, String context)",
+          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", fe);
+    }
+  }
+  
+  public static void attachmentIndexer(WAPrimaryKey fk, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod) {
+    try {
+      for (AttachmentDetail detail : searchAttachmentByCustomerPK(fk)) {
+        createIndex(detail, startOfVisibilityPeriod, endOfVisibilityPeriod);
       }
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
@@ -871,6 +882,11 @@ public class AttachmentController {
    * @see
    */
   public static void createIndex(AttachmentDetail detail) {
+    createIndex(detail, null, null);
+  }
+  
+  public static void createIndex(AttachmentDetail detail, Date startOfVisibilityPeriod,
+      Date endOfVisibilityPeriod) {
     
     if (resources.getBoolean("attachment.index.separately", true)) {
       // index the uploaded or linked file
@@ -898,6 +914,12 @@ public class AttachmentController {
             indexEntry.setLang(language);
             indexEntry.setCreationDate(translation.getCreationDate());
             indexEntry.setCreationUser(translation.getAuthor());
+            if (startOfVisibilityPeriod != null) {
+              indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibilityPeriod));
+            }
+            if (endOfVisibilityPeriod != null) {
+              indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibilityPeriod));
+            }
   
             indexEntry.setTitle(translation.getLogicalName(), language);
   

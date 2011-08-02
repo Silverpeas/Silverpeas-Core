@@ -340,13 +340,17 @@ public class VersioningUtil {
     return false;
   }
 
-  public void indexDocumentsByForeignKey(ForeignPK foreignPK)
-      throws RemoteException {
+  public void indexDocumentsByForeignKey(ForeignPK foreignPK) throws RemoteException {
+    indexDocumentsByForeignKey(foreignPK, null, null);
+  }
+  
+  public void indexDocumentsByForeignKey(ForeignPK foreignPK, Date startOfVisibilityPeriod,
+      Date endOfVisibilityPeriod) throws RemoteException {
     List<Document> documents = getVersioningBm().getDocuments(foreignPK);
     for (Document currentDocument : documents) {
       DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(
           currentDocument.getPk());
-      createIndex(currentDocument, version);
+      createIndex(currentDocument, version, startOfVisibilityPeriod, endOfVisibilityPeriod);
     }
   }
   
@@ -379,10 +383,16 @@ public class VersioningUtil {
 
   public void createIndex(Document documentToIndex, DocumentVersion lastVersion)
       throws RemoteException {
+    createIndex(documentToIndex, lastVersion, null, null);
+  }
+  
+  public void createIndex(Document documentToIndex, DocumentVersion lastVersion,
+      Date startOfVisibilityPeriod, Date endOfVisibilityPeriod) throws RemoteException {
     if (resources.getBoolean("attachment.index.separately", true)) {
       SilverTrace.info("versioningPeas", "VersioningUtil.createIndex()",
           "root.MSG_GEN_ENTER_METHOD", "documentToIndex = " + documentToIndex.toString());
-      indexer.createIndex(documentToIndex, lastVersion);
+      indexer.createIndex(documentToIndex, lastVersion, startOfVisibilityPeriod,
+          endOfVisibilityPeriod);
     }
   }
 
