@@ -267,11 +267,11 @@
    * Prepares the area into which the classification on the PdC of the resource will be rendered.
    */
   function prepareClassificationArea ( $this ) {
-    var titleTag = '<span>';
+    var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.title));
     if ($this.is('fieldset')) {
-      titleTag = '<legend>';
+      titleTag = $('<legend>').html(settings.title);
     }
-    $(titleTag).addClass('title').html(settings.title).appendTo($this);
+    titleTag.addClass('header').appendTo($this);
     if (settings.mode != 'view') {
       var editionBox = $('<div>', {
         id: 'pdc-edition-box'
@@ -280,16 +280,15 @@
         editionBox.attr("style","display: none;");
       }
     }
-    $('<div>').addClass('fields').append($('<div>', {
-      id: 'list_pdc_position'
-    }).addClass('field').
-      append($('<label>', {
-        'for': settings.positionsLabel
-        }).html(settings.positionsLabel)).
-      append($('<div>', {
-        id: 'allpositions'
-      }).addClass('champs'))).
-    appendTo($this);
+    var listOfPositions = $('<div>', { id: 'list_pdc_position' });
+    if (settings.mode != 'view') {
+      listOfPositions.append($('<label>', { 'for': settings.positionsLabel }).html(settings.positionsLabel)).
+        addClass('field').append($('<div>', { id: 'allpositions' })).
+          appendTo($('<div>').addClass('fields').appendTo($this));
+      $('#allpositions').addClass('champs');
+    } else {
+      listOfPositions.append($('<div>', { id: 'allpositions' })).appendTo($this);
+    }
   }
 
   /**
@@ -622,13 +621,14 @@
         $('<img>', {
           src: settings.edition.invariantIcon, 
           alt: settings.edition.invariantLegend,
-          width: '5px'
+          width: '10px'
         }).appendTo(currentAxisDiv);
       }
     });
     
+    axisSection.append($('<br>').attr('clear', 'all'));
     if (settings.mode == 'creation') {
-      axisSection.append($('<br>').attr('clear', 'all')).
+      axisSection.
       append($('<a>', {
         'id': 'valid_position', 
         'href': '#'

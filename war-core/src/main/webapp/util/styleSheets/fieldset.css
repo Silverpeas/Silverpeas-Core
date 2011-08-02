@@ -99,12 +99,8 @@ label {
 	clear:both ; 
 }
 
-.champs input {
-	width:96%; 
-	margin:0;
-}
-.champs select {
-	width:96%; 
+.champs input, .champs select {
+	width:94%; 
 	margin:0;
 }
 

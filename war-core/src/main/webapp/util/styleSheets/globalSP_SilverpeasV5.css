@@ -186,13 +186,21 @@ Definition des class de style Silverpeas
 		min-height:14px;
 	}
 
-.bgDegradeGris.header{
+.bgDegradeGris.header, .bgDegradeGris .header {
+    border-bottom:1px solid #cdcdcd;
 	border-top:0;
 	border-right:0;
 	border-left:0;
 	margin:0;
 	padding:5px;
 	font-size:110%;	
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
+	background: -moz-linear-gradient(top, #fff, #e5e5e5);
+	/* For Internet Explorer 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
+	/* For Internet Explorer 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
+	min-height:14px;
 }
 
 * html 	.bgDegradeGris {
@@ -4037,7 +4045,7 @@ html:not([lang*=""]) .add_position:hover {
   background-color: #EAEAEA;
 }
 
-#classification legend{
+#classification legend {
 	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
@@ -4069,5 +4077,19 @@ html:not([lang*=""]) .add_position:hover {
 
 #classification .list_pdc_position {
 	border:1px solid #C6CDBF;
-	width:96%;
+	width:94%;
+}
+
+#classification #list_pdc_position.field {
+  width: 98%;
+}
+
+#classification.preview .list_pdc_position {
+	border:0;
+	width:100%;
+}
+
+#classification.preview .header h4 {
+    background: url("/silverpeas/util/icons/component/pdcPeasSmall.gif") no-repeat scroll right top transparent;
+    height: 16px;
 }

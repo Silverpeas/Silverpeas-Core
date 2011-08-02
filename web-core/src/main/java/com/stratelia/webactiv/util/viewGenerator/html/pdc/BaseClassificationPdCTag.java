@@ -127,7 +127,11 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
       classification = new fieldset();
     }
     classification.setID(PDC_CLASSIFICATION_WIDGET_TAG_ID);
-    classification.setClass("skinFieldset");
+    if (getInvokedOperation() == READ_CLASSIFICATION) {
+      classification.setClass("preview");
+    } else {
+      classification.setClass("skinFieldset");
+    }
     script jqueryPlugin = new script().setType("text/javascript").
             setSrc(context + "/util/javaScript/silverpeas-pdc.js");
     script pluginExecution = new script().setType("text/javascript").
