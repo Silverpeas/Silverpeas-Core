@@ -49,7 +49,7 @@
 
   <repositories>
     <repository>
-      <id>NexusSilverpeas</id>
+      <id>Silverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
       <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>

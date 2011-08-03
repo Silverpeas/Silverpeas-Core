@@ -29,15 +29,15 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.simple.SimpleScheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 
-public class ScheduledDBReset
-    implements SchedulerEventListener {
+public class ScheduledDBReset implements SchedulerEventListener {
 
   // Local constants
   private static final String DBRESET_JOB_NAME = "ScheduledDBReset";
-  private AdminController m_ac = null;
+  private AdminController adminController = null;
 
   /**
    * Initialize timeout manager
@@ -49,8 +49,7 @@ public class ScheduledDBReset
       Scheduler scheduler = schedulerFactory.getScheduler();
       // Remove previous scheduled job
       scheduler.unscheduleJob(DBRESET_JOB_NAME);
-      if ((cronString != null) && (cronString.length() > 0)) {
-        // Create new scheduled job
+      if (StringUtil.isDefined(cronString)) {
         JobTrigger trigger = JobTrigger.triggerAt(cronString);
         scheduler.scheduleJob(DBRESET_JOB_NAME, trigger, this);
       }
@@ -65,16 +64,15 @@ public class ScheduledDBReset
    * processManager if associated model contains states with timeout events If so, all the instances
    * of these peas that have the "timeout" states actives are read to check if timeout interval has
    * been reached. In that case, the administrator can be notified, the active state and the
-   * instance are marked as timeout
-   * @param date the date when the method is called by the scheduler
+   * instance are marked as timeout.
    * @see SimpleScheduler for parameters,
    */
   public void doDBReset() {
-    if (m_ac == null) {
-      m_ac = new AdminController(null);
+    if (adminController == null) {
+      adminController = new AdminController(null);
     }
     try {
-      m_ac.resetAllDBConnections(true);
+      adminController.resetAllDBConnections(true);
     } catch (Exception e) {
       SilverTrace.error("admin", "ScheduledDBReset.doDBReset",
           "admin.EX_ERR_TIMEOUT_MANAGEMENT", e);
@@ -97,7 +95,6 @@ public class ScheduledDBReset
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("admin", "ScheduledDBReset.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName()
-        + "' was not successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }
