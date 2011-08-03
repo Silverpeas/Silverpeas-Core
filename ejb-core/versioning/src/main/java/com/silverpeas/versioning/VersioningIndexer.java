@@ -26,6 +26,7 @@ package com.silverpeas.versioning;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -36,6 +37,7 @@ import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -51,8 +53,13 @@ public class VersioningIndexer {
   public VersioningIndexer() {
   }
 
-  public void createIndex(Document documentToIndex, DocumentVersion lastVersion)
-      throws RemoteException {
+  public void createIndex(Document documentToIndex, DocumentVersion lastVersion) throws RemoteException {
+    createIndex(documentToIndex, lastVersion, null, null);
+  }
+  
+  public void createIndex(Document documentToIndex, DocumentVersion lastVersion,
+      Date startOfVisibilityPeriod, Date endOfVisibilityPeriod) throws RemoteException {
+    
     SilverTrace.info("versioning", "VersioningIndexer.createIndex()",
         "root.MSG_GEN_ENTER_METHOD", "documentToIndex = "
         + documentToIndex.toString());
@@ -72,6 +79,12 @@ public class VersioningIndexer {
       String userId = Integer.toString(lastVersion.getAuthorId());
       indexEntry.setCreationUser(userId);
       indexEntry.setCreationDate(lastVersion.getCreationDate());
+      if (startOfVisibilityPeriod != null) {
+        indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibilityPeriod));
+      }
+      if (endOfVisibilityPeriod != null) {
+        indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibilityPeriod));
+      }
 
       String path = createPath(space, component) + File.separator
           + lastVersion.getPhysicalName();
