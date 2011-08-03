@@ -27,43 +27,28 @@ import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 
 /**
- * A tag that renders the use of the JQuery PdC plugin to get the possibly new classification for
- * a new content in Silverpeas.
+ * The base tag for all concrete tags on the PdC classification of a content.
  */
-public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
-
-  private static final long serialVersionUID = 3377113335947703561L;
+public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
+  private static final long serialVersionUID = -562523990230139481L;
   
-  private String errorMessager;
-  private String errorCounter;
+  private String setIn;
 
-  public String getErrorCounter() {
-    return errorCounter;
+  public String getSetIn() {
+    return setIn;
   }
 
-  public void setErrorCounter(String errorCounter) {
-    this.errorCounter = errorCounter;
+  public void setSetIn(String setIn) {
+    this.setIn = setIn;
   }
-
-  public String getErrorMessager() {
-    return errorMessager;
-  }
-
-  public void setErrorMessager(String errorMessage) {
-    this.errorMessager = errorMessage;
-  } 
-
+  
   @Override
   public int doStartTag() throws JspException {
     ElementContainer xhtmlcontainer = new ElementContainer();
-    String script = "if (!$('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID + 
-            "').pdc('isClassificationValid')) { " + getErrorMessager() + " += \" - " +
-            getResources().getString("pdcPeas.theContent") + " " +
-            getResources().getString("pdcPeas.MustContainsMandatoryAxis") + "\\n\"; " +
-            getErrorCounter() + "++; }";
+    String script = getSetIn() +
+            " = $.toJSON( $('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID + "').pdc('positions') );";
     xhtmlcontainer.addElement(script);
     xhtmlcontainer.output(pageContext.getOut());
     return SKIP_BODY;
   }
-  
 }

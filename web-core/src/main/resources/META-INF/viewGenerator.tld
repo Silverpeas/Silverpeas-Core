@@ -71,19 +71,46 @@
     </attribute>
   </tag>
   <tag>
-    <description>Tag to print out javascript code to validate the classification onto the PdC of a
-    new content. The validation instructions call the passed javascript function with as parameter
-    the positions that made the classification once validated.
+    <description>Tag to print out javascript code to validate the classification onto the PdC that
+    was done through the tag pdcNewClassification for a new content. The tag generates javascript
+    instruction that returns the error message if the classification isn't valid, otherwise an empty
+    message.
     </description>
     <name>pdcValidateClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationValidationTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>The javascript function that will be called once the validation is ok.
-      The function should accept one argument: the new positions to create for the content. The positions
-      are passed in JSON.
+      <description>The name of the Javascript variable that will accept the error message when the
+      classification of the content isn't valid. The message is concatenated at the variable'value.
       </description>
-      <name>functionToCall</name>
+      <name>errorMessager</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The name of the Javascript variable representing the counter of detected errors
+      in the form validation and that will be incremented by one at the classification validation
+      failure.
+      </description>
+      <name>errorCounter</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out javascript code to get the positions of the content classification
+    onto the PdC that were selected through the tag pdcNewClassification.
+    </description>
+    <name>pdcPositions</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The name of the Javascript variable that will accept the positions set through the
+      pdcNewClassification tag.
+      </description>
+      <name>setIn</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
