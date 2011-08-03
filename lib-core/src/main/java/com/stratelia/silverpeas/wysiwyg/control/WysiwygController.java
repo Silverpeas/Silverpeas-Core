@@ -179,106 +179,78 @@ public class WysiwygController {
   }
 
   /**
-   * /* finNode
-   * @param scc
-   * @param path
-   * @return
+   * Returns the node path : for example  ....webSite17\\id\\rep1\\rep2\\rep3 returns id\rep1\rep2\rep3
+   * @param componentId the component id.
+   * @param path the full path.
+   * @return the path for the nodes.
    */
-  private static String finNode(String path, String componentId) {
-    /* ex : ....webSite17\\id\\rep1\\rep2\\rep3 */
-    /* res : id\rep1\rep2\rep3 */
+  static String finNode(String path, String componentId) {
+
     int longueur = componentId.length();
     int index = path.lastIndexOf(componentId);
     String chemin = path.substring(index + longueur);
-    chemin = ignoreAntiSlash(chemin);
+    chemin = ignoreSlashAndAntislash(chemin);
     chemin = supprDoubleAntiSlash(chemin);
     return chemin;
   }
 
   /**
-   * finNode2
+   * Returns the node path without the id element : for example  ....webSite17\\id\\rep1\\rep2\\rep3 returns rep1\rep2\rep3
+   * @param componentId the component id.
+   * @param path the full path.
+   * @return the path for the nodes.
    */
-  private static String finNode2(String path, String componentId) {
-    /* ex : ....webSite17\id\rep1\rep2\rep3 */
-    /* res : rep1\rep2\rep3 */
+  static String finNode2(String path, String componentId) {
     SilverTrace.info("wysiwyg", "WysiwygController.finNode2()", "root.MSG_GEN_PARAM_VALUE",
             "path=" + path);
     String finNode = doubleAntiSlash(path);
     finNode = finNode(finNode, componentId);
-    int index = finNode.indexOf("\\");
-    if (index == -1) // on est sous systeme UNIX : il n'y a que des Slash
-    {
-      /*
-       * NEWD CBO 25/06/2007 int longueur = componentId.length(); int index2 =
-       * path.lastIndexOf(componentId); finNode = path.substring(index2 + longueur); finNode =
-       * ignoreAntiSlash(finNode); index = finNode.indexOf("/"); NEWF CBO
-       */
-
-      index = finNode.indexOf("/");
+    int index = finNode.indexOf('\\');
+    if (index < 0) {
+      index = finNode.indexOf('/');
     }
     return finNode.substring(index + 1);
   }
 
   /**
-   * Method declaration Get the node of the path of the root Website
-   * @param path type String: for example: ex :
-   * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11\\
-   * @param componentId
-   * @return a String with the path of the node: ex:
+   * Method declaration Get the node of the path of the root Website. 
+   * For example c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11\\ should return
    * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3
+   * @param path the full path.
+   * @param componentId the component id.
+   * @return a String with the path of the node.
    * @throws WysiwygException
    */
-  private static String getNodePath(String currentPath, String componentId) {
-    /* retourne la liste des noeuds par lesquels on passe */
-    /* ex : c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11\\ */
-    /* res = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3 */
-
-    String nodePath = "";
-    String deb;
-    String finChemin;
-
+  static String getNodePath(String currentPath, String componentId) {   
     String chemin = currentPath;
     if (chemin != null) {
-      chemin = supprAntiSlashFin(chemin); /*
-       * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\
-       * rep1\\rep11
-       */
-
+      chemin = supprAntiSlashFin(chemin);
       int longueur = componentId.length();
       int index = chemin.lastIndexOf(componentId);
-
-      /* index de fin de webSite15 dans le chemin */
       index = index + longueur;
-      /* finChemin = "\\id\\rep\\ ..." */
-      finChemin = chemin.substring(index);
-      /* saute les antiSlash, finChemin = id\\rep\\ ... */
+      String finChemin = chemin.substring(index);
       finChemin = ignoreSlash(finChemin);
-
-      index = finChemin.indexOf("/");
+      finChemin = ignoreSlashAndAntislash(finChemin);
+      if(finChemin.contains("/")) {
+        index = finChemin.indexOf('/');
+      } else if(finChemin.contains("\\")) {
+        index = finChemin.indexOf('\\');
+      }
       SilverTrace.info("wysiwyg", "WysiwygController.getNodePath()", "root.MSG_GEN_PARAM_VALUE",
               "finChemin = " + finChemin);
 
       if (index == -1) {
-        nodePath = chemin; /* la racine id */
+        return chemin;
       } else {
-        /* deb */
         int indexRacine = chemin.indexOf(finChemin);
-        int indexAntiSlashSuivant = finChemin.indexOf("/");
-        deb = chemin.substring(0, indexRacine + indexAntiSlashSuivant);
-        nodePath = deb; /* ajoute la racine */
-        /* finChemin = \rep\\ ... */
-        finChemin = finChemin.substring(index + 1);
-        /* saute les antiSlash s'il y en a, finChemin = rep\\rep1\\rep2\\ ... */
-        finChemin = ignoreSlash(finChemin);
-        SilverTrace.info("wysiwyg", "WysiwygController.getNodePath()", "root.MSG_GEN_PARAM_VALUE",
-                "nodePath = " + nodePath);
-      } // fin else
-    } // fin if
-    return nodePath;
+        return chemin.substring(0, indexRacine + index);
+      }
+    }
+    return "";
   }
 
   /* supprAntiSlashFin */
-  private static String supprAntiSlashFin(String path) {
+  static String supprAntiSlashFin(String path) {
     /* ex : ....\\id\\rep1\\rep2\\rep3\\ */
     /* res : ....\\id\\rep1\\rep2\\rep3 */
 
@@ -293,7 +265,7 @@ public class WysiwygController {
     }
   }
 
-  private static String ignoreSlash(String chemin) {
+  static String ignoreSlash(String chemin) {
     /* ex : /rep1/rep2/rep3 */
     /* res = rep1/rep2/rep3 */
     String res = chemin;
@@ -309,13 +281,13 @@ public class WysiwygController {
     return res;
   }
 
-  /* supprDoubleAntiSlash */
-  private static String supprDoubleAntiSlash(String chemin) {
+ 
+  static String supprDoubleAntiSlash(String chemin) {
     String res = "";
     int i = 0;
     while (i < chemin.length()) {
       char car = chemin.charAt(i);
-      if (car == '\\') {
+      if (car == '\\' && chemin.charAt(i + 1) == '\\') {
         res = res + car;
         i++;
       } else {
@@ -326,28 +298,17 @@ public class WysiwygController {
     return res;
   }
 
-  /* ignoreAntiSlash */
-  private static String ignoreAntiSlash(String chemin) {
-    /* ex : \\\rep1\\rep2\\rep3 */
-    /* res = rep1\\rep2\\re3 */
-    String res = chemin;
-    boolean ok = false;
-    while (!ok) {
-      char car = res.charAt(0);
-      /*
-       * NEWD CBO 25/06/2007 if (car == '\\') { NEWF CBO
-       */
-      if (car == '\\' || car == '/') {
-        res = res.substring(1);
-      } else {
-        ok = true;
-      }
+
+  static String ignoreSlashAndAntislash(String chemin) {
+    char firstChar = chemin.charAt(0);
+   if (firstChar == '\\' || firstChar == '/') {
+     return ignoreSlashAndAntislash(chemin.substring(1));
     }
-    return res;
+    return chemin;
   }
 
   /* doubleAntiSlash */
-  private static String doubleAntiSlash(String chemin) {
+  static String doubleAntiSlash(String chemin) {
     int i = 0;
     String res = chemin;
     boolean ok = true;
@@ -378,9 +339,8 @@ public class WysiwygController {
     return res;
   }
 
-  /** Method declaration built the name of the file to be
-   * attached.
-   * @param id String : for example the id of the publication.
+  /** Method declaration built the name of the file to be attached.
+   * @param objectId : for example the id of the publication.
    * @return fileName String : name of the file
    */
   public static String getWysiwygFileName(String objectId) {
@@ -396,8 +356,7 @@ public class WysiwygController {
 
   /**
    * Method declaration built the name of the images to be attached.
-   * @param context String : for example Images.
-   * @param id String : for example the id of the publication.
+   * @param objectId : for example the id of the publication.
    * @return fileName String : name of the file
    */
   public static String getImagesFileName(String objectId) {
@@ -591,11 +550,10 @@ public class WysiwygController {
 
       AttachmentController.deleteAttachmentByCustomerPK(foreignKey);
       // delete the images directory
-      String path =
-              AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(
+      String path = AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(
               objectId));
 
-      WysiwygController.deletePath(path);
+      FileFolderManager.deleteFolder(path);
     } catch (Exception exc) {
       throw new WysiwygException("WysiwygController.deleteWysiwygAttachments()",
               SilverpeasException.ERROR, "wysiwyg.DELETING_WYSIWYG_ATTACHMENTS_FAILED", exc);
@@ -618,11 +576,10 @@ public class WysiwygController {
 
       AttachmentController.deleteWysiwygAttachmentByCustomerPK(foreignKey);
       // delete the images directory
-      String path =
-              AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(
+      String path = AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(
               objectId));
 
-      WysiwygController.deletePath(path);
+      FileFolderManager.deleteFolder(path);
     } catch (Exception exc) {
       throw new WysiwygException("WysiwygController.deleteWysiwygAttachments()",
               SilverpeasException.ERROR, "wysiwyg.DELETING_WYSIWYG_ATTACHMENTS_FAILED", exc);
@@ -635,48 +592,34 @@ public class WysiwygController {
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
    * @param context String : for example wysiwyg.
-   * @param objectId String : for example the id of the publication.
    * @return text : the contents of the file attached.
-   * @throws Exception
-   * @throws FinderException
-   * @throws NamingException
-   * @throws SQLException
    * @throws WysiwygException
    * @see AttachmentController
    */
   public static String loadFileAndAttachment(String fileName, String spaceId, String componentId,
           String context) throws WysiwygException {
-    String text = null;
     String path = AttachmentController.createPath(componentId, context);
-
     try {
-      text = FileFolderManager.getCode(path, fileName);
+      return FileFolderManager.getCode(path, fileName);
     } catch (UtilException e) {
       // There is no document
       throw new WysiwygException("WysiwygController.loadFileAndAttachment()",
-              SilverpeasException.WARNING, "wysiwyg.NO_WYSIWYG_DOCUMENT_ASSOCIATED");
+              SilverpeasException.WARNING, "wysiwyg.NO_WYSIWYG_DOCUMENT_ASSOCIATED", e);
     }
-    return text;
   }
 
   /**
    * Method declaration return the contents of the file attached.
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
-   * @param context String : for example wysiwyg.
    * @param objectId String : for example the id of the publication.
    * @return text : the contents of the file attached.
-   * @throws Exception
-   * @throws FinderException
-   * @throws NamingException
-   * @throws SQLException
    * @throws WysiwygException
    * @see AttachmentController
    */
   public static String loadFileAndAttachment(String spaceId, String componentId, String objectId)
           throws WysiwygException {
     String fileName = WysiwygController.getWysiwygFileName(objectId);
-
     return WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
   }
 
@@ -691,7 +634,6 @@ public class WysiwygController {
    */
   public static String load(String spaceId, String componentId, String objectId, String language)
           throws WysiwygException {
-
     return load(componentId, objectId, language);
   }
 
@@ -782,10 +724,6 @@ public class WysiwygController {
    * @param componentId
    * @param objectId
    * @return
-   * @throws Exception
-   * @throws FinderException
-   * @throws NamingException
-   * @see
    */
   public static boolean haveGotWysiwyg(String spaceId, String componentId, String objectId) {
     String path = AttachmentController.createPath(componentId, WYSIWYG_CONTEXT);
@@ -837,11 +775,8 @@ public class WysiwygController {
    * @param componentId String : the id of component.
    * @param context String : for example wysiwyg.
    * @param objectId String : for example the id of the publication.
+   * @param con 
    * @return AttachmentDetail
-   * @throws FinderException
-   * @throws NamingException
-   * @throws SQLException
-   * @throws WysiwygException
    * @see AttachmentController
    */
   public static AttachmentDetail searchAttachmentDetail(String fileName, String spaceId,
@@ -865,10 +800,6 @@ public class WysiwygController {
    * @param context String : for example wysiwyg.
    * @param objectId String : for example the id of the publication.
    * @return AttachmentDetail
-   * @throws FinderException
-   * @throws NamingException
-   * @throws SQLException
-   * @throws WysiwygException
    * @see AttachmentController
    */
   public static AttachmentDetail searchAttachmentDetail(String spaceId, String componentId,
@@ -935,40 +866,16 @@ public class WysiwygController {
 
   /**
    * deleteFile : destruction of a file Param = path name of the file
+   * @param directory 
+   * @param fileName
+   * @throws WysiwygException  
    */
   public synchronized void deleteFile(String directory, String fileName) throws WysiwygException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder\\File.html */
-
-    /* Creation of the object File */
     File file = new File(directory, fileName);
-    boolean result = file.delete();
-
-    if (!result) {
+    if (!file.delete()) {
       throw new WysiwygException("WysiwygController.deleteFile()", SilverpeasException.ERROR,
               "wysiwyg.DELETING_WYSIWYG_DOCUMENT_FAILED", "file = " + directory + fileName);
-    }
-  }
-
-  /**
-   * to delete path and file in ths directory
-   * @param path: type String: the path to deleted
-   * @exception: java.lang.Exception
-   * @author Jean-Claude Groccia
-   * @version 1.0
-   */
-  private static void deletePath(String path) throws WysiwygException {
-    SilverTrace.info("wysiwyg", "WysiwygController.deletePath()", "root.MSG_GEN_ENTER_METHOD",
-            "path = " + path);
-
-    try {
-      File d = new File(path);
-
-      if (!d.exists()) {
-        FileFolderManager.deleteFolder(path);
-      }
-    } catch (Exception e) {
-      throw new WysiwygException("WysiwygController.deletePath()", SilverpeasException.ERROR,
-              "wysiwyg.DELETING_DIRECTORY_ON_SERVER_FAILED", "path = " + path);
     }
   }
 
