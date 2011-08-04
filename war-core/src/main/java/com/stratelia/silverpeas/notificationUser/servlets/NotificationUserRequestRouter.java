@@ -29,7 +29,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,9 +39,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
-  /**
-   * <p/>
-   */
   private static final long serialVersionUID = -5858231857279380747L;
 
   /**
@@ -93,13 +89,6 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "function=" + function);
 
-    String popupMode = null;
-    String editTargets = null;
-    String txtTitle = null;
-    String txtMessage = null;
-    String notificationId = null;
-    String priorityId = null;
-
     try {
       request.setCharacterEncoding("UTF-8");
       if (function.startsWith("Main")) {
@@ -111,8 +100,8 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         nuSC.resetNotification();
         if (theTargetsUsers != null || theTargetsGroups != null) {// appel pour
           // notifier les targets
-          popupMode = request.getParameter("popupMode");
-          editTargets = request.getParameter("editTargets");
+          String popupMode = request.getParameter("popupMode");
+          String editTargets = request.getParameter("editTargets");
           selectedIdUsers = nuSC.initTargetsUsers(theTargetsUsers);
           selectedIdGroups = nuSC.initTargetsGroups(theTargetsGroups);
           destination = "/notificationUser/jsp/notificationSender.jsp?popupMode="
@@ -128,12 +117,11 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         String[] idUsers = request.getParameterValues("selectedUsers");
         String[] idGroups = request.getParameterValues("selectedGroups");
         // paramètres jsp
-        popupMode = request.getParameter("popupMode");
-        editTargets = request.getParameter("editTargets");
-        txtTitle = request.getParameter("txtTitle");
-        txtMessage = request.getParameter("txtMessage");
-        notificationId = request.getParameter("notificationId");
-        priorityId = request.getParameter("priorityId");
+        String popupMode = request.getParameter("popupMode");
+        String txtTitle = request.getParameter("txtTitle");
+        String txtMessage = request.getParameter("txtMessage");
+        String notificationId = request.getParameter("notificationId");
+        String priorityId = request.getParameter("priorityId");
         nuSC.setTxtTitle(txtTitle);
         nuSC.setTxtMessage(txtMessage);
         nuSC.setNotificationId(notificationId);
@@ -146,8 +134,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         String[] selectedIdUsers = nuSC.getTargetIdUsers();
         String[] selectedIdGroups = nuSC.getTargetIdGroups();
         // paramètres jsp
-        popupMode = request.getParameter("popupMode");
-        editTargets = request.getParameter("editTargets");
+        String popupMode = request.getParameter("popupMode");
 
         request.setAttribute("txtTitle", nuSC.getTxtTitle());
         request.setAttribute("txtMessage", nuSC.getTxtMessage());
@@ -162,30 +149,28 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
         String[] selectedIdUsers = request.getParameterValues("selectedUsers");
-        List<UserRecipient> selectUserRecipients = new ArrayList<UserRecipient>(
-                selectedIdUsers.length);
-        for (String selectedIdUser : selectedIdUsers) {
-          selectUserRecipients.add(new UserRecipient(selectedIdUser));
+        List<UserRecipient> selectUserRecipients = null;
+        if (selectedIdUsers != null) {
+          selectUserRecipients = new ArrayList<UserRecipient>(selectedIdUsers.length);
+          for (String selectedIdUser : selectedIdUsers) {
+            selectUserRecipients.add(new UserRecipient(selectedIdUser));
+          }
         }
         String[] selectedIdGroups = request.getParameterValues("selectedGroups");
-        List<GroupRecipient> selectGroupRecipients = new ArrayList<GroupRecipient>(
-                selectedIdGroups.length);
-        for (String selectedIdGroup : selectedIdGroups) {
-          selectGroupRecipients.add(new GroupRecipient(selectedIdGroup));
+        List<GroupRecipient> selectGroupRecipients = null;
+        if (selectedIdGroups != null) {
+          selectGroupRecipients = new ArrayList<GroupRecipient>(selectedIdGroups.length);
+          for (String selectedIdGroup : selectedIdGroups) {
+            selectGroupRecipients.add(new GroupRecipient(selectedIdGroup));
+          }
         }
-        for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
-          String nom = e.nextElement();
-          SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE", "nom=" + nom);
-          SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE", "value=" + request.getParameter(nom));
-        }
-        popupMode = request.getParameter("popupMode");
-        editTargets = request.getParameter("editTargets");
-        txtTitle = request.getParameter("txtTitle");
-        txtMessage = request.getParameter("txtMessage");
-        notificationId = request.getParameter("notificationId");
-        priorityId = request.getParameter("priorityId");
+        
+        String popupMode = request.getParameter("popupMode");
+        String editTargets = request.getParameter("editTargets");
+        String txtTitle = request.getParameter("txtTitle");
+        String txtMessage = request.getParameter("txtMessage");
+        String notificationId = request.getParameter("notificationId");
+        String priorityId = request.getParameter("priorityId");
 
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "notificationId=" + notificationId);
@@ -199,8 +184,10 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
                 "root.MSG_GEN_PARAM_VALUE", "popupMode=" + popupMode);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "editTargets=" + editTargets);
-        nuSC.sendMessage("", notificationId, priorityId, txtTitle, txtMessage, selectUserRecipients,
-                selectGroupRecipients);
+        if (selectUserRecipients != null || selectGroupRecipients != null) {
+          nuSC.sendMessage("", notificationId, priorityId, txtTitle, txtMessage,
+              selectUserRecipients, selectGroupRecipients);
+        }
         request.setAttribute("SelectedIdUsers", new String[0]);
         request.setAttribute("SelectedIdGroups", new String[0]);
         destination = "/notificationUser/jsp/notificationSender.jsp?Action=sendNotif&"
@@ -210,8 +197,8 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         request.setAttribute("SelectedIdUsers", new String[0]);
         request.setAttribute("SelectedIdGroups", new String[0]);
 
-        editTargets = request.getParameter("editTargets");
-        popupMode = request.getParameter("popupMode");
+        String editTargets = request.getParameter("editTargets");
+        String popupMode = request.getParameter("popupMode");
         destination = "/notificationUser/jsp/notificationSender.jsp?Action=emptyAll&notificationId"
                 + "=&priorityId=&txtTitle=&txtMessage=&popupMode="
                 + popupMode + "&editTargets=" + editTargets + "&compoId=";
