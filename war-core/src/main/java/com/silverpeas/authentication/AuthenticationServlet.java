@@ -26,10 +26,9 @@ package com.silverpeas.authentication;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.jasig.cas.client.util.AbstractCasFilter;
-import org.jasig.cas.client.validation.Assertion;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -48,7 +47,6 @@ public class AuthenticationServlet extends HttpServlet {
 
   private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
   private static final long serialVersionUID = -8695946617361150513L;
-  private final int keyMaxLength = 12;
 
   /**
    * Method invoked when called from a form or directly by URL
@@ -58,7 +56,7 @@ public class AuthenticationServlet extends HttpServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
+          throws IOException {
     // Get the session
     HttpSession session = request.getSession(true);
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
@@ -67,136 +65,94 @@ public class AuthenticationServlet extends HttpServlet {
 
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
-        "com.silverpeas.authentication.settings.authenticationSettings", "");
-    boolean cookieEnabled = authenticationSettings.getBoolean("cookieEnabled", false);
-
-    // Get the context
-    String sURI = request.getRequestURI();
-    String sServletPath = request.getServletPath();
-    String sPathInfo = request.getPathInfo();
-    String sRequestURL = request.getRequestURL().toString();
-    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - sURI.length());
-
-    if (sPathInfo != null) {
-      sURI = sURI.substring(0, sURI.lastIndexOf(sPathInfo));
-    }
-    String m_sContext = sURI.substring(0, sURI.lastIndexOf(sServletPath));
-    if (StringUtil.isDefined(m_sContext) && m_sContext.endsWith("/")) {
-      m_sContext = m_sContext.substring(0, m_sContext.length() - 1);
-    }
-    // CAS authentication
-    String casUser = null;
-    if (session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION) != null) {
-      casUser = ((Assertion) session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION)).
-          getPrincipal().getName();
-    }
-    boolean casMode = (casUser != null);
-
-    String stringKey = convert2Alpha(session.getId());
-    // New field names in login form
+            "com.silverpeas.authentication.settings.authenticationSettings", "");
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
+    Identification identification = new Identification(session, request);
+    session.setAttribute("Silverpeas_pwdForHyperlink", identification.getClearPassword());
+    String sDomainId = getDomain(request, authenticationSettings, identification.isCasMode());
 
-    String sLogin = null;
-    String sPassword = null;
-    String sStorePassword = null;
-    String sCryptedPassword = null;
-    if (casMode) {
-      sLogin = casUser;
-      sPassword = "";
-    } else if (isNewEncryptMode) {
-      sLogin = request.getParameter("Var2");
-      sPassword = request.getParameter("Var1");
-      sStorePassword = request.getParameter("tq");
-      sCryptedPassword = request.getParameter("dq");
-    } else {
-      // Get the parameters from the login page
-      sLogin = request.getParameter("Login");
-      sPassword = request.getParameter("Password");
-      sStorePassword = request.getParameter("storePassword");
-      sCryptedPassword = request.getParameter("cryptedPassword");
-    }
-
-    SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
-        "root.MSG_GEN_PARAM_VALUE", "sCryptedPassword = " + sCryptedPassword);
-
-    // Cookies
-    String cookieLoginName;
-    String cookiePwdName;
-    String sDecodedPassword;
-    if (isNewEncryptMode) {
-      // Specific Sogreah
-      cookieLoginName = "var1";
-      cookiePwdName = "var2";
-      String decodedLogin = decode(sLogin, stringKey, false);
-      sDecodedPassword = ((!StringUtil.isDefined(sCryptedPassword)) ? decode(sPassword, stringKey,
-          false) : decode(sPassword, stringKey, true));
-      if (cookieEnabled) {
-        if (StringUtil.isDefined(sCryptedPassword)) {
-          decodedLogin = decode(sLogin, stringKey, true);
-        }
-      }
-      sLogin = decodedLogin;
-    } else {
-      cookieLoginName = "svpLogin";
-      cookiePwdName = "svpPassword";
-      sDecodedPassword = ((!StringUtil.isDefined(sCryptedPassword)) ? sPassword : decode(
-          sPassword));
-    }
-    session.setAttribute("Silverpeas_pwdForHyperlink", sDecodedPassword);
-    String sDomainId = request.getParameter("DomainId");
-    if (casMode) {
-      sDomainId = authenticationSettings.getString("cas.authentication.domainId", "0");
-    }
-
-    String testKey = request.getParameter("TestKey");
-    String authentificationKey = null;
-    if (!StringUtil.isDefined(testKey)) {
-      if (casMode) {
-        authentificationKey = lpAuth.authenticate(sLogin, sDomainId, request);
-      } else {
-        authentificationKey = lpAuth.authenticate(sLogin, sDecodedPassword,
-            sDomainId, request); // Throws Specific Exception
-      }
-    }
+    String authentificationKey = authenticate(request, identification, sDomainId);
     String url;
     if (authentificationKey != null && !authentificationKey.startsWith("Error")) {
-      writeCookie(response, "defaultDomain", sDomainId, -1);
-      writeCookie(response, "defaultDomain", sDomainId, 31536000);
-      if (isNewEncryptMode) {
-        // encrypter le login que si on est dans le cas de Sogreah
-        writeCookie(response, cookieLoginName, encode(sLogin), -1);
-        writeCookie(response, cookieLoginName, encode(sLogin), 31536000);
-      } else {
-        writeCookie(response, cookieLoginName, sLogin, -1);
-        writeCookie(response, cookieLoginName, sLogin, 31536000);
-      }
+      storeDomain(response, sDomainId);
+      storeLogin(response, isNewEncryptMode, identification.getLogin());
 
       // if required by user, store password in cookie
-      if (sStorePassword != null && "Yes".equals(sStorePassword)) {
-        SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
-            "root.MSG_GEN_ENTER_METHOD", "Ok");
-        writeCookie(response, cookiePwdName, encode(sDecodedPassword), -1);
-        writeCookie(response, cookiePwdName, encode(sDecodedPassword), 31536000);
-      }
+      storePassword(response, identification.getStoredPassword(), isNewEncryptMode, identification.
+              getClearPassword());
 
       url = "/LoginServlet?Key=" + authentificationKey;
     } else {
-      // Authentication failed : remove password from cookies to avoid infinite
-      // loop
-      writeCookie(response, cookiePwdName, "", 0);
-      if (casMode) {
+      // Authentication failed : remove password from cookies to avoid infinite loop
+      removeStoredPassword(response);
+      if (identification.isCasMode()) {
         url = "/admin/jsp/casAuthenticationError.jsp";
       } else {
         // mettre a jour le code erreur : "2" = probleme technique
         // "1" = login ou mot de passe incorrect
         String errorCode = ("Error_1".equals(authentificationKey) ? "1" : "2");
-
-        // No user defined for this login-password combination
         url = "/Login.jsp?ErrorCode=" + errorCode;
       }
     }
-    response.sendRedirect(response.encodeRedirectURL(m_sAbsolute + m_sContext
-        + url));
+    response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request)
+            + url));
+  }
+
+  private void storePassword(HttpServletResponse response, String sStorePassword,
+          boolean newEncryptMode, String sDecodedPassword) {
+    if (StringUtil.getBooleanValue(sStorePassword)) {
+      SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
+              "root.MSG_GEN_ENTER_METHOD", "Ok");
+      if (newEncryptMode) {
+        writeCookie(response, "var2", encode(sDecodedPassword), -1);
+        writeCookie(response, "var2", encode(sDecodedPassword), 31536000);
+      } else {
+        writeCookie(response, "svpPassword", encode(sDecodedPassword), -1);
+        writeCookie(response, "svpPassword", encode(sDecodedPassword), 31536000);
+      }
+    }
+  }
+
+  private void removeStoredPassword(HttpServletResponse response) {
+    writeCookie(response, "var2", "", 0);
+    writeCookie(response, "svpPassword", "", 0);
+  }
+
+  private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin) {
+    if (newEncryptMode) {
+      writeCookie(response, "var1", encode(sLogin), -1);
+      writeCookie(response, "var1", encode(sLogin), 31536000);
+    } else {
+      writeCookie(response, "svpLogin", sLogin, -1);
+      writeCookie(response, "svpLogin", sLogin, 31536000);
+    }
+  }
+
+  private void storeDomain(HttpServletResponse response, String sDomainId) {
+    writeCookie(response, "defaultDomain", sDomainId, -1);
+    writeCookie(response, "defaultDomain", sDomainId, 31536000);
+  }
+
+  private String getDomain(HttpServletRequest request, ResourceLocator authenticationSettings,
+          boolean casMode) {
+    String sDomainId = request.getParameter("DomainId");
+    if (casMode) {
+      sDomainId = authenticationSettings.getString("cas.authentication.domainId", "0");
+    }
+    return sDomainId;
+  }
+
+  private String authenticate(HttpServletRequest request, Identification identification,
+          String sDomainId) {
+    String testKey = request.getParameter("TestKey");
+    if (!StringUtil.isDefined(testKey)) {
+      if (identification.isCasMode()) {
+        return lpAuth.authenticate(identification.getLogin(), sDomainId, request);
+      }
+      return lpAuth.authenticate(identification.getLogin(), identification.getClearPassword(),
+              sDomainId, request);
+    }
+    return null;
   }
 
   /**
@@ -208,42 +164,12 @@ public class AuthenticationServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+          throws ServletException, IOException {
     doPost(request, response);
   }
 
   private String encode(String str) {
-    return new EncryptionFactory().getEncryption().encode(str);
-  }
-
-  private String decode(String str) {
-    return new EncryptionFactory().getEncryption().decode(str);
-  }
-
-  private String decode(String str, String key, boolean extraCrypt) {
-    return new EncryptionFactory().getEncryption().decode(str, key, extraCrypt);
-  }
-
-  /**
-   * Convert a string to a string with only letters in upper case
-   * @param toConvert
-   * @return the String in UpperCase
-   */
-  private String convert2Alpha(String toConvert) {
-    String alphaString = "";
-    for (int i = 0; i < toConvert.length()
-        && alphaString.length() < keyMaxLength; i++) {
-      int asciiCode = toConvert.toUpperCase().charAt(i);
-      if (asciiCode >= 65 && asciiCode <= 90) {
-        alphaString += toConvert.substring(i, i + 1);
-      }
-    }
-    // We fill the key to keyMaxLength char. if not enough letters in sessionId.
-    if (alphaString.length() < keyMaxLength) {
-      alphaString += "ZFGHZSZHHJNT".substring(0, keyMaxLength
-          - alphaString.length());
-    }
-    return alphaString;
+    return EncryptionFactory.getInstance().getEncryption().encode(str);
   }
 
   /**
@@ -254,7 +180,7 @@ public class AuthenticationServlet extends HttpServlet {
    * @return
    */
   private void writeCookie(HttpServletResponse response, String name,
-      String value, int duration) {
+          String value, int duration) {
     Cookie cookie;
     try {
       cookie = new Cookie(name, URLEncoder.encode(value, "UTF-8"));
