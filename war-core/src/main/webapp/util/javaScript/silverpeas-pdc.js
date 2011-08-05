@@ -29,6 +29,8 @@
  * - render the classification on the PdC of a given content in two modes: edition or view mode. In
  * edition mode, a position on the PdC can be added, deleted or modified in the classification.
  * - render an area to create a classification of a resource on the PdC.
+ * - get the positions that were added through the previous function,
+ * - validate the classification of a resource is valid.
  * 
  * The classification is expected to be formatted in JSON with at least the following attributes:
  * - uri: the URI of the classification in the web,
@@ -77,58 +79,44 @@
 
   /**
    * The parameter settings of the plugin with, for some, the default value.
-   * - resource: the resource for which the classification on the PdC has to be rendered or edited.
-   * It has the following attributes:
-   *    - context: the web context at which the resource is published (generally 'silverpeas'),
-   *    - component: the identifier of the Silverpeas component instance that manages the resource.
-   *    - content: the identifier of the resource's content that is classified.
-   * - url: the base URL from which the classifications on the PdC are located in the web,
-   * - title: the title to display with the classification area,
-   * - positionLabel: the label to display with the name of a position,
-   * - ok: the label to display with an 'Ok' button,
-   * - cancel: the label to display with a 'Cancel' button,
-   * - mandatory: an object about the information to display when the valuation of an axis is
-   * mandatory: It has the following attributes:
-   *    - icon: the icon representing a mandatory axis,
-   *    - legend: the legend of the icon,
-   * invariant: It has the following attributes:
-   *    - icon: the icon representing an invariant axis,
-   *    - legend: the legend of the icon,
-   * - addition: an object about the operation of adding a new position into a given classification.
-   * It has the following attributes:
-   *    - icon: the icon to display as a new position add invoker,
-   *    - title: the text associated with the adding operation.
-   * - update: an object about the operation of updating a given position. It has the following
-   * attributes:
-   *    - icon: the icon to display as a new position update invoker,
-   *    - title: the text associated with the update operation.
-   * - deletion: an object about the operation of deleting a given position. It has the following
-   * attributes:
-   *    - icon: the icon to display as a new position deletion invoker,
-   *    - title: the text associated with the deletion operation.
-   * - creation: an object about the creation of the classification of a given resource. It has the
-   * following attributes:
-   *    - callback: function to call each time a position is added. It must accept two arguments:
-   *    the number of mandatory axis and the position that is added.
-   * - mode: the mode in which the classification on the PdC of a given resource should be rendered.
-   * It accepts a value among 'view' or 'edition'. By default, an unknown value is interpreted as
-   * a 'view' mode.
    */
   var settings = {
+    /**
+     * The resource for which the classification on the PdC has to be rendered or edited. It is
+     * defined by the web application context under which the resource is published, the component
+     * instance that handle it and the identifier of the content to classify or being classified.
+     */
     resource: {
       context: '/silverpeas',
       component: '',
       content: ''
     },
+    /**
+     * The title of the HTML section that will be rendered by this plugin.
+     */
     title: 'Classement',
+    /**
+     * The prefix to use when labelling a given position.
+     */
     positionLabel: 'Position',
+    /**
+     * The label to use for the HTML section into which the positions of the resource will be rendered.
+     */
     positionsLabel: 'Positions',
+    /**
+     * The messages to print when the validation of a classification fails. The messages depend on
+     * the type of the validation failure.
+     */
     messages: {
       mandatoryMessage: "Le classement est obligatoire pour la création d'une publication. <br />Veuillez sélectionner une position et la valider.",
       contentMustHaveAPosition: "Le contenu doit disposer au moins d'une position avec les axes obligatoires",
       positionAlreayInClassification: "La position existe déjà",
       positionMustBeValued: "Veuillez sélectionner au moins une valeur à la position"
     },
+    /**
+     * The different label to use when rendering the HTML section for updating or adding a position
+     * onto the PdC 
+     */
     edition: {
       ok: 'Valider',
       cancel: 'Annuler',
@@ -138,19 +126,32 @@
       invariantIcon: '/silverpeas/util/icons/buletColoredGreen.gif',
       mandatoryAxisDefaultValue: 'Veuillez selectionner une valeur'
     },
+    /**
+     * The attributes of the position adding trigger.
+     */ 
     addition: {
       icon: '/silverpeas/pdcPeas/jsp/icons/add.gif',
       title: 'Ajouter une nouvelle position'
     },
+    /**
+     * The attribute of the position update trigger.
+     */
     update: {
       icon: '/silverpeas/util/icons/update.gif',
       title: 'Editer la position'
     },
+    /**
+     * The attribute of the position deletion trigger with a confirmation message.
+     */
     deletion: {
       confirmation: 'Êtes-vous sûr de vouloir supprimer la position ?',
       icon: '/silverpeas/util/icons/delete.gif',
       title: 'Supprimer la position'
     },
+    /**
+     * The mode under which this plugin has to be ran. By default, in a view mode.
+     * The mode can be either 'view' (for a read-only classification rendering) or 'edition'.
+     */
     mode: 'view'
   };
   
@@ -638,8 +639,10 @@
   function textFrom( value ) {
     var text;
     if (settings.mode == 'view') {
-      text = '<li title="' + value.meaning + '">' + value.meaning.substring(0, value.meaning.indexOf('/')) + '/ ... ' +
-        value.meaning.substring(value.meaning.lastIndexOf('/')) + '<li>';
+      text = '<li title="' + value.meaning + '">'
+      var path = value.meaning.split('/');
+      if (path.length > 2) text += path[0] + '/ ... /' + path[path.length -1]; else text += value.meaning;
+      text += '</li>';
     } else {
       text = '<li>' + value.meaning + '<i>' + value.synonyms.join(', ') + '</i></li>';
     }
@@ -687,11 +690,12 @@
         'id': anAxis.id,  
         'name': anAxis.name
       }).addClass(mandatoryField).appendTo(currentAxisDiv);
-      var path = '';
+      var path = [];
       $.each(anAxis.values, function(valueindex, aValue) {
         var level = '', optionAttr = 'value="' + aValue.id + '"';
-        if (aValue.level == 0) path = aValue.term; else path +=  ' / ' + aValue.term;
-        aValue.meaning = path;
+        path.splice(aValue.level, path.length - aValue.level);
+        path[aValue.level] = aValue.term;
+        aValue.meaning = path.join(' / ');
         if (aValue.id != '/0/') {
           for (var i = 0; i < aValue.level; i++) {
             level += '&nbsp;&nbsp;';
