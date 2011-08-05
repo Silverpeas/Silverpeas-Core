@@ -114,7 +114,8 @@ MainSessionController	m_MainSessionCtrl	= (MainSessionController) session.getAtt
 GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 //The user is either not connector or as the anonymous user. He comes back to the login page.
-if (m_MainSessionCtrl == null || (gef != null && UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId())))
+if (m_MainSessionCtrl == null || (gef != null && UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId()) && 
+    (strGoTo == null && componentGoTo == null && spaceGoTo == null)))
 {
 %>
 	<script>
