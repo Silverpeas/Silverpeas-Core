@@ -198,6 +198,36 @@ public class SchedulerTest {
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertTrue(scheduler.isJobScheduled(JOB_NAME));
   }
+  
+  @Test
+  public void aScheduledJobAtWhateverTheDayOfWeekShouldBeFound() throws Exception {
+    String cron = "0 5 * * ?";
+    JobTrigger trigger = JobTrigger.triggerAt(cron);
+    scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+  }
+  
+  @Test
+  public void aScheduledJobAtWhateverTheDayOfMonthShouldBeFound() throws Exception {
+    String cron = "0 5 ? * *";
+    JobTrigger trigger = JobTrigger.triggerAt(cron);
+    scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+  }
+  
+  @Test
+  public void aScheduledJobAtASpecificDayOfWeekShouldBeFound() throws Exception {
+    String cron = "0 5 * * 6";
+    JobTrigger trigger = JobTrigger.triggerAt(cron);
+    scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+  }
+  
+  @Test(expected=ParseException.class)
+  public void aScheduledJobAtWhateverTheDayOfWeekAndMonthShouldThrowAnException() throws Exception {
+    String cron = "0 5 ? * ?";
+    JobTrigger.triggerAt(cron);
+  }
 
   @Test
   public void aNonScheduledJobShouldBeNotFound() throws Exception {

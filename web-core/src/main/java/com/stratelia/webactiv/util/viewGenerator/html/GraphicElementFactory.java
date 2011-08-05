@@ -108,6 +108,8 @@ public class GraphicElementFactory {
   private static final String FLOWPLAYER_CSS = "flowplayer.css";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
   private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
+  private static final String FIELDSET_CSS = "fieldset.css";
+  private static final String SILVERPEAS_PDC_JS = "silverpeas-pdc.js";
 
   /**
    * Constructor declaration
@@ -296,6 +298,9 @@ public class GraphicElementFactory {
 
       code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
           "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
+      
+      code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
+          "/util/styleSheets/").append(FIELDSET_CSS).append("\" rel=\"stylesheet\"/>\n");
 
       // define CSS(default and specific) and JS (specific) dedicated to current component
       StringBuilder defaultComponentCSS = null;
@@ -383,6 +388,10 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERY_QTIP).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_QTIP_STYLE).append("\"></script>\n");
+    
+    // include the PdC javascript code
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/").append(SILVERPEAS_PDC_JS).append("\"></script>\n");
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {

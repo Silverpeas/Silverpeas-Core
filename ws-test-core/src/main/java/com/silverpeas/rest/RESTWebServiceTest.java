@@ -24,6 +24,7 @@
 
 package com.silverpeas.rest;
 
+import javax.inject.Inject;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.rest.mock.OrganizationControllerMock;
@@ -43,7 +44,6 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.ContextLoaderListener;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -55,16 +55,21 @@ import static org.mockito.Mockito.*;
  */
 public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
 
+  /**
+   * Identifier of the default user to use in the unit tests on the REST-based web service.
+   */
+  public static final String USER_ID_IN_TEST = "2";
+  
   protected static final String CONTEXT_NAME = "silverpeas";
   protected static final String DEFAULT_LANGUAGE = "fr";
 
-  @Autowired
+  @Inject
   private SessionManagement sessionManager;
-  @Autowired
+  @Inject
   private AccessControllerMock accessController;
-  @Autowired
+  @Inject
   private OrganizationControllerMock organizationController;
-  @Autowired
+  @Inject
   private MockablePersonalizationService personalizationService;
   private Client webClient;
 
