@@ -951,7 +951,7 @@ public class GraphicElementFactory {
   }
 
   /**
-   * @param spaceId the space identifier to set
+   * @param spaceId the space identifier to set (full identifier with WA + number)
    */
   public void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
