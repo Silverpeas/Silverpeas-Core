@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -34,14 +35,15 @@ import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
+import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
 
 /**
  * The base tag for all concrete tags on the PdC classification of a content.
  */
 public abstract class BaseClassificationPdCTag extends TagSupport {
+
   private static final long serialVersionUID = -486056418553072731L;
-  
   /**
    * The key with which is associated the resource locator carried in the request.
    */
@@ -50,6 +52,7 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
    * The identifier of the XHTML tag within which the PdC classification will be displayed.
    */
   public static final String PDC_CLASSIFICATION_WIDGET_TAG_ID = "classification";
+  private static final String USE_PDC_COMPONENT_PARAMETER = "usePdc";
   private String componentId;
   private String contentId;
   private PdcTagOperation operation;
@@ -90,7 +93,7 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
   public String getContentId() {
     return contentId;
   }
-  
+
   /**
    * Gets the invoked operation.
    * @return the operation that is executed or null if no operation is invoked.
@@ -98,19 +101,27 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
   protected PdcTagOperation getInvokedOperation() {
     return operation;
   }
-  
+
   /**
    * Invokes the underlying JQuery PdC plugin with the appropriate function according to the
    * specified operation.
+   * The operation is actually invoked only if the PdC is used by the underlying Silverpeas
+   * component instance.
    * @param operation the operation to invoke.
    * @return the HTML elements container with the code to render.
    * @throws JspException 
    */
   public ElementContainer invoke(final PdcTagOperation operation) throws JspException {
-    this.operation = operation;
-    return initWidget();
+    ElementContainer container;
+    if (isPdcUsed()) {
+      this.operation = operation;
+      container = initWidget();
+    } else {
+      container = new ElementContainer();
+    }
+    return container;
   }
-  
+
   /**
    * Sets up the widget with all required information. It initializes the PdC classification JQuery
    * plugin and it calls it to render the classification of the refered content onto the PdC.
@@ -128,16 +139,13 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
     }
     classification.setID(PDC_CLASSIFICATION_WIDGET_TAG_ID);
     if (getInvokedOperation() == READ_CLASSIFICATION) {
-      classification.setClass("preview");
+      classification.setClass("preview bgDegradeGris");
     } else {
       classification.setClass("skinFieldset");
     }
-    script jqueryPlugin = new script().setType("text/javascript").
-            setSrc(context + "/util/javaScript/silverpeas-pdc.js");
     script pluginExecution = new script().setType("text/javascript").
             addElement(executePlugin());
-    xhtmlcontainer.addElement(jqueryPlugin).
-            addElement(classification).
+    xhtmlcontainer.addElement(classification).
             addElement(pluginExecution);
     return xhtmlcontainer;
   }
@@ -152,23 +160,26 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
     String function = getPdcPluginFunction();
-    String script = "$('#classification').pdc('" + function + "', {resource: {context: '" + context + "', " +
-            "component: '" + getComponentId() + "', content: '" + getContentId() + "'}, title: '" +
-            resources.getString("pdcPeas.classifyPublication") + "', positionLabel: '" +
-            resources.getString("pdcPeas.position") + "', positionsLabel: '" +
-            resources.getString("pdcPeas.positions") + "'";
+    String script = "$('#classification').pdc('" + function + "', {resource: {context: '" + context
+            + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
+            + "'}, title: '" + resources.getString("pdcPeas.classifyPublication")
+            + "', positionLabel: '" + resources.getString("pdcPeas.position")
+            + "', positionsLabel: '" + resources.getString("pdcPeas.positions") + "'";
     if (getInvokedOperation() != READ_CLASSIFICATION) {
-      script += ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "'," +
-              "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '" +
-              resources.getString("GML.requiredField") + "', invariantLegend: '" +
-              resources.getString("pdcPeas.notVariants") + "', mandatoryMessage: \"" +
-              resources.getString("pdcPeas.MustBeClassified") + "\"}, addition: {title: '" +
-              resources.getString("GML.PDCNewPosition") + "'}, update: {title: '" +
-              resources.getString("GML.modify") + "'}, deletion: {confirmation: '" +
-              resources.getString("pdcPeas.confirmDeleteAxis") + "', cannotBeDeleted: \"" + 
-              resources.getString("pdcPeas.theContent") + " " +
-              resources.getString("pdcPeas.MustContainsMandatoryAxis") + "\", title: '" +
-              resources.getString("GML.PDCDeletePosition") + "'}});";
+      script += ", messages: {mandatoryMessage: \""
+              + resources.getString("pdcPeas.MustBeClassified") + "\", contentMustHaveAPosition: \""
+              + resources.getString("pdcPeas.theContent") + " " + resources.getString(
+              "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
+              + resources.getString("pdcPeas.positionAlreadyExist") + "\", positionMustBeValued: \""
+              + resources.getString("GML.selectAValue") + "\" }"
+              + ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "',"
+              + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
+              + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
+              getString("pdcPeas.notVariants") + "', mandatoryAxisDefaultValue: \"" + resources.
+              getString("GML.selectAValue") + "\"}, addition: {title: '" + resources.getString(
+              "GML.PDCNewPosition") + "'}, update: {title: '" + resources.getString("GML.modify")
+              + "'}, deletion: {confirmation: '" + resources.getString("pdcPeas.confirmDeleteAxis")
+              + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
     } else {
       script += ", mode: 'view'});";
     }
@@ -189,10 +200,10 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
     return resources;
 
   }
-  
+
   private String getPdcPluginFunction() throws JspTagException {
     String function = null;
-    switch(getInvokedOperation()) {
+    switch (getInvokedOperation()) {
       case READ_CLASSIFICATION:
       case OPEN_CLASSIFICATION:
         function = "open";
@@ -205,4 +216,16 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
     }
     return function;
   }
+
+  /**
+   * Is the PdC is used currently by the underlying SIlverpeas component instance.
+   * @return true if the component instance uses the PdC, false otherwise.
+   */
+  protected boolean isPdcUsed() {
+    MainSessionController sessionController = (MainSessionController) pageContext.getSession().
+            getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    String parameterValue = sessionController.getComponentParameterValue(getComponentId(),
+            USE_PDC_COMPONENT_PARAMETER);
+    return getBooleanValue(parameterValue);
+  } 
 }

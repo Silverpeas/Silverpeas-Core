@@ -3880,6 +3880,19 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   height: 5px;
 }
 
+select.mandatoryField {
+  font-style: oblique;
+  color: #333;
+}
+
+select.mandatoryField option {
+  font-style: normal;
+  color: #000;
+}
+select.mandatoryField option.emphasis {
+  font-style: oblique;
+  color: #333;
+}
 
 /*- [ comment END ] ------------------------- */
 
@@ -4049,23 +4062,23 @@ html:not([lang*=""]) .add_position:hover {
 	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
-#pdc-edition-box .field {
+#pdc-addition-box .field, #pdc-update-box .field {
 	width:70%;
 }
 
-#pdc-edition-box .inlineMessage {
+#pdc-addition-box .inlineMessage {
 	position:absolute;
 	top:-5px;
 	right:-5px;
 	width:28%;
 }
 
-* html #pdc-edition-box .inlineMessage {
+* html #pdc-addition-box .inlineMessage {
 	top:-35px;
 	right:5px;
 }
 
-#pdc-edition-box #valid_position {
+#pdc-addition-box #valid_position {
 	margin:10px 10px 10px  180px;
 	float:left;
 }

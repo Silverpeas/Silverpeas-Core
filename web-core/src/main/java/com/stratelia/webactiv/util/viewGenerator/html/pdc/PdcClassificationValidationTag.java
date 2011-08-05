@@ -33,7 +33,6 @@ import org.apache.ecs.ElementContainer;
 public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
 
   private static final long serialVersionUID = 3377113335947703561L;
-  
   private String errorMessager;
   private String errorCounter;
 
@@ -51,19 +50,19 @@ public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
 
   public void setErrorMessager(String errorMessage) {
     this.errorMessager = errorMessage;
-  } 
+  }
 
   @Override
   public int doStartTag() throws JspException {
-    ElementContainer xhtmlcontainer = new ElementContainer();
-    String script = "if (!$('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID + 
-            "').pdc('isClassificationValid')) { " + getErrorMessager() + " += \" - " +
-            getResources().getString("pdcPeas.theContent") + " " +
-            getResources().getString("pdcPeas.MustContainsMandatoryAxis") + "\\n\"; " +
-            getErrorCounter() + "++; }";
-    xhtmlcontainer.addElement(script);
-    xhtmlcontainer.output(pageContext.getOut());
+    if (isPdcUsed()) {
+      ElementContainer xhtmlcontainer = new ElementContainer();
+      String script = "if (!$('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID
+              + "').pdc('isClassificationValid')) { " + getErrorMessager() + " += \" - "
+              + getResources().getString("pdcPeas.theContent") + " " + getResources().getString(
+              "pdcPeas.MustContainsMandatoryAxis") + "\\n\"; " + getErrorCounter() + "++; }";
+      xhtmlcontainer.addElement(script);
+      xhtmlcontainer.output(pageContext.getOut());
+    }
     return SKIP_BODY;
   }
-  
 }
