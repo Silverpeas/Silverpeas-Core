@@ -30,8 +30,8 @@ import org.apache.ecs.ElementContainer;
  * The base tag for all concrete tags on the PdC classification of a content.
  */
 public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
+
   private static final long serialVersionUID = -562523990230139481L;
-  
   private String setIn;
 
   public String getSetIn() {
@@ -41,14 +41,16 @@ public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
   public void setSetIn(String setIn) {
     this.setIn = setIn;
   }
-  
+
   @Override
   public int doStartTag() throws JspException {
-    ElementContainer xhtmlcontainer = new ElementContainer();
-    String script = getSetIn() +
-            " = $.toJSON( $('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID + "').pdc('positions') );";
-    xhtmlcontainer.addElement(script);
-    xhtmlcontainer.output(pageContext.getOut());
+    if (isPdcUsed()) {
+      ElementContainer xhtmlcontainer = new ElementContainer();
+      String script = getSetIn() + " = $.toJSON( $('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID
+              + "').pdc('positions') );";
+      xhtmlcontainer.addElement(script);
+      xhtmlcontainer.output(pageContext.getOut());
+    }
     return SKIP_BODY;
   }
 }
