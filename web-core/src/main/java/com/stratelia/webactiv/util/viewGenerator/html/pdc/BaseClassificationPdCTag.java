@@ -53,6 +53,7 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
    */
   public static final String PDC_CLASSIFICATION_WIDGET_TAG_ID = "classification";
   private static final String USE_PDC_COMPONENT_PARAMETER = "usePdc";
+  private static final String BROWSING_CONTEXT = "browseContext";
   private String componentId;
   private String contentId;
   private PdcTagOperation operation;
@@ -78,10 +79,15 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
 
   /**
    * Gets the identifier of the Silverpeas component instance to which the resource belongs.
+   * If no component instance identifier is set, then it is fecthed from the request.
    *
    * @return the component identifier.
    */
   public String getComponentId() {
+    if (!isDefined(componentId)) {
+      String[] context = (String[]) pageContext.getRequest().getAttribute(BROWSING_CONTEXT);
+      componentId = context[3];
+    }
     return componentId;
   }
 
