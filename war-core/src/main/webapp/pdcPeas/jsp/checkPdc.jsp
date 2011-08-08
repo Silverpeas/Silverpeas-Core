@@ -107,6 +107,8 @@ String[] browseContext = (String[]) request.getAttribute("browseContext");
 String spaceLabel = browseContext[0];
 String componentLabel = browseContext[1];
 
+boolean isAxisInvarianceUsed = (Boolean) request.getAttribute("AxisInvarianceUsed");
+
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();

@@ -60,15 +60,6 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
-    <attribute>
-      <description>The identifier of the resource content for which the classification on the PdC
-      has to be rendered.
-      </description>
-      <name>contentId</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
   </tag>
   <tag>
     <description>Tag to print out javascript code to validate the classification onto the PdC that

@@ -123,8 +123,10 @@ Icon aspiIcon = null;
 	arrayColumn3.setSortable(false);
 	ArrayColumn arrayColumn4 = arrayPane.addArrayColumn(resource.getString("GML.requiredField"));
 	arrayColumn4.setSortable(false);
-	ArrayColumn arrayColumn5 = arrayPane.addArrayColumn(resource.getString("pdcPeas.variant"));
-	arrayColumn5.setSortable(false);
+    if (isAxisInvarianceUsed) {
+      ArrayColumn arrayColumn5 = arrayPane.addArrayColumn(resource.getString("pdcPeas.variant"));
+      arrayColumn5.setSortable(false);
+    }
 	ArrayColumn arrayColumn6 = arrayPane.addArrayColumn(resource.getString("pdcPeas.axisOperation"));
     arrayColumn6.setSortable(false);
 
@@ -152,12 +154,14 @@ Icon aspiIcon = null;
 				arrayLine.addArrayCellText(cellCenterStart+"<img src=\""+resource.getIcon("pdcPeas.bulet")+"\" alt=\""+resource.getString("GML.requiredField")+"\" title=\""+resource.getString("GML.requiredField")+"\">"+cellCenterEnd);			
 	        else 
 				arrayLine.addArrayCellText("");
-               
-		    if (usedAxisVariant == 1)
-				arrayLine.addArrayCellText(cellCenterStart+"<img src=\""+resource.getIcon("pdcPeas.bulet")+"\" alt=\""+resource.getString("pdcPeas.variant")+"\" title=\""+resource.getString("pdcPeas.variant")+"\">"+cellCenterEnd);			
-	        else 
-				arrayLine.addArrayCellText("");
-          
+            
+            if (isAxisInvarianceUsed) {
+    		    if (usedAxisVariant == 1)
+        			arrayLine.addArrayCellText(cellCenterStart+"<img src=\""+resource.getIcon("pdcPeas.bulet")+"\" alt=\""+resource.getString("pdcPeas.variant")+"\" title=\""+resource.getString("pdcPeas.variant")+"\">"+cellCenterEnd);			
+                else 
+                	arrayLine.addArrayCellText("");
+            }
+            
 			arrayLine.addArrayCellText(cellCenterStart+"<input type=checkbox name=deleteAxis value="+usedAxisId+">"+cellCenterEnd);
 
 	}
