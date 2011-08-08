@@ -40,6 +40,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import java.util.List;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
+  
+  private static String SETTINGS_FILE = "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings";
 
   private String currentView = "P";
   private Axis currentAxis = null;
@@ -50,7 +52,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
 
   public PdcUtilizationSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle, String iconBundle) {
-    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
+    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle, SETTINGS_FILE);
   }
 
   public void init(String componentId) {
@@ -72,6 +74,10 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
       SpaceInst spaceInst = orga.getSpaceInstById(getSpaceId());
       this.context.setCurrentSpaceName(spaceInst.getName());
     }
+  }
+  
+  public boolean isAxisInvarianceUsed() {
+    return getSettings().getBoolean("useAxisInvariance", false);
   }
 
   public void init() {

@@ -48,6 +48,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 6411411783121021831L;
 
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcUtilizationSessionController(mainSessionCtrl,
@@ -61,6 +62,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
    * control bean name to be put in the request object ex : for notificationUser, returns
    * "notificationUser"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "pdcUtilization";
   }
@@ -74,6 +76,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
     String destination = "";
@@ -83,6 +86,8 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
     PdcFieldTemplateManager pdcFTM = pdcSC.getPdcFieldTemplateManager();
 
     try {
+      
+      request.setAttribute("AxisInvarianceUsed", pdcSC.isAxisInvarianceUsed());      
 
       if (function.startsWith("Main")) {
         // the user is on the main page

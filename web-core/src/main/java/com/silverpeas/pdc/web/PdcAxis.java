@@ -57,6 +57,8 @@ public class PdcAxis {
   private String originValue;
   @XmlElement(defaultValue = "")
   private String invariantValue;
+  @XmlElement
+  private boolean invariant = false;
   @XmlElement(required = true)
   private List<PdcAxisValue> values = new ArrayList<PdcAxisValue>();
 
@@ -79,7 +81,8 @@ public class PdcAxis {
             fromValues(axis._getAxisValues(), andOriginValue, inLanguage, withThesaurus);
     PdcAxis pdcAxis = new PdcAxis(axis.getAxisId(), axis._getAxisName(inLanguage)).
             withAsPdcAxisValues(theAxisValues, andOriginValue).
-            mandatory(axis.getMandatory() == 1);
+            withInvariance(axis.getVariant() == 0).
+            withObligation(axis.getMandatory() == 1);
     if (isDefined(axis._getInvariantValue())) {
       pdcAxis.setInvariantValue(axis._getInvariantValue());
     }
@@ -100,6 +103,16 @@ public class PdcAxis {
    */
   public boolean isMandatory() {
     return mandatory;
+  }
+
+  /**
+   * Is this axis is invariant in the classification on the PdC. An invariant axis in a
+   * classification is an axis that can have only a single possible value per classification, 
+   * whatever the positions onto the PdC.
+   * @return true if this axis in an invariant one when classifying a content onto the PdC.
+   */
+  public boolean isInvariant() {
+    return invariant;
   }
 
   /**
@@ -251,8 +264,13 @@ public class PdcAxis {
     this.name = axisName;
   }
 
-  private PdcAxis mandatory(boolean mandatory) {
+  private PdcAxis withObligation(boolean mandatory) {
     this.mandatory = mandatory;
+    return this;
+  }
+  
+  private PdcAxis withInvariance(boolean invariant) {
+    this.invariant = invariant;
     return this;
   }
 

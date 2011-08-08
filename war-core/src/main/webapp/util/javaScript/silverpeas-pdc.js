@@ -32,48 +32,62 @@
  * - get the positions that were added through the previous function,
  * - validate the classification of a resource is valid.
  * 
- * The classification is expected to be formatted in JSON with at least the following attributes:
- * - uri: the URI of the classification in the web,
- * - positions: an array with the classsification's positions on the PdC.
- * Each position in a classification should have the at least the following attributes:
- * - uri: the URI of the position on the PdC in the web,
- * - id: the unique identifier of the position,
- * - values: an array with the position's values.
- * Each position's value can be either a single term or a branch of terms in an hierachical semantic
- * tree (for example Geography/France/Isère/Grenoble with a tree representing an hierarchical geographic
- * structuration). A value should contain at least the following attributes:
- * - id: the unique identifier of the value in the form of an absolute path relative to its axis,
- * - treeId: the unique identifier of the tree to which the value belongs. The identifier is empty
- * if the value is a single term,
- * - axisId: the identifier of the axis to which it belongs.
- * - meaning: the meaning vehiculed by the value. It is either a path of terms in a hierarchic
- * semantic tree or a single term,
- * - synonyms: an array with the synonyms of this value as found in the user thesaurus.
+ * The classification is expected to be formatted in JSON as:
+ * {
+ *   uri: the URI of the classification in the Web,
+ *   positions: [ the positions onto the PdC ]
+ * }
+ * Each position of a classification is represented in JSON as:
+ * {
+ *  uri: the URI of the position on the PdC in the Web,
+ *  id: the position unique identifier,
+ *  values: [ the position's values on some of the PdC's axis ]
+ * }
+ * Each value on a PdC's axis is represented in JSON as:
+ * {
+ *  id: the unique identifier of the value in the form of an absolute path of node identifier in
+ *      the sementic tree representing the axis,
+ *  treeId: the unique identifier of the sementic tree to which the value belongs (an empty value
+ *          means the value is a single one (no hierarchic value representation),
+ *  axisId: the unique identifier of the axis to which the value belongs,
+ *  meaning: the meaning vehiculed by the value. It is either a path of terms in a hierarchic
+ *           sementic tree or a single term (for a single value),
+ *  synonyms: [ the synonyms of the value term as strings ]
+ * }         
  * 
  * In order to edit or to add a position, the PdC configured for the resource is asked to a web
- * service. The sent back PdC is expected to be formatted in JSON with at least the following
- * attributes:
- * - uri: the URI of the PdC configured for the resource,
- * - axis: an array with the different axis used in the PdC.
- * Each axis is an object that should contain at least:
- * - id: the identifier of the axis,
- * - the localized name of the axis,
- * - originValue: the value used as the origin of the axis,
- * - mandatory: if this axis must be taken into account in a position,
- * - invariantValue: if this axis is already used in a position of the resource content and the axis
- * is marked as invariant (id est it cannot be multi-valued), then the invariantValue is the value
- * used in the positions of the resource on the PdC,
- * - values: an array with the values of the axis.
- * Each value of an axis should be described by the following attributes:
- * - id: the unique identifier of the value in the form of an absolute path relative to its axis,
- * - treeId: the unique identifier of the tree to which the value belongs. The identifier is empty
- * if the value is a single term,
- * - axisId: the identifier of the axis to which it belongs,
- * - term: the localized name of the last node of this value in the tree,
- * - level: the level of this value in the tree from the axis root,
- * - ascendant: if this value is ascendant to the configured origin of the axis to which it belongs,
- * - origin: is this value the configured axis's origin,
- * - synonyms: an array with the synonyms of this value as found in the user thesaurus.
+ * service. The sent back PdC is expected to be formatted in JSON as:
+ * {
+ *  uri: the URI of the PdC configured for the resource,
+ *  axis: [ the different PdC axis used by the component instance to classify its contents ]
+ * }
+ * Each axis is an object formatted in JSON as:
+ * {
+ *  id: the identifier of the axis,
+ *  name: the localized name of the axis,
+ *  originValue: the value used as the origin of the axis,
+ *  mandatory: if this axis must be taken into account in a resource classification,
+ *  invariant: if the axis is an invariant one (meaning that a classification with this axis can
+ *             have only one value, whatever the positions),
+ *  invariantValue: if the axis is invariant, the identifier of the invariant value used. If null,
+ *                  then the invariant value isn't already set in the classification of the given
+ *                  resource,
+ *  values: [ the values of this axis ]
+ * }
+ * Each value of an axis should be described in JSON as:
+ * {
+ *  id: the unique identifier of the value in the form of an absolute path of node identifier in
+ *      the sementic tree representing the axis,
+ *  treeId: the unique identifier of the sementic tree to which the value belongs (an empty value
+ *          means the value is a single one (no hierarchic value representation),
+ *  axisId: the unique identifier of the axis to which the value belongs,
+ *  term: the localized name of the value,
+ *  level: the level of this value in the hierarchic sementic tree from the axis root,
+ *  ascendant: is the value an ascendant one from the axis origin that was configured for the
+ *             component instance,
+ *  origin: is this value the configured (or the default one) axis origin,
+ *  synonyms: [ the synonyms of the value term as strings ]
+ * }
  */
 (function( $ ){
 
@@ -295,7 +309,7 @@
     });
     if (settings.mode != 'view') {
       listOfPositions.addClass('field').
-      append($('<label for="' + settings.positionsLabel + '">').html(settings.positionsLabel)).
+      append($('<label for="' + settings.positionsLabel + '">').html(settings.positionsLabel).hide()).
       append($('<div>', {
         id: 'allpositions'
       }).addClass('champs')).appendTo($('<div>').addClass('fields').appendTo($this));
@@ -384,14 +398,7 @@
         url: settings.classificationURI + "/" + positionId,
         type: "DELETE",
         success: function() {
-          var positions = $this.data('classification').positions;
-          for(var i = 0; i < positions.length; i++) {
-            if (positions[i].id == positionId) {
-              positions.splice(i, 1);
-              break;
-            }
-          }
-          refreshClassification($this);
+          removePositionFromClassification($this, positionId);
         },
         error: function(request) {
           if (request.status == 409) {
@@ -583,15 +590,10 @@
               src: settings.update.icon,  
               alt: settings.update.title
             }).click(function () {
-              var pdc = $this.data('pdc');
-              if (pdc == null) {
-                $.getJSON(settings.pdcURI, function(pdc) {
-                  $this.data('pdc', pdc);
-                  updatePosition($this, position);
-                })
-              } else {
+              $.getJSON(settings.pdcURI, function(pdc) {
+                $this.data('pdc', pdc);
                 updatePosition($this, position);
-              }
+              })
             }))).append($('<a>', {
             href: '#', 
             title: settings.deletion.title + ' ' + posId
@@ -602,14 +604,7 @@
             }).click(function () {
               if (settings.mode == 'edition') deletePosition($this, position.id);
               else {
-                var positions = $this.data('classification').positions;
-                for(var i = 0; i < positions.length; i++) {
-                  if (i == posindex) {
-                    positions.splice(i, 1);
-                    break;
-                  }
-                }
-                refreshClassification($this);
+                removePositionFromClassification($this, position.id);
               }
             })));
         }
@@ -623,15 +618,10 @@
       $('<a>', {
         href: '#'
       }).addClass('add_position').html(settings.addition.title).click(function() {
-        var pdc = $this.data('pdc');
-        if (pdc == null) {
-          $.getJSON(settings.pdcURI, function(pdc) {
-            $this.data('pdc', pdc);
-            addNewPosition($this);
-          })
-        } else {
+        $.getJSON(settings.pdcURI, function(pdc) {
+          $this.data('pdc', pdc);
           addNewPosition($this);
-        }
+        })
       }).appendTo($('#allpositions'))
     }
   }
@@ -676,6 +666,8 @@
    * case of a position modification) and that will receive the new values for the position.
    */
   function renderPdCAxisFields( $this, theAxis, axisSection, selectedValues ) {
+    var hasMandatoryAxis = false, hasInvariantAxis = false;
+    // browse the axis of the PdC
     $.each(theAxis, function(axisindex, anAxis) {
       var currentAxisDiv = $('<div>').addClass('champs').appendTo($('<div>').addClass('field').
         append($('<label >', {
@@ -691,6 +683,8 @@
         'name': anAxis.name
       }).addClass(mandatoryField).appendTo(currentAxisDiv);
       var path = [];
+      
+      // browse the values of the current axis
       $.each(anAxis.values, function(valueindex, aValue) {
         var level = '', optionAttr = 'value="' + aValue.id + '"';
         path.splice(aValue.level, path.length - aValue.level);
@@ -716,31 +710,31 @@
           });
         }
       });
-      if (selectedValues[anAxis.id] == null) {
-        var defaultValue = '', disabled = '';
-        if (anAxis.mandatory) {
-          defaultValue = settings.edition.mandatoryAxisDefaultValue;
-          disabled = 'disabled="disabled" class="emphasis"';
-        }
-        $('<option value="-" ' + disabled + ' selected="selected">').html(defaultValue).prependTo(axisValuesSelection).click(function() {
-          selectedValues[anAxis.id] = null;
-        });
-      } else {
-        $('<option value="-">').prependTo(axisValuesSelection).click(function() {
-          selectedValues[anAxis.id] = null;
-        });
+      
+      var defaultValue = '', disabled = '', selected = '';
+      if (anAxis.mandatory) {
+        defaultValue = settings.edition.mandatoryAxisDefaultValue;
+        disabled = ' disabled="disabled" class="emphasis" ';
       }
+      if (selectedValues[anAxis.id] == null) {
+        selected = ' selected="selected"';
+      }
+      $('<option value="-"' + disabled + selected + '>').html(defaultValue).prependTo(axisValuesSelection).click(function() {
+        selectedValues[anAxis.id] = null;
+      });
       if (selectedValues[anAxis.id] != null) {
         $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);
       }
       if (anAxis.mandatory) {
+        hasMandatoryAxis = true;
         $('<img>', {
           src: settings.edition.mandatoryIcon,
           alt: settings.edition.mandatoryLegend, 
           width: '5px'
         }).appendTo(currentAxisDiv.append(' '));
       }
-      if (anAxis.invariantValue != null) {
+      if (anAxis.invariant) {
+        hasInvariantAxis = true;
         $('<img>', {
           src: settings.edition.invariantIcon, 
           alt: settings.edition.invariantLegend,
@@ -755,7 +749,7 @@
       append($('<a>', {
         'id': 'valid_position', 
         'href': '#'
-      }).addClass('add_position').html(settings.edition.ok).click(function() {
+      }).addClass('add_position').html(settings.addition.title).click(function() {
         var position = aPositionWith(selectedValues);
         var classification = $this.data('classification');
         if (checkPositionIsValid($this, position)) {
@@ -766,18 +760,26 @@
       }));
     }
     if (theAxis.length > 0) {
-      $('<p>').addClass('legende').append($('<span>').html('(')).append($('<img>', {
-        src: settings.edition.mandatoryIcon, 
-        alt: settings.edition.mandatoryLegend,
-        width: '5px'
-      })).
-      append($('<span>').html('&nbsp;:' + settings.edition.mandatoryLegend + ', ')).append(
-        $('<img>', {
-          src: settings.edition.invariantIcon, 
-          alt: settings.edition.invariantLegend,
-          width: '10px'
-        })).
-      append($('<span>').html('&nbsp;:' + settings.edition.invariantLegend + ')')).appendTo(axisSection);
+      var legende = $('<p>').addClass('legende');
+      if (hasMandatoryAxis) {
+        legende.append($('<img>', {
+          src: settings.edition.mandatoryIcon, 
+          alt: settings.edition.mandatoryLegend,
+          width: '5px'
+        })).append($('<span>').html('&nbsp;:' + settings.edition.mandatoryLegend + ' '));
+      }
+      if (hasInvariantAxis) {
+        legende.append(
+          $('<img>', {
+            src: settings.edition.invariantIcon, 
+            alt: settings.edition.invariantLegend,
+            width: '10px'
+          })).
+        append($('<span>').html('&nbsp;:' + settings.edition.invariantLegend));
+      }
+      if (hasMandatoryAxis || hasInvariantAxis) {
+        legende.appendTo(axisSection);
+      }
     }
   }
 })( jQuery );
