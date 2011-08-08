@@ -220,16 +220,8 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_LOAD_REGISTERED_AXIS", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.loadRegisteredAxis",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
     }
     return tempRegisteredAxis;
   }
@@ -336,16 +328,8 @@ public class ClassifyEngine implements Cloneable {
           "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID", "sSQLStatement= "
           + sSQLStatement, e);
     } finally {
-      try {
-        DBUtil.close(rs, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.isPositionAlreadyExists",
-            "root.EX_CONNECTION_CLOSE_FAILED", e);
-      }
+      DBUtil.close(rs, prepStmt);
+      DBUtil.close(connection);
     }
   }
 
@@ -396,15 +380,9 @@ public class ClassifyEngine implements Cloneable {
           "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID", "nSilverObjectId= "
           + nSilverObjectId, e);
     } finally {
-      try {
-        DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.classifySilverObject",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      DBUtil.close(prepStmt);
+      if (bCloseConnection) {
+        DBUtil.close(connection);
       }
     }
   }
@@ -453,15 +431,9 @@ public class ClassifyEngine implements Cloneable {
           "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
           "nSilverObjectId= " + nSilverObjectId, e);
     } finally {
-      try {
-        DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.unclassifySilverObjectByPosition",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      DBUtil.close(prepStmt);
+      if (bCloseConnection) {
+        DBUtil.close(connection);
       }
     }
   }
@@ -531,15 +503,9 @@ public class ClassifyEngine implements Cloneable {
           "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
           "nPositionId= " + nPositionId, e);
     } finally {
-      try {
-        DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.unclassifySilverObjectByPositionId",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      DBUtil.close(prepStmt);
+      if (bCloseConnection) {
+        DBUtil.close(connection);
       }
     }
   }
@@ -588,15 +554,9 @@ public class ClassifyEngine implements Cloneable {
           "classifyEngine.EX_CANT_UPDATE_SILVEROBJECTID_POSITION",
           "nPositionId= " + newPosition.getPositionId(), e);
     } finally {
-      try {
-        DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.updateSilverObjectPosition",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      DBUtil.close(prepStmt);
+      if (bCloseConnection) {
+        DBUtil.close(connection);
       }
     }
   }
@@ -645,15 +605,9 @@ public class ClassifyEngine implements Cloneable {
           "classifyEngine.EX_CANT_UPDATE_SILVEROBJECTID_POSITION", "axisId= "
           + value.getAxisId(), e);
     } finally {
-      try {
-        DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.updateSilverObjectPosition",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      DBUtil.close(prepStmt);
+      if (bCloseConnection) {
+        DBUtil.close(connection);
       }
     }
   }
@@ -734,16 +688,8 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_FIND_SILVEROBJECTID", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.findSilverOjectByCriterias",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
     }
   }
 
@@ -785,16 +731,8 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_SILVERCONTENTIDS_BYSILVEROBJECTIDS", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.getSilverContentIdsByPositionIds",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
     }
   }
 
@@ -848,16 +786,8 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_FIND_SILVEROBJECTID", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.findPositionsBySilverOjectId",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
     }
   }
 
@@ -1007,15 +937,9 @@ public class ClassifyEngine implements Cloneable {
       throw new ClassifyEngineException("ClassifyEngine.replaceValuesOnAxis",
           SilverpeasException.ERROR, "classifyEngine.EX_CANT_REPLACE_VALUES", e);
     } finally {
-      try {
-        DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.replaceValuesOnAxis",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      DBUtil.close(prepStmt);
+      if (bCloseConnection) {
+        DBUtil.close(connection);
       }
     }
   }
@@ -1103,14 +1027,7 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
-      try {
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine", "ClassifyEngine.getPertinentAxis",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(connection);
     }
   }
 
@@ -1186,15 +1103,7 @@ public class ClassifyEngine implements Cloneable {
           "ClassifyEngine.getPertinentAxisByJoin", SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
-      try {
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.getPertinentAxisByJoin",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(connection);
     }
   }
 
@@ -1280,15 +1189,9 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.getSinglePertinentAxisByJoin",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      DBUtil.close(resSet, prepStmt);
+      if (bCloseConnection) {
+        DBUtil.close(connection);
       }
       SilverTrace.info("classifyEngine",
           "ClassifyEngine.getSinglePertinentAxisByJoin",
@@ -1352,16 +1255,8 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.getPertinentValues",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
     }
   }
 
@@ -1427,16 +1322,8 @@ public class ClassifyEngine implements Cloneable {
           "ClassifyEngine.getPertinentValuesByJoin", SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.getPertinentValuesByJoin",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
     }
   }
 
@@ -1501,16 +1388,8 @@ public class ClassifyEngine implements Cloneable {
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
-      try {
-        DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("classifyEngine",
-            "ClassifyEngine.getObjectValuePairsByJoin",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
     }
   }
 }
