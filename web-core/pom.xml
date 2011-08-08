@@ -47,6 +47,10 @@
       <artifactId>standard</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jasig.cas</groupId>
+      <artifactId>cas-client-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jcharts</groupId>
       <artifactId>jcharts</artifactId>
     </dependency>

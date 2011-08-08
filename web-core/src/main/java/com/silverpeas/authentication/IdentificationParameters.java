@@ -34,7 +34,7 @@ import javax.servlet.http.HttpSession;
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class Identification {
+public class IdentificationParameters {
 
   private final int keyMaxLength = 12;
 
@@ -45,20 +45,19 @@ public class Identification {
   String clearPassword;
   boolean casMode;
 
-  public  Identification(HttpSession session, HttpServletRequest request) {
+  public IdentificationParameters(HttpSession session, HttpServletRequest request) {
     ResourceLocator authenticationSettings = new ResourceLocator(
         "com.silverpeas.authentication.settings.authenticationSettings", "");
     boolean cookieEnabled = authenticationSettings.getBoolean("cookieEnabled", false);
     this.casMode = (getCASUser(session) != null);
 
     String stringKey = convert2Alpha(session.getId());
-    // New field names in login form
-     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
+     boolean useNewEncryptionMode = StringUtil.isDefined(request.getParameter("Var2"));
 
     if (casMode) {
       login =  getCASUser(session);
       password = "";
-    } else if (isNewEncryptMode) {
+    } else if (useNewEncryptionMode) {
       login = request.getParameter("Var2");
       password = request.getParameter("Var1");
       storedPassword = request.getParameter("tq");
@@ -74,7 +73,7 @@ public class Identification {
     SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
         "root.MSG_GEN_PARAM_VALUE", "sCryptedPassword = " + cryptedPassword);
 
-    decodePassword(cookieEnabled, stringKey, isNewEncryptMode);
+    decodePassword(cookieEnabled, stringKey, useNewEncryptionMode);
   }
 
   private void decodePassword(boolean cookieEnabled, String stringKey, boolean newEncryptMode) {

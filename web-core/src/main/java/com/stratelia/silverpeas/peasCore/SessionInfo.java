@@ -86,11 +86,8 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
 
         while (spSessionAttNames.hasMoreElements()) {
           spName = spSessionAttNames.nextElement();
-          // SilverTrace.info("peasCore","LoginServlet.cleanSession()","root.MSG_GEN_PARAM_VALUE","spName="
-          // + spName);
           if ((spName != null)
-              && ((spName.startsWith("Silverpeas_")) || (spName
-              .startsWith("WYSIWYG_")))) {
+              && ((spName.startsWith("Silverpeas_")) || (spName.startsWith("WYSIWYG_")))) {
             spNames.add(spName);
           }
         }

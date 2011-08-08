@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.servlets.LoginServlet"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
