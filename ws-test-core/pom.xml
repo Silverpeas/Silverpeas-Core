@@ -60,13 +60,13 @@
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.jersey-test-framework</groupId>
-      <artifactId>jersey-test-framework-grizzly</artifactId>
+      <artifactId>jersey-test-framework-grizzly2</artifactId>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>  
-        </exclusion>  
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>

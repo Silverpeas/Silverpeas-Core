@@ -27,23 +27,18 @@ import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.rest.ResourceDeletionTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import static com.silverpeas.comment.web.CommentTestResources.*;
 
 /**
  * Tests on the comment deletion by the CommentResource web service.
  */
-public class CommentDeletionTest extends ResourceDeletionTest {
+public class CommentDeletionTest extends ResourceDeletionTest<CommentTestResources> {
 
   private UserDetail user;
   private String sessionKey;
   private Comment theComment;
-  
-  @Inject
-  private CommentTestResources testResources;
 
   public CommentDeletionTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -51,19 +46,17 @@ public class CommentDeletionTest extends ResourceDeletionTest {
 
   @Before
   public void createAUserAndAComment() {
-    assertNotNull(testResources);
-    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
     theComment = theUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire");
-    testResources.save(theComment);
+    getTestResources().save(theComment);
   }
 
   @Test(expected=CommentRuntimeException.class)
   public void deleteAnExistingComment(){
     deleteAt(aResourceURI());
-    testResources.getCommentService().getComment(theComment.getCommentPK());
+    getTestResources().getCommentService().getComment(theComment.getCommentPK());
   }
 
   @Override

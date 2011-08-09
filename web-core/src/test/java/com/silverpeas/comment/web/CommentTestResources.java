@@ -24,23 +24,18 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
 import javax.inject.Inject;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.web.mock.DefaultCommentServiceMock;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.rest.TestResources;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Named;
-import org.springframework.beans.factory.annotation.Autowired;
-import static org.mockito.Mockito.*;
 
 /**
  * Resources required by all the unit tests on the comment web resource.
  */
-@Named
-public class CommentTestResources {
+@Named(TestResources.TEST_RESOURCES_NAME)
+public class CommentTestResources extends TestResources {
 
   public static final String JAVA_PACKAGE = "com.silverpeas.comment.web";
   public static final String SPRING_CONTEXT = "spring-comment-webservice.xml";
@@ -51,8 +46,6 @@ public class CommentTestResources {
   public static final String INVALID_RESOURCE_PATH = "comments/kmelia100/3";
   @Inject
   private DefaultCommentServiceMock commentService;
-  @Inject
-  private MockablePersonalizationService personalizationService;
 
   /**
    * Gets the comment service used in tests.
@@ -60,17 +53,6 @@ public class CommentTestResources {
    */
   public CommentService getCommentService() {
     return commentService;
-  }
-
-  /**
-   * Initializes the resources required by the unit tests.
-   */
-  public void init() {
-    PersonalizationService personalization = mock(PersonalizationService.class);
-    UserPreferences prefs = new UserPreferences("fr", "", "", false, true, true,
-            UserMenuDisplay.DISABLE);
-    when(personalization.getUserSettings(anyString())).thenReturn(prefs);
-    personalizationService.setPersonalizationService(personalization);
   }
 
   /**

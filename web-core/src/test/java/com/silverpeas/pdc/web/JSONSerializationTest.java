@@ -23,9 +23,10 @@
  */
 package com.silverpeas.pdc.web;
 
+import javax.inject.Inject;
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.silverpeas.pdc.web.beans.PdcClassification;
+import com.silverpeas.rest.TestResources;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONUnmarshaller;
@@ -34,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.StringReader;
-import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
 public class JSONSerializationTest {
 
   @Inject
-  private TestResources resources;
+  private PdcTestResources resources;
 
   public JSONSerializationTest() {
   }
@@ -61,7 +61,6 @@ public class JSONSerializationTest {
   @Before
   public void setUp() {
     assertNotNull(resources);
-    resources.init();
   }
 
   @After
@@ -84,14 +83,6 @@ public class JSONSerializationTest {
   private PdcClassificationEntity aPdcClassificationEntity() throws ThesaurusException {
     PdcClassification classification = aPdcClassification().onResource(CONTENT_ID).inComponent(
             COMPONENT_INSTANCE_ID);
-    return resources.toWebEntity(classification, aUser());
-  }
-
-  private UserDetail aUser() {
-    UserDetail user = new UserDetail();
-    user.setFirstName("Toto");
-    user.setLastName("Chez-les-papoos");
-    user.setId("2");
-    return user;
+    return resources.toWebEntity(classification, resources.aUser());
   }
 }

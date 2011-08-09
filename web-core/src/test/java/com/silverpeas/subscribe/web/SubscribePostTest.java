@@ -23,14 +23,11 @@
  */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.subscribe.MockableSubscriptionService;
 import org.junit.Before;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.rest.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
-import javax.inject.Inject;
 import com.silverpeas.rest.RESTWebServiceTest;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
@@ -45,17 +42,9 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 import static com.silverpeas.rest.RESTWebService.*;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.*;
 
-public class SubscribePostTest extends RESTWebServiceTest {
-
-  @Inject
-  private MockableSubscriptionService subscriptionService;
-  @Inject
-  private MockablePersonalizationService personalisationService;
-  protected static final String COMPONENT_ID = "questionReply12";
-  protected static final String KMELIA_ID = "kmelia12";
-  protected static final String RESOURCE_PATH = "subscribe/" + COMPONENT_ID;
-  protected static final String KMELIA_RESOURCE_PATH = "subscribe/" + COMPONENT_ID;
+public class SubscribePostTest extends RESTWebServiceTest<SubscriptionTestResources> {  
 
   public SubscribePostTest() {
     super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
@@ -68,8 +57,7 @@ public class SubscribePostTest extends RESTWebServiceTest {
 
   @Before
   public void setup() {
-    assertNotNull(subscriptionService);
-    assertThat(subscriptionService,
+    assertThat(getTestResources().getMockableSubscriptionService(),
             is(SubscriptionServiceFactory.getFactory().getSubscribeService()));
   }
 
@@ -77,8 +65,9 @@ public class SubscribePostTest extends RESTWebServiceTest {
   public void subscribeForAnNotAuthenticatedUser() {
     WebResource resource = resource();
     try {
-      String result = resource.path(RESOURCE_PATH).accept(MediaType.APPLICATION_JSON).post(
-              String.class);
+      resource.path(SUBSCRIBE_RESOURCE_PATH).
+              accept(MediaType.APPLICATION_JSON).
+              post(String.class);
       fail("A non authenticated user shouldn't access the comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
@@ -98,11 +87,11 @@ public class SubscribePostTest extends RESTWebServiceTest {
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    personalisationService.setPersonalizationService(mock(PersonalizationService.class));
+    getMockedPersonalizationService().setPersonalizationService(mock(PersonalizationService.class));
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     ComponentSubscription subscription = new ComponentSubscription("10", COMPONENT_ID);
-    subscriptionService.setImplementation(mockedSubscriptionService);
-    String result = resource.path(RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).accept(
+    getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
+    String result = resource.path(SUBSCRIBE_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).accept(
             MediaType.APPLICATION_JSON).post(String.class);
     assertThat(result, is("OK"));
     verify(mockedSubscriptionService, only()).subscribe(subscription);
@@ -120,11 +109,11 @@ public class SubscribePostTest extends RESTWebServiceTest {
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    personalisationService.setPersonalizationService(mock(PersonalizationService.class));
+    getMockedPersonalizationService().setPersonalizationService(mock(PersonalizationService.class));
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     NodeSubscription subscription = new NodeSubscription("10", new NodePK("205", COMPONENT_ID));
-    subscriptionService.setImplementation(mockedSubscriptionService);
-    String result = resource.path(RESOURCE_PATH + "/topic/205").header(HTTP_SESSIONKEY, sessionKey).accept(
+    getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
+    String result = resource.path(SUBSCRIBE_RESOURCE_PATH + "/topic/205").header(HTTP_SESSIONKEY, sessionKey).accept(
             MediaType.APPLICATION_JSON).post(String.class);
     assertThat(result, is("OK"));
     verify(mockedSubscriptionService, only()).subscribe(subscription);

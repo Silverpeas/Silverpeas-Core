@@ -40,8 +40,9 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.silverpeas.pdc.web.TestResources.JAVA_PACKAGE;
-import static com.silverpeas.pdc.web.TestResources.SPRING_CONTEXT;
+import org.springframework.test.context.ContextConfiguration;
+import static com.silverpeas.pdc.web.PdcTestResources.JAVA_PACKAGE;
+import static com.silverpeas.pdc.web.PdcTestResources.SPRING_CONTEXT;
 import static com.silverpeas.pdc.web.beans.PdcClassification.aPdcClassification;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
@@ -53,10 +54,8 @@ import static org.junit.Assert.assertThat;
 /**
  * Unit tests on the update of an existing position within the PdC classification of a resource.
  */
-public class ClassificationPositionUpdateTest extends ResourceUpdateTest {
+public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTestResources> {
 
-  @Inject
-  private TestResources testResources;
   private String sessionKey;
   private UserDetail theUser;
   private PdcClassification theClassification;
@@ -67,14 +66,12 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest {
 
   @Before
   public void setUpUserSessionAndPdCClassifications() {
-    assertNotNull(testResources);
-    testResources.init();
     theUser = aUser();
     sessionKey = authenticate(theUser);
-    testResources.enableThesaurus();
+    getTestResources().enableThesaurus();
     theClassification =
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
-    testResources.save(theClassification);
+    getTestResources().save(theClassification);
   }
 
   @Test
@@ -96,7 +93,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest {
         type(MediaType.APPLICATION_JSON).
         put(PdcClassificationEntity.class, aResource());
     assertNotNull(classification);
-    assertThat(classification, equalTo(theWebEntityOf(testResources.getPdcClassification())));
+    assertThat(classification, equalTo(theWebEntityOf(getTestResources().getPdcClassification())));
   }
 
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
@@ -135,7 +132,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest {
 
   private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           Exception {
-    return testResources.toWebEntity(classification, theUser);
+    return getTestResources().toWebEntity(classification, theUser);
   }
 
   @Override
