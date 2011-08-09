@@ -23,9 +23,11 @@
  */
 package com.stratelia.webactiv.servlets.credentials;
 
+import com.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -34,10 +36,11 @@ import javax.servlet.http.HttpSession;
  * @author ehugonnet
  */
 public class ValidationQuestionHandler extends FunctionHandler {
+  private static final AuthenticationService authenticationService = new AuthenticationService();
 
   @Override
   public String doAction(HttpServletRequest request) {
-    HttpSession session = request.getSession(true);
+    HttpSession session = request.getSession();
     String key = (String) session.getAttribute("svplogin_Key");
     try {
       String userId = getAdmin().authenticate(key, session.getId(), false, false);
@@ -48,14 +51,14 @@ public class ValidationQuestionHandler extends FunctionHandler {
       userDetail.setLoginAnswer(answer);
       getAdmin().updateUser(userDetail);
 
-      if ("true".equals(getGeneral().getString("userLoginForcePasswordChange"))) {
+      if (getGeneral().getBoolean("userLoginForcePasswordChange", false)) {
         return getGeneral().getString("userLoginForcePasswordChangePage");
       }
-      return "/LoginServlet";
+      return authenticationService.authenticate(request, key);
     } catch (AdminException e) {
       // Error : go back to login page
       SilverTrace.error("peasCore", "validationQuestionHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
+          "peasCore.EX_USER_KEY_NOT_FOUND", e);
       return "/Login.jsp";
     }
   }
