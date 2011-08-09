@@ -33,13 +33,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
+<html>
+<head>
 <script>
-window.location.href = "<%=URLManager.getApplicationURL()%>/admin/jsp/Main.jsp?SpaceId=<%=request.getParameter("SpaceId")%>";
+window.location.href = "<%=URLManager.getApplicationURL()%>/dt?SpaceId=<%=request.getParameter("SpaceId")%>";
 </script>
-</HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
-</BODY>
-</HTML>
+</head>
+<body>
+</body>
+</html>
