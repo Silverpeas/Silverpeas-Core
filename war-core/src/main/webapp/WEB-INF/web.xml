@@ -78,11 +78,6 @@
     <filter-name>PortletAppEngineFilter</filter-name>
     <filter-class>com.sun.portal.portletcontainer.appengine.PortletAppEngineFilter</filter-class>
   </filter>
-  <filter>
-        <!-- Login Filter -->
-    <filter-name>LoginFilter</filter-name>
-    <filter-class>com.stratelia.webactiv.filter.LoginFilter</filter-class>
-  </filter>
   <filter-mapping>
     <filter-name>CharacterEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -92,11 +87,6 @@
     <filter-name>PortletAppEngineFilter</filter-name>
     <servlet-name>PortletAppEngineServlet</servlet-name>
     <dispatcher>INCLUDE</dispatcher>
-  </filter-mapping>
-  <filter-mapping>
-        <!-- Login Filter Mapping -->
-    <filter-name>LoginFilter</filter-name>
-    <servlet-name>LoginServlet</servlet-name>
   </filter-mapping>
   <listener>
     <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
@@ -191,10 +181,6 @@
   <servlet>
     <servlet-name>MainRequestRouter</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.MainRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>LoginServlet</servlet-name>
-    <servlet-class>com.stratelia.webactiv.servlets.LoginServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>LogoutServlet</servlet-name>
@@ -601,10 +587,6 @@
   <servlet-mapping>
     <servlet-name>MainRequestRouter</servlet-name>
     <url-pattern>/Main/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>LoginServlet</servlet-name>
-    <url-pattern>/LoginServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>LogoutServlet</servlet-name>

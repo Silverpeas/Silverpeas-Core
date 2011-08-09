@@ -28,10 +28,28 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class EncryptionFactory {
+
+
+  private Class<? extends EncryptionInterface> encryptionClass;
+  private static final EncryptionFactory instance = new EncryptionFactory();
   /**
    * -------------------------------------------------------------------------- constructor
    */
-  public EncryptionFactory() {
+  private EncryptionFactory() {
+    ResourceLocator settingsFile = new ResourceLocator(
+        "com.silverpeas.authentication.settings.authenticationSettings", "");
+    try {
+      encryptionClass = (Class<? extends EncryptionInterface>) Class.forName(settingsFile.getString(
+          "encryptionClass", "com.stratelia.silverpeas.authentication.AuthenticationEncrypt"));
+
+    } catch (ClassNotFoundException e) {
+       SilverTrace.info("authentication", "EncryptionFactory.getCustomEncryption()",
+          "root.MSG_PARAM_ENTER_VALUE", "Encrypt/Decrypt Custom Class not found", e);
+    }
+  }
+
+  public static EncryptionFactory getInstance() {
+    return instance;
   }
 
   /**
@@ -39,31 +57,15 @@ public class EncryptionFactory {
    * @return
    */
   public EncryptionInterface getEncryption() {
-    EncryptionInterface encryptionInterface = getCustomEncryption();
-    if (encryptionInterface == null)
-      encryptionInterface = new AuthenticationEncrypt();
-    return encryptionInterface;
-  }
-
-  /**
-   * Get custom Encryption class
-   * @return
-   */
-  private EncryptionInterface getCustomEncryption() {
-    ResourceLocator settingsFile = new ResourceLocator(
-        "com.silverpeas.authentication.settings.authenticationSettings.properties",
-        "");
-    EncryptionInterface encryptionInterface = null;
     try {
-      Class encryptionClass = Class.forName(settingsFile
-          .getString("encryptionClass"));
-      encryptionInterface = (EncryptionInterface) encryptionClass.newInstance();
-    } catch (Exception e) {
-      SilverTrace.info("authentication",
-          "EncryptionFactory.getCustomEncryption()",
-          "root.MSG_PARAM_ENTER_VALUE",
-          "Encrypt/Decrypt Custom Class not found");
+      return encryptionClass.newInstance();
+    } catch (InstantiationException e) {
+      SilverTrace.info("authentication", "EncryptionFactory.getCustomEncryption()",
+          "root.MSG_PARAM_ENTER_VALUE", "Encrypt/Decrypt Custom Class not found", e);
+    } catch (IllegalAccessException e) {
+      SilverTrace.info("authentication", "EncryptionFactory.getCustomEncryption()",
+          "root.MSG_PARAM_ENTER_VALUE", "Encrypt/Decrypt Custom Class not found", e);
     }
-    return encryptionInterface;
+    return new AuthenticationEncrypt();
   }
 }

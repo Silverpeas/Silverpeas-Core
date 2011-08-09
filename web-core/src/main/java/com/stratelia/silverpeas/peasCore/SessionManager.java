@@ -67,7 +67,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * Class declaration This object is a singleton used by LoginServlet : when the user log in,
+ * Class declaration This object is a singleton used by AuthenticationService : when the user log in,
  * ComponentRequestRouter : when the user access a component. It provides functions to manage the
  * sessions, to write a log journal and getFactory informations about the logged users.
  * @author Nicolas Eysseric
