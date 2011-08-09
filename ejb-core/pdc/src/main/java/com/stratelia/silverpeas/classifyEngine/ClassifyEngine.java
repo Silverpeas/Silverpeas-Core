@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.JoinStatement;
 import com.stratelia.webactiv.util.DBUtil;
@@ -1385,6 +1386,70 @@ public class ClassifyEngine implements Cloneable {
     } catch (Exception e) {
       throw new ClassifyEngineException(
           "ClassifyEngine.getObjectValuePairsByJoin",
+          SilverpeasException.ERROR,
+          "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
+    } finally {
+      DBUtil.close(resSet, prepStmt);
+      DBUtil.close(connection);
+    }
+  }
+  
+  /**
+   * Get axis on which some informations are classified according to given list
+   * @param instanceIds a List of component ids
+   * @return a List of axis id on which at least one information is classified
+   * @throws ClassifyEngineException
+   */
+  public List<Integer> getPertinentAxisByInstanceIds(List<String> instanceIds) throws ClassifyEngineException {
+    SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentAxisByInstanceIds", "root.MSG_GEN_ENTER_METHOD");
+    
+    if (instanceIds == null || instanceIds.isEmpty()) {
+      return new ArrayList<Integer>();
+    }
+    
+    Connection connection = null;
+    PreparedStatement prepStmt = null;
+    ResultSet resSet = null;
+    try {
+      // Open the connection
+      connection = DBUtil.makeConnection(m_dbName);
+
+      // Build the statement
+      StringBuilder inClause = new StringBuilder(1000);
+      boolean first = true;
+      for (String instanceId : instanceIds) {
+        if (!first) {
+          inClause.append(",");
+        }
+        inClause.append("'").append(instanceId).append("'");
+        first = false;
+      }
+      StringBuilder sSQLStatement = new StringBuilder(200);
+      sSQLStatement.append("select * from sb_classifyengine_classify ");
+      sSQLStatement.append("where objectid in ");
+      sSQLStatement.append("(select silvercontentid from sb_contentmanager_content, sb_contentmanager_instance where contentinstanceid in ");
+      sSQLStatement.append("(select instanceid from sb_contentmanager_instance where componentid IN (").append(inClause.toString()).append(")))");
+
+      // Execute the finding
+      prepStmt = connection.prepareStatement(sSQLStatement.toString());
+      resSet = prepStmt.executeQuery();
+      
+      List<Integer> ids = new ArrayList<Integer>();
+      
+      // Fetch the results
+      while(resSet.next()) {
+        for (int nI = 0; nI < nbMaxAxis; nI++) {
+          String value = resSet.getString(3 + nI);
+          if (StringUtil.isDefined(value) && !ids.contains(nI)) {
+            ids.add(getLogicalAxisId(nI));
+          }
+        } 
+      }
+      
+      return ids; 
+    } catch (Exception e) {
+      throw new ClassifyEngineException(
+          "ClassifyEngine.getPertinentAxisByInstanceIds",
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
