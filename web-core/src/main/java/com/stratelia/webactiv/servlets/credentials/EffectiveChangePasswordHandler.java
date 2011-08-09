@@ -36,6 +36,8 @@ import javax.servlet.http.HttpSession;
  * @author ehugonnet
  */
 public class EffectiveChangePasswordHandler extends FunctionHandler {
+  private static final
+      LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
 
   private ForcePasswordChangeHandler forcePasswordChangeHandler = new ForcePasswordChangeHandler();
 
@@ -51,7 +53,6 @@ public class EffectiveChangePasswordHandler extends FunctionHandler {
       String domainId = ud.getDomainId();
       String oldPassword = request.getParameter("oldPassword");
       String newPassword = request.getParameter("newPassword");
-      LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
       auth.changePassword(login, oldPassword, newPassword, domainId);
       return "/LoginServlet";
     } catch (AdminException e) {

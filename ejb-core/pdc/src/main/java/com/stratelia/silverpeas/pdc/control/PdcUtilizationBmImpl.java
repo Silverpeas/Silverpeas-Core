@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.pdc.control;
 
 import java.sql.Connection;
@@ -33,7 +29,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
+import com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence;
+import com.stratelia.silverpeas.pdc.model.AxisPK;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.UsedAxisPK;
@@ -56,13 +55,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * SilverpeasBeanDAO is the main link with the SilverPeas persitence. We indicate the Object
    * SilverPeas which map the database.
    */
-  private SilverpeasBeanDAO dao = null;
+  private SilverpeasBeanDAO<UsedAxis> dao = null;
   private PdcUtilizationDAO utilizationDAO = new PdcUtilizationDAO();
 
   public PdcUtilizationBmImpl() {
     try {
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.pdc.model.UsedAxis");
+      dao = SilverpeasBeanDAOFactory.getDAO("com.stratelia.silverpeas.pdc.model.UsedAxis");
     } catch (PersistenceException exce_DAO) {
       SilverTrace.error("PDC", "PdcUtilizationBmImpl",
           "Pdc.CANNOT_CONSTRUCT_PERSISTENCE", exce_DAO);
@@ -129,31 +127,61 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
   @Override
   public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds, AxisFilter filter)
       throws PdcException {
-    List<AxisHeader> axisHeaders = null;
-    Connection con = openConnection();
+    List<AxisHeader> axisHeaders = new ArrayList<AxisHeader>();
+    if (instanceIds == null || instanceIds.isEmpty()) {
+      return axisHeaders;
+    }
 
+    Connection con = null;
     try {
-      axisHeaders = utilizationDAO.getAxisUsedByInstanceId(con, instanceIds,
-          filter);
+      ClassifyEngine classifyEngine = new ClassifyEngine();
+      List<Integer> ids = classifyEngine.getPertinentAxisByInstanceIds(instanceIds);
+
+      if (ids == null || ids.isEmpty()) {
+        return axisHeaders;
+      }
+
+      StringBuilder inClause = new StringBuilder(1000);
+      boolean first = true;
+      for (Integer instanceId : ids) {
+        if (!first) {
+          inClause.append(",");
+        }
+        inClause.append(instanceId);
+        first = false;
+      }
+
+      SilverpeasBeanDAO<AxisHeaderPersistence> dao =
+          SilverpeasBeanDAOFactory.<AxisHeaderPersistence> getDAO(
+              "com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence");
+      con = openConnection();
+      Collection<AxisHeaderPersistence> result =
+          dao.findByWhereClause(con, new AxisPK("useless"), "id IN (" + inClause.toString() + ")");
+
+      if (result != null) {
+        for (AxisHeaderPersistence silverpeasBean : result) {
+          AxisHeader axisHeader = new AxisHeader(silverpeasBean);
+          axisHeaders.add(axisHeader);
+        }
+      }
+
+      return axisHeaders;
     } catch (Exception e) {
       throw new PdcException("PdcUtilizationBmImpl.getUsedAxisByInstanceId",
           SilverpeasException.ERROR, "Pdc.CANNOT_FIND_USED_AXIS", e);
     } finally {
       closeConnection(con);
     }
-
-    return axisHeaders;
   }
 
   /**
    * Returns the usedAxis based on a defined axis
    * @param axisId - the id of the axis
    */
-  @SuppressWarnings("unchecked")
   private List<UsedAxis> getUsedAxisByAxisId(Connection con, int axisId)
       throws PdcException {
     try {
-      return (List) dao.findByWhereClause(con, new UsedAxisPK("useless"),
+      return (List<UsedAxis>) dao.findByWhereClause(con, new UsedAxisPK("useless"),
           "axisId = " + axisId);
     } catch (Exception e) {
       throw new PdcException("PdcUtilizationBmImpl.getUsedAxisByAxisId",
@@ -172,7 +200,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
     try {
       if (utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
-          new Integer(usedAxis.getPK().getId()).intValue(), usedAxis
+          Integer.parseInt(usedAxis.getPK().getId()), usedAxis
           .getAxisId(), usedAxis.getBaseValue(), treeId)) {
         return 1;
       } else {
