@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDAO;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -37,104 +36,88 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ThumbnailServiceImpl implements ThumbnailService {
 
+  private ThumbnailDAO dao;
+
   public ThumbnailServiceImpl() {
+    dao = new ThumbnailDAO();
   }
 
-  public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail)
-      throws ThumbnailException {
-    Connection con = getConnection();
+  @Override
+  public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
+    Connection con = null;
     try {
-      return ThumbnailDAO.insertThumbnail(con, thumbDetail);
+      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      return dao.insertThumbnail(con, thumbDetail);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
-            SilverpeasException.ERROR,
-            "thumbnail.EX_INSERT_ROW", se);
+              SilverpeasException.ERROR,
+              "thumbnail.EX_INSERT_ROW", se);
     } catch (UtilException e) {
       throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
-                SilverpeasException.ERROR,
-                "thumbnail.EX_MSG_RECORD_NOT_INSERT", e);
+              SilverpeasException.ERROR,
+              "thumbnail.EX_MSG_RECORD_NOT_INSERT", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
-  public void updateThumbnail(ThumbnailDetail thumbDetail)
-      throws ThumbnailException {
-    Connection con = getConnection();
+  @Override
+  public void updateThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
+    Connection con = null;
     try {
-      ThumbnailDAO.updateThumbnail(con, thumbDetail);
+      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      dao.updateThumbnail(con, thumbDetail);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.updateAttachment()",
-          SilverpeasException.ERROR,
-          "thumbnail.EX_MSG_RECORD_NOT_UPDATE", se);
+              SilverpeasException.ERROR,
+              "thumbnail.EX_MSG_RECORD_NOT_UPDATE", se);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
-  public void deleteThumbnail(ThumbnailDetail thumbDetail)
-      throws ThumbnailException {
-    Connection con = getConnection();
+  @Override
+  public void deleteThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
+    Connection con = null;
     try {
-      // delete thumbnail
-      ThumbnailDAO.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
-          thumbDetail.getInstanceId());
+      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      dao.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
+              thumbDetail.getInstanceId());
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.deleteThumbnail()",
-          SilverpeasException.ERROR, "thumbnail.EX_MSG_RECORD_NOT_DELETE", se);
+              SilverpeasException.ERROR, "thumbnail.EX_MSG_RECORD_NOT_DELETE", se);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
-  public ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail)
-      throws ThumbnailException {
-    Connection con = getConnection();
+  @Override
+  public ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
+    Connection con = null;
     try {
-      // select thumbnail
-      return ThumbnailDAO.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
-          thumbDetail.getObjectType());
+      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
+      return dao.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
+              thumbDetail.getObjectType());
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.getCompleteThumbnail()",
-          SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_FOUND", se);
+              SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_FOUND", se);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
-  private Connection getConnection() throws ThumbnailException {
-    SilverTrace.info("thumbnail", "ThumbnailBmImpl.getConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
+  @Override
+  public void deleteAllThumbnail(String componentId) throws ThumbnailException {
+    Connection con = null;
     try {
-      Connection con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
-      return con;
-    } catch (Exception e) {
-      throw new ThumbnailException("ThumbnailBmImpl.getConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  private void closeConnection(Connection con) {
-    try {
-      if (con != null)
-        con.close();
-    } catch (Exception e) {
-      SilverTrace.error("thumbnail", "ThumbnailBmImpl.closeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-    }
-  }
-
-  public void deleteAllThumbnail(String componentId)
-      throws ThumbnailException {
-    Connection con = getConnection();
-    try {
+      con = DBUtil.makeConnection(JNDINames.THUMBNAIL_DATASOURCE);
       // delete all thumbnails
-      ThumbnailDAO.deleteAllThumbnails(con, componentId);
+      dao.deleteAllThumbnails(con, componentId);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.deleteAllThumbnail()",
-          SilverpeasException.ERROR, "thumbnail_MSG_DELETE_ALL_FAILED", se);
+              SilverpeasException.ERROR, "thumbnail_MSG_DELETE_ALL_FAILED", se);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 }

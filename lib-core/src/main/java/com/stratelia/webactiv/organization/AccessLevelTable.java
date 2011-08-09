@@ -32,7 +32,6 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
   public AccessLevelTable(OrganizationSchema organization) {
     super(organization, "ST_AccessLevel");
   }
-  static final private String ACCESSLEVEL_COLUMNS = "id,name";
 
   /**
    * Fetch the current access level row from a resultSet.
@@ -42,10 +41,8 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
    */
   protected AccessLevelRow fetchAccessLevel(ResultSet rs) throws SQLException {
     AccessLevelRow a = new AccessLevelRow();
-
-    a.id = rs.getString(1);
-    a.name = rs.getString(2);
-
+    a.id = rs.getString("id");
+    a.name = rs.getString("name");
     return a;
   }
 
@@ -57,8 +54,7 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
   public AccessLevelRow[] getAllAccessLevels() throws AdminPersistenceException {
     return getRows(SELECT_ALL_ACCESSLEVELS).toArray(new AccessLevelRow[0]);
   }
-  static final private String SELECT_ALL_ACCESSLEVELS = "select "
-      + ACCESSLEVEL_COLUMNS + " from ST_AccessLevel";
+  static final private String SELECT_ALL_ACCESSLEVELS = "SELECT id, name FROM ST_AccessLevel";
 
   /**
    * Returns the Access level whith the given id.
@@ -69,8 +65,7 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
   public AccessLevelRow getAccessLevel(String id) throws AdminPersistenceException {
     return getUniqueRow(SELECT_ACCESSLEVEL_BY_ID, id);
   }
-  static final private String SELECT_ACCESSLEVEL_BY_ID = "select "
-      + ACCESSLEVEL_COLUMNS + " from ST_AccessLevel where id = ?";
+  static final private String SELECT_ACCESSLEVEL_BY_ID = "SELECT id, name FROM  ST_AccessLevel WHERE id = ?";
 
   /**
    * Fetch the current accessLevel row from a resultSet.

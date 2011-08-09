@@ -23,34 +23,39 @@
  */
 package com.silverpeas.thumbnail.model;
 
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
-
 public class ThumbnailDAO {
 
-  private static String thumbnailTableName = "SB_Thumbnail_Thumbnail";
-  private static String thumbnailColumnNames =
-      " instanceid, objectid, objecttype, originalattachmentname, modifiedattachmentname, "
-          + "mimetype, xstart, ystart, xlength, ylength ";
+  private static final String INSERT_THUMBNAIL = "INSERT INTO sb_thumbnail_thumbnail "
+          + "(instanceid, objectid, objecttype, originalattachmentname, modifiedattachmentname,"
+          + "mimetype, xstart, ystart, xlength, ylength) "
+          + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
+  private static final String UPDATE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail "
+          + "SET xstart = ?, ystart = ?, xlength = ?, ylength = ?, originalattachmentname = ?, "
+          + "modifiedattachmentname = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
+  private static final String DELETE_THUMBNAIL = "DELETE FROM sb_thumbnail_thumbnail "
+          + "WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
+  private static final String DELETE_COMPONENT_THUMBNAILS = "DELETE FROM sb_thumbnail_thumbnail WHERE instanceId = ?";
+  private static final String SELECT_THUMBNAIL_BY_PK = "SELECT instanceid, objectid, objecttype, "
+          + "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, "
+          + "ylength FROM sb_thumbnail_thumbnail WHERE objectId = ? AND objectType = ? AND instanceId = ?";
 
   public ThumbnailDAO() {
   }
 
-  public static ThumbnailDetail insertThumbnail(Connection con,
-      ThumbnailDetail thumbnailDetail) throws SQLException, UtilException {
-    String insertQuery = "insert into "
-        + thumbnailTableName + " (" + thumbnailColumnNames + ")"
-        + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
+  public ThumbnailDetail insertThumbnail(Connection con, ThumbnailDetail thumbnailDetail) throws
+          SQLException {
     PreparedStatement prepStmt = null;
     try {
-      prepStmt = con.prepareStatement(insertQuery);
+      prepStmt = con.prepareStatement(INSERT_THUMBNAIL);
       prepStmt.setString(1, thumbnailDetail.getInstanceId());
       prepStmt.setInt(2, thumbnailDetail.getObjectId());
       prepStmt.setInt(3, thumbnailDetail.getObjectType());
@@ -89,20 +94,13 @@ public class ThumbnailDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-
     return thumbnailDetail;
   }
 
-  public static void updateThumbnail(Connection con, ThumbnailDetail thumbToUpdate)
-      throws SQLException {
-    String updateQuery =
-        "update " + thumbnailTableName +
-            " set xstart = ?, ystart = ?, xlength = ?, ylength = ?, "
-            + " originalattachmentname = ?, modifiedattachmentname = ? "
-            + " where objectId = ? and objectType = ? and instanceId = ? ";
+  public void updateThumbnail(Connection con, ThumbnailDetail thumbToUpdate) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      prepStmt = con.prepareStatement(updateQuery);
+      prepStmt = con.prepareStatement(UPDATE_THUMBNAIL);
       prepStmt.setInt(1, thumbToUpdate.getXStart());
       prepStmt.setInt(2, thumbToUpdate.getYStart());
       prepStmt.setInt(3, thumbToUpdate.getXLength());
@@ -112,22 +110,17 @@ public class ThumbnailDAO {
       prepStmt.setInt(7, thumbToUpdate.getObjectId());
       prepStmt.setInt(8, thumbToUpdate.getObjectType());
       prepStmt.setString(9, thumbToUpdate.getInstanceId());
-
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
     }
   }
 
-  public static void deleteThumbnail(Connection con, int objectId, int objectType, String instanceId)
-      throws SQLException {
+  public void deleteThumbnail(Connection con, int objectId, int objectType, String instanceId)
+          throws SQLException {
     PreparedStatement prepStmt = null;
-
     try {
-      String deleteQuery = "delete from " + thumbnailTableName
-          + " where objectId = ? and objectType = ? and instanceId = ? ";
-
-      prepStmt = con.prepareStatement(deleteQuery);
+      prepStmt = con.prepareStatement(DELETE_THUMBNAIL);
       prepStmt.setInt(1, objectId);
       prepStmt.setInt(2, objectType);
       prepStmt.setString(3, instanceId);
@@ -138,38 +131,26 @@ public class ThumbnailDAO {
     }
   }
 
-  public static void deleteAllThumbnails(Connection con, String instanceId)
-      throws SQLException {
+  public void deleteAllThumbnails(Connection con, String instanceId) throws SQLException {
     PreparedStatement prepStmt = null;
-
     try {
-      String deleteQuery = "delete from " + thumbnailTableName
-          + " where instanceId = ?";
-
-      prepStmt = con.prepareStatement(deleteQuery);
+      prepStmt = con.prepareStatement(DELETE_COMPONENT_THUMBNAILS);
       prepStmt.setString(1, instanceId);
       prepStmt.executeUpdate();
-
     } finally {
       DBUtil.close(prepStmt);
     }
   }
 
-  public static ThumbnailDetail selectByKey(Connection con,
-        String instanceId, int objectId, int objectType) throws SQLException {
-    SilverTrace.info("publication", "ThumbnailDAO.selectByPubId()",
-            "root.MSG_GEN_ENTER_METHOD", "objectId = " + objectId + "objectType" + objectType +
-                "instanceId" + instanceId);
+  public ThumbnailDetail selectByKey(Connection con, String instanceId, int objectId, int objectType)
+          throws SQLException {
+    SilverTrace.info("publication", "ThumbnailDAO.selectByPubId()", "root.MSG_GEN_ENTER_METHOD",
+            "objectId = " + objectId + "objectType" + objectType + "instanceId" + instanceId);
     ResultSet rs = null;
     ThumbnailDetail thumbnailDetail = null;
-    String selectStatement =
-        "select " +
-            thumbnailColumnNames +
-                     "from sb_thumbnail_thumbnail where objectId = ? and objectType = ? and instanceId = ?";
     PreparedStatement prepStmt = null;
-
     try {
-      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt = con.prepareStatement(SELECT_THUMBNAIL_BY_PK);
       prepStmt.setInt(1, objectId);
       prepStmt.setInt(2, objectType);
       prepStmt.setString(3, instanceId);
@@ -181,14 +162,12 @@ public class ThumbnailDAO {
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-
     return thumbnailDetail;
   }
 
-  private static ThumbnailDetail resultSet2ThumbDetail(ResultSet rs) throws SQLException {
-    ThumbnailDetail thumbnailDetail =
-        new ThumbnailDetail(rs.getString("instanceid"), rs.getInt("objectid"), rs
-            .getInt("objecttype"));
+  ThumbnailDetail resultSet2ThumbDetail(ResultSet rs) throws SQLException {
+    ThumbnailDetail thumbnailDetail = new ThumbnailDetail(rs.getString("instanceid"), rs.getInt(
+            "objectid"), rs.getInt("objecttype"));
     thumbnailDetail.setOriginalFileName(rs.getString("originalattachmentname"));
     thumbnailDetail.setCropFileName(rs.getString("modifiedattachmentname"));
     thumbnailDetail.setMimeType(rs.getString("mimetype"));

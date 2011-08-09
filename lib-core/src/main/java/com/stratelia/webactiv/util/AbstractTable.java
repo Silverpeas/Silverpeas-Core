@@ -60,7 +60,7 @@ public abstract class AbstractTable {
    * "u.id,u.firstName,u.lastName" for row alias "u" columns list "id,firstName,lastName".
    */
   static public String aliasColumns(String rowAlias, String columnList) {
-    StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
     StringTokenizer st = new StringTokenizer(columnList, ",");
 
     String column;
@@ -92,17 +92,17 @@ public abstract class AbstractTable {
    * Returns the next id which can be used to create a new row.
    */
   public int getNextId() throws SQLException {
-    int nextId = 0;
+    int nextId;
     try {
       nextId = com.stratelia.webactiv.util.DBUtil.getNextId(tableName, "id");
     } catch (Exception e) {
       throw new SQLException(e.toString());
     }
 
-    if (nextId == 0)
+    if (nextId == 0){
       return 1;
-    else
-      return nextId;
+    }
+    return nextId;
   }
 
   /**
@@ -448,7 +448,7 @@ public abstract class AbstractTable {
         notNullValues.add(matchValues[i]);
       }
     }
-    return getRows(query, (String[]) notNullValues.toArray(new String[0]));
+    return getRows(query, (String[]) notNullValues.toArray(new String[notNullValues.size()]));
   }
 
   /**
@@ -477,7 +477,7 @@ public abstract class AbstractTable {
 
   protected Object getUniqueRow(ResultSet rs) throws SQLException,
       UtilException {
-    Object result = null;
+    Object result;
 
     if (!rs.next()) {
       // no row found
@@ -510,11 +510,11 @@ public abstract class AbstractTable {
       // more then one row !
       throw new UtilException("AbstractTable.getInteger", "Not unique row !");
     }
-    return Integer.valueOf(result);
+    return result;
   }
 
   protected int insertRow(String insertQuery, Object row) throws UtilException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
     try {
       statement = schema.getStatement(insertQuery);
@@ -531,7 +531,7 @@ public abstract class AbstractTable {
   }
 
   protected int updateRow(String updateQuery, Object row) throws UtilException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
     try {
       statement = schema.getStatement(updateQuery);
@@ -548,7 +548,7 @@ public abstract class AbstractTable {
   }
 
   protected int updateRelation(String query, int param) throws UtilException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
 
     try {
@@ -570,7 +570,7 @@ public abstract class AbstractTable {
   }
 
   protected int updateRelation(String query, int[] param) throws UtilException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
 
     try {
