@@ -25,14 +25,12 @@ package com.silverpeas.subscribe.web;
 
 import java.util.List;
 import com.silverpeas.subscribe.service.Subscription;
-import com.silverpeas.subscribe.MockableSubscriptionService;
 import org.junit.Before;
 import java.util.Collection;
 import com.google.common.collect.Lists;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.rest.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
-import javax.inject.Inject;
 import com.silverpeas.rest.RESTWebServiceTest;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
@@ -46,15 +44,9 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 import static com.silverpeas.rest.RESTWebService.*;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.*;
 
-public class SubscriptionGettingTest extends RESTWebServiceTest {
-
-  @Inject
-  private MockableSubscriptionService subscriptionService;
-  protected static final String COMPONENT_ID = "questionReply12";
-  protected static final String KMELIA_ID = "kmelia12";
-  protected static final String RESOURCE_PATH = "subscriptions/" + COMPONENT_ID;
-  protected static final String KMELIA_RESOURCE_PATH = "subscriptions/" + COMPONENT_ID;
+public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTestResources> {
 
   public SubscriptionGettingTest() {
     super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
@@ -67,8 +59,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
 
   @Before
   public void setup() {
-    assertNotNull(subscriptionService);
-    assertThat(subscriptionService,
+    assertThat(getTestResources().getMockableSubscriptionService(),
             is(SubscriptionServiceFactory.getFactory().getSubscribeService()));
   }
 
@@ -76,7 +67,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
   public void getSubscriptionsByANonAuthenticatedUser() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).accept(MediaType.APPLICATION_JSON).get(String.class);
+      resource.path(SUBSCRIPTION_RESOURCE_PATH).accept(MediaType.APPLICATION_JSON).get(String.class);
       fail("A non authenticated user shouldn't access the comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
@@ -101,8 +92,8 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
     Collection<ComponentSubscription> subscriptions = Lists.newArrayList(subscription);
     when((Collection<ComponentSubscription>) mockedSubscriptionService.
             getUserSubscriptionsByComponent("10", COMPONENT_ID)).thenReturn(subscriptions);
-    subscriptionService.setImplementation(mockedSubscriptionService);
-    SubscriptionEntity[] entities = resource.path(RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).
+    getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
+    SubscriptionEntity[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).get(SubscriptionEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(1));
@@ -124,8 +115,8 @@ public class SubscriptionGettingTest extends RESTWebServiceTest {
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     List<String> subscribers = Lists.newArrayList("5", "6", "7", "20");
     when(mockedSubscriptionService.getSubscribers(new ForeignPK("0", COMPONENT_ID))).thenReturn(subscribers);
-    subscriptionService.setImplementation(mockedSubscriptionService);
-    String[] entities = resource.path(RESOURCE_PATH + "/subscribers/0").header(HTTP_SESSIONKEY, sessionKey).
+    getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
+    String[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/0").header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).get(String[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(4));

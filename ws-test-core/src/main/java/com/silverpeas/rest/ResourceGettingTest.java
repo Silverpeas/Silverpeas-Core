@@ -39,7 +39,8 @@ import static org.hamcrest.Matchers.*;
  * This class is an abstract one and it implements some tests that are redondant over all 
  * web resources in Silverpeas (about authorization failure, authentication failure, ...)
  */
-public abstract class ResourceGettingTest extends RESTWebServiceTest implements WebResourceTesting {
+public abstract class ResourceGettingTest<T extends TestResources> extends RESTWebServiceTest<T>
+        implements WebResourceTesting {
 
   /**
    * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
@@ -69,9 +70,9 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
     return resource.path(thePath).
             header(HTTP_SESSIONKEY, getSessionKey()).
             accept(MediaType.APPLICATION_JSON).
-            get(c);    
+            get(c);
   }
-  
+
   @Test
   public void gettingAResourceByANonAuthenticatedUser() {
     try {
@@ -85,7 +86,7 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
       assertThat(receivedStatus, is(unauthorized));
     }
   }
-  
+
   @Test
   public void gettingAResourceWithAnExpiredSession() {
     try {
@@ -99,7 +100,7 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
       assertThat(receivedStatus, is(unauthorized));
     }
   }
-  
+
   @Test
   public void gettingAResourceByAnUnauthorizedUser() {
     denieAuthorizationToUsers();
@@ -112,7 +113,7 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
       assertThat(receivedStatus, is(forbidden));
     }
   }
-  
+
   @Test
   public void gettingAnUnexistingResource() {
     try {
@@ -124,7 +125,7 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
       assertThat(receivedStatus, is(notFound));
     }
   }
-  
+
   private MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
     MultivaluedMap<String, String> parameters = new MultivaluedMapImpl();
     String[] queryParameters = query.split("&");

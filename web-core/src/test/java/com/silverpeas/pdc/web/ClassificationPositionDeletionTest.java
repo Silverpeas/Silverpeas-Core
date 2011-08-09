@@ -24,7 +24,6 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
-import javax.inject.Inject;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.silverpeas.rest.ResourceDeletionTest;
 import java.util.List;
@@ -35,16 +34,14 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.beans.PdcClassification.*;
-import static com.silverpeas.pdc.web.TestResources.*;
+import static com.silverpeas.pdc.web.PdcTestResources.*;
 
 /**
  * Unit tests on the deletion of existing positions in the PdC classification of a resource.
  * PdC).
  */
-public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
+public class ClassificationPositionDeletionTest extends ResourceDeletionTest<PdcTestResources> {
 
-  @Inject
-  private TestResources testResources;
   private String sessionKey;
   private UserDetail theUser;
 
@@ -54,12 +51,10 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
 
   @Before
   public void prepareAPdcClassification() {
-    assertNotNull(testResources);
-    testResources.init();
     theUser = aUser();
     sessionKey = authenticate(theUser);
-    testResources.enableThesaurus();
-    testResources.save(
+    getTestResources().enableThesaurus();
+    getTestResources().save(
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID));
   }
 
@@ -78,9 +73,9 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
   private int aPdcPositionId() {
     int positionId = -1;
     try {
-      int silverObjectId = testResources.getContentManager().getSilverContentId(CONTENT_ID,
+      int silverObjectId = getTestResources().getContentManager().getSilverContentId(CONTENT_ID,
               COMPONENT_INSTANCE_ID);
-      positionId = testResources.getPdcService().getPositions(silverObjectId, COMPONENT_INSTANCE_ID).
+      positionId = getTestResources().getPdcService().getPositions(silverObjectId, COMPONENT_INSTANCE_ID).
               get(0).getPositionId();
     } catch (Exception ex) {
       fail(ex.getMessage());
@@ -89,9 +84,9 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
   }
 
   private void assertPosition(int positionId, boolean isDeleted) throws Exception {
-    int silverObjectId = testResources.getContentManager().getSilverContentId(CONTENT_ID,
+    int silverObjectId = getTestResources().getContentManager().getSilverContentId(CONTENT_ID,
             COMPONENT_INSTANCE_ID);
-    List<ClassifyPosition> positions = testResources.getPdcService().getPositions(silverObjectId,
+    List<ClassifyPosition> positions = getTestResources().getPdcService().getPositions(silverObjectId,
             COMPONENT_INSTANCE_ID);
     boolean position = true;
     for (ClassifyPosition classifyPosition : positions) {
@@ -120,7 +115,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
   public PdcClassificationEntity aResource() {
     PdcClassificationEntity entity = null;
     try {
-      entity = testResources.toWebEntity(aPdcClassification().onResource(CONTENT_ID).inComponent(
+      entity = getTestResources().toWebEntity(aPdcClassification().onResource(CONTENT_ID).inComponent(
               COMPONENT_INSTANCE_ID), theUser);
     } catch (ThesaurusException ex) {
       fail(ex.getMessage());

@@ -23,14 +23,14 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.rest.RESTWebServiceTest;
+import com.silverpeas.rest.TestResources;
 
 /**
  * All the constants that are be used in unit tests.
  */
 public interface TestConstants {
   
-  static final String USER_ID = RESTWebServiceTest.USER_ID_IN_TEST;
+  static final String USER_ID = TestResources.USER_ID_IN_TEST;
   static final String COMPONENT_INSTANCE_ID = "kmelia2";
   static final String CONTENT_ID = "1";
   static final String CONTENT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;

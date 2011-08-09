@@ -23,16 +23,13 @@
  */
 package com.silverpeas.pdc.web;
 
+import javax.inject.Named;
 import java.util.List;
 import com.silverpeas.pdc.web.beans.PdcClassification;
-import javax.inject.Named;
 import com.silverpeas.pdc.web.mock.PdcBmMock;
-import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.pdc.web.mock.ContentManagerMock;
-import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
-import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.rest.TestResources;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -43,14 +40,13 @@ import javax.inject.Inject;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Resources required by the unit tests on the PdC web resources.
  * It manages all of the resources required by the tests.
  */
-@Named
-public class TestResources {
+@Named(TestResources.TEST_RESOURCES_NAME)
+public class PdcTestResources extends TestResources {
 
   /**
    * Java package in which are defined the web resources and their representation (web entities).
@@ -66,8 +62,6 @@ public class TestResources {
   private ThesaurusManager thesaurusManager;
   @Inject
   ContentManagerMock contentManager;
-  @Inject
-  MockablePersonalizationService personalizationService;
   
   /**
    * Gets the PdC business service used in tests.
@@ -94,17 +88,6 @@ public class TestResources {
     return UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser(user));
   }
   
-  /**
-   * Initializes the resources required for tests.
-   */
-  public void init() {
-    PersonalizationService personalization = mock(PersonalizationService.class);
-    UserPreferences preferences = new UserPreferences(USER_ID, "", "", false, true, true,
-            UserMenuDisplay.DISABLE);
-    when(personalization.getUserSettings(USER_ID)).thenReturn(preferences);
-    personalizationService.setPersonalizationService(personalization);
-  }
-
   /**
    * Saves the specified PdC classification in the current test context.
    * @param classification the classification on which the test will work.
@@ -181,10 +164,9 @@ public class TestResources {
    * value of the PdC axis will be fetched from the users thesaurus.
    */
   public void enableThesaurus() {
-    PersonalizationService personalization = personalizationService.getPersonalizationService();
-    UserPreferences preferences = new UserPreferences(USER_ID, "", "", true, true, true,
-            UserMenuDisplay.DISABLE);
-    when(personalization.getUserSettings(USER_ID)).thenReturn(preferences);
+    UserPreferences preferences = getMockedPersonalizationService().getUserSettings(
+            USER_ID);
+    preferences.enableThesaurus(true);
   }
 
 }

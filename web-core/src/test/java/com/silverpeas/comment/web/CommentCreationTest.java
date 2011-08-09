@@ -27,7 +27,6 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.rest.ResourceCreationTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.ClientResponse;
-import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,14 +37,11 @@ import static com.silverpeas.comment.web.CommentTestResources.*;
 /**
  * Unit tests on the creation of a comment through the CommentResource web service.
  */
-public class CommentCreationTest extends ResourceCreationTest {
+public class CommentCreationTest extends ResourceCreationTest<CommentTestResources> {
 
   private UserDetail user;
   private String sessionKey;
   private CommentEntity theComment;
-  
-  @Inject
-  private CommentTestResources testResources;
   
   public CommentCreationTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -53,8 +49,6 @@ public class CommentCreationTest extends ResourceCreationTest {
 
   @Before
   public void createAUserAndPrepareAComment() {
-    assertNotNull(testResources);
-    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
     theComment = CommentEntity.fromComment(theUser(user).commentTheResource(CONTENT_ID).
@@ -77,7 +71,7 @@ public class CommentCreationTest extends ResourceCreationTest {
   public void postAnAlreadyExistingComment() {
     Comment existingComment = theUser(user).commentTheResource(CONTENT_ID).
         inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou");
-    testResources.save(existingComment);
+    getTestResources().save(existingComment);
     CommentEntity aComment = CommentEntity.fromComment(existingComment);
 
     ClientResponse response = post(aComment, at(aResourceURI()));

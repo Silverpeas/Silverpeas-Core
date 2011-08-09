@@ -36,7 +36,8 @@ import static org.hamcrest.Matchers.*;
  * This class is an abstract one and it implements some tests that are redondant over all 
  * web resources in Silverpeas (about authorization failure, authentication failure, ...)
  */
-public abstract class ResourceDeletionTest extends RESTWebServiceTest implements WebResourceTesting {
+public abstract class ResourceDeletionTest<T extends TestResources> extends RESTWebServiceTest<T>
+        implements WebResourceTesting {
 
   /**
    * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
