@@ -25,19 +25,19 @@
 package com.stratelia.silverpeas.silvertrace;
 
 import com.silverpeas.util.FileUtil;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
-import org.apache.log4j.Category;
+import com.silverpeas.util.StringUtil;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Layout;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 import org.apache.log4j.net.SMTPAppender;
+
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * SilverLog is the trace tool used in silverpeas to log the users' connexions. This is a 'fully'
@@ -49,43 +49,31 @@ public class SilverLog {
 
   /**
    * Used in setTraceLevel to reset a level trace
-   * @see #setTraceLevel
-   * @see #getTraceLevel
    */
   public static final int TRACE_LEVEL_UNKNOWN = 0x00000000;
 
   /**
    * Debug-level traces
-   * @see #setTraceLevel
-   * @see #getTraceLevel
    */
   public static final int TRACE_LEVEL_DEBUG = 0x00000001;
 
   /**
    * Info-level traces
-   * @see #setTraceLevel
-   * @see #getTraceLevel
    */
   public static final int TRACE_LEVEL_INFO = 0x00000002;
 
   /**
    * Warning-level traces
-   * @see #setTraceLevel
-   * @see #getTraceLevel
    */
   public static final int TRACE_LEVEL_WARN = 0x00000003;
 
   /**
    * Error-level traces
-   * @see #setTraceLevel
-   * @see #getTraceLevel
    */
   public static final int TRACE_LEVEL_ERROR = 0x00000004;
 
   /**
    * Fatal-level traces
-   * @see #setTraceLevel
-   * @see #getTraceLevel
    */
   public static final int TRACE_LEVEL_FATAL = 0x00000005;
 
@@ -134,7 +122,7 @@ public class SilverLog {
    * @see #addAppenderRollingFile
    * @see #addAppenderMail
    */
-  public static String LAYOUT_HTML = "LAYOUT_HTML";
+  public static final String LAYOUT_HTML = "LAYOUT_HTML";
 
   /**
    * Short layout : Display "Time / Priority / Message"
@@ -143,7 +131,7 @@ public class SilverLog {
    * @see #addAppenderRollingFile
    * @see #addAppenderMail
    */
-  public static String LAYOUT_SHORT = "LAYOUT_SHORT";
+  public static final String LAYOUT_SHORT = "LAYOUT_SHORT";
 
   /**
    * Detailed layout : Display "Time / Priority / Calling Class and module / Message"
@@ -152,7 +140,7 @@ public class SilverLog {
    * @see #addAppenderRollingFile
    * @see #addAppenderMail
    */
-  public static String LAYOUT_DETAILED = "LAYOUT_DETAILED";
+  public static final String LAYOUT_DETAILED = "LAYOUT_DETAILED";
 
   /**
    * Fully detailed layout : Display
@@ -162,7 +150,7 @@ public class SilverLog {
    * @see #addAppenderRollingFile
    * @see #addAppenderMail
    */
-  public static String LAYOUT_FULL_DEBUG = "LAYOUT_FULL_DEBUG";
+  public static final String LAYOUT_FULL_DEBUG = "LAYOUT_FULL_DEBUG";
 
   /**
    * The trace file will be copied every 1st day of a mounth with the name :
@@ -170,7 +158,7 @@ public class SilverLog {
    * next mounth's traces Example : MyFile.txt.2001-07
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_MOUNTH = "'.'yyyy-MM";
+  public static final String ROLLING_MODE_MOUNTH = "'.'yyyy-MM";
 
   /**
    * The trace file will be copied every 1st day of a week with the name : FileName.ext.year-week A
@@ -178,7 +166,7 @@ public class SilverLog {
    * MyFile.txt.2001-34
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_WEEK = "'.'yyyy-ww";
+  public static final String ROLLING_MODE_WEEK = "'.'yyyy-ww";
 
   /**
    * The trace file will be copied every day at midnight with the name :
@@ -186,7 +174,7 @@ public class SilverLog {
    * next day's traces Example : MyFile.txt.2001-07-23
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_DAILY = "'.'yyyy-MM-dd";
+  public static final String ROLLING_MODE_DAILY = "'.'yyyy-MM-dd";
 
   /**
    * The trace file will be copied every hour with the name : FileName.ext.year-mounth-day-hour A
@@ -194,19 +182,17 @@ public class SilverLog {
    * MyFile.txt.2001-07-23-18
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_HOUR = "'.'yyyy-MM-dd-HH";
+  public static final String ROLLING_MODE_HOUR = "'.'yyyy-MM-dd-HH";
 
-  protected static Category logCategory = null;
+  protected static Logger currentLogger = null;
   // Directory to the log files
   protected static String logDir = null;
   protected static String logModule = null;
 
   // Layouts
-  protected static String layoutShort = "%-5p : %m%n";
-  // protected static String layoutDetailed =
-  // "%d{dd/MM/yy-HH:mm:SSS} - %-5p : %m%n";
-  protected static String layoutDetailed = "%d{dd/MM/yy-HH:mm:SSS},%m%n";
-  protected static String layoutFullDebug =
+  protected static final String layoutShort = "%-5p : %m%n";
+  protected static final String layoutDetailed = "%d{dd/MM/yy-HH:mm:SSS},%m%n";
+  protected static final String layoutFullDebug =
       "%-15.15r [%-26.26t] - %d{dd/MM/yy-HH:mm:SSS} - %-5p : %m%n";
 
   // Initialisation
@@ -219,20 +205,18 @@ public class SilverLog {
   /**
    * Log connexion informations.
    * @param message login/logout
-   * @param adresseIP of the connected client
+   * @param ipAddress of the connected client
    * @param userLogin of the connected client
    */
-  static public void logConnexion(String message, String adresseIP,
-      String userLogin) {
+  static public void logConnexion(String message, String ipAddress, String userLogin) {
     try {
-      if (logCategory != null) {
-        if (logCategory.isEnabledFor(Priority.DEBUG)) {
-          logCategory.debug(formatTraceMessage(message, adresseIP, userLogin));
+      if (currentLogger != null) {
+        if (currentLogger.isDebugEnabled()) {
+          currentLogger.debug(formatTraceMessage(message, ipAddress, userLogin));
         }
       }
     } catch (RuntimeException e) {
-      SilverTrace.error("silvertrace", "SilverLog.logConnexion()",
-          "silvertrace.ERR_RUNTIME_ERROR_OCCUR", e);
+      SilverTrace.error("silvertrace", "SilverLog.logConnexion()", "silvertrace.ERR_RUNTIME_ERROR_OCCUR", e);
     }
   }
 
@@ -240,62 +224,49 @@ public class SilverLog {
    * Init all appenders
    */
   static protected void initAll() {
-    ResourceBundle resource = null;
-
     try {
-      resource = FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverLog",
+      ResourceBundle resource = FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverLog",
           new Locale("", ""));
       logDir = resource.getString("LogDir");
 
-      if (logCategory != null) {
-        logCategory.getRoot().getLoggerRepository().resetConfiguration();
-        // logCategory.getRoot().getHierarchy().resetConfiguration();
+      if (currentLogger != null) {
+        currentLogger.getRoot().getLoggerRepository().resetConfiguration();
+        // currentLogger.getRoot().getHierarchy().resetConfiguration();
       }
 
-      logCategory = Category.getInstance(resource.getString("module.path"));
+      currentLogger = Logger.getLogger(resource.getString("module.path"));
       logModule = resource.getString("module.name");
-
       initFromBundle(resource);
 
     } catch (Exception e) {
-      SilverTrace.error("silvertrace", "SilverLog.resetAll()",
-          "silvertrace.ERR_INIT_TRACE", e);
+      SilverTrace.error("silvertrace", "SilverLog.resetAll()", "silvertrace.ERR_INIT_TRACE", e);
     }
   }
 
   /**
    * Loads the configuration from the resource given in argument.
-   * @param fileProperties the properties to merge with the current configuration
+   * @param resource the properties to merge with the current configuration
    */
   static public void initFromBundle(ResourceBundle resource) {
-
-    int i;
-    String appenderTypeStr;
-    int appenderTypeInt;
-    boolean appenderEnabled;
-
     try {
-      // read the appenders
-      // --------------------------
-      i = 0;
-      appenderTypeStr = resource.getString("appender" + Integer.toString(i)
-          + ".type");
+      int i = 0;
+      String appenderTypeStr = resource.getString("appender" + i + ".type");
+      int appenderTypeInt;
       // for each appenders
       while (appenderTypeStr != null) {
         // Translate the appender type from the string to the internal constant
-        if (appenderTypeStr.equalsIgnoreCase("APPENDER_CONSOLE")) {
+        if ("APPENDER_CONSOLE".equalsIgnoreCase(appenderTypeStr)) {
           appenderTypeInt = APPENDER_CONSOLE;
-        } else if (appenderTypeStr.equalsIgnoreCase("APPENDER_FILE")) {
+        } else if ("APPENDER_FILE".equalsIgnoreCase(appenderTypeStr)) {
           appenderTypeInt = APPENDER_FILE;
-        } else if (appenderTypeStr.equalsIgnoreCase("APPENDER_ROLLING_FILE")) {
+        } else if ("APPENDER_ROLLING_FILE".equalsIgnoreCase(appenderTypeStr)) {
           appenderTypeInt = APPENDER_ROLLING_FILE;
-        } else if (appenderTypeStr.equalsIgnoreCase("APPENDER_MAIL")) {
+        } else if ("APPENDER_MAIL".equalsIgnoreCase(appenderTypeStr)) {
           appenderTypeInt = APPENDER_MAIL;
         } else {
           appenderTypeInt = APPENDER_ALL;
         }
-        appenderEnabled = MsgTrace.getBooleanProperty(resource, "appender"
-            + Integer.toString(i) + ".enabled", true);
+        boolean appenderEnabled = MsgTrace.getBooleanProperty(resource, "appender" + i + ".enabled", true);
         if ((appenderTypeInt != APPENDER_ALL) && appenderEnabled) {
           // Create the appender and attach it to his module
           addAppenderFromBundle(resource, i, appenderTypeInt);
@@ -303,28 +274,24 @@ public class SilverLog {
         i++;
 
         try {
-          appenderTypeStr = resource.getString("appender" + Integer.toString(i)
-              + ".type");
+          appenderTypeStr = resource.getString("appender" + i + ".type");
         } catch (MissingResourceException ex) {
           appenderTypeStr = null;
         }
       }
-
     } catch (Exception e) {
-      SilverTrace.error("silvertrace", "SilverLog.resetAll()",
-          "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
+      SilverTrace.error("silvertrace", "SilverLog.resetAll()", "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
     }
   }
 
   /**
    * Read appender information from a property file and attach it to it's module
-   * @param fileProperties
+   * @param resource
    * @param appenderNumber
    * @param appenderType
    */
   static protected void addAppenderFromBundle(ResourceBundle resource,
       int appenderNumber, int appenderType) {
-    String layout;
     String fileName;
     String consoleName;
     boolean append;
@@ -337,38 +304,30 @@ public class SilverLog {
 
     // Retrieve the properties of the current appender and call the function
     // that will create and attach it
-    //
 
-    layout = resource.getString("appender" + Integer.toString(appenderNumber)
-        + ".layout");
-
+    String layout = resource.getString("appender" + appenderNumber + ".layout");
     switch (appenderType) {
       case APPENDER_CONSOLE:
-        consoleName = resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".consoleName");
+        consoleName = resource.getString("appender" + appenderNumber + ".consoleName");
         addAppenderConsole(layout, consoleName);
         break;
       case APPENDER_FILE:
-        fileName = translateFileName(resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".fileName"));
-        append = MsgTrace.getBooleanProperty(resource, "appender"
-            + Integer.toString(appenderNumber) + ".append", true);
+        fileName = translateFileName(resource.getString("appender" + appenderNumber + ".fileName"));
+        append = MsgTrace.getBooleanProperty(resource, "appender" + appenderNumber + ".append", true);
         addAppenderFile(layout, fileName, append);
         break;
       case APPENDER_ROLLING_FILE:
-        fileName = translateFileName(resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".fileName"));
-        rollingModeName = resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".rollingMode");
+        fileName = translateFileName(resource.getString("appender" + appenderNumber + ".fileName"));
+        rollingModeName = resource.getString("appender" + appenderNumber + ".rollingMode");
         if (rollingModeName == null) {
           rollingMode = ROLLING_MODE_DAILY;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_MOUNTH")) {
+        } else if ("ROLLING_MODE_MOUNTH".equalsIgnoreCase(rollingModeName)) {
           rollingMode = ROLLING_MODE_MOUNTH;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_WEEK")) {
+        } else if ("ROLLING_MODE_WEEK".equalsIgnoreCase(rollingModeName)) {
           rollingMode = ROLLING_MODE_WEEK;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_DAILY")) {
+        } else if ("ROLLING_MODE_DAILY".equalsIgnoreCase(rollingModeName)) {
           rollingMode = ROLLING_MODE_DAILY;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_HOUR")) {
+        } else if ("ROLLING_MODE_HOUR".equalsIgnoreCase(rollingModeName)) {
           rollingMode = ROLLING_MODE_HOUR;
         } else if (rollingModeName.length() == 0) {
           rollingMode = ROLLING_MODE_DAILY;
@@ -378,14 +337,10 @@ public class SilverLog {
         addAppenderRollingFile(layout, fileName, rollingMode);
         break;
       case APPENDER_MAIL:
-        mailHost = resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".mailHost");
-        mailFrom = resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".mailFrom");
-        mailTo = resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".mailTo");
-        mailSubject = resource.getString("appender"
-            + Integer.toString(appenderNumber) + ".mailSubject");
+        mailHost = resource.getString("appender" + appenderNumber + ".mailHost");
+        mailFrom = resource.getString("appender" + appenderNumber + ".mailFrom");
+        mailTo = resource.getString("appender" + appenderNumber + ".mailTo");
+        mailSubject = resource.getString("appender" + appenderNumber + ".mailSubject");
         addAppenderMail(layout, mailHost, mailFrom, mailTo, mailSubject);
         break;
     }
@@ -402,16 +357,16 @@ public class SilverLog {
       String consoleName) {
     ConsoleAppender a1 = new ConsoleAppender();
 
-    if (logCategory != null) {
+    if (currentLogger != null) {
       try {
-        logCategory.removeAppender(getAppenderName(APPENDER_CONSOLE));
+        currentLogger.removeAppender(getAppenderName(APPENDER_CONSOLE));
         a1.setName(getAppenderName(APPENDER_CONSOLE));
         a1.setLayout(getLayout(patternLayout));
-        if (MsgTrace.stringValid(consoleName)) {
+        if (StringUtil.isDefined(consoleName)) {
           a1.setTarget(consoleName);
         }
         a1.activateOptions();
-        logCategory.addAppender(a1);
+        currentLogger.addAppender(a1);
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderConsole()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "Console " + ","
@@ -433,15 +388,15 @@ public class SilverLog {
       boolean appendOnFile) {
     FileAppender a1 = new FileAppender();
 
-    if (logCategory != null) {
+    if (currentLogger != null) {
       try {
-        logCategory.removeAppender(getAppenderName(APPENDER_FILE));
+        currentLogger.removeAppender(getAppenderName(APPENDER_FILE));
         a1.setName(getAppenderName(APPENDER_FILE));
         a1.setLayout(getLayout(patternLayout));
         a1.setAppend(appendOnFile);
         a1.setFile(fileName);
         a1.activateOptions();
-        logCategory.addAppender(a1);
+        currentLogger.addAppender(a1);
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderFile()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "File " + patternLayout + ","
@@ -461,14 +416,14 @@ public class SilverLog {
    */
   static protected void addAppenderRollingFile(String patternLayout,
       String fileName, String rollingMode) {
-    if (logCategory != null) {
+    if (currentLogger != null) {
       try {
         DailyRollingFileAppender a1 = new DailyRollingFileAppender(
             getLayout(patternLayout), fileName, rollingMode);
 
-        logCategory.removeAppender(getAppenderName(APPENDER_ROLLING_FILE));
+        currentLogger.removeAppender(getAppenderName(APPENDER_ROLLING_FILE));
         a1.setName(getAppenderName(APPENDER_ROLLING_FILE));
-        logCategory.addAppender(a1);
+        currentLogger.addAppender(a1);
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderRollingFile()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "RollingFile " + ","
@@ -489,13 +444,13 @@ public class SilverLog {
    * @param mailTo target email, could be multiple targets separeted with comas
    * @param mailSubject subject of the mail
    */
-  static protected void addAppenderMail(String patternLayout, String mailHost,
-      String mailFrom, String mailTo, String mailSubject) {
+  static protected void addAppenderMail(String patternLayout, String mailHost, String mailFrom,
+      String mailTo, String mailSubject) {
     SMTPAppender a1 = new SMTPAppender();
 
-    if (logCategory != null) {
+    if (currentLogger != null) {
       try {
-        logCategory.removeAppender(getAppenderName(APPENDER_MAIL));
+        currentLogger.removeAppender(getAppenderName(APPENDER_MAIL));
         a1.setName(getAppenderName(APPENDER_MAIL));
         a1.setLayout(getLayout(patternLayout));
         a1.setSMTPHost(mailHost);
@@ -503,7 +458,7 @@ public class SilverLog {
         a1.setTo(mailTo);
         a1.setSubject(mailSubject);
         a1.activateOptions();
-        logCategory.addAppender(a1);
+        currentLogger.addAppender(a1);
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderMail()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "SMTP " + "," + patternLayout
@@ -518,18 +473,18 @@ public class SilverLog {
    * appenders attached to the module
    */
   static protected void removeAppender(int typeOfAppender) {
-    if (logCategory != null) {
+    if (currentLogger != null) {
       if ((typeOfAppender & APPENDER_CONSOLE) == APPENDER_CONSOLE) {
-        logCategory.removeAppender(getAppenderName(APPENDER_CONSOLE));
+        currentLogger.removeAppender(getAppenderName(APPENDER_CONSOLE));
       }
       if ((typeOfAppender & APPENDER_FILE) == APPENDER_FILE) {
-        logCategory.removeAppender(getAppenderName(APPENDER_FILE));
+        currentLogger.removeAppender(getAppenderName(APPENDER_FILE));
       }
       if ((typeOfAppender & APPENDER_ROLLING_FILE) == APPENDER_ROLLING_FILE) {
-        logCategory.removeAppender(getAppenderName(APPENDER_ROLLING_FILE));
+        currentLogger.removeAppender(getAppenderName(APPENDER_ROLLING_FILE));
       }
       if ((typeOfAppender & APPENDER_MAIL) == APPENDER_MAIL) {
-        logCategory.removeAppender(getAppenderName(APPENDER_MAIL));
+        currentLogger.removeAppender(getAppenderName(APPENDER_MAIL));
       }
     }
   }
@@ -540,15 +495,15 @@ public class SilverLog {
    */
   static protected String formatTraceMessage(String message, String adresseIP,
       String userLogin) {
-    StringBuffer valret = new StringBuffer("");
+    StringBuilder valret = new StringBuilder("");
 
-    if (MsgTrace.stringValid(message)) {
-      valret.append(message + ",");
+    if (StringUtil.isDefined(message)) {
+      valret.append(message).append(",");
     }
-    if (MsgTrace.stringValid(adresseIP)) {
-      valret.append(adresseIP + ",");
+    if (StringUtil.isDefined(adresseIP)) {
+      valret.append(adresseIP).append(",");
     }
-    if (MsgTrace.stringValid(userLogin)) {
+    if (StringUtil.isDefined(userLogin)) {
       valret.append(userLogin);
     }
 
@@ -563,7 +518,7 @@ public class SilverLog {
     String valret = fileName;
     int index;
 
-    if (MsgTrace.stringValid(fileName)) {
+    if (StringUtil.isDefined(fileName)) {
       index = fileName.indexOf("@ErrorDir@");
       if (index == 0) {
         valret = logDir + fileName.substring(index + 10, fileName.length());

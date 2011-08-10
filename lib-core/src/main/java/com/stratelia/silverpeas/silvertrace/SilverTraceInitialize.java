@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.silvertrace;
 
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
@@ -50,7 +47,6 @@ public class SilverTraceInitialize implements IInitialize {
   public boolean Initialize() {
     // Initialize SilverTrace
     new SilverTrace();
-
     return true;
   }
 
