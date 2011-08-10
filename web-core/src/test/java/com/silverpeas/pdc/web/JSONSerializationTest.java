@@ -26,7 +26,6 @@ package com.silverpeas.pdc.web;
 import javax.inject.Inject;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.pdc.web.beans.PdcClassification;
-import com.silverpeas.rest.TestResources;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONUnmarshaller;
