@@ -36,17 +36,18 @@ import static org.hamcrest.Matchers.*;
  * This class is an abstract one and it implements some tests that are redondant over all 
  * web resources in Silverpeas (about authorization failure, authentication failure, ...)
  */
-public abstract class ResourceUpdateTest extends RESTWebServiceTest implements WebResourceTesting {
-  
+public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWebServiceTest<T>
+        implements WebResourceTesting {
+
   /**
    * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
    */
   public ResourceUpdateTest(String webServicePackage, String springContext) {
     super(webServicePackage, springContext);
   }
-  
+
   public abstract <T> T anInvalidResource();
-  
+
   /**
    * Puts at the specified URI the specified new state of the resource.
    * @param <T> the type of the resource's state.
@@ -57,19 +58,19 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   public <T> T putAt(String uri, T newResourceState) {
     Class<T> c = (Class<T>) newResourceState.getClass();
     return resource().path(uri).
-        header(HTTP_SESSIONKEY, getSessionKey()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(c, newResourceState);
+            header(HTTP_SESSIONKEY, getSessionKey()).
+            accept(MediaType.APPLICATION_JSON).
+            type(MediaType.APPLICATION_JSON).
+            put(c, newResourceState);
   }
-  
+
   @Test
   public void updateOfAResourceByANonAuthenticatedUser() {
     try {
       resource().path(aResourceURI()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(getWebEntityClass(), aResource());
+              accept(MediaType.APPLICATION_JSON).
+              type(MediaType.APPLICATION_JSON).
+              put(getWebEntityClass(), aResource());
       fail("A non authenticated user shouldn't update the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -82,10 +83,10 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   public void updateOfAResourceWithinADeprecatedSession() {
     try {
       resource().path(aResourceURI()).
-        header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(getWebEntityClass(), aResource());
+              header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
+              accept(MediaType.APPLICATION_JSON).
+              type(MediaType.APPLICATION_JSON).
+              put(getWebEntityClass(), aResource());
       fail("A user shouldn't update the resource through an expired session");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();

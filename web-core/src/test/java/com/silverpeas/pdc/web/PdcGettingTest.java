@@ -33,20 +33,17 @@ import org.junit.Before;
 import com.silverpeas.rest.ResourceGettingTest;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.net.URI;
-import javax.inject.Inject;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.pdc.web.TestResources.*;
+import static com.silverpeas.pdc.web.PdcTestResources.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcEntityMatcher.*;
 
 /**
  * Unit tests on the getting of the PdC configured for a given component instance.
  */
-public class PdcGettingTest extends ResourceGettingTest {
+public class PdcGettingTest extends ResourceGettingTest<PdcTestResources> {
 
-  @Inject
-  private TestResources resources;
   private String sessionKey;
   private UserDetail theUser;
 
@@ -56,8 +53,7 @@ public class PdcGettingTest extends ResourceGettingTest {
 
   @Before
   public void setUpUserSessionAndPdC() {
-    resources.init();
-    resources.enableThesaurus();
+    getTestResources().enableThesaurus();
     theUser = aUser();
     sessionKey = authenticate(theUser);
   }
@@ -117,19 +113,19 @@ public class PdcGettingTest extends ResourceGettingTest {
   }
 
   public PdcEntity toWebEntity(List<UsedAxis> axis, String uri) throws ThesaurusException {
-    return PdcEntity.aPdcEntity(axis, FRENCH, URI.create(uri), resources.aThesaurusHolderFor(
+    return PdcEntity.aPdcEntity(axis, FRENCH, URI.create(uri), getTestResources().aThesaurusHolderFor(
             theUser));
   }
 
   protected List<UsedAxis> theExpectedPdcFor(String contentId) throws ContentManagerException,
           PdcException {
-    int silverObjectId = resources.getContentManager().getSilverContentId(contentId,
+    int silverObjectId = getTestResources().getContentManager().getSilverContentId(contentId,
             COMPONENT_INSTANCE_ID);
-    return resources.getPdcService().getUsedAxisToClassify(COMPONENT_INSTANCE_ID, silverObjectId);
+    return getTestResources().getPdcService().getUsedAxisToClassify(COMPONENT_INSTANCE_ID, silverObjectId);
   }
 
   protected List<UsedAxis> theExpectedPdc() throws PdcException {
-    return resources.getPdcService().getUsedAxisByInstanceId(COMPONENT_INSTANCE_ID);
+    return getTestResources().getPdcService().getUsedAxisByInstanceId(COMPONENT_INSTANCE_ID);
   }
 
   protected static String withURI(String uri) {

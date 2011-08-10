@@ -36,8 +36,9 @@ import static org.hamcrest.Matchers.*;
  * This class is an abstract one and it implements some tests that are redondant over all 
  * web resources in Silverpeas (about authorization failure, authentication failure, ...)
  */
-public abstract class ResourceCreationTest extends RESTWebServiceTest implements WebResourceTesting {
-  
+public abstract class ResourceCreationTest<T extends TestResources> extends RESTWebServiceTest<T>
+        implements WebResourceTesting {
+
   /**
    * A convenient method to improve the readability of the method calls.
    * @param uri a resource URI.
@@ -46,14 +47,14 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest implements
   public static String at(String uri) {
     return uri;
   }
-  
+
   /**
    * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
    */
   public ResourceCreationTest(String webServicePackage, String springContext) {
     super(webServicePackage, springContext);
   }
-  
+
   /**
    * Posts the specified web entity at the specified URI.
    * @param <T> the type of the web entity to post.
@@ -63,35 +64,35 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest implements
    */
   public <T> ClientResponse post(final T entity, String atURI) {
     return resource().path(atURI).
-        header(HTTP_SESSIONKEY, getSessionKey()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, entity);
+            header(HTTP_SESSIONKEY, getSessionKey()).
+            accept(MediaType.APPLICATION_JSON).
+            type(MediaType.APPLICATION_JSON).
+            post(ClientResponse.class, entity);
   }
-  
+
   @Test
   public void creationOfANewResourceByANonAuthenticatedUser() {
     ClientResponse response = resource().path(aResourceURI()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aResource());
+            accept(MediaType.APPLICATION_JSON).
+            type(MediaType.APPLICATION_JSON).
+            post(ClientResponse.class, aResource());
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
   }
-  
+
   @Test
   public void creationOfANewResourceWithADeprecatedSession() {
     ClientResponse response = resource().path(aResourceURI()).
-        header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aResource());
+            header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
+            accept(MediaType.APPLICATION_JSON).
+            type(MediaType.APPLICATION_JSON).
+            post(ClientResponse.class, aResource());
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
   }
-  
+
   @Test
   public void creationOfANewResourceByANonAuthorizedUser() {
     denieAuthorizationToUsers();

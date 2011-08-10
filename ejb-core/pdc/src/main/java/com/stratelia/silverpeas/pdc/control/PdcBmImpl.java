@@ -1791,10 +1791,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           List<ClassifyPosition> positions = getPositions(silverObjectId, instanceId);
           String invariantValue = null;
           if (!positions.isEmpty()) {
-            // Une position existe déjà
-            ClassifyPosition position = positions.get(0);
-            invariantValue = position.getValueOnAxis(axis.getAxisId());
-            axis._setInvariantValue(invariantValue);
+            for (ClassifyPosition position : positions) {
+              invariantValue = position.getValueOnAxis(axis.getAxisId());
+              axis._setInvariantValue(invariantValue);
+            }
           }
         }
       }
