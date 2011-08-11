@@ -589,6 +589,23 @@ $(document).ready(function() {
       }
     })
   });
+  
+  //function to transform insecable string into secable one
+  $(".lineMain a").html(function() {
+      var newLibelle = ""
+      var maxLength = 38;
+      var chainesInsecables = $(this).text().split(" ");
+      for (i=0;i<chainesInsecables.length;i++) {
+          var chainesSecables = " ";
+          while(chainesInsecables[i].length>maxLength) {
+              chainesSecables = chainesSecables+chainesInsecables[i].substring(0,maxLength)+'<br/>';
+              chainesInsecables[i] = chainesInsecables[i].substring(maxLength);
+          }
+          chainesInsecables[i] = chainesSecables+chainesInsecables[i];
+          newLibelle = newLibelle + chainesInsecables[i];
+      }       
+      $(this).html(newLibelle);
+  });
 });
 
 <% if (contextualMenuEnabled) { %>
