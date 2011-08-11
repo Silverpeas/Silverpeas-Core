@@ -229,8 +229,10 @@ public class URLManager {
   public static String getServerURL(HttpServletRequest request) {
     String absoluteUrl = "";
     if(request != null) {
-      absoluteUrl = request.getScheme() + "://" + request.getServerName() + ':' + request.
-        getServerPort();
+      absoluteUrl = request.getScheme() + "://" + request.getServerName();
+      if (request.getServerPort() != 80) {
+        absoluteUrl += ":" + request.getServerPort(); 
+      }
     }
     ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
     return generalSettings.getString("httpServerBase", absoluteUrl);
