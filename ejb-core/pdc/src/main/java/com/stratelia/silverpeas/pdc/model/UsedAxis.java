@@ -24,10 +24,11 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
-import java.util.List;
-
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.persistence.*;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+
+import java.util.List;
 
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can
@@ -220,7 +221,7 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
     for (int a = 0; _getAxisValues() != null && a < _getAxisValues().size(); a++) {
       value = (Value) _getAxisValues().get(a);
       valueId = value.getPK().getId();
-      if (valueId.equals(new Integer(getBaseValue()).toString())) {
+      if (valueId.equals(Integer.toString(getBaseValue()))) {
         baseValuePath = value.getPath();
         break;
       }

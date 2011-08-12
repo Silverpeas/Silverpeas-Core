@@ -43,14 +43,11 @@ public class PdcSubscriptionUtil {
   private void initEJB() {
     if (scBm == null)
       try {
-        PdcSubscriptionBmHome icEjbHome = (PdcSubscriptionBmHome) EJBUtilitaire
-            .getEJBObjectRef("ejb/pdcSubscription", PdcSubscriptionBmHome.class);
+        PdcSubscriptionBmHome icEjbHome = EJBUtilitaire.getEJBObjectRef("ejb/pdcSubscription", PdcSubscriptionBmHome.class);
         scBm = icEjbHome.create();
       } catch (Exception e) {
-        throw new PdcSubscriptionRuntimeException(
-            "PdcSubscriptionSessionController.initEJB()",
-            PdcSubscriptionRuntimeException.ERROR,
-            "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
+            PdcSubscriptionRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
   }
 
@@ -59,8 +56,7 @@ public class PdcSubscriptionUtil {
     return scBm.getPDCSubsriptionById(id);
   }
 
-  public void createPDCSubsription(PDCSubscription subscription)
-      throws RemoteException {
+  public void createPDCSubsription(PDCSubscription subscription) throws RemoteException {
     initEJB();
     scBm.createPDCSubscription(subscription);
   }

@@ -156,7 +156,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     Connection con = null;
     try {
       con = openConnection();
-
       List<AxisHeaderI18N> translations = axisHeaderI18NDAO.getTranslations(con, axisId);
       for (AxisHeaderI18N tr : translations) {
         axisHeader.addTranslation(tr);
@@ -249,7 +248,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         value.setRemoveTranslation(axisHeader.isRemoveTranslation());
         value.setTranslationId(axisHeader.getTranslationId());
 
-        String treeId = tree.createRoot(con, (TreeNode) value);
+        String treeId = tree.createRoot(con, value);
 
         axisHeader.setRootId(Integer.parseInt(treeId));
         SilverTrace.info("Pdc", "PdcBmImpl.createAxis()", "root.MSG_GEN_PARAM_VALUE",
@@ -469,7 +468,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       PdcRightsDAO.deleteAxisRights(con, axisId);
 
       // delete data in the tree table
-      tree.deleteTree(con, new Integer(axisHeader.getRootId()).toString());
+      tree.deleteTree(con, Integer.toString(axisHeader.getRootId()));
       // delete data in the pdc utilization table
       pdcUtilizationBm.deleteUsedAxisByAxisId(con, axisId);
       dao.remove(con, new AxisPK(axisId));
@@ -634,7 +633,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           throws PdcException {
     List<Value> values = new ArrayList<Value>();
     try {
-      values = getAxisValues(new Integer(rootId).intValue(), filter);
+      values = getAxisValues(Integer.parseInt(rootId), filter);
 
       // for each filtered value, get all values from root to this finded value
       for (com.stratelia.silverpeas.pdc.model.Value value : values) {
@@ -666,7 +665,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       // get the header of the axis to obtain the rootId.
       AxisHeader axisHeader = getAxisHeader(axisId, false);
       int treeId = axisHeader.getRootId();
-      TreeNode treeNode = tree.getRoot(con, new Integer(treeId).toString());
+      TreeNode treeNode = tree.getRoot(con, Integer.toString(treeId));
       return createValue(treeNode);
     } catch (Exception e) {
       throw new PdcException("PdcBmImpl.getRoot", SilverpeasException.ERROR,
@@ -712,11 +711,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     int status = 0;
     // get the header of the axis to obtain the treeId.
     AxisHeader axisHeader = getAxisHeader(axisId, false);
-    String treeId = new Integer(axisHeader.getRootId()).toString();
+    String treeId = Integer.toString(axisHeader.getRootId());
 
     // get the mother value of the value which have the refValue
     // to find sisters of the valueToInsert
-    TreeNode refNode = (TreeNode) getAxisValue(refValue, treeId);
+    TreeNode refNode = getAxisValue(refValue, treeId);
 
     Connection con = null;
 
@@ -799,8 +798,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         ArrayList<String> newPath = getPathes(con, valueToMoveId, treeId);
         // call the ClassifyBm to create oldValue and newValue
         // and to replace the oldValue by the newValue
-        pdcClassifyBm.createValuesAndReplace(con, new Integer(axis.getAxisHeader().getRootId()).
-                toString(), oldPath, newPath);
+        pdcClassifyBm.createValuesAndReplace(con,
+            Integer.toString(axis.getAxisHeader().getRootId()), oldPath, newPath);
       }
       commitTransaction(con);
     } catch (Exception e) {
@@ -1038,7 +1037,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           String axisId, String treeId) throws PdcException {
     try {
       // Insertion de la nouvelle racine
-      tree.insertFatherToNode(con, (TreeNode) valueToInsert, new TreeNodePK(
+      tree.insertFatherToNode(con, valueToInsert, new TreeNodePK(
               refValue), treeId);
     } catch (Exception exce_insert) {
       throw new PdcException("PdcBmImpl.insertMotherValue",
@@ -1060,14 +1059,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     int status = 0;
     // get the mother value of the value which have the refValue
     // to find sisters of the valueToInsert
-    TreeNode refNode = (TreeNode) getAxisValue(refValue, treeId);
+    TreeNode refNode = getAxisValue(refValue, treeId);
     List<Value> daughters = getDaughters(con, refNode.getFatherId(), treeId);
 
     if (isValueNameExist(daughters, valueToInsert)) {
       status = 1;
     } else {
       try {
-        tree.insertFatherToNode(con, (TreeNode) valueToInsert, new TreeNodePK(
+        tree.insertFatherToNode(con, valueToInsert, new TreeNodePK(
                 refValue), treeId);
       } catch (Exception exce_insert) {
         throw new PdcException("PdcBmImpl.insertMotherValue",
@@ -1098,7 +1097,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       DBUtil.close(con);
     } else {
       try {
-        tree.createSonToNode(con, (TreeNode) valueToInsert, new TreeNodePK(
+        tree.createSonToNode(con, valueToInsert, new TreeNodePK(
                 refValue), treeId);
       } catch (Exception exce_create) {
         throw new PdcException("PdcBmImpl.createDaughterValue",
@@ -1133,7 +1132,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       DBUtil.close(con);
     } else {
       try {
-        daughterId = tree.createSonToNode(con, (TreeNode) valueToInsert, new TreeNodePK(
+        daughterId = tree.createSonToNode(con, valueToInsert, new TreeNodePK(
                 refValue), treeId);
       } catch (Exception exce_create) {
         throw new PdcException("PdcBmImpl.createDaughterValueWithId",
@@ -1238,7 +1237,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         // ArrayList newPath = getPathes(con,valueId);
         // Les nouveaux chemins sont tous identiques, c'est celui de la mère
         ArrayList<String> newPath = new ArrayList<String>();
-        for (int i = 0; i < oldPath.size(); i++) {
+        for (String anOldPath : oldPath) {
           newPath.add(motherPath);
         }
         SilverTrace.info("Pdc", "PdcBmImpl.deleteValueAndSubtree",
@@ -1427,12 +1426,12 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   public AxisHeader getAxisHeader(String axisId, boolean setTranslations) {
-    AxisHeader axisHeader = (AxisHeader) axisHeaders.get(axisId);
+    AxisHeader axisHeader = axisHeaders.get(axisId);
     if (axisHeader == null) {
       try {
         AxisHeaderPersistence axisHeaderPersistence =
-                (AxisHeaderPersistence) dao.findByPrimaryKey(new AxisPK(
-                axisId));
+            dao.findByPrimaryKey(new AxisPK(
+            axisId));
         axisHeader = new AxisHeader(axisHeaderPersistence);
 
         axisHeaders.put(axisHeader.getPK().getId(), axisHeader);
@@ -1449,7 +1448,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   private AxisHeaderPersistence getAxisHeaderPersistence(String axisId) {
     try {
-      return (AxisHeaderPersistence) dao.findByPrimaryKey(new AxisPK(axisId));
+      return dao.findByPrimaryKey(new AxisPK(axisId));
     } catch (PersistenceException err_select) {
       SilverTrace.error("PDC", "PdcBmImpl.getAxisHeaderPersistence",
               "Pdc.CANNOT_RETRIEVE_HEADER_AXE", "axisId = " + axisId, err_select);
@@ -1466,7 +1465,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     AxisHeader axisHeader = null;
 
     try {
-      AxisHeaderPersistence axisHeaderPersistence = (AxisHeaderPersistence) dao.findByPrimaryKey(
+      AxisHeaderPersistence axisHeaderPersistence = dao.findByPrimaryKey(
               connection, new AxisPK(axisId));
       axisHeader = new AxisHeader(axisHeaderPersistence);
     } catch (PersistenceException err_select) {
@@ -1525,7 +1524,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       int tId = axisHeader.getRootId();
 
       daughters = createValuesList(tree.getSubTree(con,
-              new TreeNodePK(valueId), new Integer(tId).toString()));
+              new TreeNodePK(valueId), Integer.toString(tId)));
     } catch (Exception err_list) {
       SilverTrace.info("PDC", "PdcBmImpl.getSubAxis",
               "Pdc.CANNOT_RETRIEVE_SUBNODES", err_list);
@@ -1852,7 +1851,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     } else {
       // Check base value
       String baseValuePath = uAxis._getBaseValuePath();
-      if (("/" + value.getValue() + "/").indexOf(baseValuePath) == -1) {
+      if (!("/" + value.getValue() + "/").contains(baseValuePath)) {
         return null;
       }
     }
@@ -1923,7 +1922,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     for (UsedAxis ua : usedAxisList) {
       // on cherche les axes invariants
       if (ua.getVariant() == 0) {
-        invariantUsedAxis.add(new Integer(ua.getAxisId()));
+        invariantUsedAxis.add(ua.getAxisId());
       }
     }
 
@@ -1979,8 +1978,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       ArrayList<ClassifyValue> classifyValues = new ArrayList<ClassifyValue>();
       String valuePath = "";
       String valueId = "";
-      for (int p = 0; p < values.size(); p++) {
-        value = (com.stratelia.silverpeas.classifyEngine.Value) values.get(p);
+      for (Object value1 : values) {
+        value = (com.stratelia.silverpeas.classifyEngine.Value) value1;
         classifyValue = new ClassifyValue(value.getAxisId(), value.getValue());
 
         if (value.getAxisId() != -1) {
@@ -2400,7 +2399,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     Connection con = openConnection();
     try {
       while (axis.hasNext()) {
-        a = (AxisHeader) axis.next();
+        a = axis.next();
         int rootId = a.getRootId();
         tree.indexTree(con, rootId);
       }

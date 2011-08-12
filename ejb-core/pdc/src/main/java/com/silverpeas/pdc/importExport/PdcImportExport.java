@@ -24,11 +24,6 @@
 
 package com.silverpeas.pdc.importExport;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -37,6 +32,11 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Classe gérant la manipulation des axes du pdc pour le module d'importExport.
@@ -199,7 +199,7 @@ public class PdcImportExport {
     for (ClassifyPosition classPos : listClassifyPosition) {
       List<ClassifyValue> listClassVal = classPos.getListClassifyValue();
       for (ClassifyValue classVal : listClassVal) {
-        set.add(Integer.valueOf(classVal.getAxisId()));
+        set.add(classVal.getAxisId());
       }
     }
 
@@ -208,17 +208,15 @@ public class PdcImportExport {
     List<AxisType> listAxisType = new ArrayList<AxisType>();
     pdcType.setListAxisType(listAxisType);
     for (Integer axis : set) {
-      int axisId = axis.intValue();
       // Récupération de la "value" root de l'axe
-      Value valueRoot = getPdcBm().getRoot(Integer.toString(axisId));
+      Value valueRoot = getPdcBm().getRoot(Integer.toString(axis));
       AxisType axisType = new AxisType();
-      axisType.setId(axisId);
+      axisType.setId(axis);
       axisType.setName(valueRoot.getName());
       axisType.setPath(valueRoot.getFullPath());
       listAxisType.add(axisType);
-      // Récupération de la totalité de l'arbre de l'axe avec la méthode
-      // récursive getValueTree
-      List<PdcValueType> listPdcValueType = getValueTree(axisId, valueRoot.getPK().getId());
+      // Récupération de la totalité de l'arbre de l'axe avec la méthode récursive getValueTree
+      List<PdcValueType> listPdcValueType = getValueTree(axis, valueRoot.getPK().getId());
       axisType.setListPdcValueType(listPdcValueType);
     }
     return pdcType;

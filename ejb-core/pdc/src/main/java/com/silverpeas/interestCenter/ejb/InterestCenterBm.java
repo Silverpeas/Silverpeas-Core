@@ -39,34 +39,43 @@ import com.silverpeas.interestCenter.model.InterestCenter;
 public interface InterestCenterBm extends javax.ejb.EJBObject {
 
   /**
+   * @param userID 
    * @return a list of <code>InterestCenter</code>s by user id provided
+   * @throws RemoteException  
    */
   public List<InterestCenter> getICByUserID(int userID) throws RemoteException;
 
   /**
    * @param icPK <code>InterestCenter</code> id
    * @return InterestCenter by its id
+   * @throws RemoteException  
    */
   public InterestCenter getICByID(int icPK) throws RemoteException;
 
   /**
+   * @param ic 
    * @return id of <code>InterestCenter</code> created
+   * @throws RemoteException  
    */
   public int createIC(InterestCenter ic) throws RemoteException;
 
   /**
    * perform updates of provided InterestCenter
+   * @param ic
+   * @throws RemoteException  
    */
   public void updateIC(InterestCenter ic) throws RemoteException;
 
   /**
    * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
    * to be deleted
+   * @throws RemoteException  
    */
   public void removeICByPK(List<Integer> pks) throws RemoteException;
 
   /**
    * @param pk an id of <code>InterestCenter</code> to be deleted
+   * @throws RemoteException  
    */
   public void removeICByPK(int pk) throws RemoteException;
 

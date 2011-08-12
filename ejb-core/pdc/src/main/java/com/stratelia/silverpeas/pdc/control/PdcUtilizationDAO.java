@@ -23,15 +23,21 @@
  */
 package com.stratelia.silverpeas.pdc.control;
 
-import java.sql.*;
-import java.util.*;
-
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.searchEngine.model.AxisFilterNode;
 import com.stratelia.webactiv.util.DBUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Class declaration
@@ -271,23 +277,17 @@ public class PdcUtilizationDAO {
               "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
 
       whereClause = new StringBuilder("where treeId = " + treeId + " and (1=0 "); // on prépare la
-      // prochaine
-      // clause Where
+      // prochaine  clause Where
       String allCompletPathes = "";
-      // String qui va nous permettre par la suite de récupérer les valeurs
-      // ascendantes
+      // String qui va nous permettre par la suite de récupérer les valeurs ascendantes
       Statement stmt = null;
       ResultSet rs = null;
       try {
         stmt = con.createStatement();
-
         rs = stmt.executeQuery(selectQuery);
-
-        String path = "";
-        String node = "";
         while (rs.next()) {
-          path = rs.getString(1);
-          node = new Integer(rs.getInt(2)).toString();
+          String path = rs.getString(1);
+          String node = Integer.toString(rs.getInt(2));
           allCompletPathes += path;
           whereClause.append(" or path like '").append(path).append(node).append("/%'");
           // on construit la clause Where pour le prochain accès en base
@@ -314,7 +314,7 @@ public class PdcUtilizationDAO {
       forbiddenValues = getAllDaughterValues(con, forbiddenValues, whereClause.toString());
 
       // on détermine si la valeur que l'on reçoit appartient au vecteur
-      isAdded = forbiddenValues.contains(new Integer(baseValue).toString());
+      isAdded = forbiddenValues.contains(Integer.toString(baseValue));
     }
     return isAdded;
   }
@@ -454,7 +454,7 @@ public class PdcUtilizationDAO {
         axisOrder = rs.getInt(5);
         axisDescription = rs.getString(6);
 
-        axisHeader = new AxisHeader(new Integer(axisId).toString(), axisName,
+        axisHeader = new AxisHeader(Integer.toString(axisId), axisName,
                 axisType, axisOrder, axisRootId, axisDescription);
         axisUsed.add(axisHeader);
       }
@@ -501,7 +501,7 @@ public class PdcUtilizationDAO {
                 "root.MSG_GEN_PARAM_VALUE", "another baseValue which is "
                 + baseValue + " for instanceId = " + instanceId
                 + " and axisId = " + axisId);
-        allBaseValues.add(Integer.valueOf(baseValue)); // get and stock the result
+        allBaseValues.add(baseValue); // get and stock the result
       }
     } finally {
       DBUtil.close(rs, prepStmt);

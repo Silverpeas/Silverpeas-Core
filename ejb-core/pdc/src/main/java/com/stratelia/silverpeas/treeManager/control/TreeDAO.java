@@ -24,10 +24,18 @@
 
 package com.stratelia.silverpeas.treeManager.control;
 
-import java.sql.*;
-import java.util.*;
-import com.stratelia.silverpeas.treeManager.model.*;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.silverpeas.treeManager.model.TreeNode;
+import com.stratelia.silverpeas.treeManager.model.TreeNodePK;
+import com.stratelia.webactiv.util.DBUtil;
+
+import com.stratelia.webactiv.util.exception.UtilException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TreeDAO {
 
@@ -42,12 +50,11 @@ public class TreeDAO {
 
     try {
       newTreeId = DBUtil.getNextId(TreeTable, "treeId");
-    } catch (Exception e) {
+    } catch (UtilException e) {
       throw new SQLException("DBUtil.getNextId() failed !");
     }
 
-    String insertQuery = "insert into " + TreeTable
-        + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? )";
+    String insertQuery = "INSERT INTO SB_Tree_Tree VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? )";
     PreparedStatement prepStmt = null;
 
     try {
@@ -57,7 +64,7 @@ public class TreeDAO {
       prepStmt.setString(3, root.getName());
       prepStmt.setString(4, root.getDescription());
       prepStmt.setString(5, root.getCreationDate());
-      prepStmt.setInt(6, new Integer(root.getCreatorId()).intValue());
+      prepStmt.setInt(6, Integer.parseInt(root.getCreatorId()));
       prepStmt.setString(7, "/");
       prepStmt.setInt(8, 0);
       prepStmt.setInt(9, -1);
@@ -68,7 +75,7 @@ public class TreeDAO {
       DBUtil.close(prepStmt);
     }
 
-    return new Integer(newTreeId).toString();
+    return Integer.toString(newTreeId);
   }
 
   public static TreeNodePK createNode(Connection con, TreeNode node)
@@ -81,21 +88,20 @@ public class TreeDAO {
       throw new SQLException("DBUtil.getNextValueIdToTree() failed !");
     }
 
-    String insertQuery = "insert into " + TreeTable
-        + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
+    String insertQuery = "INSERT INTO SB_Tree_Tree VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(insertQuery);
-      prepStmt.setInt(1, new Integer(node.getTreeId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(node.getTreeId()));
       prepStmt.setInt(2, newNodeId);
       prepStmt.setString(3, node.getName());
       prepStmt.setString(4, node.getDescription());
       prepStmt.setString(5, node.getCreationDate());
-      prepStmt.setInt(6, new Integer(node.getCreatorId()).intValue());
+      prepStmt.setInt(6, Integer.parseInt(node.getCreatorId()));
       prepStmt.setString(7, node.getPath());
       prepStmt.setInt(8, node.getLevelNumber());
-      prepStmt.setInt(9, new Integer(node.getFatherId()).intValue());
+      prepStmt.setInt(9, Integer.parseInt(node.getFatherId()));
       prepStmt.setInt(10, node.getOrderNumber());
       prepStmt.setString(11, node.getLanguage());
       prepStmt.executeUpdate();
@@ -103,17 +109,12 @@ public class TreeDAO {
       DBUtil.close(prepStmt);
     }
 
-    return new TreeNodePK(new Integer(newNodeId).toString());
+    return new TreeNodePK(Integer.toString(newNodeId));
   }
 
   public static void updateNode(Connection con, TreeNode node)
       throws SQLException {
-    String updateQuery =
-        "update "
-            +
-            TreeTable
-            +
-            " set name = ? , description = ? , path = ? , levelNumber = ? , fatherId = ? , orderNumber = ? , lang = ? where treeId = ? and id = ? ";
+    String updateQuery = "UPDATE SB_Tree_Tree SET name = ? , description = ? , path = ? , levelNumber = ? , fatherId = ? , orderNumber = ? , lang = ? WHERE treeId = ? AND id = ? ";
     PreparedStatement prepStmt = null;
 
     try {
@@ -122,11 +123,11 @@ public class TreeDAO {
       prepStmt.setString(2, node.getDescription());
       prepStmt.setString(3, node.getPath());
       prepStmt.setInt(4, node.getLevelNumber());
-      prepStmt.setInt(5, new Integer(node.getFatherId()).intValue());
+      prepStmt.setInt(5, Integer.parseInt(node.getFatherId()));
       prepStmt.setInt(6, node.getOrderNumber());
       prepStmt.setString(7, node.getLanguage());
-      prepStmt.setInt(8, new Integer(node.getTreeId()).intValue());
-      prepStmt.setInt(9, new Integer(node.getPK().getId()).intValue());
+      prepStmt.setInt(8, Integer.parseInt(node.getTreeId()));
+      prepStmt.setInt(9, Integer.parseInt(node.getPK().getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -136,13 +137,13 @@ public class TreeDAO {
   public static void deleteNode(Connection con, TreeNodePK treeNodePK,
       String treeId) throws SQLException {
 
-    String deleteQuery = "delete from " + TreeTable + " where treeId=" + treeId
-        + " and id=" + treeNodePK.getId();
-
-    Statement stmt = null;
+    String deleteQuery = "DELETE FROM SB_Tree_Tree WHERE treeId= ? AND id = ?";
+    PreparedStatement stmt = null;
 
     try {
-      stmt = con.createStatement();
+      stmt = con.prepareStatement(deleteQuery);
+      stmt.setInt(1, Integer.parseInt(treeId));
+      stmt.setInt(2, Integer.parseInt(treeNodePK.getId()));
       stmt.executeUpdate(deleteQuery);
     } finally {
       DBUtil.close(stmt);
@@ -201,6 +202,7 @@ public class TreeDAO {
    * Update path of decendante nodes of the deleted node.
    * @param con - the connection to the database
    * @param oldFather - the deleted node
+   * @throws SQLException  
    */
   public static void updatePath(Connection con, String oldFather, String treeId)
       throws SQLException {

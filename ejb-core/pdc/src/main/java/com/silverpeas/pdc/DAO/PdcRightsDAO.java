@@ -24,13 +24,13 @@
 
 package com.silverpeas.pdc.DAO;
 
+import com.stratelia.webactiv.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * @author inra
@@ -79,15 +79,15 @@ public class PdcRightsDAO {
     if (groupIds == null || groupIds.length == 0)
       return false;
 
-    StringBuffer clauseIN = new StringBuffer("(");
+    StringBuilder clauseIN = new StringBuilder("(");
     boolean firstGroup = true;
-    for (int i = 0; i < groupIds.length; i++) {
+    for (String groupId : groupIds) {
       if (!firstGroup) {
         clauseIN.append(",");
         firstGroup = false;
       }
 
-      clauseIN.append(groupIds[i]);
+      clauseIN.append(groupId);
     }
     clauseIN.append(")");
 

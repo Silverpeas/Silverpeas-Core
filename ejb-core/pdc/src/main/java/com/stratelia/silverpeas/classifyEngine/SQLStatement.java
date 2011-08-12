@@ -23,12 +23,13 @@
  */
 package com.stratelia.silverpeas.classifyEngine;
 
-import java.util.*;
-
 import com.stratelia.silverpeas.util.JoinStatement;
-import static com.silverpeas.util.StringUtil.*;
 
-class SQLStatement extends Object {
+import java.util.List;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+
+class SQLStatement {
 
   String m_sClassifyTable = "SB_ClassifyEngine_Classify";
   String m_sPositionIdColumn = "PositionId";
@@ -252,8 +253,8 @@ class SQLStatement extends Object {
       sSQLStatement.append(" WHERE ");
     }
     for (int nI = 0; nI < alPositionIds.size(); nI++) {
-      sSQLStatement.append("(").append(m_sPositionIdColumn).append(" = ").append(((Integer) alPositionIds.
-              get(0)).intValue()).append(")");
+      sSQLStatement.append("(").append(m_sPositionIdColumn).append(" = ").append(alPositionIds.
+              get(0).intValue()).append(")");
       if (nI < alPositionIds.size() - 1) {
         sSQLStatement.append(" OR ");
       }
@@ -319,16 +320,16 @@ class SQLStatement extends Object {
     }
 
     // criteres
-    for (int nI = 0; nI < alCriterias.size(); nI++) {
-      if (((Criteria) alCriterias.get(nI)).getValue() != null) {
+    for (Criteria alCriteria : alCriterias) {
+      if (alCriteria.getValue() != null) {
         sSQLStatement.append(" AND (").append(m_sAxisColumn).append(
-                ((Criteria) alCriterias.get(nI)).getAxisId());
+            alCriteria.getAxisId());
         if (recursiveSearch) {
           sSQLStatement.append(" LIKE '");
         } else {
           sSQLStatement.append(" = '");
         }
-        sSQLStatement.append(((Criteria) alCriterias.get(nI)).getValue());
+        sSQLStatement.append(alCriteria.getValue());
         if (recursiveSearch) {
           sSQLStatement.append("%')");
         } else {

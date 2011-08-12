@@ -24,17 +24,18 @@
  */
 package com.silverpeas.components.model;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.Statement;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dbunit.database.IDatabaseConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.Statement;
 
 /**
  *
@@ -62,18 +63,22 @@ public class AbstractJndiCase {
   }
 
   protected static String loadDDL(String filename) throws IOException {
-    InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
-    BufferedReader r = new BufferedReader(new InputStreamReader(in));
-    StringBuilder buffer = new StringBuilder();
-    String line = null;
-    String EOL = System.getProperty("line.separator");
-    while ((line = r.readLine()) != null) {
-      if (!StringUtils.isBlank(line) && !line.startsWith("#")) {
-        buffer.append(line).append(EOL);
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new InputStreamReader(
+          Thread.currentThread().getContextClassLoader().getResourceAsStream(filename)));
+      StringBuilder buffer = new StringBuilder();
+      String line = null;
+      String EOL = System.getProperty("line.separator");
+      while ((line = reader.readLine()) != null) {
+        if (!StringUtils.isBlank(line) && !line.startsWith("#")) {
+          buffer.append(line).append(EOL);
+        }
       }
+      return buffer.toString();
+    } finally {
+      IOUtils.closeQuietly(reader);
     }
-    in.close();
-    return buffer.toString();
   }
 
   @After

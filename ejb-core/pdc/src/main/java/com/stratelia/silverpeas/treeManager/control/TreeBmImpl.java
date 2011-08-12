@@ -24,14 +24,6 @@
 
 package com.stratelia.silverpeas.treeManager.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.treeManager.model.TreeManagerException;
@@ -48,6 +40,14 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class TreeBmImpl implements TreeBm {
 
@@ -565,7 +565,7 @@ public class TreeBmImpl implements TreeBm {
     String path = root.getPath();
     // String whereClause =
     // "path LIKE (SELECT path + '%' FROM SB_Tree_Tree WHERE id = "+rootId+") ORDER BY path ASC, orderNumber ASC";
-    StringBuffer whereClause = new StringBuffer();
+    StringBuilder whereClause = new StringBuilder();
     whereClause.append("treeId = ").append(treeId).append(" and (path LIKE '")
         .append(path).append(rootId).append("/%' or id = ").append(rootId)
         .append(")");

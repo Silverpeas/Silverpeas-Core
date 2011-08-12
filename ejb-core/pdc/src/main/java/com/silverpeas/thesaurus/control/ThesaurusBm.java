@@ -24,13 +24,6 @@
 
 package com.silverpeas.thesaurus.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.silverpeas.thesaurus.model.Synonym;
@@ -43,71 +36,79 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * ThesaurusBm Classe servant à gérer le métier du thesuaurus
  */
 public class ThesaurusBm {
 
-  private static ThesaurusBm instance;
-  private SilverpeasBeanDAO vocabularyDao = null;
-  private SilverpeasBeanDAO synonymDao = null;
-  private SilverpeasBeanDAO jargonDao = null;
+  private static ThesaurusBm instance = null;
+  private SilverpeasBeanDAO<Vocabulary> vocabularyDao = null;
+  private SilverpeasBeanDAO<Synonym> synonymDao = null;
+  private SilverpeasBeanDAO<Jargon> jargonDao = null;
 
   private ThesaurusBm() {
   }
 
   static public ThesaurusBm getInstance() {
-    synchronized(ThesaurusBm.class) {
-    if (instance == null) {
+    synchronized (ThesaurusBm.class) {
+      if (instance == null) {
         instance = new ThesaurusBm();
       }
     }
     return instance;
   }
 
-  private SilverpeasBeanDAO getVocabularyDao() throws PersistenceException {
+  private SilverpeasBeanDAO<Vocabulary> getVocabularyDao() throws PersistenceException {
     if (vocabularyDao == null) {
-      vocabularyDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.thesaurus.model.Vocabulary");
+      vocabularyDao = SilverpeasBeanDAOFactory.<Vocabulary>getDAO(
+          "com.silverpeas.thesaurus.model.Vocabulary");
     }
     return vocabularyDao;
   }
 
-  private SilverpeasBeanDAO getSynonymDao() throws PersistenceException {
+  private SilverpeasBeanDAO<Synonym> getSynonymDao() throws PersistenceException {
     if (synonymDao == null) {
-      synonymDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.thesaurus.model.Synonym");
+      synonymDao = SilverpeasBeanDAOFactory.<Synonym>getDAO(
+          "com.silverpeas.thesaurus.model.Synonym");
     }
     return synonymDao;
   }
 
-  private SilverpeasBeanDAO getJargonDao() throws PersistenceException {
+  private SilverpeasBeanDAO<Jargon> getJargonDao() throws PersistenceException {
     if (jargonDao == null) {
-      jargonDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.thesaurus.model.Jargon");
+      jargonDao = SilverpeasBeanDAOFactory.<Jargon>getDAO("com.silverpeas.thesaurus.model.Jargon");
     }
     return jargonDao;
   }
 
   /**
    * Retourne la liste des vocabulaires (Collection de Vocabulary)
+   *
    * @return Collection
    * @throws ThesaurusException
    * @see
    */
-  @SuppressWarnings("unchecked")
   public Collection<Vocabulary> getListVocabulary() throws ThesaurusException {
     Collection<Vocabulary> vocabs = new ArrayList<Vocabulary>();
     try {
       IdPK pk = new IdPK();
-      vocabs = (Collection<Vocabulary>) getVocabularyDao().findByWhereClause(pk, null);
+      vocabs = getVocabularyDao().findByWhereClause(pk, null);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.getListVocabulary",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_LIST_VOCABULARIES",
-          "", e);
+          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_LIST_VOCABULARIES", "", e);
     }
     return vocabs;
   }
 
   /**
    * Retourne le détail du vocabulaire à partir d'un idVoca
+   *
    * @param idVoca
    * @return Vocabulary
    * @throws ThesaurusException
@@ -118,7 +119,7 @@ public class ThesaurusBm {
     try {
       IdPK pk = new IdPK();
       pk.setIdAsLong(idVoca);
-      vocab = (Vocabulary) getVocabularyDao().findByPrimaryKey(pk);
+      vocab = getVocabularyDao().findByPrimaryKey(pk);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.getVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_VOCABULARY", "", e);
@@ -128,6 +129,7 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau vocabulaire et retourne l'id de celui-ci
+   *
    * @param voca
    * @return long
    * @throws ThesaurusException
@@ -148,6 +150,7 @@ public class ThesaurusBm {
 
   /**
    * Retourne vrai si le vocabulaire passé en paramètre existe déjà
+   *
    * @param name
    * @return boolean
    * @throws ThesaurusException
@@ -157,7 +160,8 @@ public class ThesaurusBm {
   public boolean existVocabulary(String name) throws ThesaurusException {
     try {
       IdPK pk = new IdPK();
-      Collection<Vocabulary> vocabs =  getVocabularyDao().findByWhereClause(pk, " name= '" + encode(name) + "'");
+      Collection<Vocabulary> vocabs = getVocabularyDao().findByWhereClause(pk,
+          " name= '" + encode(name) + "'");
       return !vocabs.isEmpty();
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.existVocabulary",
@@ -168,6 +172,7 @@ public class ThesaurusBm {
 
   /**
    * Retourne une chaine qui a encodé les ' par des ''
+   *
    * @param name
    * @return String
    * @throws
@@ -190,6 +195,7 @@ public class ThesaurusBm {
 
   /**
    * Met à jour le vocabulaire passé en paramètre
+   *
    * @param voca
    * @return
    * @throws ThesaurusException
@@ -207,10 +213,10 @@ public class ThesaurusBm {
 
   /**
    * Supprime le vocabulaire passé en paramètre
+   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
-   * @see deleteVocaSynonyms, deleteVocaJargons
    */
   public void deleteVocabulary(long idVoca) throws ThesaurusException {
     Connection con = null;
@@ -225,7 +231,7 @@ public class ThesaurusBm {
       deleteVocaJargons(con, idVoca);
 
       // supprime le vocabulaire
-      SilverpeasBeanDAO daoV = getVocabularyDao();
+      SilverpeasBeanDAO<Vocabulary> daoV = getVocabularyDao();
       IdPK pk = new IdPK();
       pk.setIdAsLong(idVoca);
       daoV.remove(con, pk);
@@ -244,19 +250,13 @@ public class ThesaurusBm {
       throw new ThesaurusException("ThesaurusBm.deleteVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_VOCABULARY_FAILED", "", e);
     } finally {
-      if (con != null) {
-        try {
-          con.close();
-        } catch (SQLException e) {
-          throw new ThesaurusException("ThesaurusBm.deleteVocabulary",
-              SilverpeasException.ERROR, "Thesaurus.EX_DELETE_VOCABULARY_FAILED", "", e);
-        }
-      }
+      DBUtil.close(con);
     }
   }
 
   /**
    * Supprime tous les synonymes associés au vocabulaire passé en paramètre
+   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -275,6 +275,7 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les jargons associés au vocabulaire passé en paramètre
+   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -294,10 +295,10 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les jargons passés en paramètre
+   *
    * @param jargons
    * @return
    * @throws ThesaurusException
-   * @see deleteJargon
    */
   public void deleteJargons(Collection<Jargon> jargons) throws ThesaurusException {
     try {
@@ -307,13 +308,13 @@ public class ThesaurusBm {
       }
     } catch (ThesaurusException e) {
       throw new ThesaurusException("ThesaurusBm.deleteJargons",
-          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_JARGONS_FAILED", "",
-          e);
+          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_JARGONS_FAILED", "", e);
     }
   }
 
   /**
    * Supprime le jargon passé en paramètre
+   *
    * @param idJargon
    * @return
    * @throws ThesaurusException
@@ -333,10 +334,10 @@ public class ThesaurusBm {
 
   /**
    * Crée de nouveaux synonymes à un terme
+   *
    * @param synonyms
    * @return
    * @throws ThesaurusException
-   * @see createSynonym
    */
   private void createSynonyms(Connection con, Collection<Synonym> synonyms)
       throws ThesaurusException {
@@ -353,6 +354,7 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau synonyme à un terme
+   *
    * @param synonym
    * @return
    * @throws ThesaurusException
@@ -371,6 +373,7 @@ public class ThesaurusBm {
 
   /**
    * Retourne la liste des synonymes d'un vocabulaire, pour un terme
+   *
    * @param idVoca
    * @param idTree
    * @param idTerm
@@ -397,10 +400,10 @@ public class ThesaurusBm {
 
   /**
    * Met à jour une liste de synonymes
+   *
    * @param synonyms
    * @return
    * @throws ThesaurusException
-   * @see deleteSynonyms, createSynonyms
    */
   public void updateSynonyms(Collection<Synonym> synonyms) throws ThesaurusException {
     Connection con = null;
@@ -434,22 +437,15 @@ public class ThesaurusBm {
       }
 
       throw new ThesaurusException("ThesaurusBm.updateSynonyms",
-          SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_SYNONYMS_FAILED", "",
-          e);
+          SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_SYNONYMS_FAILED", "", e);
     } finally {
-      if (con != null)
-        try {
-          con.close();
-        } catch (SQLException e) {
-          throw new ThesaurusException("ThesaurusBm.updateSynonyms",
-              SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_SYNONYMS_FAILED",
-              "", e);
-        }
+      DBUtil.close(con);
     }
   }
 
   /**
    * Supprime les synonymes d'un terme dans un vocabulaire
+   *
    * @param idVoca
    * @param idTree
    * @param idTerm
@@ -468,17 +464,9 @@ public class ThesaurusBm {
           .parseLong(idTerm));
     } catch (Exception e) {
       throw new ThesaurusException("ThesaurusBm.deleteSynonyms",
-          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYMS_FAILED", "",
-          e);
+          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYMS_FAILED", "", e);
     } finally {
-      if (con != null)
-        try {
-          con.close();
-        } catch (SQLException e) {
-          throw new ThesaurusException("ThesaurusBm.updateSynonyms",
-              SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_SYNONYMS_FAILED",
-              "", e);
-        }
+      DBUtil.close(con);
     }
   }
 
@@ -499,16 +487,15 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes passés en paramètre
+   *
    * @param idSynonyms
    * @return
    * @throws ThesaurusException
-   * @see deleteSynonym
    */
   public void deleteSynonyms(Collection<Long> idSynonyms) throws ThesaurusException {
     try {
       for (Long idSynonym : idSynonyms) {
-        // supprime le synonyme
-        deleteSynonym(idSynonym.longValue());
+        deleteSynonym(idSynonym);
       }
     } catch (ThesaurusException e) {
       throw new ThesaurusException(
@@ -520,6 +507,7 @@ public class ThesaurusBm {
 
   /**
    * Supprime le synonyme passés en paramètre
+   *
    * @param idSynonym
    * @return
    * @throws ThesaurusException
@@ -532,14 +520,14 @@ public class ThesaurusBm {
       pk.setIdAsLong(idSynonym);
       daoS.remove(pk);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.deleteSynonym",
-          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYM_FAILED", "",
-          e);
+      throw new ThesaurusException("ThesaurusBm.deleteSynonym", SilverpeasException.ERROR,
+          "Thesaurus.EX_DELETE_SYNONYM_FAILED", "", e);
     }
   }
 
   /**
    * Supprime les synonymes de tous les termes associés à l'axe passé en paramètre
+   *
    * @param idTree
    * @return
    * @throws ThesaurusException
@@ -560,11 +548,11 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes de tous les termes passés en paramètre
+   *
    * @param idTree
    * @param idTerms : List de String
    * @return
    * @throws ThesaurusException
-   * @see deleteSynonymsTerm
    */
   public void deleteSynonymsTerms(Connection con, long idTree, List<String> idTerms)
       throws ThesaurusException {
@@ -582,6 +570,7 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes du terme passé en paramètre
+   *
    * @param idTree
    * @param idTerm
    * @return
@@ -604,6 +593,7 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des utilisateurs utilisant le vocabulaire passé en paramètre retourne une
    * Collection de Jargon
+   *
    * @param idVoca
    * @return Collection
    * @throws ThesaurusException
@@ -625,8 +615,9 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des jargons untilisés pas la liste des utilisateurs passés en paramètre
    * Retoune une Collection de Jargon
+   *
    * @param idUsers
-   * @param type (0=UserDetail ou 1=Group)
+   * @param type    (0=UserDetail ou 1=Group)
    * @return
    * @throws ThesaurusException
    * @see
@@ -657,8 +648,9 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des jargons untilisés pas la liste des utilisateurs passés en paramètre
    * Retoune une Collection de Jargon
+   *
    * @param idUsers
-   * @param type (0=UserDetail ou 1=Group)
+   * @param type    (0=UserDetail ou 1=Group)
    * @return
    * @throws ThesaurusException
    * @see
@@ -688,10 +680,10 @@ public class ThesaurusBm {
 
   /**
    * Crée une liste de jargons
+   *
    * @param jargons
    * @return
    * @throws ThesaurusException
-   * @see getJargons, createJargon, updateJargon
    */
   public void createJargons(Collection<Jargon> jargons) throws ThesaurusException {
     try {
@@ -713,27 +705,24 @@ public class ThesaurusBm {
             jargon.setPK(pk);
             updateJargon(jargon);
           }
-        }
-        else {// l'utilisateur n'avait pas de jargon
+        } else {// l'utilisateur n'avait pas de jargon
           createJargon(jargon);
         }
       }
     } catch (ThesaurusException e) {
       throw new ThesaurusException("ThesaurusBm.createJargons",
-          SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGONS_FAILED", "",
-          e);
+          SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGONS_FAILED", "", e);
     }
   }
 
   /**
    * Crée une liste de jargons
+   *
    * @param jargons
    * @return
    * @throws ThesaurusException
-   * @see getJargons, createJargon, updateJargon
    */
-  public void createJargons(Connection con, Collection<Jargon> jargons)
-      throws ThesaurusException {
+  public void createJargons(Connection con, Collection<Jargon> jargons) throws ThesaurusException {
     try {
       for (Jargon jargon : jargons) {
         long idVoca = jargon.getIdVoca();
@@ -753,27 +742,25 @@ public class ThesaurusBm {
             jargon.setPK(pk);
             updateJargon(jargon);
           }
-        }
-        else {// l'utilisateur n'avait pas de jargon
+        } else {// l'utilisateur n'avait pas de jargon
           createJargon(con, jargon);
         }
       }
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusBm.createJargons",
-          SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGONS_FAILED", "",
-          e);
+      throw new ThesaurusException("ThesaurusBm.createJargons", SilverpeasException.ERROR,
+          "Thesaurus.EX_CREATE_JARGONS_FAILED", "", e);
     }
   }
 
   /**
-   * Crée la liste des jargons d'un vocabulaire (suppression tous les jargons du voca puis création)
+   * Crée la liste des jargons d'un vocabulaire (suppression tous les jargons du voca puis
+   * création)
+   *
    * @param jargons
    * @return
    * @throws ThesaurusException
-   * @see deleteVocaJargons, createJargon
    */
-  public void createVocaJargons(Collection<Jargon> jargons, long idVoca)
-      throws ThesaurusException {
+  public void createVocaJargons(Collection<Jargon> jargons, long idVoca) throws ThesaurusException {
     Connection con = null;
 
     try {
@@ -788,28 +775,19 @@ public class ThesaurusBm {
       try {
         con.rollback();
       } catch (Exception e1) {
-        throw new ThesaurusException("ThesaurusBm.createJargons",
-            SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGONS_FAILED",
-            "Error in rollback", e1);
+        throw new ThesaurusException("ThesaurusBm.createJargons", SilverpeasException.ERROR,
+            "Thesaurus.EX_CREATE_JARGONS_FAILED", "Error in rollback", e1);
       }
-
-      throw new ThesaurusException("ThesaurusBm.createJargons",
-          SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGONS_FAILED", "",
-          e);
+      throw new ThesaurusException("ThesaurusBm.createJargons", SilverpeasException.ERROR,
+          "Thesaurus.EX_CREATE_JARGONS_FAILED", "", e);
     } finally {
-      if (con != null)
-        try {
-          con.close();
-        } catch (SQLException e) {
-          throw new ThesaurusException("ThesaurusBm.createJargons",
-              SilverpeasException.ERROR, "Thesaurus.EX_CREATE_JARGONS_FAILED",
-              "", e);
-        }
+      DBUtil.close(con);
     }
   }
 
   /**
    * Crée un nouveau jargon
+   *
    * @param jargon
    * @return
    * @throws ThesaurusException
@@ -817,7 +795,7 @@ public class ThesaurusBm {
    */
   private void createJargon(Jargon jargon) throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoJ = getJargonDao();
+      SilverpeasBeanDAO<Jargon> daoJ = getJargonDao();
       daoJ.add(jargon);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.createJargon",
@@ -827,6 +805,7 @@ public class ThesaurusBm {
 
   /**
    * Met à jour le jargon du user
+   *
    * @param jargon
    * @return
    * @throws ThesaurusException
@@ -835,11 +814,10 @@ public class ThesaurusBm {
   private void updateJargon(Jargon jargon) throws ThesaurusException {
     try {
       long newIdVoca = jargon.getIdVoca();
-
-      SilverpeasBeanDAO daoJ = getJargonDao();
+      SilverpeasBeanDAO<Jargon> daoJ = getJargonDao();
       IdPK pk = new IdPK();
       pk.setId(jargon.getPK().getId());
-      Jargon jargonToModify = (Jargon) daoJ.findByPrimaryKey(pk);
+      Jargon jargonToModify = daoJ.findByPrimaryKey(pk);
       jargonToModify.setIdVoca(newIdVoca);
       daoJ.update(jargonToModify);
     } catch (PersistenceException e) {
@@ -850,6 +828,7 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau jargon
+   *
    * @param jargon
    * @return
    * @throws ThesaurusException
@@ -858,7 +837,7 @@ public class ThesaurusBm {
   private void createJargon(Connection con, Jargon jargon)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoJ = getJargonDao();
+      SilverpeasBeanDAO<Jargon> daoJ = getJargonDao();
       daoJ.add(con, jargon);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.createJargon",
@@ -868,16 +847,16 @@ public class ThesaurusBm {
 
   /**
    * Retourne le jargon de l'utilisateur (type 0) passé en paramètre
+   *
    * @param idUser
    * @return Jargon
    * @throws ThesaurusException
    * @see
    */
-  @SuppressWarnings("unchecked")
   public Jargon getJargon(String idUser) throws ThesaurusException {
     Jargon jargon = null;
     try {
-      SilverpeasBeanDAO daoJ = getJargonDao();
+      SilverpeasBeanDAO<Jargon> daoJ = getJargonDao();
       IdPK pk = new IdPK();
       Collection<Jargon> jargons = daoJ.findByWhereClause(pk, " idUser='" + idUser
           + "'" + " AND type=0");
@@ -887,8 +866,8 @@ public class ThesaurusBm {
       }
 
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getJargon",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_JARGON", "", e);
+      throw new ThesaurusException("ThesaurusBm.getJargon", SilverpeasException.ERROR,
+          "Thesaurus.EX_CANT_GET_JARGON", "", e);
     }
     return jargon;
   }
@@ -896,26 +875,24 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire retourne une
    * Collection de Synonym
+   *
    * @param idVoca
    * @param name
    * @return Collection
    * @throws ThesaurusException
    * @see
    */
-  @SuppressWarnings("unchecked")
   public Collection<Synonym> getSynonyms(long idVoca, String name)
       throws ThesaurusException {
     Collection<Synonym> synonyms = new ArrayList<Synonym>();
     try {
-      SilverpeasBeanDAO daoS = getSynonymDao();
+      SilverpeasBeanDAO<Synonym> daoS = getSynonymDao();
       IdPK pk = new IdPK();
-      synonyms = daoS.findByWhereClause(pk, " idVoca=" + idVoca + " AND name='"
-          + encode(name) + "'");
+      synonyms = daoS.findByWhereClause(pk,
+          " idVoca=" + idVoca + " AND name='" + encode(name) + "'");
     } catch (PersistenceException e) {
-      throw new ThesaurusException(
-          "ThesaurusBm.getSynonyms(long idVoca, String name)",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_NAME", "",
-          e);
+      throw new ThesaurusException("ThesaurusBm.getSynonyms(long idVoca, String name)",
+          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_NAME", "", e);
     }
     return synonyms;
   }
@@ -923,21 +900,20 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire retourne une
    * Collection de Synonym
+   *
    * @param idVoca
-   * @param name
+   * @param idTree
    * @return Collection
    * @throws ThesaurusException
    * @see
    */
-  @SuppressWarnings("unchecked")
   public Collection<Synonym> getSynonymsByTree(long idVoca, long idTree)
       throws ThesaurusException {
     Collection<Synonym> synonyms = new ArrayList<Synonym>();
     try {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
-      synonyms = daoS.findByWhereClause(pk, " idVoca=" + idVoca
-          + " AND idTree=" + idTree);
+      synonyms = daoS.findByWhereClause(pk, " idVoca=" + idVoca + " AND idTree=" + idTree);
     } catch (PersistenceException e) {
       throw new ThesaurusException(
           "ThesaurusBm.getSynonymsByTree(long idVoca, long idTree)",

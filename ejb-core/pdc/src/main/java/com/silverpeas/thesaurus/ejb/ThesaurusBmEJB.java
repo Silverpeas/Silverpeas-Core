@@ -24,7 +24,6 @@
 
 package com.silverpeas.thesaurus.ejb;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 import javax.ejb.EJBException;
@@ -70,19 +69,18 @@ public class ThesaurusBmEJB implements SessionBean {
     }
   }
 
-  public void setSessionContext(SessionContext arg0) throws EJBException,
-      RemoteException {
+  public void setSessionContext(SessionContext arg0) throws EJBException {
   }
 
   public void ejbCreate() {
   }
 
-  public void ejbRemove() throws EJBException, RemoteException {
+  public void ejbRemove() throws EJBException {
   }
 
-  public void ejbActivate() throws EJBException, RemoteException {
+  public void ejbActivate() throws EJBException {
   }
 
-  public void ejbPassivate() throws EJBException, RemoteException {
+  public void ejbPassivate() throws EJBException {
   }
 }
