@@ -114,7 +114,10 @@ public class AuthenticationService {
     SilverTrace.error("peasCore", "AuthenticationService.authenticate()",
             "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + sKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
-    absoluteUrl.append("/Login.jsp");
+    if(absoluteUrl.charAt(absoluteUrl.length() -1) != '/') {
+      absoluteUrl.append('/');
+    }
+    absoluteUrl.append("Login.jsp");
     absoluteUrl.append(";jsessionid=").append(session.getId());
     return absoluteUrl.toString();
   }
