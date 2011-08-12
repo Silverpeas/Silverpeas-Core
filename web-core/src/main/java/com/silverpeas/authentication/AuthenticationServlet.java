@@ -27,9 +27,9 @@ package com.silverpeas.authentication;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -66,6 +66,9 @@ public class AuthenticationServlet extends HttpServlet {
     HttpSession session = request.getSession();
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding("UTF-8");
+    }
+    if(AUTHENTICATION_SERVICE.isAnonymousUser(request)) {
+      AUTHENTICATION_SERVICE.unauthenticate(request);
     }
 
     // Get the authentication settings

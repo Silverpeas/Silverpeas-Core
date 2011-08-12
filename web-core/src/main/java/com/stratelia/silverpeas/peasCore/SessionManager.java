@@ -274,9 +274,7 @@ public class SessionManager
       removeSession(si);
       si = null;
     } else {
-      SilverTrace.debug(
-          "peasCore",
-          "SessionManager.removeSession",
+      SilverTrace.debug("peasCore", "SessionManager.removeSession",
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
           + sessionId + ")");
     }
