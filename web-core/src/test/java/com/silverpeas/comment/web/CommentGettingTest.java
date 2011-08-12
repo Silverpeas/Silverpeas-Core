@@ -28,7 +28,6 @@ import com.silverpeas.rest.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -39,14 +38,11 @@ import static com.silverpeas.comment.web.CommentTestResources.*;
 /**
  * Tests on the comment getting by the CommentResource web service.
  */
-public class CommentGettingTest extends ResourceGettingTest {
+public class CommentGettingTest extends ResourceGettingTest<CommentTestResources> {
 
   private UserDetail user;
   private String sessionKey;
   private Comment theComment;
-  
-  @Inject
-  private CommentTestResources testResources;
 
   public CommentGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -54,13 +50,11 @@ public class CommentGettingTest extends ResourceGettingTest {
 
   @Before
   public void createAUserAndAComment() {
-    assertNotNull(testResources);
-    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
     theComment = theUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire");
-    testResources.save(theComment);
+    getTestResources().save(theComment);
   }
 
   @Test
@@ -81,7 +75,7 @@ public class CommentGettingTest extends ResourceGettingTest {
     Comment theComment3 = theUser(user).commentTheResource(CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire 3");
-    testResources.save(theComment1, theComment2, theComment3);
+    getTestResources().save(theComment1, theComment2, theComment3);
 
     CommentEntity[] entities = getAt(RESOURCE_PATH, CommentEntity[].class);
     assertNotNull(entities);

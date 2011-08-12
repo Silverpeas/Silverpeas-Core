@@ -32,28 +32,24 @@ import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.silverpeas.pdc.web.TestResources.JAVA_PACKAGE;
-import static com.silverpeas.pdc.web.TestResources.SPRING_CONTEXT;
+import static com.silverpeas.pdc.web.PdcTestResources.JAVA_PACKAGE;
+import static com.silverpeas.pdc.web.PdcTestResources.SPRING_CONTEXT;
 import static com.silverpeas.pdc.web.beans.PdcClassification.aPdcClassification;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests on the adding of a new position within the PdC classification of a resource.
  */
-public class ClassificationPositionAddingTest extends ResourceCreationTest {
+public class ClassificationPositionAddingTest extends ResourceCreationTest<PdcTestResources> {
   
-  @Inject
-  private TestResources testResources;
   private String sessionKey;
   private UserDetail theUser;
   private PdcClassification theClassification;
@@ -64,14 +60,12 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest {
   
   @Before
   public void setUpUserSessionAndPdCClassifications() {
-    assertNotNull(testResources);
-    testResources.init();
     theUser = aUser();
     sessionKey = authenticate(theUser);
-    testResources.enableThesaurus();
+    getTestResources().enableThesaurus();
     theClassification =
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
-    testResources.save(theClassification);
+    getTestResources().save(theClassification);
   }
   
   @Test
@@ -101,7 +95,7 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest {
   }
 
   private PdcClassification theClassification() {
-    return testResources.getPdcClassification();
+    return getTestResources().getPdcClassification();
   }
 
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
@@ -148,7 +142,7 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest {
   
   private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           Exception {
-    return testResources.toWebEntity(classification, theUser);
+    return getTestResources().toWebEntity(classification, theUser);
   }
 
   @Override

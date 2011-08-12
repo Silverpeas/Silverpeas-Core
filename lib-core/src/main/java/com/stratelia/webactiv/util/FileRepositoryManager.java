@@ -290,7 +290,7 @@ public class FileRepositoryManager extends Object {
     float size = new Long(lSize).floatValue();
 
     if (size < 1024) {// inférieur à 1 ko (1024 octets)
-      return Float.toString(size).concat(" ").concat(o);
+      return Integer.toString(Math.round(size)).concat(" ").concat(o);
     } else if (size < 1024 * 1024) {// inférieur à 1 mo (1024 * 1024 octets)
       return Integer.toString(Math.round(size / 1024)).concat(" ").concat(Ko);
     } else {// supérieur à 1 mo (1024 * 1024 octets)
