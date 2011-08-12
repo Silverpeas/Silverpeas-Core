@@ -24,16 +24,15 @@
 
 package com.stratelia.webactiv.util.indexEngine.parser.rtfParser;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.indexEngine.parser.PipedParser;
+
+import javax.swing.text.Document;
+import javax.swing.text.rtf.RTFEditorKit;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
-
-import javax.swing.text.Document;
-import javax.swing.text.rtf.RTFEditorKit;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.indexEngine.parser.PipedParser;
 
 /**
  * ExcelParser parse an excel file
@@ -50,8 +49,7 @@ public class RtfParser extends PipedParser {
   public RtfParser() {
   }
 
-  public void outPutContent(Writer out, String path, String encoding)
-      throws IOException {
+  public void outPutContent(Writer out, String path, String encoding) throws IOException {
     FileInputStream in = new FileInputStream(path);
 
     byte[] buffer = new byte[in.available()];
