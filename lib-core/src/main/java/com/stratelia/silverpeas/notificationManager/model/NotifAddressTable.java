@@ -31,6 +31,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class NotifAddressTable extends AbstractTable {
 
@@ -67,17 +68,16 @@ public class NotifAddressTable extends AbstractTable {
     if (orderField != null) {
       req = req + " order by " + orderField;
     }
-    return getRows(req).toArray(new NotifAddressRow[0]);
+    List<?> rows = getRows(req);
+    return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
   /**
    * Returns all the NotifAddressRow having a given notifChannelId
    */
-  public NotifAddressRow[] getAllByNotifChannelId(int notifChannelId)
-      throws UtilException {
-    return getRows(
-        SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId)
-        .toArray(new NotifAddressRow[0]);
+  public NotifAddressRow[] getAllByNotifChannelId(int notifChannelId) throws UtilException {
+    List<?> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId);
+    return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID = "select "
@@ -87,9 +87,8 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the NotifAddressRow having a given userId
    */
   public NotifAddressRow[] getAllByUserId(int userId) throws UtilException {
-    return getRows(
-        SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId).toArray(
-        new NotifAddressRow[0]);
+    List<?> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId);
+    return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID = "select "
@@ -99,8 +98,8 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifAddressRow[] getAllRows() throws UtilException {
-    return getRows(SELECT_ALL_NOTIFADDRESS).toArray(
-        new NotifAddressRow[0]);
+    List<?> rows =  getRows(SELECT_ALL_NOTIFADDRESS);
+    return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_NOTIFADDRESS = "select "
@@ -117,7 +116,8 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the rows given by a no parameters query.
    */
   public NotifAddressRow[] getNotifAddresss(String query) throws UtilException {
-    return getRows(query).toArray(new NotifAddressRow[0]);
+    List<?> rows =  getRows(query);
+    return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
   /**

@@ -36,6 +36,8 @@ package com.stratelia.webactiv.util;
  * @version 1.0
  */
 
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,12 +46,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.stratelia.webactiv.util.exception.UtilException;
-
 /**
  * A Table object manages a table in a database.
  */
-public abstract class AbstractTable {
+public abstract class AbstractTable<T> {
   public AbstractTable(Schema schema, String tableName) {
     this.schema = schema;
     this.tableName = tableName;
@@ -108,21 +108,21 @@ public abstract class AbstractTable {
   /**
    * Builds a new row object which values are retrieved from the given ResultSet.
    */
-  abstract protected Object fetchRow(ResultSet rs) throws SQLException;
+  abstract protected T fetchRow(ResultSet rs) throws SQLException;
 
   /**
    * Set all the parameters of the insert PreparedStatement built from the insertQuery in order to
    * insert the given row.
    */
   abstract protected void prepareInsert(String insertQuery,
-      PreparedStatement insert, Object row) throws SQLException;
+      PreparedStatement insert, T row) throws SQLException;
 
   /**
    * Set all the parameters of the update PreparedStatement built from the updateQuery in order to
    * update the given row.
    */
   abstract protected void prepareUpdate(String updateQuery,
-      PreparedStatement update, Object row) throws SQLException;
+      PreparedStatement update, T row) throws SQLException;
 
   /**
    * Returns the unique row referenced by the given query and id. Returns null if no rows match the
@@ -132,7 +132,7 @@ public abstract class AbstractTable {
    * an int column.
    * @param id references an unique row.
    */
-  protected Object getUniqueRow(String query, int id) throws UtilException {
+  protected T getUniqueRow(String query, int id) throws UtilException {
     ResultSet rs = null;
 
     PreparedStatement select = null;
@@ -158,7 +158,7 @@ public abstract class AbstractTable {
    * a text column.
    * @param parameter references an unique row.
    */
-  protected Object getUniqueRow(String query, String parameter)
+  protected T getUniqueRow(String query, String parameter)
       throws UtilException {
     ResultSet rs = null;
 
@@ -185,7 +185,7 @@ public abstract class AbstractTable {
    * where the col are int columns.
    * @param ids references an unique row.
    */
-  protected Object getUniqueRow(String query, int[] ids) throws UtilException {
+  protected T getUniqueRow(String query, int[] ids) throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -212,7 +212,7 @@ public abstract class AbstractTable {
    * where the col are int columns.
    * @param params references an unique row.
    */
-  protected Object getUniqueRow(String query, String[] params)
+  protected T getUniqueRow(String query, String[] params)
       throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -242,7 +242,7 @@ public abstract class AbstractTable {
    * @param ids references an unique row.
    * @param params references an unique row.
    */
-  protected Object getUniqueRow(String query, int[] ids, String[] params)
+  protected T getUniqueRow(String query, int[] ids, String[] params)
       throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -274,7 +274,7 @@ public abstract class AbstractTable {
    * @return the requiered row or null.
    * @param query the sql query string must be like "select * from ... where ..."
    */
-  protected Object getUniqueRow(String query) throws UtilException {
+  protected T getUniqueRow(String query) throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -293,7 +293,7 @@ public abstract class AbstractTable {
   /**
    * Returns the rows described by the given no parameters query.
    */
-  protected List<?> getRows(String query) throws UtilException {
+  protected List<T> getRows(String query) throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -312,7 +312,7 @@ public abstract class AbstractTable {
   /**
    * Returns the rows described by the given query with one id parameter.
    */
-  protected List<?> getRows(String query, int id) throws UtilException {
+  protected List<T> getRows(String query, int id) throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
 
@@ -333,7 +333,7 @@ public abstract class AbstractTable {
   /**
    * Returns the rows described by the given query with one string parameter.
    */
-  protected List<?> getRows(String query, String parameter)
+  protected List<T> getRows(String query, String parameter)
       throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -355,7 +355,7 @@ public abstract class AbstractTable {
   /**
    * Returns the rows described by the given query with id parameters.
    */
-  protected List<?> getRows(String query, int[] ids) throws UtilException {
+  protected List<T> getRows(String query, int[] ids) throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
 
@@ -378,7 +378,7 @@ public abstract class AbstractTable {
   /**
    * Returns the rows described by the given query and String parameters.
    */
-  protected List<?> getRows(String query, String[] params) throws UtilException {
+  protected List<T> getRows(String query, String[] params) throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
 
@@ -401,7 +401,7 @@ public abstract class AbstractTable {
   /**
    * Returns the rows described by the given query with id and String parameters.
    */
-  protected List<?> getRows(String query, int[] ids, String[] params)
+  protected List<T> getRows(String query, int[] ids, String[] params)
       throws UtilException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -435,7 +435,7 @@ public abstract class AbstractTable {
    * "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
    * returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
    */
-  protected List<?> getMatchingRows(String returnedColumns,
+  protected List<T> getMatchingRows(String returnedColumns,
       String[] matchColumns, String[] matchValues) throws UtilException {
     String query = "select " + returnedColumns + " from " + tableName;
     List<String> notNullValues = new ArrayList<String>();
@@ -475,9 +475,8 @@ public abstract class AbstractTable {
     }
   }
 
-  protected Object getUniqueRow(ResultSet rs) throws SQLException,
-      UtilException {
-    Object result;
+  protected T getUniqueRow(ResultSet rs) throws SQLException, UtilException {
+    T result;
 
     if (!rs.next()) {
       // no row found
@@ -491,8 +490,8 @@ public abstract class AbstractTable {
     return result;
   }
 
-  protected ArrayList<?> getRows(ResultSet rs) throws SQLException {
-    ArrayList<Object> result = new ArrayList<Object>();
+  protected ArrayList<T> getRows(ResultSet rs) throws SQLException {
+    ArrayList<T> result = new ArrayList<T>();
     while (rs.next()) {
       result.add(fetchRow(rs));
     }
@@ -513,7 +512,7 @@ public abstract class AbstractTable {
     return result;
   }
 
-  protected int insertRow(String insertQuery, Object row) throws UtilException {
+  protected int insertRow(String insertQuery, T row) throws UtilException {
     int rowsCount;
     PreparedStatement statement = null;
     try {
@@ -530,7 +529,7 @@ public abstract class AbstractTable {
     }
   }
 
-  protected int updateRow(String updateQuery, Object row) throws UtilException {
+  protected int updateRow(String updateQuery, T row) throws UtilException {
     int rowsCount;
     PreparedStatement statement = null;
     try {
