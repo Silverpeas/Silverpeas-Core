@@ -25,6 +25,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.domains.DomainDriverFactory;
 
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -139,14 +140,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
-      throws Exception {
-    return new UserDetail[0];
+  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws Exception {
+    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
   }
 
   @Override
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return new Group[0];
+    return ArrayUtil.EMPTY_GROUP_ARRAY;
   }
 
   @Override
@@ -317,7 +317,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public String[] getUserMemberGroupIds(String userId) throws Exception {
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**
@@ -399,12 +399,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   @Override
   public UserDetail[] getUsersBySpecificProperty(String propertyName, String value)
       throws Exception {
-    return new UserDetail[0];
+    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
   }
 
   @Override
   public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
-    return new UserDetail[0];
+    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
   }
 
   @Override
@@ -762,7 +762,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**

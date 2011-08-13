@@ -24,18 +24,7 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.LineNumberReader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-
+import com.silverpeas.util.FileUtil;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
 import org.apache.log4j.ConsoleAppender;
@@ -49,7 +38,17 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.Priority;
 import org.apache.log4j.net.SMTPAppender;
 
-import com.silverpeas.util.FileUtil;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
 
 /**
  * SilverTrace is the trace tool used in silverpeas to trace debug, running infos and errors. This
@@ -1303,7 +1302,7 @@ public class SilverTrace {
           ar.add(line);
         }
       }
-      return (String[]) ar.toArray(new String[0]);
+      return (String[]) ar.toArray(new String[ar.size()]);
     } catch (Exception e) {
       SilverTrace.error("silvertrace", "SilverTrace.getEndFileTrace()",
           "silvertrace.ERR_RUNTIME_ERROR_OCCUR", "File NOT FOUND :" + errorDir

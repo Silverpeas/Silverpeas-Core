@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
@@ -233,8 +230,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupSamse.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-          synchroReport.append("PB getting Group's subgroups : " + parentId
-              + "\n");
+          append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroReport.error("LDAPGroupSamse.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine (parentId = "
               + parentId + ")", e);

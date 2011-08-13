@@ -26,6 +26,7 @@ package com.stratelia.webactiv.organization;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * A DomainTable object manages the ST_Domain table.
@@ -76,7 +77,8 @@ public class DomainTable extends Table<DomainRow> {
    * @throws AdminPersistenceException 
    */
   public DomainRow[] getAllDomains() throws AdminPersistenceException {
-    return getRows(SELECT_ALL_DOMAINS).toArray(new DomainRow[0]);
+    List<DomainRow> rows = getRows(SELECT_ALL_DOMAINS);
+    return rows.toArray(new DomainRow[rows.size()]);
   }
   static final private String SELECT_ALL_DOMAINS = "select " + DOMAIN_COLUMNS
       + " from ST_Domain where not id=-1 order by name asc";
@@ -89,10 +91,9 @@ public class DomainTable extends Table<DomainRow> {
   public void createDomain(DomainRow domain) throws AdminPersistenceException {
     insertRow(INSERT_DOMAIN, domain);
   }
-  static final private String INSERT_DOMAIN =
-      "insert into"
-      + " ST_Domain(id,name,description,propFileName,className,authenticationServer,theTimeStamp,silverpeasServerURL)"
-      + " values  (? ,? ,?, ? ,?, ?, ?, ?)";
+  static final private String INSERT_DOMAIN ="INSERT INTO ST_Domain (id, name, description, " +
+      "propFileName, className, authenticationServer, theTimeStamp,s ilverpeasServerURL) VALUES " +
+      " (? ,? ,?, ? ,?, ?, ?, ?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, DomainRow row) throws

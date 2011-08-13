@@ -173,8 +173,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "LDAPGroupSubTree.getChildGroupsEntry()",
             "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-        synchroReport.append("PB getting Group's subgroups : " + parentId
-            + "\n");
+        append("PB getting Group's subgroups : ").append(parentId).append("\n");
         return new LDAPEntry[0];
       } else {
         throw e;

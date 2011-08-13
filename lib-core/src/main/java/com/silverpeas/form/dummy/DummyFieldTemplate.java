@@ -24,12 +24,13 @@
 
 package com.silverpeas.form.dummy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.fieldType.TextFieldImpl;
+import com.silverpeas.util.ArrayUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A dummy FieldTemplate.
@@ -91,7 +92,7 @@ public class DummyFieldTemplate implements FieldTemplate {
    */
   @Override
   public String[] getLanguages() {
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**

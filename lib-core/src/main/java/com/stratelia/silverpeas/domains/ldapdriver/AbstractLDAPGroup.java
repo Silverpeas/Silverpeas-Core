@@ -43,7 +43,7 @@ import java.util.Hashtable;
 abstract public class AbstractLDAPGroup {
   LDAPSettings driverSettings = null;
   LDAPSynchroCache synchroCache = null;
-  StringBuffer synchroReport = null;
+  private StringBuffer synchroReport = null;
   boolean synchroInProcess = false;
 
   /**
@@ -53,6 +53,13 @@ abstract public class AbstractLDAPGroup {
   public void init(LDAPSettings driverSettings, LDAPSynchroCache synchroCache) {
     this.driverSettings = driverSettings;
     this.synchroCache = synchroCache;
+  }
+
+
+
+  AbstractLDAPGroup append(CharSequence message) {
+    synchroReport.append(message);
+    return this;
   }
 
   /**
@@ -113,7 +120,7 @@ abstract public class AbstractLDAPGroup {
         }
       }
     }
-    return groupsDone.values().toArray(new Group[0]);
+    return groupsDone.values().toArray(new Group[groupsDone.size()]);
   }
 
   /**
@@ -218,7 +225,7 @@ abstract public class AbstractLDAPGroup {
       SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
           + groupsFounded.length + " groupes fils du groupe " + parentId, null);
 
-    return groupsReturned.toArray(new Group[0]);
+    return groupsReturned.toArray(new Group[groupsReturned.size()]);
   }
 
   /**
@@ -372,7 +379,7 @@ abstract public class AbstractLDAPGroup {
         }
       }
     }
-    groupInfos.setUserIds(allUserIds.toArray(new String[0]));
+    groupInfos.setUserIds(allUserIds.toArray(new String[allUserIds.size()]));
     SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
         "Users in merged Group: " + groupInfos.getNbUsers(), null);
     return groupInfos;

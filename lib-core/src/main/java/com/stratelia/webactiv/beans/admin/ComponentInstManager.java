@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
@@ -545,7 +546,7 @@ public class ComponentInstManager {
       ComponentInstanceRow[] cirs = ddManager.organization.instance.getAllMatchingComponentInstances(
           cir);
       if (cirs == null) {
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
 
       String[] compoIds = new String[cirs.length];

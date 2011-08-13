@@ -22,15 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 package com.stratelia.silverpeas.domains.ldapdriver;
-
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 import com.novell.ldap.LDAPEntry;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -38,6 +30,12 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -258,8 +256,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-          synchroReport.append("PB getting Group's subgroups : " + parentId
-              + "\n");
+          append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroReport.error("LDAPGroupAllRoot.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine", e);
         } else {
@@ -404,8 +401,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroup",
             "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-        synchroReport.append("PB getting Group's childs : "
-            + groupInfos.getName() + "\n");
+        append("PB getting Group's childs : ").append(groupInfos.getName()).append("\n");
         SynchroReport.error("AbstractLDAPGroup.translateGroup()",
             "Pb de récupération des membres utilisateurs du groupe "
             + groupInfos.getSpecificId(), e);

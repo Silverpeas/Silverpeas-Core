@@ -29,7 +29,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.FormFatalException;
 import com.silverpeas.form.TypeManager;
-import org.apache.commons.lang3.ArrayUtils;
+import com.silverpeas.util.ArrayUtil;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -361,9 +361,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @Override
   public Field getEmptyField() throws FormException {
     try {
-      Class[] noParameterClass = new Class[0];
+      Class[] noParameterClass = ArrayUtil.EMPTY_CLASS_ARRAY;
       Constructor constructor = fieldImpl.getConstructor(noParameterClass);
-      Object[] noParameter = new Object[0];
+      Object[] noParameter = ArrayUtil.EMPTY_OBJECT_ARRAY;
       Field field = (Field) constructor.newInstance(noParameter);
 
       return field;
@@ -403,7 +403,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @Override
   public String[] getLanguages() {
     if (labels == null) {
-      return ArrayUtils.EMPTY_STRING_ARRAY;
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
 
     List<String> langs = new ArrayList<String>();

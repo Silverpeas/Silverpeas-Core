@@ -27,6 +27,7 @@ package com.silverpeas.form.dummy;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.fieldType.TextFieldImpl;
+import com.silverpeas.util.ArrayUtil;
 
 
 /**
@@ -89,7 +90,7 @@ public class DummyDataRecord implements DataRecord {
 
   @Override
   public String[] getFieldNames() {
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   @Override

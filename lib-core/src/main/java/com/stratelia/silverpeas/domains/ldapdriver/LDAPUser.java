@@ -49,7 +49,7 @@ import java.util.Vector;
 public class LDAPUser {
   LDAPSettings driverSettings = null;
   LDAPSynchroCache synchroCache = null;
-  StringBuffer synchroReport = null;
+  private StringBuffer synchroReport = null;
   boolean synchroInProcess = false;
 
   protected DomainDriver driverParent = null;
@@ -135,7 +135,7 @@ public class LDAPUser {
     }
     SynchroReport.info("LDAPUser.getAllUsers()", "Récupération de "
         + theEntries.length + " utilisateurs du domaine LDAP distant", null);
-    usersReturned = usersVector.toArray(new UserDetail[0]);
+    usersReturned = usersVector.toArray(new UserDetail[usersVector.size()]);
     return usersReturned;
   }
 
@@ -164,7 +164,7 @@ public class LDAPUser {
         driverSettings.getUsersIdFilter(id));
     theEntry =
         LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings
-        .getScope(), driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[0]));
+        .getScope(), driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[lAttrs.size()]));
     return translateUserFull(lds, theEntry);
   }
 

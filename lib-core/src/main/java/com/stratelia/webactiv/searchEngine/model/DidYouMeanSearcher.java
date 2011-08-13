@@ -24,14 +24,12 @@
 
 package com.stratelia.webactiv.searchEngine.model;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.StringTokenizer;
-
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
-import org.apache.commons.lang3.ArrayUtils;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.indexEngine.model.DidYouMeanIndexer;
+import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -39,10 +37,11 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spell.SpellCheckerImpl;
 import org.apache.lucene.store.FSDirectory;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.indexEngine.model.DidYouMeanIndexer;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * 
@@ -152,7 +151,7 @@ public class DidYouMeanSearcher {
       String[] suggestWords = spellCheck.getSuggestWords(1);
       // quote and boolean operator managing
       // actions for suggested word
-      if (!ArrayUtils.isEmpty(suggestWords)) {
+      if (!ArrayUtil.isEmpty(suggestWords)) {
         // beginning
         getPrefixOperator(currentSentence, currentToken, false);
         // word

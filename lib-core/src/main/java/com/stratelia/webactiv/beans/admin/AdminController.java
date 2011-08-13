@@ -31,13 +31,13 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -267,7 +267,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllSpaceIds", "admin.MSG_ERR_GET_ALL_SPACE_IDS",
           e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -280,7 +280,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllSpaceIds",
           "admin.MSG_ERR_GET_ALL_SPACE_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -293,7 +293,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllSpaceIds",
           "admin.MSG_ERR_GET_ALL_SPACE_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -308,7 +308,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllSubSpaceIds",
           "admin.MSG_ERR_GET_SUBSPACE_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -324,7 +324,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllSubSpaceIds",
           "admin.MSG_ERR_GET_SUBSPACE_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -337,7 +337,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getSpaceNames",
           "admin.MSG_ERR_GET_SPACE_NAMES", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -491,7 +491,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAvailCompoIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -593,7 +593,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllProfilesNames",
           "admin.MSG_ERR_GET_ALL_PROFILE_NAMES", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -633,7 +633,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.isObjectAvailable",
           "admin.MSG_ERR_GET_PROFILE", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -877,7 +877,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getRootGroupsOfDomain",
           "admin.MSG_ERR_GET_ALL_DOMAINS", e);
-      return new Group[0];
+      return ArrayUtil.EMPTY_GROUP_ARRAY;
     }
   }
 
@@ -892,7 +892,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getRootGroupIdsOfDomain",
           "admin.MSG_ERR_GET_ALL_DOMAINS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -907,7 +907,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllUsersOfGroup",
           "admin.MSG_ERR_GET_ALL_DOMAINS", e);
-      return new UserDetail[0];
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
   }
 
@@ -922,7 +922,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getUsersOfDomain",
           "admin.MSG_ERR_GET_ALL_DOMAINS", e);
-      return new UserDetail[0];
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
   }
 
@@ -937,7 +937,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getUserIdsOfDomain",
           "admin.MSG_ERR_GET_ALL_DOMAINS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1047,7 +1047,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllGroupIds",
           "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1062,7 +1062,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllRootGroupsIds",
           "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1077,7 +1077,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getDirectSubgroupIds",
           "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1093,7 +1093,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
       SilverTrace.error("admin",
           "AdminController.getAllSubGroupIdsRecursively",
           "admin.MSG_ERR_GET_ALL_GROUP_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1106,7 +1106,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getGroupNames",
           "admin.MSG_ERR_GET_GROUP_NAMES", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1270,9 +1270,8 @@ public class AdminController extends AdminReference implements java.io.Serializa
     try {
       if (asUserIds != null) {
         return getAdminService().getUserDetails(asUserIds);
-      } else {
-        return new UserDetail[0];
       }
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getUserDetails",
           "admin.EX_ERR_GET_USER_DETAILS", e);
@@ -1387,7 +1386,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllGroupIds",
           "admin.EX_ERR_GET_ALL_GROUP_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
