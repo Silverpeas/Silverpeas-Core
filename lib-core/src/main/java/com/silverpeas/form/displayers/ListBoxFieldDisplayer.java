@@ -61,9 +61,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = TextField.TYPE;
-    return s;
+    return new String[] {TextField.TYPE};
   }
 
   /**

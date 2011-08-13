@@ -22,12 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -90,10 +88,16 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
     return groupsVector;
   }
 
+  /**
+   * All root groups, so, no group belongs to another...
+   * @param lds
+   * @param groupId the group's Id
+   * @return
+   * @throws AdminException
+   */
   public String[] getGroupMemberGroupIds(String lds, String groupId)
       throws AdminException {
-    // All root groups, so, no group belongs to another...
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   public String[] getUserMemberGroupIds(String lds, String userId)
@@ -182,15 +186,6 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
           "root.MSG_GEN_PARAM_VALUE", "stringVals[" + i + "] = "
           + stringVals[i]);
       usersVector.add(stringVals[i]);
-      /*
-       * try { //Case of most common OpenLDAP implementation. //memberUid = specificId //Verify that
-       * the user exist in the scope. Is it necessary for Samse ? userEntry =
-       * LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
-       * driverSettings.getScope(), driverSettings.getUsersIdFilter(stringVals[i])); if (userEntry
-       * != null) { usersVector.add(stringVals[i]); } } catch (AdminException e) {
-       * SilverTrace.error("admin", "LDAPGroupSamse.getTRUEUserIds()", "admin.MSG_ERR_LDAP_GENERAL",
-       * "USER NOT FOUND : " + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e); }
-       */
     }
     stringVals = null;
     SilverTrace.info("admin", "LDAPGroupSamse.getTRUEUserIds()",
@@ -209,7 +204,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
       String extraFilter) throws AdminException {
     if ((parentId != null) && (parentId.length() > 0)) { // ALL ROOT GROUPS
-      return new LDAPEntry[0];
+      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     } else {
       LDAPEntry[] theEntries = null;
       String theFilter;
@@ -233,8 +228,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupSamse.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-          synchroReport.append("PB getting Group's subgroups : " + parentId
-              + "\n");
+          append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroReport.error("LDAPGroupSamse.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine (parentId = "
               + parentId + ")", e);

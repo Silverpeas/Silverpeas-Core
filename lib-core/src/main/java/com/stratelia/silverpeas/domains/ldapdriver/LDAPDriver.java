@@ -346,7 +346,7 @@ public class LDAPDriver extends AbstractDomainDriver {
       }
 
       // Perform the update
-      connection.modify(userFullDN, modifications.toArray(new LDAPModification[0]));
+      connection.modify(userFullDN, modifications.toArray(new LDAPModification[modifications.size()]));
     } catch (Exception ex) {
       throw new AdminException(
           "LDAPDriver.updateUserFull()",

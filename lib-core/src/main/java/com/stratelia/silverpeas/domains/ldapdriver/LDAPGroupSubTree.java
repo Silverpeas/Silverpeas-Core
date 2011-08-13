@@ -27,15 +27,16 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.TreeMap;
-import java.util.Vector;
-
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPDN;
 import com.novell.ldap.LDAPEntry;
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.TreeMap;
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object are root to their
@@ -173,9 +174,8 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "LDAPGroupSubTree.getChildGroupsEntry()",
             "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-        synchroReport.append("PB getting Group's subgroups : " + parentId
-            + "\n");
-        return new LDAPEntry[0];
+        append("PB getting Group's subgroups : ").append(parentId).append("\n");
+        return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
       } else {
         throw e;
       }
@@ -262,7 +262,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     int i;
 
     if (theEntries == null) {
-      return new LDAPEntry[0];
+      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     }
     for (i = 0; i < theEntries.length; i++) {
       groupEntry = theEntries[i];

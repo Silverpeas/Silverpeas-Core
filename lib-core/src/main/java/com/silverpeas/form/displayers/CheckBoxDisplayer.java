@@ -23,11 +23,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -38,10 +33,15 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.fileupload.FileItem;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * A CheckBoxDisplayer is an object which can display a checkbox in HTML the content of a checkbox
@@ -64,8 +64,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = TextField.TYPE;
+    String[] s = new String[]{TextField.TYPE};
     return s;
   }
 

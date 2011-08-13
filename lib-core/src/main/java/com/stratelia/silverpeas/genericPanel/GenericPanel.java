@@ -27,6 +27,7 @@
 
 package com.stratelia.silverpeas.genericPanel;
 
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.util.PairObject;
 
 public class GenericPanel {
@@ -58,7 +59,7 @@ public class GenericPanel {
     m_goBackURL = "";
     m_cancelURL = "";
     m_zoomToItemURL = null;
-    m_selectedElements = new String[0];
+    m_selectedElements = ArrayUtil.EMPTY_STRING_ARRAY;
     m_panelOperations = new PanelOperation[0];
     m_panelProvider = null;
     m_popupMode = false;

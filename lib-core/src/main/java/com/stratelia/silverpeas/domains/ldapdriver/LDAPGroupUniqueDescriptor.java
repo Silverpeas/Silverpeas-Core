@@ -261,8 +261,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         SilverTrace.warn("admin",
             "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
             "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-        synchroReport.append("PB getting Group's subgroups : " + parentId
-            + "\n");
+        append("PB getting Group's subgroups : ").append(parentId).append("\n");
         if (parentId == null)
           SynchroReport.error(
               "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",

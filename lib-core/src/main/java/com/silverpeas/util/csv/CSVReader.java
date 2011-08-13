@@ -376,7 +376,7 @@ public class CSVReader {
 
       start = end + 1;
     }
-    return ar.toArray(new String[0]);
+    return ar.toArray(new String[ar.size()]);
   }
 
   /**

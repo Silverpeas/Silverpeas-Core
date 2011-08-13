@@ -27,10 +27,12 @@ import com.silverpeas.form.FieldTemplate;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.ArrayUtils;
+import com.novell.ldap.LDAPEntry;
 
 public class ArrayUtil extends ArrayUtils {
 
   public static final Group[] EMPTY_GROUP_ARRAY = new Group[0];
   public static final UserDetail[] EMPTY_USER_DETAIL_ARRAY = new UserDetail[0];
   public static final FieldTemplate[] EMPTY_FIELD_TEMPLATE_ARRAY = new FieldTemplate[0];
+  public static final LDAPEntry[] EMPTY_LDAP_ENTRY_ARRAY = new LDAPEntry[0];
 }

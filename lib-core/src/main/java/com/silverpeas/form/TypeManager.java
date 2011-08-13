@@ -23,9 +23,9 @@
  */
 package com.silverpeas.form;
 
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -223,7 +223,7 @@ public class TypeManager {
     try {
       Class<?>[] noParameterClass = new Class<?>[0];
       Constructor<?> constructor = fieldClass.getConstructor(noParameterClass);
-      return (Field) constructor.newInstance(ArrayUtils.EMPTY_OBJECT_ARRAY);
+      return (Field) constructor.newInstance(ArrayUtil.EMPTY_OBJECT_ARRAY);
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
               "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldClass.getName(), e);
@@ -243,7 +243,7 @@ public class TypeManager {
     try {
       Class<?>[] noParameterClass = new Class<?>[0];
       Constructor<?> constructor = displayerClass.getConstructor(noParameterClass);
-      return (FieldDisplayer) constructor.newInstance(ArrayUtils.EMPTY_OBJECT_ARRAY);
+      return (FieldDisplayer) constructor.newInstance(ArrayUtil.EMPTY_OBJECT_ARRAY);
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
               "form.EXP_MISSING_EMPTY_CONSTRUCTOR", displayerClass.getName(), e);

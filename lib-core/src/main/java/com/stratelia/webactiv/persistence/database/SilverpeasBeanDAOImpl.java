@@ -515,7 +515,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         boolean value = rs.getBoolean(count);
         if (!rs.wasNull()) {
           Boolean[] parameters = new Boolean[1];
-          parameters[0] = new Boolean(value);
+          parameters[0] = Boolean.valueOf(value);
           properties[i].getWriteMethod().invoke(bean, parameters);
         }
         count++;

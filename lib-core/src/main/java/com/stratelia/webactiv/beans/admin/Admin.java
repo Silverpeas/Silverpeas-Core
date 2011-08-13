@@ -23,25 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.time.FastDateFormat;
-
 import com.google.common.collect.Sets;
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.Instanciateur;
@@ -51,6 +32,7 @@ import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
@@ -71,6 +53,24 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
+import org.apache.commons.lang3.time.FastDateFormat;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
  * @author neysseri
@@ -912,7 +912,7 @@ public final class Admin {
    */
   public String[] getSpaceNames(String[] asClientSpaceIds) throws AdminException {
     if (asClientSpaceIds == null) {
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
     try {
       String[] asSpaceNames = new String[asClientSpaceIds.length];
@@ -1738,7 +1738,7 @@ public final class Admin {
     if (asProfiles != null) {
       return asProfiles;
     }
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**
@@ -2249,7 +2249,7 @@ public final class Admin {
    */
   public String[] getGroupNames(String[] groupIds) throws AdminException {
     if (groupIds == null) {
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
     String[] asGroupNames = new String[groupIds.length];
     for (int nI = 0; nI < groupIds.length; nI++) {
@@ -2327,7 +2327,7 @@ public final class Admin {
    */
   public Group[] getGroups(String[] asGroupId) throws AdminException {
     if (asGroupId == null) {
-      return new Group[0];
+      return ArrayUtil.EMPTY_GROUP_ARRAY;
     }
     Group[] aGroup = new Group[asGroupId.length];
     for (int nI = 0;
@@ -2794,7 +2794,7 @@ public final class Admin {
    */
   public UserDetail[] getUserDetails(String[] asUserId) throws AdminException {
     if (asUserId == null) {
-      return new UserDetail[0];
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
 
     UserDetail[] aUserDetail = new UserDetail[asUserId.length];
@@ -3373,8 +3373,8 @@ public final class Admin {
 
   public UserDetail[] getUsersOfDomain(String domainId) throws AdminException {
     try {
-      if (domainId != null && domainId.equals("-1")) {
-        return new UserDetail[0];
+      if ("-1".equals(domainId) && domainId != null) {
+        return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
       }
       return userManager.getUsersOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
@@ -3386,8 +3386,8 @@ public final class Admin {
 
   public String[] getUserIdsOfDomain(String domainId) throws AdminException {
     try {
-      if (domainId != null && domainId.equals("-1")) {
-        return new String[0];
+      if ("-1".equals(domainId) && domainId != null) {
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
       return userManager.getUserIdsOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
@@ -4516,7 +4516,7 @@ public final class Admin {
     } catch (Exception e) {
       SilverTrace.error("admin", "Admin.getCurrentProfiles",
           "admin.MSG_ERR_GET_CURRENT_PROFILE", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -4610,11 +4610,11 @@ public final class Admin {
     String[] usersIds;
 
     if (theGroup == null) {
-      return new UserDetail[0];
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
     usersIds = theGroup.getUserIds();
-    if ((usersIds == null) || (usersIds.length <= 0)) {
-      return new UserDetail[0];
+    if (usersIds == null || usersIds.length <= 0) {
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
     if ((sUserLastNameFilter == null) || (sUserLastNameFilter.length() <= 0)) {
       return getUserDetails(usersIds);
@@ -4754,7 +4754,7 @@ public final class Admin {
   // -------------------------------------------------------------------------
   private String[] arrayListToString(ArrayList<String> al) {
     if (al == null) {
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
 
     String[] as = new String[al.size()];
@@ -5101,7 +5101,7 @@ public final class Admin {
   private List<String> getUserIdsBySpecificProperty(String domainId,
       String propertyName, String propertyValue) throws AdminException {
     int iDomainId = Integer.parseInt(domainId);
-    UserDetail[] users = new UserDetail[0];
+    UserDetail[] users = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     DomainDriver domainDriver = null;
     try {
       domainDriver = domainDriverManager.getDomainDriver(iDomainId);
@@ -5506,7 +5506,7 @@ public final class Admin {
     // We must first add the group with no child. Then, the childs will be added
     // during the internal synchronization function call
     specificIds = gr.getUserIds();
-    gr.setUserIds(new String[0]);
+    gr.setUserIds(ArrayUtil.EMPTY_STRING_ARRAY);
     groupId = addGroup(gr, true);
     gr.setId(groupId);
     gr.setUserIds(specificIds);
@@ -6433,7 +6433,7 @@ public final class Admin {
       }
 
       if (userIds == null) {
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
       return userManager.searchUsersIds(domainDriverManager, userIds, modelUser);
     } catch (Exception e) {

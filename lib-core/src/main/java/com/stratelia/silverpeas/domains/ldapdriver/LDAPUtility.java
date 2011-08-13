@@ -34,6 +34,7 @@ import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.controls.LDAPSortControl;
 import com.novell.ldap.controls.LDAPSortKey;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -300,8 +301,7 @@ public class LDAPUtility {
   }
 
   static public boolean isAGuid(String attName) {
-    return "objectGUID".equalsIgnoreCase(attName)
-        || "GUID".equalsIgnoreCase(attName);
+    return "objectGUID".equalsIgnoreCase(attName) || "GUID".equalsIgnoreCase(attName);
   }
 
   /**
@@ -317,14 +317,14 @@ public class LDAPUtility {
     LDAPAttribute theAttr;
 
     if (theEntry == null || !StringUtil.isDefined(theAttributeName)) {
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
       theAttr = theEntry.getAttribute(theAttributeName);
       if (theAttr == null) {
         SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
             "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName
             + " is null !!!");
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       } else {
         SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
             "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName

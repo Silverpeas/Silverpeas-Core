@@ -62,10 +62,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-
-    s[0] = MultipleUserField.TYPE;
-    return s;
+    return new String[]{ MultipleUserField.TYPE};
   }
 
   /**

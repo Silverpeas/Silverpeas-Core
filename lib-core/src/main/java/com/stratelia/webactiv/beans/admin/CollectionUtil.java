@@ -24,12 +24,13 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.util.ArrayUtil;
+
 public class CollectionUtil {
 
   public static UserDetail[] sortUserDetailArray(UserDetail[] users) {
     if (users == null) {
-      UserDetail[] emptyUsers = new UserDetail[0];
-      return emptyUsers;
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } else {
       for (int i = users.length; --i >= 0;) {
         boolean swapped = false;

@@ -28,6 +28,7 @@
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -102,10 +103,15 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return groupsVector;
   }
 
-  public String[] getGroupMemberGroupIds(String lds, String groupId)
-      throws AdminException {
-    // All root groups, so, no group belongs to another...
-    return new String[0];
+  /**
+   * All root groups, so, no group belongs to another...
+   * @param lds
+   * @param groupId the group's Id
+   * @return
+   * @throws AdminException
+   */
+  public String[] getGroupMemberGroupIds(String lds, String groupId) throws AdminException {
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   public String[] getUserMemberGroupIds(String lds, String userId)
@@ -247,7 +253,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
       String extraFilter) throws AdminException {
     if ((parentId != null) && (parentId.length() > 0)) { // ALL ROOT GROUPS
-      return new LDAPEntry[0];
+      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     } else {
       LDAPEntry[] theEntries = null;
       String theFilter;
@@ -271,8 +277,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-          synchroReport.append("PB getting Group's subgroups : " + parentId
-              + "\n");
+          append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroReport.error("LDAPGroupAllRoot.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine (parentId = "
               + parentId + ")", e);
