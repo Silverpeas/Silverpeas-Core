@@ -281,7 +281,7 @@ public abstract class Table<T> {
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getIds", "root.MSG_QUERY",
-              query + "  id[]: " + ids + "   params[]: " + Arrays.toString(params));
+              query + "  id[]: " + Arrays.toString(ids) + "   params[]: " + Arrays.toString(params));
       select = schema.getStatement(query);
       int i, j;
       for (i = 0; i < ids.length; i++) {

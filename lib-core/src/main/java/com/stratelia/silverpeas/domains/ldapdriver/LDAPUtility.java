@@ -41,6 +41,7 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -486,7 +487,7 @@ public class LDAPUtility {
           + driverSettings.getLDAPImpl());
       if (args != null) {
         SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
-            "root.MSG_GEN_PARAM_VALUE", "args = " + args.toString());
+            "root.MSG_GEN_PARAM_VALUE", "args = " + Arrays.toString(args));
       }
       if (driverSettings.getLDAPImpl() != null
           && "openldap".equalsIgnoreCase(driverSettings.getLDAPImpl())) {
@@ -636,7 +637,7 @@ public class LDAPUtility {
 
   static String[] extractBaseDNs(String baseDN) {
     // if no separator, return a array with only the baseDN
-    if (!StringUtil.isDefined(baseDN) || baseDN.indexOf(BASEDN_SEPARATOR) == -1) {
+    if (!StringUtil.isDefined(baseDN) || !baseDN.contains(BASEDN_SEPARATOR)) {
       String[] baseDNs = new String[1];
       if (baseDN == null) {
         baseDN = "";

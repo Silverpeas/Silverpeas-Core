@@ -101,7 +101,7 @@ public class MultipleUserField implements Field {
   @Override
   public String getValue() {
     SilverTrace.info("form", "MultipleUserField.getValue",
-        "root.MSG_GEN_PARAM_VALUE", "userIds = " + getUserIds());
+        "root.MSG_GEN_PARAM_VALUE", "userIds = " + Arrays.toString(getUserIds()));
     if (this.userIds == null) {
       return null;
     }
@@ -324,7 +324,7 @@ public class MultipleUserField implements Field {
 
   @Override
   public int hashCode() {
-    return ("" + this.userIds).hashCode();
+    return ("" + Arrays.toString(this.userIds)).hashCode();
   }
 
   /**

@@ -24,21 +24,19 @@
 
 package com.silverpeas.util.i18n;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 public class I18NHelper {
 
@@ -144,7 +142,7 @@ public class I18NHelper {
     while (it.hasNext()) {
       String code = it.next();
       String className = "";
-      if (url.indexOf("?") != -1) {
+      if (url.contains("?")) {
         link = url + "&SwitchLanguage=" + code;
       }
       else {

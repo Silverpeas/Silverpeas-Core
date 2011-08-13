@@ -165,7 +165,7 @@ public class LdapField extends TextField {
     LDAPSearchResults searchResult = null;
 
     // parsing filter -> dynamic variable
-    if (filter.indexOf(VARIABLE_LOGIN) != -1) {
+    if (filter.contains(VARIABLE_LOGIN)) {
       try {
         String valueLogin = organizationController.getUserDetail(currentUserId)
             .getLogin();
