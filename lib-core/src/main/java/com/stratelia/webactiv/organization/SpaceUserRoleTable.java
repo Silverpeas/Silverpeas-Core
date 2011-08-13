@@ -23,13 +23,13 @@
  */
 package com.stratelia.webactiv.organization;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * A SpaceUserRoleTable object manages the ST_SpaceUserRole table.
@@ -71,7 +71,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow getSpaceUserRole(int spaceId, String roleName, int inherited) throws
       AdminPersistenceException {
-    SpaceUserRoleRow[] spaceUserRoles = (SpaceUserRoleRow[]) getRows(
+    SpaceUserRoleRow[] spaceUserRoles = getRows(
         SELECT_SPACEUSERROLE_BY_ROLENAME, new int[]{spaceId, inherited},
         new String[]{roleName}).toArray(new SpaceUserRoleRow[0]);
 

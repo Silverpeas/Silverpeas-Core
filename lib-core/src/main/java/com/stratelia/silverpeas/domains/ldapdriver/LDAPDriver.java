@@ -24,15 +24,11 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import com.google.common.base.Charsets;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPModification;
-import com.novell.ldap.LDAPSearchResults;
 import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.AuthenticationHostException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -85,28 +81,28 @@ public class LDAPDriver extends AbstractDomainDriver {
     property.setName("lastName");
     property.setMapParameter(driverSettings.getUsersLastNameField());
     if (descriptions != null)
-      property.setDescription((String) descriptions.get("lastName"));
+      property.setDescription(descriptions.get("lastName"));
     props.add(property);
 
     property = new DomainProperty();
     property.setName("firstName");
     property.setMapParameter(driverSettings.getUsersFirstNameField());
     if (descriptions != null)
-      property.setDescription((String) descriptions.get("firstName"));
+      property.setDescription(descriptions.get("firstName"));
     props.add(property);
 
     property = new DomainProperty();
     property.setName("email");
     property.setMapParameter(driverSettings.getUsersEmailField());
     if (descriptions != null)
-      property.setDescription((String) descriptions.get("email"));
+      property.setDescription(descriptions.get("email"));
     props.add(property);
 
     property = new DomainProperty();
     property.setName("login");
     property.setMapParameter(driverSettings.getUsersLoginField());
     if (descriptions != null)
-      property.setDescription((String) descriptions.get("login"));
+      property.setDescription(descriptions.get("login"));
     props.add(property);
   }
 
@@ -350,7 +346,7 @@ public class LDAPDriver extends AbstractDomainDriver {
       }
 
       // Perform the update
-      connection.modify(userFullDN, (LDAPModification[]) modifications.toArray(new LDAPModification[0]));
+      connection.modify(userFullDN, modifications.toArray(new LDAPModification[0]));
     } catch (Exception ex) {
       throw new AdminException(
           "LDAPDriver.updateUserFull()",

@@ -490,7 +490,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
    */
   private T getSilverpeasBeanFromResultSet(WAPrimaryKey pk, ResultSet rs) throws Exception {
 
-    T bean = (T) silverpeasBeanClass.newInstance();
+    T bean = silverpeasBeanClass.newInstance();
     int count = 1;
 
     for (int i = 0; i < properties.length; i++) {

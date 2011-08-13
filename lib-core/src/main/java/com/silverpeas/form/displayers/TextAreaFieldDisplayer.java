@@ -24,9 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.PrintWriter;
-import java.util.Map;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -38,8 +35,11 @@ import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A TextAreaFieldDisplayer is an object which can display a TextFiel in HTML the content of a
@@ -134,7 +134,7 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
       value = field.getValue(PagesContext.getLanguage());
 
     if (parameters.containsKey("class")) {
-      cssClass = (String) parameters.get("class");
+      cssClass = parameters.get("class");
       if (StringUtil.isDefined(cssClass))
         cssClass = "class=\"" + cssClass + "\"";
     }

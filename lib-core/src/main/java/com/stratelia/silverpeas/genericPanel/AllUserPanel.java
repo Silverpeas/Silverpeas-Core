@@ -27,13 +27,13 @@
 
 package com.stratelia.silverpeas.genericPanel;
 
-import java.util.Hashtable;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.Hashtable;
 
 public class AllUserPanel extends PanelProvider {
   protected static final int FILTER_LASTNAME = 0;
@@ -124,7 +124,7 @@ public class AllUserPanel extends PanelProvider {
   }
 
   public PanelLine getElementInfos(String id) {
-    UserDetail theUser = (UserDetail) m_AllUserDetail.get(id);
+    UserDetail theUser = m_AllUserDetail.get(id);
     String[] theValues;
     PanelLine valret = null;
 

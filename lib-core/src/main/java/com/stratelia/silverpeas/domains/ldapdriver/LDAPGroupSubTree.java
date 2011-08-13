@@ -93,7 +93,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
       groupsVector.add(LDAPUtility.getFirstAttributeValue(groupEntry,
           driverSettings.getGroupsIdField()));
     }
-    return (String[]) groupsVector.toArray(new String[0]);
+    return groupsVector.toArray(new String[groupsVector.size()]);
   }
 
   public String[] getGroupMemberGroupIds(String lds, String groupId)
@@ -137,7 +137,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
         usersVector.add(userSpecificId);
       }
     }
-    return (String[]) usersVector.toArray(new String[0]);
+    return usersVector.toArray(new String[usersVector.size()]);
   }
 
   /**
@@ -245,7 +245,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
         }
       }
     }
-    return (LDAPEntry[]) entryVector.toArray(new LDAPEntry[0]);
+    return entryVector.toArray(new LDAPEntry[entryVector.size()]);
   }
 
   /**
@@ -270,7 +270,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
       forReversing.reverse();
       theMap.put(forReversing.toString(), groupEntry);
     }
-    return (LDAPEntry[]) (theMap.values().toArray(new LDAPEntry[0]));
+    return theMap.values().toArray(new LDAPEntry[theMap.size()]);
   }
 
 }

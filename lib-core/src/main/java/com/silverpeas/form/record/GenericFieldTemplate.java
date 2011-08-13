@@ -24,6 +24,13 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.FormFatalException;
+import com.silverpeas.form.TypeManager;
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -32,12 +39,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.FormFatalException;
-import com.silverpeas.form.TypeManager;
 
 /**
  * A generic FieldTemplate implementation.
@@ -189,7 +190,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   public String getParameter(String name, String language) {
     String parameter = null;
     if (getParameters(language) != null) {
-      parameter = (String) getParameters(language).get(name);
+      parameter = getParameters(language).get(name);
     }
 
     if (parameter == null) {
@@ -402,7 +403,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @Override
   public String[] getLanguages() {
     if (labels == null) {
-      return new String[0];
+      return ArrayUtils.EMPTY_STRING_ARRAY;
     }
 
     List<String> langs = new ArrayList<String>();
@@ -413,7 +414,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       langs.add(labels.get(lang));
     }
 
-    return (String[]) langs.toArray(new String[0]);
+    return langs.toArray(new String[langs.size()]);
   }
 
   /**

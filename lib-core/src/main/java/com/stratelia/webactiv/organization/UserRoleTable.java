@@ -140,7 +140,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException 
    */
   public String[] getAllUserRoleIdsOfInstance(int instanceId) throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_INSTANCE_USERROLE_IDS, instanceId).toArray(new String[0]);
+    return getIds(SELECT_ALL_INSTANCE_USERROLE_IDS, instanceId).toArray(new String[0]);
   }
   static final private String SELECT_ALL_INSTANCE_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId is null";

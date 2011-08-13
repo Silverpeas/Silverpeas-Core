@@ -24,13 +24,13 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.AbstractTable;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class NotifDefaultAddressTable extends AbstractTable {
 
@@ -64,7 +64,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
    */
   public NotifDefaultAddressRow[] getAllByUserId(int userId)
       throws UtilException {
-    return (NotifDefaultAddressRow[]) getRows(
+    return getRows(
         SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID, userId).toArray(
         new NotifDefaultAddressRow[0]);
   }
@@ -77,7 +77,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifDefaultAddressRow[] getAllRows() throws UtilException {
-    return (NotifDefaultAddressRow[]) getRows(SELECT_ALL_NOTIFDEFAULTADDRESS)
+    return getRows(SELECT_ALL_NOTIFDEFAULTADDRESS)
         .toArray(new NotifDefaultAddressRow[0]);
   }
 
@@ -97,7 +97,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
    */
   public NotifDefaultAddressRow[] getNotifDefaultAddresss(String query)
       throws UtilException {
-    return (NotifDefaultAddressRow[]) getRows(query).toArray(
+    return getRows(query).toArray(
         new NotifDefaultAddressRow[0]);
   }
 

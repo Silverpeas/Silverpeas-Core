@@ -24,13 +24,6 @@
 
 package com.silverpeas.form.filter;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
@@ -41,6 +34,13 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * FilterManager
@@ -90,7 +90,7 @@ public class FilterManager {
               + Util.getString("eq", lang), lang);
 
           if (fieldsParameter.containsKey(filteredName)) {
-            FieldTemplate field = (FieldTemplate) fieldsParameter
+            FieldTemplate field = fieldsParameter
                 .get(filteredName);
             criteriumField.setDisplayerName("listbox");
 

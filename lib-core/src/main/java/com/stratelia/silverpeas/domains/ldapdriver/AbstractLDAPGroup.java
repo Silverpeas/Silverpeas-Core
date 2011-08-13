@@ -24,15 +24,15 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import com.novell.ldap.LDAPEntry;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * This class manage one particular group. It is a base class to derive from. The child classes
@@ -113,7 +113,7 @@ abstract public class AbstractLDAPGroup extends Object {
         }
       }
     }
-    return (Group[]) groupsDone.values().toArray(new Group[0]);
+    return groupsDone.values().toArray(new Group[0]);
   }
 
   /**
@@ -218,7 +218,7 @@ abstract public class AbstractLDAPGroup extends Object {
       SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
           + groupsFounded.length + " groupes fils du groupe " + parentId, null);
 
-    return (Group[]) groupsReturned.toArray(new Group[0]);
+    return groupsReturned.toArray(new Group[0]);
   }
 
   /**
@@ -372,7 +372,7 @@ abstract public class AbstractLDAPGroup extends Object {
         }
       }
     }
-    groupInfos.setUserIds((String[]) allUserIds.toArray(new String[0]));
+    groupInfos.setUserIds(allUserIds.toArray(new String[0]));
     SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
         "Users in merged Group: " + groupInfos.getNbUsers(), null);
     return groupInfos;

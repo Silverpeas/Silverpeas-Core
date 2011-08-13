@@ -24,15 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.img;
-import org.apache.ecs.xhtml.input;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -45,6 +36,14 @@ import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
+
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -162,7 +161,7 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
     } else {
       // Suggestions used ?
       String paramSuggestions =
-          parameters.containsKey("suggestions") ? (String) parameters.get("suggestions") : "false";
+          parameters.containsKey("suggestions") ? parameters.get("suggestions") : "false";
       boolean useSuggestions = Boolean.valueOf(paramSuggestions).booleanValue();
       List<String> suggestions = null;
       if (useSuggestions) {
@@ -177,12 +176,12 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
       inputField.setID(template.getFieldName());
       inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
-      inputField.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters
+      inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters
           .get("maxLength")
           : "1000");
-      inputField.setSize(parameters.containsKey("size") ? (String) parameters.get("size") : "50");
+      inputField.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
       if (parameters.containsKey("border")) {
-        inputField.setBorder(Integer.parseInt((String) parameters.get("border")));
+        inputField.setBorder(Integer.parseInt(parameters.get("border")));
       }
       if (template.isDisabled()) {
         inputField.setDisabled(true);

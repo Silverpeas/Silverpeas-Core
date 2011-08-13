@@ -150,7 +150,7 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
           + m_ConfigFileName + "'");
     }
     // m_XMLConfig.getDocumentElement().normalize();
-    ((org.apache.xerces.dom.NodeImpl) (m_XMLConfig)).normalize();
+    m_XMLConfig.normalize();
     m_RootNode = findNode(m_XMLConfig, rootString);
     if (m_RootNode == null) {
       throw new Exception("E6000-0023:Invalid configuration file '"

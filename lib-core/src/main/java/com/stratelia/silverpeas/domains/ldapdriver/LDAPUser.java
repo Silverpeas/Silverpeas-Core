@@ -120,22 +120,22 @@ public class LDAPUser {
       usersVector.add(translateUser(lds, theEntries[i]));
       SilverTrace.info("admin", "LDAPUser.getAllUsers()",
           "root.MSG_GEN_PARAM_VALUE", "User " + Integer.toString(i) + " : "
-          + ((UserDetail) usersVector.get(i)).getLogin());
-      ((UserDetail) usersVector.get(i)).traceUser();// Trace niveau Info ds
+          + usersVector.get(i).getLogin());
+      usersVector.get(i).traceUser();// Trace niveau Info ds
       // module 'admin' des infos
       // user courant : ID,
       // domaine, login,
       // e-mail,...
       SynchroReport.debug("LDAPUser.getAllUsers()", "Utilisateur trouvé no : "
           + Integer.toString(i) + ", login : "
-          + ((UserDetail) usersVector.get(i)).getLogin() + ", "
-          + ((UserDetail) usersVector.get(i)).getFirstName() + ", "
-          + ((UserDetail) usersVector.get(i)).getLastName() + ", "
-          + ((UserDetail) usersVector.get(i)).geteMail(), null);
+          + usersVector.get(i).getLogin() + ", "
+          + usersVector.get(i).getFirstName() + ", "
+          + usersVector.get(i).getLastName() + ", "
+          + usersVector.get(i).geteMail(), null);
     }
     SynchroReport.info("LDAPUser.getAllUsers()", "Récupération de "
         + theEntries.length + " utilisateurs du domaine LDAP distant", null);
-    usersReturned = (UserDetail[]) usersVector.toArray(new UserDetail[0]);
+    usersReturned = usersVector.toArray(new UserDetail[0]);
     return usersReturned;
   }
 

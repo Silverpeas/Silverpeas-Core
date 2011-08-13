@@ -24,13 +24,13 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.AbstractTable;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class NotifChannelTable extends AbstractTable {
 
@@ -61,7 +61,7 @@ public class NotifChannelTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifChannelRow[] getAllRows() throws UtilException {
-    return (NotifChannelRow[]) getRows(SELECT_ALL_NOTIFCHANNEL).toArray(
+    return getRows(SELECT_ALL_NOTIFCHANNEL).toArray(
         new NotifChannelRow[0]);
   }
 
@@ -79,7 +79,7 @@ public class NotifChannelTable extends AbstractTable {
    * Returns all the rows given by a no parameters query.
    */
   public NotifChannelRow[] getNotifChannels(String query) throws UtilException {
-    return (NotifChannelRow[]) getRows(query).toArray(new NotifChannelRow[0]);
+    return getRows(query).toArray(new NotifChannelRow[0]);
   }
 
   /**

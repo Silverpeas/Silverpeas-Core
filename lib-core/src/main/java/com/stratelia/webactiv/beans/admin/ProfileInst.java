@@ -120,7 +120,7 @@ public class ProfileInst extends Object implements Serializable, Cloneable {
   }
 
   public String getGroup(int nIndex) {
-    return (String) m_alGroups.get(nIndex);
+    return m_alGroups.get(nIndex);
   }
 
   public void addGroup(String sGroupId) {

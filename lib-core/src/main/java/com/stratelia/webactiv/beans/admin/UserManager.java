@@ -595,7 +595,7 @@ public class UserManager extends Object {
       ddManager.updateUserFull(userFull);
 
       // make userRow instance
-      UserRow ur = this.userDetail2UserRow((UserDetail) userFull);
+      UserRow ur = this.userDetail2UserRow(userFull);
       // update the user node in Silverpeas
       ddManager.organization.user.updateUser(ur);
 

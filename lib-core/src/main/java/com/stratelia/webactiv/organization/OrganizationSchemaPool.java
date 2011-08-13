@@ -70,6 +70,6 @@ public class OrganizationSchemaPool extends SchemaPool {
   }
 
   protected Schema newSchema(int connectionLot) throws UtilException {
-    return (Schema) (new OrganizationSchema(connectionLot));
+    return new OrganizationSchema(connectionLot);
   }
 }

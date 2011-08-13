@@ -27,11 +27,6 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
 import com.novell.ldap.LDAPEntry;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -39,6 +34,11 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -130,7 +130,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       }
       groupsIdsSet = groupsCur;
     }
-    return (String[]) groupsManaged.toArray(new String[0]);
+    return groupsManaged.toArray(new String[groupsManaged.size()]);
   }
 
   /**
@@ -175,7 +175,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       }
       groupsSet = groupsCur;
     }
-    return (String[]) usersManaged.toArray(new String[0]);
+    return usersManaged.toArray(new String[usersManaged.size()]);
   }
 
   protected Vector<String> getTRUEUserIds(String lds, LDAPEntry groupEntry)
@@ -377,6 +377,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       }
       groupsIdsSet = groupsCur;
     }
-    return (Group[]) groupsManaged.values().toArray(new Group[0]);
+    return groupsManaged.values().toArray(new Group[ groupsManaged.size()]);
   }
 }

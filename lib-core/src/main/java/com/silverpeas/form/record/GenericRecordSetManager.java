@@ -24,6 +24,23 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.dummy.DummyRecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,23 +50,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.dummy.DummyRecordSet;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
 import java.util.Map;
 
 /**
@@ -233,7 +233,7 @@ public class GenericRecordSetManager {
    * Cache manipulation
    */
   private GenericRecordSet getCachedRecordSet(String externalId) {
-    return (GenericRecordSet) cache.get(externalId);
+    return cache.get(externalId);
   }
 
   private void cacheRecordSet(String externalId, GenericRecordSet set) {
@@ -785,9 +785,9 @@ public class GenericRecordSetManager {
       String[] fieldNames = record.getFieldNames();
       for (int i = 0; i < fieldNames.length; i++) {
         // fieldIndex = i;
-        fieldName = (String) fieldNames[i];
+        fieldName = fieldNames[i];
         field = record.getField(fieldName);
-        fieldValue = (String) field.getStringValue();
+        fieldValue = field.getStringValue();
 
         insert.setInt(1, recordId);
         // insert.setInt(2, fieldIndex);
@@ -923,9 +923,9 @@ public class GenericRecordSetManager {
 
       String[] fieldNames = record.getFieldNames();
       for (int i = 0; i < fieldNames.length; i++) {
-        fieldName = (String) fieldNames[i];
+        fieldName = fieldNames[i];
         field = record.getField(fieldName);
-        fieldValue = (String) field.getStringValue();
+        fieldValue = field.getStringValue();
 
         SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
             "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName

@@ -261,13 +261,13 @@ public class ComponentInstManager {
         // Add default translation
         ComponentI18N translation = new ComponentI18N(compo.lang, compo.name,
             compo.description);
-        compoLight.addTranslation((Translation) translation);
+        compoLight.addTranslation(translation);
 
         List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N.
             getTranslations(compo.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
-          compoLight.addTranslation((Translation) new ComponentI18N(row));
+          compoLight.addTranslation(new ComponentI18N(row));
         }
       }
     } catch (Exception e) {
@@ -339,13 +339,13 @@ public class ComponentInstManager {
         // Add default translation
         ComponentI18N translation = new ComponentI18N(instance.lang,
             instance.name, instance.description);
-        componentInst.addTranslation((Translation) translation);
+        componentInst.addTranslation(translation);
 
         List<ComponentInstanceI18NRow> translations =
             ddManager.organization.instanceI18N.getTranslations(instance.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
-          componentInst.addTranslation((Translation) new ComponentI18N(row));
+          componentInst.addTranslation(new ComponentI18N(row));
         }
 
         componentInst.setPublic((instance.publicAccess == 1));

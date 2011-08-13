@@ -24,13 +24,13 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.AbstractTable;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class NotifAddressTable extends AbstractTable {
 
@@ -67,7 +67,7 @@ public class NotifAddressTable extends AbstractTable {
     if (orderField != null) {
       req = req + " order by " + orderField;
     }
-    return (NotifAddressRow[]) getRows(req).toArray(new NotifAddressRow[0]);
+    return getRows(req).toArray(new NotifAddressRow[0]);
   }
 
   /**
@@ -75,7 +75,7 @@ public class NotifAddressTable extends AbstractTable {
    */
   public NotifAddressRow[] getAllByNotifChannelId(int notifChannelId)
       throws UtilException {
-    return (NotifAddressRow[]) getRows(
+    return getRows(
         SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId)
         .toArray(new NotifAddressRow[0]);
   }
@@ -87,7 +87,7 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the NotifAddressRow having a given userId
    */
   public NotifAddressRow[] getAllByUserId(int userId) throws UtilException {
-    return (NotifAddressRow[]) getRows(
+    return getRows(
         SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId).toArray(
         new NotifAddressRow[0]);
   }
@@ -99,7 +99,7 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifAddressRow[] getAllRows() throws UtilException {
-    return (NotifAddressRow[]) getRows(SELECT_ALL_NOTIFADDRESS).toArray(
+    return getRows(SELECT_ALL_NOTIFADDRESS).toArray(
         new NotifAddressRow[0]);
   }
 
@@ -117,7 +117,7 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the rows given by a no parameters query.
    */
   public NotifAddressRow[] getNotifAddresss(String query) throws UtilException {
-    return (NotifAddressRow[]) getRows(query).toArray(new NotifAddressRow[0]);
+    return getRows(query).toArray(new NotifAddressRow[0]);
   }
 
   /**

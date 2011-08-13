@@ -24,6 +24,8 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
+import com.silverpeas.util.StringUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,8 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
-import com.silverpeas.util.StringUtil;
 
 /**
  * Class declaration
@@ -85,7 +85,7 @@ public class MsgTrace {
       } catch (IOException e) {
         SilverTrace.error("silvertrace", "MsgTrace.initFromProperties()",
             "silvertrace.ERR_TRACE_MESSAGES_FILE_ERROR", "File:["
-            + ((File) theFiles.get(i)).getAbsolutePath() + "]", e);
+            + theFiles.get(i).getAbsolutePath() + "]", e);
       }
     }
   }

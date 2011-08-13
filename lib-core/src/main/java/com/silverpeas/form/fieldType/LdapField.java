@@ -198,7 +198,7 @@ public class LdapField extends TextField {
       try {
         while (searchResult.hasMore()
             && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
-          entry = (LDAPEntry) searchResult.next();
+          entry = searchResult.next();
 
           if (tabSearchAttribute != null) {
             ldapAttribute = entry.getAttribute(tabSearchAttribute[0]);

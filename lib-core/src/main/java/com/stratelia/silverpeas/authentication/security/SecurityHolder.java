@@ -54,7 +54,7 @@ public class SecurityHolder {
   }
 
   private static SecurityData getPersistentData(String securityId) {
-    return (SecurityData) persistentCache.get(securityId);
+    return persistentCache.get(securityId);
   }
 
 }

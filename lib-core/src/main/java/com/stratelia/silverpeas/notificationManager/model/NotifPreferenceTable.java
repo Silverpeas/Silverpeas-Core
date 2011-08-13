@@ -24,13 +24,13 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.AbstractTable;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class NotifPreferenceTable extends AbstractTable {
 
@@ -80,7 +80,7 @@ public class NotifPreferenceTable extends AbstractTable {
    */
   public NotifPreferenceRow[] getAllByComponentInstanceId(
       int componentInstanceId) throws UtilException {
-    return (NotifPreferenceRow[]) getRows(
+    return getRows(
         SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_COMPONENTINSTANCEID,
         componentInstanceId).toArray(new NotifPreferenceRow[0]);
   }
@@ -93,7 +93,7 @@ public class NotifPreferenceTable extends AbstractTable {
    * Returns all the NotifPreferenceRow having a given userId
    */
   public NotifPreferenceRow[] getAllByUserId(int userId) throws UtilException {
-    return (NotifPreferenceRow[]) getRows(
+    return getRows(
         SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_USERID, userId).toArray(
         new NotifPreferenceRow[0]);
   }
@@ -105,7 +105,7 @@ public class NotifPreferenceTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifPreferenceRow[] getAllRows() throws UtilException {
-    return (NotifPreferenceRow[]) getRows(SELECT_ALL_NOTIFPREFERENCE).toArray(
+    return getRows(SELECT_ALL_NOTIFPREFERENCE).toArray(
         new NotifPreferenceRow[0]);
   }
 
@@ -125,7 +125,7 @@ public class NotifPreferenceTable extends AbstractTable {
    */
   public NotifPreferenceRow[] getNotifPreferences(String query)
       throws UtilException {
-    return (NotifPreferenceRow[]) getRows(query).toArray(
+    return getRows(query).toArray(
         new NotifPreferenceRow[0]);
   }
 
