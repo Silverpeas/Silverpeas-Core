@@ -349,7 +349,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     groupsIdsSet = new Vector<LDAPEntry>(les.length);
     for (i = 0; i < les.length; i++) {
       groupsIdsSet.add(les[i]);
-      groupsManaged.put(les[i].getDN().toString(), translateGroup(lds, les[i]));
+      groupsManaged.put(les[i].getDN(), translateGroup(lds, les[i]));
     }
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
@@ -359,7 +359,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         theGroup = it.next();
         SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
             "root.MSG_GEN_PARAM_VALUE", "GroupTraite2="
-            + theGroup.getDN().toString());
+            + theGroup.getDN());
         les = LDAPUtility.search1000Plus(lds, driverSettings
             .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
             "(&" + driverSettings.getGroupsFullFilter() + "("
@@ -370,12 +370,12 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         for (i = 0; i < les.length; i++) {
           SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
               "root.MSG_GEN_PARAM_VALUE", "GroupFound2=" + les[i].getDN());
-          if (!groupsManaged.containsKey(les[i].getDN().toString())) {
+          if (!groupsManaged.containsKey(les[i].getDN())) {
             SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
                 "root.MSG_GEN_PARAM_VALUE", "GroupAjoute2="
-                + les[i].getDN().toString());
+                + les[i].getDN());
             groupsCur.add(les[i]);
-            groupsManaged.put(les[i].getDN().toString(), translateGroup(lds,
+            groupsManaged.put(les[i].getDN(), translateGroup(lds,
                 les[i]));
           }
         }

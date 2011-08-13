@@ -516,9 +516,7 @@ public class AdminCache {
           allChilds = ArrayUtil.EMPTY_STRING_ARRAY;
         }
         newChilds = new String[allChilds.length + 1];
-        for (int i = 0; i < allChilds.length; i++) {
-          newChilds[i] = allChilds[i];
-        }
+        System.arraycopy(allChilds, 0, newChilds, 0, allChilds.length);
         newChilds[allChilds.length] = getShortSpaceId(theSpace.getId());
         theFather.setSubSpaceIds(newChilds);
       }

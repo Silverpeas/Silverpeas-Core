@@ -23,14 +23,6 @@
  */
 package com.silverpeas.form.form;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.jsp.JspWriter;
-
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -44,6 +36,13 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcRefField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.jsp.JspWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -118,7 +117,7 @@ public class XmlForm extends AbstractForm {
 
       // calcul lastFieldIndex
       int lastFieldIndex = -1;
-      lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+      lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
       FieldTemplate fieldTemplate;
       String fieldName;
       Field field = null;
@@ -318,7 +317,7 @@ public class XmlForm extends AbstractForm {
 
         // calcul lastFieldIndex
         int lastFieldIndex = -1;
-        lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+        lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
         FieldTemplate fieldTemplate;
         String fieldName;
         Field field = null;

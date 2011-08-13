@@ -150,7 +150,7 @@ public class XmlSearchForm extends AbstractForm {
 
       // calcul lastFieldIndex
       int lastFieldIndex = -1;
-      lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+      lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
       FieldTemplate fieldTemplate;
       String fieldName;
       String fieldType;
@@ -311,7 +311,7 @@ public class XmlSearchForm extends AbstractForm {
 
         // calcul lastFieldIndex
         int lastFieldIndex = -1;
-        lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+        lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
         FieldTemplate fieldTemplate;
         String fieldName;
         String fieldType;

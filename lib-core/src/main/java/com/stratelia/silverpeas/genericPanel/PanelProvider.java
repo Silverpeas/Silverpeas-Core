@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.genericPanel;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.util.ResourceLocator;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -74,9 +75,7 @@ abstract public class PanelProvider {
     resetAllCache();
     selectedElements.clear();
     if (selectedIds != null) {
-      for (String selectedId : selectedIds) {
-        selectedElements.add(selectedId);
-      }
+      Collections.addAll(selectedElements, selectedIds);
     }
     m_FirstDisplayed = 0;
   }

@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 
 /**
@@ -362,9 +363,7 @@ abstract public class AbstractLDAPGroup {
         String[] userIds = getUserIds(lds, groupEntry);
         SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
             "Users in group: " + userIds.length, null);
-        for (int i = 0; i < userIds.length; i++) {
-          allUserIds.add(userIds[i]);
-        }
+        Collections.addAll(allUserIds, userIds);
       } catch (AdminException e) {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroups",

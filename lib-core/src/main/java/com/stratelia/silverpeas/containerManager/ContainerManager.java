@@ -118,8 +118,7 @@ public class ContainerManager implements java.io.Serializable {
       }
 
       // Compute the next instanceId
-      int newInstanceId = DBUtil.getNextId(m_sInstanceTable, new String(
-          "instanceId"));
+      int newInstanceId = DBUtil.getNextId(m_sInstanceTable, "instanceId");
 
       // Insert the association container - content
       String sSQLStatement = "INSERT INTO " + m_sInstanceTable
