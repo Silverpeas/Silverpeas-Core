@@ -84,7 +84,7 @@ public class OOParser implements Parser {
   @Override
   public Reader getReader(String path, String encoding) {
     Reader reader = null;
-    tempFolder = new Long(new Date().getTime()).toString();
+    tempFolder = Long.toString(System.currentTimeMillis());
     try {
       List<String> toIndex = getFilesToIndex(path);
       String ooContents = this.parse(toIndex);

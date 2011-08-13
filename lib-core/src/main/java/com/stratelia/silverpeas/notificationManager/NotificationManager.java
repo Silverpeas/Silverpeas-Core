@@ -1390,7 +1390,7 @@ public class NotificationManager
 
     if (FROM_UID.equalsIgnoreCase(ncr.getFromAvailable())) {
       theExtraParams.put(NotificationParameterNames.FROM, Integer.toString(params.iFromUserId));
-      nd.setSenderId(new Integer(params.iFromUserId).toString());
+      nd.setSenderId(Integer.toString(params.iFromUserId));
       SilverTrace.info("notificationManager",
               "NotificationManager.createNotificationData()",
               "root.MSG_GEN_PARAM_VALUE", "nd.getSenderId() =" + nd.getSenderId());
@@ -1522,7 +1522,7 @@ public class NotificationManager
 
       if (FROM_UID.equalsIgnoreCase(ncrs[i].getFromAvailable())) {
         theExtraParams.put(NotificationParameterNames.FROM, Integer.toString(params.iFromUserId));
-        nds[i].setSenderId(new Integer(params.iFromUserId).toString());
+        nds[i].setSenderId(Integer.toString(params.iFromUserId));
         SilverTrace.info("notificationManager",
                 "NotificationManager.createNotificationData()",
                 "root.MSG_GEN_PARAM_VALUE", "nd.getSenderId() =" + nds[i].getSenderId());

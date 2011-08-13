@@ -23,15 +23,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -56,6 +47,14 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.fileupload.FileItem;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
@@ -406,7 +405,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         type = FileRepositoryManager.getFileExtension(logicalName);
         mimeType = item.getContentType();
 
-        physicalName = new Long(new Date().getTime()).toString() + "." + type;
+        physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
 
         dir = getImagePath(componentId, physicalName);
         size = item.getSize();

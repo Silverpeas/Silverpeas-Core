@@ -93,7 +93,7 @@ public class RepositoryIndexer {
 
     SilverTrace.info("indexEngine", "RepositoryIndexer.pathIndexer()",
         "root.MSG_GEN_PARAM_VALUE", "Fichiers à indexer="
-        + new Integer(count).toString());
+        + Integer.toString(count));
   }
 
   /**

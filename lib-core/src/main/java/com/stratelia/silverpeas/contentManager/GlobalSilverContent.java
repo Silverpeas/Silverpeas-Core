@@ -240,7 +240,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   }
 
   public String getScore() {
-    return new Float(this.score * 100).toString();
+    return Float.toString(this.score * 100);
   }
 
   public void setType(String type) {
