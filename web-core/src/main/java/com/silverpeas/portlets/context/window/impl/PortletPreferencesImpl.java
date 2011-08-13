@@ -23,6 +23,19 @@
  */
 package com.silverpeas.portlets.context.window.impl;
 
+import com.sun.portal.container.EntityID;
+import com.sun.portal.container.PortletID;
+import com.sun.portal.portletcontainer.common.PortletPreferencesUtility;
+import com.sun.portal.portletcontainer.common.PreferencesValidatorSetter;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
+import com.sun.portal.portletcontainer.portlet.impl.PortletResourceBundle;
+
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
+import javax.portlet.PreferencesValidator;
+import javax.portlet.ReadOnlyException;
+import javax.portlet.ValidatorException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,20 +50,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.portlet.PortletPreferences;
-import javax.portlet.PreferencesValidator;
-import javax.portlet.ReadOnlyException;
-import javax.portlet.ValidatorException;
-import javax.servlet.http.HttpServletRequest;
-
-import com.sun.portal.container.EntityID;
-import com.sun.portal.container.PortletID;
-import com.sun.portal.portletcontainer.common.PortletPreferencesUtility;
-import com.sun.portal.portletcontainer.common.PreferencesValidatorSetter;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
-import com.sun.portal.portletcontainer.portlet.impl.PortletResourceBundle;
-import javax.portlet.PortletRequest;
 
 /**
  * The <code>PortletPreferencesImpl</code> is the default implementation for the
@@ -80,7 +79,6 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
   protected Map userPrefMap;
   protected Map defaultMap;
   protected Set modifiedList;
-  protected static final String[] EMPTY_STRING_ARRAY = new String[0];
   // Create a logger for this class
   private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.context.window.impl",
       "com.silverpeas.portlets.PCCTXLogMessages");
@@ -340,9 +338,8 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
    * Converts an encoded string array back into String[].
    **/
   private String[] stringToArray(String value) {
-
     List valueArray = PortletPreferencesUtility.getPreferenceValues(value);
-    return (String[]) valueArray.toArray(EMPTY_STRING_ARRAY);
+    return (String[]) valueArray.toArray(new String[valueArray.size()]);
 
   }
 
