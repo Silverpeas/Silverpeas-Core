@@ -42,26 +42,26 @@ import org.springframework.context.ApplicationContextAware;
  * All objects requiring a reference to an Admin instance should use an instance of this class.
  */
 public class AdminReference implements ApplicationContextAware {
-  private static Admin m_Admin = null;
+  private static Admin admin = null;
 
   public AdminReference() {
   }
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    m_Admin = applicationContext.getBean("adminController", Admin.class);
+    admin = applicationContext.getBean("adminController", Admin.class);
   }
   
   /**
    * Gets the administration service refered by this AdminReference.
    * @return the admin service instance.
    */
-  protected Admin getAdminService() {
-    if (m_Admin == null) {
+  protected synchronized Admin getAdminService() {
+    if (admin == null) {
       // case where the admin reference is used in tests running out of an IoC container context.
       // maintained for compatibility reason.
-      m_Admin = new Admin();
+      admin = new Admin();
     }
-    return m_Admin;
+    return admin;
   }
 }

@@ -316,7 +316,8 @@ public class SQLDriver extends AbstractDomainDriver {
   public UserDetail[] getAllUsers() throws Exception {
     try {
       this.openConnection();
-      return localUserMgr.getAllUsers(openedConnection).toArray(new UserDetail[0]);
+      List<UserDetail> users = localUserMgr.getAllUsers(openedConnection);
+      return users.toArray(new UserDetail[users.size()]);
     } catch (Exception e) {
       throw new AdminException("SQLDriver.getAllUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_USERS", e);
@@ -334,8 +335,9 @@ public class SQLDriver extends AbstractDomainDriver {
     } else {
       try {
         this.openConnection();
-        return localUserMgr.getUsersBySpecificProperty( openedConnection, property.getMapParameter(),
-            propertyValue).toArray(new UserDetail[0]);
+        List<UserDetail> users = localUserMgr.getUsersBySpecificProperty( openedConnection,
+            property.getMapParameter(), propertyValue);
+        return users.toArray(new UserDetail[users.size()]);
       } catch (Exception e) {
         throw new AdminException("SQLDriver.getUsersBySpecificProperty",
             SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
@@ -486,7 +488,7 @@ public class SQLDriver extends AbstractDomainDriver {
         // Get the selected users for this group
         List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(groupId));
-        valret.setUserIds(asUsersId.toArray(new String[0]));
+        valret.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
       return valret;
     } catch (Exception e) {
@@ -530,10 +532,10 @@ public class SQLDriver extends AbstractDomainDriver {
         // Get the selected users for this group
         List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds(asUsersId.toArray(new String[0]));
+        theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
 
-      return ar.toArray(new Group[0]);
+      return ar.toArray(new Group[ar.size()]);
     } catch (Exception e) {
       throw new AdminException("SQLDriver.getGroups",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS",
@@ -555,10 +557,10 @@ public class SQLDriver extends AbstractDomainDriver {
         // Get the selected users for this group
         List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds(asUsersId.toArray(new String[0]));
+        theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
 
-      return ar.toArray(new Group[0]);
+      return ar.toArray(new Group[ar.size()]);
     } catch (Exception e) {
       throw new AdminException("SQLDriver.getAllGroups",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_GROUPS", e);
@@ -578,10 +580,10 @@ public class SQLDriver extends AbstractDomainDriver {
         // Get the selected users for this group
         List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds(asUsersId.toArray(new String[0]));
+        theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
 
-      return ar.toArray(new Group[0]);
+      return ar.toArray(new Group[ar.size()]);
     } catch (Exception e) {
       throw new AdminException("SQLDriver.getAllRootGroups",
           SilverpeasException.ERROR,

@@ -701,7 +701,7 @@ public abstract class Table<T> {
         notNullValues.add(matchValues[i]);
       }
     }
-    return getRows(query, notNullValues.toArray(new String[0]));
+    return getRows(query, notNullValues.toArray(new String[notNullValues.size()]));
   }
 
   /**

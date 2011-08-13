@@ -30,6 +30,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * A SpaceUserRoleTable object manages the ST_SpaceUserRole table.
@@ -71,14 +72,13 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow getSpaceUserRole(int spaceId, String roleName, int inherited) throws
       AdminPersistenceException {
-    SpaceUserRoleRow[] spaceUserRoles = getRows(
-        SELECT_SPACEUSERROLE_BY_ROLENAME, new int[]{spaceId, inherited},
-        new String[]{roleName}).toArray(new SpaceUserRoleRow[0]);
+    List<SpaceUserRoleRow> spaceUserRoles = getRows(SELECT_SPACEUSERROLE_BY_ROLENAME,
+        new int[]{spaceId, inherited}, new String[]{roleName});
 
-    if (spaceUserRoles.length == 0) {
+    if (spaceUserRoles.isEmpty()) {
       return null;
-    } else if (spaceUserRoles.length == 1) {
-      return spaceUserRoles[0];
+    } else if (spaceUserRoles.size() == 1) {
+      return spaceUserRoles.get(0);
     } else {
       throw new AdminPersistenceException(
           "SpaceUserRoleTable.getSpaceUserRole", SilverpeasException.ERROR,
@@ -94,7 +94,8 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    * Returns all the SpaceUserRoles.
    */
   public SpaceUserRoleRow[] getAllSpaceUserRoles() throws AdminPersistenceException {
-    return getRows(SELECT_ALL_SPACEUSERROLES).toArray(new SpaceUserRoleRow[0]);
+    List<SpaceUserRoleRow> rows = getRows(SELECT_ALL_SPACEUSERROLES);
+    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
   }
   static final private String SELECT_ALL_SPACEUSERROLES = "select "
       + SPACEUSERROLE_COLUMNS + " from ST_SpaceUserRole";
@@ -104,7 +105,8 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow[] getAllSpaceUserRolesOfSpace(int spaceId) throws
       AdminPersistenceException {
-    return getRows(SELECT_ALL_SPACE_USERROLES, spaceId).toArray(new SpaceUserRoleRow[0]);
+    List<SpaceUserRoleRow> rows = getRows(SELECT_ALL_SPACE_USERROLES, spaceId);
+    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
   }
   static final private String SELECT_ALL_SPACE_USERROLES = "select "
       + SPACEUSERROLE_COLUMNS + " from ST_SpaceUserRole where spaceId = ?";
@@ -113,7 +115,8 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    * Returns all the SpaceUserRole ids of a space.
    */
   public String[] getAllSpaceUserRoleIdsOfSpace(int spaceId) throws AdminPersistenceException {
-    return getIds(SELECT_ALL_SPACE_USERROLE_IDS, spaceId).toArray(new String[0]);
+    List<String> ids = getIds(SELECT_ALL_SPACE_USERROLE_IDS, spaceId);
+    return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_SPACE_USERROLE_IDS =
       "select id from ST_SpaceUserRole where spaceId = ?";
@@ -123,7 +126,8 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow[] getDirectSpaceUserRolesOfUser(int userId) throws
       AdminPersistenceException {
-    return getRows(SELECT_USER_SPACEUSERROLES, userId).toArray(new SpaceUserRoleRow[0]);
+    List<SpaceUserRoleRow> rows = getRows(SELECT_USER_SPACEUSERROLES, userId);
+    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
   }
   static final private String SELECT_USER_SPACEUSERROLES = "select "
       + SPACEUSERROLE_COLUMNS
@@ -135,7 +139,8 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow[] getDirectSpaceUserRolesOfGroup(int groupId) throws
       AdminPersistenceException {
-    return getRows(SELECT_GROUP_SPACEUSERROLES, groupId).toArray(new SpaceUserRoleRow[0]);
+    List<SpaceUserRoleRow> rows = getRows(SELECT_GROUP_SPACEUSERROLES, groupId);
+    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
   }
   static final private String SELECT_GROUP_SPACEUSERROLES = "select "
       + SPACEUSERROLE_COLUMNS
@@ -149,7 +154,8 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
       throws AdminPersistenceException {
     String[] columns = new String[]{"name", "description"};
     String[] values = new String[]{sampleSpaceUserRole.name, sampleSpaceUserRole.description};
-    return getMatchingRows(SPACEUSERROLE_COLUMNS, columns, values).toArray(new SpaceUserRoleRow[0]);
+    List<SpaceUserRoleRow> rows = getMatchingRows(SPACEUSERROLE_COLUMNS, columns, values);
+    return rows.toArray(new SpaceUserRoleRow[rows.size()]);
   }
 
   /**

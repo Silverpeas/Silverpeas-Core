@@ -508,9 +508,8 @@ public class UserTable extends Table<UserRow> {
     for (int i = 0; i < ids.size(); i++) {
       idsArray[i] = ids.get(i).intValue();
     }
-
-    return getRows(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
-        new UserRow[0]);
+    List<UserRow> rows = getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
+    return rows.toArray(new UserRow[rows.size()]);
   }
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS
       + ", UPPER(lastName) from ST_User";

@@ -47,7 +47,7 @@ public class I18NHelper {
   private static int nbLanguages = 0;
   public static boolean isI18N = false;
   public static String defaultLanguage = null;
-  private static List<String> allCodes = new ArrayList<String>();
+  private final static List<String> allCodes = new ArrayList<String>();
 
   public static final String HTMLSelectObjectName = "I18NLanguage";
   public static final String HTMLHiddenRemovedTranslationMode = "TranslationRemoveIt";
