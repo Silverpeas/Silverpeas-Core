@@ -24,11 +24,11 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.ArrayList;
-
 import com.stratelia.webactiv.organization.GroupRow;
 import com.stratelia.webactiv.organization.GroupUserRoleRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.ArrayList;
 
 public class GroupProfileInstManager {
   /**
@@ -202,12 +202,12 @@ public class GroupProfileInstManager {
 
       // Compute the remove group list
       for (int nI = 0; nI < alOldProfileGroup.size(); nI++)
-        if (alNewProfileGroup.indexOf(alOldProfileGroup.get(nI)) == -1)
+        if (!alNewProfileGroup.contains(alOldProfileGroup.get(nI)))
           alRemGroup.add(alOldProfileGroup.get(nI));
 
       // Compute the add and stay group list
       for (int nI = 0; nI < alNewProfileGroup.size(); nI++)
-        if (alOldProfileGroup.indexOf(alNewProfileGroup.get(nI)) == -1)
+        if (!alOldProfileGroup.contains(alNewProfileGroup.get(nI)))
           alAddGroup.add(alNewProfileGroup.get(nI));
         else
           alStayGroup.add(alNewProfileGroup.get(nI));
@@ -240,12 +240,12 @@ public class GroupProfileInstManager {
 
       // Compute the remove User list
       for (int nI = 0; nI < alOldProfileUser.size(); nI++)
-        if (alNewProfileUser.indexOf(alOldProfileUser.get(nI)) == -1)
+        if (!alNewProfileUser.contains(alOldProfileUser.get(nI)))
           alRemUser.add(alOldProfileUser.get(nI));
 
       // Compute the add and stay User list
       for (int nI = 0; nI < alNewProfileUser.size(); nI++)
-        if (alOldProfileUser.indexOf(alNewProfileUser.get(nI)) == -1)
+        if (!alOldProfileUser.contains(alNewProfileUser.get(nI)))
           alAddUser.add(alNewProfileUser.get(nI));
         else
           alStayUser.add(alNewProfileUser.get(nI));
