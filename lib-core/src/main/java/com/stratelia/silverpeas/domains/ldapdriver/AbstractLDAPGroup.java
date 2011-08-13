@@ -40,7 +40,7 @@ import java.util.Hashtable;
  * @author tleroi
  */
 
-abstract public class AbstractLDAPGroup extends Object {
+abstract public class AbstractLDAPGroup {
   LDAPSettings driverSettings = null;
   LDAPSynchroCache synchroCache = null;
   StringBuffer synchroReport = null;

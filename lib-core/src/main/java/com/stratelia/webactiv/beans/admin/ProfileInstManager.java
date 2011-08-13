@@ -35,7 +35,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class ProfileInstManager extends Object {
+public class ProfileInstManager {
 
   /**
    * Constructor

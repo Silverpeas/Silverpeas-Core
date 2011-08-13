@@ -42,7 +42,7 @@ import java.util.List;
  * This class represents the ContainerManager API It is the gateway to all the silverpeas containers
  * (PDC, ....)
  */
-public class ContainerManager extends Object implements java.io.Serializable {
+public class ContainerManager implements java.io.Serializable {
 
   private static final long serialVersionUID = 3059920239753917851L;
   // Container peas

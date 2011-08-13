@@ -38,7 +38,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,7 +52,7 @@ import javax.inject.Named;
  * (documentation, ....)
  */
 @Named("contentManager")
-public class ContentManager extends Object implements Serializable {
+public class ContentManager implements Serializable {
 
   private final static List<ContentPeas> s_acContentPeas = new ArrayList<ContentPeas>();
 

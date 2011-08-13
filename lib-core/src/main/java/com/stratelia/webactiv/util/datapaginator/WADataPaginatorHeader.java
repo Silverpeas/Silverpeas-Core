@@ -48,7 +48,7 @@ import java.util.Vector;
  * @author jpouyadou
  * @version 1.0
  */
-public class WADataPaginatorHeader extends Object {
+public class WADataPaginatorHeader {
   /** sortable flag. This flag is set if the given column is sortable. */
   public static final int FLAGS_SORTABLE = 0x0001;
   /**

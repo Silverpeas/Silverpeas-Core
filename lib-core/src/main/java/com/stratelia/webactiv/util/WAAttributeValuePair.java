@@ -34,7 +34,7 @@ package com.stratelia.webactiv.util;
  * @author jpouyadou
  * @version
  */
-public class WAAttributeValuePair extends Object {
+public class WAAttributeValuePair {
   public static final int SEARCH_MODE_PARTIAL = 0x0001;
   public static final int SEARCH_MODE_STARTSWITH = 0x0002;
   public static final int SEARCH_MODE_EXACT = ~(SEARCH_MODE_PARTIAL | SEARCH_MODE_STARTSWITH);

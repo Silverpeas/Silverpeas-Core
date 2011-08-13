@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class Group extends Object implements Serializable, Comparable<Group> {
+public class Group implements Serializable, Comparable<Group> {
 
   private static final long serialVersionUID = 4430574302630237352L;
   private String id = null;

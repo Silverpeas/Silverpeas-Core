@@ -79,7 +79,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @author jpouyadou
  * @version
  */
-public class XMLConfigurationStore extends Object implements ConfigurationStore {
+public class XMLConfigurationStore implements ConfigurationStore {
   /**
    * XML document root
    */

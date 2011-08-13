@@ -42,7 +42,7 @@ import org.apache.commons.io.FilenameUtils;
  * @author Norbert CHAIX
  * @version
  */
-public class FileRepositoryManager extends Object {
+public class FileRepositoryManager {
 
   static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");

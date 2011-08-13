@@ -36,7 +36,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserManager extends Object {
+public class UserManager {
 
   /**
    * Constructor

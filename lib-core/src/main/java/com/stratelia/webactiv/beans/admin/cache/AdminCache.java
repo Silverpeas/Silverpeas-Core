@@ -38,7 +38,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 /**
  * The class Store and manage all the Admin's cache
  */
-public class AdminCache extends Object {
+public class AdminCache {
   // Cache management
 
   static private boolean m_bUseCache = true;

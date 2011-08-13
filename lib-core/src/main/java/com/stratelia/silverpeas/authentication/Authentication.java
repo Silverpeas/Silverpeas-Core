@@ -41,7 +41,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * @author tleroi
  * @version
  */
-public abstract class Authentication extends Object {
+public abstract class Authentication {
   protected boolean m_Enabled = true;
 
   public final static String ENC_TYPE_UNIX = "CryptUnix";

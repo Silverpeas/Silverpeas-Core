@@ -24,7 +24,6 @@
 
 package com.silverpeas.export;
 
-import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.export.ical.ICalExporter;
 import javax.inject.Inject;

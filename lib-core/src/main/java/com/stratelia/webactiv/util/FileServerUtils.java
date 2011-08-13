@@ -35,7 +35,7 @@ import java.util.HashMap;
  * @author NEY
  * @version
  */
-public class FileServerUtils extends Object {
+public class FileServerUtils {
   
   public static final String COMPONENT_ID_PARAMETER = "ComponentId";
   public static final String SOURCE_FILE_PARAMETER = "SourceFile";
