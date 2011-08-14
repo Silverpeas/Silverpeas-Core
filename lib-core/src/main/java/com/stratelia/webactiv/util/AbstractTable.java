@@ -448,7 +448,7 @@ public abstract class AbstractTable<T> {
         notNullValues.add(matchValues[i]);
       }
     }
-    return getRows(query, (String[]) notNullValues.toArray(new String[notNullValues.size()]));
+    return getRows(query, notNullValues.toArray(new String[notNullValues.size()]));
   }
 
   /**

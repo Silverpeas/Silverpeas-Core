@@ -33,7 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class NotifAddressTable extends AbstractTable {
+public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
 
   /**
    * Builds a new NotifAddressTable
@@ -52,7 +52,7 @@ public class NotifAddressTable extends AbstractTable {
    * Returns the unique NotifAddress row having a given id
    */
   public NotifAddressRow getNotifAddress(int id) throws UtilException {
-    return (NotifAddressRow) getUniqueRow(SELECT_NOTIFADDRESS_BY_ID, id);
+    return getUniqueRow(SELECT_NOTIFADDRESS_BY_ID, id);
   }
 
   static final private String SELECT_NOTIFADDRESS_BY_ID = "Select "
@@ -68,7 +68,7 @@ public class NotifAddressTable extends AbstractTable {
     if (orderField != null) {
       req = req + " order by " + orderField;
     }
-    List<?> rows = getRows(req);
+    List<NotifAddressRow> rows = getRows(req);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -76,7 +76,7 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the NotifAddressRow having a given notifChannelId
    */
   public NotifAddressRow[] getAllByNotifChannelId(int notifChannelId) throws UtilException {
-    List<?> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId);
+    List<NotifAddressRow> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -87,7 +87,7 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the NotifAddressRow having a given userId
    */
   public NotifAddressRow[] getAllByUserId(int userId) throws UtilException {
-    List<?> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId);
+    List<NotifAddressRow> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -98,7 +98,7 @@ public class NotifAddressTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifAddressRow[] getAllRows() throws UtilException {
-    List<?> rows =  getRows(SELECT_ALL_NOTIFADDRESS);
+    List<NotifAddressRow> rows =  getRows(SELECT_ALL_NOTIFADDRESS);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -109,14 +109,14 @@ public class NotifAddressTable extends AbstractTable {
    * Returns the unique row given by a no parameters query.
    */
   public NotifAddressRow getNotifAddress(String query) throws UtilException {
-    return (NotifAddressRow) getUniqueRow(query);
+    return  getUniqueRow(query);
   }
 
   /**
    * Returns all the rows given by a no parameters query.
    */
   public NotifAddressRow[] getNotifAddresss(String query) throws UtilException {
-    List<?> rows =  getRows(query);
+    List<NotifAddressRow> rows =  getRows(query);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -169,8 +169,7 @@ public class NotifAddressTable extends AbstractTable {
   /**
    * Removes a reference to NotifChannelId
    */
-  public void dereferenceNotifChannelId(int notifChannelId)
-      throws UtilException {
+  public void dereferenceNotifChannelId(int notifChannelId) throws UtilException {
     NotifAddressRow[] notifAddressToBeDeleted = getAllByNotifChannelId(notifChannelId);
     for (int i = 0; i < notifAddressToBeDeleted.length; i++) {
       delete(notifAddressToBeDeleted[i].getId());
@@ -190,7 +189,7 @@ public class NotifAddressTable extends AbstractTable {
   /**
    * Fetch the current NotifAddress row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  protected NotifAddressRow fetchRow(ResultSet rs) throws SQLException {
     return new NotifAddressRow(rs.getInt("id"), rs.getInt("userId"), rs
         .getString("notifName"), rs.getInt("notifChannelId"), rs
         .getString("address"), rs.getString("usage"), rs.getInt("priority"));
@@ -200,33 +199,31 @@ public class NotifAddressTable extends AbstractTable {
    * Prepares the statement to update the given row
    */
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) throws SQLException {
-    NotifAddressRow r = (NotifAddressRow) row;
-    update.setInt(1, r.getUserId());
-    update.setString(2, truncate(r.getNotifName(), 20));
-    update.setInt(3, r.getNotifChannelId());
-    update.setString(4, truncate(r.getAddress(), 250));
-    update.setString(5, truncate(r.getUsage(), 20));
-    update.setInt(6, r.getPriority());
-    update.setInt(7, r.getId());
+      NotifAddressRow row) throws SQLException {
+    update.setInt(1, row.getUserId());
+    update.setString(2, truncate(row.getNotifName(), 20));
+    update.setInt(3, row.getNotifChannelId());
+    update.setString(4, truncate(row.getAddress(), 250));
+    update.setString(5, truncate(row.getUsage(), 20));
+    update.setInt(6, row.getPriority());
+    update.setInt(7, row.getId());
   }
 
   /**
    * Prepares the statement to insert the given row
    */
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) throws SQLException {
-    NotifAddressRow r = (NotifAddressRow) row;
-    if (r.getId() == -1) {
-      r.setId(getNextId());
+      NotifAddressRow row) throws SQLException {
+    if (row.getId() == -1) {
+      row.setId(getNextId());
     }
-    insert.setInt(1, r.getId());
-    insert.setInt(2, r.getUserId());
-    insert.setString(3, truncate(r.getNotifName(), 20));
-    insert.setInt(4, r.getNotifChannelId());
-    insert.setString(5, truncate(r.getAddress(), 250));
-    insert.setString(6, truncate(r.getUsage(), 20));
-    insert.setInt(7, r.getPriority());
+    insert.setInt(1, row.getId());
+    insert.setInt(2, row.getUserId());
+    insert.setString(3, truncate(row.getNotifName(), 20));
+    insert.setInt(4, row.getNotifChannelId());
+    insert.setString(5, truncate(row.getAddress(), 250));
+    insert.setString(6, truncate(row.getUsage(), 20));
+    insert.setInt(7, row.getPriority());
   }
 
   public void deleteAndPropagate(int notifAddressId, int defaultAddress)

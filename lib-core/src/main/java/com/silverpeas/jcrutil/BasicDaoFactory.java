@@ -69,11 +69,8 @@ import java.util.List;
 public class BasicDaoFactory implements ApplicationContextAware {
 
   public static final String JRC_REPOSITORY = "repository";
-
-  public static final String COUNTER_SEPARATOR = "__-__";
-
   private ApplicationContext context;
-  private static BasicDaoFactory instance;
+  private static final BasicDaoFactory instance = new BasicDaoFactory();
 
   private BasicDaoFactory() {
   }
@@ -89,11 +86,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   public static BasicDaoFactory getInstance() {
-    synchronized (BasicDaoFactory.class) {
-      if (BasicDaoFactory.instance == null) {
-        BasicDaoFactory.instance = new BasicDaoFactory();
-      }
-    }
     return BasicDaoFactory.instance;
   }
 

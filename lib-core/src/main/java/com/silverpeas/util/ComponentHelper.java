@@ -23,10 +23,10 @@
  */
 package com.silverpeas.util;
 
-import java.util.Set;
-
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
+
+import java.util.Set;
 
 /**
  *
@@ -34,15 +34,12 @@ import com.silverpeas.admin.components.WAComponent;
  */
 public class ComponentHelper {
 
-  private static ComponentHelper instance;
+  private static final ComponentHelper instance = new ComponentHelper();
 
   private ComponentHelper() {
   }
 
   public synchronized static ComponentHelper getInstance() {
-    if (instance == null) {
-      instance = new ComponentHelper();
-    }
     return instance;
   }
 

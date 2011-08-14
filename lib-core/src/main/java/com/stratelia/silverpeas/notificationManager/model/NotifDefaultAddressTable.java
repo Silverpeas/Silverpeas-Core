@@ -52,8 +52,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    */
   public NotifDefaultAddressRow getNotifDefaultAddress(int id)
       throws UtilException {
-    return (NotifDefaultAddressRow) getUniqueRow(
-        SELECT_NOTIFDEFAULTADDRESS_BY_ID, id);
+    return getUniqueRow(SELECT_NOTIFDEFAULTADDRESS_BY_ID, id);
   }
 
   static final private String SELECT_NOTIFDEFAULTADDRESS_BY_ID = "select "

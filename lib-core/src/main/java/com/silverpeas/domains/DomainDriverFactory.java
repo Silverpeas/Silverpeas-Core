@@ -34,18 +34,13 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class DomainDriverFactory implements ApplicationContextAware {
 
-  private static DomainDriverFactory instance;
+  private static final DomainDriverFactory instance = new DomainDriverFactory();
   private ApplicationContext context;
 
   private DomainDriverFactory() {
   }
 
   static DomainDriverFactory getDomainDriverFactory() {
-    synchronized (DomainDriverFactory.class) {
-      if (instance == null) {
-        instance = new DomainDriverFactory();
-      }
-    }
     return instance;
   }
 

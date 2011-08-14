@@ -30,6 +30,7 @@ import com.stratelia.webactiv.util.pool.ConnectionPool;
 
 import javax.ejb.EJBException;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,7 +39,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import javax.naming.NamingException;
 
 public class DBUtil {
   

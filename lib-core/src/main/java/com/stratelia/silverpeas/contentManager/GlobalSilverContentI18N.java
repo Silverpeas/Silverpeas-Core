@@ -31,30 +31,8 @@ package com.stratelia.silverpeas.contentManager;
 public class GlobalSilverContentI18N extends SilverContentI18N implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
-  private String name = "";
-  private String description = "";
 
-  public GlobalSilverContentI18N(String language, String name,
-      String description) {
-    super.setLanguage(language);
-    setName(name);
-    setDescription(description);
+  public GlobalSilverContentI18N(String language, String name, String description) {
+    super(language, name, description);
   }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
 }

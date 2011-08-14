@@ -234,9 +234,8 @@ public class LDAPUser {
 
     for (i = 0; i < keys.length; i++) {
       curProp = driverParent.getProperty(keys[i]);
-      if (curProp.getType() == DomainProperty.PROPERTY_TYPE_USERID) {
-        subUserDN = LDAPUtility.getFirstAttributeValue(userEntry, curProp
-            .getMapParameter());
+      if (DomainProperty.PROPERTY_TYPE_USERID.equals(curProp.getType())) {
+        subUserDN = LDAPUtility.getFirstAttributeValue(userEntry, curProp.getMapParameter());
         if (subUserDN != null && subUserDN.length() > 0) {
           try {
             subUserEntry = LDAPUtility.getFirstEntryFromSearch(lds, subUserDN,
