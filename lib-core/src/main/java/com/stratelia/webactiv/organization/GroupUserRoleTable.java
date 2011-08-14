@@ -23,13 +23,13 @@
  */
 package com.stratelia.webactiv.organization;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -148,13 +148,13 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
     }
 
     UserRow[] users = organization.user.getDirectUsersOfGroupUserRole(id);
-    for (int i = 0; i < users.length; i++) {
-      removeUserFromGroupUserRole(users[i].id, id);
+    for (UserRow user : users) {
+      removeUserFromGroupUserRole(user.id, id);
     }
 
     GroupRow[] groups = organization.group.getDirectGroupsInGroupUserRole(id);
-    for (int i = 0; i < groups.length; i++) {
-      removeGroupFromGroupUserRole(groups[i].id, id);
+    for (GroupRow group : groups) {
+      removeGroupFromGroupUserRole(group.id, id);
     }
 
     // organization.userSet.removeUserSet("H", id);

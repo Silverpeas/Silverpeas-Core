@@ -93,9 +93,7 @@ public class AttachmentSchedulerImpl
     File[] elementsList = folderToAnalyse.listFiles();
 
     // List all folders in Actify
-    for (int i = 0; i < elementsList.length; i++) {
-      File element = elementsList[i];
-
+    for (File element : elementsList) {
       long lastModified = element.lastModified();
       String dirName = element.getName();
       String resultActifyFullPath = FileRepositoryManager.getTemporaryPath()
@@ -156,13 +154,11 @@ public class AttachmentSchedulerImpl
     File[] elementsList = folderToAnalyse.listFiles();
 
     // List all folders in Actify
-    for (int i = 0; i < elementsList.length; i++) {
-      File element = elementsList[i];
+    for (File element : elementsList) {
       long lastModified = element.lastModified();
       if (element.isDirectory()
           && lastModified + delayBeforePurge * 1000 * 60 < now) {
-        SilverTrace.info("Attachment",
-            "AttachmentSchedulerImpl.doPurgeActify()",
+        SilverTrace.info("Attachment", "AttachmentSchedulerImpl.doPurgeActify()",
             "root.MSG_GEN_PARAM_VALUE", "PathToPurge=" + element.getName());
         FileFolderManager.deleteFolder(element.getAbsolutePath());
       }

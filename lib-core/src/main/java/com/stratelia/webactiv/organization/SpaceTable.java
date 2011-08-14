@@ -23,15 +23,15 @@
  */
 package com.stratelia.webactiv.organization;
 
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
-
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.List;
 
 /**
@@ -392,8 +392,8 @@ public class SpaceTable extends Table<SpaceRow> {
     }
 
     ComponentInstanceRow[] instances = organization.instance.getAllComponentInstancesInSpace(id);
-    for (int i = 0; i < instances.length; i++) {
-      organization.instance.removeComponentInstance(instances[i].id);
+    for (ComponentInstanceRow instance : instances) {
+      organization.instance.removeComponentInstance(instance.id);
     }
     // Remove user favorite space
     UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();

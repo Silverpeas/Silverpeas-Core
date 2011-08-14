@@ -199,8 +199,8 @@ public class SilverpeasAccessManager implements AccessManager {
     Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
     while (iter.hasNext()) {
       SilverpeasUserPrincipal principal = iter.next();
-      for (int i = 0; i < elements.length; i++) {
-        if (principal.getUserProfile(elements[i].getName().getLocalName()) != null) {
+      for (Path.Element element : elements) {
+        if (principal.getUserProfile(element.getName().getLocalName()) != null) {
           return true;
         }
       }
@@ -279,8 +279,8 @@ public class SilverpeasAccessManager implements AccessManager {
   protected boolean validateFileNode(Node node) throws RepositoryException {
     if (JcrConstants.NT_FILE.equals(node.getPrimaryNodeType().getName())) {
       NodeType[] mixins = node.getMixinNodeTypes();
-      for (int i = 0; i < mixins.length; i++) {
-        if (JcrConstants.SLV_OWNABLE_MIXIN.equals(mixins[i].getName())) {
+      for (NodeType mixin : mixins) {
+        if (JcrConstants.SLV_OWNABLE_MIXIN.equals(mixin.getName())) {
           return true;
         }
       }

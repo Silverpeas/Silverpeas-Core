@@ -152,8 +152,8 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    */
   public void dereferenceUserId(int userId) throws UtilException {
     NotifDefaultAddressRow[] notifDefaultAddressToBeDeleted = getAllByUserId(userId);
-    for (int i = 0; i < notifDefaultAddressToBeDeleted.length; i++) {
-      delete(notifDefaultAddressToBeDeleted[i].getId());
+    for (NotifDefaultAddressRow aNotifDefaultAddressToBeDeleted : notifDefaultAddressToBeDeleted) {
+      delete(aNotifDefaultAddressToBeDeleted.getId());
     }
   }
 

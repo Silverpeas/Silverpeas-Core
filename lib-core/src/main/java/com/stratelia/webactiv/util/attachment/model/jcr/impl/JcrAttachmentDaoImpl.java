@@ -69,8 +69,8 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
     if (attachment.getContext() != null && !"".equals(attachment.getContext())) {
       String[] contexts = FileRepositoryManager.getAttachmentContext(attachment
           .getContext());
-      for (int i = 0; i < contexts.length; i++) {
-        contextFolder = addFolder(contextFolder, contexts[i]);
+      for (String context : contexts) {
+        contextFolder = addFolder(contextFolder, context);
       }
     }
     if (attachment.getPK().getId() != null) {

@@ -171,8 +171,8 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
    */
   public void dereferenceNotifChannelId(int notifChannelId) throws UtilException {
     NotifAddressRow[] notifAddressToBeDeleted = getAllByNotifChannelId(notifChannelId);
-    for (int i = 0; i < notifAddressToBeDeleted.length; i++) {
-      delete(notifAddressToBeDeleted[i].getId());
+    for (NotifAddressRow aNotifAddressToBeDeleted : notifAddressToBeDeleted) {
+      delete(aNotifAddressToBeDeleted.getId());
     }
   }
 
@@ -181,8 +181,8 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
    */
   public void dereferenceUserId(int userId) throws UtilException {
     NotifAddressRow[] notifAddressToBeDeleted = getAllByUserId(userId);
-    for (int i = 0; i < notifAddressToBeDeleted.length; i++) {
-      delete(notifAddressToBeDeleted[i].getId());
+    for (NotifAddressRow aNotifAddressToBeDeleted : notifAddressToBeDeleted) {
+      delete(aNotifAddressToBeDeleted.getId());
     }
   }
 

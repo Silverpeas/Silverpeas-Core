@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.domains.sqldriver;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.cryptage.UnixMD5Crypt;
 import com.stratelia.silverpeas.authentication.Authentication;
@@ -202,10 +203,10 @@ public class SQLDriver extends AbstractDomainDriver {
       String[] specificProps = getPropertiesNames();
       DomainProperty theProp;
 
-      for (int i = 0; i < specificProps.length; i++) {
-        theProp = getProperty(specificProps[i]);
-        localUserMgr.updateUserSpecificProperty(openedConnection,
-            userId, theProp, uf.getValue(theProp.getName()));
+      for (String specificProp : specificProps) {
+        theProp = getProperty(specificProp);
+        localUserMgr.updateUserSpecificProperty(openedConnection, userId, theProp,
+            uf.getValue(theProp.getName()));
       }
 
       // PWD specific treatment
@@ -288,10 +289,9 @@ public class SQLDriver extends AbstractDomainDriver {
         DomainProperty theProp;
         String value;
 
-        for (int i = 0; i < specificProps.length; i++) {
-          theProp = getProperty(specificProps[i]);
-          value = localUserMgr.getUserSpecificProperty(
-              openedConnection, userId, theProp);
+        for (String specificProp : specificProps) {
+          theProp = getProperty(specificProp);
+          value = localUserMgr.getUserSpecificProperty(openedConnection, userId, theProp);
           uf.setValue(theProp.getName(), value);
         }
       }
@@ -372,20 +372,16 @@ public class SQLDriver extends AbstractDomainDriver {
    */
   public String createGroup(Group group) throws Exception {
     try {
-      int theGrpId = -1;
-      String theGrpIdStr = null;
-
       this.openConnection();
-      theGrpId = localGroupMgr.createGroup(openedConnection, group);
-      theGrpIdStr = Integer.toString(theGrpId);
+      int theGrpId = localGroupMgr.createGroup(openedConnection, group);
+      String theGrpIdStr = Integer.toString(theGrpId);
       // Add the users in the group
       String[] asUserIds = group.getUserIds();
-      for (int nI = 0; nI < asUserIds.length; nI++) {
-        if (asUserIds[nI] != null && asUserIds[nI].length() > 0) {
-          addUserInGroup(asUserIds[nI], theGrpIdStr);
+      for (String asUserId : asUserIds) {
+        if (StringUtil.isDefined(asUserId )) {
+          addUserInGroup(asUserId, theGrpIdStr);
         }
       }
-
       return theGrpIdStr;
     } catch (Exception e) {
       throw new AdminException("SQLDriver.createGroup",
@@ -449,22 +445,20 @@ public class SQLDriver extends AbstractDomainDriver {
       // Compute the users list
       String[] asNewUsersId = group.getUserIds();
 
-      for (int nJ = 0; nJ < asNewUsersId.length; nJ++) {
-        if (!asOldUsersId.remove(asNewUsersId[nJ])) {
-          alAddUsers.add(asNewUsersId[nJ]);
+      for (String anAsNewUsersId : asNewUsersId) {
+        if (!asOldUsersId.remove(anAsNewUsersId)) {
+          alAddUsers.add(anAsNewUsersId);
         }
       }
 
       // Remove the users that are not in this group anymore
-      for (int nI = 0; nI < asOldUsersId.size(); nI++) {
-        localGroupUserRelMgr.removeGroupUserRel(openedConnection,
-            groupId, idAsInt(asOldUsersId.get(nI)));
+      for (String anAsOldUsersId : asOldUsersId) {
+        localGroupUserRelMgr.removeGroupUserRel(openedConnection, groupId, idAsInt(anAsOldUsersId));
       }
 
       // Add the new users of the group
-      for (int nI = 0; nI < alAddUsers.size(); nI++) {
-        localGroupUserRelMgr.createGroupUserRel(openedConnection,
-            groupId, idAsInt(alAddUsers.get(nI)));
+      for (String alAddUser : alAddUsers) {
+        localGroupUserRelMgr.createGroupUserRel(openedConnection, groupId, idAsInt(alAddUser));
       }
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateGroup",

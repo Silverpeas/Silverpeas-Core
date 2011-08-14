@@ -110,19 +110,13 @@ public class ForgottenPasswordMailParameters {
 
   public String getFilledContent() {
     String result = content;
-    String name;
-    String key;
-    String value;
-    int index;
-    for (int i = 0; i < KEYS.length; i++) {
-      name = KEYS[i];
-      key = "{" + name + "}";
-      index = result.indexOf(key);
+    for (String name : KEYS) {
+      String key = "{" + name + "}";
+      int index = result.indexOf(key);
       if (index != -1) {
-        value = parametersValues.get(KEYS[i]);
+        String value = parametersValues.get(name);
         while (index != -1) {
-          result = result.substring(0, index) + value
-              + result.substring(index + key.length());
+          result = result.substring(0, index) + value + result.substring(index + key.length());
           index = result.indexOf(key);
         }
       }

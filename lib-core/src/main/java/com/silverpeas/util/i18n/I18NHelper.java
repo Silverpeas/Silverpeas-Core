@@ -86,8 +86,7 @@ public class I18NHelper {
 
   static public String getLanguageLabel(String code, String userLanguage) {
     List<I18NLanguage> labels = allLanguages.get(userLanguage);
-    for (int l = 0; l < labels.size(); l++) {
-      I18NLanguage language = labels.get(l);
+    for (I18NLanguage language : labels) {
       if (language.getCode().equalsIgnoreCase(code)) {
         return language.getLabel();
       }
@@ -277,9 +276,7 @@ public class I18NHelper {
     }
     list += "<SELECT name=\"" + HTMLSelectObjectName + "\" "
         + onChangeJavascript + ">\n";
-    for (int l = 0; l < toDisplay.size(); l++) {
-      I18NLanguage language = toDisplay.get(l);
-
+    for (I18NLanguage language : toDisplay) {
       String selected = "";
       if (language.getCode().equals(currentTranslation)) {
         selected = "selected";

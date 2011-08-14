@@ -272,9 +272,9 @@ public class LDAPUtility {
     // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
     // and stop when first entry is found
     String[] baseDNs = extractBaseDNs(baseDN);
-    for (int i = 0; i < baseDNs.length; i++) {
+    for (String baseDN1 : baseDNs) {
       try {
-        res = ld.search(baseDNs[i], scope, sureFilter, attrs, false, sc);
+        res = ld.search(baseDN1, scope, sureFilter, attrs, false, sc);
         if (res.hasMore()) {
           theEntry = res.next();
           SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
@@ -339,8 +339,8 @@ public class LDAPUtility {
           for (int j = 0; j < theAttr.size(); j++) {
             theStr = new StringBuffer(50);
             asBytes = allBytes[j];
-            for (int i = 0; i < asBytes.length; i++) {
-              asString = Integer.toHexString(asBytes[i]);
+            for (byte asByte : asBytes) {
+              asString = Integer.toHexString(asByte);
               if (asString.length() > 3) {
                 theStr.append("\\\\").append(asString.substring(6));
               } else {
@@ -510,20 +510,20 @@ public class LDAPUtility {
       // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
       String[] baseDNs = extractBaseDNs(baseDN);
       LDAPEntry entry = null;
-      for (int j = 0; j < baseDNs.length; j++) {
+      for (String baseDN1 : baseDNs) {
         theFullFilter = filter;
         while (theFullFilter != null) {
           SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-              "LDAP query", "BaseDN=" + baseDNs[j] + " scope="
+              "LDAP query", "BaseDN=" + baseDN1 + " scope="
               + Integer.toString(scope) + " Filter=" + theFullFilter);
           SynchroReport.debug("LDAPUtility.search1000Plus()",
               "Requête sur le domaine LDAP distant (protocole v"
-              + ld.getProtocolVersion() + "), BaseDN=" + baseDNs[j]
-              + " scope=" + Integer.toString(scope) + " Filter="
-              + theFullFilter, null);
+                  + ld.getProtocolVersion() + "), BaseDN=" + baseDN1
+                  + " scope=" + Integer.toString(scope) + " Filter="
+                  + theFullFilter, null);
 
           try {
-            LDAPSearchResults res = ld.search(baseDNs[j], scope, theFullFilter, args, false, cons);
+            LDAPSearchResults res = ld.search(baseDN1, scope, theFullFilter, args, false, cons);
             while (res.hasMore()) {
               entry = res.next();
               if (notTheFirst) {

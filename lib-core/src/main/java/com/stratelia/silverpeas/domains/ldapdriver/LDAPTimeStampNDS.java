@@ -55,11 +55,11 @@ public class LDAPTimeStampNDS extends AbstractLDAPTimeStamp {
         "root.MSG_GEN_PARAM_VALUE", "# entries = " + theEntries.length);
 
     String ttCurrent = "";
-    for (int i = 0; i < theEntries.length; i++) {
-      ttCurrent = LDAPUtility.getFirstAttributeValue(theEntries[i],
-          driverSettings.getTimeStampVar());
-      if (ttCurrent.compareTo(timeStamp) > 0)
+    for (LDAPEntry theEntry : theEntries) {
+      ttCurrent = LDAPUtility.getFirstAttributeValue(theEntry, driverSettings.getTimeStampVar());
+      if (ttCurrent.compareTo(timeStamp) > 0) {
         timeStamp = ttCurrent;
+      }
     }
   }
 }

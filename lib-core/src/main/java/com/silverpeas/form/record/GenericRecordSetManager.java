@@ -370,9 +370,7 @@ public class GenericRecordSetManager {
         record.setId(recordIdTo);
 
         Field[] fields = record.getFields();
-        Field field = null;
-        for (int f = 0; f < fields.length; f++) {
-          field = fields[f];
+        for (Field field : fields) {
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
             // le formulaire contient un champ de type File (fichier ou image)
             // Remplacement de l'ancien id par le nouveau
@@ -391,7 +389,6 @@ public class GenericRecordSetManager {
             }
           }
         }
-
         insertRecord(templateTo, record);
       }
     }
@@ -775,25 +772,14 @@ public class GenericRecordSetManager {
 
     try {
       insert = con.prepareStatement(INSERT_FIELD);
-
-      Field field = null;
       int recordId = record.getInternalId();
-      // int fieldIndex ;
-      String fieldName;
-      String fieldValue;
-
       String[] fieldNames = record.getFieldNames();
-      for (int i = 0; i < fieldNames.length; i++) {
-        // fieldIndex = i;
-        fieldName = fieldNames[i];
-        field = record.getField(fieldName);
-        fieldValue = field.getStringValue();
-
+      for (String fieldName : fieldNames) {
+        Field field = record.getField(fieldName);
+        String fieldValue = field.getStringValue();
         insert.setInt(1, recordId);
-        // insert.setInt(2, fieldIndex);
         insert.setString(2, fieldName);
         insert.setString(3, fieldValue);
-
         insert.execute();
       }
     } finally {
@@ -914,36 +900,27 @@ public class GenericRecordSetManager {
 
     try {
       update = con.prepareStatement(UPDATE_FIELD);
-
-      Field field = null;
       int recordId = record.getInternalId();
-      String fieldName;
-      String fieldValue;
-      int nbRowsCount = 0;
-
       String[] fieldNames = record.getFieldNames();
-      for (int i = 0; i < fieldNames.length; i++) {
-        fieldName = fieldNames[i];
-        field = record.getField(fieldName);
-        fieldValue = field.getStringValue();
+      for (String fieldName : fieldNames) {
+        Field field = record.getField(fieldName);
+        String fieldValue = field.getStringValue();
 
         SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
             "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-                + ", fieldValue = " + fieldValue
-                + ", recordId = " + recordId);
+            + ", fieldValue = " + fieldValue
+            + ", recordId = " + recordId);
 
         update.setString(1, fieldValue);
         update.setInt(2, recordId);
         update.setString(3, fieldName);
 
-        nbRowsCount = update.executeUpdate();
+        int nbRowsCount = update.executeUpdate();
         if (nbRowsCount == 0) {
-          // no row has been updated because the field fieldName doesn't exist
-          // in database.
+          // no row has been updated because the field fieldName doesn't exist in database.
           // The form has changed since the last modification of the record.
           // So we must insert this new field.
           insert = con.prepareStatement(INSERT_FIELD);
-
           insert.setInt(1, recordId);
           insert.setString(2, fieldName);
           insert.setString(3, fieldValue);
@@ -967,7 +944,6 @@ public class GenericRecordSetManager {
 
     try {
       int internalId = record.getInternalId();
-
       delete = con.prepareStatement(DELETE_RECORD_FIELDS);
       delete.setInt(1, internalId);
       delete.execute();

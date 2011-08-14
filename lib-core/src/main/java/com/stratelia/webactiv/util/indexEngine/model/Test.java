@@ -52,11 +52,11 @@ public class Test {
     String encoding = "US-ASCII";
     if (file.isDirectory()) {
       String[] files = file.list();
-      for (int i = 0; i < files.length; i++)
-        indexDirectory(indexEngine, new File(file, files[i]), cpt);
+      for (String file1 : files) {
+        indexDirectory(indexEngine, new File(file, file1), cpt);
+      }
     } else {
-      FullIndexEntry indexEntry = new FullIndexEntry("test", "none", "none "
-          + cp);
+      FullIndexEntry indexEntry = new FullIndexEntry("test", "none", "none " + cp);
       format = getFormat(file);
       indexEntry.setTitle(file.getName());
       indexEntry

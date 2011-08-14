@@ -180,17 +180,17 @@ public class AuthenticationLDAP extends Authentication {
     }
     String userFullDN = null;
     String[] baseDNs = extractBaseDNs(m_UserBaseDN);
-    for (int b = 0; b < baseDNs.length; b++) {
+    for (String baseDN : baseDNs) {
       try {
-        SilverTrace.info("authentication","AuthenticationLDAP.internalAuthentication()",
-            "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString + ", baseDN = " + baseDNs[b]);
-        LDAPSearchResults res = m_LDAPConnection.search(baseDNs[b], LDAPConnection.SCOPE_SUB,
+        SilverTrace.info("authentication", "AuthenticationLDAP.internalAuthentication()",
+            "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString + ", baseDN = " + baseDN);
+        LDAPSearchResults res = m_LDAPConnection.search(baseDN, LDAPConnection.SCOPE_SUB,
             searchString, attrNames, false);
         if (res.hasMore()) {
           LDAPEntry fe = res.next();
           if (fe != null) {
             userFullDN = fe.getDN();
-            SilverTrace.debug("authentication","AuthenticationLDAP.internalAuthentication()",
+            SilverTrace.debug("authentication", "AuthenticationLDAP.internalAuthentication()",
                 "root.MSG_GEN_PARAM_VALUE", "m_MustAlertPasswordExpiration="
                 + m_MustAlertPasswordExpiration);
             if (m_MustAlertPasswordExpiration) {

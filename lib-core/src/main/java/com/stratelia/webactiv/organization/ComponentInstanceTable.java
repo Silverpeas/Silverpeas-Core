@@ -368,8 +368,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     }
     // delete component roles
     UserRoleRow[] roles = organization.userRole.getAllUserRolesOfInstance(id);
-    for (int i = 0; i < roles.length; i++) {
-      organization.userRole.removeUserRole(roles[i].id);
+    for (UserRoleRow role : roles) {
+      organization.userRole.removeUserRole(role.id);
     }
     organization.instanceData.removeInstanceData(id);
     updateRelation(DELETE_INSTANCE, id);

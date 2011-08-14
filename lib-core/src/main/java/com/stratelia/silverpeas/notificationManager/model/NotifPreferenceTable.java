@@ -179,8 +179,8 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
       throws UtilException {
     NotifPreferenceRow[] notifPreferenceToBeDeleted =
         getAllByComponentInstanceId(componentInstanceId);
-    for (int i = 0; i < notifPreferenceToBeDeleted.length; i++) {
-      delete(notifPreferenceToBeDeleted[i].getId());
+    for (NotifPreferenceRow aNotifPreferenceToBeDeleted : notifPreferenceToBeDeleted) {
+      delete(aNotifPreferenceToBeDeleted.getId());
     }
   }
 
@@ -189,8 +189,8 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
    */
   public void dereferenceUserId(int userId) throws UtilException {
     NotifPreferenceRow[] notifPreferenceToBeDeleted = getAllByUserId(userId);
-    for (int i = 0; i < notifPreferenceToBeDeleted.length; i++) {
-      delete(notifPreferenceToBeDeleted[i].getId());
+    for (NotifPreferenceRow aNotifPreferenceToBeDeleted : notifPreferenceToBeDeleted) {
+      delete(aNotifPreferenceToBeDeleted.getId());
     }
   }
 

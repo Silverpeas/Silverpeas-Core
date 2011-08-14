@@ -145,11 +145,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     DataRecord data = getRecord(recordId, language);
     if (data != null) {
       String[] fieldNames = data.getFieldNames();
-      String fieldName = null;
-
       Field field = null;
-      for (int f = 0; f < fieldNames.length; f++) {
-        fieldName = fieldNames[f];
+      for (String fieldName : fieldNames) {
         field = data.getField(fieldName);
         if (field != null) {
           FieldTemplate fieldTemplate = recordTemplate
@@ -189,8 +186,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     } else {
       List<String> languages =
           getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, recordId);
-      for (int l = 0; l < languages.size(); l++) {
-        indexRecord(recordId, formName, indexEntry, languages.get(l));
+      for (String language : languages) {
+        indexRecord(recordId, formName, indexEntry, language);
       }
     }
   }
