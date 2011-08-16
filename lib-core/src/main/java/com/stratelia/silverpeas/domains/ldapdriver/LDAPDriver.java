@@ -252,11 +252,11 @@ public class LDAPDriver extends AbstractDomainDriver {
     synchroCache.endSynchronization();
     result = userTranslator.endSynchronization();
     if ((result != null) && (result.length() > 0)) {
-      valret.append("LDAP Domain User specific errors :\n" + result + "\n\n");
+      valret.append("LDAP Domain User specific errors :\n").append(result).append("\n\n");
     }
     result = groupTranslator.endSynchronization();
     if ((result != null) && (result.length() > 0)) {
-      valret.append("LDAP Domain Group specific errors :\n" + result + "\n\n");
+      valret.append("LDAP Domain Group specific errors :\n").append(result).append("\n\n");
     }
     synchroInProcess = false;
     return valret.toString();

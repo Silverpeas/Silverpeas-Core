@@ -476,9 +476,9 @@ public class ContainerManager implements java.io.Serializable {
 
       // Remove the links Positions-ContainerInstanceId
       if (alPositions.size() > 0) {
-        sSQLStatement.append("DELETE FROM " + m_sLinksTable + " WHERE ");
+        sSQLStatement.append("DELETE FROM ").append(m_sLinksTable).append(" WHERE ");
         for (int nI = 0; nI < alPositions.size(); nI++) {
-          sSQLStatement.append("(positionId = " + alPositions.get(nI).toString() + ")");
+          sSQLStatement.append("(positionId = ").append(alPositions.get(nI).toString()).append(")");
           if (nI < alPositions.size() - 1) {
             sSQLStatement.append(" OR ");
           }
@@ -689,9 +689,10 @@ public class ContainerManager implements java.io.Serializable {
     try {
       if (alPositionIds != null && alPositionIds.size() > 0) {
         // Set the delete statement
-        sSQLStatement.append("DELETE FROM " + m_sLinksTable + " WHERE ");
+        sSQLStatement.append("DELETE FROM ").append(m_sLinksTable).append(" WHERE ");
         for (int nI = 0; nI < alPositionIds.size(); nI++) {
-          sSQLStatement.append("(positionId = " + alPositionIds.get(nI).intValue() + ")");
+          sSQLStatement.append("(positionId = ").append(alPositionIds.get(nI).intValue()).append(
+              ")");
           if (nI < alPositionIds.size() - 1) {
             sSQLStatement.append(" OR ");
           }
@@ -762,7 +763,7 @@ public class ContainerManager implements java.io.Serializable {
       sSQLStatement.append(" AND (");
     }
     for (int nI = 0; alPositions != null && nI < alPositions.size(); nI++) {
-      sSQLStatement.append("CML.positionId = " + alPositions.get(nI).toString());
+      sSQLStatement.append("CML.positionId = ").append(alPositions.get(nI).toString());
       if (nI < alPositions.size() - 1) {
         sSQLStatement.append(" OR ");
       } else {
@@ -797,13 +798,13 @@ public class ContainerManager implements java.io.Serializable {
 
       // Set the query statement to get the positions correponding to this
       // componentId
-      sSQLStatement.append("SELECT positionId FROM " + m_sLinksTable
-          + " WHERE (containerInstanceId = " + nContainerInstanceId + ")");
+      sSQLStatement.append("SELECT positionId FROM ").append(m_sLinksTable).append(
+          " WHERE (containerInstanceId = ").append(nContainerInstanceId).append(")");
       if (alPositions != null && alPositions.size() > 0) {
         sSQLStatement.append(" AND (");
       }
       for (int nI = 0; alPositions != null && nI < alPositions.size(); nI++) {
-        sSQLStatement.append("positionId = " + alPositions.get(nI).toString());
+        sSQLStatement.append("positionId = ").append(alPositions.get(nI).toString());
         if (nI < alPositions.size() - 1) {
           sSQLStatement.append(" OR ");
         } else {

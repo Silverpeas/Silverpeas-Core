@@ -245,8 +245,7 @@ public class LDAPUser {
             SilverTrace.warn("admin", "LDAPUser.translateUser",
                 "admin.EX_ERR_BOSS_NOT_FOUND", "subUserDN=" + subUserDN, e);
             if (synchroInProcess) {
-              synchroReport.append("PB getting BOSS infos : " + subUserDN
-                  + "\n");
+              synchroReport.append("PB getting BOSS infos : ").append(subUserDN).append("\n");
             }
             subUserEntry = null;
           }

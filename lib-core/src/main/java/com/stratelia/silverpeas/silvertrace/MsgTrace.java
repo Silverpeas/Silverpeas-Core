@@ -25,6 +25,8 @@
 package com.stratelia.silverpeas.silvertrace;
 
 import com.silverpeas.util.StringUtil;
+import org.apache.commons.io.IOUtils;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +42,7 @@ import java.util.ResourceBundle;
  * @author Thierry Leroi
  * @version %I%, %G%
  */
-public class MsgTrace {
+public final class MsgTrace {
   private Properties allMessages = new Properties();
   private String languageMessages = "";
   private String pathMessages = "";
@@ -62,30 +64,25 @@ public class MsgTrace {
    * @see
    */
   public void initFromProperties(String filePath, String language) {
-    int nbFiles;
-    int i;
-    InputStream is = null;
-    List<File> theFiles = null;
-
     allMessages.clear();
     pathMessages = filePath + "/messages";
-    if (IsDefaultLanguage(language)) {
+    if (isDefaultLanguage(language)) {
       languageMessages = defaultLanguage;
     } else {
       languageMessages = language;
     }
-    theFiles = getPropertyFiles(pathMessages, "_"
-        + languageMessages.toUpperCase());
-    nbFiles = theFiles.size();
-    for (i = 0; i < nbFiles; i++) {
+    List<File> theFiles = getPropertyFiles(pathMessages, '_' + languageMessages.toUpperCase());
+    for (File currentFile : theFiles) {
+      InputStream is = null;
       try {
-        is = new FileInputStream(theFiles.get(i));
+        is = new FileInputStream(currentFile);
         allMessages.load(is);
-        is.close();
       } catch (IOException e) {
         SilverTrace.error("silvertrace", "MsgTrace.initFromProperties()",
-            "silvertrace.ERR_TRACE_MESSAGES_FILE_ERROR", "File:["
-            + theFiles.get(i).getAbsolutePath() + "]", e);
+            "silvertrace.ERR_TRACE_MESSAGES_FILE_ERROR", "File:[" + currentFile.getAbsolutePath()
+            + ']', e);
+      } finally {
+        IOUtils.closeQuietly(is);
       }
     }
   }
@@ -97,8 +94,7 @@ public class MsgTrace {
    * @see
    */
   public String getMsgString(String messageID) {
-    return allMessages.getProperty(messageID, "!!! Message " + messageID
-        + " NOT INITIALIZED !!!");
+    return allMessages.getProperty(messageID, "!!! Message " + messageID + " NOT INITIALIZED !!!");
   }
 
   /**
@@ -108,49 +104,28 @@ public class MsgTrace {
    * @see
    */
   public String getMsgString(String messageID, String language) {
-    if ((stringValid(language) == false)
-        || (language.equalsIgnoreCase(languageMessages))) {
+    if (!StringUtil.isDefined(language) || language.equalsIgnoreCase(languageMessages)) {
       return getMsgString(messageID);
-    } else {
-      File thePropFile = null;
-      Properties theMessages = new Properties();
-      String valret = "!!! Messages " + messageID + " NOT INITIALIZED !!!";
-      FileInputStream is;
-      String fileName;
-
-      if (messageID.indexOf('.') > 0) {
-        fileName = pathMessages + "/"
-            + messageID.substring(0, messageID.indexOf('.')) + "Messages_"
-            + language + ".properties";
-        try {
-          thePropFile = new File(fileName);
-          is = new FileInputStream(thePropFile);
-          theMessages.load(is);
-          is.close();
-          valret = theMessages.getProperty(messageID, valret);
-        } catch (IOException e) {
-          SilverTrace.error("silvertrace", "MsgTrace.getMsgString()",
-              "silvertrace.ERR_TRACE_MESSAGES_FILE_ERROR", "File:[" + fileName
-              + "]", e);
-        }
-      }
-      return valret;
     }
-  }
-
-  /**
-   * Return true if the string is not null and not empty
-   * @param Str the string to test
-   * @return true if Str not null and not equal to ""
-   * @see
-   */
-  protected static boolean stringValid(String Str) {
-    if (Str != null) {
-      if (Str.length() > 0) {
-        return true;
+    Properties theMessages = new Properties();
+    String valret = "!!! Messages " + messageID + " NOT INITIALIZED !!!";
+    FileInputStream is = null;
+    if (messageID.indexOf('.') > 0) {
+      String fileName = pathMessages + '/' + messageID.substring(0, messageID.indexOf('.'))
+          + "Messages_" + language + ".properties";
+      try {
+        File thePropFile = new File(fileName);
+        is = new FileInputStream(thePropFile);
+        theMessages.load(is);
+        valret = theMessages.getProperty(messageID, valret);
+      } catch (IOException e) {
+        SilverTrace.error("silvertrace", "MsgTrace.getMsgString()",
+            "silvertrace.ERR_TRACE_MESSAGES_FILE_ERROR", "File:[" + fileName + ']', e);
+      } finally {
+        IOUtils.closeQuietly(is);
       }
     }
-    return false;
+    return valret;
   }
 
   /**
@@ -161,18 +136,12 @@ public class MsgTrace {
    * @return true/false
    * @see
    */
-  static public boolean getBooleanProperty(Properties theProps,
-      String propertyName, boolean defaultValue) {
-    String value;
+  static public boolean getBooleanProperty(Properties theProps, String propertyName,
+      boolean defaultValue) {
     boolean valret = defaultValue;
-
-    value = theProps.getProperty(propertyName);
+    String value = theProps.getProperty(propertyName);
     if (value != null) {
-      if (value.equalsIgnoreCase("true")) {
-        valret = true;
-      } else {
-        valret = false;
-      }
+      valret = "true".equalsIgnoreCase(value);
     }
     return valret;
   }
@@ -187,9 +156,8 @@ public class MsgTrace {
    */
   static public boolean getBooleanProperty(ResourceBundle resource,
       String propertyName, boolean defaultValue) {
-    String value;
     boolean valret = defaultValue;
-    value = resource.getString(propertyName);
+    String value = resource.getString(propertyName);
     if (value != null) {
       valret = StringUtil.getBooleanValue(value);
     }
@@ -204,34 +172,18 @@ public class MsgTrace {
    * @see
    */
   public List<File> getPropertyFiles(String pathFiles, String suffix) {
-    List<File> valret = new ArrayList<File>();
-    File[] messageFiles = null;
-    File pathMessagesFile = null;
-    int nbFiles;
-    int i;
-
-    pathMessagesFile = new File(pathFiles);
-    if (pathMessagesFile == null) {
-      SilverTrace.error("silvertrace", "MsgTrace.getPropertyFiles()",
-          "silvertrace.ERR_PATH_NOT_FOUND", "FileMessagesPath:[" + pathFiles
-          + "]");
-    } else {
-      messageFiles = pathMessagesFile.listFiles();
-      if (messageFiles != null) {
-        nbFiles = messageFiles.length;
-        for (i = 0; i < nbFiles; i++) {
-          if (messageFiles[i].getName().toUpperCase().endsWith(
-              suffix + ".PROPERTIES")) {
-            valret.add(messageFiles[i]);
-          }
+    File pathMessagesFile = new File(pathFiles);
+    if (pathMessagesFile.exists() && pathMessagesFile.isDirectory()) {
+      File[] messageFiles = pathMessagesFile.listFiles();
+      List<File> valret = new ArrayList<File>(messageFiles.length);
+      for (File currentFile : messageFiles) {
+        if (currentFile.getName().toUpperCase().endsWith(suffix + ".PROPERTIES")) {
+          valret.add(currentFile);
         }
-      } else {
-        SilverTrace.error("silvertrace", "MsgTrace.getPropertyFiles()",
-            "silvertrace.ERR_NO_PROP_FILES_FOUND", "FileMessagesPath:["
-            + pathFiles + "]");
       }
+      return valret;
     }
-    return valret;
+    return new ArrayList<File>();
   }
 
   /**
@@ -240,13 +192,8 @@ public class MsgTrace {
    * @return
    * @see
    */
-  protected boolean IsDefaultLanguage(String language) {
-    if ((stringValid(language) == false)
-        || (language.equalsIgnoreCase(defaultLanguage))) {
-      return true;
-    } else {
-      return false;
-    }
+  protected boolean isDefaultLanguage(String language) {
+    return (!StringUtil.isDefined(language) || defaultLanguage.equalsIgnoreCase(language));
   }
 
 }

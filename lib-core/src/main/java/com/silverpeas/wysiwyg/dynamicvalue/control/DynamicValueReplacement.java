@@ -97,14 +97,14 @@ public class DynamicValueReplacement {
 
         // build the HTML select
         builder.append(
-                " <select id=\"dynamicValues_").append(fieldName).append(
-                "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues" +
-                    FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
-                    "();this.selectedIndex=0;\">")
-            .append("<option value=\"\">" + firstOption + "</option>");
+            " <select id=\"dynamicValues_").append(fieldName).append(
+            "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues").append(
+            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
+            "();this.selectedIndex=0;\">").append("<option value=\"\">").append(firstOption).append(
+            "</option>");
         for (DynamicValue dynamicValue : list) {
-          builder.append("<option value=\"" + dynamicValue.getKey() + "\">" +
-              dynamicValue.getKey() + "</option>");
+          builder.append("<option value=\"").append(dynamicValue.getKey()).append("\">").append(
+              dynamicValue.getKey()).append("</option>");
         }
         builder.append(" </select>");
 
