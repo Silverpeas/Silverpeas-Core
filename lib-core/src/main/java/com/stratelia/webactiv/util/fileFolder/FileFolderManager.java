@@ -34,18 +34,17 @@ package com.stratelia.webactiv.util.fileFolder;
  * @author  cbonin
  * @version
  */
+import com.silverpeas.util.MimeTypes;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
-import com.silverpeas.util.MimeTypes;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 public class FileFolderManager {
 
@@ -236,11 +235,11 @@ public class FileFolderManager {
       File newDirectory = new File(newCheminRep);
       if (!directory.renameTo(newDirectory)) {
         SilverTrace.error("util", "FileFolderManager.renameFolder",
-            "util.EX_REPOSITORY_RENAME", cheminRep.toString() + " en "
-            + newCheminRep.toString());
+            "util.EX_REPOSITORY_RENAME", cheminRep + " en "
+            + newCheminRep);
         throw new UtilException("FileFolderManager.renameFolder",
-            "util.EX_REPOSITORY_RENAME", cheminRep.toString() + " en "
-            + newCheminRep.toString());
+            "util.EX_REPOSITORY_RENAME", cheminRep + " en "
+            + newCheminRep);
       }
     } else {
       SilverTrace.error("util", "FileFolderManager.renameFolder",

@@ -24,10 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.PrintWriter;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -38,8 +34,12 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * A ListBoxFieldDisplayer is an object which can display a listbox in HTML the content of a listbox
@@ -61,9 +61,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = TextField.TYPE;
-    return s;
+    return new String[] {TextField.TYPE};
   }
 
   /**
@@ -127,7 +125,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("class")) {
-      cssClass = (String) parameters.get("class");
+      cssClass = parameters.get("class");
       if (StringUtil.isDefined(cssClass))
         cssClass = "class=\"" + cssClass + "\"";
     }

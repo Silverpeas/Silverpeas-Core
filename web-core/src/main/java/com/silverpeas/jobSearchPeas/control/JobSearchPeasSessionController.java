@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import com.silverpeas.jobSearchPeas.SearchResult;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -90,9 +89,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    */
   public JobSearchPeasSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    super(
-        mainSessionCtrl,
-        componentContext,
+    super(mainSessionCtrl, componentContext,
         "com.silverpeas.jobSearchPeas.multilang.jobSearchPeasBundle");
     setComponentRootName(URLManager.CMP_JOBSEARCHPEAS);
   }
@@ -115,8 +112,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     if (publicationBm == null) {
       try {
         PublicationBmHome publicationBmHome =
-            (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
+            EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
         publicationBm = publicationBmHome.create();
       } catch (Exception e) {
         throw new PublicationRuntimeException("JobSearchPeasSessionController.getPublicationBm()",
@@ -133,7 +129,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     if (nodeBm == null) {
       try {
         NodeBmHome nodeBmHome =
-            (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+            EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
         nodeBm = nodeBmHome.create();
       } catch (Exception e) {
         throw new PublicationRuntimeException("JobSearchPeasSessionController.getNodeBm()",
@@ -150,9 +146,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private SearchEngineBm getSearchEngineBm() throws PdcException {
     if (searchBm == null) {
       try {
-        SearchEngineBmHome searchBmHome = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.SEARCHBM_EJBHOME,
-            SearchEngineBmHome.class);
+        SearchEngineBmHome searchBmHome =
+            EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
         searchBm = searchBmHome.create();
       } catch (Exception e) {
         throw new PdcException(
@@ -295,32 +290,28 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
       
-      String nomCrea = null;
-      String objectId = null;
-      String spaceId = null;
-      String emplacement = null;
-      List<String> listEmplacement = null;
-      SpaceInstLight spaceInstLight = null;
-      SpaceInstLight rootSpaceInstLight = null;
-      String url = null;
       for (MatchingIndexEntry result : plainSearchResults) {
 
-        nomCrea = getAdminController().getUserDetail(result.getCreationUser()).getDisplayedName();
+        String nomCrea = "";
+        UserDetail user = getAdminController().getUserDetail(result.getCreationUser());
+        if (user != null) {
+          nomCrea = user.getDisplayedName();
+        }
         
-        objectId = result.getObjectId(); // WA3
-        spaceId = objectId.substring(2);
+        String objectId = result.getObjectId(); // WA3
+        String spaceId = objectId.substring(2);
         
-        url = "";
-        spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
+        SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
         if(spaceInstLight != null) {
-          listEmplacement = new ArrayList<String>();
-          emplacement = getPathSpace(spaceId);
+          List<String> listEmplacement = new ArrayList<String>();
+          String emplacement = getPathSpace(spaceId);
           listEmplacement.add(emplacement);
+          String url = null;
           if(spaceInstLight.isRoot()) {
             url = "openSpace('"+spaceInstLight.getFullId()+"')";
           } else {
-            rootSpaceInstLight = spaceInstLight;
-            while(! rootSpaceInstLight.isRoot()) {
+            SpaceInstLight rootSpaceInstLight = spaceInstLight;
+            while(rootSpaceInstLight != null && !rootSpaceInstLight.isRoot()) {
               String fatherId = rootSpaceInstLight.getFatherId();
               rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
             }
@@ -444,25 +435,21 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
       
-      MatchingIndexEntry result = null;
-      String creationDate = null;
-      String nomCrea = null;
-      String componentId = null;
-      String emplacement = null;
-      List<String> listEmplacement = null;
-      String url = null;
-      for (int i = 0; i < plainSearchResults.length; i++) {
-        result = plainSearchResults[i];
-
-        creationDate = result.getCreationDate();
-        nomCrea = getAdminController().getUserDetail(result.getCreationUser()).getDisplayedName();
+      for (MatchingIndexEntry result : plainSearchResults) {
+        String creationDate = result.getCreationDate();
         
-        componentId = result.getObjectId();
-        listEmplacement = new ArrayList<String>();
-        emplacement = getPathComponent(componentId);
+        String nomCrea = "";
+        UserDetail user = getAdminController().getUserDetail(result.getCreationUser());
+        if (user != null) {
+          nomCrea = user.getDisplayedName();
+        }
+        
+        String componentId = result.getObjectId();
+        List<String> listEmplacement = new ArrayList<String>();
+        String emplacement = getPathComponent(componentId);
         listEmplacement.add(emplacement);
         
-        url = "openComponent('"+componentId+"')";
+        String url = "openComponent('"+componentId+"')";
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
@@ -545,21 +532,20 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       }
       
       //Composant
-      emplacementEspaceComposant += getAdminController().getComponentInstLight(instanceId).getLabel(getLanguage()) + " > ";
+      ComponentInstLight component = getAdminController().getComponentInstLight(instanceId);
+      if (component != null) {
+        emplacementEspaceComposant += component.getLabel(getLanguage()) + " > ";
+      }
       
       //Theme / Sous-theme
       Collection<NodePK> fatherPKs = getPublicationBm().getAllFatherPK(pubPK);
       if (fatherPKs != null) {
-        Iterator<NodePK> it = fatherPKs.iterator();
-        while (it.hasNext()) {
+        for (NodePK pk : fatherPKs) {
           String emplacement = emplacementEspaceComposant;
-          NodePK pk = it.next();
           Collection<NodeDetail> path = getNodeBm().getAnotherPath(pk);
           ArrayList<NodeDetail> pathTab = new ArrayList<NodeDetail>(path);
           Collections.reverse(pathTab);
-          Iterator<NodeDetail> itNode = pathTab.iterator();
-          while (itNode.hasNext()) {
-            NodeDetail nodeDetail = itNode.next();
+          for (NodeDetail nodeDetail : pathTab) {
             emplacement += nodeDetail.getName(getLanguage()) + " > ";
           }
           emplacement = emplacement.substring(0, emplacement.length() - 3);
@@ -646,35 +632,25 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    */
   private List<SearchResult> searchEngineResultGroup(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>(); 
-    MatchingIndexEntry[] plainSearchResults = null;
-    QueryDescription query = null;
     try {
       QueryParameters queryParameters = new QueryParameters(getLanguage());
       queryParameters.setKeywords(searchField);
      
-      query = queryParameters.getQueryDescription(getUserId(), "*");
+      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
       query.addSpaceComponentPair(null, "groups");
 
       getSearchEngineBm().search(query);
-      plainSearchResults = getSearchEngineBm().getRange(0,
+      MatchingIndexEntry[] plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
       
-      MatchingIndexEntry result = null;
-      String groupId = null;
-      Group group = null;
-      String emplacement = null;
-      List<String> listEmplacement = null;
-      String url = null;
-      for (int i = 0; i < plainSearchResults.length; i++) {
-        result = plainSearchResults[i];
-
-        groupId = result.getObjectId();
-        group = getAdminController().getGroupById(groupId);
-        listEmplacement = new ArrayList<String>();
-        emplacement = getPathGroup(group);
+      for (MatchingIndexEntry result : plainSearchResults) {
+        String groupId = result.getObjectId();
+        Group group = getAdminController().getGroupById(groupId);
+        List<String> listEmplacement = new ArrayList<String>();
+        String emplacement = getPathGroup(group);
         listEmplacement.add(emplacement);
         
-        url = "openGroup('"+groupId+"')";
+        String url = "openGroup('"+groupId+"')";
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
@@ -816,31 +792,23 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchEngineResultUser(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>(); 
     MatchingIndexEntry[] plainSearchResults = null;
-    QueryDescription query = null;
     try {
       QueryParameters queryParameters = new QueryParameters(getLanguage());
       queryParameters.setKeywords(searchField);
      
-      query = queryParameters.getQueryDescription(getUserId(), "*");
+      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
       query.addSpaceComponentPair(null, "users");
 
       getSearchEngineBm().search(query);
       plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
       
-      MatchingIndexEntry result = null;
-      String userId = null;
-      UserDetail user = null;
-      List<String> listEmplacement = null;
-      String url = null;
-      for (int i = 0; i < plainSearchResults.length; i++) {
-        result = plainSearchResults[i];
-
-        userId = result.getObjectId();
-        user = getAdminController().getUserDetail(userId);
-        listEmplacement = getListPathUser(user);
+      for (MatchingIndexEntry result : plainSearchResults) {
+        String userId = result.getObjectId();
+        UserDetail user = getAdminController().getUserDetail(userId);
+        List<String> listEmplacement = getListPathUser(user);
         
-        url = "openUser('"+userId+"')";
+        String url = "openUser('"+userId+"')";
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));

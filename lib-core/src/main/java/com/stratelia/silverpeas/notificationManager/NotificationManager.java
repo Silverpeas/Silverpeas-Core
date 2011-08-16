@@ -139,9 +139,9 @@ public class NotificationManager
 
       // Add user's specific medias
       NotifAddressRow[] nar = nat.getAllByUserId(aUserId);
-      for (int i = 0; i < nar.length; i++) {
-        adresses.add(notifAddressRowToProperties(nar[i], true, true, true,
-                isDefaultAddress(nar[i].getId(), aUserId, schema, isMultiChannelSupported), schema));
+      for (NotifAddressRow aNar : nar) {
+        adresses.add(notifAddressRowToProperties(aNar, true, true, true,
+            isDefaultAddress(aNar.getId(), aUserId, schema, isMultiChannelSupported), schema));
       }
     } catch (UtilException e) {
       throw new NotificationManagerException(
@@ -336,15 +336,13 @@ public class NotificationManager
       NotifChannelTable nct = schema.notifChannel;
       NotifChannelRow[] rows = nct.getAllRows();
 
-      for (int i = 0; i < rows.length; i++) {
-        NotifChannelRow row = rows[i];
-
+      for (NotifChannelRow row : rows) {
         if (row.getCouldBeAdded().equalsIgnoreCase("Y")) {
           Properties p = new Properties();
 
           p.setProperty("id", String.valueOf(row.getId()));
           p.setProperty("name", m_Multilang.getString("channelType"
-                  + String.valueOf(row.getId())));
+              + String.valueOf(row.getId())));
           ar.add(p);
         }
       }
@@ -375,9 +373,9 @@ public class NotificationManager
       NotifPreferenceRow[] nprs = null;
 
       nprs = npt.getAllByUserId(aUserId);
-      for (int i = 0; i < nprs.length; i++) {
-        ar.add(notifPreferencesRowToProperties(aUserId, nprs[i], true, true,
-                false, false, schema));
+      for (NotifPreferenceRow npr : nprs) {
+        ar.add(notifPreferencesRowToProperties(aUserId, npr, true, true,
+            false, false, schema));
       }
     } catch (UtilException e) {
       throw new NotificationManagerException(
@@ -829,8 +827,8 @@ public class NotificationManager
                   "notifUserId : " + aUserIds[i]);
           nds = createAllNotificationData(params, aUserIds[i], schema);
 
-          for (int j = 0; j < nds.length; j++) {
-            ns.addNotification(nds[j]);
+          for (NotificationData nd : nds) {
+            ns.addNotification(nd);
           }
         } catch (NotificationServerException e) {
           throw new NotificationManagerException(
@@ -1390,7 +1388,7 @@ public class NotificationManager
 
     if (FROM_UID.equalsIgnoreCase(ncr.getFromAvailable())) {
       theExtraParams.put(NotificationParameterNames.FROM, Integer.toString(params.iFromUserId));
-      nd.setSenderId(new Integer(params.iFromUserId).toString());
+      nd.setSenderId(Integer.toString(params.iFromUserId));
       SilverTrace.info("notificationManager",
               "NotificationManager.createNotificationData()",
               "root.MSG_GEN_PARAM_VALUE", "nd.getSenderId() =" + nd.getSenderId());
@@ -1522,7 +1520,7 @@ public class NotificationManager
 
       if (FROM_UID.equalsIgnoreCase(ncrs[i].getFromAvailable())) {
         theExtraParams.put(NotificationParameterNames.FROM, Integer.toString(params.iFromUserId));
-        nds[i].setSenderId(new Integer(params.iFromUserId).toString());
+        nds[i].setSenderId(Integer.toString(params.iFromUserId));
         SilverTrace.info("notificationManager",
                 "NotificationManager.createNotificationData()",
                 "root.MSG_GEN_PARAM_VALUE", "nd.getSenderId() =" + nds[i].getSenderId());
@@ -1628,8 +1626,8 @@ public class NotificationManager
           valret = true;
         }
       } else {
-        for (int i = 0; i < ndars.length; i++) {
-          if (aDefaultAddressId == ndars[i].getNotifAddressId()) {
+        for (NotifDefaultAddressRow ndar : ndars) {
+          if (aDefaultAddressId == ndar.getNotifAddressId()) {
             valret = true;
           }
         }

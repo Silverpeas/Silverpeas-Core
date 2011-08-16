@@ -34,18 +34,13 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class DomainDriverFactory implements ApplicationContextAware {
 
-  private static DomainDriverFactory instance;
+  private static final DomainDriverFactory instance = new DomainDriverFactory();
   private ApplicationContext context;
 
   private DomainDriverFactory() {
   }
 
   static DomainDriverFactory getDomainDriverFactory() {
-    synchronized (DomainDriverFactory.class) {
-      if (instance == null) {
-        instance = new DomainDriverFactory();
-      }
-    }
     return instance;
   }
 
@@ -55,7 +50,7 @@ public class DomainDriverFactory implements ApplicationContextAware {
       return null;
     }
     if (getDomainDriverFactory().getApplicationContext().containsBean(name)) {
-      return (DomainDriver) getDomainDriverFactory().getApplicationContext().getBean(name, DomainDriver.class);
+      return getDomainDriverFactory().getApplicationContext().getBean(name, DomainDriver.class);
     }
     Class<? extends DomainDriver> driverClass = (Class<? extends DomainDriver>) Class.forName(name);
     String[] names = getDomainDriverFactory().getApplicationContext().getBeanNamesForType(driverClass);

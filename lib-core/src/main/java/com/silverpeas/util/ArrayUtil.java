@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,41 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.util;
 
-package com.stratelia.silverpeas.classifyEngine;
+import com.silverpeas.form.FieldTemplate;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang3.ArrayUtils;
+import com.novell.ldap.LDAPEntry;
 
-public class PertinentAxis implements java.io.Serializable {
+public class ArrayUtil extends ArrayUtils {
 
-  private static final long serialVersionUID = -7770062847586756429L;
-  private int nAxisId = -1;
-  private int nbObjects = 0;
-  private String sRootValue = "";
-
-  // Constructor
-  public PertinentAxis() {
-  }
-
-  public void setAxisId(int nGivenAxisId) {
-    nAxisId = nGivenAxisId;
-  }
-
-  public int getAxisId() {
-    return nAxisId;
-  }
-
-  public void setNbObjects(int nGivennbObjects) {
-    nbObjects = nGivennbObjects;
-  }
-
-  public int getNbObjects() {
-    return nbObjects;
-  }
-
-  public void setRootValue(String sGivenRootValue) {
-    sRootValue = sGivenRootValue;
-  }
-
-  public String getRootValue() {
-    return sRootValue;
-  }
+  public static final Group[] EMPTY_GROUP_ARRAY = new Group[0];
+  public static final UserDetail[] EMPTY_USER_DETAIL_ARRAY = new UserDetail[0];
+  public static final FieldTemplate[] EMPTY_FIELD_TEMPLATE_ARRAY = new FieldTemplate[0];
+  public static final LDAPEntry[] EMPTY_LDAP_ENTRY_ARRAY = new LDAPEntry[0];
 }

@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.organization.GroupRow;
@@ -151,7 +152,7 @@ public class GroupManager {
       if (asGroupIds != null) {
         return asGroupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllGroupIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_GROUP_IDS", e);
@@ -173,7 +174,7 @@ public class GroupManager {
       if (asGroupIds != null) {
         return asGroupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllRootGroupIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ROOT_GROUP_IDS", e);
@@ -197,7 +198,7 @@ public class GroupManager {
       if (asGroupIds != null) {
         return asGroupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllSubGroupIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_CHILDREN_GROUP_IDS",
@@ -467,7 +468,7 @@ public class GroupManager {
       if (groupIds != null) {
         return groupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getRootGroupIdsOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN",

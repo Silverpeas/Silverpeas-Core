@@ -24,9 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.PrintWriter;
-import java.util.Map;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -41,9 +38,12 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.fileupload.FileItem;
+import java.util.Map;
 
 /**
  * A MultipleUserFieldDisplayer is an object which can display a MultipleUserField in HTML and can
@@ -62,10 +62,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-
-    s[0] = MultipleUserField.TYPE;
-    return s;
+    return new String[]{ MultipleUserField.TYPE};
   }
 
   /**
@@ -149,7 +146,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
       SilverTrace.info("form", "UserFieldDisplayer.display",
           "form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
     } else {
-      userIds = ((MultipleUserField) field).getStringValue();
+      userIds = field.getStringValue();
     }
     if (!field.isNull()) {
       userNames = field.getValue();

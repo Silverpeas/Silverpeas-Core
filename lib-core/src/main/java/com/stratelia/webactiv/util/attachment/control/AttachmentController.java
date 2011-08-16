@@ -1106,7 +1106,7 @@ public class AttachmentController {
           // attToCopy.getLogicalName().substring(attToCopy.getLogicalName().indexOf(".")+1,
           // attToCopy.getLogicalName().length());
           type = FileRepositoryManager.getFileExtension(attToCopy.getLogicalName());
-          physicalName = new Long(new Date().getTime()).toString() + "." + type;
+          physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
           copy.setPhysicalName(physicalName);
 
           copyFileOnServer(attToCopy, copy);

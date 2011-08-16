@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A ComponentInstanceTable object manages the ST_ComponentInstance table.
@@ -126,7 +127,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    */
   public ComponentInstanceRow[] getAllComponentInstancesInSpace(int spaceId) throws
       AdminPersistenceException {
-    return getRows(SELECT_ALL_SPACE_INSTANCES, spaceId).toArray(new ComponentInstanceRow[0]);
+    List<ComponentInstanceRow> rows = getRows(SELECT_ALL_SPACE_INSTANCES, spaceId);
+    return rows.toArray(new ComponentInstanceRow[rows.size()]);
   }
   static final private String SELECT_ALL_SPACE_INSTANCES = "select " + INSTANCE_COLUMNS
       + " from ST_ComponentInstance where spaceId = ? and componentStatus is null"
@@ -139,7 +141,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * @throws AdminPersistenceException 
    */
   public String[] getAllComponentInstanceIdsInSpace(int spaceId) throws AdminPersistenceException {
-    return getIds(SELECT_ALL_SPACE_INSTANCE_IDS, spaceId).toArray(new String[0]);
+    List<String> ids =  getIds(SELECT_ALL_SPACE_INSTANCE_IDS, spaceId);
+    return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_SPACE_INSTANCE_IDS = "select id from ST_ComponentInstance "
       + "where spaceId = ? and componentStatus is null" + " order by orderNum";
@@ -150,7 +153,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * @throws AdminPersistenceException 
    */
   public ComponentInstanceRow[] getRemovedComponents() throws AdminPersistenceException {
-    return getRows(SELECT_REMOVED_COMPONENTS).toArray(new ComponentInstanceRow[0]);
+    List<ComponentInstanceRow> rows = getRows(SELECT_REMOVED_COMPONENTS);
+    return rows.toArray(new ComponentInstanceRow[rows.size()]);
   }
   static final private String SELECT_REMOVED_COMPONENTS = "select " + INSTANCE_COLUMNS
       + " from ST_ComponentInstance where componentStatus = '" + ComponentInst.STATUS_REMOVED
@@ -167,7 +171,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     String[] columns = new String[]{"componentName", "name", "description"};
     String[] values = new String[]{sampleInstance.componentName, sampleInstance.name,
       sampleInstance.description};
-    return getMatchingRows(INSTANCE_COLUMNS, columns, values).toArray(new ComponentInstanceRow[0]);
+    List<ComponentInstanceRow> rows = getMatchingRows(INSTANCE_COLUMNS, columns, values);
+    return rows.toArray(new ComponentInstanceRow[rows.size()]);
   }
 
   /**
@@ -363,8 +368,8 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     }
     // delete component roles
     UserRoleRow[] roles = organization.userRole.getAllUserRolesOfInstance(id);
-    for (int i = 0; i < roles.length; i++) {
-      organization.userRole.removeUserRole(roles[i].id);
+    for (UserRoleRow role : roles) {
+      organization.userRole.removeUserRole(role.id);
     }
     organization.instanceData.removeInstanceData(id);
     updateRelation(DELETE_INSTANCE, id);

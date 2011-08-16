@@ -24,19 +24,19 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A UserTable object manages the DomainSQL_User table.
@@ -142,7 +142,7 @@ public class SQLUserTable {
           "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       if (DomainProperty.PROPERTY_TYPE_BOOLEAN.equals(dp.getType())) {
-        statement.setInt(1, new Integer(value).intValue());
+        statement.setInt(1, Integer.parseInt(value));
       } else {
         statement.setString(1, value);
       }

@@ -24,13 +24,13 @@
 
 package com.silverpeas.util.i18n;
 
+import com.silverpeas.util.StringUtil;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-
-import com.silverpeas.util.StringUtil;
 
 public abstract class AbstractI18NBean implements I18NBean, Serializable {
 
@@ -93,7 +93,7 @@ public abstract class AbstractI18NBean implements I18NBean, Serializable {
   }
 
   public Translation getTranslation(String language) {
-    return (Translation) translations.get(language);
+    return translations.get(language);
   }
 
   public void addTranslation(Translation translation) {
@@ -109,7 +109,7 @@ public abstract class AbstractI18NBean implements I18NBean, Serializable {
     Iterator<String> languages = I18NHelper.getLanguages();
     Translation translation = null;
     while (translation == null && languages.hasNext()) {
-      translation = (Translation) getTranslations().get(languages.next());
+      translation = getTranslations().get(languages.next());
     }
     return translation;
   }

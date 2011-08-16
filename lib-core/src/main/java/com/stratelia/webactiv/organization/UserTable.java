@@ -508,9 +508,8 @@ public class UserTable extends Table<UserRow> {
     for (int i = 0; i < ids.size(); i++) {
       idsArray[i] = ids.get(i).intValue();
     }
-
-    return getRows(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
-        new UserRow[0]);
+    List<UserRow> rows = getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
+    return rows.toArray(new UserRow[rows.size()]);
   }
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS
       + ", UPPER(lastName) from ST_User";
@@ -621,23 +620,23 @@ public class UserTable extends Table<UserRow> {
     SynchroReport.info("UserTable.removeUser()", "Suppression de " + user.login
         + " des groupes dans la base", null);
     GroupRow[] groups = organization.group.getDirectGroupsOfUser(id);
-    for (int i = 0; i < groups.length; i++) {
-      organization.group.removeUserFromGroup(id, groups[i].id);
+    for (GroupRow group : groups) {
+      organization.group.removeUserFromGroup(id, group.id);
     }
 
     SynchroReport.info("UserTable.removeUser()", "Suppression de " + user.login
         + " des rôles dans la base", null);
     UserRoleRow[] roles = organization.userRole.getDirectUserRolesOfUser(id);
-    for (int i = 0; i < roles.length; i++) {
-      organization.userRole.removeUserFromUserRole(id, roles[i].id);
+    for (UserRoleRow role : roles) {
+      organization.userRole.removeUserFromUserRole(id, role.id);
     }
 
     SynchroReport.info("UserTable.removeUser()", "Suppression de " + user.login
         + " en tant que manager d'espace dans la base", null);
     SpaceUserRoleRow[] spaceRoles = organization.spaceUserRole.getDirectSpaceUserRolesOfUser(id);
-    for (int i = 0; i < spaceRoles.length; i++) {
+    for (SpaceUserRoleRow spaceRole : spaceRoles) {
       organization.spaceUserRole.removeUserFromSpaceUserRole(id,
-          spaceRoles[i].id);
+          spaceRole.id);
     }
 
     SynchroReport.info("UserTable.removeUser()", "Delete " + user.login

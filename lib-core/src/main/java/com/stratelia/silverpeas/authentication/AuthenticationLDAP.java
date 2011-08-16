@@ -31,13 +31,6 @@
 package com.stratelia.silverpeas.authentication;
 
 import com.google.common.base.Charsets;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.StringTokenizer;
-
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
@@ -50,8 +43,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * This class performs the LDAP authentification
@@ -181,17 +180,17 @@ public class AuthenticationLDAP extends Authentication {
     }
     String userFullDN = null;
     String[] baseDNs = extractBaseDNs(m_UserBaseDN);
-    for (int b = 0; b < baseDNs.length; b++) {
+    for (String baseDN : baseDNs) {
       try {
-        SilverTrace.info("authentication","AuthenticationLDAP.internalAuthentication()",
-            "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString + ", baseDN = " + baseDNs[b]);
-        LDAPSearchResults res = m_LDAPConnection.search(baseDNs[b], LDAPConnection.SCOPE_SUB,
+        SilverTrace.info("authentication", "AuthenticationLDAP.internalAuthentication()",
+            "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString + ", baseDN = " + baseDN);
+        LDAPSearchResults res = m_LDAPConnection.search(baseDN, LDAPConnection.SCOPE_SUB,
             searchString, attrNames, false);
         if (res.hasMore()) {
           LDAPEntry fe = res.next();
           if (fe != null) {
             userFullDN = fe.getDN();
-            SilverTrace.debug("authentication","AuthenticationLDAP.internalAuthentication()",
+            SilverTrace.debug("authentication", "AuthenticationLDAP.internalAuthentication()",
                 "root.MSG_GEN_PARAM_VALUE", "m_MustAlertPasswordExpiration="
                 + m_MustAlertPasswordExpiration);
             if (m_MustAlertPasswordExpiration) {
@@ -372,7 +371,7 @@ public class AuthenticationLDAP extends Authentication {
 
   static String[] extractBaseDNs(String baseDN) {
     // if no separator, return a array with only the baseDN
-    if (baseDN.indexOf(BASEDN_SEPARATOR) == -1) {
+    if (!baseDN.contains(BASEDN_SEPARATOR)) {
       String[] baseDNs = new String[1];
       baseDNs[0] = baseDN;
       return baseDNs;

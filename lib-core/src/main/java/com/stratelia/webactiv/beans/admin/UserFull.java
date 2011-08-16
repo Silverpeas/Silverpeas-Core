@@ -218,7 +218,7 @@ public class UserFull extends UserDetail {
     if (other instanceof UserFull) {
       UserFull cmpUser = (UserFull) other;
       if (super.equals(cmpUser)) {
-        String[] keys = m_hInfos.keySet().toArray(new String[0]);
+        String[] keys = m_hInfos.keySet().toArray(new String[m_hInfos.size()]);
         boolean isTheSame = true;
         for (int i = 0; (i < keys.length) && isTheSame; i++) {
           isTheSame = getValue(keys[i]).equals(cmpUser.getValue(keys[i]));

@@ -261,7 +261,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       templateForm = loadRecordTemplate(currentFileName);
       mergeTemplate(templateForm);
       try {
-        form = (Form) new XmlForm(templateForm);
+        form = new XmlForm(templateForm);
       } catch (FormException e) {
         throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
             "form.EX_CANT_GET_FORM", null, e);
@@ -275,7 +275,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       try {
         HtmlForm viewFormHtml = new HtmlForm(templateForm);
         viewFormHtml.setFileName(htmlFileName);
-        form = (Form) viewFormHtml;
+        form = viewFormHtml;
       } catch (FormException e) {
         throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
             "form.EX_CANT_GET_FORM", null, e);

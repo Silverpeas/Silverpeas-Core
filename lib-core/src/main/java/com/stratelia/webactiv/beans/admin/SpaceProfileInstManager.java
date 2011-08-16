@@ -23,12 +23,12 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.ArrayList;
-
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.organization.SpaceUserRoleRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.ArrayList;
 
 public class SpaceProfileInstManager {
 
@@ -277,14 +277,14 @@ public class SpaceProfileInstManager {
 
       // Compute the remove group list
       for (String groupId : alOldSpaceProfileGroup) {
-        if (alNewSpaceProfileGroup.indexOf(groupId) == -1) {
+        if (!alNewSpaceProfileGroup.contains(groupId)) {
           alRemGroup.add(groupId);
         }
       }
 
       // Compute the add and stay group list
       for (String groupId : alNewSpaceProfileGroup) {
-        if (alOldSpaceProfileGroup.indexOf(groupId) == -1) {
+        if (!alOldSpaceProfileGroup.contains(groupId)) {
           alAddGroup.add(groupId);
         } else {
           alStayGroup.add(groupId);
@@ -319,14 +319,14 @@ public class SpaceProfileInstManager {
 
       // Compute the remove User list
       for (String userId : alOldSpaceProfileUser) {
-        if (alNewSpaceProfileUser.indexOf(userId) == -1) {
+        if (!alNewSpaceProfileUser.contains(userId)) {
           alRemUser.add(userId);
         }
       }
 
       // Compute the add and stay User list
       for (String userId : alNewSpaceProfileUser) {
-        if (alOldSpaceProfileUser.indexOf(userId) == -1) {
+        if (!alOldSpaceProfileUser.contains(userId)) {
           alAddUser.add(userId);
         } else {
           alStayUser.add(userId);

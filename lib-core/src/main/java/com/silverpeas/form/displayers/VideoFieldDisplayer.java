@@ -39,13 +39,6 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
@@ -54,6 +47,14 @@ import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
 import org.apache.ecs.xhtml.script;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A displayer of a video.
@@ -400,7 +401,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
                 length());
         String type = FileRepositoryManager.getFileExtension(logicalName);
         String mimeType = item.getContentType();
-        String physicalName = new Long(new Date().getTime()).toString() + "." + type;
+        String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
         File dir = getVideoPath(componentId, physicalName);
         item.write(dir);
         AttachmentDetail attachmentDetail =

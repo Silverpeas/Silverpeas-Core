@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.classifyEngine;
 
-public class PertinentValue extends Object implements java.io.Serializable {
+public class PertinentValue implements java.io.Serializable {
 
   private static final long serialVersionUID = 8793599330195411733L;
   private int nAxisId = -1;

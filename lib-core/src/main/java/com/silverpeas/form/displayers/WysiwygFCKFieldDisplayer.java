@@ -512,8 +512,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         throw new IOException(e.getMessage());
       }
       List<File> files = (List<File>) FileFolderManager.getAllFile(fromPath);
-      for (int f = 0; f < files.size(); f++) {
-        File file = files.get(f);
+      for (File file : files) {
         String fileName = file.getName();
         if (fileName.startsWith(objectIdFrom + "_")) {
           String fieldName = fileName.substring(objectIdFrom.length() + 1);
@@ -527,7 +526,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
               fieldName = fieldName.substring(3); // skip en_
               FileRepositoryManager.copyFile(fromPath + file.getName(), toPath +
                   getFileName(fieldName, objectIdTo,
-                  language));
+                      language));
             }
           }
         }
@@ -552,8 +551,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
 
       // Copier/coller de tous les fichiers wysiwyg de objectIdFrom vers objectIdTo
       List<File> files = (List<File>) FileFolderManager.getAllFile(fromPath);
-      for (int f = 0; f < files.size(); f++) {
-        File file = files.get(f);
+      for (File file : files) {
         String fileName = file.getName();
         if (fileName.startsWith(objectIdFrom + "_")) {
           String fieldName = fileName.substring(objectIdFrom.length() + 1);
@@ -576,8 +574,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       }
 
       // Delete merged files
-      for (int f = 0; f < files.size(); f++) {
-        File file = files.get(f);
+      for (File file : files) {
         String fileName = file.getName();
         if (fileName.startsWith(objectIdFrom + "_")) {
           file.delete();

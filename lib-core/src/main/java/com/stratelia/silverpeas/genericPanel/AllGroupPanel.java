@@ -27,13 +27,13 @@
 
 package com.stratelia.silverpeas.genericPanel;
 
-import java.util.Hashtable;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.Hashtable;
 
 public class AllGroupPanel extends PanelProvider {
   protected static final int FILTER_NAME = 0;
@@ -105,7 +105,7 @@ public class AllGroupPanel extends PanelProvider {
   }
 
   public PanelLine getElementInfos(String id) {
-    Group theGroup = (Group) m_AllGroup.get(id);
+    Group theGroup = m_AllGroup.get(id);
     String[] theValues;
     PanelLine valret = null;
 

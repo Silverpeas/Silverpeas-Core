@@ -63,6 +63,6 @@ public class NotifSchemaPool extends SchemaPool {
   }
 
   protected Schema newSchema(int connectionLot) throws UtilException {
-    return (Schema) (new NotifSchema(connectionLot));
+    return new NotifSchema(connectionLot);
   }
 }

@@ -36,7 +36,7 @@ import java.util.List;
  * @author tleroi
  * @version
  */
-public class AuthenticationServer extends Object {
+public class AuthenticationServer {
   protected String m_FallbackType;
   protected int m_nbServers;
   protected List<Authentication> m_AutServers;

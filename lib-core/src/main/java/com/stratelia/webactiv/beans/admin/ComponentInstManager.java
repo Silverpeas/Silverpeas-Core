@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
@@ -261,13 +262,13 @@ public class ComponentInstManager {
         // Add default translation
         ComponentI18N translation = new ComponentI18N(compo.lang, compo.name,
             compo.description);
-        compoLight.addTranslation((Translation) translation);
+        compoLight.addTranslation(translation);
 
         List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N.
             getTranslations(compo.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
-          compoLight.addTranslation((Translation) new ComponentI18N(row));
+          compoLight.addTranslation(new ComponentI18N(row));
         }
       }
     } catch (Exception e) {
@@ -339,13 +340,13 @@ public class ComponentInstManager {
         // Add default translation
         ComponentI18N translation = new ComponentI18N(instance.lang,
             instance.name, instance.description);
-        componentInst.addTranslation((Translation) translation);
+        componentInst.addTranslation(translation);
 
         List<ComponentInstanceI18NRow> translations =
             ddManager.organization.instanceI18N.getTranslations(instance.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
-          componentInst.addTranslation((Translation) new ComponentI18N(row));
+          componentInst.addTranslation(new ComponentI18N(row));
         }
 
         componentInst.setPublic((instance.publicAccess == 1));
@@ -545,7 +546,7 @@ public class ComponentInstManager {
       ComponentInstanceRow[] cirs = ddManager.organization.instance.getAllMatchingComponentInstances(
           cir);
       if (cirs == null) {
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
 
       String[] compoIds = new String[cirs.length];

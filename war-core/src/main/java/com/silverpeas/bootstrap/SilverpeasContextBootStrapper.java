@@ -26,6 +26,11 @@ package com.silverpeas.bootstrap;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.SilverpeasSSLSocketFactory;
+import org.apache.commons.io.IOUtils;
+import org.springframework.web.context.ContextLoaderListener;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,9 +41,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import org.springframework.web.context.ContextLoaderListener;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
 
@@ -66,9 +68,9 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
       Logger.getLogger("bootstrap").log(Level.SEVERE,
           "Repository Initialize for systemSettings.properties file is not defined in Settings.");
     } else {
+      FileInputStream fis = null;
       try {
-        FileInputStream fis = new FileInputStream(new File(pathInitialize,
-            "systemSettings.properties"));
+        fis = new FileInputStream(new File(pathInitialize, "systemSettings.properties"));
         Properties systemFileProperties = new Properties(System.getProperties());
         systemFileProperties.load(fis);
         System.setProperties(systemFileProperties);
@@ -82,6 +84,8 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to read systemSettings.properties.");
       } catch (GeneralSecurityException e) {
         Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to configure the trustore.");
+      } finally {
+        IOUtils.closeQuietly(fis);
       }
 
     }

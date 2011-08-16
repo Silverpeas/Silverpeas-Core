@@ -27,23 +27,20 @@ import com.silverpeas.pdc.web.beans.PdcClassification;
 import org.junit.Before;
 import com.silverpeas.rest.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import javax.inject.Inject;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.beans.PdcClassification.*;
-import static com.silverpeas.pdc.web.TestResources.*;
+import static com.silverpeas.pdc.web.PdcTestResources.*;
 
 /**
  * Unit tests on the getting of the classification of a resource on the classification plan (named
  * PdC).
  */
-public class ResourceClassificationGettingTest extends ResourceGettingTest {
+public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTestResources> {
 
-  @Inject
-  private TestResources testResources;
   private String sessionKey;
   private UserDetail theUser;
 
@@ -53,11 +50,9 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest {
 
   @Before
   public void setUpUserSessionAndPdCClassifications() {
-    assertNotNull(testResources);
-    testResources.init();
     theUser = aUser();
     sessionKey = authenticate(theUser);
-    testResources.enableThesaurus();
+    getTestResources().enableThesaurus();
   }
 
   /**
@@ -76,7 +71,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest {
   public void nominalClassificationWithSynonymsGetting() throws Exception {
     PdcClassification theClassification =
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
-    testResources.save(theClassification);
+    getTestResources().save(theClassification);
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
     assertThat(classification, not(undefined()));
@@ -88,7 +83,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest {
     PdcClassification theClassification = aPdcClassificationWithoutAnySynonyms().
             onResource(CONTENT_ID).
             inComponent(COMPONENT_INSTANCE_ID);
-    testResources.save(theClassification);
+    getTestResources().save(theClassification);
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
     System.out.println(classification);
@@ -110,7 +105,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest {
   public PdcClassificationEntity aResource() {
     PdcClassification theClassification =
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
-    testResources.save(theClassification);
+    getTestResources().save(theClassification);
     PdcClassificationEntity entity = null;
     try {
       entity = theWebEntityOf(theClassification);
@@ -132,7 +127,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest {
 
   private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           Exception {
-    return testResources.toWebEntity(classification, theUser);
+    return getTestResources().toWebEntity(classification, theUser);
   }
 
   @Override

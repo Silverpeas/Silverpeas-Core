@@ -27,18 +27,19 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
 import com.novell.ldap.LDAPEntry;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -102,10 +103,15 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return groupsVector;
   }
 
-  public String[] getGroupMemberGroupIds(String lds, String groupId)
-      throws AdminException {
-    // All root groups, so, no group belongs to another...
-    return new String[0];
+  /**
+   * All root groups, so, no group belongs to another...
+   * @param lds
+   * @param groupId the group's Id
+   * @return
+   * @throws AdminException
+   */
+  public String[] getGroupMemberGroupIds(String lds, String groupId) throws AdminException {
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   public String[] getUserMemberGroupIds(String lds, String userId)
@@ -130,7 +136,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       }
       groupsIdsSet = groupsCur;
     }
-    return (String[]) groupsManaged.toArray(new String[0]);
+    return groupsManaged.toArray(new String[groupsManaged.size()]);
   }
 
   /**
@@ -175,7 +181,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       }
       groupsSet = groupsCur;
     }
-    return (String[]) usersManaged.toArray(new String[0]);
+    return usersManaged.toArray(new String[usersManaged.size()]);
   }
 
   protected Vector<String> getTRUEUserIds(String lds, LDAPEntry groupEntry)
@@ -247,7 +253,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
       String extraFilter) throws AdminException {
     if ((parentId != null) && (parentId.length() > 0)) { // ALL ROOT GROUPS
-      return new LDAPEntry[0];
+      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     } else {
       LDAPEntry[] theEntries = null;
       String theFilter;
@@ -271,8 +277,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-          synchroReport.append("PB getting Group's subgroups : " + parentId
-              + "\n");
+          append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroReport.error("LDAPGroupAllRoot.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine (parentId = "
               + parentId + ")", e);
@@ -344,7 +349,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     groupsIdsSet = new Vector<LDAPEntry>(les.length);
     for (i = 0; i < les.length; i++) {
       groupsIdsSet.add(les[i]);
-      groupsManaged.put(les[i].getDN().toString(), translateGroup(lds, les[i]));
+      groupsManaged.put(les[i].getDN(), translateGroup(lds, les[i]));
     }
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
@@ -354,7 +359,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         theGroup = it.next();
         SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
             "root.MSG_GEN_PARAM_VALUE", "GroupTraite2="
-            + theGroup.getDN().toString());
+            + theGroup.getDN());
         les = LDAPUtility.search1000Plus(lds, driverSettings
             .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
             "(&" + driverSettings.getGroupsFullFilter() + "("
@@ -365,18 +370,18 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         for (i = 0; i < les.length; i++) {
           SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
               "root.MSG_GEN_PARAM_VALUE", "GroupFound2=" + les[i].getDN());
-          if (!groupsManaged.containsKey(les[i].getDN().toString())) {
+          if (!groupsManaged.containsKey(les[i].getDN())) {
             SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
                 "root.MSG_GEN_PARAM_VALUE", "GroupAjoute2="
-                + les[i].getDN().toString());
+                + les[i].getDN());
             groupsCur.add(les[i]);
-            groupsManaged.put(les[i].getDN().toString(), translateGroup(lds,
+            groupsManaged.put(les[i].getDN(), translateGroup(lds,
                 les[i]));
           }
         }
       }
       groupsIdsSet = groupsCur;
     }
-    return (Group[]) groupsManaged.values().toArray(new Group[0]);
+    return groupsManaged.values().toArray(new Group[ groupsManaged.size()]);
   }
 }

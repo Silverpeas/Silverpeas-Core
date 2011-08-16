@@ -356,15 +356,15 @@ public class LDAPSettings extends DriverSettings {
       boolean bIsFirst = true;
       char[] vca = value.toCharArray();
 
-      for (int i = 0; i < vca.length; i++) {
-        if (vca[i] == '\\') {
+      for (char aVca : vca) {
+        if (aVca == '\\') {
           if (bIsFirst) {
-            singleSlashValue.append(vca[i]);
+            singleSlashValue.append(aVca);
           }
           bIsFirst = !bIsFirst;
         } else {
           bIsFirst = true;
-          singleSlashValue.append(vca[i]);
+          singleSlashValue.append(aVca);
         }
       }
       return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "="
@@ -454,15 +454,15 @@ public class LDAPSettings extends DriverSettings {
       boolean bIsFirst = true;
       char[] vca = value.toCharArray();
 
-      for (int i = 0; i < vca.length; i++) {
-        if (vca[i] == '\\') {
+      for (char aVca : vca) {
+        if (aVca == '\\') {
           if (bIsFirst) {
-            singleSlashValue.append(vca[i]);
+            singleSlashValue.append(aVca);
           }
           bIsFirst = !bIsFirst;
         } else {
           bIsFirst = true;
-          singleSlashValue.append(vca[i]);
+          singleSlashValue.append(aVca);
         }
       }
       return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "="

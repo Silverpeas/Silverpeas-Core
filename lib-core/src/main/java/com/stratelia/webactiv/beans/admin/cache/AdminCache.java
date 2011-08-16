@@ -23,9 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin.cache;
 
-import java.util.Hashtable;
-import java.util.Iterator;
-
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -35,10 +33,13 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import java.util.Hashtable;
+import java.util.Iterator;
+
 /**
  * The class Store and manage all the Admin's cache
  */
-public class AdminCache extends Object {
+public class AdminCache {
   // Cache management
 
   static private boolean m_bUseCache = true;
@@ -252,7 +253,8 @@ public class AdminCache extends Object {
   }
 
   protected void removeSpaceComponentsInst(String spaceId) {
-    ComponentInst[] theComponents = m_hComponentInstCache.values().toArray(new ComponentInst[0]);
+    ComponentInst[] theComponents = m_hComponentInstCache.values().toArray(
+        new ComponentInst[m_hComponentInstCache.size()]);
 
     for (ComponentInst theComponent : theComponents) {
       if (spaceId.equals(getShortSpaceId(theComponent.getDomainFatherId()))) {
@@ -318,7 +320,8 @@ public class AdminCache extends Object {
   }
 
   protected void removeComponentsProfilesInst(String componentId) {
-    ProfileInst[] theProfiles = m_hProfileInstCache.values().toArray(new ProfileInst[0]);
+    ProfileInst[] theProfiles = m_hProfileInstCache.values().toArray(
+        new ProfileInst[m_hProfileInstCache.size()]);
 
     for (ProfileInst theProfile : theProfiles) {
       if (componentId.equals(theProfile.getComponentFatherId())) {
@@ -510,12 +513,10 @@ public class AdminCache extends Object {
         String[] allChilds = theFather.getSubSpaceIds();
         String[] newChilds;
         if (allChilds == null) {
-          allChilds = new String[0];
+          allChilds = ArrayUtil.EMPTY_STRING_ARRAY;
         }
         newChilds = new String[allChilds.length + 1];
-        for (int i = 0; i < allChilds.length; i++) {
-          newChilds[i] = allChilds[i];
-        }
+        System.arraycopy(allChilds, 0, newChilds, 0, allChilds.length);
         newChilds[allChilds.length] = getShortSpaceId(theSpace.getId());
         theFather.setSubSpaceIds(newChilds);
       }

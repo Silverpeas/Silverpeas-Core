@@ -24,7 +24,6 @@
 
 package com.silverpeas.calendar;
 
-import com.google.common.collect.Collections2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;

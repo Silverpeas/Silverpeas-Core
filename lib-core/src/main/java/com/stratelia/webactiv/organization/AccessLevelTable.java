@@ -52,7 +52,8 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
    * @throws AdminPersistenceException 
    */
   public AccessLevelRow[] getAllAccessLevels() throws AdminPersistenceException {
-    return getRows(SELECT_ALL_ACCESSLEVELS).toArray(new AccessLevelRow[0]);
+    return getRows(SELECT_ALL_ACCESSLEVELS).toArray(
+        new AccessLevelRow[getRows(SELECT_ALL_ACCESSLEVELS).size()]);
   }
   static final private String SELECT_ALL_ACCESSLEVELS = "SELECT id, name FROM ST_AccessLevel";
 

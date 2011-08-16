@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +70,7 @@ public class ProcessInitialize implements Runnable {
    */
   private void processInitializeSettingsFile() {
     try {
-      Properties p = getPropertiesOfFile(m_InitializeSettingsFile
-          .getAbsolutePath());
+      Properties p = getPropertiesOfFile(m_InitializeSettingsFile.getAbsolutePath());
       String initialize = p.getProperty("Initialize");
       if (initialize != null && Boolean.parseBoolean(initialize)) {
         String InitializeClass = p.getProperty("InitializeClass");
@@ -108,14 +108,15 @@ public class ProcessInitialize implements Runnable {
    */
   private Properties getPropertiesOfFile(String fileName) {
     Properties result = null;
-
+    InputStream is = null;
     try {
-      InputStream is = new FileInputStream(fileName);
-
+      is = new FileInputStream(fileName);
       result = new Properties();
       result.load(is);
     } catch (Exception e) {
       LogMsg(this, "getPropertiesOfFile( " + fileName + " )", e.getMessage(), e);
+    } finally {
+      IOUtils.closeQuietly(is);
     }
     return result;
   }

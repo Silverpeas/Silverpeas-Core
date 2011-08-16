@@ -52,10 +52,9 @@ public class JoinStatement {
 
   public String getTable(int position) {
     if (alTables != null) {
-      return (String) alTables.get(position);
-    } else {
-      return sTable;
+      return alTables.get(position);
     }
+    return sTable;
   }
 
   public void setJoinKeys(List<String> alGivenJoinKey) {
@@ -67,7 +66,7 @@ public class JoinStatement {
   }
 
   public String getJoinKey(int position) {
-    return (String) alKeys.get(position);
+    return alKeys.get(position);
   }
 
   public void setWhere(String sGivenWhere) {

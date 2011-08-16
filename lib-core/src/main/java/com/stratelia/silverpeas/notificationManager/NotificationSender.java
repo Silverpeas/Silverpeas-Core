@@ -36,7 +36,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -177,11 +176,11 @@ public class NotificationSender implements java.io.Serializable {
       SilverTrace.info("notificationManager",
               "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
               "allUserIds apres remove= " + allUserIds);
-      notificationManager.notifyUsers(params, userIds.toArray(new String[0]));
+      notificationManager.notifyUsers(params, userIds.toArray(new String[userIds.size()]));
     }
 
     // Notify other user in language of the sender.
-    notificationManager.notifyUsers(params, allUserIds.toArray(new String[0]));
+    notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
 
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
             "root.MSG_GEN_EXIT_METHOD");

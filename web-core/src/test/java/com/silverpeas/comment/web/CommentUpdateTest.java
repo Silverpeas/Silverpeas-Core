@@ -27,7 +27,6 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.rest.ResourceUpdateTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -37,14 +36,11 @@ import static com.silverpeas.comment.web.CommentTestResources.*;
 /**
  * Unit tests on the update of a comment through the CommentResource web service.
  */
-public class CommentUpdateTest extends ResourceUpdateTest {
+public class CommentUpdateTest extends ResourceUpdateTest<CommentTestResources> {
 
   private UserDetail user;
   private String sessionKey;
   private CommentEntity theComment;
-  
-  @Inject
-  private CommentTestResources testResources;
   
   public CommentUpdateTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -52,13 +48,11 @@ public class CommentUpdateTest extends ResourceUpdateTest {
 
   @Before
   public void createAUserAndAComment() {
-    assertNotNull(testResources);
-    testResources.init();
     user = aUser();
     sessionKey = authenticate(user);
     Comment commentToUseInTest = theUser(user).commentTheResource(CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).withAsText("ceci est un commentaire");
-    testResources.save(commentToUseInTest);
+    getTestResources().save(commentToUseInTest);
     theComment = CommentEntity.fromComment(commentToUseInTest);
   }
 

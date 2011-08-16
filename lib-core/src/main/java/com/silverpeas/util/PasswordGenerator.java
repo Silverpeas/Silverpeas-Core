@@ -24,9 +24,9 @@
 
 package com.silverpeas.util;
 
-import java.util.ArrayList;
-
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.ArrayList;
 
 public class PasswordGenerator {
 
@@ -131,19 +131,19 @@ public class PasswordGenerator {
       result[indexes.get(currentIndex).intValue()] = randomSpecialChar();
       indexes.remove(currentIndex);
     }
-    for (int i = 0; i < indexes.size(); i++) {
+    for (Integer indexe : indexes) {
       switch (random(4)) {
         case 0:
-          result[indexes.get(i).intValue()] = randomUpperCaseChar();
+          result[indexe.intValue()] = randomUpperCaseChar();
           break;
         case 1:
-          result[indexes.get(i).intValue()] = randomLowerCaseChar();
+          result[indexe.intValue()] = randomLowerCaseChar();
           break;
         case 2:
-          result[indexes.get(i).intValue()] = randomNumberChar();
+          result[indexe.intValue()] = randomNumberChar();
           break;
         case 3:
-          result[indexes.get(i).intValue()] = randomSpecialChar();
+          result[indexe.intValue()] = randomSpecialChar();
           break;
       }
     }

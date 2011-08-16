@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.util;
 
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * The SchemaPool class manages a pool of Schema shared by all the client (admin classes). All the
@@ -65,7 +65,7 @@ public abstract class SchemaPool {
     while (instance == null) {
       synchronized (pool) {
         if (!pool.isEmpty()) {
-          instance = (Schema) pool.remove(0);
+          instance = pool.remove(0);
         }
       }
 

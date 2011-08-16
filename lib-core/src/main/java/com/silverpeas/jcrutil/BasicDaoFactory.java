@@ -24,19 +24,15 @@
 
 package com.silverpeas.jcrutil;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.FileUtil;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemNotFoundException;
@@ -52,16 +48,19 @@ import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
-
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
-import com.silverpeas.jcrutil.converter.ConverterUtil;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * He
@@ -70,11 +69,8 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class BasicDaoFactory implements ApplicationContextAware {
 
   public static final String JRC_REPOSITORY = "repository";
-
-  public static final String COUNTER_SEPARATOR = "__-__";
-
   private ApplicationContext context;
-  private static BasicDaoFactory instance;
+  private static final BasicDaoFactory instance = new BasicDaoFactory();
 
   private BasicDaoFactory() {
   }
@@ -90,11 +86,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   public static BasicDaoFactory getInstance() {
-    synchronized (BasicDaoFactory.class) {
-      if (BasicDaoFactory.instance == null) {
-        BasicDaoFactory.instance = new BasicDaoFactory();
-      }
-    }
     return BasicDaoFactory.instance;
   }
 
@@ -413,9 +404,8 @@ public class BasicDaoFactory implements ApplicationContextAware {
         }
         out.close();
         return out.toByteArray();
-      } else {
-        return new byte[0];
       }
+      return ArrayUtil.EMPTY_BYTE_ARRAY;
     } finally {
       if (in != null) {
         in.close();

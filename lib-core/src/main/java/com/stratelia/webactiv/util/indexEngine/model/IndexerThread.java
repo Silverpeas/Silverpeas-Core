@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.util.indexEngine.model;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A thread IndexerThread index in the background a batch of index requests. All the public methods
@@ -97,7 +97,7 @@ public class IndexerThread extends Thread {
               "root.MSG_GEN_PARAM_VALUE", "# of items to index = "
               + requestList.size());
           if (!requestList.isEmpty()) {
-            request = (Request) requestList.remove(0);
+            request = requestList.remove(0);
           }
         }
 

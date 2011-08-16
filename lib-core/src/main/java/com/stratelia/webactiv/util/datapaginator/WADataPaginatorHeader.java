@@ -48,7 +48,7 @@ import java.util.Vector;
  * @author jpouyadou
  * @version 1.0
  */
-public class WADataPaginatorHeader extends Object {
+public class WADataPaginatorHeader {
   /** sortable flag. This flag is set if the given column is sortable. */
   public static final int FLAGS_SORTABLE = 0x0001;
   /**
@@ -115,14 +115,14 @@ public class WADataPaginatorHeader extends Object {
   }
 
   private void setFieldDescending(int idx) {
-    FieldDescriptor fd = ((FieldDescriptor) m_Fields.get(idx));
+    FieldDescriptor fd = m_Fields.get(idx);
     int f = fd.getFlags();
     f &= ~FLAGS_ASCENDING;
     fd.setFlags(f);
   }
 
   private void setFieldAscending(int idx) {
-    FieldDescriptor fd = ((FieldDescriptor) m_Fields.get(idx));
+    FieldDescriptor fd = m_Fields.get(idx);
     int f = fd.getFlags();
     f |= FLAGS_ASCENDING;
     fd.setFlags(f);
@@ -132,28 +132,28 @@ public class WADataPaginatorHeader extends Object {
     if (idx < 0 || idx >= m_Fields.size()) {
       return (false);
     }
-    return (((FieldDescriptor) m_Fields.get(idx)).isSortable());
+    return (m_Fields.get(idx).isSortable());
   }
 
   public boolean isFieldAscending(int idx) {
     if (idx < 0 || idx >= m_Fields.size()) {
       return (false);
     }
-    return (((FieldDescriptor) m_Fields.get(idx)).isAscending());
+    return (m_Fields.get(idx).isAscending());
   }
 
   public boolean isFieldDescending(int idx) {
     if (idx < 0 || idx >= m_Fields.size()) {
       return (false);
     }
-    return (((FieldDescriptor) m_Fields.get(idx)).isDescending());
+    return (m_Fields.get(idx).isDescending());
   }
 
   public String getFieldRoutingAddress(int idx) {
     if (idx < 0 || idx >= m_Fields.size()) {
       return (null);
     }
-    return (((FieldDescriptor) m_Fields.get(idx)).getRoutingAddress());
+    return (m_Fields.get(idx).getRoutingAddress());
   }
 
   public String getSortKey() {
@@ -168,14 +168,14 @@ public class WADataPaginatorHeader extends Object {
     if (idx < 0 || idx >= m_Fields.size()) {
       return (null);
     }
-    return (((FieldDescriptor) m_Fields.get(idx)).getDisplayName());
+    return (m_Fields.get(idx).getDisplayName());
   }
 
   public String getFieldName(int idx) {
     if (idx < 0 || idx >= m_Fields.size()) {
       return (null);
     }
-    return (((FieldDescriptor) m_Fields.get(idx)).getName());
+    return (m_Fields.get(idx).getName());
   }
 
   class FieldDescriptor {

@@ -24,15 +24,16 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.AbstractTable;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
 
-public class NotifChannelTable extends AbstractTable {
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+public class NotifChannelTable extends AbstractTable<NotifChannelRow> {
 
   /**
    * Builds a new NotifChannelTable
@@ -51,7 +52,7 @@ public class NotifChannelTable extends AbstractTable {
    * Returns the unique NotifChannel row having a given id
    */
   public NotifChannelRow getNotifChannel(int id) throws UtilException {
-    return (NotifChannelRow) getUniqueRow(SELECT_NOTIFCHANNEL_BY_ID, id);
+    return getUniqueRow(SELECT_NOTIFCHANNEL_BY_ID, id);
   }
 
   static final private String SELECT_NOTIFCHANNEL_BY_ID = "select "
@@ -61,8 +62,8 @@ public class NotifChannelTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifChannelRow[] getAllRows() throws UtilException {
-    return (NotifChannelRow[]) getRows(SELECT_ALL_NOTIFCHANNEL).toArray(
-        new NotifChannelRow[0]);
+    List<NotifChannelRow> rows =  getRows(SELECT_ALL_NOTIFCHANNEL);
+    return rows.toArray(new NotifChannelRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_NOTIFCHANNEL = "select "
@@ -72,14 +73,15 @@ public class NotifChannelTable extends AbstractTable {
    * Returns the unique row given by a no parameters query.
    */
   public NotifChannelRow getNotifChannel(String query) throws UtilException {
-    return (NotifChannelRow) getUniqueRow(query);
+    return getUniqueRow(query);
   }
 
   /**
    * Returns all the rows given by a no parameters query.
    */
   public NotifChannelRow[] getNotifChannels(String query) throws UtilException {
-    return (NotifChannelRow[]) getRows(query).toArray(new NotifChannelRow[0]);
+    List<NotifChannelRow> rows =  getRows(query);
+    return rows.toArray(new NotifChannelRow[rows.size()]);
   }
 
   /**
@@ -132,7 +134,7 @@ public class NotifChannelTable extends AbstractTable {
   /**
    * Fetch the current NotifChannel row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  protected NotifChannelRow fetchRow(ResultSet rs) throws SQLException {
     return new NotifChannelRow(rs.getInt("id"), rs.getString("name"), rs
         .getString("description"), rs.getString("couldBeAdded"), rs
         .getString("fromAvailable"), rs.getString("subjectAvailable"));
@@ -142,8 +144,7 @@ public class NotifChannelTable extends AbstractTable {
    * Prepares the statement to update the given row
    */
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) throws SQLException {
-    NotifChannelRow r = (NotifChannelRow) row;
+      NotifChannelRow r) throws SQLException {
     update.setString(1, truncate(r.getName(), 20));
     update.setString(2, truncate(r.getDescription(), 200));
     update.setString(3, truncate(r.getCouldBeAdded(), 1));
@@ -156,8 +157,7 @@ public class NotifChannelTable extends AbstractTable {
    * Prepares the statement to insert the given row
    */
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) throws SQLException {
-    NotifChannelRow r = (NotifChannelRow) row;
+      NotifChannelRow r) throws SQLException {
     if (r.getId() == -1) {
       r.setId(getNextId());
     }

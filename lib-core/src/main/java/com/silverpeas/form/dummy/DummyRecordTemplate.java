@@ -27,6 +27,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.util.ArrayUtil;
 
 /**
  * A dummy record template.
@@ -50,7 +51,7 @@ public class DummyRecordTemplate implements RecordTemplate {
    */
   @Override
   public String[] getFieldNames() {
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**
@@ -59,7 +60,7 @@ public class DummyRecordTemplate implements RecordTemplate {
    */
   @Override
   public FieldTemplate[] getFieldTemplates() {
-    return new FieldTemplate[0];
+    return ArrayUtil.EMPTY_FIELD_TEMPLATE_ARRAY;
   }
 
   /**

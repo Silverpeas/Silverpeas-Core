@@ -24,12 +24,12 @@
 
 package com.silverpeas.form;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.form.fieldType.DateField;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataRecordUtil {
   /**
@@ -40,10 +40,10 @@ public class DataRecordUtil {
     Field updatedField = null;
     Field copiedField = null;
 
-    for (int i = 0; i < fieldNames.length; i++) {
-      updatedField = updatedRecord.getField(fieldNames[i]);
+    for (String fieldName : fieldNames) {
+      updatedField = updatedRecord.getField(fieldName);
       try {
-        copiedField = copiedRecord.getField(fieldNames[i]);
+        copiedField = copiedRecord.getField(fieldName);
         if (copiedField == null) {
           continue;
         }

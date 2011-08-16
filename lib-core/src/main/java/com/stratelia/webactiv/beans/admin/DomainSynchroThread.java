@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.Vector;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.util.Vector;
 
 public class DomainSynchroThread extends Thread {
   private Admin m_theAdmin = null;
@@ -84,9 +84,9 @@ public class DomainSynchroThread extends Thread {
       for (i = 0; (i < m_Domains.size()) && (!m_mustStop); i++) {
         SilverTrace.info("admin", "DomainSynchroThread.run",
             "root.MSG_GEN_PARAM_VALUE", "------------DEBUT SYNCHRO DOMAINE #"
-            + (String) m_Domains.get(i) + "-----------");
+            + m_Domains.get(i) + "-----------");
         try {
-          m_theAdmin.difSynchro((String) m_Domains.get(i));
+          m_theAdmin.difSynchro(m_Domains.get(i));
         } catch (Exception e) {
           m_ErrorOccured = e;
           SilverTrace.error("admin", "DomainSynchroThread.run",
@@ -95,7 +95,7 @@ public class DomainSynchroThread extends Thread {
         }
         SilverTrace.info("admin", "DomainSynchroThread.run",
             "root.MSG_GEN_PARAM_VALUE", "------------FIN SYNCHRO DOMAINE #"
-            + (String) m_Domains.get(i) + "-----------");
+            + m_Domains.get(i) + "-----------");
       }
       if (!m_mustStop && (m_Domains.size() > 0)) {
         try {

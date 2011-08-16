@@ -24,9 +24,9 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
-import java.util.List;
-
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
+
+import java.util.List;
 
 public class Value extends TreeNode implements java.io.Serializable {
 
@@ -50,24 +50,17 @@ public class Value extends TreeNode implements java.io.Serializable {
     super();
   }
 
-  public Value(String id, String treeId, String name, String description,
-      String creationDate, String creatorId, String path, int level, int order,
-      String fatherId) {
-    super(id, treeId, name, description, creationDate, creatorId, path, level,
-        order, fatherId);
-    setValuePK(new ValuePK(id));
-  }
-
-  public Value(String id, String treeId, String name, String creationDate,
+  public Value(String id, String treeId, String name, String description, String creationDate,
       String creatorId, String path, int level, int order, String fatherId) {
-    super(id, treeId, name, null, creationDate, creatorId, path, level, order,
-        fatherId);
+    super(id, treeId, name, description, creationDate, creatorId, path, level, order, fatherId);
     setValuePK(new ValuePK(id));
   }
 
-  //
-  // public methods
-  //
+  public Value(String id, String treeId, String name, String creationDate, String creatorId,
+      String path, int level, int order, String fatherId) {
+    super(id, treeId, name, null, creationDate, creatorId, path, level, order, fatherId);
+    setValuePK(new ValuePK(id));
+  }
 
   public void setValuePK(ValuePK pk) {
     this.pk = pk;
@@ -108,7 +101,7 @@ public class Value extends TreeNode implements java.io.Serializable {
   }
 
   public void setAxisId(int axisId) {
-    this.axisId = new Integer(axisId).toString();
+    this.axisId = Integer.toString(axisId);
   }
 
   public String getAxisId() {
@@ -119,9 +112,10 @@ public class Value extends TreeNode implements java.io.Serializable {
     String fullPath = "";
     Value value = null;
     for (int i = 0; i < pathValues.size(); i++) {
-      value = (Value) pathValues.get(i);
-      if (i != 0)
+      value = pathValues.get(i);
+      if (i != 0)  {
         fullPath += delimitor;
+      }
       fullPath += value.getName();
     }
     return fullPath;

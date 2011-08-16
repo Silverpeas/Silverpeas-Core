@@ -22,13 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.silverpeas.interestCenter.util;
-
-import java.rmi.RemoteException;
-import java.util.List;
 
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.ejb.InterestCenterBm;
@@ -36,6 +30,9 @@ import com.silverpeas.interestCenter.ejb.InterestCenterBmHome;
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+
+import java.rmi.RemoteException;
+import java.util.List;
 
 public class InterestCenterUtil {
 
@@ -54,14 +51,10 @@ public class InterestCenterUtil {
   private void initEJB() {
     if (icEjb == null) {
       try {
-        InterestCenterBmHome icEjbHome = (InterestCenterBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
-            InterestCenterBmHome.class);
+        InterestCenterBmHome icEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME, InterestCenterBmHome.class);
         icEjb = icEjbHome.create();
       } catch (Exception e) {
-        throw new InterestCenterRuntimeException(
-            "InterestCenterUtil.initEJB()", "root.EX_CANT_GET_REMOTE_OBJECT",
-            "", e);
+        throw new InterestCenterRuntimeException("InterestCenterUtil.initEJB()", "root.EX_CANT_GET_REMOTE_OBJECT","", e);
       }
     }
   }

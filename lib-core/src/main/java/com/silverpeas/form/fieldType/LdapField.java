@@ -165,7 +165,7 @@ public class LdapField extends TextField {
     LDAPSearchResults searchResult = null;
 
     // parsing filter -> dynamic variable
-    if (filter.indexOf(VARIABLE_LOGIN) != -1) {
+    if (filter.contains(VARIABLE_LOGIN)) {
       try {
         String valueLogin = organizationController.getUserDetail(currentUserId)
             .getLogin();
@@ -198,7 +198,7 @@ public class LdapField extends TextField {
       try {
         while (searchResult.hasMore()
             && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
-          entry = (LDAPEntry) searchResult.next();
+          entry = searchResult.next();
 
           if (tabSearchAttribute != null) {
             ldapAttribute = entry.getAttribute(tabSearchAttribute[0]);

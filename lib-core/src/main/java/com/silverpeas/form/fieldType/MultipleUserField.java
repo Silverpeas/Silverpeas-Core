@@ -28,6 +28,7 @@ package com.silverpeas.form.fieldType;
 import com.google.common.base.Joiner;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -101,7 +102,7 @@ public class MultipleUserField implements Field {
   @Override
   public String getValue() {
     SilverTrace.info("form", "MultipleUserField.getValue",
-        "root.MSG_GEN_PARAM_VALUE", "userIds = " + getUserIds());
+        "root.MSG_GEN_PARAM_VALUE", "userIds = " + Arrays.toString(getUserIds()));
     if (this.userIds == null) {
       return null;
     }
@@ -202,7 +203,7 @@ public class MultipleUserField implements Field {
         userIds[i] = (values[i] == null) ? "" : values[i].getId();
       }
     } else if (value == null) {
-      this.userIds = new String[0];
+      this.userIds = ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
       throw new FormException("MultipleUserField.setObjectValue", "form.EXP_NOT_AN_USERS_ARRAY");
     }
@@ -324,7 +325,7 @@ public class MultipleUserField implements Field {
 
   @Override
   public int hashCode() {
-    return ("" + this.userIds).hashCode();
+    return ("" + Arrays.toString(this.userIds)).hashCode();
   }
 
   /**

@@ -25,7 +25,6 @@
 package com.silverpeas.export;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * This interface defines the features an immporter of serializable resources in Silverpeas have to

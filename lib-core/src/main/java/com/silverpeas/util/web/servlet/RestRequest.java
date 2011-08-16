@@ -24,13 +24,12 @@
 
 package com.silverpeas.util.web.servlet;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class RestRequest {
   public static final int UPDATE = 1;
@@ -115,7 +114,7 @@ public class RestRequest {
   }
 
   public String[] getElements(String name) {
-    return (String[]) this.elements.get(name);
+    return this.elements.get(name);
   }
 
   public int getAction() {

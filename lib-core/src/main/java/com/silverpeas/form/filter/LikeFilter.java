@@ -62,7 +62,7 @@ public class LikeFilter implements FieldFilter {
       normalized = normalized.trim().toLowerCase();
     }
 
-    return normalized.indexOf(reference) != -1;
+    return normalized.contains(reference);
   }
 
   /**

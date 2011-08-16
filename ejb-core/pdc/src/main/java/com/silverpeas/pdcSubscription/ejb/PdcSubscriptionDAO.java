@@ -28,18 +28,18 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
+import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
+import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
 
 public class PdcSubscriptionDAO {
 
@@ -221,7 +221,7 @@ public class PdcSubscriptionDAO {
     int newId = -1;
 
     try {
-      newId = DBUtil.getNextId(PDC_SUBSRIPTION_TABLE_NAME, new String("id"));
+      newId = DBUtil.getNextId(PDC_SUBSRIPTION_TABLE_NAME, "id");
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionDAO.createPDCSubscription",
@@ -285,8 +285,7 @@ public class PdcSubscriptionDAO {
 
       for (Criteria sc : searchCriterias) {
         try {
-          newId = DBUtil.getNextId(PDC_SUBSRIPTION_AXIS_TABLE_NAME, new String(
-              "id"));
+          newId = DBUtil.getNextId(PDC_SUBSRIPTION_AXIS_TABLE_NAME, "id");
         } catch (Exception e) {
           throw new PdcSubscriptionRuntimeException(
               "PdcSubscriptionDAO.createSearchCriterias",
@@ -433,8 +432,7 @@ public class PdcSubscriptionDAO {
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
 
-    for (int i = 0; i < ids.length; i++) {
-      int id = ids[i];
+    for (int id : ids) {
       removePDCSubscriptionById(conn, id);
     }
   }
@@ -467,7 +465,7 @@ public class PdcSubscriptionDAO {
       rs = prepStmt.executeQuery();
 
       while (rs.next()) {
-        Integer subscrId = new Integer(rs.getInt(1));
+        Integer subscrId = rs.getInt(1);
         if (!ids.contains(subscrId)) {
           ids.add(subscrId);
         }

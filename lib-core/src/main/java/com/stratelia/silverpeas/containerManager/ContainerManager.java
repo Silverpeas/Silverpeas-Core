@@ -42,7 +42,7 @@ import java.util.List;
  * This class represents the ContainerManager API It is the gateway to all the silverpeas containers
  * (PDC, ....)
  */
-public class ContainerManager extends Object implements java.io.Serializable {
+public class ContainerManager implements java.io.Serializable {
 
   private static final long serialVersionUID = 3059920239753917851L;
   // Container peas
@@ -118,8 +118,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
       }
 
       // Compute the next instanceId
-      int newInstanceId = DBUtil.getNextId(m_sInstanceTable, new String(
-          "instanceId"));
+      int newInstanceId = DBUtil.getNextId(m_sInstanceTable, "instanceId");
 
       // Insert the association container - content
       String sSQLStatement = "INSERT INTO " + m_sInstanceTable
@@ -218,9 +217,9 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
     // Get the containerPeas from the containerType
     for (ContainerPeas s_acContainerPea : s_acContainerPeas) {
-      if (((ContainerPeas) s_acContainerPea).getType().equals(
+      if (s_acContainerPea.getType().equals(
           sContainerType)) {
-        return (ContainerPeas) s_acContainerPea;
+        return s_acContainerPea;
 
       }
     }
@@ -299,9 +298,9 @@ public class ContainerManager extends Object implements java.io.Serializable {
   public ContainerPeas getContainerPeasByType(String sContainerType)
       throws ContainerManagerException {
     for (int nI = 0; s_acContainerPeas != null && nI < s_acContainerPeas.size(); nI++) {
-      if (((ContainerPeas) s_acContainerPeas.get(nI)).getType().equals(
+      if (s_acContainerPeas.get(nI).getType().equals(
           sContainerType)) {
-        return (ContainerPeas) s_acContainerPeas.get(nI);
+        return s_acContainerPeas.get(nI);
       }
     }
     throw new ContainerManagerException("ContainerManager.getContainerPeas",
@@ -384,7 +383,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   private String getInstanceId(String componentId)
       throws ContainerManagerException {
-    return (String) getAsso().get(componentId);
+    return getAsso().get(componentId);
   }
 
   private void addAsso(String componentId, int instanceId)

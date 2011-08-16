@@ -24,21 +24,19 @@
 
 package com.silverpeas.util.i18n;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 public class I18NHelper {
 
@@ -49,7 +47,7 @@ public class I18NHelper {
   private static int nbLanguages = 0;
   public static boolean isI18N = false;
   public static String defaultLanguage = null;
-  private static List<String> allCodes = new ArrayList<String>();
+  private final static List<String> allCodes = new ArrayList<String>();
 
   public static final String HTMLSelectObjectName = "I18NLanguage";
   public static final String HTMLHiddenRemovedTranslationMode = "TranslationRemoveIt";
@@ -88,8 +86,7 @@ public class I18NHelper {
 
   static public String getLanguageLabel(String code, String userLanguage) {
     List<I18NLanguage> labels = allLanguages.get(userLanguage);
-    for (int l = 0; l < labels.size(); l++) {
-      I18NLanguage language = labels.get(l);
+    for (I18NLanguage language : labels) {
       if (language.getCode().equalsIgnoreCase(code)) {
         return language.getLabel();
       }
@@ -144,7 +141,7 @@ public class I18NHelper {
     while (it.hasNext()) {
       String code = it.next();
       String className = "";
-      if (url.indexOf("?") != -1) {
+      if (url.contains("?")) {
         link = url + "&SwitchLanguage=" + code;
       }
       else {
@@ -279,9 +276,7 @@ public class I18NHelper {
     }
     list += "<SELECT name=\"" + HTMLSelectObjectName + "\" "
         + onChangeJavascript + ">\n";
-    for (int l = 0; l < toDisplay.size(); l++) {
-      I18NLanguage language = toDisplay.get(l);
-
+    for (I18NLanguage language : toDisplay) {
       String selected = "";
       if (language.getCode().equals(currentTranslation)) {
         selected = "selected";

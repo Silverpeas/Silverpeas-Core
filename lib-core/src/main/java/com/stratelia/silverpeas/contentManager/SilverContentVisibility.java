@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.contentManager;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 
-public class SilverContentVisibility extends Object {
+public class SilverContentVisibility {
   private String beginDate = "0000/00/00";
   private String endDate = "9999/99/99";
   private boolean isVisible = true;

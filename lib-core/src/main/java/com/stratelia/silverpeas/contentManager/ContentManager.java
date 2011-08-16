@@ -31,6 +31,8 @@ import com.stratelia.silverpeas.util.JoinStatement;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import javax.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,7 +40,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,14 +47,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.inject.Named;
 
 /**
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents
  * (documentation, ....)
  */
 @Named("contentManager")
-public class ContentManager extends Object implements Serializable {
+public class ContentManager implements Serializable {
 
   private final static List<ContentPeas> s_acContentPeas = new ArrayList<ContentPeas>();
 
@@ -254,13 +254,13 @@ public class ContentManager extends Object implements Serializable {
             "sContentType= " + sContentType + " sComponentId=" + sComponentId);
 
     // Get the ContentPeas from the ContentType
-    for (int nI = 0; nI < s_acContentPeas.size(); nI++) {
+    for (ContentPeas s_acContentPea : s_acContentPeas) {
       SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
-              "Type= " + s_acContentPeas.get(nI).getType());
-      if ((s_acContentPeas.get(nI)).getType().equals(sContentType)) {
+          "Type= " + s_acContentPea.getType());
+      if (s_acContentPea.getType().equals(sContentType)) {
         SilverTrace.info("contentManager", "ContentManager.getContentPeas", "", "Type Trouvé= "
-                + s_acContentPeas.get(nI).getType() + "   " + sContentType);
-        return s_acContentPeas.get(nI);
+            + s_acContentPea.getType() + "   " + sContentType);
+        return s_acContentPea;
       }
     }
     SilverTrace.info("contentManager", "ContentManager.getContentPeas",
@@ -987,13 +987,11 @@ public class ContentManager extends Object implements Serializable {
 
       // Loop on the alSilverContentId
       String instanceId = "";
-      Integer oneSilverContentId = null;
-      for (int i = 0; i < alSilverContentId.size(); i++) {
-        oneSilverContentId = alSilverContentId.get(i);
+      for (Integer oneSilverContentId : alSilverContentId) {
         prepStmt.setInt(1, oneSilverContentId.intValue());
         SilverTrace.info("contentManager", "ContentManager.getInstanceId",
-                "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
-                + " silverContentId=" + oneSilverContentId);
+            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
+            + " silverContentId=" + oneSilverContentId);
         resSet = prepStmt.executeQuery();
         if (resSet.next()) {
           instanceId = resSet.getString(1);

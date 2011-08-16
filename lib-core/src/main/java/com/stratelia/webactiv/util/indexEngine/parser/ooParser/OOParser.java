@@ -29,6 +29,15 @@ package com.stratelia.webactiv.util.indexEngine.parser.ooParser;
  * Parser for Open Office Parse the content (content.xml) and the meta datas (meta.xml)
  * <p/>
  */
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.indexEngine.parser.Parser;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Namespace;
+import org.jdom.filter.ElementFilter;
+import org.jdom.input.SAXBuilder;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,20 +47,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.filter.ElementFilter;
-import org.jdom.input.SAXBuilder;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 
 public class OOParser implements Parser {
 
@@ -83,7 +83,7 @@ public class OOParser implements Parser {
   @Override
   public Reader getReader(String path, String encoding) {
     Reader reader = null;
-    tempFolder = new Long(new Date().getTime()).toString();
+    tempFolder = Long.toString(System.currentTimeMillis());
     try {
       List<String> toIndex = getFilesToIndex(path);
       String ooContents = this.parse(toIndex);
@@ -190,7 +190,7 @@ public class OOParser implements Parser {
         zipFile = new ZipFile(zip);
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
-          ZipEntry entry = (ZipEntry) entries.nextElement();
+          ZipEntry entry = entries.nextElement();
           if (entry.getName().equals("meta.xml")
                   || entry.getName().equals("content.xml")) {
             copyInputStream(zipFile.getInputStream(entry),

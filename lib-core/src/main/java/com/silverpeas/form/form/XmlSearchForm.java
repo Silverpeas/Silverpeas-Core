@@ -24,16 +24,6 @@
 
 package com.silverpeas.form.form;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.jsp.JspWriter;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -46,6 +36,14 @@ import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.Util;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.jsp.JspWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -152,7 +150,7 @@ public class XmlSearchForm extends AbstractForm {
 
       // calcul lastFieldIndex
       int lastFieldIndex = -1;
-      lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+      lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
       FieldTemplate fieldTemplate;
       String fieldName;
       String fieldType;
@@ -187,7 +185,7 @@ public class XmlSearchForm extends AbstractForm {
       String fieldLabel;
       itFields = this.fieldTemplates.iterator();
       while (itFields.hasNext()) {
-        fieldTemplate = (FieldTemplate) itFields.next();
+        fieldTemplate = itFields.next();
         if (fieldTemplate != null) {
           fieldName = fieldTemplate.getFieldName();
           fieldLabel = fieldTemplate.getLabel(language);
@@ -313,7 +311,7 @@ public class XmlSearchForm extends AbstractForm {
 
         // calcul lastFieldIndex
         int lastFieldIndex = -1;
-        lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+        lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
         FieldTemplate fieldTemplate;
         String fieldName;
         String fieldType;
@@ -348,7 +346,7 @@ public class XmlSearchForm extends AbstractForm {
         String fieldLabel;
         itFields = this.fieldTemplates.iterator();
         while (itFields.hasNext()) {
-          fieldTemplate = (FieldTemplate) itFields.next();
+          fieldTemplate = itFields.next();
           if (fieldTemplate != null) {
             fieldName = fieldTemplate.getFieldName();
             fieldLabel = fieldTemplate.getLabel(language);

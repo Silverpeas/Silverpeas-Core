@@ -29,15 +29,15 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.google.common.base.Objects;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author neysseri
@@ -181,7 +181,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   }
 
   public void setFatherId(int fatherId) {
-    this.fatherId = new Integer(fatherId).toString();
+    this.fatherId = Integer.toString(fatherId);
   }
 
   public void setFatherId(String fatherId) {
@@ -189,7 +189,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   }
 
   public void setId(int id) {
-    this.id = new Integer(id).toString();
+    this.id = Integer.toString(id);
   }
 
   public void setId(String id) {

@@ -62,7 +62,7 @@ public class IdPK extends WAPrimaryKey {
    * setIdAsLong( long value )
    */
   public void setIdAsLong(long value) {
-    setId(new Long(value).toString());
+    setId(Long.toString(value));
   }
 
   /**

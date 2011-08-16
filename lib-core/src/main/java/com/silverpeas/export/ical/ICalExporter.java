@@ -23,17 +23,12 @@
  */
 package com.silverpeas.export.ical;
 
-import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.NoDataToExportException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 

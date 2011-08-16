@@ -239,8 +239,8 @@ public class SpellCheckerImpl {
         add(query, "end" + ng, grams[grams.length - 1], bEnd); // matches end of word
 
       }
-      for (int i = 0; i < grams.length; i++) {
-        add(query, key, grams[i]);
+      for (String gram : grams) {
+        add(query, key, gram);
       }
     }
 

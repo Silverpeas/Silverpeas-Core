@@ -32,7 +32,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 /**
  * This class represents one container descriptor in memory (read from the xml)
  */
-public class ContainerPeas extends Object {
+public class ContainerPeas {
   String m_sType = null; // The container type (unique among all containers)
   String m_sContainerInterface = null; // The class to call that implements the
   // ContainerInterface

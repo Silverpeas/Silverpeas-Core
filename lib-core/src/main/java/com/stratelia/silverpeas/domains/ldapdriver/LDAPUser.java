@@ -49,7 +49,7 @@ import java.util.Vector;
 public class LDAPUser {
   LDAPSettings driverSettings = null;
   LDAPSynchroCache synchroCache = null;
-  StringBuffer synchroReport = null;
+  private StringBuffer synchroReport = null;
   boolean synchroInProcess = false;
 
   protected DomainDriver driverParent = null;
@@ -120,22 +120,22 @@ public class LDAPUser {
       usersVector.add(translateUser(lds, theEntries[i]));
       SilverTrace.info("admin", "LDAPUser.getAllUsers()",
           "root.MSG_GEN_PARAM_VALUE", "User " + Integer.toString(i) + " : "
-          + ((UserDetail) usersVector.get(i)).getLogin());
-      ((UserDetail) usersVector.get(i)).traceUser();// Trace niveau Info ds
+          + usersVector.get(i).getLogin());
+      usersVector.get(i).traceUser();// Trace niveau Info ds
       // module 'admin' des infos
       // user courant : ID,
       // domaine, login,
       // e-mail,...
       SynchroReport.debug("LDAPUser.getAllUsers()", "Utilisateur trouvé no : "
           + Integer.toString(i) + ", login : "
-          + ((UserDetail) usersVector.get(i)).getLogin() + ", "
-          + ((UserDetail) usersVector.get(i)).getFirstName() + ", "
-          + ((UserDetail) usersVector.get(i)).getLastName() + ", "
-          + ((UserDetail) usersVector.get(i)).geteMail(), null);
+          + usersVector.get(i).getLogin() + ", "
+          + usersVector.get(i).getFirstName() + ", "
+          + usersVector.get(i).getLastName() + ", "
+          + usersVector.get(i).geteMail(), null);
     }
     SynchroReport.info("LDAPUser.getAllUsers()", "Récupération de "
         + theEntries.length + " utilisateurs du domaine LDAP distant", null);
-    usersReturned = (UserDetail[]) usersVector.toArray(new UserDetail[0]);
+    usersReturned = usersVector.toArray(new UserDetail[usersVector.size()]);
     return usersReturned;
   }
 
@@ -164,7 +164,7 @@ public class LDAPUser {
         driverSettings.getUsersIdFilter(id));
     theEntry =
         LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings
-        .getScope(), driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[0]));
+        .getScope(), driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[lAttrs.size()]));
     return translateUserFull(lds, theEntry);
   }
 
@@ -234,9 +234,8 @@ public class LDAPUser {
 
     for (i = 0; i < keys.length; i++) {
       curProp = driverParent.getProperty(keys[i]);
-      if (curProp.getType() == DomainProperty.PROPERTY_TYPE_USERID) {
-        subUserDN = LDAPUtility.getFirstAttributeValue(userEntry, curProp
-            .getMapParameter());
+      if (DomainProperty.PROPERTY_TYPE_USERID.equals(curProp.getType())) {
+        subUserDN = LDAPUtility.getFirstAttributeValue(userEntry, curProp.getMapParameter());
         if (subUserDN != null && subUserDN.length() > 0) {
           try {
             subUserEntry = LDAPUtility.getFirstEntryFromSearch(lds, subUserDN,

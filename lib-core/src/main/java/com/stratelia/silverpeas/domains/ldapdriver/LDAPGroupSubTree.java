@@ -22,20 +22,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.domains.ldapdriver;
-
-import java.util.TreeMap;
-import java.util.Vector;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPDN;
 import com.novell.ldap.LDAPEntry;
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.TreeMap;
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object are root to their
@@ -93,7 +91,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
       groupsVector.add(LDAPUtility.getFirstAttributeValue(groupEntry,
           driverSettings.getGroupsIdField()));
     }
-    return (String[]) groupsVector.toArray(new String[0]);
+    return groupsVector.toArray(new String[groupsVector.size()]);
   }
 
   public String[] getGroupMemberGroupIds(String lds, String groupId)
@@ -137,7 +135,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
         usersVector.add(userSpecificId);
       }
     }
-    return (String[]) usersVector.toArray(new String[0]);
+    return usersVector.toArray(new String[usersVector.size()]);
   }
 
   /**
@@ -173,9 +171,8 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "LDAPGroupSubTree.getChildGroupsEntry()",
             "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-        synchroReport.append("PB getting Group's subgroups : " + parentId
-            + "\n");
-        return new LDAPEntry[0];
+        append("PB getting Group's subgroups : ").append(parentId).append("\n");
+        return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
       } else {
         throw e;
       }
@@ -245,7 +242,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
         }
       }
     }
-    return (LDAPEntry[]) entryVector.toArray(new LDAPEntry[0]);
+    return entryVector.toArray(new LDAPEntry[entryVector.size()]);
   }
 
   /**
@@ -262,7 +259,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     int i;
 
     if (theEntries == null) {
-      return new LDAPEntry[0];
+      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     }
     for (i = 0; i < theEntries.length; i++) {
       groupEntry = theEntries[i];
@@ -270,7 +267,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
       forReversing.reverse();
       theMap.put(forReversing.toString(), groupEntry);
     }
-    return (LDAPEntry[]) (theMap.values().toArray(new LDAPEntry[0]));
+    return theMap.values().toArray(new LDAPEntry[theMap.size()]);
   }
 
 }

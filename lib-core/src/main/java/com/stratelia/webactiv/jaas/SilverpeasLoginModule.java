@@ -24,22 +24,6 @@
 
 package com.stratelia.webactiv.jaas;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.jcr.Credentials;
-import javax.jcr.SimpleCredentials;
-import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.LoginException;
-import javax.security.auth.spi.LoginModule;
-
-import org.apache.jackrabbit.core.security.AnonymousPrincipal;
-
 import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
@@ -50,8 +34,21 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.WithNested;
-
+import org.apache.jackrabbit.core.security.AnonymousPrincipal;
 import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
+
+import javax.jcr.Credentials;
+import javax.jcr.SimpleCredentials;
+import javax.security.auth.Subject;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginException;
+import javax.security.auth.spi.LoginModule;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class SilverpeasLoginModule implements LoginModule {
 
@@ -130,29 +127,25 @@ public class SilverpeasLoginModule implements LoginModule {
           SimpleCredentials sc = (SimpleCredentials) creds;
           // authenticate
           Domain[] domains = controller.getAllDomains();
-          for (int i = 0; i < domains.length; i++) {
+          for (Domain domain : domains) {
             String key = authenticator.authenticate(sc.getUserID(),
-                new String(sc.getPassword()), domains[i]
+                new String(sc.getPassword()), domain
                 .getId(), null);
             if (key != null && !key.startsWith("Error_")) {
-              String userId = administrator.authenticate(key,
-                  null, false);
-              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(
-                  userId);
+              String userId = administrator.authenticate(key, null, false);
+              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
               fillPrincipal(principal);
               principals.add(principal);
             }
           }
 
-          if (principals.isEmpty()
-              && UserDetail.isAnonymousUser(sc.getUserID())) {
+          if (principals.isEmpty() && UserDetail.isAnonymousUser(sc.getUserID())) {
             principals.add(new AnonymousPrincipal());
           }
           authenticated = true;
         } else if (creds instanceof SilverpeasCredentials) {
           String userId = ((SilverpeasCredentials) creds).getUserId();
-          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(
-              userId);
+          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
           fillPrincipal(principal);
           principals.add(principal);
           authenticated = true;
@@ -168,8 +161,7 @@ public class SilverpeasLoginModule implements LoginModule {
     } catch (java.io.IOException ioe) {
       throw new LoginException(ioe.toString());
     } catch (UnsupportedCallbackException uce) {
-      throw new LoginException(uce.getCallback().toString()
-          + " not available");
+      throw new LoginException(uce.getCallback().toString() + " not available");
     } catch (AdminException e) {
       StringBuffer message = new StringBuffer();
 

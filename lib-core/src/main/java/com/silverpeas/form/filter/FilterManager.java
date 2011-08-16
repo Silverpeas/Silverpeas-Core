@@ -24,13 +24,6 @@
 
 package com.silverpeas.form.filter;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
@@ -41,6 +34,13 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * FilterManager
@@ -78,20 +78,17 @@ public class FilterManager {
       String filteredLabel;
       GenericFieldTemplate criteriumField;
 
-      for (int i = 0; i < filteredFields.length; i++) {
-        filteredType = filteredFields[i].getTypeName();
-        filteredName = filteredFields[i].getFieldName();
-        filteredLabel = filteredFields[i].getLabel(lang);
+      for (FieldTemplate filteredField : filteredFields) {
+        filteredType = filteredField.getTypeName();
+        filteredName = filteredField.getFieldName();
+        filteredLabel = filteredField.getLabel(lang);
 
         if ("text".equals(filteredType)) {
-          criteriumField = new GenericFieldTemplate(filteredName + "__like",
-              "text");
-          criteriumField.addLabel(filteredLabel + " "
-              + Util.getString("eq", lang), lang);
+          criteriumField = new GenericFieldTemplate(filteredName + "__like", "text");
+          criteriumField.addLabel(filteredLabel + " "+ Util.getString("eq", lang), lang);
 
           if (fieldsParameter.containsKey(filteredName)) {
-            FieldTemplate field = (FieldTemplate) fieldsParameter
-                .get(filteredName);
+            FieldTemplate field = fieldsParameter.get(filteredName);
             criteriumField.setDisplayerName("listbox");
 
             Map<String, String> parameters = field.getParameters(lang);
@@ -106,22 +103,17 @@ public class FilterManager {
 
           criteriaTemplate.addFieldTemplate(criteriumField);
         } else if ("date".equals(filteredType)) {
-          criteriumField = new GenericFieldTemplate(filteredName + "__lt",
-              "date");
+          criteriumField = new GenericFieldTemplate(filteredName + "__lt", "date");
           criteriumField.addLabel(filteredLabel + " "
               + Util.getString("le", lang), lang);
           criteriaTemplate.addFieldTemplate(criteriumField);
 
-          criteriumField = new GenericFieldTemplate(filteredName + "__gt",
-              "date");
-          criteriumField.addLabel(filteredLabel + " "
-              + Util.getString("ge", lang), lang);
+          criteriumField = new GenericFieldTemplate(filteredName + "__gt", "date");
+          criteriumField.addLabel(filteredLabel + " " + Util.getString("ge", lang), lang);
           criteriaTemplate.addFieldTemplate(criteriumField);
         } else {
-          criteriumField = new GenericFieldTemplate(filteredName + "__equal",
-              filteredType);
-          criteriumField.addLabel(filteredLabel + " "
-              + Util.getString("eq", lang), lang);
+          criteriumField = new GenericFieldTemplate(filteredName + "__equal", filteredType);
+          criteriumField.addLabel(filteredLabel + " " + Util.getString("eq", lang), lang);
           criteriaTemplate.addFieldTemplate(criteriumField);
         }
       }
@@ -166,19 +158,15 @@ public class FilterManager {
     FieldFilter fieldFilter;
 
     String[] criteriaNames = getCriteriaTemplate().getFieldNames();
-    String criteriaName;
     Field criteria;
     String filteredName;
     String filterKind;
-    for (int i = 0; i < criteriaNames.length; i++) {
-      criteriaName = criteriaNames[i];
+    for (String criteriaName : criteriaNames) {
       criteria = criteriaRecord.getField(criteriaName);
-
       // skip null criterium
       if (criteria.isNull()) {
         continue;
       }
-
       filteredName = getFilteredName(criteriaName);
       filterKind = getFilterKind(criteriaName);
 
@@ -193,12 +181,10 @@ public class FilterManager {
       } else {
         fieldFilter = null;
       }
-
       if (fieldFilter != null) {
         filter.addFieldFilter(filteredName, fieldFilter);
       }
     }
-
     return filter;
   }
 
