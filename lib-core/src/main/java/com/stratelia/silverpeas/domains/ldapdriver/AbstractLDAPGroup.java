@@ -247,7 +247,7 @@ abstract public class AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.getGroup",
             "admin.EX_ERR_GET_GROUP", "GroupId=" + id, e);
-        synchroReport.append("PB getting Group : " + id + "\n");
+        synchroReport.append("PB getting Group : ").append(id).append("\n");
       } else {
         throw e;
       }
@@ -267,7 +267,7 @@ abstract public class AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.getGroupByName",
             "admin.EX_ERR_GET_GROUP", "GroupId=" + name, e);
-        synchroReport.append("PB getting Group : " + name + "\n");
+        synchroReport.append("PB getting Group : ").append(name).append("\n");
       } else {
         throw e;
       }
@@ -318,8 +318,8 @@ abstract public class AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroup",
             "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-        synchroReport.append("PB getting Group's childs : "
-            + groupInfos.getName() + "\n");
+        synchroReport.append("PB getting Group's childs : ").append(groupInfos.getName()).append(
+            "\n");
         SynchroReport.error("AbstractLDAPGroup.translateGroup()",
             "Pb de récupération des membres utilisateurs du groupe "
             + groupInfos.getSpecificId(), e);
@@ -368,8 +368,8 @@ abstract public class AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroups",
               "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-          synchroReport.append("PB getting Group's childs : "
-              + groupInfos.getName() + "\n");
+          synchroReport.append("PB getting Group's childs : ").append(groupInfos.getName()).append(
+              "\n");
           SynchroReport.error("AbstractLDAPGroup.translateGroups()",
               "Pb de récupération des membres utilisateurs du groupe "
               + groupInfos.getSpecificId(), e);

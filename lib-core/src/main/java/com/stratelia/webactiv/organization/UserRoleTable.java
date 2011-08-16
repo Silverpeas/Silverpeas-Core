@@ -161,7 +161,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
       AdminPersistenceException {
     int[] params = new int[]{instanceId, objectId};
     String[] sParams = new String[]{objectType};
-    return getIds(SELECT_ALL_OBJECT_USERROLE_IDS, params, sParams).toArray(new String[0]);
+    List<String > ids = getIds(SELECT_ALL_OBJECT_USERROLE_IDS, params, sParams);
+    return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_OBJECT_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId = ? and objectType = ? ";

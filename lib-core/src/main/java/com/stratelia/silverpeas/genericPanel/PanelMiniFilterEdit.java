@@ -47,18 +47,18 @@ public class PanelMiniFilterEdit extends PanelMiniFilterToken {
   public String getHTMLDisplay() {
     StringBuffer sb = new StringBuffer();
 
-    sb.append("&nbsp;&nbsp;<input type=text size=5 name=\"miniFilter" + '_'
-        + m_Label + '_' + Integer.toString(m_Index)
-        + "\" style=\"font-size:9;\" value=\"" + m_Text + "\"");
+    sb.append("&nbsp;&nbsp;<input type=text size=5 name=\"miniFilter" + '_').append(m_Label).append(
+        '_').append(Integer.toString(m_Index)).append("\" style=\"font-size:9;\" value=\"").append(
+        m_Text).append("\"");
     if (m_ReadOnly) {
       sb.append(" readonly>&nbsp;");
     } else {
       sb.append(">&nbsp;");
     }
-    sb.append("<a href=\"javascript:submitOperation('GENERICPANELMINIFILTER"
-        + '_' + m_Label + '_' + Integer.toString(m_Index) + "','')\">");
-    sb.append("<img src=\"" + m_Icon + "\" border=0 align=absmiddle alt=\""
-        + m_Alt + "\" title=\"" + m_Title + "\"></a>");
+    sb.append("<a href=\"javascript:submitOperation('GENERICPANELMINIFILTER" + '_').append(
+        m_Label).append('_').append(Integer.toString(m_Index)).append("','')\">");
+    sb.append("<img src=\"").append(m_Icon).append("\" border=0 align=absmiddle alt=\"").append(
+        m_Alt).append("\" title=\"").append(m_Title).append("\"></a>");
     // sb.append("<img src=\""+resource.getIcon("selectionPeas.filter")+"\" border=0 align=absmiddle alt=\""+resource.getString("selectionPeas.filter")+"\" title=\""+resource.getString("selectionPeas.filter")+"\"></a>");
     return sb.toString();
   }
