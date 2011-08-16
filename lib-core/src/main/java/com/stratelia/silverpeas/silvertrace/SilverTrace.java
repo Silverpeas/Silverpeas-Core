@@ -31,7 +31,6 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -140,43 +139,7 @@ public class SilverTrace {
    * @see #removeAppender
    */
   public static final int APPENDER_ALL = 0xFFFFFFFF;
-  /**
-   * HTML layout : Display "Time / Thread / Priority / Category / Message" into a TABLE
-   *
-   * @see #addAppenderConsole
-   * @see #addAppenderFile
-   * @see #addAppenderRollingFile
-   * @see #addAppenderMail
-   */
-  public final static String LAYOUT_HTML = "LAYOUT_HTML";
-  /**
-   * Short layout : Display "Time / Priority / Message"
-   *
-   * @see #addAppenderConsole
-   * @see #addAppenderFile
-   * @see #addAppenderRollingFile
-   * @see #addAppenderMail
-   */
-  public final static String LAYOUT_SHORT = "LAYOUT_SHORT";
-  /**
-   * Detailed layout : Display "Time / Priority / Calling Class and module / Message"
-   *
-   * @see #addAppenderConsole
-   * @see #addAppenderFile
-   * @see #addAppenderRollingFile
-   * @see #addAppenderMail
-   */
-  public final static String LAYOUT_DETAILED = "LAYOUT_DETAILED";
-  /**
-   * Fully detailed layout : Display "Tic count / Time / Priority / Thread / Calling Class and
-   * module / Message"
-   *
-   * @see #addAppenderConsole
-   * @see #addAppenderFile
-   * @see #addAppenderRollingFile
-   * @see #addAppenderMail
-   */
-  public final static String LAYOUT_FULL_DEBUG = "LAYOUT_FULL_DEBUG";
+
   /**
    * The trace file will be copied every 1st day of a mounth with the name :
    * FileName.ext.year-mounth A new file named FileName.ext is the created and will contains the
@@ -184,7 +147,7 @@ public class SilverTrace {
    *
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_MOUNTH = "'.'yyyy-MM";
+  public final static String ROLLING_MODE_MONTH = "'.'yyyy-MM";
   /**
    * The trace file will be copied every 1st day of a week with the name : FileName.ext.year-week A
    * new file named FileName.ext is the created and will contains the next week's traces Example :
@@ -192,7 +155,7 @@ public class SilverTrace {
    *
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_WEEK = "'.'yyyy-ww";
+  public final static String ROLLING_MODE_WEEK = "'.'yyyy-MM-WW";
   /**
    * The trace file will be copied every day at midnight with the name :
    * FileName.ext.year-mounth-day A new file named FileName.ext is the created and will contains the
@@ -200,7 +163,7 @@ public class SilverTrace {
    *
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_DAILY = "'.'yyyy-MM-dd";
+  public final static String ROLLING_MODE_DAILY = "'.'yyyy-MM-dd";
   /**
    * The trace file will be copied every hour with the name : FileName.ext.year-mounth-day-hour A
    * new file named FileName.ext is the created and will contains the next hour's traces Example :
@@ -208,25 +171,24 @@ public class SilverTrace {
    *
    * @see #addAppenderRollingFile
    */
-  public static String ROLLING_MODE_HOUR = "'.'yyyy-MM-dd-HH";
-  // Modules
-  // Level 0
+  public final static String ROLLING_MODE_HOUR = "'.'yyyy-MM-dd-HH";
+
   /**
    * The silverpeas root module's name
    */
-  public static String MODULE_ROOT = "root";
+  public final static String MODULE_ROOT = "root";
   /**
    * The old Debug class module's name
    */
-  public static String MODULE_OLD_DEBUG = "oldDebug";
+  public final static String MODULE_OLD_DEBUG = "oldDebug";
   /**
    * The special output for ERROR and FATAL module's name
    */
-  public static String MODULE_ERROR_AND_FATAL = "outErrorAndFatal";
+  public final static String MODULE_ERROR_AND_FATAL = "outErrorAndFatal";
   /**
    * The special output for SPY module's name
    */
-  public static String MODULE_SPY = "outSpy";
+  public final static String MODULE_SPY = "outSpy";
   /**
    * Create action code
    */
@@ -243,30 +205,25 @@ public class SilverTrace {
   /**
    * The Bus module's name
    */
-  public static String MODULE_BUS = "bus";
+  public static final String MODULE_BUS = "bus";
   /**
    * The Admin module's name
    */
-  public static String MODULE_ADMIN = "admin";
+  public static final String MODULE_ADMIN = "admin";
   /**
    * The Components module's name
    */
-  public static String MODULE_COMPONENTS = "components";
+  public static final String MODULE_COMPONENTS = "components";
   /**
    * The Libraries module's name
    */
-  public static String MODULE_LIBRARIES = "libraries";
+  public static final String MODULE_LIBRARIES = "libraries";
   // Available modules
   protected static Properties availableModules = new Properties();
   // Messages
   protected static MsgTrace traceMessages = new MsgTrace();
   // Directory to the error files
   protected static String errorDir = null;
-  // Layouts
-  protected static String layoutShort = "%-5p : %m%n";
-  protected static String layoutDetailed = "%d{dd/MM/yy-HH:mm:ss,SSS} - %-5p : %m%n";
-  protected static String layoutFullDebug =
-          "%-15.15r [%-26.26t] - %d{dd/MM/yy-HH:mm:ss,SSS} - %-5p : %m%n";
   // Init finished
   protected static boolean initFinished = false;
 
@@ -332,19 +289,17 @@ public class SilverTrace {
    * @param ex         the exception to trace
    */
   static public void debug(String module, String classe, String message, String extraInfos,
-          Throwable ex) {
+      Throwable ex) {
     if (initFinished) {
       try {
-        Logger cat = getModukeLogger(module, classe);
+        Logger logger = getModuleLogger(module, classe);
 
-        if (cat != null) {
-          if (cat.isDebugEnabled()) {
-            cat.debug(formatTraceMessage(module, classe, null, message, extraInfos), ex);
-          }
+        if (logger != null && logger.isDebugEnabled()) {
+          logger.debug(formatTraceMessage(module, classe, null, message, extraInfos), ex);
         }
       } catch (RuntimeException e) {
         SilverTrace.error("silvertrace", "SilverTrace.debug()",
-                "silvertrace.ERR_RUNTIME_ERROR_OCCUR", "Msg=" + message, e);
+            "silvertrace.ERR_RUNTIME_ERROR_OCCUR", "Msg=" + message, e);
         emergencyTrace(module, classe, message, extraInfos, ex);
       }
     } else {
@@ -411,7 +366,7 @@ public class SilverTrace {
           String extraInfos, Throwable ex) {
     if (initFinished) {
       try {
-        Logger cat = getModukeLogger(module, classe);
+        Logger cat = getModuleLogger(module, classe);
 
         if (cat != null) {
           if (cat.isInfoEnabled()) {
@@ -487,7 +442,7 @@ public class SilverTrace {
           Throwable ex) {
     if (initFinished) {
       try {
-        Logger cat = getModukeLogger(module, classe);
+        Logger cat = getModuleLogger(module, classe);
 
         if (cat != null) {
           if (cat.isEnabledFor(Level.WARN)) {
@@ -565,19 +520,19 @@ public class SilverTrace {
     if (initFinished) {
       try {
         // Normal traces
-        Logger cat = getModukeLogger(module, classe);
+        Logger logger = getModuleLogger(module, classe);
 
-        if (cat != null) {
-          if (cat.isEnabledFor(Level.ERROR)) {
-            cat.error(formatTraceMessage(module, classe, messageID,
+        if (logger != null) {
+          if (logger.isEnabledFor(Level.ERROR)) {
+            logger.error(formatTraceMessage(module, classe, messageID,
                     traceMessages.getMsgString(messageID), extraInfos), ex);
           }
         }
         // Error and Fatal traces
-        cat = getModukeLogger(MODULE_ERROR_AND_FATAL, null);
-        if (cat != null) {
-          if (cat.isEnabledFor(Level.ERROR)) {
-            cat.error(formatErrorAndFatalMessage(module, classe, messageID,
+        logger = getModuleLogger(MODULE_ERROR_AND_FATAL, null);
+        if (logger != null) {
+          if (logger.isEnabledFor(Level.ERROR)) {
+            logger.error(formatErrorAndFatalMessage(module, classe, messageID,
                     extraInfos, ex));
           }
         }
@@ -654,7 +609,7 @@ public class SilverTrace {
     if (initFinished) {
       try {
         // Normal traces
-        Logger cat = getModukeLogger(module, classe);
+        Logger cat = getModuleLogger(module, classe);
 
         if (cat != null) {
           if (cat.isEnabledFor(Level.FATAL)) {
@@ -663,7 +618,7 @@ public class SilverTrace {
           }
         }
         // Error and Fatal traces
-        cat = getModukeLogger(MODULE_ERROR_AND_FATAL, null);
+        cat = getModuleLogger(MODULE_ERROR_AND_FATAL, null);
         if (cat != null) {
           if (cat.isEnabledFor(Level.FATAL)) {
             cat.fatal(formatErrorAndFatalMessage(module, classe, messageID,
@@ -698,7 +653,7 @@ public class SilverTrace {
           String instanceId, String objectId, String userId, String actionId) {
     if (initFinished) {
       try {
-        Logger cat = getModukeLogger(MODULE_SPY, null);
+        Logger cat = getModuleLogger(MODULE_SPY, null);
         if (cat != null) {
           if (cat.isEnabledFor(Level.FATAL)) {
             cat.fatal(formatSpyMessage(spaceId, instanceId, objectId, userId,
@@ -879,27 +834,27 @@ public class SilverTrace {
    *               TRACE_LEVEL_UNKNOWN to remove the level condition for the module.
    */
   static public void setTraceLevel(String module, int val) {
-    Logger cat = getModukeLogger(module, null);
+    Logger logger = getModuleLogger(module, null);
 
-    if (cat != null) {
+    if (logger != null) {
       switch (val) {
         case TRACE_LEVEL_UNKNOWN:
-          cat.setLevel(null);
+          logger.setLevel(null);
           break;
         case TRACE_LEVEL_DEBUG:
-          cat.setLevel(Level.DEBUG);
+          logger.setLevel(Level.DEBUG);
           break;
         case TRACE_LEVEL_INFO:
-          cat.setLevel(Level.INFO);
+          logger.setLevel(Level.INFO);
           break;
         case TRACE_LEVEL_WARN:
-          cat.setLevel(Level.WARN);
+          logger.setLevel(Level.WARN);
           break;
         case TRACE_LEVEL_ERROR:
-          cat.setLevel(Level.ERROR);
+          logger.setLevel(Level.ERROR);
           break;
         case TRACE_LEVEL_FATAL:
-          cat.setLevel(Level.FATAL);
+          logger.setLevel(Level.FATAL);
           break;
       }
     }
@@ -915,7 +870,7 @@ public class SilverTrace {
    * @return the trace level of the module or TRACE_LEVEL_UNKNOWN if the module was not found
    */
   static public int getTraceLevel(String module, boolean chained) {
-    Logger cat = getModukeLogger(module, null);
+    Logger cat = getModuleLogger(module, null);
     int log4jLevelInt;
     Level log4jLevel;
 
@@ -961,16 +916,15 @@ public class SilverTrace {
    *                      constants
    * @param consoleName   Name of the console output. If null or "", "system.out" is used
    */
-  static public void addAppenderConsole(String module, String patternLayout,
-          String consoleName) {
-    Logger cat = getModukeLogger(module, null);
+  static public void addAppenderConsole(String module, String patternLayout, String consoleName) {
+    Logger cat = getModuleLogger(module, null);
     ConsoleAppender a1 = new ConsoleAppender();
 
     if (cat != null) {
       try {
         cat.removeAppender(getAppenderName(module, APPENDER_CONSOLE));
         a1.setName(getAppenderName(module, APPENDER_CONSOLE));
-        a1.setLayout(getLayout(patternLayout));
+        a1.setLayout(SilverTraceLayout.getLayout(patternLayout));
         if (StringUtil.isDefined(consoleName)) {
           a1.setTarget(consoleName);
         }
@@ -1001,14 +955,14 @@ public class SilverTrace {
    */
   static public void addAppenderFile(String module, String patternLayout,
           String fileName, boolean appendOnFile) {
-    Logger cat = getModukeLogger(module, null);
+    Logger cat = getModuleLogger(module, null);
     FileAppender a1 = new FileAppender();
 
     if (cat != null) {
       try {
         cat.removeAppender(getAppenderName(module, APPENDER_FILE));
         a1.setName(getAppenderName(module, APPENDER_FILE));
-        a1.setLayout(getLayout(patternLayout));
+        a1.setLayout(SilverTraceLayout.getLayout(patternLayout));
         a1.setAppend(appendOnFile);
         a1.setFile(fileName);
         a1.activateOptions();
@@ -1036,26 +990,25 @@ public class SilverTrace {
    * @param rollingMode   frequency of the rolling file, could be one of the ROLLING_MODE_...
    *                      constants
    */
-  static public void addAppenderRollingFile(String module,
-          String patternLayout, String fileName, String rollingMode) {
-    Logger cat = getModukeLogger(module, null);
+  static public void addAppenderRollingFile(String module, String patternLayout, String fileName, 
+          String rollingMode) {
+    Logger logger = getModuleLogger(module, null);
 
-    if (cat != null) {
+    if (logger != null) {
       try {
         DailyRollingFileAppender a1 = new DailyRollingFileAppender(
-                getLayout(patternLayout), fileName, rollingMode);
+                SilverTraceLayout.getLayout(patternLayout), fileName, rollingMode);
         if (MODULE_ROOT.equals(module)) {
-          cat = Logger.getRootLogger();
+          logger = Logger.getRootLogger();
         }
-        cat.removeAppender(getAppenderName(module, APPENDER_ROLLING_FILE));
+        logger.removeAppender(getAppenderName(module, APPENDER_ROLLING_FILE));
         a1.setName(getAppenderName(module, APPENDER_ROLLING_FILE));
-        cat.addAppender(a1);
+        logger.addAppender(a1);
       } catch (Exception e) {
         if (initFinished) {
-          SilverTrace.error("silvertrace",
-                  "SilverTrace.addAppenderRollingFile()",
-                  "silvertrace.ERR_CANT_ADD_APPENDER", "RollingFile " + module
-                  + "," + patternLayout + "," + fileName, e);
+          SilverTrace.error("silvertrace", "SilverTrace.addAppenderRollingFile()",
+                  "silvertrace.ERR_CANT_ADD_APPENDER", "RollingFile " + module + "," 
+                  + patternLayout + "," + fileName, e);
         } else {
           emergencyTrace("Error in SilverTrace addAppenderRollingFile", e);
         }
@@ -1079,14 +1032,14 @@ public class SilverTrace {
    */
   static public void addAppenderMail(String module, String patternLayout,
           String mailHost, String mailFrom, String mailTo, String mailSubject) {
-    Logger cat = getModukeLogger(module, null);
+    Logger cat = getModuleLogger(module, null);
     SMTPAppender a1 = new SMTPAppender();
 
     if (cat != null) {
       try {
         cat.removeAppender(getAppenderName(module, APPENDER_MAIL));
         a1.setName(getAppenderName(module, APPENDER_MAIL));
-        a1.setLayout(getLayout(patternLayout));
+        a1.setLayout(SilverTraceLayout.getLayout(patternLayout));
         a1.setSMTPHost(mailHost);
         a1.setFrom(mailFrom);
         a1.setTo(mailTo);
@@ -1114,7 +1067,7 @@ public class SilverTrace {
    *                       appenders attached to the module
    */
   static public void removeAppender(String module, int typeOfAppender) {
-    Logger cat = getModukeLogger(module, null);
+    Logger cat = getModuleLogger(module, null);
 
     if (cat != null) {
       if ((typeOfAppender & APPENDER_CONSOLE) == APPENDER_CONSOLE) {
@@ -1152,7 +1105,7 @@ public class SilverTrace {
    * @return a mask of the appenders set to this module (not containing the herited ones)
    */
   static public int getAvailableAppenders(String module) {
-    Logger cat = getModukeLogger(module, null);
+    Logger cat = getModuleLogger(module, null);
     int valret = 0;
 
     if (cat != null) {
@@ -1183,7 +1136,7 @@ public class SilverTrace {
    *         appender attached to this module
    */
   static public Properties getAppender(String module, int typeOfAppender) {
-    Logger cat = getModukeLogger(module, null);
+    Logger cat = getModuleLogger(module, null);
 
     if (cat == null) {
       return (null);
@@ -1201,20 +1154,13 @@ public class SilverTrace {
     valret.setProperty("Type", Integer.toString(typeOfAppender));
 
     if (lay != null) {
-      if (lay.getClass().getName().equals("org.apache.log4j.HTMLLayout")) {
-        valret.setProperty("Layout", LAYOUT_HTML);
+      if ("org.apache.log4j.HTMLLayout".equals(lay.getClass().getName())) {
+        valret.setProperty("Layout", SilverTraceLayout.LAYOUT_HTML.name());
       }
-      if (lay.getClass().getName().equals("org.apache.log4j.PatternLayout")) {
+      if ("org.apache.log4j.PatternLayout".equals(lay.getClass().getName())) {
         layPattern = (PatternLayout) lay;
-        if (layPattern.getConversionPattern().equals(layoutShort)) {
-          valret.setProperty("Layout", LAYOUT_SHORT);
-        }
-        if (layPattern.getConversionPattern().equals(layoutDetailed)) {
-          valret.setProperty("Layout", LAYOUT_DETAILED);
-        }
-        if (layPattern.getConversionPattern().equals(layoutFullDebug)) {
-          valret.setProperty("Layout", LAYOUT_FULL_DEBUG);
-        }
+        valret.setProperty("Layout",  SilverTraceLayout.findByPattern(
+            layPattern.getConversionPattern()).name());
       }
     }
 
@@ -1448,8 +1394,6 @@ public class SilverTrace {
    */
   static protected void addAppenderFromProperties(Properties fileProperties,
           int appenderNumber, int appenderType) {
-    String module;
-    String layout;
     String fileName;
     String consoleName;
     boolean append;
@@ -1463,50 +1407,51 @@ public class SilverTrace {
     // Retrieve the properties of the current appender and call the function
     // that will create and attach it
     //
-    module = fileProperties.getProperty("appender"
-            + Integer.toString(appenderNumber) + ".module");
+    String module = fileProperties.getProperty("appender" + Integer.toString(appenderNumber)
+        + ".module");
     if (module == null) {
       module = MODULE_ROOT;
     }
-    layout = fileProperties.getProperty("appender"
-            + Integer.toString(appenderNumber) + ".layout");
-    if (layout == null) {
-      layout = LAYOUT_SHORT;
+    String layoutName = fileProperties.getProperty("appender" + Integer.toString(appenderNumber)
+        + ".layout");
+    SilverTraceLayout layout;
+    if (layoutName == null) {
+      layout = SilverTraceLayout.LAYOUT_SHORT;
+    } else {
+      layout = SilverTraceLayout.getSilverTraceLayout(layoutName);
     }
     switch (appenderType) {
       case APPENDER_CONSOLE:
-        consoleName = fileProperties.getProperty("appender"
-                + Integer.toString(appenderNumber) + ".consoleName");
-        addAppenderConsole(module, layout, consoleName);
+        consoleName = fileProperties.getProperty("appender" + Integer.toString(appenderNumber)
+            + ".consoleName");
+        addAppenderConsole(module, layout.name(), consoleName);
         break;
       case APPENDER_FILE:
         fileName = translateFileName(fileProperties.getProperty("appender"
-                + Integer.toString(appenderNumber) + ".fileName"));
+            + Integer.toString(appenderNumber) + ".fileName"));
         append = MsgTrace.getBooleanProperty(fileProperties, "appender"
                 + Integer.toString(appenderNumber) + ".append", true);
-        addAppenderFile(module, layout, fileName, append);
+        addAppenderFile(module, layout.name(), fileName, append);
         break;
       case APPENDER_ROLLING_FILE:
         fileName = translateFileName(fileProperties.getProperty("appender"
                 + Integer.toString(appenderNumber) + ".fileName"));
         rollingModeName = fileProperties.getProperty("appender"
                 + Integer.toString(appenderNumber) + ".rollingMode");
-        if (rollingModeName == null) {
+        if (!StringUtil.isDefined(rollingModeName)) {
           rollingMode = ROLLING_MODE_DAILY;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_MOUNTH")) {
-          rollingMode = ROLLING_MODE_MOUNTH;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_WEEK")) {
+        } else if ("ROLLING_MODE_MOUNTH".equalsIgnoreCase(rollingModeName)) {
+          rollingMode = ROLLING_MODE_MONTH;
+        } else if ("ROLLING_MODE_WEEK".equalsIgnoreCase(rollingModeName)) {
           rollingMode = ROLLING_MODE_WEEK;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_DAILY")) {
+        } else if ("ROLLING_MODE_DAILY".equalsIgnoreCase(rollingModeName)) {
           rollingMode = ROLLING_MODE_DAILY;
-        } else if (rollingModeName.equalsIgnoreCase("ROLLING_MODE_HOUR")) {
+        } else if ("ROLLING_MODE_HOUR".equalsIgnoreCase(rollingModeName)) {
           rollingMode = ROLLING_MODE_HOUR;
-        } else if (rollingModeName.length() == 0) {
-          rollingMode = ROLLING_MODE_DAILY;
         } else {
           rollingMode = rollingModeName;
         }
-        addAppenderRollingFile(module, layout, fileName, rollingMode);
+        addAppenderRollingFile(module, layout.name(), fileName, rollingMode);
         break;
       case APPENDER_MAIL:
         mailHost = fileProperties.getProperty("appender"
@@ -1517,32 +1462,9 @@ public class SilverTrace {
                 + Integer.toString(appenderNumber) + ".mailTo");
         mailSubject = fileProperties.getProperty("appender"
                 + Integer.toString(appenderNumber) + ".mailSubject");
-        addAppenderMail(module, layout, mailHost, mailFrom, mailTo, mailSubject);
+        addAppenderMail(module, layout.name(), mailHost, mailFrom, mailTo, mailSubject);
         break;
     }
-  }
-
-  /**
-   * Return the layout object depending on it's name
-   *
-   * @param patternLayout
-   * @return
-   */
-  static protected Layout getLayout(String patternLayout) {
-    if (patternLayout.equalsIgnoreCase(LAYOUT_HTML)) {
-      return new HTMLLayout();
-    }
-    if (patternLayout.equalsIgnoreCase(LAYOUT_SHORT)) {
-      return new PatternLayout(layoutShort);
-    }
-    if (patternLayout.equalsIgnoreCase(LAYOUT_DETAILED)) {
-      return new PatternLayout(layoutDetailed);
-    }
-    if (patternLayout.equalsIgnoreCase(LAYOUT_FULL_DEBUG)) {
-      return new PatternLayout(layoutFullDebug);
-    }
-    // Custom pattern layout
-    return new PatternLayout(patternLayout);
   }
 
   /**
@@ -1552,8 +1474,8 @@ public class SilverTrace {
    * @param classToAppend
    * @return
    */
-  static protected Logger getModukeLogger(String module, String classToAppend) {
-    if ("root".equalsIgnoreCase(module)) {
+  static protected Logger getModuleLogger(String module, String classToAppend) {
+    if (MODULE_ROOT.equalsIgnoreCase(module)) {
       return Logger.getRootLogger();
     }
     String modulePath = availableModules.getProperty(module);
