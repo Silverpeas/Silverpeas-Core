@@ -155,7 +155,7 @@ public class SilverTrace {
    *
    * @see #addAppenderRollingFile
    */
-  public final static String ROLLING_MODE_WEEK = "'.'yyyy-MM-WW";
+  public final static String ROLLING_MODE_WEEK = "'.'yyyy-WW";
   /**
    * The trace file will be copied every day at midnight with the name :
    * FileName.ext.year-mounth-day A new file named FileName.ext is the created and will contains the
