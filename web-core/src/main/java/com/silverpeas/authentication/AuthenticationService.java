@@ -38,6 +38,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -51,6 +52,16 @@ public class AuthenticationService {
   private static final int HTTP_DEFAULT_PORT = 80;
 
   public AuthenticationService() {
+  }
+  
+  public boolean isAnonymousUser(HttpServletRequest request) {
+     HttpSession session = request.getSession();
+     MainSessionController controller = (MainSessionController) session.getAttribute(
+            MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+     if(controller != null) {
+       return controller.getCurrentUserDetail().isAnonymous();
+     }
+     return false;
   }
 
   public String authenticate(HttpServletRequest request, String sKey) {
@@ -103,7 +114,10 @@ public class AuthenticationService {
     SilverTrace.error("peasCore", "AuthenticationService.authenticate()",
             "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + sKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
-    absoluteUrl.append("/Login.jsp");
+    if(absoluteUrl.charAt(absoluteUrl.length() -1) != '/') {
+      absoluteUrl.append('/');
+    }
+    absoluteUrl.append("Login.jsp");
     absoluteUrl.append(";jsessionid=").append(session.getId());
     return absoluteUrl.toString();
   }
@@ -208,5 +222,18 @@ public class AuthenticationService {
     notifMetaData.setSender(fromUserId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
     sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
+  }
+  
+  
+  public void unauthenticate(HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    session.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    session.removeAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    Enumeration<String> names = (Enumeration<String>)session.getAttributeNames();
+    while(names.hasMoreElements()) {
+      String attributeName = names.nextElement();
+      session.removeAttribute(attributeName);
+    }
+    SessionManager.getInstance().removeSession(session);
   }
 }
