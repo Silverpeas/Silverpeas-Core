@@ -42,12 +42,16 @@ public enum SilverTraceLayout {
    * Detailed layout : Display "Time / Priority / Calling Class and module / Message"
    */
   LAYOUT_DETAILED("%d{dd/MM/yy-HH:mm:ss,SSS} - %-5p : %m%n"),
-
-/**
+  /**
    * Fully detailed layout : Display "Tic count / Time / Priority / Thread / Calling Class and
    * module / Message"
    */
   LAYOUT_FULL_DEBUG("%-15.15r [%-26.26t] - %d{dd/MM/yy-HH:mm:ss,SSS} - %-5p : %m%n"),
+   /**
+   * Fully detailed layout : Display "Time / Priority / Thread / Calling Class and
+   * module / Message"
+   */
+  LAYOUT_SPY("%d{dd/MM/yy-HH:mm:ss,SSS} : %m%n"),
   /**
    * A layout that can be defined by the user.
    */
@@ -87,6 +91,9 @@ public enum SilverTraceLayout {
     }
     if (LAYOUT_FULL_DEBUG.getPattern().equals(pattern)) {
       return SilverTraceLayout.LAYOUT_FULL_DEBUG;
+    }
+    if (LAYOUT_SPY.getPattern().equals(pattern)) {
+      return SilverTraceLayout.LAYOUT_SPY;
     }
     return LAYOUT_CUSTOM;
   }
