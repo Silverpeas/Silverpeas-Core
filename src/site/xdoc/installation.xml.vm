@@ -33,8 +33,8 @@
   </head>
   <body>
     <section name="Pre-requisite">
-      <p>Silverpeas V5 has been tested and can be automatically deployed on a pre-configured version of JBoss 4.0.3.
-Silverpeas V5 has also been successfully deployed and run on other Application Servers (such as Websphere, Weblogic, ect.).
+      <p>Silverpeas V5 has been tested and can be automatically deployed on a pre-configured version of JBoss 4.0.3. <b>Since Silverpeas 5.7 
+you have to use JBoss 6.x</b>. Silverpeas V5 has also been successfully deployed and run on other Application Servers (such as Websphere, Weblogic, ect.).
 Please find a list of the tools you will need to install Silverpeas below.<br/>
       </p>
       <subsection name="Java 6">
@@ -113,12 +113,12 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
     <section name="Installation">
       <p>You will get better performance with GNU/Linux systems.</p>
       <subsection name="Installing JBoss">
-        <p>Since version 5.6, Silverpeas runs by default with JBoss AS 6.0 (JBoss 4 will no longer be supported from the version 5.7).<br/>
+        <p>Since version 5.6, Silverpeas runs by default with JBoss AS 6.0 (<b>JBoss 4 will no longer be supported from the version 5.7</b>).<br/>
         Please download it from:</p>
         <ul>
-          <li><a href="http://sourceforge.net/projects/jboss/files/JBoss/JBoss-6.0.0.Final/jboss-as-distribution-6.0.0.Final.zip"><img src="images/windows_logo_24X24.png"/><img src="images/linux_logo_24X24.png"/>here for both Windows and GNU/Linux</a></li>
+          <li><a href="http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final.zip"><img src="images/windows_logo_24X24.png"/><img src="images/linux_logo_24X24.png"/>here for both Windows and GNU/Linux</a></li>
         </ul> 
-        <p>For older versions, we provide a pre-packaged and pre-configured version of JBoss 4.0.3.<br/>
+        <p><b>For older versions</b>, we provide a pre-packaged and pre-configured version of JBoss 4.0.3.<br/>
         Please download it from :</p>
         <ul>
           <li><a href="http://repository.silverpeas.org/files/jboss403.zip"><img src="images/windows_logo_24X24.png"/> here for Windows</a></li>
@@ -129,17 +129,17 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
       <subsection name="Preparing Silverpeas">
         <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download </p>
 <fieldset>
-        <legend>Stable release for JBoss AS 6.0</legend>
+        <legend>Stable release for JBoss AS 6.x</legend>
           <ul>
           <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}-jboss6.zip"><img src="images/windows_logo_24X24.png"/> the last stable version for Windows</a></li>
           <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}-jboss6.tar.gz"><img src="images/linux_logo_24X24.png"/> the last stable version  for GNU/Linux</a></li>
         </ul>
 </fieldset>
 <fieldset>
-        <legend>Stable release for JBoss 4.0.3</legend>
+        <legend>Stable release for JBoss 4.0.3. This is deprecated</legend>
           <ul>
-          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}-jboss4.zip"><img src="images/windows_logo_24X24.png"/> the last stable version for Windows</a></li>
-          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}-jboss4.tar.gz"><img src="images/linux_logo_24X24.png"/> the last stable version  for GNU/Linux</a></li>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-5.6.2-jboss4.zip"><img src="images/windows_logo_24X24.png"/> the last stable version for Windows</a></li>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-5.6.2-jboss4.tar.gz"><img src="images/linux_logo_24X24.png"/> the last stable version  for GNU/Linux</a></li>
         </ul>
 </fieldset>
 <fieldset>
