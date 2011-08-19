@@ -117,11 +117,8 @@ GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("S
 if (m_MainSessionCtrl == null || (gef != null && UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId()) && 
     (strGoTo == null && componentGoTo == null && spaceGoTo == null)))
 {
-%>
-	<script>
-		top.location="Login.jsp?DomainId="+<%=domainId%>;
-	</script>
-<%
+  response.sendRedirect(response.encodeRedirectURL(URLManager.getApplicationURL()+"/Login.jsp?DomainId="+domainId));
+  return;
 }
 else
 {

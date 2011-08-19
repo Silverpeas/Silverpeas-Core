@@ -160,15 +160,12 @@ public class AuthenticationService {
     String sDirectAccessCompo = request.getParameter("DirectAccessCompo");
     if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
       absoluteUrl.append("/admin/jsp/appInMaintenance.jsp");
-      absoluteUrl.append(";jsessionid=").append(session.getId());
     } else if (redirectURL != null) {
       absoluteUrl.append(redirectURL);
     } else if (StringUtil.isDefined(sDirectAccessSpace) && StringUtil.isDefined(sDirectAccessCompo)) {
       absoluteUrl.append(URLManager.getURL(sDirectAccessSpace, sDirectAccessCompo)).append("Main");
-      absoluteUrl.append(";jsessionid=").append(session.getId());
     } else {
       absoluteUrl.append("/Main/").append(favoriteFrame);
-      absoluteUrl.append(";jsessionid=").append(session.getId());
     }    
     return absoluteUrl.toString();
   }
