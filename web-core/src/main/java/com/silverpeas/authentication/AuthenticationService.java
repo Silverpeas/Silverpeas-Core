@@ -38,9 +38,10 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
 
 /**
  * Service used for user authentication : creating all the required ressources for Silverpeas 
@@ -78,9 +79,7 @@ public class AuthenticationService {
       // Notify user about password expiration if needed
       Boolean alertUserAboutPwdExpiration = (Boolean) session.getAttribute(
               Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
-      //The URL from a permalink
-      String redirectURL = (String) session.getAttribute("gotoNew");
-      session.removeAttribute("gotoNew");
+      String redirectURL = null;
       if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
         redirectURL = alertUserAboutPwdExpiration(controller.getUserId(), controller.
                 getOrganizationController().
@@ -120,7 +119,6 @@ public class AuthenticationService {
       absoluteUrl.append('/');
     }
     absoluteUrl.append("Login.jsp");
-    absoluteUrl.append(";jsessionid=").append(session.getId());
     return absoluteUrl.toString();
   }
 
@@ -160,7 +158,7 @@ public class AuthenticationService {
     String sDirectAccessCompo = request.getParameter("DirectAccessCompo");
     if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
       absoluteUrl.append("/admin/jsp/appInMaintenance.jsp");
-    } else if (redirectURL != null) {
+    } else if (StringUtil.isDefined(redirectURL)) {
       absoluteUrl.append(redirectURL);
     } else if (StringUtil.isDefined(sDirectAccessSpace) && StringUtil.isDefined(sDirectAccessCompo)) {
       absoluteUrl.append(URLManager.getURL(sDirectAccessSpace, sDirectAccessCompo)).append("Main");
@@ -201,7 +199,7 @@ public class AuthenticationService {
       String passwordChangeURL =
               settings.getString("passwordChangeURL", "defaultPasswordAboutToExpire.jsp");
 
-      if (notificationType.equalsIgnoreCase("POPUP") || !allowPasswordChange) {
+      if ("POPUP".equalsIgnoreCase(notificationType) || !allowPasswordChange) {
         sendPopupNotificationAboutPwdExpiration(userId, fromUserId, language);
         return null;
       }

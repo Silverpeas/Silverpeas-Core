@@ -78,8 +78,6 @@ if (strGoTo != null)
 			componentId = null;
 		}
 	}
-	//System.out.println("componentId = "+componentId);
-
 	mainFrameParams = "?ComponentIdFromRedirect="+componentId;
 	mySession.setAttribute("RedirectToComponentId", componentId);
 }
@@ -117,12 +115,16 @@ GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("S
 if (m_MainSessionCtrl == null || (gef != null && UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId()) && 
     (strGoTo == null && componentGoTo == null && spaceGoTo == null)))
 {
-  response.sendRedirect(response.encodeRedirectURL(URLManager.getApplicationURL()+"/Login.jsp?DomainId="+domainId));
-  return;
+  String loginUrl = response.encodeRedirectURL(URLManager.getApplicationURL()+"/Login.jsp?DomainId="+domainId);
+%>
+    <script>
+        top.location="<%=loginUrl%>";
+    </script>
+<%  return;
 }
 else
 {
-	//Il retourne � la page de login s'il n'est pas autoris� sur le composant cible.
+	//Il retourne a la page de login s'il n'est pas autorise sur le composant cible.
 	if ((componentId != null && !m_MainSessionCtrl.getOrganizationController().isComponentAvailable(componentId, m_MainSessionCtrl.getUserId()))
 		|| (spaceId != null && !m_MainSessionCtrl.getOrganizationController().isSpaceAvailable(spaceId, m_MainSessionCtrl.getUserId())))
 	{

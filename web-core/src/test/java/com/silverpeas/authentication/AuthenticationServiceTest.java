@@ -21,22 +21,24 @@
  */
 package com.silverpeas.authentication;
 
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.google.common.collect.Lists;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import edu.emory.mathcs.backport.java.util.Collections;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -107,7 +109,7 @@ public class AuthenticationServiceTest {
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
     String sKey = RandomGenerator.getRandomString();
     String errorUrl = instance.getAuthenticationErrorPageUrl(request, sKey);
-    assertThat(errorUrl, is("http://www.silverpeas.org:80/silverpeas/Login.jsp;jsessionid=mysessionid"));
+    assertThat(errorUrl, is("http://www.silverpeas.org:80/silverpeas/Login.jsp"));
   }
 
 

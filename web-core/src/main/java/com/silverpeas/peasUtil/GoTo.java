@@ -26,19 +26,17 @@ package com.silverpeas.peasUtil;
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
 import com.silverpeas.util.StringUtil;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public abstract class GoTo extends HttpServlet {
 
@@ -68,7 +66,7 @@ public abstract class GoTo extends HttpServlet {
           if (redirect == null || !redirect.startsWith("http")) {
             redirect = URLManager.getApplicationURL() + "/autoRedirect.jsp?" + redirect;
           }
-          res.sendRedirect(redirect);
+          res.sendRedirect(res.encodeRedirectURL(redirect));
         }
       }
     } catch (AccessForbiddenException afe) {
@@ -87,8 +85,7 @@ public abstract class GoTo extends HttpServlet {
     if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
     } else {
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "ApplicationURL") + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
     }
   }
 
