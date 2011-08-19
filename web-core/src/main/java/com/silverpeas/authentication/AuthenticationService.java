@@ -78,7 +78,9 @@ public class AuthenticationService {
       // Notify user about password expiration if needed
       Boolean alertUserAboutPwdExpiration = (Boolean) session.getAttribute(
               Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
-      String redirectURL = null;
+      //The URL from a permalink
+      String redirectURL = (String) session.getAttribute("gotoNew");
+      session.removeAttribute("gotoNew");
       if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
         redirectURL = alertUserAboutPwdExpiration(controller.getUserId(), controller.
                 getOrganizationController().
@@ -158,14 +160,16 @@ public class AuthenticationService {
     String sDirectAccessCompo = request.getParameter("DirectAccessCompo");
     if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
       absoluteUrl.append("/admin/jsp/appInMaintenance.jsp");
+      absoluteUrl.append(";jsessionid=").append(session.getId());
     } else if (redirectURL != null) {
       absoluteUrl.append(redirectURL);
     } else if (StringUtil.isDefined(sDirectAccessSpace) && StringUtil.isDefined(sDirectAccessCompo)) {
       absoluteUrl.append(URLManager.getURL(sDirectAccessSpace, sDirectAccessCompo)).append("Main");
+      absoluteUrl.append(";jsessionid=").append(session.getId());
     } else {
       absoluteUrl.append("/Main/").append(favoriteFrame);
-    }
-    absoluteUrl.append(";jsessionid=").append(session.getId());
+      absoluteUrl.append(";jsessionid=").append(session.getId());
+    }    
     return absoluteUrl.toString();
   }
 
@@ -232,7 +236,9 @@ public class AuthenticationService {
     Enumeration<String> names = (Enumeration<String>)session.getAttributeNames();
     while(names.hasMoreElements()) {
       String attributeName = names.nextElement();
-      session.removeAttribute(attributeName);
+      if(!attributeName.startsWith("Redirect") && !"gotoNew".equals(attributeName)) {
+        session.removeAttribute(attributeName);
+      }
     }
     SessionManager.getInstance().removeSession(session);
   }
