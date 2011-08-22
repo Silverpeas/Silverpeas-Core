@@ -1513,7 +1513,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return true or false
    */
   public boolean isOtherAgendaMode() {
-    return agendaUserId != getUserId();
+    return !agendaUserId.equals(getUserId());
   }
 
   /**

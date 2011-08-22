@@ -41,6 +41,7 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -158,7 +159,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     } else {
       SilverTrace.info("jobOrganizationPeas",
           "JobOrganizationPeasSessionController.getCurrentUserInfo",
-          "root.MSG_GEN_PARAM_VALUE", "Groups=" + currentGroups);
+          "root.MSG_GEN_PARAM_VALUE", "Groups=" + Arrays.deepToString(currentGroups));
     }
     return currentGroups;
   }

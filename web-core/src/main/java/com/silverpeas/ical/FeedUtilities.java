@@ -24,11 +24,13 @@
 
 package com.silverpeas.ical;
 
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.util.Date;
-import java.util.List;
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
@@ -41,18 +43,15 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Url;
 import net.fortuna.ical4j.model.property.Version;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * RSS / ATOM feed utilities. Created: Jan 03, 2007 12:50:56 PM
@@ -110,7 +109,7 @@ public final class FeedUtilities {
         } else {
           SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
               "agenda.FEED_LOADING_FAILED", "Status Http Client=" + status
-              + " Content=" + bytes.toString());
+              + " Content=" + Arrays.toString(bytes));
           bytes = null;
         }
       } catch (Exception loadError) {

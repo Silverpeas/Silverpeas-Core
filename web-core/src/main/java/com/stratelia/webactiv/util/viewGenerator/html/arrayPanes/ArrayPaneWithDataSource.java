@@ -544,7 +544,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         ac.setRoutingAddress(m_RoutingAddress);
       } else {
         ac.setRoutingAddress(fra);
-        if (fra == "") {
+        if ("".equals(fra)) {
           ac.setSortable(false);
         }
       }
