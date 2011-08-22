@@ -24,13 +24,13 @@
 
 package com.stratelia.silverpeas.portlet.model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.AbstractTable;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PortletRowTable extends AbstractTable {
 
@@ -172,8 +172,8 @@ public class PortletRowTable extends AbstractTable {
   public PortletRowRow[] dereferenceInstanceId(int InstanceId)
       throws UtilException {
     PortletRowRow[] portletRowToBeDeleted = getAllByInstanceId(InstanceId);
-    for (int i = 0; i < portletRowToBeDeleted.length; i++) {
-      delete(portletRowToBeDeleted[i].getId());
+    for (PortletRowRow aPortletRowToBeDeleted : portletRowToBeDeleted) {
+      delete(aPortletRowToBeDeleted.getId());
     }
 
     return portletRowToBeDeleted;
@@ -185,8 +185,8 @@ public class PortletRowTable extends AbstractTable {
   public PortletRowRow[] dereferencePortletColumnId(int portletColumnId)
       throws UtilException {
     PortletRowRow[] portletRowToBeDeleted = getAllByPortletColumnId(portletColumnId);
-    for (int i = 0; i < portletRowToBeDeleted.length; i++) {
-      delete(portletRowToBeDeleted[i].getId());
+    for (PortletRowRow aPortletRowToBeDeleted : portletRowToBeDeleted) {
+      delete(aPortletRowToBeDeleted.getId());
     }
     return portletRowToBeDeleted;
   }

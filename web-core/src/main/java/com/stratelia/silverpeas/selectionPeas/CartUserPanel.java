@@ -95,8 +95,8 @@ public class CartUserPanel extends PanelProvider {
     // Select case for all
     if (filterIndex == 999) {
       PanelMiniFilterSelect theFilter = getSelectMiniFilter();
-      for (int i = 0; i < ids.length; i++) {
-        setSelectedElement(ids[i], theFilter.isSelectAllFunction());
+      for (String id : ids) {
+        setSelectedElement(id, theFilter.isSelectAllFunction());
       }
       theFilter.setSelectAllFunction(!theFilter.isSelectAllFunction());
     }

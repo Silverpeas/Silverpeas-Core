@@ -331,9 +331,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       m_BrothersSpaces = new SpaceInst[sids.length - 1];
     }
     j = 0;
-    for (int i = 0; i < sids.length; i++) {
-      if (isNew || !sids[i].equals(currentSpaceId)) {
-        m_BrothersSpaces[j++] = adminController.getSpaceInstById(sids[i]);
+    for (String sid : sids) {
+      if (isNew || !sid.equals(currentSpaceId)) {
+        m_BrothersSpaces[j++] = adminController.getSpaceInstById(sid);
       }
     }
     Arrays.sort(m_BrothersSpaces);
@@ -348,10 +348,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SpaceInst currentSpace = getSpaceInstById();
     String currentSpaceId = (currentSpace == null) ? "-1" : currentSpace.getId();
 
-    for (int i = 0; i < sids.length; i++) {
-      if ((isSpaceInMaintenance(sids[i].substring(2)))
-          || (sids[i].equals(currentSpaceId))) {
-        vManageableSpaces.add(adminController.getSpaceInstById(sids[i]));
+    for (String sid : sids) {
+      if ((isSpaceInMaintenance(sid.substring(2)))
+          || (sid.equals(currentSpaceId))) {
+        vManageableSpaces.add(adminController.getSpaceInstById(sid));
       }
     }
 
@@ -625,8 +625,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       List<String> alGroupIds = m_SpaceProfileInst.getAllGroups();
 
       Group theGroup = null;
-      for (int nI = 0; nI < alGroupIds.size(); nI++) {
-        theGroup = adminController.getGroupById(alGroupIds.get(nI));
+      for (String alGroupId : alGroupIds) {
+        theGroup = adminController.getGroupById(alGroupId);
         res.add(theGroup);
       }
     }
@@ -654,8 +654,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       List<String> alUserIds = m_SpaceProfileInst.getAllUsers();
 
       UserDetail userDetail = null;
-      for (int nI = 0; nI < alUserIds.size(); nI++) {
-        userDetail = adminController.getUserDetail(alUserIds.get(nI));
+      for (String alUserId : alUserIds) {
+        userDetail = adminController.getUserDetail(alUserId);
         res.add(userDetail);
       }
     }
@@ -851,8 +851,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       m_BrothersComponents = new ComponentInst[arc.size() - 1];
     }
     j = 0;
-    for (int i = 0; i < arc.size(); i++) {
-      theComponent = arc.get(i);
+    for (ComponentInst anArc : arc) {
+      theComponent = anArc;
 
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSesionController.getBrotherComponents()",
@@ -877,8 +877,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     ComponentInst[] m_Components = new ComponentInst[arc.size()];
     j = 0;
-    for (int i = 0; i < arc.size(); i++) {
-      theComponent = arc.get(i);
+    for (ComponentInst anArc : arc) {
+      theComponent = anArc;
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSesionController.getComponentsOfSpace()",
           "root.MSG_GEN_PARAM_VALUE", "Current = '" + getManagedInstanceId() + "' Loop = '"
@@ -950,8 +950,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       m_DestBrothersComponents = new ComponentInst[arc.size() - 1];
     }
     j = 0;
-    for (int i = 0; i < arc.size(); i++) {
-      theComponent = arc.get(i);
+    for (ComponentInst anArc : arc) {
+      theComponent = anArc;
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSesionController.getDestBrotherComponents()",
           "root.MSG_GEN_PARAM_VALUE", "Current = '" + componentId + "' Loop = '" + theComponent.
@@ -1315,15 +1315,15 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     // groupes
     List<String> groups = getManagedProfile().getAllGroups();
     if (groups != null) {
-      for (int i = 0; i < groups.size(); i++) {
-        profile.addGroup(groups.get(i));
+      for (String group : groups) {
+        profile.addGroup(group);
       }
     }
     // users
     List<String> users = getManagedProfile().getAllUsers();
     if (users != null) {
-      for (int i = 0; i < users.size(); i++) {
-        profile.addUser(users.get(i));
+      for (String user : users) {
+        profile.addUser(user);
       }
     }
     // mise à jour

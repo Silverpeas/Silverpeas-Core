@@ -28,12 +28,6 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.RepositoriesType;
@@ -52,6 +46,12 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
@@ -336,14 +336,12 @@ public class RepositoriesTypeManager {
    * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
   private List convertListStringToListFile(String[] listFileName, String path) {
-
     List listFile = new ArrayList();
-
-    if (listFileName == null)
+    if (listFileName == null) {
       return null;
-
-    for (int i = 0; i < listFileName.length; i++) {
-      listFile.add(new File(path + File.separator + listFileName[i]));
+    }
+    for (String aListFileName : listFileName) {
+      listFile.add(new File(path + File.separator + aListFileName));
     }
     return listFile;
   }

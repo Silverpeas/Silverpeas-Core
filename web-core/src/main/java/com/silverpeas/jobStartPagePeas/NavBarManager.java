@@ -272,8 +272,8 @@ public class NavBarManager extends Object {
         m_CurrentSubSpaceId = null;
       }
     }
-    for (int j = 0; j < m_SubSpaces.length; j++) {
-      buildSpaceHTMLLine(m_SubSpaces[j]);
+    for (DisplaySorted m_SubSpace : m_SubSpaces) {
+      buildSpaceHTMLLine(m_SubSpace);
     }
     if (StringUtil.isDefined(m_CurrentSubSpaceId)) {
       m_SubSpaceComponents = createComponentObjects(sp, true);
@@ -345,9 +345,9 @@ public class NavBarManager extends Object {
     if (goRecurs) {
       DisplaySorted[] parents = valret;
       List<DisplaySorted> alValret = new ArrayList<DisplaySorted>();
-      for (int j = 0; j < parents.length; j++) {
-        alValret.add(parents[j]);
-        String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parents[j].id);
+      for (DisplaySorted parent : parents) {
+        alValret.add(parent);
+        String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parent.id);
         DisplaySorted[] children = createSpaceObjects(subSpaceIds, true);
         Collections.addAll(alValret, children);
       }

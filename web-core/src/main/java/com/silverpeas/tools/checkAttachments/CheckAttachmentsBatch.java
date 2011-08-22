@@ -80,10 +80,10 @@ public class CheckAttachmentsBatch {
     //Get all spaces
     String[] spaces = oc.getAllRootSpaceIds();
     if (spaces != null) {
-      for (int i = 0; i < spaces.length; i++) {
+      for (String space : spaces) {
         SilverTrace.info("admin", "CheckAttachmentBatch.getOrphansFiles(context)",
-            "root.MSG_GEN_PARAM_VALUE", "spaceid = " + spaces[i]);
-        String[] componentsId = oc.getAllComponentIdsRecur(spaces[i]);
+            "root.MSG_GEN_PARAM_VALUE", "spaceid = " + space);
+        String[] componentsId = oc.getAllComponentIdsRecur(space);
         //get all components name Folders
         for (int j = 0; componentsId != null && j < componentsId.length; j++) {
           String pathFolder = FileRepositoryManager.getAbsolutePath(componentsId[j])
@@ -95,21 +95,21 @@ public class CheckAttachmentsBatch {
           File[] listFiles = path.listFiles();
 
           if (listFiles != null) {
-            for (int k = 0; k < listFiles.length; k++) {
+            for (File listFile : listFiles) {
               SilverTrace.info("admin", "CheckAttachmentBatch.getOrphansFiles(context)",
-                  "root.MSG_GEN_PARAM_VALUE", "file = " + listFiles[k].getName());
-              if (getAttachmentsByPhysicalName(listFiles[k].getName()).isEmpty()) {
+                  "root.MSG_GEN_PARAM_VALUE", "file = " + listFile.getName());
+              if (getAttachmentsByPhysicalName(listFile.getName()).isEmpty()) {
                 OrphanAttachment orphanAttachment = new OrphanAttachment();
-                orphanAttachment.setPhysicalName(listFiles[k].getName());
+                orphanAttachment.setPhysicalName(listFile.getName());
                 ComponentInstLight componentInst = oc.getComponentInstLight(componentsId[j]);
                 SpaceInstLight spaceInst = oc.getSpaceInstLightById(
                     componentInst.getDomainFatherId());
                 orphanAttachment.setSpaceLabel(spaceInst.getName(language));
                 orphanAttachment.setComponentLabel(
                     componentInst.getLabel(language) + " (" + componentsId[j] + ")");
-                orphanAttachment.setSize(listFiles[k].length());
+                orphanAttachment.setSize(listFile.length());
                 orphanAttachment.setContext(context);
-                orphanAttachment.setPath(pathFolder + File.separator + listFiles[k].getName());
+                orphanAttachment.setPath(pathFolder + File.separator + listFile.getName());
                 orphansList.add(orphanAttachment);
               }
             }

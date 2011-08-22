@@ -1366,18 +1366,18 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
     String[] selectedUsers = sel.getSelectedElements();
     if (selectedUsers != null) {
-      for (int i = 0; i < selectedUsers.length; i++) {
+      for (String selectedUser : selectedUsers) {
         Attendee newAttendee = null;
         if (oldAttendees != null) {
           for (Attendee attendee : oldAttendees) {
-            if (attendee.getUserId().equals(selectedUsers[i])) {
+            if (attendee.getUserId().equals(selectedUser)) {
               newAttendee = attendee;
             }
           }
         }
 
         if (newAttendee == null) {
-          newAttendee = new Attendee(selectedUsers[i]);
+          newAttendee = new Attendee(selectedUser);
         }
         attendees.add(newAttendee);
       }

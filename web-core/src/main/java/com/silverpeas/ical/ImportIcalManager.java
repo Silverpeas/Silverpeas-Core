@@ -25,28 +25,6 @@
 package com.silverpeas.ical;
 
 import com.silverpeas.util.EncodeHelper;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-
-import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.parameter.Value;
-import net.fortuna.ical4j.model.property.Priority;
-import net.fortuna.ical4j.model.property.RRule;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
@@ -60,7 +38,28 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.sun.syndication.io.XmlReader;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.Priority;
+import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
 /**
  * @author dle
@@ -108,8 +107,8 @@ public class ImportIcalManager {
       CalendarBuilder builder = new CalendarBuilder();
       Calendar calendar = builder.build(inputStream);
       // Get all EVENTS
-      for (Iterator i = calendar.getComponents(Component.VEVENT).iterator(); i.hasNext();) {
-        VEvent eventIcal = (VEvent) i.next();
+      for (Object o : calendar.getComponents(Component.VEVENT)) {
+        VEvent eventIcal = (VEvent) o;
         String name = getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
 
         String description = null;
@@ -144,7 +143,7 @@ public class ImportIcalManager {
         // All day case
         // I don't know why ??
         if (("00:00".equals(startHour) && "00:00".equals(endHour))
-                || (!StringUtil.isDefined(startHour) && !StringUtil.isDefined(endHour))) {
+            || (!StringUtil.isDefined(startHour) && !StringUtil.isDefined(endHour))) {
           // For complete Day
           startHour = "";
           endHour = "";
@@ -168,10 +167,11 @@ public class ImportIcalManager {
           // update if event already exists, create if does not exist
           if (StringUtil.isDefined(idEvent)) {
             agendaSessionController.updateJournal(idEvent, name, description,
-                    priority, classification, startDay, startHour, endDay, endHour);
+                priority, classification, startDay, startHour, endDay, endHour);
           } else {
-            idEvent = agendaSessionController.addJournal(name, description, priority, classification,
-                    startDay, startHour, endDay, endHour);
+            idEvent = agendaSessionController.addJournal(name, description, priority,
+                classification,
+                startDay, startHour, endDay, endHour);
           }
 
           // Get Categories
@@ -186,7 +186,7 @@ public class ImportIcalManager {
             endDay = new DateTime(newEndDay);
             if (allDay) {
               // So we have to convert this date to agenda format date
-              GregorianCalendar gregCalendar = new java.util.GregorianCalendar();
+              GregorianCalendar gregCalendar = new GregorianCalendar();
               gregCalendar.setTime(endDay);
               gregCalendar.add(GregorianCalendar.DATE, -1);
               endDay = new Date(gregCalendar.getTime());
@@ -195,17 +195,17 @@ public class ImportIcalManager {
             // update if event already exists, create if does not exist
             if (StringUtil.isDefined(idEvent)) {
               SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-                      "root.MSG_GEN_PARAM_VALUE" + "Update event: " + DateUtil.date2SQLDate(startDay)
+                  "root.MSG_GEN_PARAM_VALUE" + "Update event: " + DateUtil.date2SQLDate(startDay)
                       + " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
               agendaSessionController.updateJournal(idEvent, name, description,
-                      priority, classification, startDay, startHour, endDay,
-                      endHour);
+                  priority, classification, startDay, startHour, endDay,
+                  endHour);
             } else {
               SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-                      "root.MSG_GEN_PARAM_VALUE" + "Create event: " + DateUtil.date2SQLDate(startDay)
+                  "root.MSG_GEN_PARAM_VALUE" + "Create event: " + DateUtil.date2SQLDate(startDay)
                       + " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
               idEvent = agendaSessionController.addJournal(name, description, priority,
-                      classification, startDay, startHour, endDay, endHour);
+                  classification, startDay, startHour, endDay, endHour);
             }
             // Get Categories
             processCategories(eventIcal, idEvent);

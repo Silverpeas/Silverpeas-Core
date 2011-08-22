@@ -26,6 +26,7 @@ package com.silverpeas.ical;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 import net.fortuna.ical4j.model.Calendar;
@@ -143,8 +144,8 @@ public final class FeedUtilities {
     ComponentList events = calendar.getComponents();
     java.util.Date now = new java.util.Date();
     SyndEntry entry;
-    for (int i = 0; i < entries.length; i++) {
-      entry = entries[i];
+    for (SyndEntry entry1 : entries) {
+      entry = entry1;
 
       // Convert feed link to iCal URL
       String url = entry.getLink();
@@ -153,7 +154,7 @@ public final class FeedUtilities {
       }
 
       // Convert feed published date to iCal dates
-      java.util.Date date = entry.getPublishedDate();
+      Date date = entry.getPublishedDate();
       if (date == null) {
         date = now;
       }

@@ -247,9 +247,10 @@ public final class StringUtils {
   public static final String decodeBASE64(String string) throws Exception {
     char[] data = string.toCharArray();
     int tempLen = data.length;
-    for (int ix = 0; ix < data.length; ix++) {
-      if ((data[ix] > 255) || BASE64_CHARS[data[ix]] < 0)
+    for (char aData : data) {
+      if ((aData > 255) || BASE64_CHARS[aData] < 0) {
         --tempLen;
+      }
     }
     int len = (tempLen / 4) * 3;
     if ((tempLen % 4) == 3) {
@@ -263,8 +264,8 @@ public final class StringUtils {
     int accum = 0;
     int index = 0;
     int value;
-    for (int ix = 0; ix < data.length; ix++) {
-      value = (data[ix] > 255) ? -1 : BASE64_CHARS[data[ix]];
+    for (char aData : data) {
+      value = (aData > 255) ? -1 : BASE64_CHARS[aData];
       if (value >= 0) {
         accum <<= 6;
         shift += 6;
@@ -305,7 +306,7 @@ public final class StringUtils {
       val >>= 6;
       chars[index + 1] = ALPHABETS[val & 0x3F];
       val >>= 6;
-      chars[index + 0] = ALPHABETS[val & 0x3F];
+      chars[index] = ALPHABETS[val & 0x3F];
     }
     return new String(chars);
   }

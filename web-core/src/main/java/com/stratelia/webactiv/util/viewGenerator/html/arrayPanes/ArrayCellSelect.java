@@ -118,10 +118,11 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
     selected.clear();
 
     // Verify that the provided values exist among all values
-    for (int i = 0; i < astrSelectedValues.length; i++) {
-      index = values.indexOf(astrSelectedValues[i]);
-      if (index != -1)
+    for (String astrSelectedValue : astrSelectedValues) {
+      index = values.indexOf(astrSelectedValue);
+      if (index != -1) {
         selected.add(new Integer(index));
+      }
     }
   }
 

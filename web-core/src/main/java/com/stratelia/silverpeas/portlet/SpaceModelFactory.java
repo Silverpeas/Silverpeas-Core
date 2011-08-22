@@ -34,8 +34,6 @@ package com.stratelia.silverpeas.portlet;
  */
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.StringUtil;
-import java.util.ArrayList;
-
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.portlet.model.PortletColumnRow;
@@ -52,6 +50,8 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -102,8 +102,7 @@ public class SpaceModelFactory {
         SpaceColumn sc = new SpaceColumn(i, pc.getColumnWidth());
         PortletRowRow[] portletRows = tPortletRow.getAllByPortletColumnId(pc.getId(), "nbRow");
         // for each row in the column
-        for (int j = 0; j < portletRows.length; j++) {
-          PortletRowRow prr = portletRows[j];
+        for (PortletRowRow prr : portletRows) {
           Portlet portlet = getPortlet(prr.getInstanceId(), prr.getId());
           sc.addPortlet(portlet);
         }
@@ -359,9 +358,7 @@ public class SpaceModelFactory {
 
       // Delete old configuration from database
       // Cascading delete of all the column for this spaceId
-      for (int i = 0; i < pRows.length; i++) {
-        PortletColumnRow pr = pRows[i];
-
+      for (PortletColumnRow pr : pRows) {
         tPortletColumn.delete(pr.getId());
       }
 
@@ -468,15 +465,14 @@ public class SpaceModelFactory {
       }
 
       search:
-      for (int i = 0; i < ciRows.length; i++) {
-        PortletRowRow cir = ciRows[i];
+      for (PortletRowRow cir : ciRows) {
         // Get the space id and the component id required by the user
         String componentId = String.valueOf(cir.getInstanceId());
 
         // check if the user is allowed to access the required component
-        for (int nI = 0; nI < availComponents.length; nI++) {
+        for (String availComponent : availComponents) {
 
-          if (availComponents[nI].equalsIgnoreCase(componentId)) {
+          if (availComponent.equalsIgnoreCase(componentId)) {
             ret = true;
             break search;
           }

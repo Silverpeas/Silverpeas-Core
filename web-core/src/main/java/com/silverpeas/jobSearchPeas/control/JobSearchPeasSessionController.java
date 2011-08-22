@@ -23,15 +23,6 @@
  */
 package com.silverpeas.jobSearchPeas.control;
 
-import java.rmi.NoSuchObjectException;
-
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import com.silverpeas.jobSearchPeas.SearchResult;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
@@ -55,17 +46,24 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-
 import edu.emory.mathcs.backport.java.util.Collections;
+
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Class declaration
@@ -708,29 +706,29 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     //groupe(s) d'appartenance
     String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(userId);
     if (groupIds != null && groupIds.length > 0) {
-      for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-        Group group = getOrganizationController().getGroup(groupIds[iGrp]);
-        
+      for (String groupId : groupIds) {
+        Group group = getOrganizationController().getGroup(groupId);
+
         String domainId = group.getDomainId();
-        if(domainId == null) {
+        if (domainId == null) {
           domainId = "-1";
         }
         Domain domain = getAdminController().getDomain(domainId);
         emplacement = "";
         //nom du domaine
-        if("-1".equals(domainId)) {//domaine mixte
-          emplacement += getString("JSP.domainMixt");  
+        if ("-1".equals(domainId)) {//domaine mixte
+          emplacement += getString("JSP.domainMixt");
         } else {
           emplacement += domain.getName();
         }
-        
+
         //nom du(des) groupe(s) pères
-        List<String> groupList = getAdminController().getPathToGroup(groupIds[iGrp]);
+        List<String> groupList = getAdminController().getPathToGroup(groupId);
         for (String elementGroupId : groupList) {
-          emplacement += " > "+ getAdminController().getGroupName(elementGroupId);
+          emplacement += " > " + getAdminController().getGroupName(elementGroupId);
         }
         //nom du groupe
-        emplacement += " > "+ group.getName();
+        emplacement += " > " + group.getName();
         listEmplacement.add(emplacement);
       }
     } else {

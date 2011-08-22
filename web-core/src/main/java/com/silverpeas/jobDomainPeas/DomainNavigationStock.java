@@ -87,12 +87,12 @@ public class DomainNavigationStock extends NavigationStock {
 
     // filter groups
     String groupId = null;
-    for (int g = 0; g < groups.length; g++) {
-      groupId = groups[g].getId();
+    for (Group group : groups) {
+      groupId = group.getId();
 
-      if (manageableGroupIds.contains(groupId))
-        temp.add(groups[g]);
-      else {
+      if (manageableGroupIds.contains(groupId)) {
+        temp.add(group);
+      } else {
         // get all subGroups of group
         List<String> subGroupIds = Arrays.asList(m_adc
             .getAllSubGroupIdsRecursively(groupId));
@@ -104,12 +104,14 @@ public class DomainNavigationStock extends NavigationStock {
         boolean find = false;
         while (!find && itManageableGroupsIds.hasNext()) {
           manageableGroupId = itManageableGroupsIds.next();
-          if (subGroupIds.contains(manageableGroupId))
+          if (subGroupIds.contains(manageableGroupId)) {
             find = true;
+          }
         }
 
-        if (find)
-          temp.add(groups[g]);
+        if (find) {
+          temp.add(group);
+        }
       }
     }
 

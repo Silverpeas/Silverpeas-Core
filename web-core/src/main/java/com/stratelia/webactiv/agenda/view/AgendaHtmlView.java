@@ -25,12 +25,6 @@
 package com.stratelia.webactiv.agenda.view;
 
 import com.silverpeas.util.EncodeHelper;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
@@ -45,8 +39,14 @@ import com.stratelia.webactiv.calendar.model.SchedulableList;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 public class AgendaHtmlView {
 
@@ -517,8 +517,7 @@ public class AgendaHtmlView {
         result += "        <td class=\"intfdcolor4\" width=\"600\">&nbsp;</td>";
         maxColumns = 0;
       } else {
-        for (int goOnIterator = 0; goOnIterator < goOn.size(); goOnIterator++) {
-          Schedulable schedule = goOn.get(goOnIterator);
+        for (Schedulable schedule : goOn) {
           boolean start = true;
 
           if (lastGoOn != null) {
@@ -748,8 +747,7 @@ public class AgendaHtmlView {
       }
       if (all.size() > 0) {
         result.append("      <table>");
-        for (int i = 0; i < all.size(); i++) {
-          Schedulable schedule = all.get(i);
+        for (Schedulable schedule : all) {
           result.append("  <tr>");
           if (isOtherAgenda && schedule.getClassification().isPrivate()) {
             result.append("    <td class=\"privateEvent\">").append(

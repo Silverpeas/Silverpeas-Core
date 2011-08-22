@@ -97,15 +97,14 @@ public class GroupNavigationStock extends NavigationStock {
 
     // filter groups
     String groupId = null;
-    for (int g = 0; g < groupIds.length; g++) {
-      groupId = groupIds[g];
+    for (String groupId1 : groupIds) {
+      groupId = groupId1;
 
-      if (manageableGroupIds.contains(groupId))
+      if (manageableGroupIds.contains(groupId)) {
         temp.add(groupId);
-      else {
+      } else {
         // get all subGroups of group
-        List<String> subGroupIds = Arrays.asList(m_adc
-            .getAllSubGroupIdsRecursively(groupId));
+        List<String> subGroupIds = Arrays.asList(m_adc.getAllSubGroupIdsRecursively(groupId));
 
         // check if at least one manageable group is part of subGroupIds
         itManageableGroupsIds = manageableGroupIds.iterator();
@@ -114,12 +113,14 @@ public class GroupNavigationStock extends NavigationStock {
         boolean find = false;
         while (!find && itManageableGroupsIds.hasNext()) {
           manageableGroupId = itManageableGroupsIds.next();
-          if (subGroupIds.contains(manageableGroupId))
+          if (subGroupIds.contains(manageableGroupId)) {
             find = true;
+          }
         }
 
-        if (find)
+        if (find) {
           temp.add(groupId);
+        }
       }
     }
 

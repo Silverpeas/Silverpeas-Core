@@ -157,8 +157,8 @@ public class PortletColumnTable extends AbstractTable {
   public PortletColumnRow[] dereferenceSpaceId(int spaceId)
       throws UtilException {
     PortletColumnRow[] portletColumnToBeDeleted = getAllBySpaceId(spaceId);
-    for (int i = 0; i < portletColumnToBeDeleted.length; i++) {
-      delete(portletColumnToBeDeleted[i].getId());
+    for (PortletColumnRow aPortletColumnToBeDeleted : portletColumnToBeDeleted) {
+      delete(aPortletColumnToBeDeleted.getId());
     }
     return portletColumnToBeDeleted;
   }

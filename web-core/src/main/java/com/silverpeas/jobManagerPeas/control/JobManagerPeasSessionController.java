@@ -386,16 +386,16 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + jmsParent.getLabel());
     List<JobManagerService> listChild = new ArrayList<JobManagerService>();
     String[] idSubServices = jmsParent.getIdSubServices();
-    for (int i = 0; i < idSubServices.length; i++) {
-      JobManagerService jmsChild = services.get(idSubServices[i]);
+    for (String idSubService : idSubServices) {
+      JobManagerService jmsChild = services.get(idSubService);
       if (jmsChild != null) {
         SilverTrace
             .debug(
-            "jobManagerPeas",
-            "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-            "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
-            + jmsChild.getId() + " jmsChild label="
-            + jmsChild.getLabel());
+                "jobManagerPeas",
+                "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
+                "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
+                + jmsChild.getId() + " jmsChild label="
+                + jmsChild.getLabel());
         listChild.add(jmsChild);
       }
     }
@@ -435,9 +435,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     // correspondant au nouveau service
     JobManagerService[] jms = this.getSubServices(newService);
     idCurrentOperationActif = null;
-    for (int i = 0; i < jms.length; i++) {
-      if (jms[i].isActif())
-        idCurrentOperationActif = jms[i].getId();
+    for (JobManagerService jm : jms) {
+      if (jm.isActif()) {
+        idCurrentOperationActif = jm.getId();
+      }
     }
 
     // contrôle si l'attribut idCurrentServiceActif à bien une valeur
@@ -500,7 +501,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           String valeur = groupe.substring(j, j + 1);
           total = total + Integer.parseInt(valeur);
         }
-        if (total != Integer.parseInt(serial.substring(i * 1, i * 1 + 1)))
+        if (total != Integer.parseInt(serial.substring(i, i + 1)))
           validSequence = false;
       }
     } catch (Exception e) {

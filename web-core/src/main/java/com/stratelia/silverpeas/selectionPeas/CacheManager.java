@@ -157,9 +157,9 @@ abstract public class CacheManager {
 
   public void setSelected(CacheType what, String[] ids, boolean isSelected) {
     if (ids != null) {
-      for (int i = 0; i < ids.length; i++) {
-        if (StringUtil.isDefined(ids[i])) {
-          setSelected(what, ids[i], isSelected);
+      for (String id : ids) {
+        if (StringUtil.isDefined(id)) {
+          setSelected(what, id, isSelected);
         }
       }
     }
