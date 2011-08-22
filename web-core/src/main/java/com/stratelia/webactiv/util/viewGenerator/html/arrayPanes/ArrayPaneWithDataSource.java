@@ -198,7 +198,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
                 .getParameter(COLUMN_PARAMETER_NAME);
 
             if (newState != null) {
-              int ns = new Integer(newState).intValue();
+              int ns = Integer.parseInt(newState);
 
               if ((ns == state.getSortColumn())
                   || (ns + state.getSortColumn() == 0)) {

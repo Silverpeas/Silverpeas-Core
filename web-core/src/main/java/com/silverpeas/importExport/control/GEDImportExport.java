@@ -429,7 +429,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
               String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
               String imageMimeType = AttachmentController.getMimeType(imagePath);
 
-              String physicalName = new Long(new Date().getTime()).toString() + "." + imageExtension;
+              String physicalName = Long.toString(System.currentTimeMillis()) + "." + imageExtension;
 
               String path = AttachmentController.createPath(getCurrentComponentId(), context);
               FileRepositoryManager.copyFile(imagePath, path + physicalName);
@@ -1209,7 +1209,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     String logicalName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
     String type = FileRepositoryManager.getFileExtension(logicalName);
     String mimeType = AttachmentController.getMimeType(logicalName);
-    String physicalName = new Long(new Date().getTime()).toString() + "." + type;
+    String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
     if (FileUtil.isImage(logicalName)) {
       String dest = FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId())
               + "images" + File.separator + physicalName;

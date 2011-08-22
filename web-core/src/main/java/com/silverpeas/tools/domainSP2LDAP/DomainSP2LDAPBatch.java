@@ -1,8 +1,5 @@
 package com.silverpeas.tools.domainSP2LDAP;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -12,6 +9,9 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DomainSP2LDAPBatch
 {
@@ -116,7 +116,7 @@ public class DomainSP2LDAPBatch
             if (processGroup)
             {
               int nextId = DBUtil.getNextId("ST_GROUP", "specificId");
-              group.setSpecificId(new Integer(nextId).toString());
+              group.setSpecificId(Integer.toString(nextId));
               group.setDomainId(null);
               adminController.updateGroup(group);
               SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "- Groupe "+group.getName()+" avec "+group.getUserIds().length+" utilisateurs d&eacute;plac&eacute;s dans le domaine Mixte", null);

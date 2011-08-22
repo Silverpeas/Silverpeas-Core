@@ -1,16 +1,5 @@
 package com.silverpeas.tools.checkAttachments;
 
-import java.io.File;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.tools.checkAttachments.model.CheckAttachmentDetail;
 import com.silverpeas.tools.checkAttachments.model.OrphanAttachment;
 import com.silverpeas.util.ComponentHelper;
@@ -41,6 +30,17 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import java.io.File;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public class CheckAttachmentsBatch {
 
@@ -203,7 +203,7 @@ public class CheckAttachmentsBatch {
 
           if (display) {
             CheckAttachmentDetail cad = new CheckAttachmentDetail();
-            cad.setAttachmentId(new Long(attachmentId).longValue());
+            cad.setAttachmentId(Long.parseLong(attachmentId));
             cad.setPhysicalName(attDetail.getPhysicalName());
             cad.setLogicalName(attDetail.getLogicalName(language));
             cad.setSize(attDetail.getSize());

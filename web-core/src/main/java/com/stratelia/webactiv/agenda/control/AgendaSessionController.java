@@ -1686,7 +1686,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     else
       calendarBm.addHolidayDates(holidayDates);
     setHolidaysDates(getHolidaysDatesInDb());
-    currentCalendar.set(Calendar.YEAR, new Integer(year).intValue());
+    currentCalendar.set(Calendar.YEAR, Integer.parseInt(year));
     currentCalendar.set(Calendar.MONTH, iMonth);
     currentCalendar.set(Calendar.DATE, 1);
     SilverTrace.info("agenda",

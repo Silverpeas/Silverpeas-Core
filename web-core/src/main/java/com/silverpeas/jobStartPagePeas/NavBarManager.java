@@ -24,12 +24,6 @@
 
 package com.silverpeas.jobStartPagePeas;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -39,6 +33,12 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 public class NavBarManager extends Object {
   // Constants used by urlFactory
@@ -349,9 +349,7 @@ public class NavBarManager extends Object {
         alValret.add(parents[j]);
         String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parents[j].id);
         DisplaySorted[] children = createSpaceObjects(subSpaceIds, true);
-        for (DisplaySorted child : children) {
-          alValret.add(child);
-        }
+        Collections.addAll(alValret, children);
       }
       valret = alValret.toArray(new DisplaySorted[0]);
     }
