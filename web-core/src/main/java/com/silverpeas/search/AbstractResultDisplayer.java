@@ -23,8 +23,6 @@
  */
 package com.silverpeas.search;
 
-import javax.servlet.jsp.JspTagException;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.EncodeHelper;
@@ -33,6 +31,8 @@ import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
+
+import javax.servlet.jsp.JspTagException;
 
 /**
  * This class shares common method to implement ResultDisplayer interface.
@@ -80,7 +80,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
 
     String sCreationDate = null;
     try {
-      if (searchResult.getSortValue().intValue() == 4) {
+      if (searchResult.getSortValue() == 4) {
         sCreationDate =
             DateUtil.getOutputDate(silverResult.getCreationDate(), getUserPreferences(
                 searchResult.getUserId()).getLanguage());

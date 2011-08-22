@@ -121,7 +121,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
     for (String astrSelectedValue : astrSelectedValues) {
       index = values.indexOf(astrSelectedValue);
       if (index != -1) {
-        selected.add(new Integer(index));
+        selected.add(index);
       }
     }
   }
@@ -307,7 +307,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
 
     // Options
     if (iterSelected.hasNext())
-      iSelected = iterSelected.next().intValue();
+      iSelected = iterSelected.next();
 
     for (int i = 0; i < labels.size(); i++) {
       syntax.append("\n<option value=\"");
@@ -318,7 +318,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
         syntax.append(" selected");
 
         if (iterSelected.hasNext())
-          iSelected = iterSelected.next().intValue();
+          iSelected = iterSelected.next();
       }
 
       syntax.append(">");
