@@ -32,11 +32,10 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.formPanes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author frageade
@@ -97,7 +96,7 @@ public class FormSelect extends FormLine {
   public void addItem(String itemsLabel, String itemValue, boolean selected) {
     itemsLabels.add(itemsLabel);
     itemValues.add(itemValue);
-    itemsSelected.add(new Boolean(selected));
+    itemsSelected.add(Boolean.valueOf(selected));
     nbItems++;
   }
 
@@ -110,7 +109,7 @@ public class FormSelect extends FormLine {
   public void addItem(String itemsLabel, String itemValue) {
     itemsLabels.add(itemsLabel);
     itemValues.add(itemValue);
-    itemsSelected.add(new Boolean(false));
+    itemsSelected.add(Boolean.FALSE);
     nbItems++;
   }
 

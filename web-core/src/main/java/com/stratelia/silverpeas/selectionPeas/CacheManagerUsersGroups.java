@@ -91,9 +91,7 @@ public class CacheManagerUsersGroups extends CacheManager {
             PanelLine pl;
             for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
               pl = getLineFromId(CacheType.CM_SET, groupIds[iGrp]);
-              for (int i = 0; i < columns.length; i++) {
-                result[iGrp][i] = pl.m_Values[i];
-              }
+              System.arraycopy(pl.m_Values, 0, result[iGrp], 0, columns.length);
             }
           }
         }
@@ -112,9 +110,7 @@ public class CacheManagerUsersGroups extends CacheManager {
             PanelLine pl;
             for (int iUsr = 0; iUsr < userIds.length; iUsr++) {
               pl = getLineFromId(CacheType.CM_ELEMENT, userIds[iUsr]);
-              for (int i = 0; i < columns.length; i++) {
-                result[iUsr][i] = pl.m_Values[i];
-              }
+              System.arraycopy(pl.m_Values, 0, result[iUsr], 0, columns.length);
             }
           }
         }
