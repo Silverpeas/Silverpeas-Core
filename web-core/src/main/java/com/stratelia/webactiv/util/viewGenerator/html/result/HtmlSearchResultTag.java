@@ -23,14 +23,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.result;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.search.ResultDisplayer;
@@ -47,6 +39,13 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tag to display result search element (GlobalSilverResult) object. Add extra information from
@@ -87,6 +86,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
   /**
    * Get user identifier.
+   *
    * @return the user identifier.
    */
   public String getUserId() {
@@ -95,6 +95,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
   /**
    * Set user idenfier.
+   *
    * @param userId the user identifier.
    */
   public void setUserId(String userId) {
@@ -171,14 +172,14 @@ public class HtmlSearchResultTag extends TagSupport {
     // Create a new added information
     String addedInformation = null;
 
-    if (StringUtil.isDefined(instanceId) &&
-        !(instanceId.startsWith("user") || instanceId.startsWith("pdc"))) {
+    if (StringUtil.isDefined(instanceId) && !(instanceId.startsWith("user")
+        || instanceId.startsWith("pdc"))) {
 
       // Check if this component has a specific template result
       ComponentInstLight component = orga.getComponentInstLight(instanceId);
       if (component != null) {
         componentName = component.getName();
-  
+
         boolean processResultTemplating = isResultTemplating(instanceId, componentName);
         if (processResultTemplating) {
           // Retrieve the component result displayer class from a factory
@@ -188,9 +189,9 @@ public class HtmlSearchResultTag extends TagSupport {
               "load specific for current result: instanceid=" + instanceId + ", contentid=" +
                   gsr.getId());
           if (resultDisplayer != null) {
-            addedInformation =
-                resultDisplayer.getResultContent(new SearchResultContentVO(this.userId, this.gsr,
-                    this.sortValue, this.activeSelection, this.exportEnabled, settings));
+            addedInformation = resultDisplayer.getResultContent(new SearchResultContentVO(
+                this.userId, this.gsr, this.sortValue, this.activeSelection, this.exportEnabled,
+                settings));
           }
         }
       }
@@ -201,7 +202,8 @@ public class HtmlSearchResultTag extends TagSupport {
   /**
    * Check if a component instance must process a specific result template. Then this method adds
    * the result of this check inside a cache.
-   * @param instanceId : the component instance identifier
+   *
+   * @param instanceId    : the component instance identifier
    * @param componentName : the component name
    * @return true if this instance need to generate a specific result template, false else if
    * @throws JspTagException
@@ -230,7 +232,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
   /**
    * @param settings
-   * @param comp
+   * @param componentName
    * @param extraInformation
    * @return the default HTML result search of a searched element
    * @throws JspTagException
@@ -240,8 +242,7 @@ public class HtmlSearchResultTag extends TagSupport {
     // initialize html result
     StringBuilder result = new StringBuilder();
 
-    String downloadSrc =
-        "<img src=\"" + settings.getIcon("pdcPeas.download") +
+    String downloadSrc = "<img src=\"" + settings.getIcon("pdcPeas.download") +
             "\" class=\"fileDownload\" alt=\"" + settings.getString("pdcPeas.DownloadInfo") +
             "\"/>";
 
@@ -267,9 +268,8 @@ public class HtmlSearchResultTag extends TagSupport {
 
     String serverName = "";
     if (settings.getSetting("external.search.enable", false) && gsr.getIndexEntry() != null) {
-      serverName =
-          "external_server_" +
-              (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ? gsr.getIndexEntry()
+      serverName = "external_server_" +
+          (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ? gsr.getIndexEntry()
                   .getServerName() : "unknown");
     }
 
@@ -279,8 +279,8 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append(serverName).append("\">");
 
     if (settings.getSetting("PertinenceVisible", false)) {
-      result.append("<td class=\"pertinence\">" +
-          ResultSearchRendererUtil.displayPertinence(gsr.getRawScore()) + "&nbsp;</td>");
+      result.append("<td class=\"pertinence\">").append(
+          ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("&nbsp;</td>");
     }
 
     if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
@@ -289,14 +289,13 @@ public class HtmlSearchResultTag extends TagSupport {
         if (gsr.isSelected()) {
           checked = "checked";
         }
-        result.append("<td class=\"selection\"><input type=\"checkbox\" " + checked +
-            " name=\"resultObjects\" value=\"" + gsr.getId() + "-" + gsr.getInstanceId() +
-            "\"></td>");
+        result.append("<td class=\"selection\"><input type=\"checkbox\" ").append(checked).append(
+            " name=\"resultObjects\" value=\"").append(gsr.getId()).append("-").append(
+            gsr.getInstanceId()).append("\"></td>");
       } else {
-        result
-            .append("<td class=\"selection\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\""
-                +
-                gsr.getId() + "-" + gsr.getInstanceId() + "\"></td>");
+        result.append(
+            "<td class=\"selection\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\"").append(
+            gsr.getId()).append("-").append(gsr.getInstanceId()).append("\"></td>");
       }
     }
 
@@ -318,12 +317,12 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (gsr.getThumbnailURL() != null && gsr.getThumbnailURL().length() > 0) {
       if ("UserFull".equals(gsr.getType())) {
-        result.append("<td><img class=\"avatar\" src=\"" + URLManager.getApplicationURL() +
-            gsr.getThumbnailURL() +
-            "\" /></td>");
+        result.append("<td><img class=\"avatar\" src=\"").append(
+            URLManager.getApplicationURL()).append(gsr.getThumbnailURL()).append("\" /></td>");
       } else {
-        result.append("<td><img src=\"" + gsr.getThumbnailURL() + "\" border=\"0\" width=\"" +
-            gsr.getThumbnailWidth() + "\" height=\"" + gsr.getThumbnailHeight() + "\"/></td>");
+        result.append("<td><img src=\"").append(gsr.getThumbnailURL()).append(
+            "\" border=\"0\" width=\"").append(gsr.getThumbnailWidth()).append(
+            "\" height=\"").append(gsr.getThumbnailHeight()).append("\"/></td>");
       }
       result.append("<td>&nbsp;</td>");
     }
@@ -331,8 +330,8 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append("<td>");
     String curResultId = "readSpanId_" + gsr.getResultId();
     if (activeSelection.booleanValue()) {
-      result.append("<span id=\"" + curResultId + "\" class=\"textePetitBold\">" + sName +
-          "</span>");
+      result.append("<span id=\"").append(curResultId).append(
+          "\" class=\"textePetitBold\">").append(sName).append("</span>");
     } else {
       String cssClass = "textePetitBold";
       String cssClassDisableVisited = "";
@@ -340,36 +339,37 @@ public class HtmlSearchResultTag extends TagSupport {
         cssClass = "markedkAsRead";
         cssClassDisableVisited = "markedkAsReadDisableVisited";
       }
-      result
-          .append("<a href=\"" + sURL + "\" class=\"" + cssClassDisableVisited + "\"><span id=\"" +
-              curResultId + "\" class=\"" + cssClass + "\">" + sName + "</span></a>");
+      result.append("<a href=\"").append(sURL).append("\" class=\"").append(
+          cssClassDisableVisited).append("\"><span id=\"").append(curResultId).append(
+          "\" class=\"").append(cssClass).append("\">").append(sName).append("</span></a>");
     }
     if (StringUtil.isDefined(sDownloadURL)) {
       // affiche le lien pour le téléchargement
-      result.append("<a href=\"" + sDownloadURL + "\" target=\"_blank\">" + downloadSrc + "</a>");
+      result.append("<a href=\"").append(sDownloadURL).append("\" target=\"_blank\">").append(
+          downloadSrc).append("</a>");
     }
     if (StringUtil.isDefined(sCreatorName)) {
-      result.append(" <span class=\"creatorName\"> - " +
-          EncodeHelper.javaStringToHtmlString(sCreatorName) + "</span>");
+      result.append(" <span class=\"creatorName\"> - ").append(
+          EncodeHelper.javaStringToHtmlString(sCreatorName)).append("</span>");
     }
     if (StringUtil.isDefined(sCreationDate)) {
-      result.append(" <span class=\"creationDate\"> (" + sCreationDate + ") </span>");
+      result.append(" <span class=\"creationDate\"> (").append(sCreationDate).append(") </span>");
     }
 
     if (StringUtil.isDefined(sDescription)) {
-      result.append("<span class=\"description\"><br/><i> " +
-          EncodeHelper.javaStringToHtmlParagraphe(sDescription) + "</i></span>");
+      result.append("<span class=\"description\"><br/><i> ").append(
+          EncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</i></span>");
     }
 
     if (sortValue.intValue() == 7 && gsr.getHits() >= 0) {
-      result.append("<br/><span class=\"popularity\">" +
-          settings.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits())) +
-          "</span>");
+      result.append("<br/><span class=\"popularity\">").append(
+          settings.getStringWithParam("pdcPeas.popularity",
+              Integer.toString(gsr.getHits()))).append("</span>");
     }
 
     if (StringUtil.isDefined(sLocation)) {
-      result.append("<span class=\"location\"> <br/>" +
-          EncodeHelper.javaStringToHtmlString(sLocation) + "</span>");
+      result.append("<span class=\"location\"> <br/>").append(
+          EncodeHelper.javaStringToHtmlString(sLocation)).append("</span>");
     }
     if (StringUtil.isDefined(extraInformation)) {
       result.append("<div class=\"extra\">");

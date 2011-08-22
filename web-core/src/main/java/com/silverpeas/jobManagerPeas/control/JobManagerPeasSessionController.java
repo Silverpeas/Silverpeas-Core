@@ -40,8 +40,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -362,9 +362,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         "jobManagerPeasSessionController.getServices()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER level=" + level);
     List<JobManagerService> listServices = new ArrayList<JobManagerService>();
-    Enumeration<JobManagerService> enumer = services.elements();
-    while (enumer.hasMoreElements()) {
-      JobManagerService jms = enumer.nextElement();
+    Iterator<JobManagerService> iterator = services.values().iterator();
+    while (iterator.hasNext()) {
+      JobManagerService jms = iterator.next();
       if (jms.getLevel() == level) {
         SilverTrace.debug("jobManagerPeas",
             "jobManagerPeasSessionController.getServices()",

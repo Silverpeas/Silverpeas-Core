@@ -154,9 +154,8 @@ public class HomePageUtil {
 
     if ((lastEx != null)
         && (lastEx.getMessage() != null)
-        && (lastEx.getMessage().indexOf(
-        "Connection reset by peer: socket write error") >= 0)
-        && (lastEx.getMessage().indexOf("SQL") < 0)) {
+        && (lastEx.getMessage().contains("Connection reset by peer: socket write error"))
+        && (!lastEx.getMessage().contains("SQL"))) {
       SilverTrace.info("util", "HomePageUtil.traceException()",
           "root.EX_IGNORED", "Deepest", lastEx);
       SilverTrace.info("util", "HomePageUtil.traceException()",

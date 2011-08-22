@@ -62,7 +62,7 @@ public class SilverpeasWebUtil {
         // Get the space and component Ids
         // componentId extracted from the URL
         // Old url (with WA..)
-        if (pathInfo.indexOf("WA") != -1) {
+        if (pathInfo.contains("WA")) {
           String sAndCId = pathInfo.substring(0, pathInfo.indexOf('/'));
           // spaceId looks like WA17
           spaceId = sAndCId.substring(0, sAndCId.indexOf('_'));

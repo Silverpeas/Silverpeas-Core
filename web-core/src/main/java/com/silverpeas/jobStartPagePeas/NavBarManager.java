@@ -432,7 +432,7 @@ public class NavBarManager extends Object {
         sb.append("<option ");
         if (space.id.equals(m_CurrentSpaceId))
           sb.append("selected ");
-        sb.append("value=" + space.id + ">" + space.name);
+        sb.append("value=").append(space.id).append(">").append(space.name);
         if (m_SessionCtrl.isSpaceInMaintenance(space.id))
           sb.append(" (M)");
         sb.append("</option>");

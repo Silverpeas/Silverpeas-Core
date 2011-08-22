@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
-import java.util.Vector;
-
 import com.silverpeas.util.StringUtil;
+
+import java.util.Vector;
 
 public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
@@ -79,10 +79,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     String alt = getMultilang().getString("GEF.operations.label", "Opérations");
 
-    result.append(
-        "<div align=\"right\"><span id=\"menutoggle\">"
-        + alt + "<img src=\"").append(getIconsPath()).append(
-        "/ptr.gif\" alt=\"" + alt + "\"/></span></div>");
+    result.append("<div align=\"right\"><span id=\"menutoggle\">").append(alt).append(
+        "<img src=\"").append(getIconsPath()).append("/ptr.gif\" alt=\"").append(alt).append(
+        "\"/></span></div>");
 
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");
     result.append("<div class=\"bd\">");

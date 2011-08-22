@@ -618,7 +618,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += "<a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";
@@ -637,7 +637,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += " | <a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";
@@ -751,7 +751,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += "<a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";
@@ -770,7 +770,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += " | <a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";

@@ -24,20 +24,10 @@
 
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import java.util.Date;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import static com.stratelia.silverpeas.peasCore.MainSessionController.*;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
@@ -47,6 +37,16 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter extends HttpServlet {
 
@@ -268,14 +268,10 @@ public abstract class ComponentRequestRouter extends HttpServlet {
             "/admin/jsp/errorpageMain.jsp").forward(request, response);
       } catch (Exception ex) {
         if ((e.getMessage() != null)
-            && (e.getMessage().indexOf(
-            "Connection reset by peer: socket write error") >= 0)
-            && (e.getMessage().indexOf("SQL") < 0)) { // This is a
-          // "Connection reset by peer"
-          // exception due to user
-          // quick clicks -> Forget
-          // it unless we are in
-          // Info Mode
+            && (e.getMessage().contains("Connection reset by peer: socket write error"))
+            && (!e.getMessage().contains("SQL"))) { // This is a
+          // "Connection reset by peer" exception due to user quick clicks -> Forget
+          // it unless we are in Info Mode
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
