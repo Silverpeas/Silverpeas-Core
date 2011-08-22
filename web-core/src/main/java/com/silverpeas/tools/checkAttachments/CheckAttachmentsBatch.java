@@ -288,7 +288,7 @@ public class CheckAttachmentsBatch {
     StringBuffer linkedPathString = new StringBuffer();
     StringBuffer pathString = new StringBuffer();
     if (nodesPK != null && !nodesPK.isEmpty()) {
-      NodePK firstNodePK = (NodePK) nodesPK.get(0);
+      NodePK firstNodePK = nodesPK.get(0);
       path = getPath(firstNodePK.getId(), firstNodePK.getInstanceId());
       if (path != null) {
         int nbItemInPath = path.size();
@@ -361,7 +361,7 @@ public class CheckAttachmentsBatch {
   public PublicationBm getPublicationBm() {
     PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.PUBLICATIONBM_EJBHOME,
           PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
@@ -376,7 +376,7 @@ public class CheckAttachmentsBatch {
   public NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {

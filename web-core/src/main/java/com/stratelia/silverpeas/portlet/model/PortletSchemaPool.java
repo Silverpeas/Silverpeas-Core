@@ -63,6 +63,6 @@ public class PortletSchemaPool extends SchemaPool {
   }
 
   protected Schema newSchema(int connectionLot) throws UtilException {
-    return (Schema) (new PortletSchema(connectionLot));
+    return new PortletSchema(connectionLot);
   }
 }

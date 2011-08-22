@@ -1343,7 +1343,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copyComponent()",
         "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
         + getClipboardCount());
-    addClipboardSelection((ClipboardSelection) compoSelect);
+    addClipboardSelection(compoSelect);
   }
 
   public void copySpace(String id) throws RemoteException {
@@ -1352,7 +1352,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copySpace()",
         "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
         + getClipboardCount());
-    addClipboardSelection((ClipboardSelection) spaceSelect);
+    addClipboardSelection(spaceSelect);
   }
 
   /**

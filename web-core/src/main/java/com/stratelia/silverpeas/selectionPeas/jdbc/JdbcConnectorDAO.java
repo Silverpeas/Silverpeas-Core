@@ -24,6 +24,10 @@
 
 package com.stratelia.silverpeas.selectionPeas.jdbc;
 
+import com.stratelia.silverpeas.selection.SelectionJdbcParams;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
@@ -33,10 +37,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import com.stratelia.silverpeas.selection.SelectionJdbcParams;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * JDBC database access.
@@ -90,7 +90,7 @@ public class JdbcConnectorDAO {
       } finally {
         closeConnection(con, null, columnsRs);
       }
-      columnsNames = (String[]) columns.toArray(new String[columns.size()]);
+      columnsNames = columns.toArray(new String[columns.size()]);
     }
     return columnsNames;
   }

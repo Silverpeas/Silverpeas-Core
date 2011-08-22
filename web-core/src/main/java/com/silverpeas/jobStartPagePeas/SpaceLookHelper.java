@@ -57,6 +57,6 @@ public class SpaceLookHelper implements Serializable {
   }
 
   public SpaceLookItem getItem(String name) {
-    return (SpaceLookItem) items.get(name);
+    return items.get(name);
   }
 }

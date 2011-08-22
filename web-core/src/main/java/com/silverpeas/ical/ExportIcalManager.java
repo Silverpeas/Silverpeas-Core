@@ -384,8 +384,8 @@ public class ExportIcalManager {
   private void setCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
+        calendarBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class).create();
       } catch (Exception e) {
         throw new AgendaRuntimeException("ExportIcalManager.setCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

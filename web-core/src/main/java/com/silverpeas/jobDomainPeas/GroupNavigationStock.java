@@ -31,15 +31,15 @@
 
 package com.silverpeas.jobDomainPeas;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
@@ -123,7 +123,7 @@ public class GroupNavigationStock extends NavigationStock {
       }
     }
 
-    return (String[]) temp.toArray(new String[0]);
+    return temp.toArray(new String[0]);
   }
 
   public boolean isThisGroup(String grId) {

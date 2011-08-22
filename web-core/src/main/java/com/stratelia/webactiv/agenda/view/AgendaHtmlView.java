@@ -82,7 +82,7 @@ public class AgendaHtmlView {
    * Constructor declaration
    * @param viewType
    * @param date
-   * @param message
+   * @param agendaSessionController
    * @param settings
    * @see
    */
@@ -564,7 +564,7 @@ public class AgendaHtmlView {
               }
             }
 
-            result += "<td width=\"" + ((int) (600 / maxColumns))
+            result += "<td width=\"" + (600 / maxColumns)
                 + "\" class=\"" + color + "\" rowspan=\"" + length + "\">";
             if (isOtherAgenda) {
               if (schedule.getClassification().isPrivate()) {
@@ -605,7 +605,7 @@ public class AgendaHtmlView {
         }
         for (int maxColumnsIterator = goOn.size(); maxColumnsIterator < maxColumns; maxColumnsIterator++) {
           result += "        <td class=\"intfdcolor4\" width=\""
-              + ((int) (600 / maxColumns)) + "\">&nbsp;</td>";
+              + (600 / maxColumns) + "\">&nbsp;</td>";
         }
       }
       result += "       </tr>\n";

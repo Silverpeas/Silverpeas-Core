@@ -184,8 +184,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   private void setCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
+        calendarBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class).create();
       } catch (Exception e) {
         throw new AgendaRuntimeException(
             "AgendaSessionController.setCalendarBm()",

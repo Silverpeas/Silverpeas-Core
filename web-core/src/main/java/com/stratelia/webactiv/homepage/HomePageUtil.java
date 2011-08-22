@@ -54,7 +54,7 @@ public class HomePageUtil {
       return "Internal error : No error in parameter's request";
     }
     Collection exceptions = SilverpeasException
-        .getChainedExceptions((Throwable) exception);
+        .getChainedExceptions(exception);
     Iterator it = exceptions.iterator();
 
     while (it.hasNext()) {
@@ -79,7 +79,7 @@ public class HomePageUtil {
       return "Internal error : No error in parameter's request";
     }
     Collection exceptions = SilverpeasException
-        .getChainedExceptions((Throwable) exception);
+        .getChainedExceptions(exception);
 
     StringBuffer result = new StringBuffer();
     Iterator it = exceptions.iterator();
@@ -133,7 +133,7 @@ public class HomePageUtil {
 
     if (exception != null) {
       Collection exceptions = SilverpeasException
-          .getChainedExceptions((Throwable) exception);
+          .getChainedExceptions(exception);
       Iterator it = exceptions.iterator();
 
       while (it.hasNext()) {
@@ -170,7 +170,7 @@ public class HomePageUtil {
 
         if (exception != null) {
           Collection exceptions = SilverpeasException
-              .getChainedExceptions((Throwable) exception);
+              .getChainedExceptions(exception);
           Iterator it = exceptions.iterator();
 
           while (it.hasNext()) {

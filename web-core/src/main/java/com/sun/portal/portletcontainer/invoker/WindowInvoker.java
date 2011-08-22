@@ -24,23 +24,6 @@
 package com.sun.portal.portletcontainer.invoker;
 
 import com.silverpeas.util.FileUtil;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.silverpeas.util.StringUtil;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
@@ -68,6 +51,22 @@ import com.sun.portal.container.PortletWindowContextFactory;
 import com.sun.portal.container.WindowRequestReader;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import com.sun.portal.portletcontainer.invoker.util.PortletWindowRules;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * This class is responsible for rendering the portlet markup fragments. It retrieves the portlet
@@ -1017,7 +1016,7 @@ public abstract class WindowInvoker
   // Read error code from the request params
   //
   protected ErrorCode readErrorCode(HttpServletRequest request) {
-    String errorCodeStr = (String) request.getParameter(getErrorCodeParameter());
+    String errorCodeStr = request.getParameter(getErrorCodeParameter());
 
     if (errorCodeStr
             != null

@@ -222,7 +222,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   public GenericPanel getGenericPanel(String panelKey) {
-    return (GenericPanel) genericPanels.get(panelKey);
+    return genericPanels.get(panelKey);
   }
 
   // ------------------- Selection Functions -----------------------------
@@ -254,8 +254,8 @@ public class MainSessionController extends AdminReference implements Clipboard {
       SilverTrace.info("peasCore", "MainSessionController.getClipboard()",
           "root.MSG_GEN_ENTER_METHOD");
       try {
-        m_ClipboardBm = ((ClipboardBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class)).create(
+        m_ClipboardBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class).create(
             "MainClipboard");
       } catch (Exception e) {
         throw new PeasCoreRuntimeException(

@@ -467,7 +467,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   @Override
   public String getPortletHandle(String portletWindowName) throws PortletWindowContextException {
     PortletPreferences prefs = getPreferences(portletWindowName, null, true);
-    return (String) prefs.getValue(PORTLET_HANDLE_PREF_NAME, null);
+    return prefs.getValue(PORTLET_HANDLE_PREF_NAME, null);
   }
 
   @Override

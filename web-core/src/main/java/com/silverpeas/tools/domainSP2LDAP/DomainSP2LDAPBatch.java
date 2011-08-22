@@ -107,7 +107,7 @@ public class DomainSP2LDAPBatch
           {
             UserDetail[] usersOfGroup = getAdminController().getAllUsersOfGroup(group.getId());
             for (int j=0; j<usersOfGroup.length && !processGroup; j++) {
-              UserDetail userDetail = (UserDetail) usersOfGroup[j];  
+              UserDetail userDetail = usersOfGroup[j];
               String userKeyName = (userDetail.getFirstName()+userDetail.getLastName()).toLowerCase();
               if (processedUsers.containsKey(userKeyName))
                 processGroup = true;

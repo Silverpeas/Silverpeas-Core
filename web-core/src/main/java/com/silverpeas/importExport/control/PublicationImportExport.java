@@ -148,7 +148,7 @@ public class PublicationImportExport {
     PublicationBm publicationBm = null;
     try {
       PublicationBmHome publicationBmHome =
-          (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
           PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {

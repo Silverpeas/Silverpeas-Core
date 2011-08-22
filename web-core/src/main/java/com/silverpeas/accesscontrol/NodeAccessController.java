@@ -77,7 +77,7 @@ public class NodeAccessController implements AccessController<NodePK> {
   }
 
   public NodeBm getNodeBm() throws Exception {
-    NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+    NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
         NodeBmHome.class);
     return nodeBmHome.create();
   }

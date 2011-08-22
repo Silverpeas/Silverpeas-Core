@@ -27,11 +27,6 @@
 
 package com.silverpeas.jobManagerPeas.control;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-
 import com.silverpeas.jobManagerPeas.JobManagerService;
 import com.silverpeas.jobManagerPeas.JobManagerSettings;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -43,6 +38,11 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Class declaration
@@ -373,7 +373,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         listServices.add(jms);
       }
     }
-    return (JobManagerService[]) listServices.toArray(new JobManagerService[0]);
+    return listServices.toArray(new JobManagerService[0]);
   }
 
   public JobManagerService[] getSubServices(JobManagerService jmsParent) {
@@ -422,11 +422,11 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       // première initialisation de
       // idCurrentServiceActif
       // resset du flag actif du service courant
-      ((JobManagerService) services.get(this.idCurrentServiceActif))
+      services.get(this.idCurrentServiceActif)
           .setActif(false);
     }
     //
-    JobManagerService newService = (JobManagerService) services
+    JobManagerService newService = services
         .get(idNewService);
     newService.setActif(true);
     this.idCurrentServiceActif = idNewService;

@@ -24,13 +24,6 @@
 
 package com.silverpeas.treeMenu.process;
 
-import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.silverpeas.treeMenu.model.MenuItem;
 import com.silverpeas.treeMenu.model.MenuRuntimeException;
 import com.silverpeas.treeMenu.model.NodeType;
@@ -45,6 +38,13 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
 
 /**
  * Allows the level menu building
@@ -238,7 +238,7 @@ public class TreeBuilder {
     NodeBm nodeBm = null;
     try {
       NodeBmHome nodeBmHome =
-          (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+          EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new MenuRuntimeException("TreeBuilder.getNodeBm()", SilverpeasRuntimeException.ERROR,

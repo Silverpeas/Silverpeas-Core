@@ -31,16 +31,16 @@
 
 package com.silverpeas.jobDomainPeas;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class manage the informations needed for domains navigation and browse PRE-REQUIRED : the
@@ -113,7 +113,7 @@ public class DomainNavigationStock extends NavigationStock {
       }
     }
 
-    return (Group[]) temp.toArray(new Group[0]);
+    return temp.toArray(new Group[0]);
   }
 
   public boolean isThisDomain(String grId) {
