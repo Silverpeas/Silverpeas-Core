@@ -218,7 +218,7 @@
   </modules>
 
   <properties>
-    <installer_stable_version>5.6.2</installer_stable_version>
+    <installer_stable_version>5.7</installer_stable_version>
     <installer_version>${project.version}</installer_version>
   </properties>
 
