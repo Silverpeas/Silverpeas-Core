@@ -29,13 +29,11 @@ import com.silverpeas.rest.RESTWebService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.subscribe.service.SubscribeRuntimeException;
 import com.silverpeas.subscribe.service.Subscription;
-import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import java.net.URI;
-import java.util.Collection;
-import javax.ws.rs.GET;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,8 +41,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import java.net.URI;
 
 /**
  *

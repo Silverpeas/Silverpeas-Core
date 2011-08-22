@@ -24,10 +24,6 @@
 
 package com.stratelia.webactiv.agenda.control;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarBmHome;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
@@ -36,6 +32,9 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.Collection;
+import java.util.Date;
 
 /*
  * CVS Informations
