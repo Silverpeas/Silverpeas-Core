@@ -213,7 +213,7 @@ public class HtmlSearchResultTag extends TagSupport {
     boolean doResultTemplating = false;
     Boolean cacheResult = componentSettings.get(componentName);
     if (cacheResult != null) {
-      return cacheResult.booleanValue();
+      return cacheResult;
     } else {
       String compConfig = PDC_BUNDLE_PREFIX_KEY + componentName;
       String listComponent = getSettings().getSetting(compConfig, "");
@@ -257,7 +257,7 @@ public class HtmlSearchResultTag extends TagSupport {
     String sCreatorName = gsr.getCreatorName();
     String sCreationDate = null;
     try {
-      if (sortValue.intValue() == 4) {
+      if (sortValue == 4) {
         sCreationDate = settings.getOutputDate(gsr.getCreationDate());
       } else {
         sCreationDate = settings.getOutputDate(gsr.getDate());
@@ -283,7 +283,7 @@ public class HtmlSearchResultTag extends TagSupport {
           ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("&nbsp;</td>");
     }
 
-    if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
+    if (activeSelection || exportEnabled) {
       if (gsr.isExportable()) {
         String checked = "";
         if (gsr.isSelected()) {
@@ -329,7 +329,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     result.append("<td>");
     String curResultId = "readSpanId_" + gsr.getResultId();
-    if (activeSelection.booleanValue()) {
+    if (activeSelection) {
       result.append("<span id=\"").append(curResultId).append(
           "\" class=\"textePetitBold\">").append(sName).append("</span>");
     } else {
@@ -361,7 +361,7 @@ public class HtmlSearchResultTag extends TagSupport {
           EncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</i></span>");
     }
 
-    if (sortValue.intValue() == 7 && gsr.getHits() >= 0) {
+    if (sortValue == 7 && gsr.getHits() >= 0) {
       result.append("<br/><span class=\"popularity\">").append(
           settings.getStringWithParam("pdcPeas.popularity",
               Integer.toString(gsr.getHits()))).append("</span>");

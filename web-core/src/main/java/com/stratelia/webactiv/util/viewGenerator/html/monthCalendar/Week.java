@@ -46,7 +46,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * Class declaration
  * @author
  */
-class Week extends Object {
+class Week {
 
   private Date startDate = null;
   private Date endDate = null;

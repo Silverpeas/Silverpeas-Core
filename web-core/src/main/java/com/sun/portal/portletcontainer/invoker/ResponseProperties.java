@@ -52,7 +52,7 @@ public class ResponseProperties {
 
   /**
    * Returns the Map of response headers that are set are by the portlet using addProperty method of
-   * PortletResponse. If there is no response headers, returns and empty map.
+   * PortletResponse. If there is no response headers, returns an empty map.
    * @return the Map of the response headers that set by the portlet
    */
   public Map<String, List<String>> getResponseHeaders() {

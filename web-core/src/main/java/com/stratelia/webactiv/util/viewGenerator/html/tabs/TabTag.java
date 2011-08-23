@@ -47,7 +47,7 @@ public class TabTag extends TagSupport {
   }
 
   public void setSelected(String selected) {
-    this.selected = Boolean.valueOf(selected).booleanValue();
+    this.selected = Boolean.valueOf(selected);
   }
 
   public int doEndTag() throws JspException {

@@ -29,10 +29,11 @@ import com.stratelia.silverpeas.authentication.password.ForgottenPasswordExcepti
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import java.util.Map;
-import java.util.Map.Entry;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -57,7 +58,7 @@ public class ForgotPasswordHandler extends FunctionHandler {
 
       Map<String, String> domains = lpAuth.getAllDomains();
       String domain = "";
-      for (Entry<String, String> entry : domains.entrySet()) {;
+      for (Entry<String, String> entry : domains.entrySet()) {
         if (entry.getKey().equals(domainId)) {
           domain = entry.getValue();
         }

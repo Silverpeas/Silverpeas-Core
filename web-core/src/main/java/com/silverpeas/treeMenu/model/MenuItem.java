@@ -446,7 +446,7 @@ public class MenuItem implements Serializable {
       if (other.type != null) {
         return false;
       }
-    } else if (!type.equals(other.type)) {
+    } else if (type != other.type) {
       return false;
     }
     if (url == null) {

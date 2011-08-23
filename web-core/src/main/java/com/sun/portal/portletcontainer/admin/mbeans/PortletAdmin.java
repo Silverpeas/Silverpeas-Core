@@ -23,14 +23,6 @@
  */
 package com.sun.portal.portletcontainer.admin.mbeans;
 
-import java.io.File;
-import java.util.Properties;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.sun.portal.container.PortletLang;
 import com.sun.portal.portletcontainer.admin.PortletRegistryGenerator;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
@@ -41,6 +33,14 @@ import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerFactory;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdater;
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
+
+import java.io.File;
+import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * PortletAdmin class is a concrete implementation of PortletAdminMBean
@@ -104,7 +104,7 @@ public class PortletAdmin implements PortletAdminMBean {
       registerSuccess = registerPortlet(warFileName, roles, userinfo, preparedWarFile);
     }
 
-    if (registerSuccess.booleanValue()) {
+    if (registerSuccess) {
       if (deployToContainer) {
         WebAppDeployer webAppDeployer = WebAppDeployerFactory.getInstance().getDeploymentManager();
         if (webAppDeployer != null) {

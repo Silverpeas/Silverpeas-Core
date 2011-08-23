@@ -27,7 +27,7 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import static com.silverpeas.util.StringUtil.*;;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A value of a PdC's axis.

@@ -109,7 +109,7 @@ public class JdbcConnectorDAO {
    * Loads the table's data.
    */
   public void loadData() {
-    StringBuffer columnNameSb = new StringBuffer(100);
+    StringBuilder columnNameSb = new StringBuilder(100);
     int columnsNamesCount = columnsNames.length;
     for (int i = 0; i < columnsNamesCount; i++) {
       columnNameSb.append(columnsNames[i]).append(",");

@@ -61,7 +61,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
  * @t.leroi
  */
-public class NavigationStock extends Object {
+public class NavigationStock {
   Group[] m_SubGroups = null;
   UserDetail[] m_SubUsers = null;
   int m_FirstDisplayedUser = 0;

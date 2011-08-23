@@ -27,16 +27,15 @@
 //
 package com.silverpeas.ical;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.sun.syndication.feed.synd.SyndFeed;
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.Calendar;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-
-import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.Calendar;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.sun.syndication.feed.synd.SyndFeed;
 
 public final class SyncEngine {
 
@@ -91,8 +90,7 @@ public final class SyncEngine {
           // convert rss feed in Calendar File
           CalendarOutputter outputter = new CalendarOutputter();
           SyndFeed feed = FeedUtilities.parseFeed(feedBytes);
-          Calendar feedCalendar = FeedUtilities.convertFeedToCalendar(feed,
-              new Long(100000000).longValue());
+          Calendar feedCalendar = FeedUtilities.convertFeedToCalendar(feed,100000000L);
           outputter.output(feedCalendar, fileOutput);
         } else // File feed
         {

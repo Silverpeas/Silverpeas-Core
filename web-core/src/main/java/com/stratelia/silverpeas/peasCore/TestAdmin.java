@@ -29,12 +29,6 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -44,11 +38,17 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
 
+import java.net.URL;
+import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 /**
  * The class Admin is the main class of the Administrator.<BR>
  * The role of the administrator is to create and maintain spaces.
  */
-public class TestAdmin extends Object {
+public class TestAdmin {
   static private Admin m_Admin = null;
   static private String m_Auc = null;
 

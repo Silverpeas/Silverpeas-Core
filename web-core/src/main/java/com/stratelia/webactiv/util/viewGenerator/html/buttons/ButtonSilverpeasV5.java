@@ -49,7 +49,7 @@ public class ButtonSilverpeasV5 extends AbstractButton {
       action = "#";
     }
 
-    StringBuffer str = new StringBuffer();
+    StringBuilder str = new StringBuilder();
     str.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
     str.append("<tr>");
     str.append("<td align=\"left\" class=\"gaucheBoutonV5\"><img src=\"")

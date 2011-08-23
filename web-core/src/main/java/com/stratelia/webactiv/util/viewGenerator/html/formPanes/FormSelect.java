@@ -96,7 +96,7 @@ public class FormSelect extends FormLine {
   public void addItem(String itemsLabel, String itemValue, boolean selected) {
     itemsLabels.add(itemsLabel);
     itemValues.add(itemValue);
-    itemsSelected.add(Boolean.valueOf(selected));
+    itemsSelected.add(selected);
     nbItems++;
   }
 

@@ -47,7 +47,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
    * @see
    */
   public String print() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String iconsPath = getIconsPath();
     Vector<Collection<Tab>> tabLines = getTabLines();
     Collection<Tab> tabs = null;
@@ -86,7 +86,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
    */
   private String printTabLine(Collection<Tab> tabs) {
 
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String iconsPath = getIconsPath();
     int indentation = getIndentation();
 
