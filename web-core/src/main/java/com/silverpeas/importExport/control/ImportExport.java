@@ -284,11 +284,11 @@ public class ImportExport {
       // Mapping file for Castor
       String mappingDir = settings.getString("mappingDir");
       String mappingFileName = settings.getString("importExportMapping");
-      File mappingFile = new File(mappingDir, mappingFileName);
+      String mappingFile = mappingDir + mappingFileName;
       Mapping mapping = new Mapping();
 
       // Load mapping and instantiate a Unmarshaller
-      mapping.loadMapping(mappingFile.getPath());
+      mapping.loadMapping(mappingFile);
       Unmarshaller unmar = new Unmarshaller(SilverPeasExchangeType.class);
       unmar.setMapping(mapping);
       unmar.setValidation(false);
