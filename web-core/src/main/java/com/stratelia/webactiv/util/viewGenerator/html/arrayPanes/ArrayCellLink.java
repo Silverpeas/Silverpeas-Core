@@ -166,7 +166,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Co
    * @see
    */
   public String print() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     result.append("<td");
 
     if (getAlignement() != null) {

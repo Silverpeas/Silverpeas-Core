@@ -48,7 +48,7 @@ public class TreeFilterTheme implements TreeFilter {
    */
   @Override
   public boolean acceptNodeType(NodeType node) {
-    if (node.equals(NodeType.THEME)) {
+    if (node == NodeType.THEME) {
       return true;
     }
     return false;

@@ -81,7 +81,7 @@ public class HomePageUtil {
     Collection exceptions = SilverpeasException
         .getChainedExceptions(exception);
 
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     Iterator it = exceptions.iterator();
 
     while (it.hasNext()) {

@@ -40,7 +40,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-public class NavBarManager extends Object {
+public class NavBarManager {
   // Constants used by urlFactory
   final static int SPACE = 0;
   final static int COMPONENT = 1;
@@ -409,7 +409,7 @@ public class NavBarManager extends Object {
         String link;
         int objType;
         String spaceName;
-        StringBuffer spacesSpaces = new StringBuffer();
+        StringBuilder spacesSpaces = new StringBuilder();
 
         objType = (space.id.equals(m_CurrentSubSpaceId)) ? SPACE_EXPANDED
             : SPACE_COLLAPSE;
@@ -428,7 +428,7 @@ public class NavBarManager extends Object {
             + urlFactory(link, "space" + space.id, "", spaceName, SPACE,
                 objType, m_sContext, "", space);
       } else {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<option ");
         if (space.id.equals(m_CurrentSpaceId))
           sb.append("selected ");
@@ -516,7 +516,7 @@ public class NavBarManager extends Object {
   protected String urlFactory(String link, String elementLabel,
       String imageLinked, String labelLinked, int elementType, int imageType,
       String m_sContext, String target, DisplaySorted extraInfos) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String boldStart = "";
     String boldEnd = "";
 
@@ -588,4 +588,4 @@ public class NavBarManager extends Object {
     return result.toString();
   }
 
-};
+}

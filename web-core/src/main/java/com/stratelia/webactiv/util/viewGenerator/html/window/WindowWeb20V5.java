@@ -54,7 +54,7 @@ public class WindowWeb20V5 extends AbstractWindow {
    * @see
    */
   public String printBefore() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String width = getWidth();
 
     int nbCols = 1;
@@ -96,7 +96,7 @@ public class WindowWeb20V5 extends AbstractWindow {
    * @see
    */
   public String printAfter() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String iconsPath = getIconsPath();
 
     result.append("</td></tr></table>");
@@ -138,7 +138,7 @@ public class WindowWeb20V5 extends AbstractWindow {
    * @see
    */
   public String print() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     result.append(printBefore());
     result.append(getBody());

@@ -676,7 +676,7 @@ public class PublicationsTypeManager {
                     if (coordinateId == 0) {
                       unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
                     } else {
-                      nodesKmax.add(Integer.valueOf(coordinateId));
+                      nodesKmax.add(coordinateId);
                     }
                   }
                 }

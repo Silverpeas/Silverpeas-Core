@@ -37,7 +37,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.navigationList;
  * @author lloiseau
  * @version 1.0
  */
-public class Link extends Object {
+public class Link {
 
   private String label;
   private String URL;

@@ -52,7 +52,7 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
    * @return the HTML code of the navigation list
    */
   public String print() {
-    StringBuffer result = new StringBuffer(50);
+    StringBuilder result = new StringBuilder(50);
     String iconsPath = getIconsPath() + "/navigationList/";
     String title = getTitle();
     int nbCol = getNbcol();

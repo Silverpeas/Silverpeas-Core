@@ -190,7 +190,7 @@ public class CalendarHtmlView {
     boolean viewByDay = (AgendaHtmlView.BYDAY == agendaSessionController
         .getCurrentDisplayType());
 
-    StringBuffer result = new StringBuffer(255);
+    StringBuilder result = new StringBuilder(255);
     List<Date> nonSelectableDays = agendaSessionController.getNonSelectableDays();
     List<String> hiddenDays = null;
     try {
@@ -323,7 +323,7 @@ public class CalendarHtmlView {
         while (calendarEvents.getTime().compareTo(event.getEndDate()) <= 0) {
           if (calendarEvents.get(Calendar.MONTH) == currentMonth) {
             int dayNumber = calendarEvents.get(Calendar.DAY_OF_MONTH);
-            dayWithEvents.add(Integer.valueOf(dayNumber));
+            dayWithEvents.add(dayNumber);
           }
           calendarEvents.add(Calendar.DATE, 1);
         }

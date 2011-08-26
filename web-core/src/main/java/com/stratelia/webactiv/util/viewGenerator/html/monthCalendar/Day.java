@@ -36,10 +36,10 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.Calendar;
 import java.util.Date;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /*
  * CVS Informations
@@ -64,7 +64,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * Class declaration
  * @author
  */
-class Day extends Object {
+class Day {
 
   private Date date = null;
 

@@ -142,7 +142,7 @@ public final class StringUtils {
 
   public static final String decodePassword(String encodedPassword)
       throws Exception {
-    StringBuffer buffer = new StringBuffer(encodedPassword.substring(3));
+    StringBuilder buffer = new StringBuilder(encodedPassword.substring(3));
     return decodeBASE64(buffer.reverse().toString().replace('$', '=')).trim();
   }
 

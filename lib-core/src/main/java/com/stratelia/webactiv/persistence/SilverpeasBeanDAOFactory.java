@@ -26,8 +26,6 @@ package com.stratelia.webactiv.persistence;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.stratelia.webactiv.persistence.database.SilverpeasBeanDAOImpl;
-
 public class SilverpeasBeanDAOFactory {
 
   private static Map<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>> silverpeasBeanDAOs = new HashMap<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>>();

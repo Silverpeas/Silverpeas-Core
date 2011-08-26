@@ -43,7 +43,7 @@ import java.util.Vector;
  * Class declaration
  * @author
  */
-class Row extends Object {
+class Row {
 
   private Vector<Event> listEventRow = null;
 

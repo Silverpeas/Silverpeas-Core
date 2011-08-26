@@ -808,7 +808,7 @@ public class AgendaHtmlView {
         } else {
           String color = "intfdcolor2";
           int maxRowSpan = 0;
-          StringBuffer tmpResult = new StringBuffer();
+          StringBuilder tmpResult = new StringBuilder();
 
           for (int m = 0; m < starting.size(); m++) {
             Object startObj = starting.elementAt(m);

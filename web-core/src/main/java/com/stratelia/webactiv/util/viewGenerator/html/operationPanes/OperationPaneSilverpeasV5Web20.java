@@ -48,7 +48,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
    */
   public void addOperation(String iconPath, String altText, String action) {
     Vector<String> stack = getStack();
-    StringBuffer operation = new StringBuffer();
+    StringBuilder operation = new StringBuilder();
 
     if (!StringUtil.isDefined(altText))
       altText = action;
@@ -74,7 +74,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
    * @see
    */
   public String print() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     Vector<String> stack = getStack();
 
     String alt = getMultilang().getString("GEF.operations.label", "Opérations");

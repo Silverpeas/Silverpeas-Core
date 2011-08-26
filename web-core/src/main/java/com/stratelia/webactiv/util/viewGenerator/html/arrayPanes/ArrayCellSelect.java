@@ -338,7 +338,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
    * @see
    */
   public String print() {
-    StringBuffer result = new StringBuffer("<td ");
+    StringBuilder result = new StringBuilder("<td ");
 
     if (getCellAlign() != null) {
       if (getCellAlign().equalsIgnoreCase("center")

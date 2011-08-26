@@ -40,11 +40,11 @@ public class PaginationTag extends TagSupport {
   private String action;
 
   public void setCurrentPage(Integer currentPage) {
-    this.currentPage = currentPage.intValue();
+    this.currentPage = currentPage;
   }
 
   public void setNbPages(Integer nbPages) {
-    this.nbPages = nbPages.intValue();
+    this.nbPages = nbPages;
   }
 
   public void setAction(String action) {

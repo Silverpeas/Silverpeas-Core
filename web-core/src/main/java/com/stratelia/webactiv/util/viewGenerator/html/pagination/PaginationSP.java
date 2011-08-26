@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
-import java.util.Date;
-
 import com.silverpeas.util.StringUtil;
+
+import java.util.Date;
 
 public class PaginationSP extends AbstractPagination {
   public PaginationSP() {
@@ -38,7 +38,7 @@ public class PaginationSP extends AbstractPagination {
   }
 
   public String printCounter() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     if (getNbItems() <= getNbItemsPerPage()) {
       result.append(getNbItems()).append(" ");
     } else {
@@ -56,7 +56,7 @@ public class PaginationSP extends AbstractPagination {
   }
 
   public String printIndex(String javascriptFunc) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     if (getNbItems() > 0 && getNbItems() > getNbItemsPerPage()) {
       result.append("<div class=\"pageNav\">");
@@ -202,7 +202,7 @@ public class PaginationSP extends AbstractPagination {
 
   // formatage du lien de la source de la balise href
   private String getLink(String javascriptFunc, int index, String title) {
-    StringBuffer link = new StringBuffer();
+    StringBuilder link = new StringBuilder();
     String action = "Pagination" + getActionSuffix();
     if (javascriptFunc == null) {
       if (getBaseURL() != null) {

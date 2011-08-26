@@ -263,7 +263,7 @@ public class ArrayColumn implements SimpleGraphicElement {
           sep = "&amp;";
         }
 
-        StringBuffer href = new StringBuffer();
+        StringBuilder href = new StringBuilder();
         href.append(address).append(JSStartString);
 
         // standard non-javascript url. Add parameters to the url

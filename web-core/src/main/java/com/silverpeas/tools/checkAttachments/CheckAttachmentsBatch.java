@@ -285,8 +285,8 @@ public class CheckAttachmentsBatch {
     List<NodePK> nodesPK = (List<NodePK>) pubDetail.getPublicationBm().getAllFatherPK(pubDetail.
         getPK());
     Collection<NodeDetail> path = null;
-    StringBuffer linkedPathString = new StringBuffer();
-    StringBuffer pathString = new StringBuffer();
+    StringBuilder linkedPathString = new StringBuilder();
+    StringBuilder pathString = new StringBuilder();
     if (nodesPK != null && !nodesPK.isEmpty()) {
       NodePK firstNodePK = nodesPK.get(0);
       path = getPath(firstNodePK.getId(), firstNodePK.getInstanceId());

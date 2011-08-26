@@ -26,7 +26,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.tabs;
 
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
-public class TabbedPaneSilverpeasV5StringFactory extends Object {
+public class TabbedPaneSilverpeasV5StringFactory {
   private static String printBeforeString = null;
   private static String printAfterString = null;
   private static String printEndString = null;

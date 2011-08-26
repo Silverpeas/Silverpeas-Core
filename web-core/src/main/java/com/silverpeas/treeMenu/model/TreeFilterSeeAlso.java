@@ -49,11 +49,11 @@ public class TreeFilterSeeAlso implements TreeFilter {
    */
   @Override
   public boolean acceptNodeType(NodeType node) {
-    if (node.equals(NodeType.COMPONENT)) {
+    if (node == NodeType.COMPONENT) {
       return true;
-    } else if (node.equals(NodeType.SPACE)) {
+    } else if (node == NodeType.SPACE) {
       return true;
-    } else if (node.equals(NodeType.THEME)) {
+    } else if (node == NodeType.THEME) {
       return true;
     }
     return false;
