@@ -33,6 +33,9 @@ import com.silverpeas.components.model.AbstractTestDao;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jdbc-datasource.xml"})
 public class DomainTest extends AbstractTestDao {
@@ -42,11 +45,24 @@ public class DomainTest extends AbstractTestDao {
     ac.reloadAdminCache();
     return ac;
   }
+  
+  @Test
+  public void testGetDomain() {
+    String domainId = "0";
+    AdminController ac = getAdminController();
+    Domain domain = new Domain();
+    domain.setName("Silverpeas");
+    domain.setPropFileName("com.stratelia.silverpeas.domains.domainSP");
+    domain.setDriverClassName("com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver");
+    domain.setAuthenticationServer("autDomainSP");
+    domain.setId(domainId);
+    Domain savedDomain = ac.getDomain(domainId);
+    assertThat(savedDomain, is(domain));
+  }
 
   @Test
   public void testAddDomain() {
     AdminController ac = getAdminController();
-
     Domain domain = new Domain();
     domain.setName("Test new");
     domain.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
@@ -56,6 +72,9 @@ public class DomainTest extends AbstractTestDao {
     String domainId = ac.addDomain(domain);
     assertNotNull(domainId);
     assertEquals("1", domainId);
+    domain.setId(domainId);
+    Domain savedDomain = ac.getDomain(domainId);
+     assertThat(savedDomain, is(domain));
   }
   
   @Override
