@@ -138,10 +138,7 @@ public class PdcAxisValue extends PdcValue {
     if (this.ascendant != other.ascendant) {
       return false;
     }
-    if (this.origin != other.origin) {
-      return false;
-    }
-    return true;
+    return this.origin == other.origin;
   }
 
   @Override

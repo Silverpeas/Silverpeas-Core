@@ -266,11 +266,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     Calendar calendar = Calendar.getInstance();
 
     calendar.setTime(date);
-    if (calendar.get(Calendar.MONTH) == this.cal.get(Calendar.MONTH)) {
-      return true;
-    } else {
-      return false;
-    }
+    return calendar.get(Calendar.MONTH) == this.cal.get(Calendar.MONTH);
   }
 
   /**

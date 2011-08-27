@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * DomainNavigationStock.java
  */
@@ -115,15 +112,14 @@ public class DomainNavigationStock extends NavigationStock {
       }
     }
 
-    return temp.toArray(new Group[0]);
+    return temp.toArray(new Group[temp.size()]);
   }
 
   public boolean isThisDomain(String grId) {
     if (StringUtil.isDefined(grId)) {
       return (grId.equals(m_NavDomain.getId()));
-    } else {
-      return (isDomainValid(m_NavDomain) == false);
     }
+    return (isDomainValid(m_NavDomain) == false);
   }
 
   public Domain getThisDomain() {

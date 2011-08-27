@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * GroupNavigationStock.java
  */
@@ -124,7 +121,7 @@ public class GroupNavigationStock extends NavigationStock {
       }
     }
 
-    return temp.toArray(new String[0]);
+    return temp.toArray(new String[temp.size()]);
   }
 
   public boolean isThisGroup(String grId) {
@@ -140,9 +137,6 @@ public class GroupNavigationStock extends NavigationStock {
   }
 
   static public boolean isGroupValid(Group gr) {
-    if (gr != null && StringUtil.isDefined(gr.getId())) {
-      return true;
-    }
-    return false;
+    return gr != null && StringUtil.isDefined(gr.getId());
   }
 }

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.RemoveException;
@@ -786,11 +785,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     }
 
     if (schedules != null) {
-      Iterator i = schedules.iterator();
 
-      while (i.hasNext()) {
-        Object obj = i.next();
-
+      for (Object obj : schedules) {
         if (obj instanceof Schedulable) {
           agendaView.add((Schedulable) obj);
         }
@@ -896,10 +892,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
     if (!userId.equals(getUserId())) {
       Collection subResult = new ArrayList();
-      Iterator i = result.iterator();
 
-      while (i.hasNext()) {
-        Schedulable schedule = (Schedulable) i.next();
+      for (JournalHeader aResult : result) {
+        Schedulable schedule = (Schedulable) aResult;
         boolean toView = false;
 
         if (!schedule.getClassification().isConfidential()) {
@@ -907,8 +902,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
         } else if (schedule.getDelegatorId().equals(getUserId())) {
           toView = true;
         } else {
-          Collection<Attendee> attendees = calendarBm.getJournalAttendees(schedule
-              .getId());
+          Collection<Attendee> attendees = calendarBm.getJournalAttendees(schedule.getId());
 
           for (Attendee attendee : attendees) {
             if (attendee.getUserId().equals(getUserId())) {

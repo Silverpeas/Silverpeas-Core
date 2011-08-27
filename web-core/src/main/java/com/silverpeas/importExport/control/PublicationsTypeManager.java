@@ -412,29 +412,25 @@ public class PublicationsTypeManager {
         FileServerUtils.replaceAccentChars(relativeExportPath.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForPublicationExport",
-        "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = "
-        + relativeExportPathAscii);
-    // String relativeExportPathAscii = relativeExportPath.toString();
+        "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = " + relativeExportPathAscii);
     String pathToCreateAscii = FileServerUtils.replaceAccentChars(pathToCreate.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "pathToCreateAscii = " + pathToCreateAscii);
-    // String pathToCreateAscii = pathToCreate.toString();
 
-    File dir = new File(pathToCreateAscii.toString());
+    File dir = new File(pathToCreateAscii);
     if (!dir.exists()) {
       boolean creationOK = dir.mkdirs();
       if (!creationOK) {
         throw new IOException();
       }
     }
-
-    return relativeExportPathAscii.toString();
+    return relativeExportPathAscii;
   }
 
   public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport, UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, String exportPath,
-      boolean useNameForFolders) throws ImportExportException, IOException {
+      List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
+      throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport();
     OrganizationController orgaController = new OrganizationController();
@@ -525,14 +521,14 @@ public class PublicationsTypeManager {
         "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "pathToCreateAscii = " + pathToCreateAscii);
 
-    File dir = new File(pathToCreateAscii.toString());
+    File dir = new File(pathToCreateAscii);
     if (!dir.exists()) {
       boolean creationOK = dir.mkdirs();
       if (!creationOK) {
         throw new IOException();
       }
     }
-    return relativeExportPathAscii.toString();
+    return relativeExportPathAscii;
   }
 
   public void processImport(UserDetail userDetail,

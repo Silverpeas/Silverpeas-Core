@@ -28,12 +28,14 @@ import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import edu.emory.mathcs.backport.java.util.Collections;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import static com.silverpeas.util.StringUtil.*;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The Web representation of the position of a Silverpeas's resource in the classification plan
@@ -135,11 +137,8 @@ public class PdcPositionEntity implements Exposable {
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
-    if (this.values != other.values && (this.values == null
-            || !this.values.equals(other.values))) {
-      return false;
-    }
-    return true;
+    return !(this.values != other.values && (this.values == null
+        || !this.values.equals(other.values)));
   }
 
   @Override

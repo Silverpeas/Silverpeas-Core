@@ -31,8 +31,9 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-public class PortletRowTable extends AbstractTable {
+public class PortletRowTable extends AbstractTable<PortletRowRow> {
 
   /**
    * Builds a new PortletRowTable
@@ -51,7 +52,7 @@ public class PortletRowTable extends AbstractTable {
    * Returns the unique PortletRow row having a given id
    */
   public PortletRowRow getPortletRow(int id) throws UtilException {
-    return (PortletRowRow) getUniqueRow(SELECT_PORTLETROW_BY_ID, id);
+    return getUniqueRow(SELECT_PORTLETROW_BY_ID, id);
   }
 
   static final private String SELECT_PORTLETROW_BY_ID = "Select "
@@ -67,17 +68,16 @@ public class PortletRowTable extends AbstractTable {
     if (orderField != null) {
       req = req + " order by " + orderField;
     }
-    return (PortletRowRow[]) getRows(req).toArray(new PortletRowRow[0]);
+    List<PortletRowRow> rows = getRows(req);
+    return rows.toArray(new PortletRowRow[rows.size()]);
   }
 
   /**
    * Returns all the PortletRowRow having a given instanceId
    */
-  public PortletRowRow[] getAllByInstanceId(int InstanceId)
-      throws UtilException {
-    return (PortletRowRow[]) getRows(
-        SELECT_ALL_PORTLETROW_WITH_GIVEN_INSTANCEID, InstanceId).toArray(
-        new PortletRowRow[0]);
+  public PortletRowRow[] getAllByInstanceId(int instanceId) throws UtilException {
+    List<PortletRowRow> rows = getRows(SELECT_ALL_PORTLETROW_WITH_GIVEN_INSTANCEID, instanceId);
+    return rows.toArray(new PortletRowRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_PORTLETROW_WITH_GIVEN_INSTANCEID = "select "
@@ -86,11 +86,10 @@ public class PortletRowTable extends AbstractTable {
   /**
    * Returns all the PortletRowRow having a given portletColumnId
    */
-  public PortletRowRow[] getAllByPortletColumnId(int portletColumnId)
-      throws UtilException {
-    return (PortletRowRow[]) getRows(
-        SELECT_ALL_PORTLETROW_WITH_GIVEN_PORTLETCOLUMNID, portletColumnId)
-        .toArray(new PortletRowRow[0]);
+  public PortletRowRow[] getAllByPortletColumnId(int portletColumnId) throws UtilException {
+    List<PortletRowRow> rows = getRows(SELECT_ALL_PORTLETROW_WITH_GIVEN_PORTLETCOLUMNID,
+        portletColumnId);
+    return rows.toArray(new PortletRowRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_PORTLETROW_WITH_GIVEN_PORTLETCOLUMNID = "select "
@@ -100,8 +99,8 @@ public class PortletRowTable extends AbstractTable {
    * Returns all the rows.
    */
   public PortletRowRow[] getAllRows() throws UtilException {
-    return (PortletRowRow[]) getRows(SELECT_ALL_PORTLETROW).toArray(
-        new PortletRowRow[0]);
+    List<PortletRowRow> rows = getRows(SELECT_ALL_PORTLETROW);
+    return rows.toArray(new PortletRowRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_PORTLETROW = "select "
@@ -111,14 +110,15 @@ public class PortletRowTable extends AbstractTable {
    * Returns the unique row given by a no parameters query.
    */
   public PortletRowRow getPortletRow(String query) throws UtilException {
-    return (PortletRowRow) getUniqueRow(query);
+    return getUniqueRow(query);
   }
 
   /**
    * Returns all the rows given by a no parameters query.
    */
   public PortletRowRow[] getPortletRows(String query) throws UtilException {
-    return (PortletRowRow[]) getRows(query).toArray(new PortletRowRow[0]);
+    List<PortletRowRow> rows = getRows(query);
+    return rows.toArray(new PortletRowRow[rows.size()]);
   }
 
   /**
@@ -169,21 +169,18 @@ public class PortletRowTable extends AbstractTable {
   /**
    * Removes a reference to InstanceId
    */
-  public PortletRowRow[] dereferenceInstanceId(int InstanceId)
-      throws UtilException {
+  public PortletRowRow[] dereferenceInstanceId(int InstanceId) throws UtilException {
     PortletRowRow[] portletRowToBeDeleted = getAllByInstanceId(InstanceId);
     for (PortletRowRow aPortletRowToBeDeleted : portletRowToBeDeleted) {
       delete(aPortletRowToBeDeleted.getId());
     }
-
     return portletRowToBeDeleted;
   }
 
   /**
    * Removes a reference to PortletColumnId
    */
-  public PortletRowRow[] dereferencePortletColumnId(int portletColumnId)
-      throws UtilException {
+  public PortletRowRow[] dereferencePortletColumnId(int portletColumnId) throws UtilException {
     PortletRowRow[] portletRowToBeDeleted = getAllByPortletColumnId(portletColumnId);
     for (PortletRowRow aPortletRowToBeDeleted : portletRowToBeDeleted) {
       delete(aPortletRowToBeDeleted.getId());
@@ -194,7 +191,7 @@ public class PortletRowTable extends AbstractTable {
   /**
    * Fetch the current PortletRow row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  protected PortletRowRow fetchRow(ResultSet rs) throws SQLException {
     return new PortletRowRow(rs.getInt("id"), rs.getInt("InstanceId"), rs
         .getInt("portletColumnId"), rs.getInt("rowHeight"), rs.getInt("nbRow"));
   }
@@ -203,28 +200,26 @@ public class PortletRowTable extends AbstractTable {
    * Prepares the statement to update the given row
    */
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) throws SQLException {
-    PortletRowRow r = (PortletRowRow) row;
-    update.setInt(1, r.getInstanceId());
-    update.setInt(2, r.getPortletColumnId());
-    update.setInt(3, r.getRowHeight());
-    update.setInt(4, r.getNbRow());
-    update.setInt(5, r.getId());
+      PortletRowRow row) throws SQLException {
+    update.setInt(1, row.getInstanceId());
+    update.setInt(2, row.getPortletColumnId());
+    update.setInt(3, row.getRowHeight());
+    update.setInt(4, row.getNbRow());
+    update.setInt(5, row.getId());
   }
 
   /**
    * Prepares the statement to insert the given row
    */
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) throws SQLException {
-    PortletRowRow r = (PortletRowRow) row;
-    if (r.getId() == -1) {
-      r.setId(getNextId());
+      PortletRowRow row) throws SQLException {
+    if (row.getId() == -1) {
+      row.setId(getNextId());
     }
-    insert.setInt(1, r.getId());
-    insert.setInt(2, r.getInstanceId());
-    insert.setInt(3, r.getPortletColumnId());
-    insert.setInt(4, r.getRowHeight());
-    insert.setInt(5, r.getNbRow());
+    insert.setInt(1, row.getId());
+    insert.setInt(2, row.getInstanceId());
+    insert.setInt(3, row.getPortletColumnId());
+    insert.setInt(4, row.getRowHeight());
+    insert.setInt(5, row.getNbRow());
   }
 }

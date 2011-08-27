@@ -26,12 +26,14 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import static com.silverpeas.util.StringUtil.*;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * An axis of the classification plan (named PdC). A PdC axis is defined by an identifier and it is
@@ -186,10 +188,8 @@ public class PdcAxis {
             : !this.invariantValue.equals(other.invariantValue)) {
       return false;
     }
-    if (this.values != other.values && (this.values == null || !this.values.equals(other.values))) {
-      return false;
-    }
-    return true;
+    return !(this.values != other.values && (this.values == null || !this.values.equals(
+        other.values)));
   }
 
   @Override

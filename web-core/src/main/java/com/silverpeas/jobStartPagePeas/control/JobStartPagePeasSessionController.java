@@ -26,16 +26,6 @@ package com.silverpeas.jobStartPagePeas.control;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.silverpeas.jobStartPagePeas.DisplaySorted;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasException;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -68,7 +58,17 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -355,7 +355,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     }
 
-    aManageableSpaces = vManageableSpaces.toArray(new SpaceInst[0]);
+    aManageableSpaces = vManageableSpaces.toArray(new SpaceInst[vManageableSpaces.size()]);
     Arrays.sort(aManageableSpaces);
     return aManageableSpaces;
   }
@@ -404,12 +404,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     m_spaceTemplate = spaceTemplate;
     m_look = look;
     // Only use global variable to set spacePosition
-    if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
-        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG)) {
-      m_spaceFirst = false;
-    } else {
-      m_spaceFirst = true;
-    }
+    m_spaceFirst = !JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
+        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG);
   }
 
   public String createSpace() {
@@ -713,8 +709,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
     List<String> users = getAllCurrentUserIdSpace(role);
     List<String> groups = getAllCurrentGroupIdSpace(role);
-    selection.setSelectedElements(users.toArray(new String[0]));
-    selection.setSelectedSets(groups.toArray(new String[0]));
+    selection.setSelectedElements(users.toArray(new String[users.size()]));
+    selection.setSelectedSets(groups.toArray(new String[groups.size()]));
   }
 
   public void createSpaceRole(String role) {

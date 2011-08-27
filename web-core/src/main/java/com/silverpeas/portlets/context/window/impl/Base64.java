@@ -29,6 +29,8 @@
 
 package com.silverpeas.portlets.context.window.impl;
 
+import com.silverpeas.util.ArrayUtil;
+
 class Base64 {
 
   private static byte[] DecodeMap;
@@ -137,7 +139,7 @@ class Base64 {
       return null;
     }
     if (encData.length == 0) {
-      return new byte[0];
+      return ArrayUtil.EMPTY_BYTE_ARRAY;
     }
 
     int tail = encData.length;

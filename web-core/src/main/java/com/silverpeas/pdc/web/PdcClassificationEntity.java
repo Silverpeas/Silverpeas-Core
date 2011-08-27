@@ -27,16 +27,18 @@ import com.silverpeas.rest.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import edu.emory.mathcs.backport.java.util.Collections;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import static com.silverpeas.util.StringUtil.*;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The PdC classification entity represents the web entity of the classification of a Silverpeas's
@@ -158,11 +160,8 @@ public class PdcClassificationEntity implements Exposable {
     if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
       return false;
     }
-    if (this.positions != other.positions && (this.positions == null
-            || !this.positions.equals(other.positions))) {
-      return false;
-    }
-    return true;
+    return !(this.positions != other.positions && (this.positions == null
+        || !this.positions.equals(other.positions)));
   }
 
   @Override

@@ -24,10 +24,6 @@
 
 package com.silverpeas.portlets.portal;
 
-import java.io.Serializable;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
@@ -35,6 +31,9 @@ import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 
 /**
  * PortletWindowDataImpl provides concrete implementation of PortletWindowData interface
@@ -176,9 +175,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   @Override
   public boolean isNormalized() {
     String aCurrentWindowState = getCurrentWindowState();
-    if (aCurrentWindowState.equals(ChannelState.NORMAL.toString()))
-      return true;
-    return false;
+    return ChannelState.NORMAL.toString().equals(aCurrentWindowState);
   }
 
   @Override
@@ -189,9 +186,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   @Override
   public boolean isMaximized() {
     String aCurrentWindowState = getCurrentWindowState();
-    if (aCurrentWindowState.equals(ChannelState.MAXIMIZED.toString()))
-      return true;
-    return false;
+    return ChannelState.MAXIMIZED.toString().equals(aCurrentWindowState);
   }
 
   @Override
@@ -202,9 +197,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   @Override
   public boolean isMinimized() {
     String aCurrentWindowState = getCurrentWindowState();
-    if (aCurrentWindowState.equals(ChannelState.MINIMIZED.toString()))
-      return true;
-    return false;
+    return ChannelState.MINIMIZED.toString().equals(aCurrentWindowState);
   }
 
   @Override
@@ -279,16 +272,12 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
 
   @Override
   public boolean isThin() {
-    if (width != null && width.equals(PortletRegistryConstants.WIDTH_THIN))
-      return true;
-    return false;
+    return width != null && PortletRegistryConstants.WIDTH_THIN.equals(width);
   }
 
   @Override
   public boolean isThick() {
-    if (width != null && width.equals(PortletRegistryConstants.WIDTH_THICK))
-      return true;
-    return false;
+    return width != null && PortletRegistryConstants.WIDTH_THICK.equals(width);
   }
 
   @Override

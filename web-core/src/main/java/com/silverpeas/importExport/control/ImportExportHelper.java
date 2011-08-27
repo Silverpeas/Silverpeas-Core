@@ -35,16 +35,12 @@ public class ImportExportHelper {
 
   public static boolean isVersioningUsed(ComponentInst componentInst) {
     String versioningParam = componentInst.getParameterValue("versionControl");
-    if (versioningParam != null && !("").equals(versioningParam)
-        && !("no").equals(versioningParam.toLowerCase()))
-      return true;
-    else
-      return false;
+    return StringUtil.isDefined(versioningParam) && !"no".equals(versioningParam.toLowerCase());
   }
 
   public static boolean isDraftUsed(ComponentInst componentInst) {
     String param = componentInst.getParameterValue("draft");
-    return (StringUtil.isDefined(param) && !("no").equals(param.toLowerCase()));
+    return StringUtil.isDefined(param) && !"no".equals(param.toLowerCase());
   }
 
   public static boolean isIndexable(PublicationDetail pubDetail) {

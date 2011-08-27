@@ -26,7 +26,6 @@ package com.sun.portal.portletcontainer.driver.admin;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -66,12 +65,8 @@ public class DirectoryWatcherTask extends TimerTask {
   public void run() {
     File[] fileArray = new File(directoryToWatch).listFiles(filter);
     if (fileArray != null) {
-      List currentFileList = Arrays.asList(fileArray);
-
-      Iterator iterator = currentFileList.iterator();
-
-      while (iterator.hasNext()) {
-        File currentFile = (File) iterator.next();
+      List<File> currentFileList = Arrays.asList(fileArray);
+      for (File currentFile : currentFileList) {
         listener.fileAdded(currentFile);
       }
     }

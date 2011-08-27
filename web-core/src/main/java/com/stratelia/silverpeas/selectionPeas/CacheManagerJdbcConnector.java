@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
@@ -75,7 +76,7 @@ public class CacheManagerJdbcConnector extends CacheManager {
       case CM_SET:
         return getColumnsNames(CacheType.CM_ELEMENT);
       default:
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 

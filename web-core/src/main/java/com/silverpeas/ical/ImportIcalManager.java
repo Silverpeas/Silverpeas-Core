@@ -58,7 +58,6 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
 /**
@@ -147,14 +146,6 @@ public class ImportIcalManager {
           // For complete Day
           startHour = "";
           endHour = "";
-          // In iCal, an allday is coded with DTSTART=...YYYYMMDD and
-          // DTEND=...YYYYMM(DD+1)
-          // So we have to convert this date to agenda format date
-          /*
-           * GregorianCalendar gregCalendar = new java.util.GregorianCalendar();
-           * gregCalendar.setTime(endDay); gregCalendar.add(GregorianCalendar.DATE, -1); endDay =
-           * new Date(gregCalendar.getTime());
-           */
           allDay = true;
         }
 
@@ -177,10 +168,9 @@ public class ImportIcalManager {
           // Get Categories
           processCategories(eventIcal, idEvent);
         } else {
-          Iterator itReccurentDates = reccurenceDates.iterator();
-          while (itReccurentDates.hasNext()) {
+          for (Object reccurenceDate : reccurenceDates) {
             // Reccurent event startDate
-            startDay = (DateTime) itReccurentDates.next();
+            startDay = (DateTime) reccurenceDate;
             // Reccurent event endDate
             long newEndDay = startDay.getTime() + duration;
             endDay = new DateTime(newEndDay);
@@ -274,15 +264,13 @@ public class ImportIcalManager {
             agendaSessionController.getAgendaUserId(), null, agendaSessionController.
             getParticipationStatus().getString());
     if (!events.isEmpty()) {
-      Iterator itSchedules = events.iterator();
-      while (itSchedules.hasNext()) {
-        Object obj = itSchedules.next();
+      for (Object obj : events) {
         if (obj instanceof Schedulable) {
           Schedulable eventAgenda = (Schedulable) obj;
           if (eventAgenda.getName().equals(name)
-                  && DateUtil.date2SQLDate(eventAgenda.getStartDate()).equals(
-                  startDate)) {
-            if (StringUtil.isDefined(eventAgenda.getStartHour()) && StringUtil.isDefined(startHour)) {
+              && DateUtil.date2SQLDate(eventAgenda.getStartDate()).equals(startDate)) {
+            if (StringUtil.isDefined(eventAgenda.getStartHour()) && StringUtil.isDefined(
+                startHour)) {
               if (eventAgenda.getStartHour().equals(startHour)) {
                 return eventAgenda.getId();
               }
@@ -313,9 +301,7 @@ public class ImportIcalManager {
       while (st.hasMoreTokens()) {
         String categIcal = st.nextToken();
         // Agenda Categories
-        Iterator itAllCategs = agendaSessionController.getAllCategories().iterator();
-        while (itAllCategs.hasNext()) {
-          Category category = (Category) itAllCategs.next();
+        for (Category category : agendaSessionController.getAllCategories()) {
           if (categIcal.equals(EncodeHelper.htmlStringToJavaString(category.getName()))) {
             addCategoryToEvent = true;
             categoryIds[j++] = category.getId();

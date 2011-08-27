@@ -166,7 +166,8 @@ abstract public class CacheManager {
   }
 
   public String[] getSelectedIds(CacheType what) {
-    return getSelected(what).toArray(new String[0]);
+    Set<String> selectedStrings =  getSelected(what);
+    return getSelected(what).toArray(new String[getSelected(what).size()]);
   }
 
   public int getSelectedNumber(CacheType what) {

@@ -48,10 +48,7 @@ public class FileFilterTodo implements FilenameFilter {
    */
   @Override
   public boolean accept(File dir, String name) {
-    if (name.startsWith("user@") && name.endsWith("todo")) {
-      return true;
-    }
-    return false;
+    return name.startsWith("user@") && name.endsWith("todo");
   }
 
 }

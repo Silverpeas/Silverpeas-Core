@@ -106,11 +106,8 @@ class Week {
     if (listEventMonth.isEmpty()) {
       return v;
     }
-    Iterator<Event> itEvent = listEventMonth.iterator();
 
-    while (itEvent.hasNext()) {
-      Event currentEvt = itEvent.next();
-
+    for (Event currentEvt : listEventMonth) {
       if (currentEvt.isInWeek(startDate, endDate)) {
         Date stDateEvt = null;
         Date edDateEvt = null;

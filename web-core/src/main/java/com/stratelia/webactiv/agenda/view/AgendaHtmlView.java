@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -1001,9 +1000,7 @@ public class AgendaHtmlView {
     }
 
     String categs = "";
-    Iterator<Category> categoriesIt = categories.iterator();
-    while (categoriesIt.hasNext()) {
-      Category categorie = categoriesIt.next();
+    for (Category categorie : categories) {
       categs += categorie.getName() + "&nbsp;";
     }
 

@@ -25,6 +25,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
@@ -127,7 +128,7 @@ public class CacheManagerUsersGroups extends CacheManager {
       case CM_SET:
         return getColumnsNames(CacheType.CM_ELEMENT);
       default:
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -218,7 +219,7 @@ public class CacheManagerUsersGroups extends CacheManager {
       }
       return columnsHeader;
     }
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   public PanelMiniFilterSelect getSelectMiniFilter(CacheType what) {

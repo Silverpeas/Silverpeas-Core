@@ -178,13 +178,7 @@ public class TreeBuilder {
    * @return true if the component is a leaf
    */
   private static boolean getLeafValue(String componentId) {
-    boolean isLeaf;
-    if (componentId.startsWith("kmelia")) {
-      isLeaf = false;
-    } else {
-      isLeaf = true;
-    }
-    return isLeaf;
+    return !componentId.startsWith("kmelia");
   }
 
   /**

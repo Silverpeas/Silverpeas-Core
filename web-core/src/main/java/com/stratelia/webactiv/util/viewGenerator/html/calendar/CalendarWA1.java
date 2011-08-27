@@ -185,10 +185,7 @@ public class CalendarWA1 extends AbstractCalendar {
       currentDate = calendar.getTime();
       d = DateUtil.getInputDate(currentDate, language);
 
-      if (nonSelectableDays != null && nonSelectableDays.contains(currentDate))
-        isSelectableDate = false;
-      else
-        isSelectableDate = true;
+      isSelectableDate = !(nonSelectableDays != null && nonSelectableDays.contains(currentDate));
 
       // If day has events
       dayStyle = monthDayStyle;

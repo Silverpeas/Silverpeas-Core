@@ -552,9 +552,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
     // Preparation du images dbmodel pour cretion en base
     if (listImagesParts != null) {
-      Iterator<String> itListImagesParts = listImagesParts.iterator();
-      while (itListImagesParts.hasNext()) {
-        String imagePath = itListImagesParts.next();
+      for (String imagePath : listImagesParts) {
         File f = new File(imagePath);
         long size = f.length();
         String mimeType = AttachmentController.getMimeType(imagePath);
@@ -563,8 +561,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         }
         imageOrder++;
         listInfoImage.add(new InfoImageDetail(null, String.valueOf(imageOrder), null,
-                imagePath, imagePath.substring(imagePath.lastIndexOf(File.separatorChar) + 1), "",
-                mimeType, size));
+            imagePath, imagePath.substring(imagePath.lastIndexOf(File.separatorChar) + 1), "",
+            mimeType, size));
       }
       // copie sur le serveur des images
       copyDBmodelImagePartsForImport(unitReport, getCurrentComponentId(), listInfoImage);

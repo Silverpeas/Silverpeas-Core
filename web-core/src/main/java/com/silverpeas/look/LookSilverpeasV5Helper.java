@@ -431,17 +431,13 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (topItems == null) {
       topItems = new ArrayList<TopItem>();
       topSpaceIds = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop"), ",");
-
-      String itemId = null;
-      ComponentInstLight component = null;
-      SpaceInstLight space = null;
+      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
       while (tokenizer.hasMoreTokens()) {
-        itemId = tokenizer.nextToken();
+        String itemId = tokenizer.nextToken();
 
         if (itemId.startsWith(Admin.SPACE_KEY_PREFIX)) {
           if (orga.isSpaceAvailable(itemId, userId)) {
-            space = orga.getSpaceInstLightById(itemId);
+            SpaceInstLight space = orga.getSpaceInstLightById(itemId);
             SpaceInstLight rootSpace = orga.getRootSpace(itemId);
             TopItem item = new TopItem();
             item.setLabel(space.getName(getLanguage()));
@@ -452,7 +448,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           }
         } else {
           if (orga.isComponentAvailable(itemId, userId)) {
-            component = orga.getComponentInstLight(itemId);
+            ComponentInstLight component = orga.getComponentInstLight(itemId);
             String currentSpaceId = component.getDomainFatherId();
             SpaceInstLight rootSpace = orga.getRootSpace(currentSpaceId);
             TopItem item = new TopItem();

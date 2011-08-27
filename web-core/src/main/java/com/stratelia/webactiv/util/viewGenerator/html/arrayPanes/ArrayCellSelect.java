@@ -24,11 +24,11 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
+import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-
-import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * @author jboulet
@@ -82,7 +82,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param CellAlign
+   * @param cellAlign
    */
   public void setCellAlign(String cellAlign) {
     this.cellAlign = cellAlign;
@@ -100,10 +100,9 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
    */
   public String[] getSelectedValues() {
     ArrayList<String> selectedValues = new ArrayList<String>();
-    Iterator<Integer> iterator = selected.iterator();
 
-    while (iterator.hasNext()) {
-      selectedValues.add(values.get(iterator.next().intValue()));
+    for (Integer aSelected : selected) {
+      selectedValues.add(values.get(aSelected.intValue()));
     }
 
     return selectedValues.toArray(new String[selectedValues.size()]);
@@ -113,13 +112,10 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
    * @return
    */
   public void setSelectedValues(String[] astrSelectedValues) {
-    int index = -1;
-
     selected.clear();
-
     // Verify that the provided values exist among all values
     for (String astrSelectedValue : astrSelectedValues) {
-      index = values.indexOf(astrSelectedValue);
+      int index = values.indexOf(astrSelectedValue);
       if (index != -1) {
         selected.add(index);
       }
@@ -148,7 +144,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param maxlength
+   * @param fMultiselect
    */
   public void setMultiselect(boolean fMultiselect) {
     multiselect = fMultiselect;
@@ -162,7 +158,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param maxlength
+   * @param strColor
    */
   public void setColor(String strColor) {
     color = strColor;
@@ -218,7 +214,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param likeText
+   * @param fReadOnly
    */
   public void setReadOnly(boolean fReadOnly) {
     readOnly = fReadOnly;

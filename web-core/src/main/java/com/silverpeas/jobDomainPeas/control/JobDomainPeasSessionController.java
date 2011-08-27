@@ -30,6 +30,7 @@ import com.silverpeas.jobDomainPeas.JobDomainPeasException;
 import com.silverpeas.jobDomainPeas.JobDomainPeasTrappedException;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.jobDomainPeas.SynchroUserWebServiceItf;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
@@ -1531,7 +1532,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public Group[] getAllRootGroups() {
     if (targetDomainId.length() <= 0) {
-      return new Group[0];
+      return ArrayUtil.EMPTY_GROUP_ARRAY;
     }
     Group[] selGroupsArray = m_TargetDomain.getAllGroupPage();
 

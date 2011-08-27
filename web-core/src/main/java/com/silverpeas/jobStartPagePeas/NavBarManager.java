@@ -351,7 +351,7 @@ public class NavBarManager {
         DisplaySorted[] children = createSpaceObjects(subSpaceIds, true);
         Collections.addAll(alValret, children);
       }
-      valret = alValret.toArray(new DisplaySorted[0]);
+      valret = alValret.toArray(new DisplaySorted[alValret.size()]);
     }
     return valret;
   }

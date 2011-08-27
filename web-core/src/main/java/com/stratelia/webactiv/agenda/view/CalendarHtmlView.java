@@ -24,14 +24,6 @@
 
 package com.stratelia.webactiv.agenda.view;
 
-import java.rmi.RemoteException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Vector;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
@@ -39,6 +31,14 @@ import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class declaration
@@ -360,10 +360,7 @@ public class CalendarHtmlView {
           isVisibleDate = false;
       }
 
-      if (nonSelectableDays.contains(currentDate))
-        isSelectableDate = false;
-      else
-        isSelectableDate = true;
+      isSelectableDate = !nonSelectableDays.contains(currentDate);
 
       // If day has events
       dayStyle = monthDayStyle;

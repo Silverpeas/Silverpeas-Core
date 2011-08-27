@@ -29,6 +29,8 @@
 
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.util.ArrayUtil;
+
 /**
  * Built by the main sesion controller the ComponentContext objects store the context of a component
  * instance : space, user, ... Used by the abstract component session controllers.
@@ -47,14 +49,15 @@ public class ComponentContext {
     m_sCurCompoId = "";
     m_sCurCompoName = "";
     m_sCurCompoLabel = "";
-    m_asCurProfile = new String[0];
+    m_asCurProfile = ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   public void setCurrentSpaceName(String CurrentSpaceName) {
-    if (CurrentSpaceName != null)
+    if (CurrentSpaceName != null) {
       m_sCurSpaceName = CurrentSpaceName;
-    else
+    } else {
       m_sCurSpaceName = "";
+    }
   }
 
   public String getCurrentSpaceName() {
@@ -62,10 +65,11 @@ public class ComponentContext {
   }
 
   public void setCurrentSpaceId(String CurrentSpaceId) {
-    if (CurrentSpaceId != null)
+    if (CurrentSpaceId != null) {
       m_sCurSpaceId = CurrentSpaceId;
-    else
+    } else {
       m_sCurSpaceId = "";
+    }
   }
 
   public String getCurrentSpaceId() {
@@ -73,10 +77,11 @@ public class ComponentContext {
   }
 
   public void setCurrentComponentId(String sClientComponentId) {
-    if (sClientComponentId != null)
+    if (sClientComponentId != null) {
       m_sCurCompoId = sClientComponentId;
-    else
+    } else {
       m_sCurCompoId = "";
+    }
   }
 
   public String getCurrentComponentId() {
@@ -84,10 +89,11 @@ public class ComponentContext {
   }
 
   public void setCurrentComponentName(String sCurrentComponentName) {
-    if (sCurrentComponentName != null)
+    if (sCurrentComponentName != null) {
       m_sCurCompoName = sCurrentComponentName;
-    else
+    } else {
       m_sCurCompoName = "";
+    }
   }
 
   public String getCurrentComponentName() {
@@ -95,10 +101,11 @@ public class ComponentContext {
   }
 
   public void setCurrentComponentLabel(String sCurrentComponentLabel) {
-    if (sCurrentComponentLabel != null)
+    if (sCurrentComponentLabel != null) {
       m_sCurCompoLabel = sCurrentComponentLabel;
-    else
+    } else {
       m_sCurCompoLabel = "";
+    }
   }
 
   public String getCurrentComponentLabel() {
@@ -106,10 +113,11 @@ public class ComponentContext {
   }
 
   public void setCurrentProfile(String[] asCurrentProfile) {
-    if (asCurrentProfile != null)
+    if (asCurrentProfile != null) {
       m_asCurProfile = asCurrentProfile;
-    else
-      m_asCurProfile = new String[0];
+    } else {
+      m_asCurProfile = ArrayUtil.EMPTY_STRING_ARRAY;
+    }
   }
 
   public String[] getCurrentProfile() {

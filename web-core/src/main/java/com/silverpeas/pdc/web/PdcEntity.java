@@ -158,10 +158,7 @@ public class PdcEntity implements Exposable {
     if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
       return false;
     }
-    if (this.axis != other.axis && (this.axis == null || !this.axis.equals(other.axis))) {
-      return false;
-    }
-    return true;
+    return !(this.axis != other.axis && (this.axis == null || !this.axis.equals(other.axis)));
   }
 
   @Override

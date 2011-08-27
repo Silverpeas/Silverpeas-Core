@@ -61,14 +61,9 @@ public class ServletContextThreadLocalizer {
 
   /**
    * Checks whether ServletContext is set in the ThreadLocal variable
-   * @param boolean
    */
   public static synchronized boolean exists() {
     ServletContext sc = (ServletContext) servletContextThreadLocal.get();
-    if (sc != null) {
-      return true;
-    } else {
-      return false;
-    }
+    return sc != null;
   }
 }

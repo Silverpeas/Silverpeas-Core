@@ -221,7 +221,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           services.put(jabout.getId(), jabout);
 
           jTools = new JobManagerService("4", "JTOOLS",
-              JobManagerService.LEVEL_SERVICE, null, ids.toArray(new String[0]), false);
+              JobManagerService.LEVEL_SERVICE, null, ids.toArray(new String[ids.size()]), false);
           services.put(jTools.getId(), jTools);
         }
       }
@@ -373,7 +373,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         listServices.add(jms);
       }
     }
-    return listServices.toArray(new JobManagerService[0]);
+    return listServices.toArray(new JobManagerService[listServices.size()]);
   }
 
   public JobManagerService[] getSubServices(JobManagerService jmsParent) {
@@ -389,17 +389,15 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     for (String idSubService : idSubServices) {
       JobManagerService jmsChild = services.get(idSubService);
       if (jmsChild != null) {
-        SilverTrace
-            .debug(
-                "jobManagerPeas",
-                "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-                "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
-                + jmsChild.getId() + " jmsChild label="
-                + jmsChild.getLabel());
+        SilverTrace.debug("jobManagerPeas",
+            "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
+            "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
+            + jmsChild.getId() + " jmsChild label="
+            + jmsChild.getLabel());
         listChild.add(jmsChild);
       }
     }
-    return listChild.toArray(new JobManagerService[0]);
+    return listChild.toArray(new JobManagerService[listChild.size()]);
   }
 
   public JobManagerService[] getSubServices(String idService) {

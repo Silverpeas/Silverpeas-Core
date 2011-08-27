@@ -118,10 +118,8 @@ public class PdcPositionValue extends PdcValue {
     if (!super.equals(other)) {
       return false;
     }
-    if ((this.meaning == null) ? (other.meaning != null) : !this.meaning.equals(other.meaning)) {
-      return false;
-    }
-    return true;
+    return !((this.meaning == null) ? (other.meaning != null) : !this.meaning.equals(
+        other.meaning));
   }
 
   @Override

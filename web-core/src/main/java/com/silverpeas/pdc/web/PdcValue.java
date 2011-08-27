@@ -23,14 +23,15 @@
  */
 package com.silverpeas.pdc.web;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import static com.silverpeas.util.StringUtil.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A value in the classification plan (named PdC).
@@ -124,11 +125,8 @@ public abstract class PdcValue implements Serializable {
     if ((this.treeId == null) ? (other.treeId != null) : !this.treeId.equals(other.treeId)) {
       return false;
     }
-    if (this.synonyms != other.synonyms &&
-            (this.synonyms == null || !this.synonyms.equals(other.synonyms))) {
-      return false;
-    }
-    return true;
+    return !(this.synonyms != other.synonyms &&
+        (this.synonyms == null || !this.synonyms.equals(other.synonyms)));
   }
 
   @Override
