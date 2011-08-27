@@ -109,7 +109,7 @@ public class ImportDragAndDrop extends HttpServlet {
           + ", draftMode = " + draftMode);
 
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
-          + File.separator + topicId + new Date().getTime() + File.separator;
+          + File.separator + topicId + System.currentTimeMillis() + File.separator;
 
       List<FileItem> items = FileUploadUtil.parseRequest(request);
       SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
