@@ -45,9 +45,10 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 </div>
 <% } %>
 
+<div id="identity">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
-    <tr>
+    <tr id="lastName">
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>
         <td>
         	<%if (updateIsAllowed && updateLastNameIsAllowed) {%>
@@ -57,7 +58,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 			<%}%>
 		</td>
     </tr>
-    <tr>
+    <tr id="firstName">
         <td class="txtlibform"><%=resource.getString("GML.firstName")%> :</td>
         <td>
         	<%if (updateIsAllowed && updateFirstNameIsAllowed) {%>
@@ -67,11 +68,11 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 			<%}%>
 		</td>
     </tr>
-	<tr>
+	<tr id="login">
         <td class="txtlibform"><%=resource.getString("GML.login")%> :</td>
 		<td><%=userFull.getLogin()%></td>
     </tr>
-    <tr>
+    <tr id="email">
     	<td class="txtlibform"><%=resource.getString("GML.eMail")%> :</td>
         <td>
         	<%if (updateIsAllowed && updateEmailIsAllowed) {%>
@@ -81,7 +82,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 			<%}%>
 		</td>
     </tr>
-	<tr>
+	<tr id="accessLevel">
 		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
 		<td>
 			<input type="radio" name="userAccessLevel" value=A" <% if ((userFull.getAccessLevel() != null) && (userFull.getAccessLevel().equalsIgnoreCase("A"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.admin") %><br/>
@@ -92,15 +93,15 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 		</td>
 	</tr>
 	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
-		<tr>
+		<tr id="oldPassword">
 	        <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
 	        <td><input <%=fieldAttribute%> type="password" name="OldPassword" size="50" maxlength="32"/></td>
 	    </tr>
-		<tr>
+		<tr id="newPassword">
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
 	        <td><input <%=fieldAttribute%> type="password" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
 	    </tr>
-		<tr>
+		<tr id="newPasswordConfirmation">
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
 	        <td><input <%=fieldAttribute%> type="password" name="NewPasswordConfirm" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
 	    </tr>
@@ -115,7 +116,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
         String userLoginQuestion = userFull.getLoginQuestion();
         String userLoginAnswer = userFull.getLoginAnswer();
 %>
-        <tr>
+        <tr id="question">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginQuestion")%> :</td>
             <td><select name="userLoginQuestion">
                     <option value=""<%if ("".equals(userLoginQuestion)) {%> selected<%}%>></option><%
@@ -129,7 +130,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
         <% } %>
                 </select></td>
         </tr>
-        <tr>
+        <tr id="answer">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginAnswer")%> :</td>
             <td><input type="text" name="userLoginAnswer" value="<%=userLoginAnswer%>" size="50" maxlength="99"/></td>
         </tr><%
@@ -147,7 +148,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 
 			if (!propertyName.startsWith("password")) {
 			%>
-			<tr>
+			<tr id="<%=propertyName%>">
 				<td class="txtlibform"><%=userFull.getSpecificLabel(resource.getLanguage(), propertyName) %> :</td>
 				<% if ( (userFull.isPropertyUpdatableByUser(propertyName)) || (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName)) ) { %>
 					<td><input type="text" name="prop_<%=propertyName%>" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userFull.getValue(propertyName))%>"></td>
@@ -162,6 +163,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 	%>
   </table>
  </form>
+ </div>
  <%
 		ButtonPane buttonPane = gef.getButtonPane();
 		if (updateIsAllowed)

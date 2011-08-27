@@ -92,7 +92,7 @@ public class DomainTable extends Table<DomainRow> {
     insertRow(INSERT_DOMAIN, domain);
   }
   static final private String INSERT_DOMAIN ="INSERT INTO ST_Domain (id, name, description, " +
-      "propFileName, className, authenticationServer, theTimeStamp,s ilverpeasServerURL) VALUES " +
+      "propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL) VALUES " +
       " (? ,? ,?, ? ,?, ?, ?, ?)";
 
   @Override
