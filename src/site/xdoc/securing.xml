@@ -24,13 +24,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<document>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
   <properties>
-    <author>Emmanuel Hugonnet</author>
     <title>Securing Silverpeas</title>
+    <author>Emmanuel Hugonnet</author>
   </properties>
-  <head>
-  </head>
   <body>
     <section name="Configuring SSL">
       <subsection name="Preparing the Certificate Keystore">
@@ -40,6 +40,7 @@
      To import an existing certificate signed by your own CA into a PKCS12 keystore using OpenSSL you would execute a command like:
       </p>
       <fieldset>
+        <legend>Importing an existing certificate</legend>
         <pre>openssl pkcs12 -export -in mycert.crt -inkey mykey.key \
                         -out mycert.p12 -name tomcat -CAfile myCA.crt \
                         -caname root -chain
