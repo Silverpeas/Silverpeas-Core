@@ -183,8 +183,4 @@ public class CacheManagerJdbcConnector extends CacheManager {
     }
     return valret;
   }
-
-  public void setJdbcParams(SelectionJdbcParams jdbcParams) {
-  }
-
 }

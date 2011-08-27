@@ -75,9 +75,8 @@ public class PortletColumnTable extends AbstractTable<PortletColumnRow> {
    * Returns all the PortletColumnRow having a given spaceId
    */
   public PortletColumnRow[] getAllBySpaceId(int spaceId) throws UtilException {
-    return (PortletColumnRow[]) getRows(
-        SELECT_ALL_PORTLETCOLUMN_WITH_GIVEN_SPACEID, spaceId).toArray(
-        new PortletColumnRow[0]);
+    List<PortletColumnRow> rows = getRows(SELECT_ALL_PORTLETCOLUMN_WITH_GIVEN_SPACEID, spaceId);
+    return rows.toArray(new PortletColumnRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_PORTLETCOLUMN_WITH_GIVEN_SPACEID = "select "

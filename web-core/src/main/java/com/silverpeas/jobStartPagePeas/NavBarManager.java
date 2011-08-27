@@ -26,13 +26,13 @@ package com.silverpeas.jobStartPagePeas;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,16 +151,12 @@ public class NavBarManager {
     }
   }
 
-  public void initWithUser(AbstractComponentSessionController msc,
-      UserDetail user) {
+  public void initWithUser(AbstractComponentSessionController msc, UserDetail user) {
     String sUserId = user.getId();
-    String[] spaceIds;
-    String[] allManageableSpaceIds;
 
     SilverTrace.info("jobStartPagePeas", "NavBarManager.initWithUser()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + sUserId);
-    m_sContext = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    m_sContext = URLManager.getApplicationURL();
     m_administrationCtrl = new AdminController(sUserId);
     m_SessionCtrl = msc;
     m_user = user;
@@ -172,8 +168,8 @@ public class NavBarManager {
     m_SubSpaceComponents = new DisplaySorted[0];
 
     if (!m_user.isAccessAdmin()) {
-      allManageableSpaceIds = m_administrationCtrl
-          .getUserManageableSpaceIds(sUserId);
+      String[] allManageableSpaceIds = m_administrationCtrl
+           .getUserManageableSpaceIds(sUserId);
       // First of all, add the manageable spaces into the set
       m_ManageableSpaces.clear();
       for (String manageableSpaceId : allManageableSpaceIds) {
@@ -181,7 +177,7 @@ public class NavBarManager {
       }
     }
 
-    spaceIds = m_administrationCtrl.getAllRootSpaceIds();
+    String[] spaceIds = m_administrationCtrl.getAllRootSpaceIds();
     m_Spaces = createSpaceObjects(spaceIds, false);
   }
 

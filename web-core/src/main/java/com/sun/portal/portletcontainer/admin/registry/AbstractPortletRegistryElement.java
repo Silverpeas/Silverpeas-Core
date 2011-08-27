@@ -279,7 +279,6 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
         while (keysItr.hasNext()) {
           Map.Entry entry = (Map.Entry) keysItr.next();
           key = (String) entry.getKey();
-          ;
           obj = entry.getValue();
           if (obj instanceof String) {
             value = (String) obj;

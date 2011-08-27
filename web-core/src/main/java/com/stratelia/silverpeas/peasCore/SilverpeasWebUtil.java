@@ -4,6 +4,7 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -101,6 +102,6 @@ public class SilverpeasWebUtil {
       return organizationController.getUserProfiles(controller.getUserId(),
           getComponentId(request)[1]);
     }
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 }

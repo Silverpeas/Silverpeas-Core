@@ -242,33 +242,29 @@ public class AgendaHtmlView {
       calendarHtmlView.setWeekDayStyle("class=\"txtnav\"");
       calendarHtmlView.setMonthDayStyle("class=\"intfdcolor4\"");
       calendarHtmlView.setMonthSelectedDayStyle("class=\"intfdcolor6\"");
-      String result = "";
+      StringBuffer result = new StringBuffer("");
 
-      result += "      <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n";
-      result += "        <tr> \n";
-      result += "          <td> \n";
-      result +=
-          "            <table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n";
-      result += "              <tr> \n";
-      result += "                <td class=\"grille\"> \n";
-      result +=
-          "                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n";
-      result += "                    <tr> \n";
-      result += "                      <td align=\"center\" class=\"grille\"> ";
+      result.append("\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n");
+      result.append("\t\t\t\t<tr> \n");
+      result.append("\t\t\t\t\t<td> \n");
+      result.append("\t\t\t\t\t\t<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n");
+      result.append("\t\t\t\t\t\t\t<tr>\n");
+      result.append("\t\t\t\t\t\t\t\t<td class=\"grille\">\n");
+      result.append("\t\t\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n");
+      result.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
+      result.append("\t\t\t\t\t\t\t\t\t\t\t<td align=\"center\" class=\"grille\"> ");
+      result.append(calendarHtmlView.getHtmlView(DateUtil.parse(startDate), agendaSessionController));
+      result.append("\t\t\t\t\t\t\t\t\t\t\t</td>");
+      result.append("                    </tr>");
+      result.append("                  </table>");
+      result.append("                </td>");
+      result.append("              </tr>");
+      result.append("            </table>");
+      result.append("          </td>");
+      result.append("        </tr>");
+      result.append("      </table>");
 
-      result += calendarHtmlView.getHtmlView(DateUtil.parse(startDate), agendaSessionController);
-
-      result += "                      </td>";
-      result += "                    </tr>";
-      result += "                  </table>";
-      result += "                </td>";
-      result += "              </tr>";
-      result += "            </table>";
-      result += "          </td>";
-      result += "        </tr>";
-      result += "      </table>";
-
-      return result;
+      return result.toString();
     } catch (java.text.ParseException e) {
 
       SilverTrace.warn("agenda",

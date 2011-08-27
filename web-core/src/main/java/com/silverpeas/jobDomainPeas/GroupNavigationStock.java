@@ -28,10 +28,10 @@
 
 package com.silverpeas.jobDomainPeas;
 
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +64,7 @@ public class GroupNavigationStock extends NavigationStock {
     m_NavGroup = m_adc.getGroupById(m_GroupId);
     subUsersIds = m_NavGroup.getUserIds();
     if (subUsersIds == null) {
-      m_SubUsers = new UserDetail[0];
+      m_SubUsers = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } else {
       m_SubUsers = m_adc.getUserDetails(subUsersIds);
     }
@@ -72,7 +72,7 @@ public class GroupNavigationStock extends NavigationStock {
 
     subGroupsIds = m_adc.getAllSubGroupIds(m_NavGroup.getId());
     if (subGroupsIds == null) {
-      m_SubGroups = new Group[0];
+      m_SubGroups = ArrayUtil.EMPTY_GROUP_ARRAY;
     } else {
       if (manageableGroupIds != null)
         subGroupsIds = filterGroupsToGroupManager(subGroupsIds);

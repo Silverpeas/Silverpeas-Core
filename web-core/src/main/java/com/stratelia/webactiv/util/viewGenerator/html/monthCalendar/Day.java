@@ -63,22 +63,21 @@ import java.util.Date;
  */
 class Day {
 
-  private Date date = null;
+  private Date date;
 
-  private String name = null;
+  private String name;
 
-  private String numbers = null;
+  private String numbers;
 
-  private boolean isInThisMonth = false;
+  private boolean isInThisMonth;
 
   /**
    * Creates new Day
    */
   public Day(Date date, String name, String numbers, boolean isInThisMonth) {
     this.date = date;
-    SilverTrace.info("viewgenerator", "Day()", "root.MSG_GEN_PARAM_VALUE",
-        "date = " + date.toString());
-
+    SilverTrace.info("viewgenerator", "Day()", "root.MSG_GEN_PARAM_VALUE", "date = "
+        + date.toString());
     this.name = name;
     this.numbers = numbers;
     this.isInThisMonth = isInThisMonth;
@@ -91,6 +90,9 @@ class Day {
    */
   public Day(Date date) {
     this.date = date;
+    this.name = null;
+    this.numbers = null;
+    this.isInThisMonth = false;
     SilverTrace.info("viewgenerator", "Day(date)", "root.MSG_GEN_PARAM_VALUE",
         "date = " + date.toString());
   }
@@ -148,13 +150,11 @@ class Day {
    */
   public boolean isCurrentDay() {
     Calendar cal = Calendar.getInstance();
-
     cal.clear(Calendar.HOUR);
     cal.clear(Calendar.HOUR_OF_DAY);
     cal.clear(Calendar.MINUTE);
     cal.clear(Calendar.SECOND);
     cal.clear(Calendar.MILLISECOND);
-
-    return date.compareTo(cal.getTime()) == 0;
+    return date.equals(cal.getTime());
   }
 }

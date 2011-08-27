@@ -206,18 +206,16 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public String addJournal(String name, String description, String priority,
       String classification, Date startDay, String startHour, Date endDay,
-      String endHour) throws RemoteException, CalendarException {
+      String endHour) throws RemoteException {
     JournalHeader journal = new JournalHeader(name, getUserId());
 
     journal.setDescription(description);
     try {
       journal.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
-      SilverTrace
-          .warn(
-              "agenda",
-              "AgendaSessionController. addJournal(String name, String description, String priority, String classification, Date startDay, String startHour, Date endDay, String endHour)",
-              "agenda.MSG_CANT_GET_PRIORITY", "", e);
+      SilverTrace.warn("agenda", "AgendaSessionController.addJournal(String name, " +
+          "String description, String priority, String classification, Date startDay, String " +
+          "startHour, Date endDay, String endHour)", "agenda.MSG_CANT_GET_PRIORITY", "", e);
 
     }
     try {
@@ -227,12 +225,11 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       journal.setEndDay(DateUtil.date2SQLDate(endDay));
       journal.setEndHour(endHour);
     } catch (java.text.ParseException pe) {
-      throw new AgendaRuntimeException(
-          "AgendaSessionController. addJournal(String name, String description, String priority, String classification, Date startDay, String startHour, Date endDay, String endHour)",
-          SilverpeasException.ERROR, "agenda.EX_CANT_ADD_JOURNAL", pe);
+      throw new AgendaRuntimeException("AgendaSessionController.addJournal(String name, String " +
+          "description, String priority, String classification, Date startDay, String startHour, " +
+          "Date endDay, String endHour)", SilverpeasException.ERROR, "agenda.EX_CANT_ADD_JOURNAL", pe);
     }
     String result = calendarBm.addJournal(journal);
-
     return result;
   }
 
@@ -894,7 +891,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       Collection subResult = new ArrayList();
 
       for (JournalHeader aResult : result) {
-        Schedulable schedule = (Schedulable) aResult;
+        Schedulable schedule = aResult;
         boolean toView = false;
 
         if (!schedule.getClassification().isConfidential()) {
@@ -1745,11 +1742,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws ParseException
    */
   public void changeDayOfWeekStatus(String year, String month, String day)
-      throws RemoteException, ParseException {
-    SilverTrace.info("agenda",
-        "AgendaSessionController.changeDayOfWeekStatus()",
-        "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month
-        + ", day=" + day);
+      throws RemoteException {
+    SilverTrace.info("agenda", "AgendaSessionController.changeDayOfWeekStatus()",
+        "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month + ", day=" + day);
 
     int iMonth = Integer.parseInt(month);
 

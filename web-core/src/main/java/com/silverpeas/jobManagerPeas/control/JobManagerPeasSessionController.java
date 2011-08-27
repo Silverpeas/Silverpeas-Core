@@ -41,7 +41,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -358,18 +357,13 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   // 2 => action
   // 3 => acteur
   public JobManagerService[] getServices(int level) {
-    SilverTrace.debug("jobManagerPeas",
-        "jobManagerPeasSessionController.getServices()",
+    SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER level=" + level);
     List<JobManagerService> listServices = new ArrayList<JobManagerService>();
-    Iterator<JobManagerService> iterator = services.values().iterator();
-    while (iterator.hasNext()) {
-      JobManagerService jms = iterator.next();
+    for (JobManagerService jms : services.values()) {
       if (jms.getLevel() == level) {
-        SilverTrace.debug("jobManagerPeas",
-            "jobManagerPeasSessionController.getServices()",
-            "root.MSG_GEN_PARAM_VALUE", " jms id=" + jms.getId()
-            + "  jms label=" + jms.getLabel());
+        SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
+            "root.MSG_GEN_PARAM_VALUE", " jms id=" + jms.getId() + "  jms label=" + jms.getLabel());
         listServices.add(jms);
       }
     }

@@ -50,18 +50,17 @@ public class CheckAttachmentsBatch {
   public CheckAttachmentsBatch() {
   }
 
-  public List<CheckAttachmentDetail> check(String attachmentType, String reqLanguage) throws
-      Exception {
+  public List<CheckAttachmentDetail> check(String attachmentType, String reqLanguage) {
     List<CheckAttachmentDetail> listAttachments = null;
     try {
       // get all attachments
       this.language = reqLanguage;
       listAttachments = getAttachments(attachmentType);
     } catch (Exception e) {
-      e.printStackTrace();
+       SilverTrace.error("admin", "CheckAttachmentBatch.check()",
+                "root.MSG_GEN_PARAM_VALUE", e);
       throw new AttachmentRuntimeException("CheckAttachmentsBatch.check()",
-          SilverpeasException.ERROR,
-          "Erreur lors de la recuperation des attachments", e);
+          SilverpeasException.ERROR, "Erreur lors de la recuperation des attachments", e);
     }
     return listAttachments;
   }
@@ -130,12 +129,12 @@ public class CheckAttachmentsBatch {
    */
   public List<AttachmentDetail> getAttachmentsByPhysicalName(String physicalName) {
     List<AttachmentDetail> listAttachements = new ArrayList<AttachmentDetail>();
-    AttachmentDetail attDetail = null;
-    String query = "select attachmentId, instanceId from sb_attachment_attachment where attachmentPhysicalName=?";
+    String query = "SELECT attachmentId, instanceId FROM sb_attachment_attachment WHERE attachmentPhysicalName = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = openConnection();
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, physicalName);
       rs = prepStmt.executeQuery();
@@ -143,19 +142,18 @@ public class CheckAttachmentsBatch {
         String attachmentId = String.valueOf(rs.getInt(1));
         String instanceId = rs.getString(2);
         AttachmentPK attPK = new AttachmentPK(attachmentId, instanceId);
-        attDetail = AttachmentController.searchAttachmentByPK(attPK);
+        AttachmentDetail attDetail = AttachmentController.searchAttachmentByPK(attPK);
         if (attDetail != null) {
-          SilverTrace.info("admin",
-              "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
+          SilverTrace.info("admin", "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
               "root.MSG_GEN_PARAM_VALUE", "attDetail = " + attDetail.getPK().getId());
           listAttachements.add(attDetail);
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (SQLException e) {
+      SilverTrace.error("admin", "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
+              "root.MSG_GEN_PARAM_VALUE", e);
       throw new AttachmentRuntimeException("CheckAttachmentsBatch.getAttachmentsByPhysicalName()",
-          SilverpeasException.ERROR,
-          "Erreur lors de la recuperation des attachments", e);
+          SilverpeasException.ERROR, "Erreur lors de la recuperation des attachments", e);
     } finally {
       // fermeture
       DBUtil.close(rs, prepStmt);
