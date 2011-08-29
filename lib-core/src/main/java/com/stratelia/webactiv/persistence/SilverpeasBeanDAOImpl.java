@@ -27,6 +27,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
@@ -91,11 +92,18 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         }
       }
       tableName = object._getTableName();
-    } catch (Exception e) {
-      throw new PersistenceException(
-              "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
-              SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS",
-              "classe= " + beanClassName, e);
+    } catch (IntrospectionException ex) {
+      throw new PersistenceException("SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
+              SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS","classe= " + beanClassName, ex);
+    }catch (ClassNotFoundException ex) {
+      throw new PersistenceException("SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
+              SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS","classe= " + beanClassName, ex);
+    }catch (InstantiationException ex) {
+      throw new PersistenceException("SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
+              SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS","classe= " + beanClassName, ex);
+    }catch (IllegalAccessException ex) {
+      throw new PersistenceException("SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl(String beanClassName)",
+              SilverpeasException.ERROR, "persistence.EX_CANT_INITIALISE_CLASS","classe= " + beanClassName, ex);
     }
   }
 
@@ -120,12 +128,14 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
               "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement + ", id= " + pk.getId());
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       prepStmt.executeUpdate();
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PersistenceException("SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
               SilverpeasException.ERROR, "persistence.EX_CANT_REMOVE_OBJECT", "", e);
     } finally {
       DBUtil.close(prepStmt);
-      DBUtil.close(con);
+      if (connection == null) {
+        DBUtil.close(con);
+      }
     }
   }
 
@@ -148,18 +158,18 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       String updateStatement = "delete from " + getTableName(pk) + " where " + whereClause;
 
       prepStmt = con.prepareStatement(updateStatement);
-      SilverTrace.info("persistence",
-              "SilverpeasBeanDAOImpl.removeWhere( WAPrimaryKey pk, String p_WhereClause )",
+      SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.removeWhere(WAPrimaryKey pk, String p_WhereClause)",
               "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement + ", id= " + pk.getId()
               + ", whereClause= " + whereClause);
       prepStmt.executeUpdate();
     } catch (Exception e) {
-      throw new PersistenceException(
-              "SilverpeasBeanDAOImpl.removeWhere( WAPrimaryKey pk, String p_WhereClause )",
+      throw new PersistenceException("SilverpeasBeanDAOImpl.removeWhere(WAPrimaryKey pk, String p_WhereClause)",
               SilverpeasException.ERROR, "persistence.EX_CANT_REMOVE_OBJECT", "", e);
     } finally {
       DBUtil.close(prepStmt);
-      DBUtil.close(con);
+      if (connection == null) {
+        DBUtil.close(con);
+      }
     }
   }
 
@@ -195,7 +205,8 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         }
       }
 
-      String updateStatement = "update " + getTableName(bean.getPK()) + " set " + statement + " where id = ?";
+      String updateStatement = "update " + getTableName(bean.getPK()) + " set " + statement 
+              + " where id = ?";
 
       prepStmt = con.prepareStatement(updateStatement);
       SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
@@ -213,7 +224,9 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
               SilverpeasException.ERROR, "persistence.EX_CANT_UPDATE_OBJECT", "", e);
     } finally {
       DBUtil.close(prepStmt);
-      DBUtil.close(con);
+      if (connection == null) {
+        DBUtil.close(con);
+      }
     }
 
   }
@@ -272,7 +285,9 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
               SilverpeasException.ERROR, "persistence.EX_CANT_ADD_OBJECT", "", e);
     } finally {
       DBUtil.close(prepStmt);
-      DBUtil.close(con);
+      if (connection == null) {
+        DBUtil.close(con);
+      }
     }
   }
 
@@ -308,7 +323,9 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
               SilverpeasException.ERROR, "persistence.EX_CANT_FIND_OBJECT", "", e);
     } finally {
       DBUtil.close(rs, prepStmt);
-      DBUtil.close(con);
+      if (connection == null) {
+        DBUtil.close(con);
+      }
     }
   }
 
@@ -354,7 +371,9 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
               SilverpeasException.ERROR, "persistence.EX_CANT_FIND_OBJECT", "", e);
     } finally {
       DBUtil.close(rs, prepStmt);
-      DBUtil.close(con);
+      if (connection == null) {
+        DBUtil.close(con);
+      }
     }
 
   }
@@ -373,7 +392,8 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         }
         case CONNECTION_TYPE_JDBC_CLASSIC: {
           Class.forName(jdbcConnectionParameters.JDBCdriverName);
-          con = DriverManager.getConnection(jdbcConnectionParameters.JDBCurl, jdbcConnectionParameters.JDBClogin,
+          con = DriverManager.getConnection(jdbcConnectionParameters.JDBCurl,
+                  jdbcConnectionParameters.JDBClogin,
                   jdbcConnectionParameters.JDBCpassword);
           break;
         }
@@ -381,9 +401,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
           con = DBUtil.makeConnection(JNDINames.PERSISTENCE_DB_DATASOURCE);
           break;
         }
-        default /*
-         * CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS
-         */: {
+        default: {
           con = DBUtil.makeConnection(JNDINames.PERSISTENCE_EJB_DATASOURCE);
           break;
         }
