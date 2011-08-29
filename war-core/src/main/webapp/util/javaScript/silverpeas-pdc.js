@@ -681,15 +681,22 @@
       var axisValuesSelection = $('<select>', {
         'id': anAxis.id,  
         'name': anAxis.name
-      }).addClass(mandatoryField).appendTo(currentAxisDiv);
+      }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
+        var theValue = $(this).children(':selected').attr('value');
+        if (theValue == '-') {
+          selectedValues[anAxis.id] = null;
+        } else {
+          selectedValues[anAxis.id] = $.parseJSON(theValue);
+        }
+      });
       var path = [];
       
       // browse the values of the current axis
       $.each(anAxis.values, function(valueindex, aValue) {
-        var level = '', optionAttr = 'value="' + aValue.id + '"';
         path.splice(aValue.level, path.length - aValue.level);
         path[aValue.level] = aValue.term;
         aValue.meaning = path.join(' / ');
+        var level = '', optionAttr = "value='" + $.toJSON(aValue) + "'", selected = false;
         if (aValue.id != '/0/') {
           for (var i = 0; i < aValue.level; i++) {
             level += '&nbsp;&nbsp;';
@@ -699,29 +706,29 @@
           }
           if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id) ||
             (aValue.id == anAxis.invariantValue)) {
-            optionAttr += ' selected="selected"';
+            selected = true;
             selectedValues[anAxis.id] = aValue;
           }
           if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
             optionAttr += ' disabled="disabled"';
           }
-          $('<option ' + optionAttr + '>').html(level + aValue.term).appendTo(axisValuesSelection).click(function() {
-            selectedValues[anAxis.id] = aValue;
-          });
+          var option =
+            $('<option ' + optionAttr + '>').html(level + aValue.term).appendTo(axisValuesSelection);
+          if (selected) option.attr('selected', 'selected');
         }
       });
       
-      var defaultValue = '', disabled = '', selected = '';
+      var defaultValue = '', disabled = '', selected = false;
       if (anAxis.mandatory) {
         defaultValue = settings.edition.mandatoryAxisDefaultValue;
         disabled = ' disabled="disabled" class="emphasis" ';
       }
       if (selectedValues[anAxis.id] == null) {
-        selected = ' selected="selected"';
+        selected = true;
       }
-      $('<option value="-"' + disabled + selected + '>').html(defaultValue).prependTo(axisValuesSelection).click(function() {
-        selectedValues[anAxis.id] = null;
-      });
+      var option =
+        $('<option value="-"' + disabled + '>').html(defaultValue).prependTo(axisValuesSelection);
+      if (selected) option.attr('selected', 'selected');
       if (selectedValues[anAxis.id] != null) {
         $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);
       }
