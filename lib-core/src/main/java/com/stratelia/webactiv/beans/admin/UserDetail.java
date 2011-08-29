@@ -28,12 +28,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import static com.silverpeas.util.StringUtil.*;
+import org.apache.commons.beanutils.BeanUtils;
 
 import java.io.File;
 import java.io.Serializable;
 
-import org.apache.commons.beanutils.BeanUtils;
+import static com.silverpeas.util.StringUtil.areStringEquals;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
 
@@ -300,15 +301,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public String getDisplayedName() {
-    String valret = "";
-
+    StringBuilder displayedName = new StringBuilder("");
     if (getFirstName() != null) {
-      valret = getFirstName() + " ";
+      displayedName.append(getFirstName()).append(' ');
     }
     if (getLastName() != null) {
-      valret += getLastName();
+      displayedName.append(getLastName());
     }
-    return valret;
+    return displayedName.toString();
   }
 
   @Override
