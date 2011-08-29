@@ -28,6 +28,11 @@
  */
 package com.stratelia.webactiv.calendar.model;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,11 +40,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * @author neysseri
@@ -62,7 +62,7 @@ public class HolidaysDAO {
       try {
         prepStmt = con.prepareStatement(insertStatement.toString());
 
-        prepStmt.setInt(1, new Integer(holiday.getUserId()).intValue());
+        prepStmt.setInt(1, Integer.parseInt(holiday.getUserId()));
         prepStmt.setString(2, DateUtil.date2SQLDate(holiday.getDate()));
 
         prepStmt.executeUpdate();
@@ -84,7 +84,7 @@ public class HolidaysDAO {
       prepStmt = con.prepareStatement(deleteStatement.toString());
 
       prepStmt.setString(1, DateUtil.date2SQLDate(holiday.getDate()));
-      prepStmt.setInt(2, new Integer(holiday.getUserId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(holiday.getUserId()));
 
       prepStmt.executeUpdate();
     } finally {
@@ -110,7 +110,7 @@ public class HolidaysDAO {
       stmt = con.prepareStatement(query.toString());
 
       stmt.setString(1, DateUtil.date2SQLDate(holiday.getDate()));
-      stmt.setInt(2, new Integer(holiday.getUserId()).intValue());
+      stmt.setInt(2, Integer.parseInt(holiday.getUserId()));
 
       rs = stmt.executeQuery();
 
@@ -137,7 +137,7 @@ public class HolidaysDAO {
 
     try {
       stmt = con.prepareStatement(query.toString());
-      stmt.setInt(1, new Integer(userId).intValue());
+      stmt.setInt(1, Integer.parseInt(userId));
       rs = stmt.executeQuery();
       while (rs.next()) {
         holidayDates.add(rs.getString("holidayDate"));
@@ -168,7 +168,7 @@ public class HolidaysDAO {
 
     try {
       stmt = con.prepareStatement(query.toString());
-      stmt.setInt(1, new Integer(userId).intValue());
+      stmt.setInt(1, Integer.parseInt(userId));
       stmt.setString(2, DateUtil.date2SQLDate(beginDate));
       stmt.setString(3, DateUtil.date2SQLDate(endDate));
       rs = stmt.executeQuery();

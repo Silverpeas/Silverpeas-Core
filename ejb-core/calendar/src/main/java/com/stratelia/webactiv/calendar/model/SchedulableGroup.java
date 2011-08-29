@@ -24,13 +24,11 @@
 
 package com.stratelia.webactiv.calendar.model;
 
+import com.stratelia.webactiv.util.DateUtil;
+
 import java.util.Vector;
 
 public class SchedulableGroup extends SchedulableList {
-
-  // Vector content = new Vector();
-  private static final java.text.SimpleDateFormat completeFormat = new java.text.SimpleDateFormat(
-      "yyyy/MM/dd HH:mm");
 
   public SchedulableGroup() {
   }
@@ -74,10 +72,10 @@ public class SchedulableGroup extends SchedulableList {
       Schedulable schedule = (Schedulable) content.elementAt(i);
       if (result == null) {
         result = schedule.getStartHour();
-      }
-      else if (schedule.getStartHour() != null) {
-        if (schedule.getStartHour().compareTo(result) < 0)
+      } else if (schedule.getStartHour() != null) {
+        if (schedule.getStartHour().compareTo(result) < 0) {
           result = schedule.getStartHour();
+        }
       }
     }
     // Debug.println("Group.startHour = " + result);
@@ -90,8 +88,7 @@ public class SchedulableGroup extends SchedulableList {
       Schedulable schedule = (Schedulable) content.elementAt(i);
       if (result == null) {
         result = schedule.getEndHour();
-      }
-      else if (schedule.getEndHour() != null) {
+      } else if (schedule.getEndHour() != null) {
         if (schedule.getEndHour().compareTo(result) > 0) {
           result = schedule.getEndHour();
         }
@@ -99,10 +96,6 @@ public class SchedulableGroup extends SchedulableList {
     }
     // Debug.println("Group.endHour = " + result);
     return result;
-  }
-
-  public Vector getContent() {
-    return content;
   }
 
   public Vector getStartingSchedules(String hour) {
@@ -123,10 +116,8 @@ public class SchedulableGroup extends SchedulableList {
 
   public int getMinuteDuration() {
     try {
-      java.util.Date startDate = completeFormat.parse("2000/01/01 "
-          + getStartHour());
-      java.util.Date endDate = completeFormat.parse("2000/01/01 "
-          + getEndHour());
+      java.util.Date startDate = DateUtil.parseDateTime("2000/01/01 " + getStartHour());
+      java.util.Date endDate = DateUtil.parseDateTime("2000/01/01 " + getEndHour());
       long ms = endDate.getTime() - startDate.getTime();
       return (int) (ms / (60000));
     } catch (Exception e) {

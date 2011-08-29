@@ -29,7 +29,7 @@ import java.util.Vector;
 public class SchedulableList {
 
   protected Vector content = new Vector();
-  private String day;
+  private String day = null;
 
   public SchedulableList() {
   }
@@ -40,8 +40,9 @@ public class SchedulableList {
 
   public SchedulableList(String day, Vector elements) {
     this(day);
-    for (int i = 0; i < elements.size(); i++)
+    for (int i = 0; i < elements.size(); i++) {
       add((Schedulable) elements.elementAt(i));
+    }
   }
 
   public Vector getContent() {

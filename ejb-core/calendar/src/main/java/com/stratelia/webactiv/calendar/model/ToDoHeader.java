@@ -37,7 +37,6 @@ public class ToDoHeader extends Schedulable implements Cloneable {
   private java.util.Date completedDate = null;
   private String componentId = null;
   private String spaceId = null;
-  private String externalId = null;
   private int duration = DURATION_UNDEFINED;
 
   public ToDoHeader() {
@@ -106,16 +105,6 @@ public class ToDoHeader extends Schedulable implements Cloneable {
 
   public String getSpaceId() {
     return spaceId;
-  }
-
-  @Override
-  public void setExternalId(String id) {
-    externalId = id;
-  }
-
-  @Override
-  public String getExternalId() {
-    return externalId;
   }
 
   @Override

@@ -25,6 +25,8 @@
 //TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.calendar.model;
 
+import com.stratelia.webactiv.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,8 +34,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.stratelia.webactiv.util.DBUtil;
 
 public class CategoryDAO {
 
@@ -54,16 +54,14 @@ public class CategoryDAO {
         "select "
         + CategoryDAO.CATEGORYCOLUMNNAMES
         + " from CalendarCategory, CalendarJournalCategory "
-        +
-        " where journalId = ? and CalendarCategory.categoryId = CalendarJournalCategory.categoryId";
+        +" where journalId = ? and CalendarCategory.categoryId = CalendarJournalCategory.categoryId";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    List<Category> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(journalId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(journalId));
       rs = prepStmt.executeQuery();
-      list = new ArrayList<Category>();
+      List<Category> list = new ArrayList<Category>();
       while (rs.next()) {
         Category category = getCategoryFromResultSet(rs);
         list.add(category);
@@ -125,7 +123,7 @@ public class CategoryDAO {
       String insertStatement = "insert into CalendarJournalCategory (journalId, categoryId) "
           + " values (?, ?)";
       prepStmt = con.prepareStatement(insertStatement);
-      prepStmt.setInt(1, new Integer(journalId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(journalId));
       prepStmt.setString(2, categoryId);
       prepStmt.executeUpdate();
     } finally {
@@ -141,7 +139,7 @@ public class CategoryDAO {
       String statement = "delete from CalendarJournalCategory "
           + "where journalId = ? and categoryId = ?";
       prepStmt = con.prepareStatement(statement);
-      prepStmt.setInt(1, new Integer(journalId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(journalId));
       prepStmt.setString(2, categoryId);
       prepStmt.executeUpdate();
     } finally {
@@ -157,7 +155,7 @@ public class CategoryDAO {
       String statement = "delete from CalendarJournalCategory "
           + "where journalId = ?";
       prepStmt = con.prepareStatement(statement);
-      prepStmt.setInt(1, new Integer(id).intValue());
+      prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);

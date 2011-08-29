@@ -24,6 +24,8 @@
 
 package com.stratelia.webactiv.calendar.model;
 
+import com.stratelia.webactiv.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,8 +33,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.stratelia.webactiv.util.DBUtil;
 
 public class AttendeeDAO {
 
@@ -73,7 +73,6 @@ public class AttendeeDAO {
     List<Attendee> list = new ArrayList<Attendee>();
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      // prepStmt.setInt(1, new Integer(id).intValue());
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         Attendee attendee = getAttendeeFromResultSet(rs);
@@ -106,7 +105,7 @@ public class AttendeeDAO {
     try {
       prepStmt = con.prepareStatement(insertStatement);
       prepStmt.setString(1, attendee.getUserId());
-      prepStmt.setInt(2, new Integer(id).intValue());
+      prepStmt.setInt(2, Integer.parseInt(id));
       prepStmt.setString(3, attendee.getParticipationStatus().getString());
       prepStmt.executeUpdate();
     } finally {
@@ -135,7 +134,7 @@ public class AttendeeDAO {
       String statement = "delete from " + table + " " + "where " + idLabel
           + " = ? and userId = ?";
       prepStmt = con.prepareStatement(statement);
-      prepStmt.setInt(1, new Integer(id).intValue());
+      prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.setString(2, attendee.getUserId());
       prepStmt.executeUpdate();
     } finally {
@@ -162,7 +161,7 @@ public class AttendeeDAO {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(statement);
-      prepStmt.setInt(1, new Integer(id).intValue());
+      prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
