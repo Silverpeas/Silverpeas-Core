@@ -737,7 +737,8 @@
         $('<img>', {
           src: settings.edition.mandatoryIcon,
           alt: settings.edition.mandatoryLegend, 
-          width: '5px'
+          width: '5px',
+          height: '5px'
         }).appendTo(currentAxisDiv.append(' '));
       }
       if (anAxis.invariant) {
@@ -745,7 +746,8 @@
         $('<img>', {
           src: settings.edition.invariantIcon, 
           alt: settings.edition.invariantLegend,
-          width: '10px'
+          width: '10px',
+          height: '10px'
         }).appendTo(currentAxisDiv);
       }
     });
@@ -772,7 +774,8 @@
         legende.append($('<img>', {
           src: settings.edition.mandatoryIcon, 
           alt: settings.edition.mandatoryLegend,
-          width: '5px'
+          width: '5px',
+          height: '5px'
         })).append($('<span>').html('&nbsp;:' + settings.edition.mandatoryLegend + ' '));
       }
       if (hasInvariantAxis) {
@@ -780,7 +783,8 @@
           $('<img>', {
             src: settings.edition.invariantIcon, 
             alt: settings.edition.invariantLegend,
-            width: '10px'
+            width: '10px',
+            height: '10px'
           })).
         append($('<span>').html('&nbsp;:' + settings.edition.invariantLegend));
       }
