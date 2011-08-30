@@ -25,16 +25,20 @@ package com.silverpeas.peasUtil;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -134,6 +138,28 @@ public abstract class GoTo extends HttpServlet {
       SilverTrace.warn("peasUtil", "GoToFile.displayError", "root.EX_CANT_READ_FILE");
     } finally {
       Closeables.closeQuietly(out);
+    }
+  }
+  
+  /**
+   * Set GEF and look helper space identifier
+   * @param req current HttpServletRequest
+   * @param componentId the component identifier
+   */
+  protected void setGefSpaceId(HttpServletRequest req, String componentId) {
+    if (StringUtil.isDefined(componentId)) {
+      HttpSession session = req.getSession(true);
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+      if (gef != null && helper != null) {
+        helper.setComponentIdAndSpaceIds(null, null, componentId);
+        String helperSpaceId = helper.getSubSpaceId();
+        if (!StringUtil.isDefined(helperSpaceId)) {
+          helperSpaceId = helper.getSpaceId();
+        }
+        gef.setSpaceId(helperSpaceId);
+      }
     }
   }
 }
