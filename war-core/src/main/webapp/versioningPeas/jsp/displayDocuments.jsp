@@ -373,6 +373,12 @@
 				  }
 				  %>
 											<span class="lineMain">
+											
+												<% if (contextualMenuEnabled && !useContextualMenu) { %>
+				          							<img id="edit_<%=document.getPk().getId() %>"
+				                             src="<%=m_context %>/util/icons/arrow/menuAttachment.gif" class="moreActions"/>
+				          						 <% } %>
+											
 					                             <img id="img_<%=document.getPk().getId() %>" alt=""
 				                                    src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>"
 				                                    class="icon"/>
@@ -381,10 +387,7 @@
 				                         </a>
 								                 &nbsp;<span class="version-number"
 				                                     id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>
-								                 <% if (contextualMenuEnabled && !useContextualMenu) { %>
-				          							<img id="edit_<%=document.getPk().getId() %>"
-				                             src="<%=m_context %>/util/icons/arrow/menuAttachment.gif" class="moreActions"/>
-				          						 <% } %>
+								                 
 												</span>
 												
 												<span class="lineSize">

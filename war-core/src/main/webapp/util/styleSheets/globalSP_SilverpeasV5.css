@@ -3652,7 +3652,6 @@ ul#attachmentList {
 ul#attachmentList li.attachmentListItem {
 	margin:0;
     padding: 10px 5px 10px 10px;
-    position:relative;
 }
 
 ul#attachmentList li.ui-state-highlight {
@@ -3666,32 +3665,28 @@ ul#attachmentList li.ui-state-highlight {
 ul#attachmentList li.attachmentListItem .lineSize,
 ul#attachmentList li.attachmentListItem .lineMain {
     display: block;
-    position: relative;
-    padding: 1px 44px 2px 24px;
+    padding: 1px 0 2px 0;
 }
 
 
 ul#attachmentList li.attachmentListItem .lineSize img {
-	position: absolute;
-    top: 4px;
-    left: 0px;
+	float:left;
+	margin-right:10px
 }
 
 ul#attachmentList li.attachmentListItem .lineMain .icon {
-	position: absolute;
-    top: 0px;
-    left: 0px;
+	float:left;
 	width: 16px;
 	height: 16px;
+	margin-right:10px
 }
 
 ul#attachmentList li.attachmentListItem .moreActions {
     cursor: pointer;
-    position: absolute;
-    top: 0px;
-    right: 0px;
+	float:right;
     opacity: 0.65;
 }
+
 
 ul#attachmentList li.attachmentListItem .moreActions:HOVER {
     opacity: 1;
