@@ -86,16 +86,16 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
     try {
       mainFrame = getMainFrame();
     } catch(err) {
-      mainFrame = "MainFrameSilverpeasV5.jsp";
+      mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
     }
   	if (spaceLook != currentLook)
   	{
-  		top.location = getContext()+"/admin/jsp/" + mainFrame + "?RedirectToSpaceId="+spaceId;
+  		top.location = getContext()+ mainFrame + "?RedirectToSpaceId="+spaceId;
   	}
 
   	if (spaceWallpaper != currentWallpaper)
   	{
-  		top.location = getContext()+"/admin/jsp/" + mainFrame + "?RedirectToSpaceId="+spaceId;
+  		top.location = getContext() + mainFrame + "?RedirectToSpaceId="+spaceId;
   	}
 
   	closeCurrentComponent();
@@ -104,7 +104,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	{
   		closeSpace(spaceId, currentSpaceLevel, true);
 
-  		//Envoi de la requ�te pour afficher le contenu de l'espace
+  		//Envoi de la requete pour afficher le contenu de l'espace
   		ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','GetPDC='+displayPDC(),'SpaceId='+spaceId);
   	}
   	else
@@ -173,7 +173,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   {
 	  try
 	  {
-		  top.topFrame.location.href=getContext()+"/admin/jsp/"+getTopBarPage();
+		  top.topFrame.location.href=getContext() + getTopBarPage();
 	  }
 	  catch (e)
 	  {
@@ -257,7 +257,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 
   function openComponent(componentId, componentLevel, componentURL)
   {
-  	document.getElementById("img"+componentId).src = "icons/silverpeasV5/activComponent.gif";
+  	document.getElementById("img"+componentId).src = getContext() + "/admin/jsp/icons/silverpeasV5/activComponent.gif";
   	document.getElementById("img"+componentId).width = "20";
   	document.getElementById("img"+componentId).height = "8";
 
@@ -278,7 +278,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	else
   		eval(componentURL);
 
-  	//Envoi de la requ�te pour afficher le plan de classement du composant
+  	//Envoi de la requete pour afficher le plan de classement du composant
 	ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','GetPDC='+displayPDC(),'ComponentId='+currentComponentId);
 
 	refreshPDCFrame();
@@ -329,7 +329,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	img.setAttribute("align", "absmiddle");
   	document.getElementById("jsAxis"+axisId).setAttribute("href", "javaScript:pdcAxisCollapse('"+axisId+"')");
 
-  	//Envoi de la requ�te pour afficher le contenu de l'axe
+  	//Envoi de la requete pour afficher le contenu de l'axe
   	if (isPDCContextual())
   		ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','SpaceId='+currentSpaceId,'ComponentId='+currentComponentId,'AxisId='+axisId,'ValuePath='+currentValuePath);
   	else
@@ -376,7 +376,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	currentValuePath = valuePath;
 
   	var img = document.getElementById("imgValue"+valuePath);
-  	img.setAttribute("src", "icons/silverpeasV5/loading.gif");
+  	img.setAttribute("src", getContext() + "/admin/jsp/icons/silverpeasV5/loading.gif");
   	img.setAttribute("width", "16");
   	img.setAttribute("height", "22");
   	img.setAttribute("align", "absmiddle");

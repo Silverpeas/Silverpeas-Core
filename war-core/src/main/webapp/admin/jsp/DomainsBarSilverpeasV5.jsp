@@ -219,7 +219,7 @@ out.println(gef.getLookStyleSheet());
 
     function getTopBarPage()
     {
-        return "TopBarSilverpeasV5.jsp";
+        return "/admin/jsp/TopBarSilverpeasV5.jsp";
     }
 
     function getFooterPage()

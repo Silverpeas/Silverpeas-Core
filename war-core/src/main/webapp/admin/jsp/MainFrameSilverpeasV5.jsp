@@ -63,7 +63,7 @@ else
 	if (helper == null)
 	{
 		helper = new LookSilverpeasV5Helper(m_MainSessionCtrl, gef.getFavoriteLookSettings());
-		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
+		helper.setMainFrame("/admin/jsp/MainFrameSilverpeasV5.jsp");
 
 		session.setAttribute("Silverpeas_LookHelper", helper);
 		login = true;
@@ -85,16 +85,14 @@ else
 			spaceExists = (organizationCtrl.getSpaceInstById(spaceIdFromRedirect) != null);
 		}
 
-		//System.out.println("spaceExists = "+spaceExists+" for spaceId = "+spaceIdFromRedirect);
-
-		if (spaceExists) {
+		if (spaceExists)
+		{
 			spaceId = spaceIdFromRedirect;
 		} else {
 			if (helper != null && helper.getSpaceId() != null) {
 				spaceId = helper.getSpaceId();
 			}
 		}
-		//System.out.println("MainFrame : spaceId = "+spaceId);
 		helper.setSpaceIdAndSubSpaceId(spaceId);
 
 		String 	workSpace 	= "?SpaceId="+spaceId;
@@ -110,7 +108,7 @@ else
 		frameBottomParams += "&amp;Login=1";
 	}
 
-	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
+	if (!"/admin/jsp/MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
 	{
 		session.setAttribute("RedirectToSpaceId", spaceIdFromRedirect);
 		%>
