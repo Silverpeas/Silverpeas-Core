@@ -63,15 +63,8 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel />
-
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-ui-1.7.3.custom.min.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/progressMessage.js"></script>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/jquery/ui-lightness/jquery-ui-1.7.3.custom.css" rel="stylesheet">
-
-<script language="javascript">
+<script type="text/javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
 		fonction = fonction + "?MonthBegin=" + accessFormulaire.MonthBegin.value;
@@ -120,10 +113,9 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 		document.pdcAccessForm.AxisValue.value = "/0/";
 		document.pdcAccessForm.submit();
 	}
-
 </script>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
+<body>
 <view:window>
   <c:if test="${fn:contains(userProfile, 'A')}">
 <view:tabs>
