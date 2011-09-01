@@ -166,6 +166,11 @@
           }
           
           out.print("<span class=\"lineMain\">");
+		  
+		  if (contextualMenuEnabled && !useContextualMenu) {
+          	out.println("<img id=\"edit_"+attachmentDetail.getPK().getId()+"\" src=\""+m_Context + "/util/icons/arrow/menuAttachment.gif\" class=\"moreActions\"/>");
+          }
+		  
           if (showIcon) {
             out.println(
                 "<img id=\"img_" + attachmentDetail.getPK().getId() + "\" src=\"" + attachmentDetail.
@@ -179,9 +184,7 @@
 
           out.println("<a id=\"url" + attachmentDetail.getPK().getId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
 			
-          if (contextualMenuEnabled && !useContextualMenu) {
-          	out.println("<img id=\"edit_"+attachmentDetail.getPK().getId()+"\" src=\""+m_Context + "/util/icons/arrow/menuAttachment.gif\" class=\"moreActions\"/>");
-          }
+          
 
           out.print("</span>");
           out.println("<span class=\"lineSize\">");

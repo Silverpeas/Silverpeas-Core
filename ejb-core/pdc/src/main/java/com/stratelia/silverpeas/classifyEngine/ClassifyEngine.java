@@ -1440,12 +1440,17 @@ public class ClassifyEngine implements Cloneable {
         for (int nI = 0; nI < nbMaxAxis; nI++) {
           String value = resSet.getString(3 + nI);
           if (StringUtil.isDefined(value) && !ids.contains(nI)) {
-            ids.add(getLogicalAxisId(nI));
+            ids.add(nI);
           }
         }
       }
+      
+      List<Integer> axisIds = new ArrayList<Integer>();
+      for (int id : ids) {
+        axisIds.add(getLogicalAxisId(id));
+      }
 
-      return ids;
+      return axisIds;
     } catch (Exception e) {
       throw new ClassifyEngineException(
           "ClassifyEngine.getPertinentAxisByInstanceIds",
