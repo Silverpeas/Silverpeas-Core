@@ -23,18 +23,17 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
+import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 
 /**
  * AbstractPortletRegistryElement provides partial implementation of the PortletRegistryElement
@@ -208,7 +207,7 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
               // Get the attributes for String Tag.
               Map stringAttributes = XMLDocumentHelper
                   .createAttributeTable(stringTag);
-              listValues.add((String) stringAttributes.get(VALUE_KEY));
+              listValues.add(stringAttributes.get(VALUE_KEY));
             }
             mapValues.put(innerName, listValues);
           }
@@ -280,7 +279,6 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
         while (keysItr.hasNext()) {
           Map.Entry entry = (Map.Entry) keysItr.next();
           key = (String) entry.getKey();
-          ;
           obj = entry.getValue();
           if (obj instanceof String) {
             value = (String) obj;

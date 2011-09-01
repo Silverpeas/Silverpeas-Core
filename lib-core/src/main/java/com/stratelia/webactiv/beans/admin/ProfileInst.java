@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileInst extends Object implements Serializable, Cloneable {
+public class ProfileInst implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 3092416162986110340L;
   private String m_sId;
@@ -120,7 +120,7 @@ public class ProfileInst extends Object implements Serializable, Cloneable {
   }
 
   public String getGroup(int nIndex) {
-    return (String) m_alGroups.get(nIndex);
+    return m_alGroups.get(nIndex);
   }
 
   public void addGroup(String sGroupId) {

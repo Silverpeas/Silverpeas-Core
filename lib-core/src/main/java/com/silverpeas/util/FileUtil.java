@@ -165,7 +165,7 @@ public class FileUtil implements MimeTypes {
       loc = Locale.ROOT;
     }
     ResourceBundle result = ResourceBundle.getBundle(name, loc,
-        new ConfigurationClassLoader(FileUtil.class.getClassLoader()));
+        new ConfigurationClassLoader(FileUtil.class.getClassLoader()), new ConfigurationControl());
     return result;
   }
 

@@ -34,14 +34,17 @@ public class PortletAppDataImpl implements PortletAppData {
     this.name = name;
   }
 
+  @Override
   public String getLabel() {
     return label;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
 
+  @Override
   public String getName() {
     return name;
   }

@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.organization.GroupRow;
@@ -151,7 +152,7 @@ public class GroupManager {
       if (asGroupIds != null) {
         return asGroupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllGroupIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_GROUP_IDS", e);
@@ -173,7 +174,7 @@ public class GroupManager {
       if (asGroupIds != null) {
         return asGroupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllRootGroupIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ROOT_GROUP_IDS", e);
@@ -197,7 +198,7 @@ public class GroupManager {
       if (asGroupIds != null) {
         return asGroupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllSubGroupIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_CHILDREN_GROUP_IDS",
@@ -467,7 +468,7 @@ public class GroupManager {
       if (groupIds != null) {
         return groupIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getRootGroupIdsOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN",
@@ -635,6 +636,9 @@ public class GroupManager {
       }
       ddManager.organization.group.createGroup(gr);
       String sGroupId = idAsString(gr.id);
+      
+      // index group information
+      ddManager.indexGroup(gr);
 
       // Create the links group_user in Silverpeas
       SynchroReport.info("GroupManager.addGroup()",
@@ -678,6 +682,10 @@ public class GroupManager {
       }
       // Delete the group node from Silverpeas
       ddManager.organization.group.removeGroup(idAsInt(group.getId()));
+      
+      // Delete index of group information
+      ddManager.unindexGroup(group.getId());
+      
       return group.getId();
     } catch (Exception e) {
       SynchroReport.error("GroupManager.deleteGroupById()",
@@ -731,6 +739,9 @@ public class GroupManager {
       // Update the group node
       GroupRow gr = Group2GroupRow(group);
       ddManager.organization.group.updateGroup(gr);
+      
+      // index group information
+      ddManager.indexGroup(gr);
 
       // Update the users if necessary
       SynchroReport.info("GroupManager.updateGroup()", "Maj éventuelle des relations du groupe "

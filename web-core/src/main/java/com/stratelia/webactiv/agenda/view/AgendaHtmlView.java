@@ -25,12 +25,6 @@
 package com.stratelia.webactiv.agenda.view;
 
 import com.silverpeas.util.EncodeHelper;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
@@ -45,8 +39,13 @@ import com.stratelia.webactiv.calendar.model.SchedulableList;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 public class AgendaHtmlView {
 
@@ -82,7 +81,7 @@ public class AgendaHtmlView {
    * Constructor declaration
    * @param viewType
    * @param date
-   * @param message
+   * @param agendaSessionController
    * @param settings
    * @see
    */
@@ -243,33 +242,29 @@ public class AgendaHtmlView {
       calendarHtmlView.setWeekDayStyle("class=\"txtnav\"");
       calendarHtmlView.setMonthDayStyle("class=\"intfdcolor4\"");
       calendarHtmlView.setMonthSelectedDayStyle("class=\"intfdcolor6\"");
-      String result = "";
+      StringBuffer result = new StringBuffer("");
 
-      result += "      <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n";
-      result += "        <tr> \n";
-      result += "          <td> \n";
-      result +=
-          "            <table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n";
-      result += "              <tr> \n";
-      result += "                <td class=\"grille\"> \n";
-      result +=
-          "                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n";
-      result += "                    <tr> \n";
-      result += "                      <td align=\"center\" class=\"grille\"> ";
+      result.append("\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n");
+      result.append("\t\t\t\t<tr> \n");
+      result.append("\t\t\t\t\t<td> \n");
+      result.append("\t\t\t\t\t\t<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n");
+      result.append("\t\t\t\t\t\t\t<tr>\n");
+      result.append("\t\t\t\t\t\t\t\t<td class=\"grille\">\n");
+      result.append("\t\t\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n");
+      result.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
+      result.append("\t\t\t\t\t\t\t\t\t\t\t<td align=\"center\" class=\"grille\"> ");
+      result.append(calendarHtmlView.getHtmlView(DateUtil.parse(startDate), agendaSessionController));
+      result.append("\t\t\t\t\t\t\t\t\t\t\t</td>");
+      result.append("                    </tr>");
+      result.append("                  </table>");
+      result.append("                </td>");
+      result.append("              </tr>");
+      result.append("            </table>");
+      result.append("          </td>");
+      result.append("        </tr>");
+      result.append("      </table>");
 
-      result += calendarHtmlView.getHtmlView(DateUtil.parse(startDate), agendaSessionController);
-
-      result += "                      </td>";
-      result += "                    </tr>";
-      result += "                  </table>";
-      result += "                </td>";
-      result += "              </tr>";
-      result += "            </table>";
-      result += "          </td>";
-      result += "        </tr>";
-      result += "      </table>";
-
-      return result;
+      return result.toString();
     } catch (java.text.ParseException e) {
 
       SilverTrace.warn("agenda",
@@ -517,8 +512,7 @@ public class AgendaHtmlView {
         result += "        <td class=\"intfdcolor4\" width=\"600\">&nbsp;</td>";
         maxColumns = 0;
       } else {
-        for (int goOnIterator = 0; goOnIterator < goOn.size(); goOnIterator++) {
-          Schedulable schedule = goOn.get(goOnIterator);
+        for (Schedulable schedule : goOn) {
           boolean start = true;
 
           if (lastGoOn != null) {
@@ -564,7 +558,7 @@ public class AgendaHtmlView {
               }
             }
 
-            result += "<td width=\"" + ((int) (600 / maxColumns))
+            result += "<td width=\"" + (600 / maxColumns)
                 + "\" class=\"" + color + "\" rowspan=\"" + length + "\">";
             if (isOtherAgenda) {
               if (schedule.getClassification().isPrivate()) {
@@ -605,7 +599,7 @@ public class AgendaHtmlView {
         }
         for (int maxColumnsIterator = goOn.size(); maxColumnsIterator < maxColumns; maxColumnsIterator++) {
           result += "        <td class=\"intfdcolor4\" width=\""
-              + ((int) (600 / maxColumns)) + "\">&nbsp;</td>";
+              + (600 / maxColumns) + "\">&nbsp;</td>";
         }
       }
       result += "       </tr>\n";
@@ -748,8 +742,7 @@ public class AgendaHtmlView {
       }
       if (all.size() > 0) {
         result.append("      <table>");
-        for (int i = 0; i < all.size(); i++) {
-          Schedulable schedule = all.get(i);
+        for (Schedulable schedule : all) {
           result.append("  <tr>");
           if (isOtherAgenda && schedule.getClassification().isPrivate()) {
             result.append("    <td class=\"privateEvent\">").append(
@@ -810,7 +803,7 @@ public class AgendaHtmlView {
         } else {
           String color = "intfdcolor2";
           int maxRowSpan = 0;
-          StringBuffer tmpResult = new StringBuffer();
+          StringBuilder tmpResult = new StringBuilder();
 
           for (int m = 0; m < starting.size(); m++) {
             Object startObj = starting.elementAt(m);
@@ -1003,9 +996,7 @@ public class AgendaHtmlView {
     }
 
     String categs = "";
-    Iterator<Category> categoriesIt = categories.iterator();
-    while (categoriesIt.hasNext()) {
-      Category categorie = categoriesIt.next();
+    for (Category categorie : categories) {
       categs += categorie.getName() + "&nbsp;";
     }
 

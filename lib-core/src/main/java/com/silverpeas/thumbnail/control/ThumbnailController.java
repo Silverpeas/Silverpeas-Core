@@ -50,7 +50,7 @@ import org.apache.commons.io.FilenameUtils;
 
 public class ThumbnailController {
 
-  private static ThumbnailService thumbnailService = new ThumbnailServiceImpl();
+  private static final ThumbnailService thumbnailService = new ThumbnailServiceImpl();
   private static final ResourceLocator publicationSettings = new ResourceLocator(
           "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
 
@@ -195,7 +195,7 @@ public class ThumbnailController {
   }
 
   public static String getImage(String instanceId, int objectId, int objectType, int
-      thumbnailWidth, int thumbnailHeight) throws ThumbnailException {
+      thumbnailWidth, int thumbnailHeight) {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
     // default size if creation
     String[] imageProps = getImageAndMimeType(thumbDetail, thumbnailWidth, thumbnailHeight);
@@ -203,7 +203,7 @@ public class ThumbnailController {
   }
 
   public static String getImageMimeType(String instanceId, int objectId, int objectType,
-      int thumbnailWidth, int thumbnailHeight) throws ThumbnailException {
+      int thumbnailWidth, int thumbnailHeight) {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
 
     // default size if creation
@@ -293,7 +293,7 @@ public class ThumbnailController {
           ImageUtil.getWidthAndHeightByWidth(new File(pathOriginalFile), thumbnailWidth);
       thumbnailWidth = Integer.valueOf(result[0]);
       thumbnailHeight = Integer.valueOf(result[1]);
-    } else if (thumbnailHeight == -1 && thumbnailWidth == -1) {
+    } else if (thumbnailHeight == -1) {
       // crop full file
       String[] result = ImageUtil.getWidthAndHeight(new File(pathOriginalFile));
       thumbnailWidth = Integer.valueOf(result[0]);

@@ -27,6 +27,9 @@ import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.DateTime;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,8 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.lang.time.FastDateFormat;
 
 /**
  * DateUtil is an helper class for date manipulation.
@@ -46,11 +47,9 @@ public class DateUtil {
   private static final long millisPerHour = 60l * 60l * 1000l;
   private static final long millisPerMinute = 60l * 1000l;
   private static Map<String, FastDateFormat> outputFormatters =
-      new HashMap<String, FastDateFormat>(
-      5);
+      new HashMap<String, FastDateFormat>(5);
   private static Map<String, SimpleDateFormat> inputParsers =
-      new HashMap<String, SimpleDateFormat>(
-      5);
+      new HashMap<String, SimpleDateFormat>(5);
   /**
    * Format and parse dates.
    */
@@ -615,8 +614,8 @@ public class DateUtil {
    * @exception ParseException if the specified date is not in the one of the expected formats.
    */
   public static Date parseISO8601Date(final String date) throws ParseException {
-    return DateUtils.parseDate(date, new String[]{ISO8601DATE_FORMATTER.getPattern(),
-          ISO8601DAY_FORMATTER.getPattern()});
+    return DateUtils.parseDate(date, ISO8601DATE_FORMATTER.getPattern(),
+          ISO8601DAY_FORMATTER.getPattern());
   }
 
   /**

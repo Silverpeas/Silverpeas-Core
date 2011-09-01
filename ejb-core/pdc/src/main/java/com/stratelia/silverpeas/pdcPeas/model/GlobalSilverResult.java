@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.pdcPeas.model;
 
 import java.io.File;
+import java.util.List;
 
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
@@ -50,6 +51,11 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private int hits = -1;
   private String externalUrl = null;
 
+  /**
+   * List of all linked attachment in wysiwyg content
+   */
+  private List<String> embeddedFileIds;
+
   public GlobalSilverResult(GlobalSilverContent gsc) {
     super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
         gsc.getInstanceId(), gsc.getDate(), gsc.getUserId());
@@ -68,6 +74,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     indexEntry = mie;
     super.setType(mie.getObjectType());
     super.setScore(mie.getScore());
+    this.embeddedFileIds = mie.getEmbeddedFileIds();
 
     if (mie.getThumbnail() != null) {
       String[] dimensions = null;
@@ -109,6 +116,13 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
       setThumbnailWidth(dimensions[0]);
       setThumbnailHeight(dimensions[1]);
     }
+  }
+
+  /**
+   * @return the embeddedFileIds
+   */
+  public List<String> getEmbeddedFileIds() {
+    return embeddedFileIds;
   }
 
   public MatchingIndexEntry getIndexEntry() {

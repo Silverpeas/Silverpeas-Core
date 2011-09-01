@@ -24,22 +24,21 @@
 
 package com.silverpeas.util.csv;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.exception.UtilTrappedException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.exception.UtilTrappedException;
-import java.util.List;
-
-public class CSVReader extends SilverpeasSettings {
+public class CSVReader {
   protected int m_nbCols = 0;
   protected String[] m_colNames;
   protected String[] m_colTypes;
@@ -89,12 +88,12 @@ public class CSVReader extends SilverpeasSettings {
       String separator) {
     ResourceLocator rs = new ResourceLocator(propertiesFile, "");
 
-    m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
+    m_colNames = rs.getStringArray(rootPropertyName, ".Name", -1);
     m_nbCols = m_colNames.length;
-    m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
-    m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
+    m_colTypes = rs.getStringArray(rootPropertyName, ".Type", m_nbCols);
+    m_colDefaultValues = rs.getStringArray(rootPropertyName, ".Default",
         m_nbCols);
-    m_colMandatory = readStringArray(rs, rootPropertyName, ".Mandatory",
+    m_colMandatory = rs.getStringArray(rootPropertyName, ".Mandatory",
         m_nbCols);
     m_separator = separator;
   }
@@ -105,11 +104,11 @@ public class CSVReader extends SilverpeasSettings {
     initCSVFormat(propertiesFile, rootPropertyName, separator);
 
     ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
-    m_specificColNames = readStringArray(specificRs, specificRootPropertyName,
+    m_specificColNames = specificRs.getStringArray(specificRootPropertyName,
         ".Name", -1);
     m_specificNbCols = m_specificColNames.length;
 
-    m_specificColTypes = readStringArray(specificRs, specificRootPropertyName,
+    m_specificColTypes = specificRs.getStringArray(specificRootPropertyName,
         ".Type", m_specificNbCols);
     for (int i = 0; i < m_specificNbCols; i++) {
       if (!Variant.TYPE_STRING.equals(m_specificColTypes[i])
@@ -125,7 +124,7 @@ public class CSVReader extends SilverpeasSettings {
       }
     }
     
-    m_specificColMandatory = readStringArray(specificRs, specificRootPropertyName, ".Mandatory",
+    m_specificColMandatory = specificRs.getStringArray(specificRootPropertyName, ".Mandatory",
         m_specificNbCols);
     
     m_specificParameterNames = m_specificColNames;
@@ -377,7 +376,7 @@ public class CSVReader extends SilverpeasSettings {
 
       start = end + 1;
     }
-    return ar.toArray(new String[0]);
+    return ar.toArray(new String[ar.size()]);
   }
 
   /**

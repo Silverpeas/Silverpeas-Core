@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.thesaurus.model.Jargon;
-import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdcPeas.control.PdcClassifySessionController;
@@ -44,24 +43,48 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import static com.silverpeas.util.StringUtil.*;
 
 public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = -7647574714509474585L;
 
+  @Override
   public ComponentSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcClassifySessionController(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+            "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
+            "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
   }
 
+  @Override
   public String getSessionControlBeanName() {
     return "pdcClassify";
   }
 
+  protected void setUpPdcSession(final PdcClassifySessionController pdcSC,
+          final HttpServletRequest request) throws Exception {
+    String silverObjectId = request.getParameter("SilverObjectId");
+    String componentId = request.getParameter("ComponentId");
+    if (isDefined(componentId)) {
+      if (!isDefined(silverObjectId)) {
+        String contentId = request.getParameter("ContentId");
+        ContentManager contentManager = new ContentManager();
+        silverObjectId = String.valueOf(contentManager.getSilverContentId(contentId, componentId));
+      }
+
+      if (isDefined(silverObjectId)) {
+        pdcSC.clearCurrentSilverObjectIds();
+        pdcSC.setCurrentSilverObjectId(silverObjectId);
+        pdcSC.setCurrentComponentId(componentId);
+        pdcSC.initializeJargon();
+      }
+    }
+  }
+
+  @Override
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+          ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
 
     // get the session controller to inform the request
@@ -73,15 +96,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
       if (function.startsWith("Main")) {
         // the user is on the main page
         pdcFPM.reset();
-
-        String silverObjectId = request.getParameter("SilverObjectId");
-        String componentId = request.getParameter("ComponentId");
-
-        pdcSC.clearCurrentSilverObjectIds();
-        if (silverObjectId != null)
-          pdcSC.setCurrentSilverObjectId(silverObjectId);
-        if (componentId != null)
-          pdcSC.setCurrentComponentId(componentId);
+        setUpPdcSession(pdcSC, request);
 
         List<ClassifyPosition> positions = pdcSC.getPositions();
 
@@ -89,18 +104,15 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
         setBrowseContextInRequest(pdcSC, request);
 
-        pdcSC.initializeJargon();
         Jargon jargon = pdcSC.getJargon();
         request.setAttribute("Jargon", jargon);
-        request.setAttribute("ActiveThesaurus", new Boolean(pdcSC
-            .getActiveThesaurus()));
+        request.setAttribute("ActiveThesaurus", pdcSC.getActiveThesaurus());
 
         // create the new destination
         destination = "/pdcPeas/jsp/positions.jsp";
 
-      }
-
-      else if (function.startsWith("NewPosition")) {
+      } else if (function.startsWith("NewPosition")) {
+        setUpPdcSession(pdcSC, request);
         // the user wants to add a position to the object
         request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
 
@@ -110,24 +122,22 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
         // !!! workaround to get the searchContext
         HttpSession session = request.getSession(true);
-        PdcSearchSessionController pdcSearchSC = (PdcSearchSessionController) session
-            .getAttribute("Silverpeas_pdcSearch_"
-            + pdcSC.getCurrentComponentId());
+        PdcSearchSessionController pdcSearchSC = (PdcSearchSessionController) session.getAttribute("Silverpeas_pdcSearch_"
+                + pdcSC.getCurrentComponentId());
 
-        if (pdcSearchSC != null)
+        if (pdcSearchSC != null) {
           request.setAttribute("SearchContext", pdcSearchSC.getSearchContext());
+        }
 
         Jargon jargon = pdcSC.getJargon();
         request.setAttribute("Jargon", jargon);
-        request.setAttribute("ActiveThesaurus", new Boolean(pdcSC
-            .getActiveThesaurus()));
+        request.setAttribute("ActiveThesaurus", pdcSC.getActiveThesaurus());
 
         destination = "/pdcPeas/jsp/positionAdd.jsp";
-      }
+      } else if (function.startsWith("EditPosition")) {
+        setUpPdcSession(pdcSC, request);
 
-      else if (function.startsWith("EditPosition")) {
         // the user wants to update a position to the object
-
         int positionId = new Integer(request.getParameter("Id")).intValue();
 
         request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
@@ -147,14 +157,11 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         request.setAttribute("ListValues", new ArrayList());
         Jargon jargon = pdcSC.getJargon();
         request.setAttribute("Jargon", jargon);
-        request.setAttribute("ActiveThesaurus", new Boolean(pdcSC
-            .getActiveThesaurus()));
+        request.setAttribute("ActiveThesaurus", pdcSC.getActiveThesaurus());
 
         destination = "/pdcPeas/jsp/positionEdit.jsp";
 
-      }
-
-      else if (function.startsWith("DeletePosition")) {
+      } else if (function.startsWith("DeletePosition")) {
         // the user wants to delete some positions
 
         String positionIds = request.getParameter("Ids");
@@ -165,7 +172,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         }
         if (pdcFPM.isEnabled()) {
           destination = getPdcFieldModeReturnDestination(
-              request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
+                  request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
         } else {
           String toURL = request.getParameter("ToURL");
           if (toURL != null && toURL.length() > 0) {
@@ -175,9 +182,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
             destination = getDestination("Main", componentSC, request);
           }
         }
-      }
-
-      else if (function.startsWith("CreatePosition")) {
+      } else if (function.startsWith("CreatePosition")) {
         // the user wants to create a new position
 
         String selectedValues = request.getParameter("Values");
@@ -200,9 +205,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
               destination = "/pdcPeas/jsp/reload.jsp";
             }
         }
-      }
-
-      else if (function.startsWith("ReloadPosition")) {
+      } else if (function.startsWith("ReloadPosition")) {
 
         String selectedValues = request.getParameter("Values");
         request.setAttribute("ListValues", buildListPosition(selectedValues));
@@ -211,14 +214,11 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
         Jargon jargon = pdcSC.getJargon();
         request.setAttribute("Jargon", jargon);
-        request.setAttribute("ActiveThesaurus", new Boolean(pdcSC
-            .getActiveThesaurus()));
+        request.setAttribute("ActiveThesaurus", pdcSC.getActiveThesaurus());
 
         destination = "/pdcPeas/jsp/positionAdd.jsp";
 
-      }
-
-      else if (function.startsWith("UpdatePosition")) {
+      } else if (function.startsWith("UpdatePosition")) {
         // the user wants to update a position
 
         String positionId = request.getParameter("Id");
@@ -246,9 +246,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
             }
         }
 
-      }
-
-      else if (function.startsWith("ReloadUpdatePosition")) {
+      } else if (function.startsWith("ReloadUpdatePosition")) {
 
         int positionId = new Integer(request.getParameter("Id")).intValue();
 
@@ -260,8 +258,9 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         ClassifyPosition position = null;
         for (int i = 0; i < positions.size(); i++) {
           position = positions.get(i);
-          if (position.getPositionId() == positionId)
+          if (position.getPositionId() == positionId) {
             break;
+          }
         }
 
         request.setAttribute("LastPosition", position);
@@ -273,52 +272,49 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
         Jargon jargon = pdcSC.getJargon();
         request.setAttribute("Jargon", jargon);
-        request.setAttribute("ActiveThesaurus", new Boolean(pdcSC
-            .getActiveThesaurus()));
+        request.setAttribute("ActiveThesaurus", pdcSC.getActiveThesaurus());
 
         destination = "/pdcPeas/jsp/positionEdit.jsp";
 
-      }
-
-      else if (function.equals("ToAddPositions")) {
+      } else if (function.equals("ToAddPositions")) {
         String objectIds = request.getParameter("ObjectIds"); // silverObjectIds
         List<String> lObjectIds = (List<String>) request.getAttribute("ObjectIds");
 
         String componentId = request.getParameter("ComponentId");
-        if (!StringUtil.isDefined(componentId))
+        if (!isDefined(componentId)) {
           componentId = (String) request.getAttribute("ComponentId");
+        }
 
         pdcSC.initializeJargon();
         pdcSC.clearCurrentSilverObjectIds();
         pdcSC.setCurrentSilverObjectId(-1);
 
-        if (StringUtil.isDefined(componentId))
+        if (isDefined(componentId)) {
           pdcSC.setCurrentComponentId(componentId);
+        }
 
-        if (StringUtil.isDefined(objectIds)) {
+        if (isDefined(objectIds)) {
           StringTokenizer st = new StringTokenizer(objectIds, ",");
-          while (st.hasMoreTokens())
+          while (st.hasMoreTokens()) {
             pdcSC.addCurrentSilverObjectId(st.nextToken());
+          }
         } else if (lObjectIds != null) {
           Iterator<String> it = lObjectIds.iterator();
-          while (it.hasNext())
+          while (it.hasNext()) {
             pdcSC.addCurrentSilverObjectId(it.next());
+          }
         }
 
         destination = getDestination("NewPosition", componentSC, request);
 
-      }
-
-      else if (function.equals("PdcFieldMode")) {
+      } else if (function.equals("PdcFieldMode")) {
         String pdcFieldName = request.getParameter("pdcFieldName");
         String pdcFieldPositions = request.getParameter("pdcFieldPositions");
         String pdcAxis = request.getParameter("pdcAxis");
         String action = request.getParameter("action");
         pdcFPM.init(pdcFieldName, pdcFieldPositions, pdcAxis);
         destination = getDestination(action, componentSC, request);
-      }
-
-      else {
+      } else {
         destination = "/pdcPeas/jsp/" + function;
       }
     } catch (Exception exce_all) {
@@ -336,7 +332,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
    * @return The reload page to display to update the positions of a PDC field.
    */
   private String getPdcFieldModeReturnDestination(HttpServletRequest request,
-      PdcFieldPositionsManager pdcFPM, String message) {
+          PdcFieldPositionsManager pdcFPM, String message) {
     request.setAttribute("pdcFieldName", pdcFPM.getFieldName());
     request.setAttribute("pdcFieldPositions", pdcFPM.getPositionsToString());
     if (message != null) {
@@ -358,16 +354,16 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
       valueInfo = st.nextToken();
       if (valueInfo.length() >= 3) {
         axisId = valueInfo.substring(0, valueInfo.indexOf("|"));
-        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo
-            .length());
+        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo.length());
         value = new ClassifyValue(new Integer(axisId).intValue(), valuePath);
         values.add(value);
       }
     }
 
     int id = -1;
-    if (positionId != null)
+    if (positionId != null) {
       id = Integer.parseInt(positionId);
+    }
     ClassifyPosition position = new ClassifyPosition(values);
     position.setPositionId(id);
     return position;
@@ -390,9 +386,8 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
   }
 
   private void setBrowseContextInRequest(PdcClassifySessionController pdcSC,
-      HttpServletRequest request) {
-    request.setAttribute("browseContext", new String[] { pdcSC.getSpaceLabel(),
-        pdcSC.getComponentLabel() });
+          HttpServletRequest request) {
+    request.setAttribute("browseContext", new String[]{pdcSC.getSpaceLabel(),
+              pdcSC.getComponentLabel()});
   }
-
 }

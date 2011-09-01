@@ -21,19 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.notificationManager;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.util.StringUtil;
@@ -46,34 +34,39 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_groups;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_users;
 
 /**
  * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
  * utilisateur(s) (ou groupes) Elle package les appels et appelle la fonction du NotificationManager
  * pour reellement envoyer les notifications
- * @author Thierry Leroi
- * @version %I%, %G%
  */
 public class NotificationSender implements java.io.Serializable {
-
-  /**
-   *
-   */
   private static final long serialVersionUID = 4165938893905145809L;
-  private static ResourceLocator settings =
-      new ResourceLocator(
-      "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
-  protected NotificationManager m_Manager = null;
-  protected int m_instanceId = -1;
+  private static ResourceLocator settings = new ResourceLocator(
+          "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
+  protected NotificationManager notificationManager = null;
+  protected int instanceId = -1;
 
   /**
    * Constructor for a standard component
    * @param instanceId the instance Id of the calling's component
    */
   public NotificationSender(String instanceId) {
-    m_instanceId = extractLastNumber(instanceId);
-    m_Manager = new NotificationManager(null);
+    this.instanceId = extractLastNumber(instanceId);
+    notificationManager = new NotificationManager(null);
   }
 
   /**
@@ -83,7 +76,7 @@ public class NotificationSender implements java.io.Serializable {
    * @see
    */
   public void notifyUser(NotificationMetaData metaData)
-      throws NotificationManagerException {
+          throws NotificationManagerException {
     notifyUser(NotificationParameters.ADDRESS_COMPONENT_DEFINED, metaData);
   }
 
@@ -99,35 +92,36 @@ public class NotificationSender implements java.io.Serializable {
   /**
    * Method declaration
    * @param aMediaType
-   * @param Metadata
+   * @param metaData
    * @throws NotificationManagerException
    * @see
    */
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
-      throws NotificationManagerException {
+          throws NotificationManagerException {
 
     OrganizationController orgaController = new OrganizationController();
 
     // String[] allUsers;
-    HashSet<String> usersSet = new HashSet<String>();
-    Collection<String> userRecipients = metaData.getUserRecipients();
-    Collection<String> groupRecipients = metaData.getGroupRecipients();
+    Set<UserRecipient> usersSet = new HashSet<UserRecipient>();
+    Collection<UserRecipient> userRecipients = metaData.getUserRecipients();
+    Collection<GroupRecipient> groupRecipients = metaData.getGroupRecipients();
 
     // Delete doublons between direct users and users included in groups
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
 
     // First get direct users
     usersSet.addAll(userRecipients);
 
     // Then get users included in groups
-    for (String groupId : groupRecipients) {
-      usersSet.addAll(Arrays.asList(m_Manager.getUsersFromGroup(groupId)));
+    for (GroupRecipient group : groupRecipients) {
+      usersSet.addAll(notificationManager.getUsersFromGroup(group.getGroupId()));
     }
     Set<String> languages = metaData.getLanguages();
     Map<String, String> usersLanguage = new HashMap<String, String>(usersSet.size());
-    for(String userId : usersSet) {
-      usersLanguage.put(userId, SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId).getLanguage());
+    for (UserRecipient user : usersSet) {
+      usersLanguage.put(user.getUserId(), SilverpeasServiceProvider.getPersonalizationService().
+              getUserSettings(user.getUserId()).getLanguage());
     }
 
     NotificationParameters params = null;
@@ -136,18 +130,17 @@ public class NotificationSender implements java.io.Serializable {
     // All usersId to notify
     Set<String> allUserIds = usersLanguage.keySet();
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
-        "root.MSG_GEN_PARAM_VALUE", "allUserIds = " + allUserIds);
+            "root.MSG_GEN_PARAM_VALUE", "allUserIds = " + allUserIds);
     for (String language : languages) {
       SilverTrace.info("notificationManager",
-          "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
-          "language = " + language);
+              "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
+              "language = " + language);
       params = getNotificationParameters(aMediaType, metaData);
       params.sTitle = metaData.getTitle(language);
       // ajout des destinataires dans le corps du message
       if (!metaData.isTemplateUsed()) {
-        // manageManualNotification(usersSet, languages, metaData, orgaController);
         manageManualNotification(getUserSet(metaData, settings), getGroupSet(metaData, settings),
-            languages, metaData, orgaController);
+                languages, metaData, orgaController);
       } else {
         Map<String, SilverpeasTemplate> templates = metaData.getTemplates();
         if (templates != null && !templates.isEmpty()) {
@@ -156,20 +149,19 @@ public class NotificationSender implements java.io.Serializable {
           if (template != null) {
             try {
               String receiver_users = addReceiverUsers(getUserSet(metaData, settings),
-                  getGroupSet(metaData, settings), language, settings);
+                      getGroupSet(metaData, settings), language, settings);
               if (StringUtil.isDefined(receiver_users)) {
                 template.setAttribute(notification_receiver_users.toString(), receiver_users);
               }
               String receiver_groups =
-                  addReceiverGroups(getUserSet(metaData, settings), getGroupSet(metaData,
-                  settings), language, settings);
+                      addReceiverGroups(getUserSet(metaData, settings), getGroupSet(metaData,
+                      settings), language, settings);
               if (StringUtil.isDefined(receiver_groups)) {
                 template.setAttribute(notification_receiver_groups.toString(), receiver_groups);
               }
             } catch (NotificationManagerException e) {
-              SilverTrace.warn("alertUserPeas",
-                  "AlertUserPeasSessionController.prepareNotification()",
-                  "root.EX_ADD_USERS_FAILED", e);
+              SilverTrace.warn("alertUserPeas", "AlertUserPeasSessionController.prepareNotification()",
+                      "root.EX_ADD_USERS_FAILED", e);
             }
           }
         }
@@ -182,30 +174,27 @@ public class NotificationSender implements java.io.Serializable {
       // remove users already notified in their language
       allUserIds.removeAll(userIds);
       SilverTrace.info("notificationManager",
-          "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
-          "allUserIds apres remove= " + allUserIds);
-      m_Manager.notifyUsers(params, userIds.toArray(new String[0]));
+              "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
+              "allUserIds apres remove= " + allUserIds);
+      notificationManager.notifyUsers(params, userIds.toArray(new String[userIds.size()]));
     }
 
     // Notify other user in language of the sender.
-    m_Manager.notifyUsers(params, allUserIds.toArray(new String[0]));
+    notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
 
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
-        "root.MSG_GEN_EXIT_METHOD");
+            "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private HashSet<String> getUserSet(NotificationMetaData metaData, ResourceLocator settings)
-      throws NotificationManagerException {
-    HashSet<String> usersSet = new HashSet<String>();
-    Collection<String> userRecipients = metaData.getUserRecipients();
-    Collection<String> groupRecipients = metaData.getGroupRecipients();
-    // Delete doublons between direct users and users included in groups
-    // First get direct users
+  private Set<UserRecipient> getUserSet(NotificationMetaData metaData, ResourceLocator settings)
+          throws NotificationManagerException {
+    HashSet<UserRecipient> usersSet = new HashSet<UserRecipient>();
+    Collection<UserRecipient> userRecipients = metaData.getUserRecipients();
+    Collection<GroupRecipient> groupRecipients = metaData.getGroupRecipients();
     usersSet.addAll(userRecipients);
-    // Then get users included in groups
-    for (String groupId : groupRecipients) {
-      if (!displayGroup(settings, groupId)) {
-        usersSet.addAll(Arrays.asList(new NotificationManager(null).getUsersFromGroup(groupId)));
+    for (GroupRecipient group : groupRecipients) {
+      if (!displayGroup(settings, group.getGroupId())) {
+        usersSet.addAll(new NotificationManager(null).getUsersFromGroup(group.getGroupId()));
       }
     }
     return usersSet;
@@ -224,49 +213,50 @@ public class NotificationSender implements java.io.Serializable {
     return result;
   }
 
-  private HashSet<String> getGroupSet(NotificationMetaData metaData, ResourceLocator settings)
-      throws NotificationManagerException {
-    HashSet<String> groupsSet = new HashSet<String>();
-    Collection<String> groupRecipients = metaData.getGroupRecipients();
-    for (String groupId : groupRecipients) {
-      if (displayGroup(settings, groupId)) {
+  private Set<GroupRecipient> getGroupSet(NotificationMetaData metaData, ResourceLocator settings)
+          throws NotificationManagerException {
+    HashSet<GroupRecipient> groupsSet = new HashSet<GroupRecipient>();
+    Collection<GroupRecipient> groupRecipients = metaData.getGroupRecipients();
+    for (GroupRecipient group : groupRecipients) {
+      if (displayGroup(settings, group.getGroupId())) {
         // add groups names
-        groupsSet.add(groupId);
+        groupsSet.add(group);
       }
     }
     return groupsSet;
   }
 
-  private String addReceiverUsers(Set<String> usersSet, Set<String> groupsSet, String language,
-      ResourceLocator settings) {
+  private String addReceiverUsers(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
+          String language,
+          ResourceLocator settings) {
     OrganizationController orgaController = new OrganizationController();
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
       boolean first = true;
-      Iterator<String> it = usersSet.iterator();
+      Iterator<UserRecipient> it = usersSet.iterator();
       while (it.hasNext()) {
         if (!first) {
           users.append(", ");
         }
-        users.append(orgaController.getUserDetail(it.next()).getDisplayedName());
+        users.append(orgaController.getUserDetail(it.next().getUserId()).getDisplayedName());
         first = false;
       }
     }
     return users.toString();
   }
 
-  private String addReceiverGroups(Set<String> usersSet, Set<String> groupsSet, String language,
-      ResourceLocator settings) {
+  private String addReceiverGroups(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
+          String language, ResourceLocator settings) {
     OrganizationController orgaController = new OrganizationController();
     StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
       boolean first = true;
-      Iterator<String> itG = groupsSet.iterator();
+      Iterator<GroupRecipient> itG = groupsSet.iterator();
       while (itG.hasNext()) {
-         if (!first) {
+        if (!first) {
           groups.append(", ");
         }
-        groups.append(orgaController.getGroup(itG.next()).getName());
+        groups.append(orgaController.getGroup(itG.next().getGroupId()).getName());
         first = false;
       }
     }
@@ -281,16 +271,14 @@ public class NotificationSender implements java.io.Serializable {
    * @param orgaController the controller.
    * @throws NotificationManagerException
    */
-  protected void manageManualNotification(Set<String> usersSet, Set<String> groupsSet,
-      Set<String> languages,
-      NotificationMetaData metaData,
-      OrganizationController orgaController) throws NotificationManagerException {
+  protected void manageManualNotification(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
+          Set<String> languages, NotificationMetaData metaData,
+          OrganizationController orgaController) throws NotificationManagerException {
     if (isNotificationManual(metaData)) {
       if (settings.getBoolean("addReceiversInBody", false)) {
         for (String language : languages) {
-          String newContent =
-              addReceiversInContent(usersSet, groupsSet, metaData.getContent(language), language,
-              orgaController);
+          String newContent = addReceiversInContent(usersSet, groupsSet, metaData.getContent(
+                  language), language, orgaController);
           metaData.setContent(newContent, language);
         }
       }
@@ -298,15 +286,15 @@ public class NotificationSender implements java.io.Serializable {
     }
   }
 
-  private String addReceiversInContent(Set<String> usersSet, Set<String> groupsSet, String content,
-      String language, OrganizationController orgaController) {
+  private String addReceiversInContent(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
+          String content, String language, OrganizationController orgaController) {
     ResourceLocator m_Multilang = new ResourceLocator(
-        "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
-        language);
+            "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
+            language);
     StringBuilder listReceivers = new StringBuilder(500);
     listReceivers.append(content);
     boolean first = true;
-    Iterator<String> it = usersSet.iterator();
+    Iterator<UserRecipient> it = usersSet.iterator();
     while (it.hasNext()) {
       if (first) {
         listReceivers.append('\n');
@@ -314,11 +302,11 @@ public class NotificationSender implements java.io.Serializable {
       } else {
         listReceivers.append(", ");
       }
-      listReceivers.append(orgaController.getUserDetail(it.next()).getDisplayedName());
+      listReceivers.append(orgaController.getUserDetail(it.next().getUserId()).getDisplayedName());
       first = false;
     }
     first = true;
-    Iterator<String> itG = groupsSet.iterator();
+    Iterator<GroupRecipient> itG = groupsSet.iterator();
     while (itG.hasNext()) {
       if (first) {
         listReceivers.append('\n');
@@ -326,26 +314,26 @@ public class NotificationSender implements java.io.Serializable {
       } else {
         listReceivers.append(", ");
       }
-      listReceivers.append(orgaController.getGroup(itG.next()).getName());
+      listReceivers.append(orgaController.getGroup(itG.next().getGroupId()).getName());
       first = false;
     }
     return listReceivers.toString();
   }
 
-  private void saveNotification(NotificationMetaData metaData, Set<String> usersSet)
-      throws NotificationManagerException {
+  private void saveNotification(NotificationMetaData metaData, Set<UserRecipient> usersSet)
+          throws NotificationManagerException {
     getNotificationInterface().saveNotifUser(metaData, usersSet);
   }
 
   private SendedNotificationInterface getNotificationInterface()
-      throws NotificationManagerException {
+          throws NotificationManagerException {
     SendedNotificationInterface notificationInterface = null;
     try {
       notificationInterface = new SendedNotificationInterfaceImpl();
     } catch (Exception e) {
       throw new NotificationManagerException(
-          "NotificationSender.getNotificationInterface()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "NotificationSender.getNotificationInterface()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return notificationInterface;
   }
@@ -359,20 +347,20 @@ public class NotificationSender implements java.io.Serializable {
     while (languages.hasNext()) {
       language = languages.next();
       SilverTrace.debug("notificationManager", "NotificationSender.getUserIds()",
-          "root.MSG_GEN_PARAM_VALUE", "language = " + language);
+              "root.MSG_GEN_PARAM_VALUE", "language = " + language);
       if (lang.equalsIgnoreCase(language)) {
         result.add(userIds.get(u));
       }
       u++;
     }
     SilverTrace.info("notificationManager", "NotificationSender.getUserIds()",
-        "root.MSG_GEN_EXIT_METHOD", result.size() + " users for language '"
-        + lang + "' ");
+            "root.MSG_GEN_EXIT_METHOD", result.size() + " users for language '"
+            + lang + "' ");
     return result;
   }
 
   private NotificationParameters getNotificationParameters(int aMediaType,
-      NotificationMetaData metaData) {
+          NotificationMetaData metaData) {
     NotificationParameters params = new NotificationParameters();
 
     params.iMessagePriority = metaData.getMessageType();
@@ -382,8 +370,8 @@ public class NotificationSender implements java.io.Serializable {
     params.sSource = metaData.getSource();
     params.sURL = metaData.getLink();
     params.sSessionId = metaData.getSessionId();
-    if (m_instanceId != -1) {
-      params.iComponentInstance = m_instanceId;
+    if (instanceId != -1) {
+      params.iComponentInstance = instanceId;
     } else {
       params.iComponentInstance = extractLastNumber(metaData.getComponentId());
     }
@@ -392,14 +380,14 @@ public class NotificationSender implements java.io.Serializable {
     params.bAnswerAllowed = metaData.isAnswerAllowed();
     String sender = metaData.getSender();
     if (aMediaType == NotificationParameters.ADDRESS_BASIC_POPUP
-        || aMediaType == NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
+            || aMediaType == NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
       if (metaData.isAnswerAllowed() && StringUtil.isDefined(sender)) {
         params.iFromUserId = Integer.parseInt(metaData.getSender());
       }
     } else if (StringUtil.isInteger(sender)) {
       SilverTrace.info("notificationManager",
-          "NotificationSender.getNotificationParameters()",
-          "root.MSG_GEN_PARAM_VALUE", metaData.getSender());
+              "NotificationSender.getNotificationParameters()",
+              "root.MSG_GEN_PARAM_VALUE", metaData.getSender());
       params.iFromUserId = Integer.parseInt(metaData.getSender());
     } else {
       params.iFromUserId = -1;

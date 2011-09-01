@@ -48,17 +48,16 @@ public class PanelSearchCombo extends PanelSearchToken {
     StringBuffer sb = new StringBuffer();
     int i;
 
-    sb.append("<select name=\"filter" + Integer.toString(m_Index)
-        + "\" size=\"1\">\n");
+    sb.append("<select name=\"filter").append(Integer.toString(m_Index)).append("\" size=\"1\">\n");
     for (i = 0; i < m_NbValues; i++) {
       if ((!m_ReadOnly) || (m_Selected.equals(m_ValuesId[i]))) {
-        sb.append("<option value=\"" + m_ValuesId[i] + "\"");
+        sb.append("<option value=\"").append(m_ValuesId[i]).append("\"");
         if (m_Selected.equals(m_ValuesId[i])) {
           sb.append(" selected>");
         } else {
           sb.append(">");
         }
-        sb.append(m_ValuesText[i] + "</option>\n");
+        sb.append(m_ValuesText[i]).append("</option>\n");
       }
     }
     sb.append("</select>");

@@ -37,7 +37,7 @@ import java.util.TimeZone;
  * bound constraint (a fix point).
  * @param <T> A datable type this class should generate.
  */
-public interface Datable<T extends Datable<? super T>> {
+public interface Datable<T extends Datable<? super T>> extends Cloneable {
 
   /**
    * The pattern for the short ISO 8601 date representation.

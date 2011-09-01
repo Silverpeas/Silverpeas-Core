@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.8-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -13,6 +13,10 @@
   <name>Lib Core</name>
 
   <dependencies>
+    <dependency>
+      <groupId>com.artofsolving</groupId>
+      <artifactId>jodconverter</artifactId>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>test-core</artifactId>
@@ -113,6 +117,10 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>

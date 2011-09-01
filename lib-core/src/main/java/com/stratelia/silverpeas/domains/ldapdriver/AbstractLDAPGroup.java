@@ -24,9 +24,6 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import com.novell.ldap.LDAPEntry;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -34,16 +31,20 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
+
 /**
  * This class manage one particular group. It is a base class to derive from. The child classes
  * manages the particular method to retreive the groups' elements(groups or users)
  * @author tleroi
  */
 
-abstract public class AbstractLDAPGroup extends Object {
+abstract public class AbstractLDAPGroup {
   LDAPSettings driverSettings = null;
   LDAPSynchroCache synchroCache = null;
-  StringBuffer synchroReport = null;
+  private StringBuffer synchroReport = null;
   boolean synchroInProcess = false;
 
   /**
@@ -53,6 +54,13 @@ abstract public class AbstractLDAPGroup extends Object {
   public void init(LDAPSettings driverSettings, LDAPSynchroCache synchroCache) {
     this.driverSettings = driverSettings;
     this.synchroCache = synchroCache;
+  }
+
+
+
+  AbstractLDAPGroup append(CharSequence message) {
+    synchroReport.append(message);
+    return this;
   }
 
   /**
@@ -113,7 +121,7 @@ abstract public class AbstractLDAPGroup extends Object {
         }
       }
     }
-    return (Group[]) groupsDone.values().toArray(new Group[0]);
+    return groupsDone.values().toArray(new Group[groupsDone.size()]);
   }
 
   /**
@@ -218,7 +226,7 @@ abstract public class AbstractLDAPGroup extends Object {
       SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
           + groupsFounded.length + " groupes fils du groupe " + parentId, null);
 
-    return (Group[]) groupsReturned.toArray(new Group[0]);
+    return groupsReturned.toArray(new Group[groupsReturned.size()]);
   }
 
   /**
@@ -239,7 +247,7 @@ abstract public class AbstractLDAPGroup extends Object {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.getGroup",
             "admin.EX_ERR_GET_GROUP", "GroupId=" + id, e);
-        synchroReport.append("PB getting Group : " + id + "\n");
+        synchroReport.append("PB getting Group : ").append(id).append("\n");
       } else {
         throw e;
       }
@@ -259,7 +267,7 @@ abstract public class AbstractLDAPGroup extends Object {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.getGroupByName",
             "admin.EX_ERR_GET_GROUP", "GroupId=" + name, e);
-        synchroReport.append("PB getting Group : " + name + "\n");
+        synchroReport.append("PB getting Group : ").append(name).append("\n");
       } else {
         throw e;
       }
@@ -310,8 +318,8 @@ abstract public class AbstractLDAPGroup extends Object {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroup",
             "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-        synchroReport.append("PB getting Group's childs : "
-            + groupInfos.getName() + "\n");
+        synchroReport.append("PB getting Group's childs : ").append(groupInfos.getName()).append(
+            "\n");
         SynchroReport.error("AbstractLDAPGroup.translateGroup()",
             "Pb de récupération des membres utilisateurs du groupe "
             + groupInfos.getSpecificId(), e);
@@ -355,15 +363,13 @@ abstract public class AbstractLDAPGroup extends Object {
         String[] userIds = getUserIds(lds, groupEntry);
         SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
             "Users in group: " + userIds.length, null);
-        for (int i = 0; i < userIds.length; i++) {
-          allUserIds.add(userIds[i]);
-        }
+        Collections.addAll(allUserIds, userIds);
       } catch (AdminException e) {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroups",
               "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-          synchroReport.append("PB getting Group's childs : "
-              + groupInfos.getName() + "\n");
+          synchroReport.append("PB getting Group's childs : ").append(groupInfos.getName()).append(
+              "\n");
           SynchroReport.error("AbstractLDAPGroup.translateGroups()",
               "Pb de récupération des membres utilisateurs du groupe "
               + groupInfos.getSpecificId(), e);
@@ -372,7 +378,7 @@ abstract public class AbstractLDAPGroup extends Object {
         }
       }
     }
-    groupInfos.setUserIds((String[]) allUserIds.toArray(new String[0]));
+    groupInfos.setUserIds(allUserIds.toArray(new String[allUserIds.size()]));
     SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
         "Users in merged Group: " + groupInfos.getNbUsers(), null);
     return groupInfos;

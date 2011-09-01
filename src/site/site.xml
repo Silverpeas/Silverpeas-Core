@@ -40,9 +40,9 @@
   </skin>
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans 6.8" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.png" />
+    <logo name="Netbeans 7.0" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.png" />
     <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
-    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
+    <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
     <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" />
     <logo name="Izpack" href="http://izpack.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_izPack.png" />
   </poweredBy>
@@ -62,24 +62,26 @@ pageTracker._trackPageview();
     <breadcrumbs>
       <item name="Silverpeas" href="http://www.silverpeas.com"/>
     </breadcrumbs>
-    <menu name="Overview" collapse="false" inherit="none">
-      <item name="Introduction" href="index.html"/>
-      <item name="Roadmap" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1"/>
+    <menu name="Overview" inherit="none">
+      <item name="Introduction" href="index.html" collapse="false"/>
+      <item name="Roadmap" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1" collapse="false"/>
       <item name="Changelog" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
-      <item name="Release Notes" href="releasenotes.html"/>
-      <item name="Installation" href="installation.html"/>
-      <item name="Migration" href="migration.html"/>
-      <item name="Source Code" href="source-repository.html" />
+      <item name="Release Notes" href="releasenotes.html" collapse="false"/>
+      <item name="Installation" href="installation.html" collapse="false"/>
+      <item name="Migration" href="migration.html" collapse="false"/>
+      <item name="Source Code" href="source-repository.html" collapse="false"/>
     </menu>    
-    <menu name="How to contribute" collapse="false" inherit="none">
-      <item name="Contribution" href="collaboration.html"/>
+    <menu name="How to contribute" inherit="none">
+      <item name="Contribution" href="collaboration.html" collapse="false"/>
+      <item name="Code Quality" href="quality.html" collapse="false"/>
     </menu>
     <menu ref="reports" />
-    <menu name="SilverpeasConfiguration" collapse="true" inherit="none">
-      <item name="Security" href="securing.html"/>
-      <item name="Migration" href="migration.html"/>
+    <menu name="SilverpeasConfiguration" inherit="none">
+      <item name="Security" href="securing.html"  collapse="true"/>
+      <item name="Migration" href="migration.html"  collapse="true"/>
+      <item name="Configuring a reverse-proxy" href="proxy.html"  collapse="true"/>
     </menu>
-    <menu name="CAS" collapse="true" inherit="none">
+    <menu name="CAS" inherit="none">
       <item name="Introduction" href="cas/SSO-CAS.html" collapse="true"/>
       <item name="Certificates Configuration" href="cas/certificates.html" collapse="true" />
       <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="true" />

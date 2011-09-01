@@ -31,9 +31,11 @@
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.result.HtmlSearchResultTag"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%-- Set resource bundle --%>
@@ -41,43 +43,6 @@
 <view:setBundle basename="com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle"/>
 
 <%!
-String displayPertinence(float score, String fullStarSrc, String emptyStarSrc)
-{
-	StringBuffer stars = new StringBuffer();
-	if (score <= 0.2) {
-		for (int l = 0; l < 1; l++) {
-			stars.append("").append(fullStarSrc);
-		}
-		for (int k = 2; k <= 5; k++) {
-			stars.append("").append(emptyStarSrc);
-		}
-	} else if (score > 0.2 && score <= 0.4) {
-		for (int l = 0; l < 2; l++) {
-			stars.append("").append(fullStarSrc);
-		}
-		for (int k = 3; k <= 5; k++) {
-			stars.append("").append(emptyStarSrc);
-		}
-	} else if (score > 0.4 && score <= 0.6) {
-		for (int l = 0; l < 3; l++) {
-			stars.append("").append(fullStarSrc);
-		}
-		for (int k = 4; k <= 5; k++) {
-			stars.append("").append(emptyStarSrc);
-		}
-	} else if (score > 0.6 && score <= 0.8) {
-		for (int l = 0; l < 4; l++) {
-			stars.append("").append(fullStarSrc);
-		}
-		stars.append("").append(emptyStarSrc);
-	} else if (score > 0.8) {
-		for (int l = 0; l < 5; l++) {
-			stars.append("").append(fullStarSrc);
-		}
-	}
-	return stars.toString();
-}
-
 void displayItemsListHeader(String query, Pagination pagination, ResourcesWrapper resource, JspWriter out) throws IOException {
 	out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
 	out.println("<td align=\"center\" class=\"ArrayNavigation\">");
@@ -91,8 +56,13 @@ void displayItemsListHeader(String query, Pagination pagination, ResourcesWrappe
 }
 %>
 
+<c:set var="results" value="${requestScope['Results']}" />
+<c:set var="exportEnabled" value="${requestScope['ExportEnabled']}" />
+<c:set var="activeSelection" value="${requestScope['ActiveSelection']}" />
+<c:set var="sortValue" value="${requestScope['SortValue']}" />
+<c:set var="userId" value="${requestScope['UserId']}" />
 <%
-List results 			= (List) request.getAttribute("Results");
+List<GlobalSilverResult> results 			= (List) request.getAttribute("Results");
 int nbTotalResults		= ((Integer) request.getAttribute("NbTotalResults")).intValue();
 
 int indexOfFirstResult	= ((Integer) request.getAttribute("IndexOfFirstResult")).intValue();
@@ -163,7 +133,7 @@ Board board = gef.getBoard();
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 // keyword autocompletion
-int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletion.minChars", "3"));
+int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 
@@ -176,7 +146,7 @@ if (!StringUtil.isDefined(pageId)) {
 
 <html>
 <head>
-<title><%=resource.getString("GML.popupTitle")%></title>
+<title><%=resource.getString("GML.popupTitle")%><c:out value="${anotherUserId}"></c:out></title>
 <view:looknfeel />
 <% if (resultsDisplayMode == PdcSearchSessionController.SHOWRESULTS_OnlyPDC) { %>
 	<style>
@@ -489,13 +459,14 @@ function showExternalSearchError() {
 	if ( isXmlSearchVisible )
 		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", false);
 
-	out.println("<div id=\"globalResultTab\">" + tabs.print() + "</div>");
-	out.println("<div id=\"globalResultFrame\">");
-    out.println(frame.printBefore());
-    out.println("<div id=\"globalResultForm\">");
-    out.println(board.printBefore());
 
 %>
+<div id="globalResultTab"><%=tabs.print()%></div>
+<div id="globalResultFrame">
+  <view:frame>
+    <div id="globalResultForm">
+    <view:board>
+  
 		<table id="globalResultQuery" border="0" cellspacing="0" cellpadding="5" width="100%">
         <tr align="center">
           <td id="globalResultQueryLabel"><%=resource.getString("pdcPeas.SearchFind")%></td>
@@ -571,12 +542,13 @@ function showExternalSearchError() {
 		</table>
 <%
 	}
-
-	out.println(board.printAfter());
-	out.println("</div>");
-    out.println("<div id=\"globalResultList\">");
-	out.println(board.printBefore());
-
+%>
+  </view:board>
+</div>  
+<div id="globalResultList">
+<view:board>
+  
+<%
 	if (results != null)
 	{
 		Pagination	pagination			= gef.getPagination(nbTotalResults, nbResToDisplay.intValue(), indexOfFirstResult);
@@ -601,121 +573,19 @@ function showExternalSearchError() {
 			</tr>
 		</table>
 <%  }
-		out.println("<table border=\"0\" id=\"globalResultListDetails\" cellspacing=\"0\" cellpadding=\"0\">");
-		GlobalSilverResult	gsr			= null;
 
-		for(int nI=0; resultsOnThisPage != null && nI < resultsOnThisPage.size(); nI++){
-			gsr				= (GlobalSilverResult) resultsOnThisPage.get(nI);
-			sName			= EncodeHelper.javaStringToHtmlString(gsr.getName(language));
-			sDescription	= gsr.getDescription(language);
-			if (sDescription != null && sDescription.length() > 400) {
-				sDescription = sDescription.substring(0, 400)+"...";
-			}
-			sURL			= gsr.getTitleLink();
-			sDownloadURL	= gsr.getDownloadLink();
-			sLocation		= gsr.getLocation();
-			sCreatorName	= gsr.getCreatorName();
-			try	{
-			  	if (sortValue.intValue() == 4) {
-			  	  	sCreationDate = resource.getOutputDate(gsr.getCreationDate());
-			  	} else {
-					sCreationDate = resource.getOutputDate(gsr.getDate());
-			  	}
-			} catch (Exception e) {
-				sCreationDate	= null;
-			}
-            
-            String serverName = "";
-			if (externalSearchEnabled && gsr.getIndexEntry() != null) {
-              serverName = "external_server_" + (StringUtil.isDefined(gsr.getIndexEntry().getServerName())? gsr.getIndexEntry().getServerName(): "unknown");
-            }
+%>
+  <c:if test="${not empty results}">
+    <table border="0" id="globalResultListDetails" cellspacing="0" cellpadding="0">
+      <c:forEach var="result" items="${results}">
+        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}"></view:displayResult>
+      </c:forEach>
+    </table>
+  </c:if>
+<%
 
-			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + " " + serverName + "\">");
+		
 
-			if (showPertinence) {
-				out.println("<td class=\"pertinence\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
-			}
-
-			if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
-				if (gsr.isExportable()) {
-					String checked = "";
-					if (gsr.isSelected()) {
-						checked = "checked";
-					}
-					out.println("<td class=\"selection\"><input type=\"checkbox\" "+checked+" name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
-				} else { 
-			   		out.println("<td class=\"selection\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
-				}
-			}
-
-			if (gsr.getType() != null && (gsr.getType().startsWith("Attachment")|| gsr.getType().startsWith("Versioning") || gsr.getType().equals("LinkedFile")) ) {
-                fileType	= sName.substring(sName.lastIndexOf(".")+1, sName.length());
-				fileIcon	= FileRepositoryManager.getFileIcon(fileType);
-				sName = "<img src=\""+fileIcon+"\" class=\"fileIcon\"/>"+sName;
-				//no preview, display this is an attachment
-				if (gsr.getType().startsWith("Attachment") || gsr.getType().equals("LinkedFile")) {
-					sDescription = null;
-				}
-			}
-
-			out.println("<td class=\"content\">");
-
-			out.println("<table cellspacing=\"0\" cellpadding=\"0\"><tr>");
-
-			if (gsr.getThumbnailURL() != null && gsr.getThumbnailURL().length()>0)
-			{
-			  	if ("UserFull".equals(gsr.getType())) {
-			  	  out.println("<td><img class=\"avatar\" src=\""+m_context+gsr.getThumbnailURL()+"\" /></td>");
-			  	} else {
-			  	  out.println("<td><img src=\""+gsr.getThumbnailURL()+"\" border=\"0\" width=\""+gsr.getThumbnailWidth()+"\" height=\""+gsr.getThumbnailHeight()+"\"/></td>");
-			  	}
-				out.println("<td>&nbsp;</td>");
-			}
-
-			out.println("<td>");
-            String curResultId = "readSpanId_" + gsr.getResultId();
-			if (activeSelection.booleanValue()) {
-              out.println("<span id=\"" + curResultId + "\" class=\"textePetitBold\">"+sName+"</span>");
-			} else {
-			  	String cssClass="textePetitBold";
-			  	String cssClassDisableVisited="";
-			  	if(gsr.isHasRead()){
-			  	  cssClass="markedkAsRead";
-			  	  cssClassDisableVisited ="markedkAsReadDisableVisited";
-			  	}
-				out.println("<a href=\""+sURL+"\" class=\""+cssClassDisableVisited +"\"><span id=\"" + curResultId + "\" class=\""+ cssClass+ "\">"+sName+"</span></a>");
-			} 
-			if (StringUtil.isDefined(sDownloadURL))
-			{
-				//affiche le lien pour le téléchargement
-				out.println("<a href=\""+sDownloadURL+"\" target=\"_blank\">"+downloadSrc+"</a>");
-			}
-			if (StringUtil.isDefined(sCreatorName)) {
-				out.println(" <span class=\"creatorName\"> - "+EncodeHelper.javaStringToHtmlString(sCreatorName)+"</span>");
-			}
-			if (StringUtil.isDefined(sCreationDate)) {
-				out.print(" <span class=\"creationDate\"> ("+sCreationDate + ") </span>");
-			}
-
-			if (StringUtil.isDefined(sDescription)) {
-				out.println("<span class=\"description\"><br/><i> "+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i></span>");
-			}
-
-			if (sortValue.intValue() == 7 && gsr.getHits() >= 0) {
-			  	out.println("<br/><span class=\"popularity\">"+resource.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits()))+"</span>");
-			}
-
-			if (StringUtil.isDefined(sLocation)) {
-				out.println("<span class=\"location\"> <br/>"+EncodeHelper.javaStringToHtmlString(sLocation)+"</span>");
-			}
-			out.println("<td>");
-
-			out.println("</tr></table>");
-
-			out.println("</td>");
-			out.println("</tr>");
-		}
-		out.println("</table>");
 
 		out.println("</td></tr>");
 		out.println("<tr class=\"intfdcolor4\"><td>&nbsp;</td></tr>");
@@ -730,19 +600,21 @@ function showExternalSearchError() {
 		}
 
 		out.println("</table>");
-	} else {
-		out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
-		out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
-		out.println("<td align=\"center\">"+resource.getString("pdcPeas.NoResult")+"</td>");
-		out.println("</tr>");
-		out.println("</table>");
+	} else { 
+%>
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+      <tr valign="middle" class="intfdcolor">
+        <td align="center"><%=resource.getString("pdcPeas.NoResult")%></td>
+      </tr>
+    </table>
+<%
 	}
-	out.println(board.printAfter());
-  	out.println("</div>");
-
-    out.println("<div id=\"globalResultHelp\">");
-	out.println(board.printBefore());
-    %>
+%>
+    </view:board>
+    </div>
+    <div id="globalResultHelp">
+    <view:board>
+    
 		<table width="100%" border="0"><tr><td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol1Header")%><br><br>
 		<%=resource.getString("pdcPeas.helpCol1Content1")%><br>
@@ -767,11 +639,11 @@ function showExternalSearchError() {
 		<%=resource.getString("pdcPeas.helpCol3Content4")%><br>
 		</td>
 		</tr></table>
+    </view:board>
+  </div>
+  </view:frame>
+</div>
 	<%
-	out.println(board.printAfter());
-	out.println("</div>");
-	out.println(frame.printAfter());
-	out.println("</div>");
 
 	// Adding facet search group
   	int facetResultLength = Integer.parseInt(resource.getSetting("searchengine.facet.max.length", "30"));

@@ -26,8 +26,8 @@ package com.stratelia.silverpeas.pdcPeas.model;
 
 public class GoogleSite {
 
-  private String label = null;
-  private String url = null;
+  private String label;
+  private String url;
 
   public GoogleSite(String label, String url) {
     this.label = label;

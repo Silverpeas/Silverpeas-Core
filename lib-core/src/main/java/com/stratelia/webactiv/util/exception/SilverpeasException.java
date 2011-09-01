@@ -24,15 +24,14 @@
 
 package com.stratelia.webactiv.util.exception;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.ejb.EJBException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.ejb.EJBException;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * SilverpeasException est la racine de la hiérarchie d'exception silverpeas. Toutes les classes
@@ -48,6 +47,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
   public static final int FATAL = SilverTrace.TRACE_LEVEL_FATAL;
   public static final int ERROR = SilverTrace.TRACE_LEVEL_ERROR;
   public static final int WARNING = SilverTrace.TRACE_LEVEL_WARN;
+  private static final long serialVersionUID = -981770983716177578L;
 
   private int errorLevel = ERROR;
   private Exception nested = null;
@@ -182,7 +182,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
       Collection<Throwable> exceptions = SilverpeasException
           .getChainedExceptions(getNested());
       for (Iterator<Throwable> i = exceptions.iterator(); i.hasNext();) {
-        e = (Throwable) i.next();
+        e = i.next();
         if (!i.hasNext()) {
           w.println("nested (Deepest) : ");
         } else {

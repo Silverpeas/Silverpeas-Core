@@ -24,26 +24,7 @@
 package com.sun.portal.portletcontainer.invoker;
 
 import com.silverpeas.util.FileUtil;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.ChannelURLFactory;
@@ -71,12 +52,28 @@ import com.sun.portal.container.WindowRequestReader;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import com.sun.portal.portletcontainer.invoker.util.PortletWindowRules;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
 /**
  * This class is responsible for rendering the portlet markup fragments. It retrieves the portlet
  * markup fragments by delegating the portlet execution to the a container implementation.
  */
 public abstract class WindowInvoker
-  implements WindowInvokerConstants {
+        implements WindowInvokerConstants {
 
   // -----------------------------------------------------------
   // Static String used for creating Error URL
@@ -99,10 +96,7 @@ public abstract class WindowInvoker
   // Debug logger
   // ---
   private final static Logger logger = ContainerLogger.getLogger(WindowInvoker.class,
-    "com.silverpeas.portlets.PCCTXLogMessages");
-  private final static ResourceLocator messages =
-    new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle",
-    "");
+          "com.silverpeas.portlets.PCCTXLogMessages");
 
   // ------------------------------------------------------------------
   //
@@ -110,32 +104,32 @@ public abstract class WindowInvoker
   //
   // -----------------------------------------------------------------
   abstract public List getRoleList(HttpServletRequest request)
-    throws InvokerException;
+          throws InvokerException;
 
   abstract public Map getUserInfoMap(HttpServletRequest request)
-    throws InvokerException;
+          throws InvokerException;
 
   abstract public EntityID getEntityID(HttpServletRequest request)
-    throws InvokerException;
+          throws InvokerException;
 
   abstract public WindowRequestReader getWindowRequestReader()
-    throws InvokerException;
+          throws InvokerException;
 
   abstract public Container getContainer();
 
   abstract public ChannelURLFactory getPortletWindowURLFactory(
-    String desktopURLPrefix,
-    HttpServletRequest request)
-    throws InvokerException;
+          String desktopURLPrefix,
+          HttpServletRequest request)
+          throws InvokerException;
 
   abstract public boolean isMarkupSupported(String contentType,
-    String locale,
-    ChannelMode mode,
-    ChannelState state)
-    throws InvokerException;
+          String locale,
+          ChannelMode mode,
+          ChannelState state)
+          throws InvokerException;
 
   abstract public String getDefaultTitle()
-    throws InvokerException;
+          throws InvokerException;
 
   // ***************************************************************** //
   // MAIN METHODS FOR GETTING render
@@ -150,9 +144,9 @@ public abstract class WindowInvoker
    * @throws com.sun.portal.portletcontainer.invoker.InvokerException
    */
   public void init(ServletContext servletContext,
-    HttpServletRequest request,
-    HttpServletResponse response)
-    throws InvokerException {
+          HttpServletRequest request,
+          HttpServletResponse response)
+          throws InvokerException {
     this.origRequest = request;
     this.origResponse = response;
     this.servletContext = servletContext;
@@ -162,7 +156,7 @@ public abstract class WindowInvoker
       this.portletWindowContext = factory.getPortletWindowContext(request);
     } catch (PortletWindowContextException pwce) {
       throw new InvokerException("Initialization of WindowInvoker failed",
-        pwce);
+              pwce);
     }
   }
 
@@ -215,21 +209,21 @@ public abstract class WindowInvoker
    * @exception InvokerException If there was an error generating the content.
    */
   public StringBuffer render(HttpServletRequest request,
-    HttpServletResponse response)
-    throws InvokerException {
+          HttpServletResponse response)
+          throws InvokerException {
 
     StringBuffer markupText = null;
 
     ErrorCode errorCode = readErrorCode(request);
     if (errorCode
-      != null) {
+            != null) {
       //
       // First, check if request is to report errors that processAction
       // might have ran in to, prior to render() request
       // Or due to explicit invocation of ErrorURL.
       logger.log(Level.FINE,
-        "PSPL_PCCTXCSPPCI0001",
-        errorCode);
+              "PSPL_PCCTXCSPPCI0001",
+              errorCode);
       markupText = getErrorMessageContent(errorCode);
       // Since the error message is being sent, set the default title for this
       // portlet
@@ -241,16 +235,16 @@ public abstract class WindowInvoker
 
       try {
         markupText = getPortletContent(request,
-          response);
+                response);
       } catch (WindowException we) {
         logger.log(Level.SEVERE,
-          "PSPL_PCCTXCSPPCI0006",
-          we.getMessage());
+                "PSPL_PCCTXCSPPCI0006",
+                we.getMessage());
         markupText = getErrorMessageContent(we.getErrorCode());
       } catch (InvokerException ie) {
         logger.log(Level.SEVERE,
-          "PSPL_PCCTXCSPPCI0006",
-          ie.getMessage());
+                "PSPL_PCCTXCSPPCI0006",
+                ie.getMessage());
         markupText = getErrorMessageContent(WindowErrorCode.CONTAINER_EXCEPTION);
       }
     }
@@ -259,9 +253,9 @@ public abstract class WindowInvoker
   }
 
   private StringBuffer getPortletContent(HttpServletRequest request,
-    HttpServletResponse response)
-    throws InvokerException,
-    WindowException {
+          HttpServletResponse response)
+          throws InvokerException,
+          WindowException {
 
     //
     // We need to know if it is a authless user, because
@@ -270,7 +264,7 @@ public abstract class WindowInvoker
     // not.
 
     boolean authless = getPortletWindowContext().
-      isAuthless(request);
+            isAuthless(request);
 
     //
     // Abstract method to be implemented by the derived class
@@ -293,100 +287,97 @@ public abstract class WindowInvoker
     // Get list of allowed window states
     //
     List allowableWindowStates = getAllowableWindowStates(request,
-      currentPortletWindowMode);
+            currentPortletWindowMode);
 
     //
     // Get list of allowed portletWindow modes
     //
     List allowablePortletWindowModes = PortletWindowRules.getAllowablePortletWindowModes(
-      currentPortletWindowMode,
-      authless);
+            currentPortletWindowMode,
+            authless);
 
     String processURL = getActionURL(request,
-      currentPortletWindowMode,
-      currentWindowState);
+            currentPortletWindowMode,
+            currentWindowState);
 
     // Request
     GetMarkupRequest getMarkupRequest = getContainer().
-      createGetMarkUpRequest(
-      request,
-      portletEntityId,
-      currentWindowState,
-      currentPortletWindowMode,
-      portletWindowContext,
-      getPortletWindowURLFactory(processURL,
-      request));
+            createGetMarkUpRequest(
+            request,
+            portletEntityId,
+            currentWindowState,
+            currentPortletWindowMode,
+            portletWindowContext,
+            getPortletWindowURLFactory(processURL,
+            request));
     populateContainerRequest(getMarkupRequest,
-      request,
-      allowableWindowStates,
-      allowablePortletWindowModes);
+            request,
+            allowableWindowStates,
+            allowablePortletWindowModes);
 
     // Response
     GetMarkupResponse getMarkupResponse = getContainer().
-      createGetMarkUpResponse(response);
+            createGetMarkUpResponse(response);
 
     //
     // Call the container interface
     //
     try {
       getContainer().
-        getMarkup(getMarkupRequest,
-        getMarkupResponse);
+              getMarkup(getMarkupRequest,
+              getMarkupResponse);
     } catch (ContainerException ce) {
       // If exception set the default title
       setTitle(getDefaultTitle());
       if (logger.isLoggable(Level.WARNING)) {
         LogRecord logRecord = new LogRecord(Level.WARNING,
-          "PSPL_PCCTXCSPPCI0006");
+                "PSPL_PCCTXCSPPCI0006");
         logRecord.setLoggerName(logger.getName());
         logRecord.setParameters(new String[]{getPortletWindowName()});
         logRecord.setThrown(ce);
         logger.log(logRecord);
       }
       throw new InvokerException("Container exception",
-        ce);
+              ce);
     } catch (ContentException cte) {
       // If exception set the default title
       setTitle(getDefaultTitle());
       if (logger.isLoggable(Level.WARNING)) {
         LogRecord logRecord = new LogRecord(Level.WARNING,
-          "PSPL_PCCTXCSPPCI0006");
+                "PSPL_PCCTXCSPPCI0006");
         logRecord.setLoggerName(logger.getName());
         logRecord.setParameters(new String[]{getPortletWindowName()});
         logRecord.setThrown(cte);
         logger.log(logRecord);
       }
       throw new WindowException(getErrorCode(cte),
-        "Content Exception",
-        cte);
+              "Content Exception",
+              cte);
     }
-
+    
     //
     // save the title so getTitle can return it
     //
-    MainSessionController sessionController = (MainSessionController) request.getSession().
-      getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    messages.setLanguage(sessionController.getFavoriteLanguage());
-    String portletTitle = getMarkupResponse.getTitle();
-    setTitle(messages.getString(portletTitle, portletTitle));
+        
+    setTitle(getMarkupResponse.getTitle());
 
     //
     // Process the markup based on the mode.
     //
 
     if (getMarkupResponse.getMarkup()
-      == null) {
+            == null) {
       logger.info("PSPL_PCCTXCSPPCI0007");
     }
 
     // If headers, cookie have been set by the Portlet add it to the
     // ResponseProperties
     if (getMarkupResponse.getCookieProperties()
-      != null
-      || getMarkupResponse.getStringProperties()
-      != null
-      || getMarkupResponse.getElementProperties()
-      != null) {
+            != null
+            || getMarkupResponse.getStringProperties()
+            != null
+            || getMarkupResponse.getElementProperties()
+            != null) {
       this.responseProperties = new ResponseProperties();
       this.responseProperties.setCookies(getMarkupResponse.getCookieProperties());
       this.responseProperties.setResponseHeaders(getMarkupResponse.getStringProperties());
@@ -414,25 +405,25 @@ public abstract class WindowInvoker
    * @exception InvokerException If there was an error generating the content.
    */
   public URL processAction(HttpServletRequest request,
-    HttpServletResponse response)
-    throws InvokerException {
+          HttpServletResponse response)
+          throws InvokerException {
 
     try {
       return processActionInternal(request,
-        response);
+              response);
     } catch (WindowException we) {
       logger.log(Level.SEVERE,
-        "PSPL_PCCTXCSPPCI0008",
-        we.getMessage());
+              "PSPL_PCCTXCSPPCI0008",
+              we.getMessage());
       return getErrorCodeURL(we.getErrorCode(),
-        request);
+              request);
     }
   }
 
   public URL processActionInternal(HttpServletRequest request,
-    HttpServletResponse response)
-    throws InvokerException,
-    WindowException {
+          HttpServletResponse response)
+          throws InvokerException,
+          WindowException {
 
     URL returnURL = null;
     ChannelMode currentPortletWindowMode = null;
@@ -447,7 +438,7 @@ public abstract class WindowInvoker
     // not.
 
     boolean authless = getPortletWindowContext().
-      isAuthless(request);
+            isAuthless(request);
 
     //
     // Abstract method to be implemented by the derived class
@@ -465,11 +456,11 @@ public abstract class WindowInvoker
     // get new portletWindow mode and window state set on the url.
     //
     newWindowState = getWindowRequestReader().
-      readNewWindowState(request);
+            readNewWindowState(request);
 
     newPortletWindowMode = getWindowRequestReader().
-      readNewPortletWindowMode(
-      request);
+            readNewPortletWindowMode(
+            request);
 
     //
     // Process only the window state.
@@ -478,86 +469,86 @@ public abstract class WindowInvoker
     // since it might change again after the processAction is called
 
     if (newPortletWindowMode
-      != null) {
+            != null) {
       validateModeChange(currentPortletWindowMode,
-        newPortletWindowMode,
-        authless);
+              newPortletWindowMode,
+              authless);
       currentPortletWindowMode = newPortletWindowMode;
     }
     if (newWindowState
-      != null) {
+            != null) {
       currentWindowState = processWindowStateChange(request,
-        newWindowState,
-        currentPortletWindowMode,
-        authless);
+              newWindowState,
+              currentPortletWindowMode,
+              authless);
     }
 
     //
     // See what kind of URL is it
 
     ChannelURLType urlType = getWindowRequestReader().
-      readURLType(request);
+            readURLType(request);
     Container c = ContainerFactory.getContainer(ContainerType.PORTLET_CONTAINER);
     String processURL = getActionURL(request,
-      currentPortletWindowMode,
-      currentWindowState);
+            currentPortletWindowMode,
+            currentWindowState);
     // Request
     ExecuteActionRequest executeActionRequest = getContainer().
-      createExecuteActionRequest(request,
-      portletEntityId,
-      currentWindowState,
-      currentPortletWindowMode,
-      portletWindowContext,
-      getPortletWindowURLFactory(processURL,
-      request),
-      getWindowRequestReader());
+            createExecuteActionRequest(request,
+            portletEntityId,
+            currentWindowState,
+            currentPortletWindowMode,
+            portletWindowContext,
+            getPortletWindowURLFactory(processURL,
+            request),
+            getWindowRequestReader());
 
     List allowableWindowStates = getAllowableWindowStates(request,
-      currentPortletWindowMode);
+            currentPortletWindowMode);
     List allowablePortletWindowModes = PortletWindowRules.getAllowablePortletWindowModes(
-      currentPortletWindowMode,
-      authless);
+            currentPortletWindowMode,
+            authless);
     populateContainerRequest(executeActionRequest,
-      request,
-      allowableWindowStates,
-      allowablePortletWindowModes);
+            request,
+            allowableWindowStates,
+            allowablePortletWindowModes);
 
     // Response
     ExecuteActionResponse executeActionResponse = getContainer().
-      createExecuteActionResponse(response);
+            createExecuteActionResponse(response);
 
     //
     // Call the container implementation to executeAction
     //
     try {
       getContainer().
-        executeAction(executeActionRequest,
-        executeActionResponse,
-        urlType);
+              executeAction(executeActionRequest,
+              executeActionResponse,
+              urlType);
     } catch (ContainerException ce) {
       if (logger.isLoggable(Level.WARNING)) {
         LogRecord logRecord = new LogRecord(Level.WARNING,
-          "PSPL_PCCTXCSPPCI0008");
+                "PSPL_PCCTXCSPPCI0008");
         logRecord.setLoggerName(logger.getName());
         logRecord.setParameters(new String[]{getPortletWindowName()});
         logRecord.setThrown(ce);
         logger.log(logRecord);
       }
       throw new InvokerException(
-        "WindowInvoker.processAction():container exception",
-        ce);
+              "WindowInvoker.processAction():container exception",
+              ce);
     } catch (ContentException cte) {
       if (logger.isLoggable(Level.WARNING)) {
         LogRecord logRecord = new LogRecord(Level.WARNING,
-          "PSPL_PCCTXCSPPCI0008");
+                "PSPL_PCCTXCSPPCI0008");
         logRecord.setLoggerName(logger.getName());
         logRecord.setParameters(new String[]{getPortletWindowName()});
         logRecord.setThrown(cte);
         logger.log(logRecord);
       }
       throw new WindowException(getErrorCode(cte),
-        "Content Exception",
-        cte);
+              "Content Exception",
+              cte);
     }
 
     //
@@ -569,17 +560,17 @@ public abstract class WindowInvoker
     returnURL = executeActionResponse.getRedirectURL();
 
     if (returnURL
-      == null) {
+            == null) {
 
       //
       // process mode changes.
 
       newPortletWindowMode = executeActionResponse.getNewChannelMode();
       if (newPortletWindowMode
-        != null) {
+              != null) {
         validateModeChange(currentPortletWindowMode,
-          newPortletWindowMode,
-          authless);
+                newPortletWindowMode,
+                authless);
         currentPortletWindowMode = newPortletWindowMode;
       }
 
@@ -589,11 +580,11 @@ public abstract class WindowInvoker
 
       newWindowState = executeActionResponse.getNewWindowState();
       if (newWindowState
-        != null) {
+              != null) {
         currentWindowState = processWindowStateChange(request,
-          newWindowState,
-          currentPortletWindowMode,
-          authless);
+                newWindowState,
+                currentPortletWindowMode,
+                authless);
       }
 
     }
@@ -604,12 +595,12 @@ public abstract class WindowInvoker
     //
 
     if (returnURL
-      == null) {
+            == null) {
       if (currentPortletWindowMode
-        != null) {
+              != null) {
         returnURL = processModeChange(request,
-          currentPortletWindowMode,
-          currentWindowState);
+                currentPortletWindowMode,
+                currentWindowState);
       }
 
     }
@@ -628,26 +619,26 @@ public abstract class WindowInvoker
    * @exception InvokerException If there was an error generating the content.
    */
   public void getResources(HttpServletRequest request,
-    HttpServletResponse response)
-    throws InvokerException {
+          HttpServletResponse response)
+          throws InvokerException {
 
     try {
       getResourcesInternal(request,
-        response);
+              response);
     } catch (WindowException we) {
       logger.log(Level.SEVERE,
-        "PSPL_PCCTXCSPPCI0019",
-        we.getMessage());
+              "PSPL_PCCTXCSPPCI0019",
+              we.getMessage());
     }
   }
 
   public void getResourcesInternal(HttpServletRequest request,
-    HttpServletResponse response)
-    throws InvokerException,
-    WindowException {
+          HttpServletResponse response)
+          throws InvokerException,
+          WindowException {
 
     boolean authless = getPortletWindowContext().
-      isAuthless(request);
+            isAuthless(request);
 
     //
     // Abstract method to be implemented by the derived class
@@ -670,64 +661,64 @@ public abstract class WindowInvoker
     // Get list of allowed window states
     //
     List allowableWindowStates = getAllowableWindowStates(request,
-      currentPortletWindowMode);
+            currentPortletWindowMode);
 
     //
     // Get list of allowed portletWindow modes
     //
     List allowablePortletWindowModes = PortletWindowRules.getAllowablePortletWindowModes(
-      currentPortletWindowMode,
-      authless);
+            currentPortletWindowMode,
+            authless);
 
     String processURL = getActionURL(request,
-      currentPortletWindowMode,
-      currentWindowState);
+            currentPortletWindowMode,
+            currentWindowState);
 
     // Request
     GetResourceRequest getResourceRequest = getContainer().
-      createGetResourceRequest(request,
-      portletEntityId,
-      currentWindowState,
-      currentPortletWindowMode,
-      portletWindowContext,
-      getPortletWindowURLFactory(processURL,
-      request),
-      getWindowRequestReader());
+            createGetResourceRequest(request,
+            portletEntityId,
+            currentWindowState,
+            currentPortletWindowMode,
+            portletWindowContext,
+            getPortletWindowURLFactory(processURL,
+            request),
+            getWindowRequestReader());
     populateContainerRequest(getResourceRequest,
-      request,
-      allowableWindowStates,
-      allowablePortletWindowModes);
+            request,
+            allowableWindowStates,
+            allowablePortletWindowModes);
 
     // Response
     GetResourceResponse getResourceResponse = getContainer().
-      createGetResourceResponse(response);
+            createGetResourceResponse(response);
 
     //
     // Call the container interface
     //
     try {
       getContainer().
-        getResources(getResourceRequest,
-        getResourceResponse);
+              getResources(getResourceRequest,
+              getResourceResponse);
     } catch (ContainerException ce) {
       // If exception set the default title
       setTitle(getDefaultTitle());
       if (logger.isLoggable(Level.WARNING)) {
         LogRecord logRecord = new LogRecord(Level.WARNING,
-          "PSPL_PCCTXCSPPCI0019");
+                "PSPL_PCCTXCSPPCI0019");
         logRecord.setLoggerName(logger.getName());
         logRecord.setParameters(new String[]{getPortletWindowName()});
         logRecord.setThrown(ce);
         logger.log(logRecord);
       }
       throw new InvokerException("Container exception",
-        ce);
+              ce);
     } catch (ContentException cte) {
       // If exception set the default title
       setTitle(getDefaultTitle());
       if (logger.isLoggable(Level.WARNING)) {
         LogRecord logRecord = new LogRecord(Level.WARNING,
-          "PSPL_PCCTXCSPPCI0019");
+                "PSPL_PCCTXCSPPCI0019");
         logRecord.setLoggerName(logger.getName());
         logRecord.setParameters(new String[]{getPortletWindowName()});
         logRecord.setThrown(cte);
@@ -739,11 +730,11 @@ public abstract class WindowInvoker
     // If headers, cookie have been set by the Portlet add it to the
     // ResponseProperties
     if (getResourceResponse.getCookieProperties()
-      != null
-      || getResourceResponse.getStringProperties()
-      != null
-      || getResourceResponse.getElementProperties()
-      != null) {
+            != null
+            || getResourceResponse.getStringProperties()
+            != null
+            || getResourceResponse.getElementProperties()
+            != null) {
       this.responseProperties = new ResponseProperties();
       this.responseProperties.setCookies(getResourceResponse.getCookieProperties());
       this.responseProperties.setResponseHeaders(getResourceResponse.getStringProperties());
@@ -751,34 +742,34 @@ public abstract class WindowInvoker
     }
 
     InvokerUtil.setResponseProperties(request,
-      response,
-      this.responseProperties);
+            response,
+            this.responseProperties);
 
     try {
       StringBuffer buff = getResourceResponse.getContentAsBuffer();
       byte[] bytes = getResourceResponse.getContentAsBytes();
       if (buff
-        != null) {
+              != null) {
         response.getWriter().
-          print(buff);
+                print(buff);
 
       } else if (bytes
-        != null
-        && bytes.length
-        > 0) {
+              != null
+              && bytes.length
+              > 0) {
         response.getOutputStream().
-          write(bytes);
+                write(bytes);
 
       } else {
         response.getWriter().
-          print("");
+                print("");
       }
 
       response.flushBuffer();
       InvokerUtil.clearResponseProperties(this.responseProperties);
     } catch (IOException e) {
       throw new InvokerException("Exception in Writing Response",
-        e);
+              e);
     }
 
   }
@@ -787,10 +778,10 @@ public abstract class WindowInvoker
    * Populates the ContainerRequest object
    */
   protected void populateContainerRequest(ContainerRequest containerRequest,
-    HttpServletRequest request,
-    List allowableWindowStates,
-    List allowablePortletWindowModes)
-    throws InvokerException {
+          HttpServletRequest request,
+          List allowableWindowStates,
+          List allowablePortletWindowModes)
+          throws InvokerException {
 
     //
     // allowable window state and mode determines the set of window state
@@ -805,7 +796,7 @@ public abstract class WindowInvoker
     //
 
     String contentType = getPortletWindowContext().
-      getContentType();
+            getContentType();
     List allowableContentTypes = new ArrayList();
     allowableContentTypes.add(contentType);
     containerRequest.setAllowableContentTypes(allowableContentTypes);
@@ -822,12 +813,8 @@ public abstract class WindowInvoker
    * @exception InvokerException if error occurs when getting the title for the portletWindow.
    */
   public String getTitle()
-    throws InvokerException {
-    if (title
-      != null
-      && title.trim().
-      length()
-      != 0) {
+          throws InvokerException {
+    if (title != null && title.trim().length() != 0) {
       return title;
     } else {
       return getDefaultTitle();
@@ -848,50 +835,50 @@ public abstract class WindowInvoker
   }
 
   public boolean isEditable()
-    throws InvokerException {
+          throws InvokerException {
 
     //
     // Get handle to portlet description
     //
     //
     if (getPortletWindowContext().
-      isAuthless(origRequest)) {
+            isAuthless(origRequest)) {
       return false;
     }
 
     return isMarkupSupported(getPortletWindowContext().
-      getContentType(),
-      getPortletWindowContext().
-      getLocaleString(),
-      ChannelMode.EDIT,
-      ChannelState.MAXIMIZED);
+            getContentType(),
+            getPortletWindowContext().
+            getLocaleString(),
+            ChannelMode.EDIT,
+            ChannelState.MAXIMIZED);
   }
 
   /**
    * Process window state changes.
    */
   protected ChannelState processWindowStateChange(HttpServletRequest request,
-    ChannelState newWindowState,
-    ChannelMode portletWindowMode,
-    boolean authless)
-    throws InvokerException,
-    WindowException {
+          ChannelState newWindowState,
+          ChannelMode portletWindowMode,
+          boolean authless)
+          throws InvokerException,
+          WindowException {
 
     ChannelState windowState = newWindowState;
     boolean validState = PortletWindowRules.validateWindowStateChange(
-      portletWindowMode,
-      newWindowState);
+            portletWindowMode,
+            newWindowState);
 
     if (!validState
-      || newWindowState
-      == null) {
+            || newWindowState
+            == null) {
 
       windowState = PortletWindowRules.getDefaultWindowState(portletWindowMode);
       logger.log(Level.FINER,
-        "PSPL_PCCTXCSPPCI0002",
-        new Object[]{
-          windowState,
-          portletWindowMode});
+              "PSPL_PCCTXCSPPCI0002",
+              new Object[]{
+                windowState,
+                portletWindowMode});
     }
 
     return windowState;
@@ -901,29 +888,28 @@ public abstract class WindowInvoker
    * Assemble the URL to cause the desktop to be rendered with the new mode and window state
    */
   protected URL processModeChange(HttpServletRequest request,
-    ChannelMode portletWindowMode,
-    ChannelState portletWindowState)
-    throws InvokerException {
+          ChannelMode portletWindowMode,
+          ChannelState portletWindowState)
+          throws InvokerException {
     URL redirectURL = null;
     try {
       redirectURL = new URL(getRenderURL(request,
-        portletWindowMode,
-        portletWindowState));
+              portletWindowMode,
+              portletWindowState));
     } catch (MalformedURLException mue) {
       throw new InvokerException("WindowInvoker.processModeChange():"
-        + " couldn't generate redirect URL to page for mode "
-        + portletWindowMode.toString(),
-        mue);
+              + " couldn't generate redirect URL to page for mode "
+              + portletWindowMode.toString(),
+              mue);
     }
     return redirectURL;
   }
 
-  private static List initParamKeyList() {
-
-    ArrayList localParamKeyList = new ArrayList();
-    localParamKeyList.add(PORTLET_WINDOW_KEY);
-    localParamKeyList.add(PORTLET_WINDOW_MODE_KEY);
-    return localParamKeyList;
+  private static List<String> initParamKeyList() {
+    ArrayList<String> paramKeyList = new ArrayList();
+    paramKeyList.add(PORTLET_WINDOW_KEY);
+    paramKeyList.add(PORTLET_WINDOW_MODE_KEY);
+    return paramKeyList;
 
   }
 
@@ -931,8 +917,7 @@ public abstract class WindowInvoker
    * Used by subclasses to find out if key in the request is reserved by the window invoker
    */
   public static boolean isWindowInvokerKey(String key) {
-    if (key
-      != null) {
+    if (key != null) {
       if (localParamKeyList.contains(key)) {
         return true;
       }
@@ -948,38 +933,38 @@ public abstract class WindowInvoker
    * based on the current mode
    */
   public URL getErrorCodeURL(ErrorCode errorCode,
-    HttpServletRequest request)
-    throws InvokerException {
+          HttpServletRequest request)
+          throws InvokerException {
 
     try {
       //
       // Get the URL for the existing mode
       //
       String startURL = getPortletWindowContext().
-        getDesktopURL(request)
-        + "?";
+              getDesktopURL(request)
+              + "?";
 
       //
       // Append the error code to it
       //
       return new URL(startURL
-        + getErrorCodeParameter()
-        + "="
-        + errorCode.toString());
+              + getErrorCodeParameter()
+              + "="
+              + errorCode.toString());
 
     } catch (MalformedURLException mue) {
       throw new InvokerException(
-        "WindowInvoker.getErrorCodeURL():couldn't build errorURL",
-        mue);
+              "WindowInvoker.getErrorCodeURL():couldn't build errorURL",
+              mue);
     }
   }
 
   private String getErrorCodeParameter() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(KEYWORD_PREFIX);
-    buffer.append(getPortletWindowName());
-    buffer.append(ERROR_CODE);
-    return buffer.toString();
+    StringBuilder builder = new StringBuilder();
+    builder.append(KEYWORD_PREFIX);
+    builder.append(getPortletWindowName());
+    builder.append(ERROR_CODE);
+    return builder.toString();
   }
 
   //
@@ -992,10 +977,10 @@ public abstract class WindowInvoker
       buffer.append(bundle.getString(errorCode.toString()));
     } catch (MissingResourceException ex) {
       logger.log(Level.FINE,
-        "PSPL_PCCTXCSPPCI0003",
-        ex);
+              "PSPL_PCCTXCSPPCI0003",
+              ex);
       if (bundle
-        != null) {
+              != null) {
         buffer.append(bundle.getString(WindowErrorCode.GENERIC_ERROR.toString()));
         buffer.append(" ");
         buffer.append(errorCode);
@@ -1020,7 +1005,7 @@ public abstract class WindowInvoker
   protected ErrorCode getErrorCode(ContentException ex) {
     ErrorCode code = ex.getErrorCode();
     if (code
-      == null) {
+            == null) {
       return WindowErrorCode.CONTENT_EXCEPTION;
     } else {
       return code;
@@ -1031,12 +1016,12 @@ public abstract class WindowInvoker
   // Read error code from the request params
   //
   protected ErrorCode readErrorCode(HttpServletRequest request) {
-    String errorCodeStr = (String) request.getParameter(getErrorCodeParameter());
+    String errorCodeStr = request.getParameter(getErrorCodeParameter());
 
     if (errorCodeStr
-      != null
-      && errorCodeStr.length()
-      > 0) {
+            != null
+            && errorCodeStr.length()
+            > 0) {
       return new ErrorCode(errorCodeStr);
     } else {
       return null;
@@ -1048,18 +1033,18 @@ public abstract class WindowInvoker
     ChannelMode currentPortletWindowMode = getPortletWindowMode();
 
     if (currentPortletWindowMode
-      != null) {
+            != null) {
       return currentPortletWindowMode;
     }
     return ChannelMode.VIEW;
   }
 
   protected ChannelState getCurrentWindowState(HttpServletRequest request)
-    throws InvokerException {
+          throws InvokerException {
 
     ChannelState currentWindowState = getPortletWindowState();
     if (currentWindowState
-      == null) {
+            == null) {
       return PortletWindowRules.getDefaultWindowState(getCurrentPortletWindowMode(request));
     }
 
@@ -1067,7 +1052,7 @@ public abstract class WindowInvoker
   }
 
   protected List getAllowableWindowStates(HttpServletRequest request,
-    ChannelMode mode) {
+          ChannelMode mode) {
     List allowableWindowStates = null;
 
     allowableWindowStates = PortletWindowRules.getDefaultAllowableWindowStates(mode);
@@ -1075,60 +1060,68 @@ public abstract class WindowInvoker
   }
 
   public String getActionURL(HttpServletRequest request,
-    ChannelMode portletWindowMode,
-    ChannelState portletWindowState) {
-    return computeURL(request, ACTION);
+          ChannelMode portletWindowMode,
+          ChannelState portletWindowState) {
+    return computeURL(request, ACTION, portletWindowState, portletWindowMode);
   }
 
   public String getRenderURL(HttpServletRequest request,
-    ChannelMode portletWindowMode,
-    ChannelState portletWindowState) {
-    return computeURL(request, RENDER);
+          ChannelMode portletWindowMode,
+          ChannelState portletWindowState) {
+    return computeURL(request, RENDER, portletWindowState, portletWindowMode);
   }
 
   /**
-   * Computes the URL corresponding to the state of the portlet (in rendering, in performing an
-   * action, ...)
-   * @param request
-   * @param portletState
-   * @return
+   * Computes the URL corresponding to the specified action, window state, and window mode of the
+   * portlet.
+   * @param request the incoming HTTP request.
+   * @param driverAction the next portlet action state.
+   * @param portletWindowState the next portlet window state.
+   * @param  portletWindowMode the next portlet window mode.
+   * @return the URL corresponding to the passed parameters.
    */
-  private String computeURL(HttpServletRequest request, String portletState) {
+  private String computeURL(final HttpServletRequest request, String driverAction,
+          final ChannelState portletWindowState, final ChannelMode portletWindowMode) {
+    String portletWindowStateName = getPortletWindowState().toString();
+    if (portletWindowState != null) {
+      portletWindowStateName = portletWindowState.toString();
+    }
+    String portletWindowModeName = getPortletWindowMode().toString();
+    if (portletWindowMode != null) {
+      portletWindowModeName = portletWindowMode.toString();
+    }
+    
     StringBuilder processURL = new StringBuilder(getPortletWindowContext().
-      getDesktopURL(request));
+            getDesktopURL(request));
 
     processURL.append("?").
-      append(DRIVER_ACTION).
-      append("=").
-      append(portletState).
-      append("&").
-      append(PORTLET_WINDOW_MODE_KEY).
-      append("=").
-      append(
-      portletWindowMode.toString()).
-      append("&").
-      append(
-      PORTLET_WINDOW_STATE_KEY).
-      append("=").
-      append(
-      portletWindowState.toString()).
-      append("&").
-      append(
-      PORTLET_WINDOW_KEY).
-      append("=").
-      append(getPortletWindowName());
+            append(DRIVER_ACTION).
+            append("=").
+            append(driverAction).
+            append("&").
+            append(PORTLET_WINDOW_MODE_KEY).
+            append("=").
+            append(portletWindowModeName).
+            append("&").
+            append(PORTLET_WINDOW_STATE_KEY).
+            append("=").
+            append(portletWindowStateName).
+            append("&").
+            append(PORTLET_WINDOW_KEY).
+            append("=").
+            append(getPortletWindowName());
 
     String spaceId = (String) request.getAttribute("SpaceId");
     if (StringUtil.isDefined(spaceId)) {
       processURL.append("&").
-        append(WindowInvokerConstants.DRIVER_SPACEID).
-        append("=").
-        append(spaceId);
+              append(WindowInvokerConstants.DRIVER_SPACEID).
+              append("=").
+              append(spaceId);
       processURL.append("&").
-        append(WindowInvokerConstants.DRIVER_ROLE).
-        append(
-        "=").
-        append("admin");
+              append(WindowInvokerConstants.DRIVER_ROLE).
+              append(
+              "=").
+              append("admin");
     }
 
     return processURL.toString();
@@ -1139,20 +1132,20 @@ public abstract class WindowInvoker
    * allowed by the portal
    */
   private void validateModeChange(ChannelMode currentMode,
-    ChannelMode newMode,
-    boolean authless)
-    throws WindowException {
+          ChannelMode newMode,
+          boolean authless)
+          throws WindowException {
 
     List allowedList = PortletWindowRules.getAllowablePortletWindowModes(
-      currentMode,
-      authless);
+            currentMode,
+            authless);
     if (!allowedList.contains(newMode)) {
       throw new WindowException(WindowErrorCode.INVALID_MODE_CHANGE_REQUEST,
-        "Portal doesn't allow changing mode "
-        + " from "
-        + currentMode
-        + " to "
-        + newMode);
+              "Portal doesn't allow changing mode "
+              + " from "
+              + currentMode
+              + " to "
+              + newMode);
     }
     return;
 
@@ -1178,8 +1171,8 @@ public abstract class WindowInvoker
   public ResourceBundle getResourceBundle(String base) {
     Locale locale = null;
     locale = new Locale(getPortletWindowContext().
-      getLocaleString());
+            getLocaleString());
     return FileUtil.loadBundle(base,
-      locale);
+            locale);
   }
 }

@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.genericPanel;
 
 public class PanelSearchEdit extends PanelSearchToken {
@@ -40,9 +36,8 @@ public class PanelSearchEdit extends PanelSearchToken {
   public String getHTMLSpecific() {
     StringBuffer sb = new StringBuffer();
 
-    sb
-        .append("<input type=\"text\" size=\"15\" maxlength=\"100\" name=\"filter"
-        + Integer.toString(m_Index) + "\" value=\"" + m_Text + "\"");
+    sb.append("<input type=\"text\" size=\"15\" maxlength=\"100\" name=\"filter").append(
+        Integer.toString(m_Index)).append("\" value=\"").append(m_Text).append("\"");
     if (m_ReadOnly) {
       sb.append(" readonly>");
     } else {

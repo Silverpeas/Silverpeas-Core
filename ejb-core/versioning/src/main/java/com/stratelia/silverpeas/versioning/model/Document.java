@@ -51,7 +51,7 @@ public class Document implements java.io.Serializable, Cloneable {
   private String additionalInfo;
   private String instanceId;
   private ArrayList<Worker> workList;
-  private ArrayList readList;
+  private ArrayList<Reader> readList;
   private int typeWorkList;
   private int currentWorkListOrder;
   private int orderNumber;
@@ -64,13 +64,13 @@ public class Document implements java.io.Serializable, Cloneable {
 
   public Document() {
     this.workList = new ArrayList<Worker>();
-    this.readList = new ArrayList();
+    this.readList = new ArrayList<Reader>();
   }
 
   public Document(DocumentPK pk, WAPrimaryKey foreignKey, String name,
       String description, int status, int ownerId, Date lastCheckOutDate,
       String additionalInfo, String instanceId, ArrayList<Worker> workList,
-      ArrayList readList, int typeWorkList, int currentWorkListOrder) {
+      ArrayList<Reader> readList, int typeWorkList, int currentWorkListOrder) {
     this.pk = pk;
     this.foreignKey = foreignKey;
     this.name = name;
@@ -166,11 +166,11 @@ public class Document implements java.io.Serializable, Cloneable {
     this.workList = workList;
   }
 
-  public ArrayList getReadList() {
+  public ArrayList<Reader> getReadList() {
     return readList;
   }
 
-  public void setReadList(ArrayList readList) {
+  public void setReadList(ArrayList<Reader> readList) {
     this.readList = readList;
   }
 

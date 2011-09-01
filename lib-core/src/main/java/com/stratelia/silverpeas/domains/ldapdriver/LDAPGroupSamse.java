@@ -22,22 +22,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
 import com.novell.ldap.LDAPEntry;
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -90,10 +88,16 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
     return groupsVector;
   }
 
+  /**
+   * All root groups, so, no group belongs to another...
+   * @param lds
+   * @param groupId the group's Id
+   * @return
+   * @throws AdminException
+   */
   public String[] getGroupMemberGroupIds(String lds, String groupId)
       throws AdminException {
-    // All root groups, so, no group belongs to another...
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   public String[] getUserMemberGroupIds(String lds, String userId)
@@ -109,7 +113,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
       it = groupsIdsSet.iterator();
       groupsCur = new Vector<String>();
       while (it.hasNext()) {
-        grId = (String) it.next();
+        grId = it.next();
         if (!groupsManaged.contains(grId)) {
           groupsManaged.add(grId);
           groupsCur.addAll(getMemberGroupIds(lds, grId, true));
@@ -117,7 +121,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
       }
       groupsIdsSet = groupsCur;
     }
-    return (String[]) groupsManaged.toArray(new String[0]);
+    return groupsManaged.toArray(new String[groupsManaged.size()]);
   }
 
   /**
@@ -143,7 +147,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
       it = groupsSet.iterator();
       groupsCur = new Vector<LDAPEntry>();
       while (it.hasNext()) {
-        curGroup = (LDAPEntry) it.next();
+        curGroup = it.next();
         if (curGroup != null) {
           grId = "???";
           try {
@@ -163,7 +167,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
       }
       groupsSet = groupsCur;
     }
-    return (String[]) usersManaged.toArray(new String[0]);
+    return usersManaged.toArray(new String[usersManaged.size()]);
   }
 
   protected Vector<String> getTRUEUserIds(String lds, LDAPEntry groupEntry)
@@ -182,15 +186,6 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
           "root.MSG_GEN_PARAM_VALUE", "stringVals[" + i + "] = "
           + stringVals[i]);
       usersVector.add(stringVals[i]);
-      /*
-       * try { //Case of most common OpenLDAP implementation. //memberUid = specificId //Verify that
-       * the user exist in the scope. Is it necessary for Samse ? userEntry =
-       * LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
-       * driverSettings.getScope(), driverSettings.getUsersIdFilter(stringVals[i])); if (userEntry
-       * != null) { usersVector.add(stringVals[i]); } } catch (AdminException e) {
-       * SilverTrace.error("admin", "LDAPGroupSamse.getTRUEUserIds()", "admin.MSG_ERR_LDAP_GENERAL",
-       * "USER NOT FOUND : " + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e); }
-       */
     }
     stringVals = null;
     SilverTrace.info("admin", "LDAPGroupSamse.getTRUEUserIds()",
@@ -209,7 +204,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
       String extraFilter) throws AdminException {
     if ((parentId != null) && (parentId.length() > 0)) { // ALL ROOT GROUPS
-      return new LDAPEntry[0];
+      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     } else {
       LDAPEntry[] theEntries = null;
       String theFilter;
@@ -233,8 +228,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupSamse.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-          synchroReport.append("PB getting Group's subgroups : " + parentId
-              + "\n");
+          append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroReport.error("LDAPGroupSamse.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine (parentId = "
               + parentId + ")", e);
@@ -305,7 +299,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
     Vector<LDAPEntry> groupsIdsSet = new Vector<LDAPEntry>(les.length);
     for (i = 0; i < les.length; i++) {
       groupsIdsSet.add(les[i]);
-      groupsManaged.put(les[i].getDN().toString(), translateGroup(lds, les[i]));
+      groupsManaged.put(les[i].getDN(), translateGroup(lds, les[i]));
     }
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
@@ -315,7 +309,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
         theGroup = it.next();
         SilverTrace.info("admin", "LDAPGroupSamse.getAllChangedGroups()",
             "root.MSG_GEN_PARAM_VALUE", "GroupTraite2="
-            + theGroup.getDN().toString());
+            + theGroup.getDN());
         les = LDAPUtility.search1000Plus(lds, driverSettings
             .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
             "(&" + driverSettings.getGroupsFullFilter() + "("
@@ -326,18 +320,18 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
         for (i = 0; i < les.length; i++) {
           SilverTrace.info("admin", "LDAPGroupSamse.getAllChangedGroups()",
               "root.MSG_GEN_PARAM_VALUE", "GroupFound2=" + les[i].getDN());
-          if (!groupsManaged.containsKey(les[i].getDN().toString())) {
+          if (!groupsManaged.containsKey(les[i].getDN())) {
             SilverTrace.info("admin", "LDAPGroupSamse.getAllChangedGroups()",
                 "root.MSG_GEN_PARAM_VALUE", "GroupAjoute2="
-                + les[i].getDN().toString());
+                + les[i].getDN());
             groupsCur.add(les[i]);
-            groupsManaged.put(les[i].getDN().toString(), translateGroup(lds,
+            groupsManaged.put(les[i].getDN(), translateGroup(lds,
                 les[i]));
           }
         }
       }
       groupsIdsSet = groupsCur;
     }
-    return (Group[]) groupsManaged.values().toArray(new Group[0]);
+    return groupsManaged.values().toArray(new Group[groupsManaged.size()]);
   }
 }

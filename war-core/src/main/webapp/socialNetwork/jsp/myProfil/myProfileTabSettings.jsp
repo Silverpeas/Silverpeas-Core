@@ -13,9 +13,10 @@
 <%
   pageContext.setAttribute("availableLooks", gef.getAvailableLooks());
 %>-->
+<div id="settings">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
   <table border="0" cellspacing="0" cellpadding="5" width="100%">
-    <tr>
+    <tr id="language">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteLanguage'}"/> :</td>
       <td>
         <select name="SelectedLanguage" size="1">
@@ -58,7 +59,7 @@
         </tr>
       </c:otherwise>
     </c:choose>
-    <tr>
+    <tr id="defaultSpace">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.DefaultWorkSpace'}"/> :</td>
       <td>
         <select name="SelectedWorkSpace" size="1">
@@ -91,7 +92,7 @@
       </td>
     </tr>
     </c:if>
-    <tr>
+    <tr id="thesaurus">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.Thesaurus'}"/> :</td>
       <td>
         <input name="opt_thesaurusStatus" type="checkbox"
@@ -99,7 +100,7 @@
                <c:if test="${preferences.thesaurusEnabled}">checked="checked"</c:if>  />
       </td>
     </tr>
-    <tr>
+    <tr id="dragndrop">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.DragDrop'}"/> :</td>
       <td>
         <input name="opt_dragDropStatus" type="checkbox"
@@ -107,7 +108,7 @@
                <c:if test="${preferences.dragAndDropEnabled}">checked="checked"</c:if> />
       </td>
     </tr>
-    <tr>
+    <tr id="webdav">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.WebdavEditing'}"/> :</td>
       <td>
         <input name="opt_webdavEditingStatus" type="checkbox"
@@ -126,6 +127,7 @@
     </view:buttonPane>
   </center>
 </form>
+</div>
 <script type="text/javascript">
   function submitForm() {
     var currentLook = '<caption:out balue="${preferences.look}"/>';

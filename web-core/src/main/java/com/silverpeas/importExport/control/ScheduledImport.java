@@ -23,8 +23,6 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.File;
-
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.scheduler.Scheduler;
@@ -38,6 +36,8 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.io.File;
 
 public class ScheduledImport implements SchedulerEventListener {
 
@@ -84,8 +84,7 @@ public class ScheduledImport implements SchedulerEventListener {
     ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");
 
     File[] files = dir.listFiles();
-    for (int f = 0; f < files.length; f++) {
-      File file = files[f];
+    for (File file : files) {
       if (file.isFile()) {
         String extension = FileRepositoryManager.getFileExtension(file.getName());
         if ("xml".equalsIgnoreCase(extension)) {

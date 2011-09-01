@@ -183,22 +183,22 @@ public class ArrayPaneWithDataSource implements ArrayPane {
       return;
     }
 
-    target = (String) request.getParameter(TARGET_PARAMETER_NAME);
+    target = request.getParameter(TARGET_PARAMETER_NAME);
 
     if (target != null) {
       if (target.equals(name)) {
-        String action = (String) request.getParameter(ACTION_PARAMETER_NAME);
+        String action = request.getParameter(ACTION_PARAMETER_NAME);
 
         SilverTrace.info("viewgenerator", "ArrayPaneWithDataSource.init()",
             "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action
             + "'");
         if (action != null) {
           if (action.equals("Sort")) {
-            String newState = (String) request
+            String newState = request
                 .getParameter(COLUMN_PARAMETER_NAME);
 
             if (newState != null) {
-              int ns = new Integer(newState).intValue();
+              int ns = Integer.parseInt(newState);
 
               if ((ns == state.getSortColumn())
                   || (ns + state.getSortColumn() == 0)) {
@@ -381,7 +381,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     if (columns == null || columnNumber <= 0 || columnNumber > columns.size()) {
       return;
     }
-    ArrayColumn col = (ArrayColumn) (columns.get(columnNumber - 1));
+    ArrayColumn col = columns.get(columnNumber - 1);
     col.setSortable(mode == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
   }
 
@@ -544,7 +544,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         ac.setRoutingAddress(m_RoutingAddress);
       } else {
         ac.setRoutingAddress(fra);
-        if (fra == "") {
+        if ("".equals(fra)) {
           ac.setSortable(false);
         }
       }
@@ -618,7 +618,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += "<a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";
@@ -637,7 +637,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += " | <a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";
@@ -694,7 +694,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     }
     result += "<tr>";
     for (int i = 0; i < columns.size(); i++) {
-      result += ((ArrayColumn) columns.elementAt(i)).print(isXHTML);
+      result += columns.elementAt(i).print(isXHTML);
       if (m_CellsSpacing == 0) {
         result += printPseudoColumn();
       }
@@ -719,9 +719,9 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
       for (int i = first; (i < lines.size()) && (i < first + max); i++) {
         if (m_CellsSpacing == 0) {
-          result += ((ArrayLine) lines.elementAt(i)).printWithPseudoColumns();
+          result += lines.elementAt(i).printWithPseudoColumns();
         } else {
-          result += ((ArrayLine) lines.elementAt(i)).print();
+          result += lines.elementAt(i).print();
         }
         last = i;
       }
@@ -751,7 +751,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += "<a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";
@@ -770,7 +770,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         result += " | <a class=\"ArrayNavigation\" href=\"";
         String url = getUrl();
 
-        if (url.indexOf("?") < 0) {
+        if (!url.contains("?")) {
           url += "?";
         } else {
           url += "&";

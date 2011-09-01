@@ -29,13 +29,14 @@ import java.util.List;
 
 public class GoogleTab {
 
-  private int id = 0;
-  private String label = null;
+  private int id;
+  private String label;
   private List<GoogleSite> sites = null;
 
   public GoogleTab(int id, String label) {
     this.id = id;
     this.label = label;
+    this.sites = new ArrayList<GoogleSite>();
   }
 
   public int getId() {
@@ -63,9 +64,6 @@ public class GoogleTab {
   }
 
   public void addSite(GoogleSite site) {
-    if (sites == null) {
-      sites = new ArrayList<GoogleSite>();
-    }
     sites.add(site);
   }
 }

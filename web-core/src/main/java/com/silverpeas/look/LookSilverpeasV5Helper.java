@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -56,8 +56,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
-import static com.stratelia.webactiv.beans.admin.Admin.SPACE_KEY_PREFIX;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
@@ -101,8 +99,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
-    if (!spaceId.startsWith(SPACE_KEY_PREFIX)) {
-      this.spaceId = SPACE_KEY_PREFIX + spaceId;
+    if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+      this.spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
     }
   }
 
@@ -122,8 +120,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setSubSpaceId(String subSpaceId) {
     this.subSpaceId = subSpaceId;
-    if (!subSpaceId.startsWith(SPACE_KEY_PREFIX)) {
-      this.subSpaceId = SPACE_KEY_PREFIX + subSpaceId;
+    if (!subSpaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+      this.subSpaceId = Admin.SPACE_KEY_PREFIX + subSpaceId;
     }
   }
 
@@ -168,6 +166,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    * @see com.silverpeas.look.LookHelper#setComponentIdAndSpaceIds(java.lang.String,
    * java.lang.String, java.lang.String)
    */
+  @Override
   public void setComponentIdAndSpaceIds(String spaceId, String subSpaceId, String componentId) {
     setComponentId(componentId);
 
@@ -202,8 +201,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.orga = mainSessionController.getOrganizationController();
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
-    this.defaultMessages = new ResourceLocator(
-        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+    this.defaultMessages = new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
       this.messages = new ResourceLocator(resources.getString("MessageBundle"),
@@ -382,7 +380,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public boolean getSettings(String key) {
-    return SilverpeasSettings.readBoolean(resources, key, false);
+    return resources.getBoolean(key, false);
   }
 
   /*
@@ -391,7 +389,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public boolean getSettings(String key, boolean defaultValue) {
-    return SilverpeasSettings.readBoolean(resources, key, defaultValue);
+    return resources.getBoolean(key, defaultValue);
   }
 
   /*
@@ -400,7 +398,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getSettings(String key, String defaultValue) {
-    return SilverpeasSettings.readString(resources, key, defaultValue);
+    return resources.getString(key, defaultValue);
   }
 
   /*
@@ -410,9 +408,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public String getString(String key) {
     if (key.startsWith("lookSilverpeasV5")) {
-      return SilverpeasSettings.readString(defaultMessages, key, "");
+      return defaultMessages.getString(key, "");
     }
-    return SilverpeasSettings.readString(messages, key, "");
+    return messages.getString(key, "");
   }
 
   /*
@@ -433,18 +431,13 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (topItems == null) {
       topItems = new ArrayList<TopItem>();
       topSpaceIds = new ArrayList<String>();
-
-      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop"), ",");
-
-      String itemId = null;
-      ComponentInstLight component = null;
-      SpaceInstLight space = null;
+      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
       while (tokenizer.hasMoreTokens()) {
-        itemId = tokenizer.nextToken();
+        String itemId = tokenizer.nextToken();
 
-        if (itemId.startsWith(SPACE_KEY_PREFIX)) {
+        if (itemId.startsWith(Admin.SPACE_KEY_PREFIX)) {
           if (orga.isSpaceAvailable(itemId, userId)) {
-            space = orga.getSpaceInstLightById(itemId);
+            SpaceInstLight space = orga.getSpaceInstLightById(itemId);
             SpaceInstLight rootSpace = orga.getRootSpace(itemId);
             TopItem item = new TopItem();
             item.setLabel(space.getName(getLanguage()));
@@ -455,7 +448,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           }
         } else {
           if (orga.isComponentAvailable(itemId, userId)) {
-            component = orga.getComponentInstLight(itemId);
+            ComponentInstLight component = orga.getComponentInstLight(itemId);
             String currentSpaceId = component.getDomainFatherId();
             SpaceInstLight rootSpace = orga.getRootSpace(currentSpaceId);
             TopItem item = new TopItem();
@@ -549,8 +542,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return defaultSpaceId;
   }
 
-  private PublicationHelper getPublicationHelper() throws ClassNotFoundException,
-      InstantiationException, IllegalAccessException {
+  private PublicationHelper getPublicationHelper() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
     if (kmeliaTransversal == null) {
       String helperClassName = resources.getString("publicationHelper",
           "com.stratelia.webactiv.kmelia.KmeliaTransversal");
@@ -599,8 +591,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (publicationBm == null) {
       try {
         publicationBm =
-            ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class)).create();
+            EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+                PublicationBmHome.class).create();
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -632,7 +624,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       destination = getParsedDestination(destination, "%ST_USER_LOGIN%",
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
-          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName()));
+          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",

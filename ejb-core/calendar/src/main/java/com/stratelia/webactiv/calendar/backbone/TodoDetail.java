@@ -26,9 +26,9 @@ package com.stratelia.webactiv.calendar.backbone;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Vector;
 
 import com.stratelia.webactiv.calendar.model.Attendee;
+import java.util.List;
 
 public class TodoDetail implements Serializable {
 
@@ -39,12 +39,12 @@ public class TodoDetail implements Serializable {
   private String id = null;
   private String name = null;
   private String delegatorId = null;
-  private Vector<Attendee> attendees = null;
+  private List<Attendee> attendees = null;
   private String description = null;
   private Date startDate = null;
   private Date endDate = null;
   private int percentCompleted = PERCENT_UNDEFINED;
-  private java.util.Date completedDate = null;
+  private Date completedDate = null;
   private String componentId = null;
   private String spaceId = null;
   private String externalId = null;
@@ -81,7 +81,7 @@ public class TodoDetail implements Serializable {
    * @param attendees a list of Attendee objects
    */
 
-  public void setAttendees(Vector<Attendee> attendees) {
+  public void setAttendees(List<Attendee> attendees) {
     this.attendees = attendees;
   }
 
@@ -89,7 +89,7 @@ public class TodoDetail implements Serializable {
    * @return a list of Attendee objects
    */
 
-  public Vector<Attendee> getAttendees() {
+  public List<Attendee> getAttendees() {
     return attendees;
   }
 

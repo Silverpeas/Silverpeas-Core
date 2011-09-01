@@ -48,9 +48,6 @@ public class FileFilterAgenda implements FilenameFilter {
    */
   @Override
   public boolean accept(File dir, String name) {
-    if (name.startsWith("user@") && name.endsWith("agenda")) {
-      return true;
-    }
-    return false;
+    return name.startsWith("user@") && name.endsWith("agenda");
   }
 }

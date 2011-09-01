@@ -33,91 +33,110 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class ImageUtil {
 
-  public static String[] getWidthAndHeightByWidth(File image,
-      int widthParam) {
+  public static String[] getWidthAndHeightByWidth(File image, int widthParam) {
     String[] result = new String[2];
-    try {
-      BufferedImage inputBuf = ImageIO.read(image);
-      // calcul de la taille de la sortie
-      double inputBufWidth;
-      double inputBufHeight;
-      double width;
-      double ratio;
-      double height;
-      if (inputBuf.getWidth() > widthParam) {
-        inputBufWidth = inputBuf.getWidth();
-        inputBufHeight = inputBuf.getHeight();
-        width = widthParam;
-        ratio = inputBufWidth / width;
-        height = inputBufHeight / ratio;
-      } else {
-        width = inputBuf.getWidth();
-        height = inputBuf.getHeight();
+    if (image != null && image.isFile()) {
+      try {
+        BufferedImage inputBuf = ImageIO.read(image);
+        // calcul de la taille de la sortie
+        double inputBufWidth;
+        double inputBufHeight;
+        double width;
+        double ratio;
+        double height;
+        if (inputBuf.getWidth() > widthParam) {
+          inputBufWidth = inputBuf.getWidth();
+          inputBufHeight = inputBuf.getHeight();
+          width = widthParam;
+          ratio = inputBufWidth / width;
+          height = inputBufHeight / ratio;
+        } else {
+          width = inputBuf.getWidth();
+          height = inputBuf.getHeight();
+        }
+        String sWidth = Double.toString(width);
+        String sHeight = Double.toString(height);
+  
+        result[0] = sWidth.substring(0, sWidth.indexOf("."));
+        result[1] = sHeight.substring(0, sHeight.indexOf("."));
+        
+        return result;
+      } catch (Exception e) {
+        if (image != null) {
+          SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR",
+            "File not found : " + image.getAbsolutePath());
+        }
       }
-      String sWidth = Double.toString(width);
-      String sHeight = Double.toString(height);
-
-      result[0] = sWidth.substring(0, sWidth.indexOf("."));
-      result[1] = sHeight.substring(0, sHeight.indexOf("."));
-    } catch (Exception e) {
-      SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR", e);
-      result[0] = "";
-      result[1] = "";
     }
+    result[0] = "";
+    result[1] = "";
     return result;
   }
 
-  public static String[] getWidthAndHeightByHeight(File image,
-      int heightParam) {
+  public static String[] getWidthAndHeightByHeight(File image, int heightParam) {
     String[] result = new String[2];
-    try {
-      BufferedImage inputBuf = ImageIO.read(image);
-      // calcul de la taille de la sortie
-      double inputBufWidth;
-      double inputBufHeight;
-      double height;
-      double ratio;
-      double width;
-      if (inputBuf.getHeight() > heightParam) {
-        inputBufHeight = inputBuf.getHeight();
-        inputBufWidth = inputBuf.getWidth();
-        height = heightParam;
-        ratio = inputBufHeight / height;
-        width = inputBufWidth / ratio;
-      } else {
-        height = inputBuf.getHeight();
-        width = inputBuf.getWidth();
-      }
-      String sWidth = Double.toString(width);
-      String sHeight = Double.toString(height);
+    if (image != null && image.isFile()) {
+      try {
+        BufferedImage inputBuf = ImageIO.read(image);
+        // calcul de la taille de la sortie
+        double inputBufWidth;
+        double inputBufHeight;
+        double height;
+        double ratio;
+        double width;
+        if (inputBuf.getHeight() > heightParam) {
+          inputBufHeight = inputBuf.getHeight();
+          inputBufWidth = inputBuf.getWidth();
+          height = heightParam;
+          ratio = inputBufHeight / height;
+          width = inputBufWidth / ratio;
+        } else {
+          height = inputBuf.getHeight();
+          width = inputBuf.getWidth();
+        }
+        String sWidth = Double.toString(width);
+        String sHeight = Double.toString(height);
 
-      result[0] = sWidth.substring(0, sWidth.indexOf("."));
-      result[1] = sHeight.substring(0, sHeight.indexOf("."));
-    } catch (Exception e) {
-      SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR", e);
-      result[0] = "";
-      result[1] = "";
+        result[0] = sWidth.substring(0, sWidth.indexOf("."));
+        result[1] = sHeight.substring(0, sHeight.indexOf("."));
+
+        return result;
+      } catch (Exception e) {
+        if (image != null) {
+          SilverTrace.error("util", "ImageUtil.getWidthAndHeightByHeight", "root.MSG_GEN_ERROR",
+            "File not found : " + image.getAbsolutePath());
+        }
+      }
     }
+    result[0] = "";
+    result[1] = "";
     return result;
   }
   
   public static String[] getWidthAndHeight(File image) {
 	    String[] result = new String[2];
-	    try {
-	      BufferedImage inputBuf = ImageIO.read(image);
-	      // calcul de la taille de la sortie
-	      double inputBufWidth = inputBuf.getWidth();
-	      double inputBufHeight = inputBuf.getHeight();
-	      String sWidth = Double.toString(inputBufWidth);
-	      String sHeight = Double.toString(inputBufHeight);
-
-	      result[0] = sWidth.substring(0, sWidth.indexOf("."));
-	      result[1] = sHeight.substring(0, sHeight.indexOf("."));
-	    } catch (Exception e) {
-	      SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR", e);
-	      result[0] = "";
-	      result[1] = "";
+	    if (image != null && image.isFile()) {
+  	    try {
+  	      BufferedImage inputBuf = ImageIO.read(image);
+  	      // calcul de la taille de la sortie
+  	      double inputBufWidth = inputBuf.getWidth();
+  	      double inputBufHeight = inputBuf.getHeight();
+  	      String sWidth = Double.toString(inputBufWidth);
+  	      String sHeight = Double.toString(inputBufHeight);
+  
+  	      result[0] = sWidth.substring(0, sWidth.indexOf("."));
+  	      result[1] = sHeight.substring(0, sHeight.indexOf("."));
+  	      
+  	      return result;
+  	    } catch (Exception e) {
+  	      if (image != null) {
+            SilverTrace.error("util", "ImageUtil.getWidthAndHeight", "root.MSG_GEN_ERROR",
+              "File not found : " + image.getAbsolutePath());
+          }  	      
+  	    }
 	    }
+	    result[0] = "";
+      result[1] = "";
 	    return result;
 	  }
   

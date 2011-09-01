@@ -23,6 +23,45 @@
  */
 package com.silverpeas.jobDomainPeas.control;
 
+import com.silverpeas.jobDomainPeas.DomainNavigationStock;
+import com.silverpeas.jobDomainPeas.GroupNavigationStock;
+import com.silverpeas.jobDomainPeas.JobDomainPeasDAO;
+import com.silverpeas.jobDomainPeas.JobDomainPeasException;
+import com.silverpeas.jobDomainPeas.JobDomainPeasTrappedException;
+import com.silverpeas.jobDomainPeas.JobDomainSettings;
+import com.silverpeas.jobDomainPeas.SynchroUserWebServiceItf;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.csv.CSVReader;
+import com.silverpeas.util.csv.Variant;
+import com.silverpeas.util.security.X509Factory;
+import com.stratelia.silverpeas.authentication.Authentication;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.selection.Selection;
+import com.stratelia.silverpeas.selection.SelectionException;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.GroupProfileInst;
+import com.stratelia.webactiv.beans.admin.SynchroReport;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.exception.UtilTrappedException;
+import org.apache.commons.fileupload.FileItem;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,46 +81,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
-import org.apache.commons.fileupload.FileItem;
-
-import com.silverpeas.jobDomainPeas.DomainNavigationStock;
-import com.silverpeas.jobDomainPeas.GroupNavigationStock;
-import com.silverpeas.jobDomainPeas.JobDomainPeasDAO;
-import com.silverpeas.jobDomainPeas.JobDomainPeasException;
-import com.silverpeas.jobDomainPeas.JobDomainPeasTrappedException;
-import com.silverpeas.jobDomainPeas.JobDomainSettings;
-import com.silverpeas.jobDomainPeas.SynchroUserWebServiceItf;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.csv.CSVReader;
-import com.silverpeas.util.csv.Variant;
-import com.silverpeas.util.security.X509Factory;
-import com.stratelia.silverpeas.authentication.Authentication;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.selection.SelectionException;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
-import com.stratelia.webactiv.beans.admin.DomainDriver;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.DomainProperty;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.GroupProfileInst;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.exception.UtilTrappedException;
 
 /**
  * Class declaration
@@ -139,11 +138,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean isAccessGranted() {
-    if (!getUserManageableGroupIds().isEmpty() || getUserDetail().isAccessAdmin() || getUserDetail().
-        isAccessDomainManager()) {
-      return true;
-    }
-    return false;
+    return !getUserManageableGroupIds().isEmpty() || getUserDetail().isAccessAdmin() || getUserDetail().
+        isAccessDomainManager();
   }
 
   public void setRefreshDomain(boolean refreshDomain) {
@@ -285,16 +281,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
 
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
-      int numPropertyRegroup = SilverpeasSettings.readInt(specificRs,
-          "property.Grouping", -1);
+      int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomRegroup = null;
       String theUserIdToRegroup = m_TargetUserId;
       String[] newUserIds;
       List<String> lUserIds;
       List<String> lNewUserIds;
       if (numPropertyRegroup > -1) {
-        String nomPropertyRegroupement = SilverpeasSettings.readString(
-            specificRs, "property_" + numPropertyRegroup + ".Name", null);
+        String nomPropertyRegroupement = specificRs.getString("property_" + numPropertyRegroup + ".Name", null);
 
         if (nomPropertyRegroupement != null) {
           // Suppression de l'appartenance de l'utilisateur au groupe auquel il
@@ -363,7 +357,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @param filePart
    * @throws UtilTrappedException
    * @throws JobDomainPeasTrappedException
-   * @throws JobDomainPeasException 
+   * @throws JobDomainPeasException
    */
   public void importCsvUsers(FileItem filePart) throws UtilTrappedException,
       JobDomainPeasTrappedException, JobDomainPeasException {
@@ -436,8 +430,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       prenom = csvValues[i][1].getValueString(); // verifier 100 char max
       if (prenom.length() > 100) {
         listErrors.append(getErrorMessage(i + 1, 2, prenom));
-        listErrors.append(getString("JDP.nbCarMax")).append(" 100 "
-            + getString("JDP.caracteres")).append("<br/>");
+        listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(
+            getString("JDP.caracteres")).append("<br/>");
       }
 
       // Login
@@ -450,9 +444,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
             JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
             append("<br/>");
-      } else if (login.length() > 20) {// verifier 20 char max
-        listErrors.append(getErrorMessage(i + 1, 3, login));
-        listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
+      } else if (login.length() > 50) {// verifier 50 char max
+        listErrors.append(getErrorMessage(i+1, 3, login));
+        listErrors.append(getString("JDP.nbCarMax")).append(" 50 ").append(getString(
             "JDP.caracteres")).append("<br/>");
       } else {// verif login unique
         existingLogin = m_AdminCtrl.getUserIdByLoginAndDomain(login,
@@ -484,8 +478,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       motDePasse = csvValues[i][5].getValueString();
       // password is not mandatory
       if (StringUtil.isDefined(motDePasse)) {
-        if (!JobDomainSettings.m_BlanksAllowedInPwd
-            && motDePasse.indexOf(" ") != -1) {
+        if (!JobDomainSettings.m_BlanksAllowedInPwd && motDePasse.contains(" ")) {
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
           listErrors.append(getString("JDP.espaces")).append("<br/>");
         } else if (motDePasse.length() < JobDomainSettings.m_MinLengthPwd) {// verifier
@@ -607,21 +600,21 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     // pas d'erreur, on importe les utilisateurs
     HashMap<String, String> properties;
-    for (int i = 0; i < csvValues.length; i++) {
+    for (Variant[] csvValue : csvValues) {
       // Nom
-      nom = csvValues[i][0].getValueString();
+      nom = csvValue[0].getValueString();
 
       // Prenom
-      prenom = csvValues[i][1].getValueString();
+      prenom = csvValue[1].getValueString();
 
       // Login
-      login = csvValues[i][2].getValueString();
+      login = csvValue[2].getValueString();
 
       // Email
-      email = csvValues[i][3].getValueString();
+      email = csvValue[3].getValueString();
 
       // Droits
-      droits = csvValues[i][4].getValueString();
+      droits = csvValue[4].getValueString();
       if ("Admin".equals(droits)) {
         userAccessLevel = "A";
       } else if ("AdminPdc".equals(droits)) {
@@ -637,7 +630,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // MotDePasse
-      motDePasse = csvValues[i][5].getValueString();
+      motDePasse = csvValue[5].getValueString();
 
       // données spécifiques
       properties = new HashMap<String, String>();
@@ -646,39 +639,39 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             || "0".equals(getTargetDomain().getId())) {// domaine Silverpeas
 
           // title
-          title = csvValues[i][6].getValueString();
+          title = csvValue[6].getValueString();
           properties.put(csvReader.getM_specificParameterName(0), title);
 
           // company
-          company = csvValues[i][7].getValueString();
+          company = csvValue[7].getValueString();
           properties.put(csvReader.getM_specificParameterName(1), company);
 
           // position
-          position = csvValues[i][8].getValueString();
+          position = csvValue[8].getValueString();
           properties.put(csvReader.getM_specificParameterName(2), position);
 
           // boss
-          boss = csvValues[i][9].getValueString();
+          boss = csvValue[9].getValueString();
           properties.put(csvReader.getM_specificParameterName(3), boss);
 
           // phone
-          phone = csvValues[i][10].getValueString();
+          phone = csvValue[10].getValueString();
           properties.put(csvReader.getM_specificParameterName(4), phone);
 
           // homePhone
-          homePhone = csvValues[i][11].getValueString();
+          homePhone = csvValue[11].getValueString();
           properties.put(csvReader.getM_specificParameterName(5), homePhone);
 
           // fax
-          fax = csvValues[i][12].getValueString();
+          fax = csvValue[12].getValueString();
           properties.put(csvReader.getM_specificParameterName(6), fax);
 
           // cellularPhone
-          cellularPhone = csvValues[i][13].getValueString();
+          cellularPhone = csvValue[13].getValueString();
           properties.put(csvReader.getM_specificParameterName(7), cellularPhone);
 
           // address
-          address = csvValues[i][14].getValueString();
+          address = csvValue[14].getValueString();
           properties.put(csvReader.getM_specificParameterName(8), address);
 
         } else {// domaine SQL
@@ -686,11 +679,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // informations spécifiques
           for (int j = 0; j < csvReader.getM_specificNbCols(); j++) {
             if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
-              informationSpecifiqueString = csvValues[i][j + 6].getValueString();
+              informationSpecifiqueString = csvValue[j + 6].getValueString();
               properties.put(csvReader.getM_specificParameterName(j),
                   informationSpecifiqueString);
             } else if (Variant.TYPE_BOOLEAN.equals(csvReader.getM_specificColType(j))) {
-              informationSpecifiqueBoolean = csvValues[i][j + 6].getValueBoolean();
+              informationSpecifiqueBoolean = csvValue[j + 6].getValueBoolean();
               if (informationSpecifiqueBoolean) {
                 properties.put(csvReader.getM_specificParameterName(j), "1");
               } else {
@@ -722,20 +715,18 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         && getTargetDomain().getDriverClassName().equals(
         "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
-      int numPropertyRegroup = SilverpeasSettings.readInt(specificRs,
-          "property.Grouping", -1);
+      int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomLastGroup = null;
       if (numPropertyRegroup > -1) {
-        String nomPropertyRegroupement = SilverpeasSettings.readString(
-            specificRs, "property_" + numPropertyRegroup + ".Name", null);
+        String nomPropertyRegroupement = specificRs.getString("property_" + numPropertyRegroup + ".Name", null);
         if (nomPropertyRegroupement != null) {
           // Recherche du nom du regroupement (nom du groupe)
           String[] keys = theUser.getPropertiesNames();
           String key = null;
           String value = null;
           boolean trouve = false;
-          for (int i = 0; i < keys.length; i++) {
-            key = keys[i];
+          for (String key1 : keys) {
+            key = key1;
             value = theUser.getValue(key);
 
             if (key.equals(nomPropertyRegroupement)) {
@@ -891,8 +882,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       String directGroupId = null;
       String rootGroupId = null;
       List<String> groupIdLinksToRemove = new ArrayList<String>();
-      for (int g = 0; g < directGroupIds.size(); g++) {
-        directGroupId = directGroupIds.get(g);
+      for (String directGroupId1 : directGroupIds) {
+        directGroupId = directGroupId1;
 
         // get root group of each directGroup
         List<String> groupPath = m_AdminCtrl.getPathToGroup(directGroupId);
@@ -913,8 +904,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       if (!deleteUser) {
         // removes only links between user and manageable groups
-        for (Iterator<String> iterator = groupIdLinksToRemove.iterator(); iterator.hasNext();) {
-          String groupIdLinkToRemove = iterator.next();
+        for (String groupIdLinkToRemove : groupIdLinksToRemove) {
           m_AdminCtrl.removeUserFromGroup(idUser, groupIdLinkToRemove);
         }
 
@@ -1102,14 +1092,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (profile != null) {
       List<String> groupIds = profile.getAllGroups();
       Group group = null;
-      for (int nI = 0; nI < groupIds.size(); nI++) {
-        group = m_AdminCtrl.getGroupById(groupIds.get(nI));
+      for (String groupId : groupIds) {
+        group = m_AdminCtrl.getGroupById(groupId);
         groups.add(group);
       }
       List<String> userIds = profile.getAllUsers();
       UserDetail user = null;
-      for (int nI = 0; nI < userIds.size(); nI++) {
-        user = getUserDetail(userIds.get(nI));
+      for (String userId : userIds) {
+        user = getUserDetail(userId);
         users.add(user);
       }
     }
@@ -1168,13 +1158,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean isGroupRoot(String groupId) throws JobDomainPeasException {
     Group gr = m_AdminCtrl.getGroupById(groupId);
-
     if (GroupNavigationStock.isGroupValid(gr)) {
-      if (this.refreshDomain && (!StringUtil.isDefined(gr.getSuperGroupId()) || "-1".equals(gr.
-          getSuperGroupId()))) {
-        return true;
-      }
-      return false;
+      return this.refreshDomain && (!StringUtil.isDefined(gr.getSuperGroupId()) || "-1".equals(gr.
+          getSuperGroupId()));
     }
     return false;
   }
@@ -1195,10 +1181,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (isOnlyGroupManager() && !isGroupManagerOnCurrentGroup()) {
       groups = filterGroupsToGroupManager(groups);
     }
-    for (int i = 0; i < groups.length; i++) {
-      if (groups[i] != null) {
-        groups[i].setNbUsers(getOrganizationController().getAllSubUsersNumber(
-            groups[i].getId()));
+    for (Group group : groups) {
+      if (group != null) {
+        group.setNbUsers(getOrganizationController().getAllSubUsersNumber(
+            group.getId()));
       }
     }
     return groups;
@@ -1546,7 +1532,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public Group[] getAllRootGroups() {
     if (targetDomainId.length() <= 0) {
-      return new Group[0];
+      return ArrayUtil.EMPTY_GROUP_ARRAY;
     }
     Group[] selGroupsArray = m_TargetDomain.getAllGroupPage();
 
@@ -1564,8 +1550,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     List<Group> temp = new ArrayList<Group>();
     // filter groups
     Group group = null;
-    for (int g = 0; g < groups.length; g++) {
-      group = groups[g];
+    for (Group group1 : groups) {
+      group = group1;
       if (manageableGroupIds.contains(group.getId())) {
         temp.add(group);
       } else {
@@ -1648,8 +1634,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // 3-Vérif domainName unique dans la table ST_Domain
     Domain[] tabDomain = m_AdminCtrl.getAllDomains();
     Domain domain;
-    for (int j = 0; j < tabDomain.length; j++) {
-      domain = tabDomain[j];
+    for (Domain aTabDomain : tabDomain) {
+      domain = aTabDomain;
       if (domain.getName().toLowerCase().equals(domainName.toLowerCase())) {
         throw trappedException;
       }
@@ -1727,12 +1713,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     // properties templateDomainSQL
-    ResourceLocator templateDomainSql = new ResourceLocator(
-        "com.stratelia.silverpeas.domains.templateDomainSQL", "");
-    String cryptMethod = SilverpeasSettings.readString(templateDomainSql,
-        "database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
-    boolean allowPasswordChange = SilverpeasSettings.readBoolean(
-        templateDomainSql, "allowPasswordChange", true);
+    ResourceLocator templateDomainSql = new ResourceLocator("com.stratelia.silverpeas.domains.templateDomainSQL", "");
+    String cryptMethod = templateDomainSql.getString("database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
+    boolean allowPasswordChange = templateDomainSql.getBoolean("allowPasswordChange", true);
 
     BufferedReader readerTemplateDomainSQL = null;
     try {
@@ -2063,8 +2046,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     trappedException.setGoBackPage("domainContent");
     Domain[] tabDomain = m_AdminCtrl.getAllDomains();
     Domain domain;
-    for (int j = 0; j < tabDomain.length; j++) {
-      domain = tabDomain[j];
+    for (Domain aTabDomain : tabDomain) {
+      domain = aTabDomain;
       if (!domain.getId().equals(theNewDomain.getId())
           && domain.getName().toLowerCase().equals(domainName.toLowerCase())) {
         throw trappedException;
@@ -2111,8 +2094,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     trappedException.setGoBackPage("domainContent");
     Domain[] tabDomain = m_AdminCtrl.getAllDomains();
     Domain domain;
-    for (int j = 0; j < tabDomain.length; j++) {
-      domain = tabDomain[j];
+    for (Domain aTabDomain : tabDomain) {
+      domain = aTabDomain;
       if (!domain.getId().equals(theNewDomain.getId())
           && domain.getName().toLowerCase().equals(domainName.toLowerCase())) {
         throw trappedException;
@@ -2247,8 +2230,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (m_TargetDomain != null) {
       m_TargetDomain.refresh();
     }
-    for (int i = 0; i < m_GroupsPath.size(); i++) {
-      m_GroupsPath.get(i).refresh();
+    for (GroupNavigationStock aM_GroupsPath : m_GroupsPath) {
+      aM_GroupsPath.refresh();
     }
     setTargetUser(null);
   }
@@ -2592,8 +2575,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public UserDetail checkUser(UserDetail userToCheck) {
     UserDetail existingUser = null;
     UserDetail[] existingUsers = m_TargetDomain.getAllUserPage();
-    for (int i = 0; i < existingUsers.length; i++) {
-      existingUser = existingUsers[i];
+    for (UserDetail existingUser1 : existingUsers) {
+      existingUser = existingUser1;
       if (userToCheck.getLastName().equalsIgnoreCase(existingUser.getLastName())
           && userToCheck.getFirstName().equalsIgnoreCase(existingUser.getFirstName())
           && userToCheck.geteMail().equalsIgnoreCase(existingUser.geteMail())) {
@@ -2612,8 +2595,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       return false;
     }
     List<String> groupIds = getUserManageableGroupIds();
-    for (Iterator<String> iterator = groupIds.iterator(); iterator.hasNext();) {
-      String groupId = iterator.next();
+    for (String groupId : groupIds) {
       UserDetail[] users = getOrganizationController().getAllUsersOfGroup(groupId);
       UserDetail user = getUser(m_TargetUserId, users);
 

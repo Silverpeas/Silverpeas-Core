@@ -35,15 +35,15 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.Calendar;
 import java.util.Date;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * this class allows to convert objects into object "Event" usable by the monthCalendar
  */
-public class Event extends Object {
+public class Event {
 
   private String id = null;
   private String name = null;
@@ -220,10 +220,7 @@ public class Event extends Object {
         "root.MSG_GEN_PARAM_VALUE", "dateDay = " + dateDay.toString()
         + ", startDate = " + startDate.toString());
 
-    if (dateDay.equals(startDate)) {
-      return true;
-    }
-    return false;
+    return dateDay.equals(startDate);
   }
 
   /*

@@ -81,21 +81,16 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
     if (m_Session != null) {
       try {
         Enumeration<String> spSessionAttNames = m_Session.getAttributeNames();
-        String spName;
         ArrayList<String> spNames = new ArrayList<String>();
 
         while (spSessionAttNames.hasMoreElements()) {
-          spName = spSessionAttNames.nextElement();
-          // SilverTrace.info("peasCore","LoginServlet.cleanSession()","root.MSG_GEN_PARAM_VALUE","spName="
-          // + spName);
+          String spName = spSessionAttNames.nextElement();
           if ((spName != null)
-              && ((spName.startsWith("Silverpeas_")) || (spName
-              .startsWith("WYSIWYG_")))) {
+              && ((spName.startsWith("Silverpeas_")) || (spName.startsWith("WYSIWYG_")))) {
             spNames.add(spName);
           }
         }
-        for (int i = 0; i < spNames.size(); i++) {
-          spName = spNames.get(i);
+        for (String spName : spNames) {
           try {
             Object element = m_Session.getAttribute(spName);
             SilverTrace.debug("peasCore", "SessionInfo.cleanSession()",

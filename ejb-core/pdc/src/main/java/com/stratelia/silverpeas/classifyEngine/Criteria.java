@@ -26,51 +26,48 @@ package com.stratelia.silverpeas.classifyEngine;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class Criteria extends Object implements java.io.Serializable {
+public class Criteria implements java.io.Serializable {
 
   private static final long serialVersionUID = 3824817745975131588L;
-  private int nAxisId = -1;
-  private String sValue = null;
+  private int axisId = -1;
+  private String value;
 
   protected Criteria() {
     super();
+    value = null;
   }
 
-  // Constructor
   public Criteria(int nGivenAxisId, String sGivenValue) {
-    nAxisId = nGivenAxisId;
-    sValue = sGivenValue;
+    axisId = nGivenAxisId;
+    value = sGivenValue;
   }
 
-  public void setAxisId(int nGivenAxisId) {
-    nAxisId = nGivenAxisId;
+  public void setAxisId(int givenAxisId) {
+    axisId = givenAxisId;
   }
 
   public int getAxisId() {
-    return nAxisId;
+    return axisId;
   }
 
-  public void setValue(String sGivenValue) {
-    sValue = sGivenValue;
+  public void setValue(String givenValue) {
+    value = givenValue;
   }
 
   public String getValue() {
-    return sValue;
+    return value;
   }
 
   // Check that the given criteria is valid
   public void checkCriteria() throws ClassifyEngineException {
-    // Check the axisId
-    if (this.getAxisId() < 0)
+    if (this.getAxisId() < 0) {
       throw new ClassifyEngineException("Criteria.checkCriteria",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_INCORRECT_AXISID_CRITERIA");
+          SilverpeasException.ERROR, "classifyEngine.EX_INCORRECT_AXISID_CRITERIA");
+    }
   }
 
   public String toString() {
-    String axisId = new Integer(getAxisId()).toString();
-    return "Criteria Object : [ axisId=" + axisId + ", value=" + getValue()
-        + " ]";
+    return "Criteria Object : [ axisId=" + getAxisId() + ", value=" + getValue() + " ]";
   }
 
 }

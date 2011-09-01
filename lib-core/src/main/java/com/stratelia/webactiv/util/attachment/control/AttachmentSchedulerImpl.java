@@ -26,10 +26,6 @@ package com.stratelia.webactiv.util.attachment.control;
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
@@ -40,6 +36,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 public class AttachmentSchedulerImpl
     implements SchedulerEventListener {
@@ -93,9 +93,7 @@ public class AttachmentSchedulerImpl
     File[] elementsList = folderToAnalyse.listFiles();
 
     // List all folders in Actify
-    for (int i = 0; i < elementsList.length; i++) {
-      File element = elementsList[i];
-
+    for (File element : elementsList) {
       long lastModified = element.lastModified();
       String dirName = element.getName();
       String resultActifyFullPath = FileRepositoryManager.getTemporaryPath()
@@ -120,10 +118,8 @@ public class AttachmentSchedulerImpl
         for (int j = 0; j < filesList.length; j++) {
           File file = filesList[j];
           String fileName = file.getName();
-          String physicalName = new Long(new Date().getTime()).toString()
-              + ".3d";
-          String logicalName = fileName.substring(0, fileName.lastIndexOf("."))
-              + ".3d";
+          String physicalName = Long.toString(System.currentTimeMillis()) + ".3d";
+          String logicalName = fileName.substring(0, fileName.lastIndexOf('.')) + ".3d";
           String mimeType = AttachmentController.getMimeType(physicalName);
 
           AttachmentDetail attachmentDetail = new AttachmentDetail(atPK,
@@ -158,13 +154,11 @@ public class AttachmentSchedulerImpl
     File[] elementsList = folderToAnalyse.listFiles();
 
     // List all folders in Actify
-    for (int i = 0; i < elementsList.length; i++) {
-      File element = elementsList[i];
+    for (File element : elementsList) {
       long lastModified = element.lastModified();
       if (element.isDirectory()
           && lastModified + delayBeforePurge * 1000 * 60 < now) {
-        SilverTrace.info("Attachment",
-            "AttachmentSchedulerImpl.doPurgeActify()",
+        SilverTrace.info("Attachment", "AttachmentSchedulerImpl.doPurgeActify()",
             "root.MSG_GEN_PARAM_VALUE", "PathToPurge=" + element.getName());
         FileFolderManager.deleteFolder(element.getAbsolutePath());
       }

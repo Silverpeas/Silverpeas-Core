@@ -39,27 +39,30 @@ public class LikeFilter implements FieldFilter {
     String simplifiedRef = reference.getValue("");
     if (simplifiedRef != null) {
       simplifiedRef = simplifiedRef.trim().toLowerCase();
-      if (simplifiedRef.equals(""))
+      if (simplifiedRef.equals("")) {
         simplifiedRef = null;
+      }
     }
 
     this.reference = simplifiedRef;
   }
 
   /**
-   * Returns true if the given field contains the reference field.
+   * @return true if the given field contains the reference field.
    */
   public boolean match(Field tested) {
-    if (reference == null)
+    if (reference == null) {
       return true;
+    }
 
     String normalized = tested.getValue("");
-    if (normalized == null)
+    if (normalized == null) {
       return false;
-    else
+    } else {
       normalized = normalized.trim().toLowerCase();
+    }
 
-    return normalized.indexOf(reference) != -1;
+    return normalized.contains(reference);
   }
 
   /**

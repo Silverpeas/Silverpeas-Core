@@ -26,7 +26,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
-public class OperationPaneSilverpeasV5StringFactory extends Object {
+public class OperationPaneSilverpeasV5StringFactory {
   /**
    * Hashtable which contains the specifics code encoded as key and their values are right code
    * encoded

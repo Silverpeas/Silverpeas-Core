@@ -24,13 +24,13 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.Vector;
-
 import com.novell.ldap.LDAPEntry;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -79,7 +79,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
       groupsVector.add(LDAPUtility.getFirstAttributeValue(theEntries[i],
           driverSettings.getGroupsIdField()));
     }
-    return (String[]) groupsVector.toArray(new String[0]);
+    return groupsVector.toArray(new String[groupsVector.size()]);
   }
 
   public String[] getGroupMemberGroupIds(String lds, String groupId)
@@ -140,7 +140,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
     stringVals = null;
     SilverTrace.info("admin", "LDAPGroupUniqueDescriptor.getUserIds()",
         "root.MSG_GEN_EXIT_METHOD");
-    return (String[]) usersVector.toArray(new String[0]);
+    return usersVector.toArray(new String[usersVector.size()]);
   }
 
   /**
@@ -261,8 +261,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         SilverTrace.warn("admin",
             "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
             "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-        synchroReport.append("PB getting Group's subgroups : " + parentId
-            + "\n");
+        append("PB getting Group's subgroups : ").append(parentId).append("\n");
         if (parentId == null)
           SynchroReport.error(
               "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
@@ -276,6 +275,6 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         throw e;
       }
     }
-    return (LDAPEntry[]) entryVector.toArray(new LDAPEntry[0]);
+    return entryVector.toArray(new LDAPEntry[entryVector.size()]);
   }
 }

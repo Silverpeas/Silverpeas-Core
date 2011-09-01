@@ -34,6 +34,7 @@ import com.stratelia.webactiv.beans.admin.SynchroGroupReport;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,33 +47,41 @@ public class GroupTable extends Table<GroupRow> {
     super(schema, "ST_Group");
     this.organization = schema;
   }
-  static final private String GROUP_COLUMNS =
-      "id,specificId,domainId,superGroupId,name,description,synchroRule";
+  static final private String GROUP_COLUMNS = "id, specificId, domainId, superGroupId, name, "
+          + "description, synchroRule";
+  static final private String SELECT_GROUP_BY_ID = "SELECT id, specificId, domainId, superGroupId, "
+          + "name, description, synchroRule FROM ST_Group WHERE id = ?";
+  static final private String SELECT_GROUP_BY_SPECIFICID = "SELECT id, specificId, domainId, "
+          + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
+          + "domainId = ? AND specificId = ?";
+  static final private String SELECT_ROOT_GROUP_BY_NAME = "SELECT id, specificId, domainId, "
+          + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
+          + "superGroupId IS NULL AND name = ?";
+  static final private String SELECT_GROUP_BY_NAME = "SELECT id, specificId, domainId, "
+          + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
+          + "superGroupId = ? AND name = ?";
 
   /**
    * Fetch the current group row from a resultSet.
+   * @param rs
+   * @return
+   * @throws SQLException 
    */
   protected GroupRow fetchGroup(ResultSet rs) throws SQLException {
     GroupRow g = new GroupRow();
-
-    g.id = rs.getInt(1);
-    g.specificId = rs.getString(2);
+    g.id = rs.getInt("id");
+    g.specificId = rs.getString("specificId");
     if ("-1".equals(g.specificId)) {
       g.specificId = null;
     }
-
-    g.domainId = rs.getInt(3);
-
-    g.superGroupId = rs.getInt(4);
+    g.domainId = rs.getInt("domainId");
+    g.superGroupId = rs.getInt("superGroupId");
     if (rs.wasNull()) {
       g.superGroupId = -1;
     }
-
-    g.name = rs.getString(5);
-    g.description = rs.getString(6);
-
-    g.rule = rs.getString(7);
-
+    g.name = rs.getString("name");
+    g.description = rs.getString("description");
+    g.rule = rs.getString("synchroRule");
     return g;
   }
 
@@ -85,8 +94,6 @@ public class GroupTable extends Table<GroupRow> {
   public GroupRow getGroup(int id) throws AdminPersistenceException {
     return getUniqueRow(SELECT_GROUP_BY_ID, id);
   }
-  static final private String SELECT_GROUP_BY_ID = "select " + GROUP_COLUMNS
-      + " from ST_Group where id = ?";
 
   /**
    * Returns Group whith the given specificId and domainId.
@@ -96,11 +103,10 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public GroupRow getGroupBySpecificId(int domainId, String specificId) throws
-      AdminPersistenceException {    
-    List<GroupRow> rows = getRows(SELECT_GROUP_BY_SPECIFICID, new int[]{domainId},
-        new String[]{specificId});
+          AdminPersistenceException {
+    List<GroupRow> rows = getRows(SELECT_GROUP_BY_SPECIFICID, new int[]{domainId}, new String[]{
+              specificId});
     GroupRow[] groups = rows.toArray(new GroupRow[rows.size()]);
-
     if (groups.length == 0) {
       return null;
     }
@@ -108,12 +114,10 @@ public class GroupTable extends Table<GroupRow> {
       return groups[0];
     }
     throw new AdminPersistenceException("GroupTable.getGroupBySpecificId", SilverpeasException.ERROR,
-        "admin.EX_ERR_GROUP_SPECIFIC_ID_FOUND_TWICE",
-        "domain Id: '" + domainId + "', specific Id: '" + specificId + "'");
+            "admin.EX_ERR_GROUP_SPECIFIC_ID_FOUND_TWICE",
+            "domain Id: '" + domainId + "', specific Id: '" + specificId + "'");
 
   }
-  static final private String SELECT_GROUP_BY_SPECIFICID = "select "
-      + GROUP_COLUMNS + " from ST_Group where domainId = ? and specificId = ?";
 
   /**
    * Returns the root Group whith the given name.
@@ -132,10 +136,8 @@ public class GroupTable extends Table<GroupRow> {
       return groups[0];
     }
     throw new AdminPersistenceException("GroupTable.getRootGroup", SilverpeasException.ERROR,
-        "admin.EX_ERR_GROUP_NAME_FOUND_TWICE", "group name: '" + name + "'");
+            "admin.EX_ERR_GROUP_NAME_FOUND_TWICE", "group name: '" + name + "'");
   }
-  static final private String SELECT_ROOT_GROUP_BY_NAME = "select " + GROUP_COLUMNS
-      + " from ST_Group where superGroupId is null and name = ?";
 
   /**
    * Returns the Group whith the given name in the given super group.
@@ -146,7 +148,7 @@ public class GroupTable extends Table<GroupRow> {
    */
   public GroupRow getGroup(int superGroupId, String name) throws AdminPersistenceException {
     List<GroupRow> rows = getRows(SELECT_GROUP_BY_NAME, new int[]{superGroupId}, new String[]{
-          name});
+              name});
     GroupRow[] groups = rows.toArray(new GroupRow[rows.size()]);
     if (groups.length == 0) {
       return null;
@@ -155,11 +157,9 @@ public class GroupTable extends Table<GroupRow> {
       return groups[0];
     }
     throw new AdminPersistenceException("GroupTable.getGroup", SilverpeasException.ERROR,
-        "admin.EX_ERR_GROUP_NAME_ID_FOUND_TWICE",
-        "group name: '" + name + "', father group id: '" + superGroupId + "'");
+            "admin.EX_ERR_GROUP_NAME_ID_FOUND_TWICE",
+            "group name: '" + name + "', father group id: '" + superGroupId + "'");
   }
-  static final private String SELECT_GROUP_BY_NAME = "select " + GROUP_COLUMNS
-      + " from ST_Group" + " where superGroupId = ? and name = ?";
 
   /**
    * Returns all the Groups.
@@ -171,7 +171,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_ALL_GROUPS = "select " + GROUP_COLUMNS
-      + " from ST_Group";
+          + " from ST_Group";
 
   /**
    * Returns all the Groups.
@@ -181,7 +181,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_SYNCHRONIZED_GROUPS = "select " + GROUP_COLUMNS
-      + " from ST_Group where synchroRule is not null and synchroRule <> ''";
+          + " from ST_Group where synchroRule is not null and synchroRule <> ''";
 
   /**
    * Returns all the Group ids.
@@ -204,7 +204,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_ALL_ROOT_GROUPS = "select "
-      + GROUP_COLUMNS + " from ST_Group where superGroupId is null";
+          + GROUP_COLUMNS + " from ST_Group where superGroupId is null";
 
   /**
    * Returns all the Groups without a superGroup.
@@ -216,7 +216,7 @@ public class GroupTable extends Table<GroupRow> {
     return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_ROOT_GROUP_IDS =
-      "select id from ST_Group where superGroupId is null";
+          "select id from ST_Group where superGroupId is null";
 
   /**
    * Returns all the Groups having a given superGroup.
@@ -229,7 +229,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_SUBGROUPS = "select " + GROUP_COLUMNS
-      + " from ST_Group where superGroupId = ?";
+          + " from ST_Group where superGroupId = ?";
 
   /**
    * Returns all the Group ids having a given superGroup.
@@ -265,9 +265,9 @@ public class GroupTable extends Table<GroupRow> {
     return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_ROOT_GROUPS_IN_DOMAIN = "select " + GROUP_COLUMNS
-      + " from ST_Group where (domainId=?) AND (superGroupId is null)";
+          + " from ST_Group where (domainId=?) AND (superGroupId is null)";
   static final private String SELECT_ALL_ROOT_GROUPS_IDS_IN_DOMAIN =
-      "select id from ST_Group where (domainId=?) AND (superGroupId is null)";
+          "select id from ST_Group where (domainId=?) AND (superGroupId is null)";
 
   /**
    * Returns all the Groups having a given domain id.
@@ -277,13 +277,13 @@ public class GroupTable extends Table<GroupRow> {
    */
   public GroupRow[] getAllGroupsOfDomain(int domainId) throws AdminPersistenceException {
     SynchroReport.debug("GroupTable.getAllGroupsOfDomain()",
-        "Recherche de l'ensemble des groupes du domaine LDAP dans la base (ID "
-        + domainId + "), requête : " + SELECT_ALL_GROUPS_IN_DOMAIN, null);
+            "Recherche de l'ensemble des groupes du domaine LDAP dans la base (ID "
+            + domainId + "), requête : " + SELECT_ALL_GROUPS_IN_DOMAIN, null);
     List<GroupRow> rows = getRows(SELECT_ALL_GROUPS_IN_DOMAIN, domainId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_ALL_GROUPS_IN_DOMAIN = "select " + GROUP_COLUMNS
-      + " from ST_Group where domainId=?";
+          + " from ST_Group where domainId=?";
 
   /**
    * Returns the superGroup of a given subGroup.
@@ -295,7 +295,7 @@ public class GroupTable extends Table<GroupRow> {
     return getUniqueRow(SELECT_SUPERGROUP, subGroupId);
   }
   static final private String SELECT_SUPERGROUP = "select " + aliasColumns("sg", GROUP_COLUMNS)
-      + " from ST_Group sg, ST_GROUP g where sg.id=g.superGroupId and g.id=?";
+          + " from ST_Group sg, ST_GROUP g where sg.id=g.superGroupId and g.id=?";
 
   /**
    * Returns all the groups of a given user (not recursive).
@@ -308,7 +308,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_USER_GROUPS = "select " + GROUP_COLUMNS
-      + " from ST_Group,ST_Group_User_Rel where id = groupId and userId = ?";
+          + " from ST_Group,ST_Group_User_Rel where id = groupId and userId = ?";
 
   /**
    * Returns all the groups in a given userRole (not recursive).
@@ -321,7 +321,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_USERROLE_GROUPS = "select " + GROUP_COLUMNS
-      + " from ST_Group,ST_UserRole_Group_Rel where id = groupId and userRoleId = ?";
+          + " from ST_Group,ST_UserRole_Group_Rel where id = groupId and userRoleId = ?";
 
   /**
    * Returns all the groups in a given userRole (not recursive).
@@ -334,7 +334,7 @@ public class GroupTable extends Table<GroupRow> {
     return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_USERROLE_GROUP_IDS =
-      "SELECT id FROM st_group, st_userrole_group_rel WHERE id = groupid AND userroleid = ?";
+          "SELECT id FROM st_group, st_userrole_group_rel WHERE id = groupid AND userroleid = ?";
 
   /**
    * Returns all the groups in a given spaceUserRole (not recursive).
@@ -343,12 +343,12 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public GroupRow[] getDirectGroupsInSpaceUserRole(int spaceUserRoleId) throws
-      AdminPersistenceException {
+          AdminPersistenceException {
     List<GroupRow> rows = getRows(SELECT_SPACEUSERROLE_GROUPS, spaceUserRoleId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_SPACEUSERROLE_GROUPS = "SELECT " + GROUP_COLUMNS
-      + " FROM ST_Group,ST_SpaceUserRole_Group_Rel WHERE id = groupId AND spaceUserRoleId = ?";
+          + " FROM ST_Group,ST_SpaceUserRole_Group_Rel WHERE id = groupId AND spaceUserRoleId = ?";
 
   /**
    * Returns all the group ids in a given spaceUserRole (not recursive).
@@ -357,12 +357,12 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public String[] getDirectGroupIdsInSpaceUserRole(int spaceUserRoleId) throws
-      AdminPersistenceException {
+          AdminPersistenceException {
     List<String> ids = getIds(SELECT_SPACEUSERROLE_GROUP_IDS, spaceUserRoleId);
     return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_SPACEUSERROLE_GROUP_IDS = "SELECT id FROM st_group, "
-      + "st_spaceuserrole_group_rel WHERE id = groupId AND spaceUserRoleId = ?";
+          + "st_spaceuserrole_group_rel WHERE id = groupId AND spaceUserRoleId = ?";
 
   /**
    * Returns all the groups in a given groupUserRole (not recursive).
@@ -371,12 +371,12 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public GroupRow[] getDirectGroupsInGroupUserRole(int groupUserRoleId) throws
-      AdminPersistenceException {
+          AdminPersistenceException {
     List<GroupRow> rows = getRows(SELECT_GROUPUSERROLE_GROUPS, groupUserRoleId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_GROUPUSERROLE_GROUPS = "SELECT " + GROUP_COLUMNS
-      + " FROM ST_Group, ST_GroupUserRole_Group_Rel WHERE id = groupId AND groupUserRoleId = ?";
+          + " FROM ST_Group, ST_GroupUserRole_Group_Rel WHERE id = groupId AND groupUserRoleId = ?";
 
   /**
    * Returns the Group of a given group user role.
@@ -388,8 +388,8 @@ public class GroupTable extends Table<GroupRow> {
     return getUniqueRow(SELECT_GROUPUSERROLE_GROUP, groupUserRoleId);
   }
   static final private String SELECT_GROUPUSERROLE_GROUP = "SELECT "
-      + aliasColumns("i", GROUP_COLUMNS) + " FROM ST_Group i, ST_GroupUserRole us"
-      + " WHERE i.id = us.groupId AND us.id = ?";
+          + aliasColumns("i", GROUP_COLUMNS) + " FROM ST_Group i, ST_GroupUserRole us"
+          + " WHERE i.id = us.groupId AND us.id = ?";
 
   /**
    * Returns all the group ids in a given groupUserRole (not recursive).
@@ -398,12 +398,12 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public String[] getDirectGroupIdsInGroupUserRole(int groupUserRoleId) throws
-      AdminPersistenceException {
+          AdminPersistenceException {
     List<String> ids = getIds(SELECT_GROUPUSERROLE_GROUP_IDS, groupUserRoleId);
     return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_GROUPUSERROLE_GROUP_IDS = "SELECT id FROM ST_Group, "
-      + "ST_GroupUserRole_Group_Rel WHERE id = groupId AND groupUserRoleId = ?";
+          + "ST_GroupUserRole_Group_Rel WHERE id = groupId AND groupUserRoleId = ?";
 
   /**
    * Returns the Group whose fields match those of the given sample group fields.
@@ -428,7 +428,7 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public String[] searchGroupsIds(boolean isRootGroup, int componentId, int[] aRoleId,
-      GroupRow groupModel) throws AdminPersistenceException {
+          GroupRow groupModel) throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     StringBuffer theQuery;
@@ -442,7 +442,7 @@ public class GroupTable extends Table<GroupRow> {
         theQuery.append("(");
       }
       for (int i = 0; i < aRoleId.length; i++) {
-        ids.add(new Integer(aRoleId[i]));
+        ids.add((aRoleId[i]));
         if (i > 0) {
           theQuery.append(" OR ");
         }
@@ -454,10 +454,10 @@ public class GroupTable extends Table<GroupRow> {
       concatAndOr = true;
     } else if (componentId >= 0) {
       theQuery = new StringBuffer(SELECT_SEARCH_GROUPSID_IN_COMPONENT);
-      ids.add(new Integer(componentId));
+      ids.add(componentId);
       theQuery.append(" WHERE ((ST_UserRole.id = ST_UserRole_Group_Rel.userRoleId) AND (");
       theQuery.append(
-          "ST_Group.id = ST_UserRole_Group_Rel.groupId) AND (ST_UserRole.instanceId = ?)");
+              "ST_Group.id = ST_UserRole_Group_Rel.groupId) AND (ST_UserRole.instanceId = ?)");
       concatAndOr = true;
     } else {
       theQuery = new StringBuffer(SELECT_SEARCH_GROUPSID);
@@ -473,17 +473,17 @@ public class GroupTable extends Table<GroupRow> {
       theQuery.append("ST_Group.superGroupId IS NULL");
     } else {
       concatAndOr = addIdToQuery(ids, theQuery, groupModel.superGroupId,
-          "ST_Group.superGroupId", concatAndOr, andOr);
+              "ST_Group.superGroupId", concatAndOr, andOr);
     }
     concatAndOr = addIdToQuery(ids, theQuery, groupModel.id, "ST_Group.id", concatAndOr, andOr);
     concatAndOr = addIdToQuery(ids, theQuery, groupModel.domainId, "ST_Group.domainId", concatAndOr,
-        andOr);
+            andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.name, "ST_Group.name", concatAndOr,
-        andOr);
+            andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.description, "ST_Group.description",
-        concatAndOr, andOr);
+            concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.specificId, "ST_Group.specificId",
-        concatAndOr, andOr);
+            concatAndOr, andOr);
     if (concatAndOr) {
       theQuery.append(")");
     }
@@ -491,20 +491,20 @@ public class GroupTable extends Table<GroupRow> {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ids.get(i).intValue();
+      idsArray[i] = ids.get(i);
     }
 
-    return getIds(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
-        new String[0]);
+    return getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()])).toArray(
+        new String[getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()])).size()]);
   }
   static final private String SELECT_SEARCH_GROUPSID =
-      "select DISTINCT ST_Group.id, UPPER(ST_Group.name) from ST_Group";
+          "select DISTINCT ST_Group.id, UPPER(ST_Group.name) from ST_Group";
   static final private String SELECT_SEARCH_GROUPSID_IN_COMPONENT =
-      "select DISTINCT ST_Group.id, UPPER(ST_Group.name) "
-      + "from ST_Group,ST_UserRole_Group_Rel,ST_UserRole";
+          "select DISTINCT ST_Group.id, UPPER(ST_Group.name) "
+          + "from ST_Group,ST_UserRole_Group_Rel,ST_UserRole";
   static final private String SELECT_SEARCH_GROUPSID_IN_ROLE =
-      "select DISTINCT ST_Group.id, UPPER(ST_Group.name) "
-      + "from ST_Group,ST_UserRole_Group_Rel";
+          "select DISTINCT ST_Group.id, UPPER(ST_Group.name) "
+          + "from ST_Group,ST_UserRole_Group_Rel";
 
   /**
    * Returns all the Groups satiffying the model
@@ -513,7 +513,8 @@ public class GroupTable extends Table<GroupRow> {
    * @return
    * @throws AdminPersistenceException 
    */
-  public GroupRow[] searchGroups(GroupRow groupModel, boolean isAnd) throws AdminPersistenceException {
+  public GroupRow[] searchGroups(GroupRow groupModel, boolean isAnd) throws
+          AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr;
     StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_GROUPS);
@@ -526,17 +527,17 @@ public class GroupTable extends Table<GroupRow> {
       andOr = ") OR (";
     }
     concatAndOr = addIdToQuery(ids, theQuery, groupModel.id, "id", concatAndOr,
-        andOr);
+            andOr);
     concatAndOr = addIdToQuery(ids, theQuery, groupModel.domainId, "domainId",
-        concatAndOr, andOr);
+            concatAndOr, andOr);
     concatAndOr = addIdToQuery(ids, theQuery, groupModel.superGroupId,
-        "superGroupId", concatAndOr, andOr);
+            "superGroupId", concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.name, "name",
-        concatAndOr, andOr);
+            concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.description,
-        "description", concatAndOr, andOr);
+            "description", concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.specificId,
-        "specificId", concatAndOr, andOr);
+            "specificId", concatAndOr, andOr);
     if (concatAndOr) {
       theQuery.append(")");
     }
@@ -544,14 +545,15 @@ public class GroupTable extends Table<GroupRow> {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ids.get(i).intValue();
+      idsArray[i] = ids.get(i);
     }
 
-    return getRows(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
-        new GroupRow[0]);
+    return getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()])).toArray(
+        new GroupRow[getRows(theQuery.toString(), idsArray,
+            params.toArray(new String[params.size()])).size()]);
   }
   static final private String SELECT_SEARCH_GROUPS = "SELECT " + GROUP_COLUMNS
-      + ", UPPER(name) FROM ST_Group";
+          + ", UPPER(name) FROM ST_Group";
 
   /**
    * Insert a new group row.
@@ -559,27 +561,27 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public void createGroup(GroupRow group) throws AdminPersistenceException {
-    GroupRow superGroup = null;
+    GroupRow superGroup;
     if (group.superGroupId != -1) {
       superGroup = getGroup(group.superGroupId);
       if (superGroup == null) {
         throw new AdminPersistenceException("GroupTable.createGroup", SilverpeasException.ERROR,
-            "admin.EX_ERR_GROUP_NOT_FOUND", "father group id: '" + group.superGroupId + "'");
+                "admin.EX_ERR_GROUP_NOT_FOUND", "father group id: '" + group.superGroupId + "'");
       }
     }
     SynchroReport.debug("GroupTable.createGroup()", "Ajout de " + group.name + ", requête : "
-        + INSERT_GROUP, null);
+            + INSERT_GROUP, null);
     insertRow(INSERT_GROUP, group);
 
     CallBackManager callBackManager = CallBackManager.get();
     callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_GROUP, group.id, null, null);
   }
   static final private String INSERT_GROUP = "INSERT INTO ST_Group("
-      + GROUP_COLUMNS + ")" + " VALUES  (? ,? ,? ,? ,? ,? ,?)";
+          + GROUP_COLUMNS + ")" + " VALUES  (? ,? ,? ,? ,? ,? ,?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, GroupRow row) throws
-      SQLException {
+          SQLException {
     if (row.id == -1) {
       row.id = getNextId();
     }
@@ -607,15 +609,15 @@ public class GroupTable extends Table<GroupRow> {
    */
   public void updateGroup(GroupRow group) throws AdminPersistenceException {
     SynchroReport.debug("GroupTable.updateGroup()", "Maj de " + group.name
-        + ", Id=" + group.id + ", requête : " + UPDATE_GROUP, null);
+            + ", Id=" + group.id + ", requête : " + UPDATE_GROUP, null);
     updateRow(UPDATE_GROUP, group);
   }
   static final private String UPDATE_GROUP = "update ST_Group set domainId = ?, specificId = ?, "
-      + "name = ?, description = ?, superGroupId = ?, synchroRule = ? where id = ?";
+          + "name = ?, description = ?, superGroupId = ?, synchroRule = ? where id = ?";
 
   @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update, GroupRow row) throws
-      SQLException {
+          SQLException {
     update.setInt(1, row.domainId);
     if (row.specificId == null) {
       row.specificId = String.valueOf(row.id);
@@ -647,43 +649,44 @@ public class GroupTable extends Table<GroupRow> {
     }
 
     SynchroReport.info("GroupTable.removeGroup()", "Suppression du groupe " + group.name
-        + " dans la base...", null);
+            + " dans la base...", null);
     // remove the group from each role where it's used.
     UserRoleRow[] roles = organization.userRole.getDirectUserRolesOfGroup(id);
     SynchroReport.info("GroupTable.removeGroup()", "Suppression de "
-        + group.name + " des rôles dans la base", null);
-    for (int i = 0; i < roles.length; i++) {
-      organization.userRole.removeGroupFromUserRole(id, roles[i].id);
+            + group.name + " des rôles dans la base", null);
+    for (UserRoleRow role : roles) {
+      organization.userRole.removeGroupFromUserRole(id, role.id);
     }
 
     // remove the group from each space role where it's used.
     SpaceUserRoleRow[] spaceRoles = organization.spaceUserRole.getDirectSpaceUserRolesOfGroup(id);
     SynchroReport.info("GroupTable.removeGroup()", "Suppression de " + group.name
-        + " comme manager d'espace dans la base", null);
-    for (int i = 0; i < spaceRoles.length; i++) {
-      organization.spaceUserRole.removeGroupFromSpaceUserRole(id, spaceRoles[i].id);
+            + " comme manager d'espace dans la base", null);
+    for (SpaceUserRoleRow spaceRole : spaceRoles) {
+      organization.spaceUserRole.removeGroupFromSpaceUserRole(id, spaceRole.id);
     }
     // remove all subgroups.
     GroupRow[] subGroups = getDirectSubGroups(id);
     if (subGroups.length > 0) {
       SynchroReport.info("GroupTable.removeGroup()", "Suppression des groupes fils de "
-          + group.name + " dans la base", null);
+              + group.name + " dans la base", null);
     }
-    for (int i = 0; i < subGroups.length; i++) {
-      removeGroup(subGroups[i].id);
+    for (GroupRow subGroup : subGroups) {
+      removeGroup(subGroup.id);
     }
     // remove from the group any user.
     UserRow[] users = organization.user.getDirectUsersOfGroup(id);
-    for (int i = 0; i < users.length; i++) {
-      removeUserFromGroup(users[i].id, id);
+    for (UserRow user : users) {
+      removeUserFromGroup(user.id, id);
     }
     SynchroReport.info("GroupTable.removeGroup()", "Suppression de " + users.length
-        + " utilisateurs inclus directement dans le groupe " + group.name + " dans la base", null);
+            + " utilisateurs inclus directement dans le groupe " + group.name + " dans la base",
+            null);
 
     // remove the empty group.
     // organization.userSet.removeUserSet("G", id);
     SynchroReport.debug("GroupTable.removeGroup()", "Suppression de " + group.name + " (ID="
-        + id + "), requête : " + DELETE_GROUP, null);
+            + id + "), requête : " + DELETE_GROUP, null);
     updateRelation(DELETE_GROUP, id);
   }
   static final private String DELETE_GROUP = "delete from ST_Group where id = ?";
@@ -694,13 +697,10 @@ public class GroupTable extends Table<GroupRow> {
   private boolean isUserDirectlyInGroup(int userId, int groupId) throws AdminPersistenceException {
     int[] ids = new int[]{userId, groupId};
     Integer result = getInteger(SELECT_COUNT_GROUP_USER_REL, ids);
-    if (result == null) {
-      return false;
-    }
-    return result.intValue() >= 1;
+    return result != null && result >= 1;
   }
   static final private String SELECT_COUNT_GROUP_USER_REL = "select count(*) from ST_Group_User_Rel"
-      + " where userId = ? and groupId = ?";
+          + " where userId = ? and groupId = ?";
 
   /**
    * Add an user in this group.
@@ -715,19 +715,19 @@ public class GroupTable extends Table<GroupRow> {
     UserRow user = organization.user.getUser(userId);
     if (user == null) {
       throw new AdminPersistenceException("GroupTable.addUserInGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_USER_NOT_FOUND", "user id: '" + userId + "'");
+              "admin.EX_ERR_USER_NOT_FOUND", "user id: '" + userId + "'");
     }
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
       throw new AdminPersistenceException("GroupTable.addUserInGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_FOUND", "group id: '" + groupId + "'");
+              "admin.EX_ERR_GROUP_NOT_FOUND", "group id: '" + groupId + "'");
     }
 
     int[] params = new int[]{groupId, userId};
     SynchroReport.debug("GroupTable.addUserInGroup()",
-        "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID " + groupId
-        + ", requête : " + INSERT_A_GROUP_USER_REL, null);
+            "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID " + groupId 
+            + ", requête : " + INSERT_A_GROUP_USER_REL, null);
     updateRelation(INSERT_A_GROUP_USER_REL, params);
     GroupCache.removeCacheOfUser(Integer.toString(userId));
   }
@@ -740,18 +740,18 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public void addUsersInGroup(String[] userIds, int groupId, boolean checkRelation) throws
-      AdminPersistenceException {
+          AdminPersistenceException {
     SilverTrace.info("admin", "GroupTable.addUsersInGroup", "root.MSG_GEN_ENTER_METHOD",
-        "groupId = " + groupId + ", userIds = " + userIds.toString());
+            "groupId = " + groupId + ", userIds = " + Arrays.toString(userIds));
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
       throw new AdminPersistenceException("GroupTable.addUsersInGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_FOUND", "group id: '" + groupId + "'");
+              "admin.EX_ERR_GROUP_NOT_FOUND", "group id: '" + groupId + "'");
     }
 
-    for (int u = 0; u < userIds.length; u++) {
-      int userId = Integer.parseInt(userIds[u]);
+    for (String userId1 : userIds) {
+      int userId = Integer.parseInt(userId1);
 
       boolean userInGroup = false;
       if (checkRelation) {
@@ -762,7 +762,8 @@ public class GroupTable extends Table<GroupRow> {
         UserRow user = organization.user.getUser(userId);
         if (user == null) {
           throw new AdminPersistenceException("GroupTable.addUsersInGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND", "user id: '" + userId + "'");
+              SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
+              "user id: '" + userId + "'");
         }
 
         int[] params = new int[]{groupId, userId};
@@ -775,7 +776,7 @@ public class GroupTable extends Table<GroupRow> {
     }
   }
   static final private String INSERT_A_GROUP_USER_REL =
-      "insert into ST_Group_User_Rel(groupId, userId) values(?,?)";
+          "insert into ST_Group_User_Rel(groupId, userId) values(?,?)";
 
   /**
    * Removes an user from this group.
@@ -786,18 +787,18 @@ public class GroupTable extends Table<GroupRow> {
   public void removeUserFromGroup(int userId, int groupId) throws AdminPersistenceException {
     if (!isUserDirectlyInGroup(userId, groupId)) {
       throw new AdminPersistenceException("GroupTable.removeUserFromGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP",
-          "group id: '" + groupId + "', user id: '" + userId + "'");
+              SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP",
+              "group id: '" + groupId + "', user id: '" + userId + "'");
     }
     int[] params = new int[]{groupId, userId};
     SynchroReport.debug("GroupTable.removeUserFromGroup()",
-        "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID "
-        + groupId + ", requête : " + DELETE_GROUP_USER_REL, null);
+            "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID "
+            + groupId + ", requête : " + DELETE_GROUP_USER_REL, null);
     updateRelation(DELETE_GROUP_USER_REL, params);
     GroupCache.removeCacheOfUser(Integer.toString(userId));
   }
   static final private String DELETE_GROUP_USER_REL =
-      "delete from ST_Group_User_Rel where groupId = ? and userId = ?";
+          "delete from ST_Group_User_Rel where groupId = ? and userId = ?";
 
   /**
    * Add an user in this group.
@@ -807,17 +808,18 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException 
    */
   public void removeUsersFromGroup(String[] userIds, int groupId, boolean checkRelation) throws
-      AdminPersistenceException {
-    SilverTrace.info("admin", "GroupTable.removeUsersFromGroup",
-        "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId + ", userIds = " + userIds.toString());
+          AdminPersistenceException {
+    SilverTrace.info("admin", "GroupTable.removeUsersFromGroup", "root.MSG_GEN_ENTER_METHOD", 
+            "groupId = " + groupId + ", userIds = " + Arrays.toString(userIds));
     GroupRow group = getGroup(groupId);
     if (group == null) {
       throw new AdminPersistenceException("GroupTable.removeUsersFromGroup()",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND","group id: '" + groupId + "'");
+              SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
+              "group id: '" + groupId + "'");
     }
 
-    for (int u = 0; u < userIds.length; u++) {
-     int userId = Integer.parseInt(userIds[u]);
+    for (String userId1 : userIds) {
+      int userId = Integer.parseInt(userId1);
 
       boolean userInGroup = true;
       if (checkRelation) {
@@ -826,13 +828,13 @@ public class GroupTable extends Table<GroupRow> {
 
       if (userInGroup) {
         int[] params = new int[]{groupId, userId};
-        SynchroGroupReport.debug("GroupTable.removeUsersFromGroup()", 
-            "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID " + groupId 
-            + ", requête : " + DELETE_GROUP_USER_REL, null);
+        SynchroGroupReport.debug("GroupTable.removeUsersFromGroup()",
+            "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID " + groupId
+                + ", requête : " + DELETE_GROUP_USER_REL, null);
         updateRelation(DELETE_GROUP_USER_REL, params);
         GroupCache.removeCacheOfUser(Integer.toString(userId));
       } else {
-        throw new AdminPersistenceException("GroupTable.removeUsersFromGroup()", 
+        throw new AdminPersistenceException("GroupTable.removeUsersFromGroup()",
             SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP", "group id: '" + groupId
             + "', user id: '" + userId + "'");
       }

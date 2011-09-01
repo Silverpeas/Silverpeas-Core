@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.8-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -128,10 +128,6 @@
       <artifactId>importExport</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jasig.cas</groupId>
-      <artifactId>cas-client-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.metaparadigm</groupId>

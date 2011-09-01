@@ -24,23 +24,23 @@
 
 package com.silverpeas.jobStartPagePeas;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
-public class NavBarManager extends Object {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
+public class NavBarManager {
   // Constants used by urlFactory
   final static int SPACE = 0;
   final static int COMPONENT = 1;
@@ -151,16 +151,12 @@ public class NavBarManager extends Object {
     }
   }
 
-  public void initWithUser(AbstractComponentSessionController msc,
-      UserDetail user) {
+  public void initWithUser(AbstractComponentSessionController msc, UserDetail user) {
     String sUserId = user.getId();
-    String[] spaceIds;
-    String[] allManageableSpaceIds;
 
     SilverTrace.info("jobStartPagePeas", "NavBarManager.initWithUser()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + sUserId);
-    m_sContext = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    m_sContext = URLManager.getApplicationURL();
     m_administrationCtrl = new AdminController(sUserId);
     m_SessionCtrl = msc;
     m_user = user;
@@ -172,8 +168,8 @@ public class NavBarManager extends Object {
     m_SubSpaceComponents = new DisplaySorted[0];
 
     if (!m_user.isAccessAdmin()) {
-      allManageableSpaceIds = m_administrationCtrl
-          .getUserManageableSpaceIds(sUserId);
+      String[] allManageableSpaceIds = m_administrationCtrl
+           .getUserManageableSpaceIds(sUserId);
       // First of all, add the manageable spaces into the set
       m_ManageableSpaces.clear();
       for (String manageableSpaceId : allManageableSpaceIds) {
@@ -181,7 +177,7 @@ public class NavBarManager extends Object {
       }
     }
 
-    spaceIds = m_administrationCtrl.getAllRootSpaceIds();
+    String[] spaceIds = m_administrationCtrl.getAllRootSpaceIds();
     m_Spaces = createSpaceObjects(spaceIds, false);
   }
 
@@ -272,8 +268,8 @@ public class NavBarManager extends Object {
         m_CurrentSubSpaceId = null;
       }
     }
-    for (int j = 0; j < m_SubSpaces.length; j++) {
-      buildSpaceHTMLLine(m_SubSpaces[j]);
+    for (DisplaySorted m_SubSpace : m_SubSpaces) {
+      buildSpaceHTMLLine(m_SubSpace);
     }
     if (StringUtil.isDefined(m_CurrentSubSpaceId)) {
       m_SubSpaceComponents = createComponentObjects(sp, true);
@@ -345,15 +341,13 @@ public class NavBarManager extends Object {
     if (goRecurs) {
       DisplaySorted[] parents = valret;
       List<DisplaySorted> alValret = new ArrayList<DisplaySorted>();
-      for (int j = 0; j < parents.length; j++) {
-        alValret.add(parents[j]);
-        String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parents[j].id);
+      for (DisplaySorted parent : parents) {
+        alValret.add(parent);
+        String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parent.id);
         DisplaySorted[] children = createSpaceObjects(subSpaceIds, true);
-        for (DisplaySorted child : children) {
-          alValret.add(child);
-        }
+        Collections.addAll(alValret, children);
       }
-      valret = alValret.toArray(new DisplaySorted[0]);
+      valret = alValret.toArray(new DisplaySorted[alValret.size()]);
     }
     return valret;
   }
@@ -411,7 +405,7 @@ public class NavBarManager extends Object {
         String link;
         int objType;
         String spaceName;
-        StringBuffer spacesSpaces = new StringBuffer();
+        StringBuilder spacesSpaces = new StringBuilder();
 
         objType = (space.id.equals(m_CurrentSubSpaceId)) ? SPACE_EXPANDED
             : SPACE_COLLAPSE;
@@ -430,11 +424,11 @@ public class NavBarManager extends Object {
             + urlFactory(link, "space" + space.id, "", spaceName, SPACE,
                 objType, m_sContext, "", space);
       } else {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<option ");
         if (space.id.equals(m_CurrentSpaceId))
           sb.append("selected ");
-        sb.append("value=" + space.id + ">" + space.name);
+        sb.append("value=").append(space.id).append(">").append(space.name);
         if (m_SessionCtrl.isSpaceInMaintenance(space.id))
           sb.append(" (M)");
         sb.append("</option>");
@@ -518,7 +512,7 @@ public class NavBarManager extends Object {
   protected String urlFactory(String link, String elementLabel,
       String imageLinked, String labelLinked, int elementType, int imageType,
       String m_sContext, String target, DisplaySorted extraInfos) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String boldStart = "";
     String boldEnd = "";
 
@@ -590,4 +584,4 @@ public class NavBarManager extends Object {
     return result.toString();
   }
 
-};
+}

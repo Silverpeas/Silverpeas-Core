@@ -23,11 +23,8 @@
  */
 package com.silverpeas.jobOrganizationPeas.control;
 
-import java.util.ArrayList;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.StringUtil;
-import java.util.List;
-import java.util.Map;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -42,6 +39,11 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -157,7 +159,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     } else {
       SilverTrace.info("jobOrganizationPeas",
           "JobOrganizationPeasSessionController.getCurrentUserInfo",
-          "root.MSG_GEN_PARAM_VALUE", "Groups=" + currentGroups);
+          "root.MSG_GEN_PARAM_VALUE", "Groups=" + Arrays.deepToString(currentGroups));
     }
     return currentGroups;
   }
@@ -259,29 +261,28 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       ProfileInst currentProfile = null;
       ComponentInst currentComponent = null;
       List<String> spaceIds = new ArrayList<String>();
-      for (int iProfile = 0; iProfile < profileIds.length; iProfile++) {
-        currentProfile = getAdminController().getProfileInst(profileIds[iProfile]);
+      for (String profileId : profileIds) {
+        currentProfile = getAdminController().getProfileInst(profileId);
         currentComponent = getAdminController().getComponentInst(
             currentProfile.getComponentFatherId());
         String spaceId = currentComponent.getDomainFatherId();
         SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
-        if (currentComponent.getStatus() == null && ! spaceInst.isPersonalSpace()) {//on n'affiche pas les composants de l'espace personnel
+        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {//on n'affiche pas les composants de l'espace personnel
           String dProfile = currentComponent.getId() + currentProfile.getName();
           if (!distinctProfiles.contains(dProfile)) {
-        	  String[] profile2Display = new String[6];
-        	  profile2Display[1] = currentComponent.getId();
-        	  profile2Display[2] = currentComponent.getName();
-        	  profile2Display[3] = currentComponent.getLabel();
-        	  profile2Display[4] = getComponentOfficialName(currentComponent.getName());
-        	  profile2Display[5] = currentProfile.getLabel();
-        	  if (!StringUtil.isDefined(profile2Display[5])) {
-        		  profile2Display[5] = getAdminController()
-				      .getProfileLabelfromName(currentComponent.getName(),
-				      currentProfile.getName(), getLanguage());
-        	  }
-        	  currentProfiles.add(profile2Display);
-        	  spaceIds.add(spaceId);
-        	  distinctProfiles.add(dProfile);
+            String[] profile2Display = new String[6];
+            profile2Display[1] = currentComponent.getId();
+            profile2Display[2] = currentComponent.getName();
+            profile2Display[3] = currentComponent.getLabel();
+            profile2Display[4] = getComponentOfficialName(currentComponent.getName());
+            profile2Display[5] = currentProfile.getLabel();
+            if (!StringUtil.isDefined(profile2Display[5])) {
+              profile2Display[5] = getAdminController().getProfileLabelfromName(
+                  currentComponent.getName(), currentProfile.getName(), getLanguage());
+            }
+            currentProfiles.add(profile2Display);
+            spaceIds.add(spaceId);
+            distinctProfiles.add(dProfile);
           }
         }
       }

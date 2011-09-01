@@ -31,9 +31,10 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Collection;
+
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collection;
 
 /**
  * Check the access to a document for a user.
@@ -77,7 +78,7 @@ public class DocumentAccessController implements AccessController<Document> {
   }
 
   protected PublicationBm getPublicationBm() throws Exception {
-    PublicationBmHome pubBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+    PublicationBmHome pubBmHome = EJBUtilitaire.getEJBObjectRef(
         JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
     return pubBmHome.create();
   }

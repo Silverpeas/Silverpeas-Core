@@ -104,17 +104,12 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   protected String[] cloneStringArray(String[] src) {
-    String[] valret;
-
     if (src == null) {
       return null;
-    } else {
-      valret = new String[src.length];
-      for (int i = 0; i < src.length; i++) {
-        valret[i] = src[i];
-      }
     }
-    return valret;
+    String[] clonedArray = new String[src.length];
+    System.arraycopy(src, 0, clonedArray, 0, src.length);
+    return clonedArray;
   }
 
   public void setId(String sId) {

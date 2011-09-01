@@ -23,21 +23,20 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.PageContext;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.PageContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The default implementation of ArrayPane interface.
@@ -421,8 +420,8 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     if (m_CellsSpacing == 0) {
       result.append(printPseudoColumn());
     }
-    for (int i = 0; i < columns.size(); i++) {
-      result.append(columns.get(i).print(isXHTML));
+    for (ArrayColumn column : columns) {
+      result.append(column.print(isXHTML));
       if (m_CellsSpacing == 0) {
         result.append(printPseudoColumn());
       }

@@ -34,7 +34,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.navigationList;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * @author lloiseau
@@ -53,11 +52,11 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
    * @return the HTML code of the navigation list
    */
   public String print() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder(50);
     String iconsPath = getIconsPath() + "/navigationList/";
     String title = getTitle();
     int nbCol = getNbcol();
-    Collection items = getItems();
+    Collection<Item> items = getItems();
     boolean endRaw = false;
     int nbTd = 0;
 
@@ -74,12 +73,10 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
     result
         .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\">\n");
 
-    Iterator i = items.iterator();
     int j = 1;
 
-    while (i.hasNext()) {
-      Item item = (Item) i.next();
-      Collection links = item.getLinks();
+    for (Item item : items) {
+      Collection<Link> links = item.getLinks();
 
       if (j == 1) {
         result.append("<tr>\n");
@@ -116,11 +113,8 @@ public class NavigationListSilverpeasV5 extends AbstractNavigationList {
           result.append("\t\t\t\t<tr>\n");
           result.append("\t\t\t\t\t<td>&nbsp;</td>\n");
           result.append("\t\t\t\t\t<td>");
-          Iterator k = links.iterator();
 
-          while (k.hasNext()) {
-            Link link = (Link) k.next();
-
+          for (Link link : links) {
             result.append("\n\t\t<a href=\"").append(link.getURL()).append(
                 "\" class=\"txtnote\">").append(link.getLabel()).append(
                 "</a>&nbsp&nbsp");

@@ -71,7 +71,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   private static final String PORTLET_HANDLE_PREF_NAME = "portletHandle";
   private static String AUTHLESS_USER_ID = "NONE";
   private static final String IS_WSRP_REQ = "is.wsrp.request";
-  private static Logger logger = ContainerLogger.getLogger(PortletWindowContextImpl.class,
+  private static final Logger logger = ContainerLogger.getLogger(PortletWindowContextImpl.class,
       "com.silverpeas.portlets.PCCTXLogMessages");
   private static List<String> roles = Arrays.asList("role1", "role2", "role3",
       "role4", "role5", "role6",
@@ -313,6 +313,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public EntityID getEntityID(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getEntityId(portletWindowName);
@@ -321,6 +322,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getPortletWindowTitle(String portletWindowName, String locale)
       throws PortletWindowContextException {
     try {
@@ -331,6 +333,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public Map getRoleMap(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getRoleMap(portletWindowName);
@@ -339,6 +342,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public Map getUserInfoMap(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getUserInfoMap(portletWindowName);
@@ -347,6 +351,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public PortletPreferences getPreferences(String portletWindowName, ResourceBundle bundle,
       boolean isReadOnly) throws PortletWindowContextException {
     String userId = checkUserID();
@@ -370,6 +375,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return isWSRPReq == null ? false : true;
   }
 
+  @Override
   public EventHolder verifySupportedPublishingEvent(EntityID portletEntityId,
       EventHolder eventHolder) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
@@ -379,6 +385,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return portletDescriptorHolder.verifySupportedPublishingEvent(portletEntityId, eventHolder);
   }
 
+  @Override
   public List<EventHolder> getSupportedPublishingEventHolders(EntityID portletEntityId) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
     if (portletDescriptorHolder == null) {
@@ -387,6 +394,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return portletDescriptorHolder.getSupportedPublishingEventHolders(portletEntityId);
   }
 
+  @Override
   public EventHolder verifySupportedProcessingEvent(EntityID portletEntityId,
       EventHolder eventHolder) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
@@ -396,6 +404,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return portletDescriptorHolder.verifySupportedProcessingEvent(portletEntityId, eventHolder);
   }
 
+  @Override
   public List<EventHolder> getSupportedProcessingEventHolders(EntityID portletEntityId) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
     if (portletDescriptorHolder == null) {
@@ -404,6 +413,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return portletDescriptorHolder.getSupportedProcessingEventHolders(portletEntityId);
   }
 
+  @Override
   public Map<String, String> verifySupportedPublicRenderParameters(EntityID portletEntityId,
       List<PublicRenderParameterHolder> publicRenderParameterHolders) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
@@ -414,6 +424,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
         publicRenderParameterHolders);
   }
 
+  @Override
   public List<PublicRenderParameterHolder> getSupportedPublicRenderParameterHolders(
       EntityID portletEntityId, Map<String, String[]> renderParameters) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
@@ -435,6 +446,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return portletDescriptorHolder;
   }
 
+  @Override
   public String getPortletID(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getPortletID(portletWindowName);
@@ -443,6 +455,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getConsumerID(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getConsumerID(portletWindowName);
@@ -451,11 +464,13 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getPortletHandle(String portletWindowName) throws PortletWindowContextException {
     PortletPreferences prefs = getPreferences(portletWindowName, null, true);
-    return (String) prefs.getValue(PORTLET_HANDLE_PREF_NAME, null);
+    return prefs.getValue(PORTLET_HANDLE_PREF_NAME, null);
   }
 
+  @Override
   public void setPortletHandle(String portletWindowName, String portletHandle)
       throws PortletWindowContextException {
     PortletPreferences prefs = getPreferences(portletWindowName, null, false);
@@ -469,6 +484,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getProducerEntityID(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getProducerEntityID(portletWindowName);
@@ -477,6 +493,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public PortletLang getPortletLang(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getPortletLang(portletWindowName);
@@ -486,6 +503,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   }
 
   // TODO
+  @Override
   public void store() throws PortletWindowContextException {
   }
 

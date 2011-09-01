@@ -23,10 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.RoleDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
@@ -35,7 +31,11 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class ProfileInstManager extends Object {
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProfileInstManager {
 
   /**
    * Constructor
@@ -239,14 +239,14 @@ public class ProfileInstManager extends Object {
 
       // Compute the remove group list
       for (String groupId : alOldProfileGroup) {
-        if (alNewProfileGroup.indexOf(groupId) == -1) {
+        if (!alNewProfileGroup.contains(groupId)) {
           alRemGroup.add(groupId);
         }
       }
 
       // Compute the add and stay group list
       for (String groupId : alNewProfileGroup) {
-        if (alOldProfileGroup.indexOf(groupId) == -1) {
+        if (!alOldProfileGroup.contains(groupId)) {
           alAddGroup.add(groupId);
         } else {
           alStayGroup.add(groupId);
@@ -281,14 +281,14 @@ public class ProfileInstManager extends Object {
 
       // Compute the remove User list
       for (String userId : alOldProfileUser) {
-        if (alNewProfileUser.indexOf(userId) == -1) {
+        if (!alNewProfileUser.contains(userId)) {
           alRemUser.add(userId);
         }
       }
 
       // Compute the add and stay User list
       for (String userId : alNewProfileUser) {
-        if (alOldProfileUser.indexOf(userId) == -1) {
+        if (!alOldProfileUser.contains(userId)) {
           alAddUser.add(userId);
         } else {
           alStayUser.add(userId);

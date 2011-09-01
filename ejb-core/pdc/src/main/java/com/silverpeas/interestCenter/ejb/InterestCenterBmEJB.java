@@ -28,20 +28,17 @@
  */
 package com.silverpeas.interestCenter.ejb;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.List;
+import com.silverpeas.interestCenter.InterestCenterRuntimeException;
+import com.silverpeas.interestCenter.model.InterestCenter;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
-
-import com.silverpeas.interestCenter.InterestCenterRuntimeException;
-import com.silverpeas.interestCenter.model.InterestCenter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import java.sql.Connection;
+import java.util.List;
 
 /**
  * InterestCenterBm EJB implementation for detailed comments for each method see remote interface
@@ -53,122 +50,101 @@ public class InterestCenterBmEJB implements SessionBean {
   private static final long serialVersionUID = -5867239072798551540L;
 
   public List<InterestCenter> getICByUserID(int userID) {
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       return InterestCenterDAO.getICByUserID(con, userID);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException(
-          "InterestCenterBmEJB.getICByUserID()",
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
           "InterestCenter.CANNOT_LOAD_IC", String.valueOf(userID), e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   public InterestCenter getICByID(int icPK) {
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       return InterestCenterDAO.getICByPK(con, icPK);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException(
-          "InterestCenterBmEJB.getICByID()",
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByID()",
           "InterestCenter.CANNOT_LOAD_LIST_OF_IC", String.valueOf(icPK), e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   public int createIC(InterestCenter ic) {
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       return InterestCenterDAO.createIC(con, ic);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException(
-          "InterestCenterBmEJB.createIC()", "InterestCenter.CANNOT_CREATE_IC",
-          ic.toString(), e);
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()", 
+              "InterestCenter.CANNOT_CREATE_IC", ic.toString(), e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   public void updateIC(InterestCenter ic) {
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       InterestCenterDAO.updateIC(con, ic);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException(
-          "InterestCenterBmEJB.updateIC()", "InterestCenter.CANNOT_UPDATE_IC",
-          ic.toString(), e);
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()", 
+              "InterestCenter.CANNOT_UPDATE_IC", ic.toString(), e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   public void removeICByPK(List<Integer> pks) {
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       InterestCenterDAO.removeICByPK(con, pks);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException(
-          "InterestCenterBmEJB.removeICByPK(ArrayList pks)",
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
           "InterestCenter.CANNOT_DELETE_IC", pks.toString(), e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   public void removeICByPK(int pk) {
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       InterestCenterDAO.removeICByPK(con, pk);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException(
-          "InterestCenterBmEJB.removeICByPK(int pk)",
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
           "InterestCenter.CANNOT_DELETE_IC", String.valueOf(pk), e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
-  private Connection openConnection() {
-    try {
-      Connection con = DBUtil
-          .makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
-      return con;
-    } catch (Exception e) {
-      throw new InterestCenterRuntimeException(
-          "InterestCenterBmEJB.getConnection()",
-          "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  private void closeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("InterestCenter",
-            "InterestCenterBmEJB.closeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", e);
-      }
-    }
-  }
 
   public void ejbCreate() throws CreateException {
   }
 
-  public void ejbActivate() throws EJBException, RemoteException {
+  @Override
+  public void ejbActivate() throws EJBException {
   }
 
-  public void ejbPassivate() throws EJBException, RemoteException {
+  @Override
+  public void ejbPassivate() throws EJBException {
   }
 
-  public void ejbRemove() throws EJBException, RemoteException {
+  @Override
+  public void ejbRemove() throws EJBException {
   }
 
-  public void setSessionContext(SessionContext context) throws EJBException,
-      RemoteException {
-
+  @Override
+  public void setSessionContext(SessionContext context) throws EJBException {
   }
 
 }

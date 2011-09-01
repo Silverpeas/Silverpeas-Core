@@ -31,7 +31,7 @@ public class ObjectValuePair {
   private String valuePath = null;
 
   public ObjectValuePair(int objectId, String valuePath, String instanceId) {
-    this.objectId = new Integer(objectId);
+    this.objectId = objectId;
     this.valuePath = valuePath;
     this.instanceId = instanceId;
   }
@@ -49,7 +49,7 @@ public class ObjectValuePair {
   }
 
   public void setObjectId(int objectId) {
-    this.objectId = new Integer(objectId);
+    this.objectId = objectId;
   }
 
   public String getValuePath() {

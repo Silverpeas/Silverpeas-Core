@@ -35,19 +35,18 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class declaration
  * @author
  */
-class Week extends Object {
+class Week {
 
   private Date startDate = null;
   private Date endDate = null;
@@ -107,11 +106,8 @@ class Week extends Object {
     if (listEventMonth.isEmpty()) {
       return v;
     }
-    Iterator<Event> itEvent = listEventMonth.iterator();
 
-    while (itEvent.hasNext()) {
-      Event currentEvt = itEvent.next();
-
+    for (Event currentEvt : listEventMonth) {
       if (currentEvt.isInWeek(startDate, endDate)) {
         Date stDateEvt = null;
         Date edDateEvt = null;

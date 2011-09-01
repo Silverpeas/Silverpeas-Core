@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.8-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -45,6 +45,10 @@
     <dependency>
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jasig.cas</groupId>
+      <artifactId>cas-client-core</artifactId>
     </dependency>
     <dependency>
       <groupId>jcharts</groupId>
@@ -171,6 +175,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>searchengine</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.metaparadigm</groupId>
       <artifactId>json-rpc</artifactId>
       <scope>provided</scope>
@@ -223,6 +233,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ws-test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>pdc</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

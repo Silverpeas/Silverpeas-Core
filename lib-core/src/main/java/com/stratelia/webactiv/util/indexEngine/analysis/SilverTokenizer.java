@@ -31,8 +31,6 @@ import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
-//import org.apache.lucene.analysis.standard.StandardTokenizer;
-
 /**
  * A grammar-based tokenizer constructed with JFlex
  * <p>

@@ -192,11 +192,7 @@ public class PortletRegistryCache {
       }
     }
     // If the value is -1, it means, read from the cache
-    if (value == -1) {
-      return true;
-    } else {
-      return false;
-    }
+    return value == -1;
   }
 
   /**

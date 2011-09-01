@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.Vector;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.util.Vector;
 
 public class SynchroGroupReport {
 
@@ -200,10 +200,10 @@ public class SynchroGroupReport {
     }
     sb.append(msgToTrace);
     if ((classe != null) && (classe.length() > 0)) {
-      sb.append(" | Classe : " + classe);
+      sb.append(" | Classe : ").append(classe);
     }
     if (ex != null) {
-      sb.append(" | !!! EXCEPTION !!! : " + ex.getMessage());
+      sb.append(" | !!! EXCEPTION !!! : ").append(ex.getMessage());
     }
     return (sb.toString());
   }

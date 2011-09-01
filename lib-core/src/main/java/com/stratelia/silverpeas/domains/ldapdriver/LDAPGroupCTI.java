@@ -22,22 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
 import com.novell.ldap.LDAPEntry;
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -94,24 +94,21 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
   public String[] getGroupMemberGroupIds(String lds, String groupId)
       throws AdminException {
     // All root groups, so, no group belongs to another...
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   public String[] getUserMemberGroupIds(String lds, String userId)
       throws AdminException {
-    Vector groupsIdsSet;
-    Vector groupsCur;
-    Iterator it;
-    String grId;
-    HashSet groupsManaged = new HashSet();
+    Vector<String> groupsCur;
+    Set<String> groupsManaged = new HashSet<String>();
 
-    groupsIdsSet = getMemberGroupIds(lds, userId, false);
+    Vector<String> groupsIdsSet = getMemberGroupIds(lds, userId, false);
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
-      it = groupsIdsSet.iterator();
-      groupsCur = new Vector();
+      Iterator<String> it = groupsIdsSet.iterator();
+      groupsCur = new Vector<String>();
       while (it.hasNext()) {
-        grId = (String) it.next();
+        String grId = it.next();
         if (!groupsManaged.contains(grId)) {
           groupsManaged.add(grId);
           groupsCur.addAll(getMemberGroupIds(lds, grId, true));
@@ -119,7 +116,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
       }
       groupsIdsSet = groupsCur;
     }
-    return (String[]) groupsManaged.toArray(new String[0]);
+    return groupsManaged.toArray(new String[groupsManaged.size()]);
   }
 
   /**
@@ -163,7 +160,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
       }
       groupsSet = groupsCur;
     }
-    return (String[]) usersManaged.toArray(new String[0]);
+    return (String[]) usersManaged.toArray(new String[usersManaged.size()]);
   }
 
   protected Vector getTRUEUserIds(String lds, LDAPEntry groupEntry)
@@ -234,7 +231,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
       String extraFilter) throws AdminException {
     if ((parentId != null) && (parentId.length() > 0)) { // ALL ROOT GROUPS
-      return new LDAPEntry[0];
+      return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     } else {
       LDAPEntry[] theEntries = null;
       String theFilter;
@@ -258,8 +255,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
               "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
-          synchroReport.append("PB getting Group's subgroups : " + parentId
-              + "\n");
+          append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroReport.error("LDAPGroupAllRoot.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes racine", e);
         } else {
@@ -356,7 +352,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
       }
       groupsIdsSet = groupsCur;
     }
-    return (Group[]) groupsManaged.values().toArray(new Group[0]);
+    return (Group[]) groupsManaged.values().toArray(new Group[groupsManaged.size()]);
   }
 
   // Surcharge de la fonction de la classe abstraite pour pouvoir construire le
@@ -404,8 +400,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
       if (synchroInProcess) {
         SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroup",
             "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-        synchroReport.append("PB getting Group's childs : "
-            + groupInfos.getName() + "\n");
+        append("PB getting Group's childs : ").append(groupInfos.getName()).append("\n");
         SynchroReport.error("AbstractLDAPGroup.translateGroup()",
             "Pb de récupération des membres utilisateurs du groupe "
             + groupInfos.getSpecificId(), e);

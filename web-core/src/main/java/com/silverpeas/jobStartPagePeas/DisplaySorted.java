@@ -24,7 +24,7 @@
 
 package com.silverpeas.jobStartPagePeas;
 
-public class DisplaySorted extends Object implements Comparable<DisplaySorted> {
+public class DisplaySorted implements Comparable<DisplaySorted> {
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_COMPONENT = 1;
   public static final int TYPE_SPACE = 2;
@@ -53,4 +53,4 @@ public class DisplaySorted extends Object implements Comparable<DisplaySorted> {
     isAdmin = src.isAdmin;
     isVisible = src.isVisible;
   }
-};
+}

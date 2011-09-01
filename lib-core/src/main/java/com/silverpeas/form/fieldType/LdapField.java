@@ -105,7 +105,7 @@ public class LdapField extends TextField {
 
     try {
       ldapConnection = new LDAPConnection();
-      int portInt = new Integer(port).intValue();
+      int portInt = Integer.parseInt(port);
       ldapConnection.connect(host, portInt);
 
       return ldapConnection;
@@ -135,7 +135,7 @@ public class LdapField extends TextField {
     }
 
     try {
-      int versionInt = new Integer(version).intValue();
+      int versionInt = Integer.parseInt(version);
       ldapConnection.bind(versionInt, distinguishedName, password);
 
     } catch (Exception e) {
@@ -147,7 +147,7 @@ public class LdapField extends TextField {
       String maxResultDisplayed) throws FormException {
 
     try {
-      int maxResultDisplayedInt = new Integer(maxResultDisplayed).intValue();
+      int maxResultDisplayedInt = Integer.parseInt(maxResultDisplayed);
       LDAPSearchConstraints ldapConstraint = new LDAPSearchConstraints();
       ldapConstraint.setMaxResults(maxResultDisplayedInt);
       ldapConnection.setConstraints(ldapConstraint);
@@ -165,7 +165,7 @@ public class LdapField extends TextField {
     LDAPSearchResults searchResult = null;
 
     // parsing filter -> dynamic variable
-    if (filter.indexOf(VARIABLE_LOGIN) != -1) {
+    if (filter.contains(VARIABLE_LOGIN)) {
       try {
         String valueLogin = organizationController.getUserDetail(currentUserId)
             .getLogin();
@@ -178,7 +178,7 @@ public class LdapField extends TextField {
 
     String[] tabSearchAttribute = null;
     try {
-      int scopeInt = new Integer(scope).intValue();
+      int scopeInt = Integer.parseInt(scope);
       if (StringUtil.isDefined(attribute)) {
         tabSearchAttribute = new String[1];
         tabSearchAttribute[0] = attribute;
@@ -198,7 +198,7 @@ public class LdapField extends TextField {
       try {
         while (searchResult.hasMore()
             && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
-          entry = (LDAPEntry) searchResult.next();
+          entry = searchResult.next();
 
           if (tabSearchAttribute != null) {
             ldapAttribute = entry.getAttribute(tabSearchAttribute[0]);

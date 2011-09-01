@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -48,8 +49,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -65,21 +64,29 @@ import java.util.Vector;
 
 public class AttachmentController {
 
-  private static final AttachmentBm attachmentBm = new AttachmentBmImpl();
+  private static AttachmentBm attachmentBm = new AttachmentBmImpl();
   public final static String CONTEXT_ATTACHMENTS = "Attachment" + File.separatorChar + "Images"
       + File.separatorChar;
   // For Office files direct update
   public final static String NO_UPDATE_MODE = "0";
   public final static String UPDATE_DIRECT_MODE = "1";
   public final static String UPDATE_SHORTCUT_MODE = "2";
-  private static ResourceLocator resources = new ResourceLocator(
+  private final static ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
-  private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
 
   /**
    * the constructor.
    */
   public AttachmentController() {
+  }
+  
+  /**
+   * the constructor.
+   */
+  public static AttachmentBm changeAttachmentControllerForTests(AttachmentBm attachmentBmForTests) {
+    AttachmentBm oldAttachmentBm = attachmentBm;
+    attachmentBm = attachmentBmForTests;
+    return oldAttachmentBm;
   }
 
   /**
@@ -472,11 +479,21 @@ public class AttachmentController {
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void attachmentIndexer(WAPrimaryKey fk) {
-
     try {
-
       for (AttachmentDetail detail : searchAttachmentByCustomerPK(fk)) {
         createIndex(detail);
+      }
+    } catch (Exception fe) {
+      throw new AttachmentRuntimeException(
+          "AttachmentController.attachmentIndexer(WAPrimaryKey foreignKey, String context)",
+          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", fe);
+    }
+  }
+  
+  public static void attachmentIndexer(WAPrimaryKey fk, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod) {
+    try {
+      for (AttachmentDetail detail : searchAttachmentByCustomerPK(fk)) {
+        createIndex(detail, startOfVisibilityPeriod, endOfVisibilityPeriod);
       }
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
@@ -609,7 +626,10 @@ public class AttachmentController {
     try {
       AttachmentDetail attachDetail = attachmentBm.
           getAttachmentByPrimaryKey(pk);
-      deleteAttachment(attachDetail, invokeCallback);
+      if(attachDetail != null) {
+        //l'attachment existe bien toujours en base
+        deleteAttachment(attachDetail, invokeCallback);
+      }
 
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
@@ -862,84 +882,83 @@ public class AttachmentController {
    * @see
    */
   public static void createIndex(AttachmentDetail detail) {
-
-    // index the uploaded or linked file
-    int attGroup = detail.getAttachmentGroup();
-
-    if ((attGroup == AttachmentDetail.GROUP_FILE)
-        || (attGroup == AttachmentDetail.GROUP_FILE_LINK)
-        || (attGroup == AttachmentDetail.GROUP_DIR)) {
-      String component = detail.getPK().getComponentName();
-      String fk = detail.getForeignKey().getId();
-
-      try {
-        Iterator<String> languages = detail.getLanguages();
-
-        while (languages.hasNext()) {
-          String language = languages.next();
-          AttachmentDetailI18N translation = (AttachmentDetailI18N) detail.getTranslation(language);
-
-          String objectType = "Attachment" + detail.getPK().getId();
-
-          if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
-            objectType += "_" + language;
-          }
-
-          FullIndexEntry indexEntry = new FullIndexEntry(component, objectType,
-              fk);
-
-          indexEntry.setLang(language);
-          indexEntry.setCreationDate(translation.getCreationDate());
-          indexEntry.setCreationUser(translation.getAuthor());
-
-          indexEntry.setTitle(translation.getLogicalName(), language);
-
-          String title = translation.getTitle();
-
-          if (StringUtil.isDefined(title)) {
-            indexEntry.setKeywords(title, language);
-          }
-
-          String info = translation.getInfo();
-
-          if (StringUtil.isDefined(info)) {
-            indexEntry.setPreview(info, language);
-          }
-
-          /*
-           * le champs description est utilisé pour savoir si c'est un lien ou une copie sur le
-           * fichier
-           */
-          String path;
-
-          if (detail.getAttachmentGroup() == AttachmentDetail.GROUP_FILE_LINK) {
-
+    createIndex(detail, null, null);
+  }
+  
+  public static void createIndex(AttachmentDetail detail, Date startOfVisibilityPeriod,
+      Date endOfVisibilityPeriod) {
+    
+    if (resources.getBoolean("attachment.index.separately", true)) {
+      // index the uploaded or linked file
+      int attGroup = detail.getAttachmentGroup();
+  
+      if ((attGroup == AttachmentDetail.GROUP_FILE)
+          || (attGroup == AttachmentDetail.GROUP_FILE_LINK)
+          || (attGroup == AttachmentDetail.GROUP_DIR)) {
+        String component = detail.getPK().getComponentName();
+        String fk = detail.getForeignKey().getId();
+  
+        try {
+          Iterator<String> languages = detail.getLanguages();
+          while (languages.hasNext()) {
+            String language = languages.next();
+            AttachmentDetailI18N translation = (AttachmentDetailI18N) detail.getTranslation(language);
+  
+            String objectType = "Attachment" + detail.getPK().getId();
+            if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
+              objectType += "_" + language;
+            }
+  
+            FullIndexEntry indexEntry = new FullIndexEntry(component, objectType, fk);
+  
+            indexEntry.setLang(language);
+            indexEntry.setCreationDate(translation.getCreationDate());
+            indexEntry.setCreationUser(translation.getAuthor());
+            if (startOfVisibilityPeriod != null) {
+              indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibilityPeriod));
+            }
+            if (endOfVisibilityPeriod != null) {
+              indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibilityPeriod));
+            }
+  
+            indexEntry.setTitle(translation.getLogicalName(), language);
+  
+            String title = translation.getTitle();
+            if (StringUtil.isDefined(title)) {
+              indexEntry.setKeywords(title, language);
+            }
+  
+            String info = translation.getInfo();
+            if (StringUtil.isDefined(info)) {
+              indexEntry.setPreview(info, language);
+            }
+  
             /*
-             * c'est un lien, le chemin est contenu dans la colonne physicalName(complet) un lien,
-             * le chemin est contenu dans la colonne physicalName(complet)
+             * le champs description est utilisé pour savoir si c'est un lien ou une copie sur le
+             * fichier
              */
-            path = detail.getPhysicalName();
-          } else {
-            path = createPath(component, detail.getContext()) + File.separator
-                + translation.getPhysicalName();
+            String path;
+            if (detail.getAttachmentGroup() == AttachmentDetail.GROUP_FILE_LINK) {
+              // it's a link, the complete path is contained in the column physicalName
+              path = detail.getPhysicalName();
+            } else {
+              path = createPath(component, detail.getContext()) + File.separator
+                  + translation.getPhysicalName();
+            }
+  
+            indexEntry.addFileContent(path, null, translation.getType(), translation.getLanguage());
+  
+            if (StringUtil.isDefined(detail.getXmlForm())) {
+              updateIndexEntryWithXMLFormContent(detail.getPK(), detail.getXmlForm(), indexEntry);
+            }
+  
+            IndexEngineProxy.addIndexEntry(indexEntry);
           }
-
-          String encoding = null;
-          String format = translation.getType();
-          String lang = translation.getLanguage();
-
-          indexEntry.addFileContent(path, encoding, format, lang);
-
-          if (StringUtil.isDefined(detail.getXmlForm())) {
-            updateIndexEntryWithXMLFormContent(detail.getPK(), detail.getXmlForm(), indexEntry);
-          }
-
-          IndexEngineProxy.addIndexEntry(indexEntry);
+        } catch (Exception e) {
+          SilverTrace.warn("attachment",
+              "AttachmentController.createIndex((AttachmentDetail attachDetail)",
+              "root.EX_INDEX_FAILED");
         }
-      } catch (Exception e) {
-        SilverTrace.warn("attachment",
-            "AttachmentController.createIndex((AttachmentDetail attachDetail)",
-            "root.EX_INDEX_FAILED");
       }
     }
   }
@@ -959,6 +978,24 @@ public class AttachmentController {
     } catch (Exception e) {
       SilverTrace.error("attachment",
           "AttachmentController.updateIndexEntryWithXMLFormContent()", "", e);
+    }
+  }
+  
+  public static void updateIndexEntryWithAttachments(FullIndexEntry indexEntry) {
+    if (resources.getBoolean("attachment.index.incorporated", true)) {
+      if (!indexEntry.getObjectType().startsWith("Attachment")) {
+        // index attachments
+        WAPrimaryKey pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
+        Vector<AttachmentDetail> attachments = searchAttachmentByPKAndContext(pk, "Images");
+        for (AttachmentDetail attachment : attachments) {
+          Iterator<String> languages = attachment.getLanguages();
+          while (languages.hasNext()) {
+            String language = languages.next();
+            indexEntry.addFileContent(attachment.getAttachmentPath(language), null,
+                attachment.getType(language), language);
+          }
+        }
+      }
     }
   }
 
@@ -1069,13 +1106,13 @@ public class AttachmentController {
           // attToCopy.getLogicalName().substring(attToCopy.getLogicalName().indexOf(".")+1,
           // attToCopy.getLogicalName().length());
           type = FileRepositoryManager.getFileExtension(attToCopy.getLogicalName());
-          physicalName = new Long(new Date().getTime()).toString() + "." + type;
+          physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
           copy.setPhysicalName(physicalName);
 
           copyFileOnServer(attToCopy, copy);
         }
 
-        copy = AttachmentController.createAttachment(copy);
+        copy = createAttachment(copy);
         ids.put(attToCopy.getPK().getId(), copy.getPK().getId());
 
         // Copy translations
@@ -1100,14 +1137,14 @@ public class AttachmentController {
           translationCopy.setLanguage(translation.getLanguage());
 
           type = FileRepositoryManager.getFileExtension(translation.getLogicalName());
-          physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
+          physicalName = java.lang.Long.toString(System.currentTimeMillis()) + "." + type;
           translationCopy.setPhysicalName(physicalName);
 
           attToCopy.setPhysicalName(translation.getPhysicalName());
 
           copyFileOnServer(attToCopy, translationCopy);
 
-          AttachmentController.updateAttachment(translationCopy);
+          updateAttachment(translationCopy);
         }
       }
     }
@@ -1222,7 +1259,7 @@ public class AttachmentController {
       attachmentDetail.setReservationDate(null);
       attachmentDetail.setAlertDate(null);
       attachmentDetail.setExpiryDate(null);
-      AttachmentController.updateAttachment(attachmentDetail, false, invokeCallback);
+      updateAttachment(attachmentDetail, false, invokeCallback);
     } catch (Exception e) {
       SilverTrace.error("attachment", "AttachmentController.checkinOfficeFile()",
           "attachment.CHECKIN_FAILED", e);
@@ -1350,7 +1387,7 @@ public class AttachmentController {
         }
       }
 
-      AttachmentController.updateAttachment(attachmentDetail, false, false);
+      updateAttachment(attachmentDetail, false, false);
     } catch (Exception e) {
       throw new AttachmentRuntimeException(
           "AttachmentController.checkoutFile()",
@@ -1379,7 +1416,7 @@ public class AttachmentController {
     for (AttachmentDetail a : attachments) {
       AttachmentDetail clone = (AttachmentDetail) a.clone();
       // The file must be copied
-      String physicalName = Long.toString(System.currentTimeMillis()) + "." + a.getExtension();
+      String physicalName = java.lang.Long.toString(System.currentTimeMillis()) + "." + a.getExtension();
       clone.setPhysicalName(physicalName);
       copyFileOnServer(a, clone);
       clone.setForeignKey(toForeignKey);

@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamException;
  * default, each user has its own workspace from which it access its data and collaborative and
  * shared resources.
  */
-public class SpaceInstanciator extends Object {
+public class SpaceInstanciator {
 
   protected static String xmlPackage = "";
   private Map<String, SpaceTemplate> spaceTemplates = new HashMap<String, SpaceTemplate>();

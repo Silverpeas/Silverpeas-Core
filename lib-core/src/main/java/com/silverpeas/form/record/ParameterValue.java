@@ -49,8 +49,9 @@ public class ParameterValue implements Serializable {
   }
 
   public void setLang(String lang) {
-    if (lang == null || lang.equals(""))
+    if (lang == null || lang.equals("")) {
       lang = "fr";
+    }
     this.lang = lang;
   }
 

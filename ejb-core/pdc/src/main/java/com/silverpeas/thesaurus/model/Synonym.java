@@ -25,7 +25,6 @@
 package com.silverpeas.thesaurus.model;
 
 import com.stratelia.webactiv.persistence.*;
-import java.lang.Comparable;
 
 /**
  * This class contains a full information about a Synonym a Synonym is linked to a Vocabulary and a

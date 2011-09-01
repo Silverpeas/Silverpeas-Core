@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -112,9 +113,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     int g, u;
     HashSet<String> usersSet = new HashSet<String>();
     if (selectedUsers != null && selectedUsers.length > 0) {
-      for (String selectedUser : selectedUsers) {
-        usersSet.add(selectedUser);
-      }
+      Collections.addAll(usersSet, selectedUsers);
     }
     if (selectedGroups != null && selectedGroups.length > 0) {
       for (String selectedGroup : selectedGroups) {

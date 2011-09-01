@@ -42,13 +42,14 @@ import org.apache.commons.io.FilenameUtils;
  * @author Norbert CHAIX
  * @version
  */
-public class FileRepositoryManager extends Object {
+public class FileRepositoryManager {
 
-  final static String s_sUpLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  static String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
-  final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", s_sUpLoadPath +
-      File.pathSeparator + "avatar");
-  static String s_sTempPath = "";
+  static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
+  final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
+  static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+  final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath +
+      File.separatorChar + "avatar");
+  static String tempPath = "";
   final static ResourceLocator uploadSettings=  new ResourceLocator(
           "com.stratelia.webactiv.util.uploads.uploadSettings", "");
   static final ResourceLocator utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", "");
@@ -57,9 +58,9 @@ public class FileRepositoryManager extends Object {
 
   static {
     try {
-      s_sTempPath = GeneralPropertiesManager.getString("tempPath");
-      if (!s_sTempPath.endsWith(File.separator)) {
-        s_sTempPath = s_sTempPath + File.separatorChar;
+      tempPath = GeneralPropertiesManager.getString("tempPath");
+      if (!tempPath.endsWith(File.separator)) {
+        tempPath = tempPath + File.separatorChar;
       }
     } catch (Exception e) {
       SilverTrace.error("util", "FileRepositoryManager static",
@@ -77,17 +78,26 @@ public class FileRepositoryManager extends Object {
   static public String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
-    return s_sUpLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + File.separator + sComponentId + File.separator;
   }
 
   static public String getAbsolutePath(String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
-    return s_sUpLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + File.separator + sComponentId + File.separator;
   }
-  
+
   static public String getAvatarPath() {
     return avatarPath;
+  }
+  
+  /**
+   * Gets the path of the repository into which attachments and other files are uploaded in
+   * Silverpeas.
+   * @return the path of the root repository for uploads.
+   */
+  static public String getUploadPath() {
+    return upLoadPath + File.separator;
   }
 
   // Add by Jean-Claude Groccia
@@ -109,14 +119,11 @@ public class FileRepositoryManager extends Object {
    * @param sDirectoryName
    * @return path
    */
-  static public String getAbsolutePath(String sComponentId,
-      String[] sDirectoryName) {
+  static public String getAbsolutePath(String sComponentId, String[] sDirectoryName) {
     int lg = sDirectoryName.length;
     String path = getAbsolutePath(sComponentId);
     for (int k = 0; k < lg; k++) {
-      SilverTrace.debug(
-          "util",
-          "FileRepositoryManager.getAbsolutePath",
+      SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
           ("concat: path = " + path + " sDirectoryName[" + k + "]=" + sDirectoryName[k]));
       path = path + sDirectoryName[k] + File.separatorChar;
     }
@@ -141,11 +148,11 @@ public class FileRepositoryManager extends Object {
   }
 
   static public String getTemporaryPath() {
-    return s_sTempPath + File.separator;
+    return tempPath + File.separator;
   }
 
   static public String getTemporaryPath(String sSpaceId, String sComponentId) {
-    return s_sTempPath + File.separator;
+    return tempPath + File.separator;
   }
 
   static public String getComponentTemporaryPath(String sComponentId) {
@@ -159,74 +166,72 @@ public class FileRepositoryManager extends Object {
         + sComponentId);
     if (particularSpace != null
         && (particularSpace.startsWith("user@") || particularSpace.equals("transverse"))) {
-      return s_sIndexUpLoadPath + File.separator + particularSpace
+      return indexUpLoadPath + File.separator + particularSpace
           + File.separator + sComponentId + File.separator + "index";
     } else {
-      return s_sIndexUpLoadPath + File.separator + sComponentId
+      return indexUpLoadPath + File.separator + sComponentId
           + File.separator + "index";
     }
   }
 
   /**
-   * @param sSpaceId 
-   * @param sComponentId 
-   * @param sDirectoryName 
-   * @throws Exception 
+   * @param sSpaceId
+   * @param sComponentId
+   * @param sDirectoryName
+   * @throws Exception
    * @deprecated
    */
   static public void createAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId)
         + sDirectoryName);
   }
 
   static public void createAbsolutePath(String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId)
         + sDirectoryName);
   }
 
   /**
-   * @param sSpaceId 
-   * @param sComponentId 
-   * @param sDirectoryName 
-   * @throws Exception 
+   * @param sSpaceId
+   * @param sComponentId
+   * @param sDirectoryName
+   * @throws Exception
    * @deprecated
    */
   static public void createTempPath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId));
   }
 
-  static public void createTempPath(String sComponentId, String sDirectoryName)
-      throws Exception {
+  static public void createTempPath(String sComponentId, String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId));
   }
 
-  static public void createGlobalTempPath(String sDirectoryName)
-      throws Exception {
+  static public void createGlobalTempPath(String sDirectoryName) {
     FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
 
   static public void createAbsoluteIndexPath(String particularSpace,
-      String sComponentId) throws Exception {
+      String sComponentId) {
     FileFolderManager.createFolder(getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
 
   static public void deleteAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId)
         + sDirectoryName);
   }
 
   static public void deleteTempPath(String sSpaceId, String sComponentId,
-      String sDirectoryName) throws Exception {
+      String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
   }
 
   static public void deleteAbsoluteIndexPath(String particularSpace,
-      String sComponentId) throws Exception {
+      String sComponentId) {
     FileFolderManager.deleteFolder(getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
@@ -260,11 +265,9 @@ public class FileRepositoryManager extends Object {
         fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Lock.gif";
       }
     }
-    if (small) {
+    if (small && fileIcon != null) {
       String newFileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Small.gif";
-      if (newFileIcon != null) {
-        fileIcon = newFileIcon;
-      }
+      fileIcon = newFileIcon;
     }
 
     return path + fileIcon;
@@ -287,7 +290,7 @@ public class FileRepositoryManager extends Object {
     float size = new Long(lSize).floatValue();
 
     if (size < 1024) {// inférieur à 1 ko (1024 octets)
-      return Float.toString(size).concat(" ").concat(o);
+      return Integer.toString(Math.round(size)).concat(" ").concat(o);
     } else if (size < 1024 * 1024) {// inférieur à 1 mo (1024 * 1024 octets)
       return Integer.toString(Math.round(size / 1024)).concat(" ").concat(Ko);
     } else {// supérieur à 1 mo (1024 * 1024 octets)
@@ -330,10 +333,9 @@ public class FileRepositoryManager extends Object {
    * @param from The name of the source file, the one to copy.
    * @param to The name of the destination file, where to paste data.
    * @throws FileNotFoundException
-   * @throws IOException  
+   * @throws IOException
    */
-  static public void copyFile(String from, String to)
-      throws FileNotFoundException, IOException {
+  static public void copyFile(String from, String to) throws IOException {
     BufferedInputStream input = new BufferedInputStream(new FileInputStream(
         from));
     BufferedOutputStream output = new BufferedOutputStream(
@@ -352,11 +354,11 @@ public class FileRepositoryManager extends Object {
     String sec = " s";
     String ms = " ms";
     if (size < 1000) {
-      return new Long(size).toString() + ms;
+      return Long.toString(size) + ms;
     } else if (size < 120000) {
-      return new Long(size / 1000).toString() + sec;
+      return Long.toString(size / 1000) + sec;
     } else {
-      return new Long(size / 60000).toString() + min;
+      return Long.toString(size / 60000) + min;
     }
   }
 
@@ -392,6 +394,18 @@ public class FileRepositoryManager extends Object {
    * @return
    */
   public static String getIndexUpLoadPath() {
-    return s_sIndexUpLoadPath + File.separator;
+    return indexUpLoadPath + File.separator;
+  }
+  
+  /**
+   * Gets the path of the repository that contains the templates to use in exports.
+   * @return the path of the export template repository.
+   */
+  public static String getExportTemplateRepository() {
+    String path = exportTemplatePath;
+    if (!path.endsWith("/")) {
+      path += "/";
+    }
+    return path;
   }
 }

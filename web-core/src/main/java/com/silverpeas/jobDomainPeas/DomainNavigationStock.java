@@ -22,25 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * DomainNavigationStock.java
  */
 
 package com.silverpeas.jobDomainPeas;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class manage the informations needed for domains navigation and browse PRE-REQUIRED : the
@@ -64,12 +61,12 @@ public class DomainNavigationStock extends NavigationStock {
     m_NavDomain = m_adc.getDomain(m_DomainId);
     m_SubUsers = m_adc.getUsersOfDomain(m_NavDomain.getId());
     if (m_SubUsers == null) {
-      m_SubUsers = new UserDetail[0];
+      m_SubUsers = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
     JobDomainSettings.sortUsers(m_SubUsers);
     m_SubGroups = m_adc.getRootGroupsOfDomain(m_NavDomain.getId());
     if (m_SubGroups == null) {
-      m_SubGroups = new Group[0];
+      m_SubGroups = ArrayUtil.EMPTY_GROUP_ARRAY;
     }
 
     if (manageableGroupIds != null)
@@ -87,12 +84,12 @@ public class DomainNavigationStock extends NavigationStock {
 
     // filter groups
     String groupId = null;
-    for (int g = 0; g < groups.length; g++) {
-      groupId = groups[g].getId();
+    for (Group group : groups) {
+      groupId = group.getId();
 
-      if (manageableGroupIds.contains(groupId))
-        temp.add(groups[g]);
-      else {
+      if (manageableGroupIds.contains(groupId)) {
+        temp.add(group);
+      } else {
         // get all subGroups of group
         List<String> subGroupIds = Arrays.asList(m_adc
             .getAllSubGroupIdsRecursively(groupId));
@@ -104,24 +101,25 @@ public class DomainNavigationStock extends NavigationStock {
         boolean find = false;
         while (!find && itManageableGroupsIds.hasNext()) {
           manageableGroupId = itManageableGroupsIds.next();
-          if (subGroupIds.contains(manageableGroupId))
+          if (subGroupIds.contains(manageableGroupId)) {
             find = true;
+          }
         }
 
-        if (find)
-          temp.add(groups[g]);
+        if (find) {
+          temp.add(group);
+        }
       }
     }
 
-    return (Group[]) temp.toArray(new Group[0]);
+    return temp.toArray(new Group[temp.size()]);
   }
 
   public boolean isThisDomain(String grId) {
     if (StringUtil.isDefined(grId)) {
       return (grId.equals(m_NavDomain.getId()));
-    } else {
-      return (isDomainValid(m_NavDomain) == false);
     }
+    return (isDomainValid(m_NavDomain) == false);
   }
 
   public Domain getThisDomain() {

@@ -10,6 +10,104 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
+    <description>Tag to print out the classification of a given resource content on the PdC configured
+    for a given component instance. The classification on the PdC can be or not editable.
+    </description>
+    <name>pdcClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource content for which the classification on the PdC
+      has to be rendered.
+      </description>
+      <name>contentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is this classification on the PdC should be editable?.By default, if not set, the
+      classification isn't editable
+      </description>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out an HTML section and javascript code dedicated to the creation of
+    a new classification of a given resource content on the PdC configured
+    for a given component instance. It is mainly to be used for new content. This tag is to be
+    used in conjonction with the pdcValidateClassification one.
+    </description>
+    <name>pdcNewClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewClassificationTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out javascript code to validate the classification onto the PdC that
+    was done through the tag pdcNewClassification for a new content. The tag generates javascript
+    instruction that returns the error message if the classification isn't valid, otherwise an empty
+    message.
+    </description>
+    <name>pdcValidateClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationValidationTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The name of the Javascript variable that will accept the error message when the
+      classification of the content isn't valid. The message is concatenated at the variable'value.
+      </description>
+      <name>errorMessager</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The name of the Javascript variable representing the counter of detected errors
+      in the form validation and that will be incremented by one at the classification validation
+      failure.
+      </description>
+      <name>errorCounter</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out javascript code to get the positions of the content classification
+    onto the PdC that were selected through the tag pdcNewClassification.
+    </description>
+    <name>pdcPositions</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The name of the Javascript variable that will accept the positions set through the
+      pdcNewClassification tag.
+      </description>
+      <name>setIn</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Tag to print out a date localized from the specified language</description>
     <name>formatDate</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.FormatDateTag</tag-class>
@@ -22,7 +120,9 @@
       <type>java.util.Date</type>
     </attribute>
     <attribute>
-      <description>The language to use for localizing the date</description>
+      <description>The language to use for localizing the date. If not set, then the resources wrapper
+      usually carried in the request is used.
+      </description>
       <name>language</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -42,7 +142,9 @@
       <type>java.util.Date</type>
     </attribute>
     <attribute>
-      <description>The language to use for localizing the date and time</description>
+      <description>The language to use for localizing the date and time. If not set, then the
+      resources wrapper usually carried in the request is used.
+      </description>
       <name>language</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -892,7 +994,7 @@
     <description>Simple tag to encode a java String into a XML escaped String.</description>
     <name>encodeXml</name>
     <tag-class>
-      com.stratelia.webactiv.util.viewGenerator.html.XmlEncoderTag
+      com.stratelia.webactiv.util.viewGenerator.html.XMLEncoderTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -901,6 +1003,64 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into an HTML Paragraph String.</description>
+    <name>encodeHtmlParagraph</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.HtmlParagraphEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Generate HTML search result element.</description>
+    <name>displayResult</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.result.HtmlSearchResultTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>User identifier</description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Global Silver Result</description>
+      <name>gsr</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult</type>
+    </attribute>
+    <attribute>
+      <description>Sort value</description>
+      <name>sortValue</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>Active selection</description>
+      <name>activeSelection</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Export enabled</description>
+      <name>exportEnabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
     </attribute>
   </tag>
 </taglib>

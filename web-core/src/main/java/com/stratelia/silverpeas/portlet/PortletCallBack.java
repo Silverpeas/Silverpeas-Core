@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.portlet;
 
 import com.stratelia.silverpeas.portlet.model.PortletColumnRow;
@@ -69,21 +66,21 @@ public class PortletCallBack implements CallBack {
       } else if (action == CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT) {
         PortletRowRow[] portletRowDeleted = schema.portletRow
             .dereferenceInstanceId(iParam);
-        for (int i = 0; i < portletRowDeleted.length; i++) {
+        for (PortletRowRow aPortletRowDeleted : portletRowDeleted) {
           schema.portletColumn
-              .delete(portletRowDeleted[i].getPortletColumnId());
-          schema.portletState.dereferencePortletRowId(portletRowDeleted[i]
+              .delete(aPortletRowDeleted.getPortletColumnId());
+          schema.portletState.dereferencePortletRowId(aPortletRowDeleted
               .getId());
         }
       } else if (action == CallBackManager.ACTION_BEFORE_REMOVE_SPACE) {
         PortletColumnRow[] portletColumnDeleted = schema.portletColumn
             .dereferenceSpaceId(iParam);
         PortletRowRow[] portletRowDeleted;
-        for (int i = 0; i < portletColumnDeleted.length; i++) {
+        for (PortletColumnRow aPortletColumnDeleted : portletColumnDeleted) {
           portletRowDeleted = schema.portletRow
-              .dereferencePortletColumnId(portletColumnDeleted[i].getId());
-          for (int j = 0; j < portletRowDeleted.length; j++) {
-            schema.portletState.dereferencePortletRowId(portletRowDeleted[j]
+              .dereferencePortletColumnId(aPortletColumnDeleted.getId());
+          for (PortletRowRow aPortletRowDeleted : portletRowDeleted) {
+            schema.portletState.dereferencePortletRowId(aPortletRowDeleted
                 .getId());
           }
         }

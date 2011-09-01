@@ -35,7 +35,24 @@ import java.util.HashMap;
  * @author NEY
  * @version
  */
-public class FileServerUtils extends Object {
+public class FileServerUtils {
+  
+  public static final String COMPONENT_ID_PARAMETER = "ComponentId";
+  public static final String SOURCE_FILE_PARAMETER = "SourceFile";
+  public static final String DIRECTORY_PARAMETER = "Directory";
+  public static final String ARCHIVE_IT_PARAMETER = "ArchiveIt";
+  public static final String DIR_TYPE_PARAMETER = "DirType";
+  public static final String USER_ID_PARAMETER = "UserId";
+  public static final String MIME_TYPE_PARAMETER = "MimeType";
+  public static final String TYPE_UPLOAD_PARAMETER = "TypeUpload";
+  public static final String ZIP_PARAMETER = "zip";
+  public static final String FILE_NAME_PARAMETER = "fileName";
+  public static final String ATTACHMENT_ID_PARAMETER = "attachmentId";
+  public static final String LANGUAGE_PARAMETER = "lang";
+  public static final String DOCUMENT_ID_PARAMETER = "DocumentId";
+  public static final String VERSION_ID_PARAMETER = "VersionId";
+  public static final String NODE_ID_PARAMETER = "NodeId";
+  public static final String PUBLICATION_ID_PARAMETER = "PubId";
 
   /**
    * Replace chars that have special meanings in url by their http substitute.

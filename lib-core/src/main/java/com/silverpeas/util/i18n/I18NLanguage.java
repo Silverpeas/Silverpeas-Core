@@ -49,8 +49,11 @@ public class I18NLanguage {
 
   @Override
   public boolean equals(Object o) {
-    I18NLanguage other = (I18NLanguage) o;
-    return other.getCode().equals(code);
+    if (o instanceof I18NLanguage) {
+      I18NLanguage other = (I18NLanguage) o;
+      return other.getCode().equals(code);
+    }
+    return false;
   }
 
   @Override

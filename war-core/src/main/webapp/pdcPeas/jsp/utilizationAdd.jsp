@@ -145,7 +145,8 @@ function goBack(){
 				<input type="radio" name="Mandatory" value="0" <%=notMandatoryChecked%>><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.optional")%></span></td>
 		  <% } %>
       </tr>
-	  <tr> 
+      <% if (isAxisInvarianceUsed) { %>
+      <tr> 
         <td class="txtlibform" nowrap><%=resource.getString("pdcPeas.axisValue")%>&nbsp;:</td>
         <td nowrap>
 		  <% if (isVariant != null) { 
@@ -159,7 +160,7 @@ function goBack(){
 				<input type="radio" name="Variant" value="0" <%=notVariantChecked%>><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.notVariants")%></span></td>
 		  <% } %>
       </tr>
-		      
+    <% } %>
 	</form>
   </table>
   <%

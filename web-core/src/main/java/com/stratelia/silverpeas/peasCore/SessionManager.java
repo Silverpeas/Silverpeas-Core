@@ -52,6 +52,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverLog;
@@ -66,7 +67,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * Class declaration This object is a singleton used by LoginServlet : when the user log in,
+ * Class declaration This object is a singleton used by AuthenticationService : when the user log in,
  * ComponentRequestRouter : when the user access a component. It provides functions to manage the
  * sessions, to write a log journal and getFactory informations about the logged users.
  * @author Nicolas Eysseric
@@ -273,9 +274,7 @@ public class SessionManager
       removeSession(si);
       si = null;
     } else {
-      SilverTrace.debug(
-          "peasCore",
-          "SessionManager.removeSession",
+      SilverTrace.debug("peasCore", "SessionManager.removeSession",
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
           + sessionId + ")");
     }
@@ -499,7 +498,7 @@ public class SessionManager
         "EndOfSessionNotificationMsgText"));
     notifMetaData.setSender(null);
     notifMetaData.setSessionId(sessionId);
-    notifMetaData.addUserRecipient(userId);
+    notifMetaData.addUserRecipient(new UserRecipient(userId));
     notifMetaData.setSource(m_Multilang.getString("administrator"));
 
     notifSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP,

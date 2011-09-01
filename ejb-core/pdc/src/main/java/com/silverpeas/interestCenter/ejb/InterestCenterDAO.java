@@ -28,6 +28,11 @@
  */
 package com.silverpeas.interestCenter.ejb;
 
+import com.silverpeas.interestCenter.model.InterestCenter;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,15 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-
 public class InterestCenterDAO {
 
-  /** DB Interest_Center table name */
-  public final static String ICENTER_TABLE_NAME = "SB_Interest_Center";
   /** Interest_Center_Axes table name */
   public final static String ICENTER_AXES_TABLE_NAME = "SB_Interest_Center_Axis";
   /** Date format pattern constatnt. This patters is used in db operations */
@@ -54,50 +52,44 @@ public class InterestCenterDAO {
   /** getICByUserID sql query constant */
   public final static String GET_IC_BY_USERID_QUERY =
       "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
-      + ICENTER_TABLE_NAME + " a WHERE a.ownerId = ? ";
+      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM SB_Interest_Center a WHERE a.ownerId = ? ";
 
   /**
+   * @param con 
+   * @param userid 
    * @return a list of <code>InterestCenter</code>s by user id provided
+   * @throws SQLException
+   * @throws DAOException  
    */
-  public static List<InterestCenter> getICByUserID(Connection con, int userid)
-      throws SQLException, DAOException {
+  public static List<InterestCenter> getICByUserID(Connection con, int userid) throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.getICByUserID",
-          "InterestCenter.EX_NO_CONNECTION");
-    }
+          "InterestCenter.EX_NO_CONNECTION");    }
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    List<InterestCenter> result = null;
-
     try {
       prepStmt = con.prepareStatement(GET_IC_BY_USERID_QUERY);
       prepStmt.setInt(1, userid);
 
-      result = new ArrayList<InterestCenter>();
+      List<InterestCenter> result = new ArrayList<InterestCenter>();
       rs = prepStmt.executeQuery();
-
       while (rs.next()) {
         InterestCenter ic = getICformRS(rs, con);
-
         result.add(ic);
       }
+      return result;
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-
-    return result;
   }
 
   /** getICByPK sql query constant */
-  public final static String GET_IC_BY_PK_QUERY =
-      "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
-      + ICENTER_TABLE_NAME + " a WHERE a.id = ? ";
+  public final static String GET_IC_BY_PK_QUERY = "SELECT id, name, criteria, workSpaceId, peasId, "
+          + "authorId, afterDate, beforeDate, ownerId FROM SB_Interest_Center WHERE id = ? ";
 
   /**
-   * @param icPK <code>InterestCenter</code> id
+   * @param icID <code>InterestCenter</code> id
    * @return InterestCenter by its id
    */
   public static InterestCenter getICByPK(Connection con, int icID)
@@ -171,13 +163,8 @@ public class InterestCenterDAO {
 
   /** createIC sql query constant */
   public final static String CREATE_IC_QUERY =
-      "INSERT  INTO "
-          +
-          ICENTER_TABLE_NAME
-          +
-          " (id, name, criteria, "
-          +
-          " workSpaceId, peasId, authorId, afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+      "INSERT  INTO SB_Interest_Center (id, name, criteria, workSpaceId, peasId, authorId, " +
+          "afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   /**
    * @return id of <code>InterestCenter</code> created
@@ -197,10 +184,10 @@ public class InterestCenterDAO {
 
     int newId = -1;
     try {
-      newId = DBUtil.getNextId(ICENTER_TABLE_NAME, "Id");
+      newId = DBUtil.getNextId("SB_Interest_Center", "Id");
     } catch (Exception e) {
       throw new DAOException("InterestCenterDAO.createIC",
-          "root.EX_PK_GENERATION_FAILED", ICENTER_TABLE_NAME, e);
+          "root.EX_PK_GENERATION_FAILED", "SB_Interest_Center", e);
     }
 
     try {
@@ -246,13 +233,8 @@ public class InterestCenterDAO {
 
   /** updateIC sql query constant */
   public final static String UPDATE_IC_QUERY =
-      "UPDATE  "
-          +
-          ICENTER_TABLE_NAME
-          +
-          " SET name = ?, criteria = ?, "
-          +
-          " workSpaceId = ?, peasId = ?, authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
+      "UPDATE SB_Interest_Center SET name = ?, criteria = ?, workSpaceId = ?, peasId = ?, " +
+          "authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
 
   /**
    * perform updates of provided InterestCenter
@@ -304,22 +286,20 @@ public class InterestCenterDAO {
   }
 
   /**
-   * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
-   * to be deleted
+   * @param removePKList id's of <code>InterestCenter</code>s to be deleted
    */
   public static void removeICByPK(Connection con, List<Integer> removePKList)
       throws SQLException, DAOException {
     for (Integer pk : removePKList) {
-      removeICByPK(con, pk.intValue());
+      removeICByPK(con, pk);
     }
   }
 
   /** removeICByPK sql query constant */
-  public final static String REMOVE_IC_BY_PKS_LIST_QUERY = "delete from "
-      + ICENTER_TABLE_NAME + " where id = ?";
+  public final static String REMOVE_IC_BY_PKS_LIST_QUERY = "DELETE FROM SB_Interest_Center WHERE id = ?";
 
   /**
-   * @param pk an id of <code>InterestCenter</code> to be deleted
+   * @param removeID an id of <code>InterestCenter</code> to be deleted
    */
   public static void removeICByPK(Connection con, int removeID)
       throws SQLException, DAOException {

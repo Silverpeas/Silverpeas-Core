@@ -23,27 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import org.apache.commons.lang.time.FastDateFormat;
-
 import com.google.common.collect.Sets;
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.Instanciateur;
@@ -53,6 +32,7 @@ import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
@@ -73,6 +53,24 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
+import org.apache.commons.lang3.time.FastDateFormat;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
  * @author neysseri
@@ -247,21 +245,31 @@ public final class Admin {
   public String getGeneralSpaceId() {
     return SPACE_KEY_PREFIX + m_nEntrepriseClientSpaceId;
   }
+  
+  public void createSpaceIndex(int spaceId) {
+    try {
+      SpaceInstLight space = getSpaceInstLight(String.valueOf(spaceId));
+      createSpaceIndex(space);
+    } catch (AdminException e) {
+      SilverTrace.error(MODULE_ADMIN, "admin.createSpaceIndex",
+          "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId);
+    }
+  }
 
-  public void createSpaceIndex(SpaceInst spaceInst) {
+  public void createSpaceIndex(SpaceInstLight spaceInst) {
     FullIndexEntry indexEntry;
 
     SilverTrace.info(MODULE_ADMIN, "admin.createSpaceIndex",
         "root.MSG_GEN_PARAM_VALUE", "Space Name : " + spaceInst.getName()
-        + " Space Id : " + spaceInst.getId());
+        + " Space Id : " + spaceInst.getShortId());
 
     if (spaceInst != null) {
       // Index the space
-      String spaceId = getSpaceId(spaceInst);
+      String spaceId = spaceInst.getFullId();
       indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
       indexEntry.setTitle(spaceInst.getName());
       indexEntry.setPreView(spaceInst.getDescription());
-      indexEntry.setCreationUser(spaceInst.getCreatorUserId());
+      indexEntry.setCreationUser(String.valueOf(spaceInst.getCreatedBy()));
 
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
@@ -329,13 +337,14 @@ public final class Admin {
       domainDriverManager.commit();
       connectionProd.commit();
 
-      addSpaceInTreeCache(getSpaceInstLight(sSpaceInstId), true);
+      SpaceInstLight space = getSpaceInstLight(sSpaceInstId);
+      addSpaceInTreeCache(space, true);
 
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst",
           "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = "
           + spaceInst.getName());
-      createSpaceIndex(spaceInst);
+      createSpaceIndex(space);
 
       return spaceInst.getId();
     } catch (Exception e) {
@@ -523,7 +532,7 @@ public final class Admin {
       SilverTrace.info(MODULE_ADMIN, "admin.restoreSpaceFromBasket",
           "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = "
           + spaceInst.getName());
-      createSpaceIndex(spaceInst);
+      createSpaceIndex(Integer.parseInt(sDriverSpaceId));
       // reset space and eventually subspace
       cache.opAddSpace(spaceInst);
     } catch (Exception e) {
@@ -676,7 +685,7 @@ public final class Admin {
       SilverTrace.info(MODULE_ADMIN, "admin.updateSpaceInst",
           "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = "
           + spaceInstNew.getName());
-      createSpaceIndex(spaceInstNew);
+      createSpaceIndex(spaceLight);
 
       return spaceInstNew.getId();
     } catch (Exception e) {
@@ -903,7 +912,7 @@ public final class Admin {
    */
   public String[] getSpaceNames(String[] asClientSpaceIds) throws AdminException {
     if (asClientSpaceIds == null) {
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
     try {
       String[] asSpaceNames = new String[asClientSpaceIds.length];
@@ -1085,12 +1094,12 @@ public final class Admin {
         // inherits profiles from space
         setSpaceProfilesToComponent(componentInst, null);
       }
-      createComponentIndex(componentInst);
       domainDriverManager.commit();
       cache.opUpdateComponent(componentInst);
       ComponentInstLight component = getComponentInstLight(sComponentId);
       TreeCache.addComponent(getDriverComponentId(sComponentId), component,
           getDriverSpaceId(component.getDomainFatherId()));
+      createComponentIndex(component);
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.restoreComponentFromBasket",
@@ -1098,8 +1107,18 @@ public final class Admin {
           + sComponentId);
     }
   }
+  
+  public void createComponentIndex(String componentId) {
+    try {
+      ComponentInstLight component = getComponentInstLight(componentId);
+      createComponentIndex(component);
+    } catch (AdminException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
-  public void createComponentIndex(ComponentInst componentInst) {
+  public void createComponentIndex(ComponentInstLight componentInst) {
     FullIndexEntry indexEntry;
 
     if (componentInst != null) {
@@ -1119,7 +1138,7 @@ public final class Admin {
       indexEntry = new FullIndexEntry("Components", "Component", componentId);
       indexEntry.setTitle(componentInst.getLabel());
       indexEntry.setPreView(componentInst.getDescription());
-      indexEntry.setCreationUser(componentInst.getCreatorUserId());
+      indexEntry.setCreationUser(Integer.toString(componentInst.getCreatedBy()));
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }
@@ -1211,11 +1230,13 @@ public final class Admin {
       }
       connectionProd.commit();
       cache.opAddComponent(componentInst);
-      TreeCache.addComponent(sDriverComponentId, getComponentInstLight(componentId),
+      
+      ComponentInstLight component = getComponentInstLight(componentId);
+      TreeCache.addComponent(sDriverComponentId, component,
           getDriverSpaceId(spaceInstFather.getId()));
 
       // indexation du composant
-      createComponentIndex(componentInst);
+      createComponentIndex(component);
 
       return componentId;
     } catch (Exception e) {
@@ -1433,7 +1454,7 @@ public final class Admin {
       componentInstNew.setId(componentClientId);
 
       // indexation du composant
-      createComponentIndex(componentInstNew);
+      createComponentIndex(componentClientId);
 
       return componentClientId;
     } catch (Exception e) {
@@ -1717,7 +1738,7 @@ public final class Admin {
     if (asProfiles != null) {
       return asProfiles;
     }
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**
@@ -2228,7 +2249,7 @@ public final class Admin {
    */
   public String[] getGroupNames(String[] groupIds) throws AdminException {
     if (groupIds == null) {
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
     String[] asGroupNames = new String[groupIds.length];
     for (int nI = 0; nI < groupIds.length; nI++) {
@@ -2306,7 +2327,7 @@ public final class Admin {
    */
   public Group[] getGroups(String[] asGroupId) throws AdminException {
     if (asGroupId == null) {
-      return new Group[0];
+      return ArrayUtil.EMPTY_GROUP_ARRAY;
     }
     Group[] aGroup = new Group[asGroupId.length];
     for (int nI = 0;
@@ -2700,6 +2721,42 @@ public final class Admin {
           "space profile Id: '" + groupProfileInstNew.getId() + "'", e);
     }
   }
+  
+  /**
+   * @throws AdminException
+   */
+  public void indexAllGroups() throws AdminException {
+    Domain[] domains = getAllDomains(); //All domains except Mixt Domain (id -1)
+    for (Domain domain : domains) {
+      try {
+        indexGroups(domain.getId());
+      } catch (Exception e) {
+        SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
+            "domainId = " + domain.getId(), e);
+      }
+    }
+    
+    //Mixt Domain (id -1)
+    try {
+      indexGroups("-1");
+    } catch (Exception e) {
+      SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
+          "domainId = -1", e);
+    }
+  }
+
+  /**
+   * @param domainId
+   * @throws AdminException
+   */
+  public void indexGroups(String domainId) throws AdminException {
+    try {
+      domainDriverManager.indexAllGroups(domainId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.indexGroups",
+          SilverpeasException.ERROR, "admin.CANT_INDEX_GROUPS", "domainId = " + domainId, e);
+    }
+  }
 
   // -------------------------------------------------------------------------
   // USER RELATED FUNCTIONS
@@ -2737,7 +2794,7 @@ public final class Admin {
    */
   public UserDetail[] getUserDetails(String[] asUserId) throws AdminException {
     if (asUserId == null) {
-      return new UserDetail[0];
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
 
     UserDetail[] aUserDetail = new UserDetail[asUserId.length];
@@ -3316,8 +3373,8 @@ public final class Admin {
 
   public UserDetail[] getUsersOfDomain(String domainId) throws AdminException {
     try {
-      if (domainId != null && domainId.equals("-1")) {
-        return new UserDetail[0];
+      if ("-1".equals(domainId) && domainId != null) {
+        return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
       }
       return userManager.getUsersOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
@@ -3329,8 +3386,8 @@ public final class Admin {
 
   public String[] getUserIdsOfDomain(String domainId) throws AdminException {
     try {
-      if (domainId != null && domainId.equals("-1")) {
-        return new String[0];
+      if ("-1".equals(domainId) && domainId != null) {
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
       return userManager.getUserIdsOfDomain(domainDriverManager, domainId);
     } catch (Exception e) {
@@ -3703,7 +3760,7 @@ public final class Admin {
     }
   }
 
-  public Hashtable<String, SpaceAndChildren> getTreeView(String userId, String spaceId)
+  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId)
       throws AdminException {
     SilverTrace.info("admin", "Admin.getTreeView", "root.MSG_GEN_ENTER_METHOD",
         "userId = " + userId + ", spaceId = " + spaceId);
@@ -3717,7 +3774,7 @@ public final class Admin {
         "SQL Queries done !");
 
     // Step 2 - build HashTable
-    Hashtable<String, SpaceAndChildren> spaceTrees = new Hashtable<String, SpaceAndChildren>();
+    Map<String, SpaceAndChildren> spaceTrees = new HashMap<String, SpaceAndChildren>();
     Iterator<SpaceInstLight> it = spacesLight.iterator();
     while (it.hasNext()) {
       SpaceInstLight space = it.next();
@@ -3852,11 +3909,13 @@ public final class Admin {
     if (sil == null) {
       sil = spaceManager.getSpaceInstLightById(domainDriverManager, spaceId);
     }
-    if (level != -1) {
-      sil.setLevel(level);
-    }
-    if (sil.getLevel() == -1) {
-      sil.setLevel(TreeCache.getSpaceLevel(spaceId));
+    if (sil != null) {
+      if (level != -1) {
+        sil.setLevel(level);
+      }
+      if (sil.getLevel() == -1) {
+        sil.setLevel(TreeCache.getSpaceLevel(spaceId));
+      }
     }
     return sil;
   }
@@ -4457,7 +4516,7 @@ public final class Admin {
     } catch (Exception e) {
       SilverTrace.error("admin", "Admin.getCurrentProfiles",
           "admin.MSG_ERR_GET_CURRENT_PROFILE", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -4551,11 +4610,11 @@ public final class Admin {
     String[] usersIds;
 
     if (theGroup == null) {
-      return new UserDetail[0];
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
     usersIds = theGroup.getUserIds();
-    if ((usersIds == null) || (usersIds.length <= 0)) {
-      return new UserDetail[0];
+    if (usersIds == null || usersIds.length <= 0) {
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
     if ((sUserLastNameFilter == null) || (sUserLastNameFilter.length() <= 0)) {
       return getUserDetails(usersIds);
@@ -4695,7 +4754,7 @@ public final class Admin {
   // -------------------------------------------------------------------------
   private String[] arrayListToString(ArrayList<String> al) {
     if (al == null) {
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
 
     String[] as = new String[al.size()];
@@ -5042,7 +5101,7 @@ public final class Admin {
   private List<String> getUserIdsBySpecificProperty(String domainId,
       String propertyName, String propertyValue) throws AdminException {
     int iDomainId = Integer.parseInt(domainId);
-    UserDetail[] users = new UserDetail[0];
+    UserDetail[] users = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     DomainDriver domainDriver = null;
     try {
       domainDriver = domainDriverManager.getDomainDriver(iDomainId);
@@ -5294,9 +5353,9 @@ public final class Admin {
     }
   }
 
-  private Vector<String> translateGroupIds(String sDomainId, String[] groupSpecificIds,
+  private List<String> translateGroupIds(String sDomainId, String[] groupSpecificIds,
       boolean recursGroups) throws Exception {
-    Vector<String> convertedGroupIds = new Vector<String>();
+    List<String> convertedGroupIds = new ArrayList<String>();
     String groupId;
 
     for (String groupSpecificId : groupSpecificIds) {
@@ -5447,7 +5506,7 @@ public final class Admin {
     // We must first add the group with no child. Then, the childs will be added
     // during the internal synchronization function call
     specificIds = gr.getUserIds();
-    gr.setUserIds(new String[0]);
+    gr.setUserIds(ArrayUtil.EMPTY_STRING_ARRAY);
     groupId = addGroup(gr, true);
     gr.setId(groupId);
     gr.setUserIds(specificIds);
@@ -5535,14 +5594,14 @@ public final class Admin {
       // Synchronize the user's groups
       String[] incGroupsSpecificId = synchroDomain.getUserMemberGroupIds(
           theUserDetail.getSpecificId());
-      Vector<String> incGroupsId = translateGroupIds(theUserDetail.getDomainId(),
+      List<String> incGroupsId = translateGroupIds(theUserDetail.getDomainId(),
           incGroupsSpecificId, recurs);
       String[] oldGroupsId = groupManager.getDirectGroupsOfUser(domainDriverManager, userId);
       for (i = 0; i < oldGroupsId.length; i++) {
         if (incGroupsId.contains(oldGroupsId[i])) { // No changes have to be
           // performed to the group ->
           // Remove it
-          incGroupsId.removeElement(oldGroupsId[i]);
+          incGroupsId.remove(oldGroupsId[i]);
         } else {
           Group grpToRemove = groupManager.getGroup(domainDriverManager,
               oldGroupsId[i]);
@@ -5557,8 +5616,8 @@ public final class Admin {
       // Now the remaining groups of the vector are the groups where the user is
       // newly added
       for (i = 0; i < incGroupsId.size(); i++) {
-        groupManager.addUserInGroup(domainDriverManager, userId, incGroupsId.elementAt(i));
-        cache.opAddUserInGroup(userId, incGroupsId.elementAt(i));
+        groupManager.addUserInGroup(domainDriverManager, userId, incGroupsId.get(i));
+        cache.opAddUserInGroup(userId, incGroupsId.get(i));
       }
 
       // traitement spécifique des users selon l'interface implémentée
@@ -5622,7 +5681,7 @@ public final class Admin {
     return synchroDomain.getPropertiesToImport(language);
   }
 
-  public UserDetail[] searchUsers(String domainId, Hashtable<String, String> query)
+  public UserDetail[] searchUsers(String domainId, Map<String, String> query)
       throws Exception {
     SilverTrace.info("admin", "admin.searchUsers", "root.MSG_GEN_ENTER_METHOD",
         "domainId=" + domainId);
@@ -6374,7 +6433,7 @@ public final class Admin {
       }
 
       if (userIds == null) {
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
       return userManager.searchUsersIds(domainDriverManager, userIds, modelUser);
     } catch (Exception e) {

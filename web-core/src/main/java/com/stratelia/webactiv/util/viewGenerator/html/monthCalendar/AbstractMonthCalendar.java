@@ -266,11 +266,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     Calendar calendar = Calendar.getInstance();
 
     calendar.setTime(date);
-    if (calendar.get(Calendar.MONTH) == this.cal.get(Calendar.MONTH)) {
-      return true;
-    } else {
-      return false;
-    }
+    return calendar.get(Calendar.MONTH) == this.cal.get(Calendar.MONTH);
   }
 
   /**
@@ -411,7 +407,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    */
   protected Event[] getEventOfRow(int week, int row) {
     Week wk = listWeek.get(week - 1);
-    Row currentRow = (Row) (wk.getListRow().get(row));
+    Row currentRow = wk.getListRow().get(row);
 
     if (currentRow.getListEvent().isEmpty()) {
       return null;
@@ -421,7 +417,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     Event evt[] = new Event[numbersEvent];
 
     for (int i = 0; i < numbersEvent; i++) {
-      evt[i] = (Event) (currentRow.getListEvent().elementAt(i));
+      evt[i] = currentRow.getListEvent().elementAt(i);
     }
 
     return evt;

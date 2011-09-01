@@ -165,7 +165,6 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     this.type = type;
     checkMimeType();
     this.size = size;
-    // this.context = context;
     setContext(context);
     this.creationDate = creationDate;
     this.foreignKey = foreignKey;
@@ -184,7 +183,6 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     this.type = type;
     checkMimeType();
     this.size = size;
-    // this.context = context;
     setContext(context);
     this.creationDate = creationDate;
     this.foreignKey = foreignKey;
@@ -200,10 +198,10 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    * @param description : type String: the description of file, size=4000 character
    * @param type : type String: the mime type of file
    * @param context : type String: the context or the file is recorded
-   * @param fileDate : type Date: the date where the file was added
+   * @param creationDate : type Date: the date where the file was added
    * @param foreignKey : type WAPrimaryKey: the key of custumer object
-   * @param String author
-   * @param String title
+   * @param author
+   * @param title
    * @author dlesimple
    * @see com.stratelia.util.WAPrimaryKey
    */
@@ -632,20 +630,17 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   }
 
   public String getAliasURL(String language) {
-    String physicalName = getPhysicalName(language);
-    String logicalName = getLogicalName(language);
+    String localizedPhysicalName = getPhysicalName(language);
+    String localizedLogicalName = getLogicalName(language);
 
-    String valret = FileServerUtils.getAliasURL(pk.getInstanceId(),
-        logicalName, pk.getId());
+    String valret = FileServerUtils.getAliasURL(pk.getInstanceId(), localizedLogicalName, pk.getId());
     if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
       valret += "&lang=" + language;
     }
-    if (physicalName != null) {
-      String extension = FileRepositoryManager.getFileExtension(physicalName);
-      if ("exe".equalsIgnoreCase(extension)
-          || "pdf".equalsIgnoreCase(extension)) {
-        valret += "&logicalName="
-            + FileServerUtils.replaceSpecialChars(logicalName);
+    if (localizedPhysicalName != null) {
+      String extension = FileRepositoryManager.getFileExtension(localizedPhysicalName);
+      if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
+        valret += "&logicalName=" + FileServerUtils.replaceSpecialChars(localizedLogicalName);
       }
     }
     return valret;
@@ -656,15 +651,14 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   }
 
   protected String getLanguage(String language) {
-    if (language != null
-        && ("fr".equalsIgnoreCase(language) || "".equals(language.trim()))) {
+    if (language != null && ("fr".equalsIgnoreCase(language) || "".equals(language.trim()))) {
       return null;
     }
     return language;
   }
 
   public String getWebdavUrl(String language) {
-    StringBuffer url = new StringBuffer(500);
+    StringBuilder url = new StringBuilder(500);
     ResourceLocator messages = GeneralPropertiesManager.getGeneralResourceLocator();
     String webAppContext = messages.getString("ApplicationURL");
     if (!webAppContext.endsWith("/")) {
@@ -677,7 +671,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   }
 
   public String getJcrPath(String language) {
-    StringBuffer jcrPath = new StringBuffer(500);
+    StringBuilder jcrPath = new StringBuilder(500);
     jcrPath.append(ATTACHMENTS_FOLDER).append('/').append(getInstanceId()).append('/');
     if (StringUtil.isDefined(this.context)) {
       String[] elements = FileRepositoryManager.getAttachmentContext(this.context);

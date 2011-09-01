@@ -93,8 +93,8 @@ public class WorkListDAO {
         prepStmt.setInt(2, worker.getId());
         prepStmt.setInt(3, worker.getOrder());
 
-        String isWriter = (worker.isWriter() == true) ? "Y" : "N";
-        String isApproval = (worker.isApproval() == true) ? "Y" : "N";
+        String isWriter = (worker.isWriter()) ? "Y" : "N";
+        String isApproval = (worker.isApproval()) ? "Y" : "N";
         prepStmt.setString(4, isWriter);
         prepStmt.setString(5, isApproval);
         prepStmt.setString(6, worker.getInstanceId());
@@ -243,7 +243,7 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException(
             "WorkListDAO.saveWorkersAccessList", SilverTrace.TRACE_LEVEL_DEBUG,
-            "root.EX_WRONG_PK", componentId.toString(), e);
+            "root.EX_WRONG_PK", componentId, e);
       }
       prepStmt.executeUpdate();
     } finally {
@@ -271,7 +271,7 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException(
             "WorkListDAO.getWorkersAccessListUsers",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId.toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId, e);
       }
 
       rs = prepStmt.executeQuery();
@@ -317,7 +317,7 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException(
             "WorkListDAO.getWorkersAccessListUsers",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId.toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId, e);
       }
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -360,7 +360,7 @@ public class WorkListDAO {
         prepStmt.setString(1, componentId);
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.getSavedListType()",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId.toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId, e);
       }
 
       rs = prepStmt.executeQuery();

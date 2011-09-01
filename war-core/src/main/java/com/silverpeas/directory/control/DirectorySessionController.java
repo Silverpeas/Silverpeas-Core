@@ -44,6 +44,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -98,18 +99,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public DirectorySessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+          ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "com.silverpeas.directory.multilang.DirectoryBundle",
-        "com.silverpeas.directory.settings.DirectoryIcons",
-        "com.silverpeas.directory.settings.DirectorySettings");
+            "com.silverpeas.directory.settings.DirectoryIcons",
+            "com.silverpeas.directory.settings.DirectorySettings");
 
     elementsByPage = Integer.parseInt(getSettings().getString("ELEMENTS_PER_PAGE", "10"));
 
     stConfig = new Properties();
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings().getString(
-        "templatePath"));
+            "templatePath"));
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings().getString(
-        "customersTemplatePath"));
+            "customersTemplatePath"));
 
     relationShipService = new RelationShipService();
   }
@@ -144,12 +145,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
           lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
         }
     }
-    
+
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
   }
-  
+
   private List<UserDetail> getUsersOfCurrentUserDomain() {
     String currentUserDomainId = getUserDetail().getDomainId();
     UserDetail[] allUsers = getOrganizationController().getAllUsers();
@@ -196,7 +197,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       searchEngine.search(queryDescription);
 
       MatchingIndexEntry[] plainSearchResults =
-          searchEngine.getRange(0, searchEngine.getResultLength());
+              searchEngine.getRange(0, searchEngine.getResultLength());
 
       for (MatchingIndexEntry result : plainSearchResults) {
         String userId = result.getObjectId();
@@ -208,7 +209,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
     } catch (Exception e) {
       throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH",
-          e);
+              e);
     }
 
     return lastListUsersCalled;
@@ -259,8 +260,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
     lastAlllistUsersCalled =
-        Arrays.asList(
-        getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
+            Arrays.asList(
+            getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
@@ -300,7 +301,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     domainIds.add(domainId);
     return getAllUsersByDomains(domainIds);
   }
-  
+
   public List<UserDetail> getAllUsersByDomains(List<String> domainIds) {
     getAllUsers();// recuperer tous les users
     setCurrentDirectory(DIRECTORY_DOMAIN);
@@ -346,8 +347,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastAlllistUsersCalled = new ArrayList<UserDetail>();
     try {
       List<String> contactsIds =
-          relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
-          parseInt(userId));
+              relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
+              parseInt(userId));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
       }
@@ -363,29 +364,21 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Method declaration
-   * @param notificationId
-   * @param priorityId
+   * 
+   * @param compoId
    * @param txtTitle
    * @param txtMessage
    * @param selectedUsers
-   * @param selectedGroups
-   * @throws NotificationManagerException
-   * @see
+   * @throws NotificationManagerException 
    */
-  public void sendMessage(String compoId,
-      String txtTitle, String txtMessage,
-      String[] selectedUsers)
-      throws NotificationManagerException {
+  public void sendMessage(String compoId, String txtTitle, String txtMessage,
+          UserRecipient[] selectedUsers) throws NotificationManagerException {
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_DEFAULT;
     int priorityId = 0;
-    SilverTrace.debug("notificationUser",
-        "NotificationUsersessionController.sendMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
-        + priorityId);
-    NotificationMetaData notifMetaData = new NotificationMetaData(
-        priorityId, txtTitle, txtMessage);
+    SilverTrace.debug("notificationUser", "NotificationUsersessionController.sendMessage()",
+            "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId=" + priorityId);
+    NotificationMetaData notifMetaData = new NotificationMetaData(priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
     notifMetaData.addUserRecipients(selectedUsers);
@@ -410,7 +403,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
     Collection<SessionInfo> sessions =
-        SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
+            SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
@@ -446,7 +439,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("extra", extra);
 
       fragments.add(new UserFragmentVO(member.getId(), template.applyFileTemplate("user_"
-          + getLanguage())));
+              + getLanguage())));
     }
     return fragments;
 
@@ -456,9 +449,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     StringBuilder sb = new StringBuilder();
     String webcontext = URLManager.getApplicationURL();
     sb.append("<a href=\"").append(webcontext).append("/Rprofil/jsp/Main?userId=").append(
-        member.getId()).append("\">");
+            member.getId()).append("\">");
     sb.append("<img src=\"").append(webcontext).append(member.getUserDetail().getAvatar()).append(
-        "\" alt=\"viewUser\"");
+            "\" alt=\"viewUser\"");
     sb.append("class=\"avatar\"/></a>");
     return sb.toString();
   }
@@ -466,11 +459,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private SearchEngineBm getSearchEngineBm() throws DirectoryException {
     try {
       SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
+              JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
       return home.create();
     } catch (Exception e) {
       throw new DirectoryException(this.getClass().getSimpleName(), "root.EX_SEARCH_ENGINE_FAILED",
-          e);
+              e);
     }
   }
 

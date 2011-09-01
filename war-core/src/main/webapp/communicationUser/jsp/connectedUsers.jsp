@@ -31,9 +31,7 @@
 
 <%
   ArrayLine arrayLine = null;
-  Iterator iter = null;
   Collection cResultData = (Collection) request.getAttribute("ConnectedUsersList");
-  OrganizationController orgaController = new OrganizationController();
 %>
 
 <HTML>
@@ -49,9 +47,7 @@
   <SCRIPT LANGUAGE="JAVASCRIPT">
     <!--
     //--------------------------------------------------------------------------------------DoIdle
-    ID = window.setTimeout("DoIdle();", <%=settings.getString("refreshList")%> * 1000
-    )
-    ;
+    ID = window.setTimeout("DoIdle();", <%=settings.getString("refreshList")%> * 1000);
     function DoIdle() {
       self.location.href = "Main";
     }
@@ -92,11 +88,8 @@
       arrayColumn1.setSortable(true);
     }
     arrayColumn1 = arrayPane.addArrayColumn("");
-    ArrayCellText cellText;
-
     if (cResultData != null) {
-      long currentTime = System.currentTimeMillis();
-      iter = cResultData.iterator();
+      Iterator iter = cResultData.iterator();
       while (iter.hasNext()) {
         SessionInfo item = (SessionInfo) iter.next();
         if (!item.getUserDetail().getId().equals(communicationScc.getUserId())) {

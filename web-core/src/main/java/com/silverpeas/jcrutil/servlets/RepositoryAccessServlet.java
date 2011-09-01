@@ -148,10 +148,9 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   private void registerSilverpeasNodeTypes() throws NamespaceException,
       UnsupportedRepositoryOperationException, AccessDeniedException,
-      RepositoryException, ParseException, FileNotFoundException,
-      InvalidNodeTypeDefException {
+      RepositoryException, ParseException, FileNotFoundException, InvalidNodeTypeDefException {
     String cndFileName = this.getClass().getClassLoader().getResource(
-        "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
+        "silverpeas-jcr.txt").getFile().replaceAll("%20", " ");
     SilverpeasRegister.registerNodeTypes(cndFileName);
   }
 
@@ -230,7 +229,6 @@ public class RepositoryAccessServlet extends HttpServlet {
     return getClass().getName() + "$RMIRemoteFactoryDelegater";
   }
 
-  @SuppressWarnings("unchecked")
   private void registerRMI(RmiConfiguration config) throws ServletException {
     String rmiUri = "//" + config.getHost() + ":" + config.getPort() + "/"
         + config.getName();

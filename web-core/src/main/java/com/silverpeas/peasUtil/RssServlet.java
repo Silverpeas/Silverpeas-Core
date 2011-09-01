@@ -23,19 +23,6 @@
  */
 package com.silverpeas.peasUtil;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Date;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -47,12 +34,23 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
 
 public abstract class RssServlet<T> extends HttpServlet {
 
@@ -129,10 +127,6 @@ public abstract class RssServlet<T> extends HttpServlet {
           Writer writer = res.getWriter();
           RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
           rssExporter.write(channel);
-
-          if (rssExporter == null) {
-            objectNotFound(req, res);
-          }
         } else {
           objectNotFound(req, res);
         }
@@ -160,10 +154,7 @@ public abstract class RssServlet<T> extends HttpServlet {
     OrganizationController orga = new OrganizationController();
     String paramRssValue = orga.getComponentParameterValue(instanceId, "rss");
     // rechercher si le composant a bien le flux RSS autorisé
-    if ("yes".equalsIgnoreCase(paramRssValue)) {
-      return true;
-    }
-    return false;
+    return "yes".equalsIgnoreCase(paramRssValue);
   }
 
   public boolean isComponentAvailable(AdminController admin, String instanceId,

@@ -24,6 +24,13 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.FormFatalException;
+import com.silverpeas.form.TypeManager;
+import com.silverpeas.util.ArrayUtil;
+
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -33,12 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.FormFatalException;
-import com.silverpeas.form.TypeManager;
-
 /**
  * A generic FieldTemplate implementation.
  */
@@ -46,20 +47,19 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   private static final long serialVersionUID = 1L;
   private String fieldName = null;
-  @SuppressWarnings("unchecked")
   private Class fieldImpl = null;
   private String typeName = null;
   private String displayerName = "";
-  private boolean isMandatory = false;
-  private boolean isReadOnly = false;
-  private boolean isDisabled = false;
-  private boolean isHidden = false;
+  private boolean mandatory = false;
+  private boolean readOnly = false;
+  private boolean disabled = false;
+  private boolean hidden = false;
   private String defaultLabel = null;
   private Map<String, String> labels = new HashMap<String, String>();
   private Map<String, String> parameters = new HashMap<String, String>();
   private List<Label> labelsObj = new ArrayList<Label>();
   private List<Parameter> parametersObj = new ArrayList<Parameter>();
-  private boolean isSearchable = false;
+  private boolean searchable = false;
   private String templateName = null;
 
   /**
@@ -161,10 +161,10 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public String getLabel() {
-    if (defaultLabel == null)
-      return ""/* fieldName */;
-    else
+    if (defaultLabel != null) {
       return defaultLabel;
+    } 
+    return "";
   }
 
   /**
@@ -173,13 +173,15 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @Override
   public String getLabel(String language) {
     String label = null;
-    if (getLabels() != null)
-      label = (String) getLabels().get(language);
+    if (getLabels() != null) {
+      label = getLabels().get(language);
+    }
 
-    if (label == null)
+    if (label == null) {
       return getLabel();
-    else
+    } else {
       return label;
+    }
   }
 
   /**
@@ -188,13 +190,14 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   public String getParameter(String name, String language) {
     String parameter = null;
     if (getParameters(language) != null) {
-      parameter = (String) getParameters(language).get(name);
+      parameter = getParameters(language).get(name);
     }
 
-    if (parameter == null)
+    if (parameter == null) {
       return "";
-    else
+    } else {
       return parameter;
+    }
   }
 
   /**
@@ -208,11 +211,12 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Adds a local label.
    */
   public void addLabel(String label, String language) {
-    if (language == null || language.trim().equals(""))
+    if (language == null || language.trim().equals("")) {
       setLabel(label);
-    else {
-      if (labels == null)
+    } else {
+      if (labels == null) {
         labels = new HashMap<String, String>();
+      }
       labels.put(language, label);
     }
   }
@@ -221,8 +225,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Adds a local parameter.
    */
   public void addParameter(String name, String value) {
-    if (parameters == null)
+    if (parameters == null) {
       parameters = new HashMap<String, String>();
+    }
     parameters.put(name, value);
   }
 
@@ -231,21 +236,21 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isMandatory() {
-    return isMandatory;
+    return mandatory;
   }
 
   /**
    * Set or unset the isMandatory flag
    */
   public void setMandatory(boolean isMandatory) {
-    this.isMandatory = isMandatory;
+    this.mandatory = isMandatory;
   }
 
   /**
    * Set or unset the isMandatory flag
    */
   public void setMandatory(Boolean isMandatory) {
-    this.isMandatory = isMandatory.booleanValue();
+    this.mandatory = isMandatory.booleanValue();
   }
 
   /**
@@ -253,14 +258,14 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isReadOnly() {
-    return isReadOnly;
+    return readOnly;
   }
 
   /**
    * Set or unset the isReadOnly flag
    */
   public void setReadOnly(boolean isReadOnly) {
-    this.isReadOnly = isReadOnly;
+    this.readOnly = isReadOnly;
   }
 
   /**
@@ -268,14 +273,14 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isDisabled() {
-    return isDisabled;
+    return disabled;
   }
 
   /**
    * Set or unset the isDisabled flag
    */
   public void setDisabled(boolean isDisabled) {
-    this.isDisabled = isDisabled;
+    this.disabled = isDisabled;
   }
 
   /**
@@ -283,26 +288,24 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    */
   @Override
   public boolean isHidden() {
-    return isHidden;
+    return hidden;
   }
 
   /**
    * Set or unset the isHidden flag
    */
   public void setHidden(boolean isHidden) {
-    this.isHidden = isHidden;
+    this.hidden = isHidden;
   }
 
   @Override
   public Map<String, String> getParameters(String language) {
-    // if ((parameters == null) || (parameters.size()==0)) {
     Iterator<Parameter> parametersIter = parametersObj.iterator();
 
     while (parametersIter.hasNext()) {
       Parameter parameter = parametersIter.next();
       addParameter(parameter.getName(), parameter.getValue(language));
     }
-    // }
     return parameters;
   }
 
@@ -310,8 +313,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     Map<String, String> keyValuePairs = new HashMap<String, String>();
     Map<String, String> theParameters = getParameters(language);
 
-    if (theParameters == null)
+    if (theParameters == null) {
       return keyValuePairs;
+    }
 
     String keys = theParameters.get("keys");
     String values = theParameters.get("values");
@@ -357,21 +361,21 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @Override
   public Field getEmptyField() throws FormException {
     try {
-      Class[] noParameterClass = new Class[0];
+      Class[] noParameterClass = ArrayUtil.EMPTY_CLASS_ARRAY;
       Constructor constructor = fieldImpl.getConstructor(noParameterClass);
-      Object[] noParameter = new Object[0];
+      Object[] noParameter = ArrayUtil.EMPTY_OBJECT_ARRAY;
       Field field = (Field) constructor.newInstance(noParameter);
 
       return field;
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
-          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldImpl.getName());
+          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldImpl.getName(), e);
     } catch (ClassCastException e) {
       throw new FormFatalException("TypeManager", "form.EXP_NOT_A_FIELD",
-          fieldImpl.getName());
+          fieldImpl.getName(), e);
     } catch (Exception e) {
       throw new FormFatalException("TypeManager",
-          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldImpl.getName());
+          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldImpl.getName(), e);
     }
   }
 
@@ -380,11 +384,12 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     try {
       if (obj instanceof String) {
         return obj.equals(this.getFieldName());
-      } else if (obj instanceof GenericFieldTemplate)
+      } else if (obj instanceof GenericFieldTemplate) {
         return ((GenericFieldTemplate) obj).getFieldName().equals(
             this.getFieldName());
-      else
+      } else {
         return false;
+      }
     } catch (Exception e) {
       return false;
     }
@@ -397,8 +402,9 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   @Override
   public String[] getLanguages() {
-    if (labels == null)
-      return new String[0];
+    if (labels == null) {
+      return ArrayUtil.EMPTY_STRING_ARRAY;
+    }
 
     List<String> langs = new ArrayList<String>();
     Iterator<String> iter = labels.keySet().iterator();
@@ -408,7 +414,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       langs.add(labels.get(lang));
     }
 
-    return (String[]) langs.toArray(new String[0]);
+    return langs.toArray(new String[langs.size()]);
   }
 
   /**
@@ -441,11 +447,11 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   @Override
   public boolean isSearchable() {
-    return isSearchable;
+    return searchable;
   }
 
   public void setSearchable(boolean searchable) {
-    isSearchable = searchable;
+    this.searchable = searchable;
   }
 
   @Override

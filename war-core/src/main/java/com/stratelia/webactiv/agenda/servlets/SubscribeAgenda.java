@@ -24,17 +24,6 @@
 
 package com.stratelia.webactiv.agenda.servlets;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.ical.ExportIcalManager;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -42,6 +31,17 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.apache.commons.io.IOUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 public class SubscribeAgenda extends HttpServlet {
 
@@ -61,7 +61,7 @@ public class SubscribeAgenda extends HttpServlet {
     String userId = getUserId(req);
     String login = getLogin(req);
     String password = getPassword(req);
-
+    FileInputStream fs = null;
     try {
       SilverTrace.info("agenda", "SubscribeAgenda.doPost",
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
@@ -78,7 +78,7 @@ public class SubscribeAgenda extends HttpServlet {
         res.setHeader("Content-Disposition", "attachment;filename=calendar"
             + userId + ".ics");
         OutputStream os = res.getOutputStream();
-        FileInputStream fs = new FileInputStream(filePath);
+        fs = new FileInputStream(filePath);
         // Stream data back to the client
         int i;
         while (((i = fs.read()) != -1)) {
@@ -92,6 +92,8 @@ public class SubscribeAgenda extends HttpServlet {
       }
     } catch (Exception e) {
       objectNotFound(req, res);
+    } finally {
+      IOUtils.closeQuietly(fs);
     }
     SilverTrace.info("agenda", "SubscribeAgenda.doPost",
         "root.MSG_GEN_EXIT_METHOD");

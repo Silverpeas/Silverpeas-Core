@@ -26,10 +26,14 @@ package com.stratelia.webactiv.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class GoToComponent extends GoTo {
 
@@ -40,8 +44,21 @@ public class GoToComponent extends GoTo {
     OrganizationController organization = new OrganizationController();
     ComponentInstLight component = organization.getComponentInstLight(objectId);
 
-    if (component != null)
+    if (component != null) {
+      HttpSession session = req.getSession(true);
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+      if (gef != null && helper != null) {
+        helper.setComponentIdAndSpaceIds(null, null, objectId);
+        String helperSpaceId = helper.getSubSpaceId();
+        if (!StringUtil.isDefined(helperSpaceId)) {
+          helperSpaceId = helper.getSpaceId();
+        }
+        gef.setSpaceId(helperSpaceId);
+      }
       return "ComponentId=" + objectId;
+    }
 
     return null;
   }

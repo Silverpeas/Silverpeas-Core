@@ -24,18 +24,18 @@
 
 package com.stratelia.silverpeas.pdc.control;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class declaration
@@ -56,13 +56,13 @@ public class AxisHeaderI18NDAO {
   }
 
   /*
-	 * 
+	 *
 	 */
   public List<AxisHeaderI18N> getTranslations(Connection con, int axisId)
       throws PersistenceException, SQLException {
     String selectQuery = "select * from " + PdcAxisI18NTable
         + " where AxisId = ?";
-    Vector<AxisHeaderI18N> allTranslations = new Vector<AxisHeaderI18N>();
+    List<AxisHeaderI18N> allTranslations = new ArrayList<AxisHeaderI18N>();
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -76,7 +76,7 @@ public class AxisHeaderI18NDAO {
       while (rs.next()) {
         translation = new AxisHeaderI18N();
         translation.setId(rs.getInt(1));
-        translation.setObjectId(Integer.toString(rs.getInt(2)));
+        translation.setObjectId(java.lang.Integer.toString(rs.getInt(2)));
         translation.setLanguage(rs.getString(3));
         translation.setName(rs.getString(4));
         translation.setDescription(rs.getString(5));

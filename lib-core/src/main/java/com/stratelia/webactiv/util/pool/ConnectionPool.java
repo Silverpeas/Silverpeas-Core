@@ -37,6 +37,10 @@ public class ConnectionPool {
   private static BasicDataSource pool;
 
   static {
+    init();
+  }
+
+  private static void init() {
     SilverTrace.debug("util", "ConnectionPool.getConnection",
         "No more free connection : we need to create a new one.");
     ResourceLocator resources = new ResourceLocator(
@@ -46,22 +50,32 @@ public class ConnectionPool {
     pool.setUsername(resources.getString("WaProductionUser"));
     pool.setDriverClassName(resources.getString("AdminDBDriver"));
     pool.setUrl(resources.getString("WaProductionDb"));
+    pool.setRemoveAbandoned(true);
   }
 
+  /**
+   * Release all the connections and close the pool.
+   * @throws SQLException
+   */
   public static void releaseConnections() throws SQLException {
     SilverTrace.debug("util", "ConnectionPool.releaseConnections", "start");
-    synchronized (pool) {
+    synchronized (ConnectionPool.class) {
       pool.close();
     }
   }
 
   /**
-   * permet de recuperer une connection depuis un pool de connection libre. On libere la connection
-   * en la fermant (connection.close()), elle revient alors toute seule dans le pool.
-   * @return Une connection BDD vers la base de donn�e silverpeas.
+   * Return a connection to Silverpeas database from the pool.
+   * @return a connection to Silverpeas database.
+   * @throws java.sql.SQLException
    */
   public static Connection getConnection() throws SQLException {
     SilverTrace.debug("util", "ConnectionPool.getConnection", "start");
+    synchronized (ConnectionPool.class) {
+      if(pool.isClosed()) {
+        init();
+      }
+    }
     return pool.getConnection();
   }
 }

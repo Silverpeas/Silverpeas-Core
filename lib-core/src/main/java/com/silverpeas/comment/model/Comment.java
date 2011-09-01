@@ -127,12 +127,12 @@ public class Comment implements java.io.Serializable {
     str.append("getForeignKey() = ").append(getForeignKey().toString()).append(
         ", \n");
     str.append("getOwnerId() = ").append(getOwnerId()).append(", \n");
-    str.append("getMessage() = ").append(getMessage().toString())
+    str.append("getMessage() = ").append(getMessage())
         .append(", \n");
-    str.append("getCreationDate() = ").append(getCreationDate().toString())
+    str.append("getCreationDate() = ").append(getCreationDate())
         .append(", \n");
     str.append("getModificationDate() = ").append(
-        getModificationDate().toString());
+        getModificationDate());
     return str.toString();
   }
 }

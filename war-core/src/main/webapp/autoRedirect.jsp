@@ -78,8 +78,6 @@ if (strGoTo != null)
 			componentId = null;
 		}
 	}
-	//System.out.println("componentId = "+componentId);
-
 	mainFrameParams = "?ComponentIdFromRedirect="+componentId;
 	mySession.setAttribute("RedirectToComponentId", componentId);
 }
@@ -114,17 +112,19 @@ MainSessionController	m_MainSessionCtrl	= (MainSessionController) session.getAtt
 GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 //The user is either not connector or as the anonymous user. He comes back to the login page.
-if (m_MainSessionCtrl == null || (gef != null && UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId())))
+if (m_MainSessionCtrl == null || (gef != null && UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId()) && 
+    (strGoTo == null && componentGoTo == null && spaceGoTo == null)))
 {
+  String loginUrl = response.encodeRedirectURL(URLManager.getApplicationURL()+"/Login.jsp?DomainId="+domainId);
 %>
-	<script>
-		top.location="Login.jsp?DomainId="+<%=domainId%>;
-	</script>
-<%
+    <script>
+        top.location="<%=loginUrl%>";
+    </script>
+<%  return;
 }
 else
 {
-	//Il retourne � la page de login s'il n'est pas autoris� sur le composant cible.
+	//Il retourne a la page de login s'il n'est pas autorise sur le composant cible.
 	if ((componentId != null && !m_MainSessionCtrl.getOrganizationController().isComponentAvailable(componentId, m_MainSessionCtrl.getUserId()))
 		|| (spaceId != null && !m_MainSessionCtrl.getOrganizationController().isSpaceAvailable(spaceId, m_MainSessionCtrl.getUserId())))
 	{

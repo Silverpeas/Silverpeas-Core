@@ -23,6 +23,10 @@
  */
 package com.silverpeas.form;
 
+import com.silverpeas.util.ArrayUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -30,9 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.Set;
 
 /**
@@ -114,7 +115,7 @@ public class TypeManager {
   public FieldDisplayer getDisplayer(String typeName,
           String displayerName) throws FormException {
     String displayerId = getDisplayerId(typeName, displayerName);
-    Class<?> displayerClass = (Class<?>) displayerId2displayerClass.get(displayerId);
+    Class<?> displayerClass = displayerId2displayerClass.get(displayerId);
 
     if (displayerClass == null) {
       List<String> displayerNames = typeName2displayerNames.get(typeName);
@@ -222,7 +223,7 @@ public class TypeManager {
     try {
       Class<?>[] noParameterClass = new Class<?>[0];
       Constructor<?> constructor = fieldClass.getConstructor(noParameterClass);
-      return (Field) constructor.newInstance(new Object[0]);
+      return (Field) constructor.newInstance(ArrayUtil.EMPTY_OBJECT_ARRAY);
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
               "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldClass.getName(), e);
@@ -242,7 +243,7 @@ public class TypeManager {
     try {
       Class<?>[] noParameterClass = new Class<?>[0];
       Constructor<?> constructor = displayerClass.getConstructor(noParameterClass);
-      return (FieldDisplayer) constructor.newInstance(new Object[0]);
+      return (FieldDisplayer) constructor.newInstance(ArrayUtil.EMPTY_OBJECT_ARRAY);
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
               "form.EXP_MISSING_EMPTY_CONSTRUCTOR", displayerClass.getName(), e);

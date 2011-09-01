@@ -29,11 +29,6 @@ import java.util.List;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 
 public class UserFavoriteSpaceManager {
-  /**
-   * Default Constructor
-   */
-  public UserFavoriteSpaceManager() {
-  }
 
   /**
    * @param listUFS : the list of user favorite space

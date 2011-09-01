@@ -114,10 +114,7 @@ public class PortletWar {
     // If in the directory of this war file there is a file called
     // warName.deployed
     // then it has already been deployed.
-    if (markerFile.exists())
-      return true;
-    else
-      return false;
+    return markerFile.exists();
   }
 
   public void undeploy() throws Exception {
@@ -142,10 +139,7 @@ public class PortletWar {
     // if the timestamp of the war file is more than the timestamp of the
     // .deploy
     // then this portlet needs redeploy
-    if (warFile.lastModified() > markerFile.lastModified())
-      return true;
-    else
-      return false;
+    return warFile.lastModified() > markerFile.lastModified();
   }
 
   public void redeploy() throws Exception {

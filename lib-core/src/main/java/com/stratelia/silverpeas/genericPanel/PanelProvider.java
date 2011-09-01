@@ -23,13 +23,14 @@
  */
 package com.stratelia.silverpeas.genericPanel;
 
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 abstract public class PanelProvider {
   protected String pageName = "";
@@ -74,9 +75,7 @@ abstract public class PanelProvider {
     resetAllCache();
     selectedElements.clear();
     if (selectedIds != null) {
-      for (String selectedId : selectedIds) {
-        selectedElements.add(selectedId);
-      }
+      Collections.addAll(selectedElements, selectedIds);
     }
     m_FirstDisplayed = 0;
   }
@@ -131,7 +130,7 @@ abstract public class PanelProvider {
   }
 
   public String[] getSelectedElements() {
-    return selectedElements.toArray(new String[0]);
+    return selectedElements.toArray(new String[selectedElements.size()]);
   }
 
   public int getSelectedNumber() {

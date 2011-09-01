@@ -24,10 +24,6 @@
 
 package com.stratelia.webactiv.agenda.control;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarBmHome;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
@@ -36,6 +32,9 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.Collection;
+import java.util.Date;
 
 /*
  * CVS Informations
@@ -75,7 +74,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class AgendaAccess {
   static private CalendarBm calendarBm = null;
-  static private Calendar currentCalendar = null;
 
   /**
    * getEJB
@@ -84,8 +82,8 @@ public class AgendaAccess {
   static private CalendarBm getEJB() throws AgendaException {
     if (calendarBm == null) {
       try {
-        calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
+        calendarBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class).create();
       } catch (Exception e) {
         throw new AgendaException("AgendaAccess.getEJB()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -112,23 +110,8 @@ public class AgendaAccess {
     }
   }
 
-  /**
-   * Method declaration
-   * @param date
-   * @see
-   */
-  static public void setCurrentDay(Date date) {
-    if (currentCalendar == null) {
-      currentCalendar = Calendar.getInstance();
-    }
-    currentCalendar.setTime(date);
-  }
-
   static public Date getCurrentDay() {
-    if (currentCalendar == null) {
-      currentCalendar = Calendar.getInstance();
-    }
-    return currentCalendar.getTime();
+    return new Date();
   }
 
   static public Collection<JournalHeader> getDaySchedulables(String userId)

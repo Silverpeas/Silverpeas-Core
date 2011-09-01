@@ -55,15 +55,13 @@
   String userProfile = (String) request.getAttribute("UserProfile");
 %>
 
-
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel />
-
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
 		fonction = fonction + "?MonthBegin=" + accessFormulaire.MonthBegin.value;
@@ -89,13 +87,14 @@
 	
 	function validerForm(){
 		accessFormulaire.FilterLibGroup.disabled = false;
-		accessFormulaire.FilterLibUser.disabled = false;		
+		accessFormulaire.FilterLibUser.disabled = false;
+		$.progressMessage();
 		document.accessFormulaire.submit();
 	}
 
 </script>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
+<body>
 <c:forEach items="${requestScope['MonthBegin']}" var="mBegin" varStatus="status">
 	<c:set var="curValue" value="${mBegin[0]}" />
 	<c:if test="${fn:contains(curValue, 'selected')}">
@@ -303,5 +302,6 @@ out.println(window.printAfter());
 %>
 <form name="cancelAccessForm" action="ViewAccess" method="post">
 </form>
+<view:progressMessage/>
 </body>
 </html>

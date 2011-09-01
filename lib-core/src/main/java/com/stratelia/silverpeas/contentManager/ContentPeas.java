@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * This class represents one content descriptor in memory (read from the xml)
  */
-public class ContentPeas extends Object {
+public class ContentPeas {
   String m_sType = null; // The content type (unique among all contents)
   String m_sContentInterfaceClass = null; // The class to call that implements
   // the ContentInterface

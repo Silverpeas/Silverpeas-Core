@@ -23,6 +23,7 @@
  */
 package com.silverpeas.comment.web;
 
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import java.net.URI;
@@ -33,6 +34,7 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.rest.RESTWebService;
 import java.util.Comparator;
+import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -121,7 +123,7 @@ public class CommentResource extends RESTWebService {
    * If the user isn't authorized to save the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param commentToSave the comment to save in Silverpeas.
-   * @return the response to the HTTP PÖST request with the JSON representation of the saved comment.
+   * @return the response to the HTTP POST request with the JSON representation of the saved comment.
    */
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -190,7 +192,8 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Deletes the specified existing comment.
-   * If the comment doesn't exist, a 404 HTTP code is returned.
+   * If the comment doesn't exist, nothing is done, so that the HTTP DELETE request remains
+   * indempotent as defined in the HTTP specification..
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
@@ -203,7 +206,7 @@ public class CommentResource extends RESTWebService {
     try {
       commentService().deleteComment(byPK(onCommentId, inComponentId()));
     } catch (CommentRuntimeException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
+      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -267,11 +270,9 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    // TODO REMOVE THIS SPECIFIC AVATAR URL SETTING ONCE IN A MORE RECENT APPLICATION SERVER.
-    // PLEASE SEE CommentAuthorEntity constructor TODO.
     CommentEntity entity = CommentEntity.fromComment(comment).withURI(commentURI);
-    CommentAuthorEntity author = entity.getAuthor();
-    author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    //CommentAuthorEntity author = entity.getAuthor();
+    //author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
     return entity;
   }
 
@@ -283,6 +284,10 @@ public class CommentResource extends RESTWebService {
   protected String getComponentId() {
     return this.componentId;
   }
+  
+  protected String getContentId() {
+    return this.contentId;
+  }
 
   /**
    * Check the specified comment is valid. A comment is valid if the following attributes are
@@ -293,6 +298,10 @@ public class CommentResource extends RESTWebService {
     if (!isDefined(theComment.getComponentId()) || !isDefined(theComment.getResourceId()) ||
         !isDefined(theComment.getText()) || !isDefined(theComment.getAuthor().getId())) {
       throw new WebApplicationException(Status.BAD_REQUEST);
+    }
+    if (!theComment.getComponentId().equals(getComponentId()) || !theComment.getResourceId().equals(
+            getContentId())) {
+      throw new WebApplicationException(Status.NOT_FOUND);
     }
   }
 

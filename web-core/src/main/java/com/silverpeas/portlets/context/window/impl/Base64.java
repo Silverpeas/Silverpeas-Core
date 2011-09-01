@@ -29,10 +29,12 @@
 
 package com.silverpeas.portlets.context.window.impl;
 
+import com.silverpeas.util.ArrayUtil;
+
 class Base64 {
 
   private static byte[] DecodeMap;
-  private static byte[] theMap = { (byte) 'A', (byte) 'B', (byte) 'C',
+  private static final byte[] theMap = { (byte) 'A', (byte) 'B', (byte) 'C',
       (byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H', (byte) 'I',
       (byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N', (byte) 'O',
       (byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T', (byte) 'U',
@@ -137,7 +139,7 @@ class Base64 {
       return null;
     }
     if (encData.length == 0) {
-      return new byte[0];
+      return ArrayUtil.EMPTY_BYTE_ARRAY;
     }
 
     int tail = encData.length;

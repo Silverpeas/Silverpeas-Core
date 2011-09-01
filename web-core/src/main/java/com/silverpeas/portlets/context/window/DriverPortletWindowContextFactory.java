@@ -42,6 +42,7 @@ public class DriverPortletWindowContextFactory implements PortletWindowContextFa
   public DriverPortletWindowContextFactory() {
   }
 
+  @Override
   public PortletWindowContext getPortletWindowContext(HttpServletRequest request)
       throws PortletWindowContextException {
     if (portletWindowContext == null) {
@@ -51,6 +52,7 @@ public class DriverPortletWindowContextFactory implements PortletWindowContextFa
     return portletWindowContext;
   }
 
+  @Override
   public PortletWindowContext getPortletWindowContext(
       HttpServletRequest request, String userID)
       throws PortletWindowContextException {

@@ -32,6 +32,7 @@ import java.sql.Connection;
  */
 public class ThumbnailDAOTest extends AbstractTestDao {
 
+  private static ThumbnailDAO dao = new ThumbnailDAO();
   public ThumbnailDAOTest() {
   }
 
@@ -42,7 +43,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
   @org.junit.Test
   public void testInsertThumbnail() throws Exception {
     Connection con = getConnection().getConnection();
-
     String instanceId = "kmelia57";
     int objectId = 999999;
     int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
@@ -63,8 +63,8 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     detail.setXLength(x_length);
     detail.setYLength(y_length);
 
-    ThumbnailDAO.insertThumbnail(con, detail);
-    ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+    dao.insertThumbnail(con, detail);
+    ThumbnailDetail result = dao.selectByKey(con, instanceId, objectId, objectType);
     assertNotNull(result);
     assertEquals(detail.getInstanceId(), result.getInstanceId());
     assertEquals(detail.getObjectId(), result.getObjectId());
@@ -77,7 +77,7 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     assertEquals(detail.getYStart(), result.getYStart());
     assertEquals(detail.getYLength(), result.getYLength());
 
-    ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
+    dao.deleteThumbnail(con, objectId, objectType, instanceId);
   }
 
   /**
@@ -87,7 +87,7 @@ public class ThumbnailDAOTest extends AbstractTestDao {
   public void testSelectByKey() throws Exception {
     System.out.println("selectByKey");
     Connection con = getConnection().getConnection();
-    ThumbnailDetail result = ThumbnailDAO.selectByKey(con, "kmelia57", 1, 0);
+    ThumbnailDetail result = dao.selectByKey(con, "kmelia57", 1, 0);
     assertNotNull(result);
     assertEquals("kmelia57", result.getInstanceId());
     assertEquals(1, result.getObjectId());
@@ -130,11 +130,11 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     detail.setXLength(x_length);
     detail.setYLength(y_length);
 
-    ThumbnailDAO.insertThumbnail(con, detail);
+    dao.insertThumbnail(con, detail);
 
-    ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
+    dao.deleteThumbnail(con, objectId, objectType, instanceId);
 
-    ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+    ThumbnailDetail result = dao.selectByKey(con, instanceId, objectId, objectType);
     assertNull(result);
 
   }
@@ -145,7 +145,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
    */
   @org.junit.Test
   public void testDeleteAllThumbnails() throws Exception {
-    System.out.println("deleteAllRows");
     Connection con = getConnection().getConnection();
 
     String instanceId = "kmelia58";
@@ -168,18 +167,18 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     detail.setXLength(x_length);
     detail.setYLength(y_length);
 
-    ThumbnailDAO.insertThumbnail(con, detail);
+    dao.insertThumbnail(con, detail);
 
     int objectId2 = 777777;
     detail.setObjectId(objectId2);
 
-    ThumbnailDAO.insertThumbnail(con, detail);
+    dao.insertThumbnail(con, detail);
 
-    ThumbnailDAO.deleteAllThumbnails(con, instanceId);
+    dao.deleteAllThumbnails(con, instanceId);
 
-    ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+    ThumbnailDetail result = dao.selectByKey(con, instanceId, objectId, objectType);
     assertNull(result);
-    ThumbnailDetail result2 = ThumbnailDAO.selectByKey(con, instanceId, objectId2, objectType);
+    ThumbnailDetail result2 = dao.selectByKey(con, instanceId, objectId2, objectType);
     assertNull(result2);
 
   }
@@ -213,9 +212,9 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     detail.setXLength(0);
     detail.setYLength(0);
 
-    ThumbnailDAO.insertThumbnail(con, detail);
+    dao.insertThumbnail(con, detail);
 
-    ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+    ThumbnailDetail result = dao.selectByKey(con, instanceId, objectId, objectType);
     assertNotNull(result);
     assertEquals(detail.getCropFileName(), "");
     assertEquals(detail.getXStart(), 0);
@@ -229,9 +228,9 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     detail.setXLength(x_length);
     detail.setYLength(y_length);
 
-    ThumbnailDAO.updateThumbnail(con, detail);
+    dao.updateThumbnail(con, detail);
 
-    result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+    result = dao.selectByKey(con, instanceId, objectId, objectType);
     assertNotNull(result);
     assertEquals(detail.getInstanceId(), result.getInstanceId());
     assertEquals(detail.getObjectId(), result.getObjectId());
@@ -243,9 +242,7 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     assertEquals(detail.getXLength(), result.getXLength());
     assertEquals(detail.getYStart(), result.getYStart());
     assertEquals(detail.getYLength(), result.getYLength());
-
-    ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
-
+    dao.deleteThumbnail(con, objectId, objectType, instanceId);
   }
 
   @Override

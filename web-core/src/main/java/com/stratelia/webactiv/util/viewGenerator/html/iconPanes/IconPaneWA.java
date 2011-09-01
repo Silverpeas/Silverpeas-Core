@@ -33,9 +33,9 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.iconPanes;
 
-import java.util.Vector;
-
 import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
+
+import java.util.Vector;
 
 /**
  * The default implementation of IconPane interface

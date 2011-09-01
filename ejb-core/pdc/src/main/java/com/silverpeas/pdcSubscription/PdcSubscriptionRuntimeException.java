@@ -54,6 +54,7 @@ public class PdcSubscriptionRuntimeException extends SilverpeasRuntimeException 
     super(callingClass, ERROR, message, makeString(extraParams), nested);
   }
 
+  @Override
   public String getModule() {
     return "pdc";
   }

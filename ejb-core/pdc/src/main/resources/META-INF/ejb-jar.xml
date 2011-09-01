@@ -173,7 +173,7 @@
         <method-intf>Remote</method-intf>
         <method-name>removeICByPK</method-name>
         <method-params>
-          <method-param>java.util.ArrayList</method-param>
+          <method-param>java.util.List</method-param>
         </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>

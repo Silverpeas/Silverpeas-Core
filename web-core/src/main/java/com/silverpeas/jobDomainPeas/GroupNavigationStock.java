@@ -22,24 +22,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * GroupNavigationStock.java
  */
 
 package com.silverpeas.jobDomainPeas;
 
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.Group;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
@@ -67,7 +64,7 @@ public class GroupNavigationStock extends NavigationStock {
     m_NavGroup = m_adc.getGroupById(m_GroupId);
     subUsersIds = m_NavGroup.getUserIds();
     if (subUsersIds == null) {
-      m_SubUsers = new UserDetail[0];
+      m_SubUsers = ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } else {
       m_SubUsers = m_adc.getUserDetails(subUsersIds);
     }
@@ -75,7 +72,7 @@ public class GroupNavigationStock extends NavigationStock {
 
     subGroupsIds = m_adc.getAllSubGroupIds(m_NavGroup.getId());
     if (subGroupsIds == null) {
-      m_SubGroups = new Group[0];
+      m_SubGroups = ArrayUtil.EMPTY_GROUP_ARRAY;
     } else {
       if (manageableGroupIds != null)
         subGroupsIds = filterGroupsToGroupManager(subGroupsIds);
@@ -97,15 +94,14 @@ public class GroupNavigationStock extends NavigationStock {
 
     // filter groups
     String groupId = null;
-    for (int g = 0; g < groupIds.length; g++) {
-      groupId = groupIds[g];
+    for (String groupId1 : groupIds) {
+      groupId = groupId1;
 
-      if (manageableGroupIds.contains(groupId))
+      if (manageableGroupIds.contains(groupId)) {
         temp.add(groupId);
-      else {
+      } else {
         // get all subGroups of group
-        List<String> subGroupIds = Arrays.asList(m_adc
-            .getAllSubGroupIdsRecursively(groupId));
+        List<String> subGroupIds = Arrays.asList(m_adc.getAllSubGroupIdsRecursively(groupId));
 
         // check if at least one manageable group is part of subGroupIds
         itManageableGroupsIds = manageableGroupIds.iterator();
@@ -114,16 +110,18 @@ public class GroupNavigationStock extends NavigationStock {
         boolean find = false;
         while (!find && itManageableGroupsIds.hasNext()) {
           manageableGroupId = itManageableGroupsIds.next();
-          if (subGroupIds.contains(manageableGroupId))
+          if (subGroupIds.contains(manageableGroupId)) {
             find = true;
+          }
         }
 
-        if (find)
+        if (find) {
           temp.add(groupId);
+        }
       }
     }
 
-    return (String[]) temp.toArray(new String[0]);
+    return temp.toArray(new String[temp.size()]);
   }
 
   public boolean isThisGroup(String grId) {
@@ -139,9 +137,6 @@ public class GroupNavigationStock extends NavigationStock {
   }
 
   static public boolean isGroupValid(Group gr) {
-    if (gr != null && StringUtil.isDefined(gr.getId())) {
-      return true;
-    }
-    return false;
+    return gr != null && StringUtil.isDefined(gr.getId());
   }
 }

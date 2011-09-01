@@ -49,5 +49,5 @@ if (! StringUtil.isDefined(loginPage)){
   loginPage = request.getContextPath()+"/defaultLogin.jsp";
 }
 loginPage += "?DomainId="+domainId+"&ErrorCode="+errorCode+"&logout="+request.getParameter("logout");
-response.sendRedirect(loginPage);
+response.sendRedirect(response.encodeRedirectURL(loginPage));
 %>

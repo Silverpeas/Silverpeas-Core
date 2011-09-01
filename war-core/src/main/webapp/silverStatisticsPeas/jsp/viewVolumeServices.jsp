@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 //Recuperation des parametres
@@ -44,13 +45,11 @@ Iterator   iter1 = null;
 %>
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
+</head>
+<body>
 <%
 
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
@@ -62,8 +61,8 @@ Iterator   iter1 = null;
     out.println(frame.printBefore());
 %>
 
-<div align=center>
-<img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=(new Date()).getTime()%>">
+<div align="center">
+<img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=(new Date()).getTime()%>"/>
 </div>
 
 <%
@@ -96,5 +95,5 @@ Iterator   iter1 = null;
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

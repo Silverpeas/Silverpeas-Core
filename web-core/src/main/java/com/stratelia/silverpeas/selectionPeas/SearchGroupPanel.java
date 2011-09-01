@@ -25,6 +25,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
@@ -77,7 +78,7 @@ public class SearchGroupPanel extends BrowsePanelProvider {
     if (SelectionPeasSettings.displayAllSearchByDefault) {
       refresh(filters);
     } else {
-      ids = new String[0];
+      ids = ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.directory.servlets;
 
 import java.io.IOException;
@@ -37,6 +36,7 @@ import org.json.JSONObject;
 
 import com.silverpeas.directory.control.DirectorySessionController;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -46,37 +46,31 @@ public class DirectoryJSONServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
+          IOException {
     doPost(req, res);
   }
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
-
+          IOException {
     HttpSession session = req.getSession(true);
-
-    DirectorySessionController dsc =
-        (DirectorySessionController) session.getAttribute("Silverpeas_" + "directory");
+    DirectorySessionController dsc = (DirectorySessionController) session.getAttribute(
+            "Silverpeas_directory");
     if (dsc == null) {
-      MainSessionController msc =
-          (MainSessionController) session
-              .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      MainSessionController msc = (MainSessionController) session.getAttribute(
+              MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       if (msc != null) {
         dsc = new DirectorySessionController(msc, msc.createComponentContext(null, null));
       }
     }
-
     res.setContentType("application/json");
-
     String action = req.getParameter("Action");
-
     Writer writer = res.getWriter();
     JSONObject jsonObject = new JSONObject();
-    if ("SendMessage".equals(action)) {
+    if ("SendMessage".equals(action) && dsc != null) {
       try {
-        String[] selectedUsers = new String[1];
-        selectedUsers[0] = req.getParameter("TargetUserId");
+        UserRecipient[] selectedUsers = new UserRecipient[1];
+        selectedUsers[0] = new UserRecipient(req.getParameter("TargetUserId"));
         String title = req.getParameter("Title");
         String message = req.getParameter("Message");
         dsc.sendMessage(null, title, message, selectedUsers);

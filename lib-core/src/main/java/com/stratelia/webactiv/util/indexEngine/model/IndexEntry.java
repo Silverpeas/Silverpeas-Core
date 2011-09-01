@@ -24,16 +24,16 @@
 
 package com.stratelia.webactiv.util.indexEngine.model;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * IndexEntry is the base class for all the entries which are indexed in the web'activ index. A
@@ -130,14 +130,6 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Return the space of the indexed document or the userId if the space is a private working space.
-   * @deprecated - to use this method is forbidden
-   */
-  public String getSpace() {
-    return pk.getSpace();
-  }
-
-  /**
    * Return the name of the component's instance which handles the object.
    */
   public String getComponent() {
@@ -185,7 +177,7 @@ public class IndexEntry implements Serializable {
   }
 
   public String getTitle(String lang) {
-    return (String) getTitles().get(I18NHelper.checkLanguage(lang));
+    return getTitles().get(I18NHelper.checkLanguage(lang));
   }
 
   /**
@@ -212,7 +204,7 @@ public class IndexEntry implements Serializable {
   }
 
   public String getKeywords(String lang) {
-    return (String) getKeywords().get(I18NHelper.checkLanguage(lang));
+    return getKeywords().get(I18NHelper.checkLanguage(lang));
   }
 
   /**
@@ -241,7 +233,7 @@ public class IndexEntry implements Serializable {
   }
 
   public String getPreview(String lang) {
-    return (String) getPreviews().get(I18NHelper.checkLanguage(lang));
+    return getPreviews().get(I18NHelper.checkLanguage(lang));
   }
 
   /**

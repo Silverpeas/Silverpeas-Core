@@ -24,16 +24,18 @@
 
 package com.silverpeas.form.fieldType;
 
+
+import com.google.common.base.Joiner;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FormException;
+import com.silverpeas.util.ArrayUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.StringTokenizer;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
 
 /**
  * A UserField stores user references.
@@ -50,7 +52,9 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the type name.
+   * @return 
    */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
@@ -63,22 +67,29 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the user id referenced by this field.
+   * @return 
    */
   public String[] getUserIds() {
-    return userIds;
+    return  userIds;
   }
 
   /**
-   * Set the userd id referenced by this field.
+   * Set the user ids referenced by this field.
+   * @param currentUserIds 
    */
-  public void setUserIds(String[] userIds) {
+  public void setUserIds(String[] currentUserIds) {
     SilverTrace.info("form", "MultipleUserField.setUserIds",
-        "root.MSG_GEN_ENTER_METHOD", "userIds = " + userIds);
-    this.userIds = userIds;
+        "root.MSG_GEN_ENTER_METHOD", "userIds = " + Arrays.toString(currentUserIds));
+    if(currentUserIds != null) {
+      this.userIds = Arrays.copyOf(currentUserIds, currentUserIds.length);
+    } else {
+      this.userIds = null;
+    }
   }
 
   /**
    * Returns true if the value is read only.
+   * @return 
    */
   public boolean isReadOnly() {
     return false;
@@ -86,16 +97,20 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the string value of this field : aka the user name.
+   * @return 
    */
+  @Override
   public String getValue() {
     SilverTrace.info("form", "MultipleUserField.getValue",
-        "root.MSG_GEN_PARAM_VALUE", "userIds = " + getUserIds());
-    if (getUserIds() == null)
+        "root.MSG_GEN_PARAM_VALUE", "userIds = " + Arrays.toString(getUserIds()));
+    if (this.userIds == null) {
       return null;
-    if (getUserIds().length == 0)
+    }
+    if (this.userIds.length == 0) {
       return "";
+    }
 
-    StringBuffer value = new StringBuffer();
+    StringBuilder value = new StringBuilder();
     UserDetail[] users = organizationController.getUserDetails(getUserIds());
     for (int i = 0; i < users.length; i++) {
       if (i > 0) {
@@ -108,105 +123,123 @@ public class MultipleUserField implements Field {
             users[i].getLastName());
       }
     }
-
     return value.toString();
   }
 
   /**
    * Returns the local value of this field. There is no local format for a user field, so the
    * language parameter is unused.
+   * @param language 
+   * @return 
    */
+  @Override
   public String getValue(String language) {
     return getValue();
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
+   * @param value
+   * @throws FormException 
    */
+  @Override
   public void setValue(String value) throws FormException {
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
+   * @param value
+   * @param language
+   * @throws FormException 
    */
+  @Override
   public void setValue(String value, String language) throws FormException {
   }
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
+   * @param value
+   * @return 
    */
+  @Override
   public boolean acceptValue(String value) {
     return false;
   }
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
+   * @param value
+   * @param language
+   * @return 
    */
+  @Override
   public boolean acceptValue(String value, String language) {
     return false;
   }
 
   /**
    * Returns the User referenced by this field.
+   * @return 
    */
+  @Override
   public Object getObjectValue() {
-    if ((getUserIds() == null) || (getUserIds().length == 0))
+    if (this.userIds == null || this.userIds.length == 0) {
       return null;
-
+    }
     return organizationController.getUserDetails(getUserIds());
   }
 
   /**
    * Set user referenced by this field.
+   * @param value
+   * @throws FormException 
    */
+  @Override
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof UserDetail[]) {
       UserDetail[] values = (UserDetail[]) value;
-      String[] userIds = new String[values.length];
+      this.userIds = new String[values.length];
       for (int i = 0; i < values.length; i++) {
         userIds[i] = (values[i] == null) ? "" : values[i].getId();
       }
-      setUserIds(userIds);
     } else if (value == null) {
-      setUserIds(new String[0]);
+      this.userIds = ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
-      throw new FormException("MultipleUserField.setObjectValue",
-          "form.EXP_NOT_AN_USERS_ARRAY");
+      throw new FormException("MultipleUserField.setObjectValue", "form.EXP_NOT_AN_USERS_ARRAY");
     }
   }
 
   /**
    * Returns true if the value is a String and this field isn't read only.
+   * @param value
+   * @return 
    */
+  @Override
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof UserDetail[])
+    if (value instanceof UserDetail[]) {
       return !isReadOnly();
-    else
-      return false;
+    }
+    return false;
   }
 
   /**
    * Returns this field value as a normalized String : a user id
+   * @return 
    */
+  @Override
   public String getStringValue() {
-    String[] userIds = getUserIds();
     if (userIds == null) {
       return "";
     }
-
-    StringBuffer values = new StringBuffer();
-    for (int i = 0; i < userIds.length; i++) {
-      if (i > 0) {
-        values.append(",");
-      }
-      values.append(userIds[i]);
-    }
-    return values.toString();
+    Joiner joiner = Joiner.on(",").skipNulls();
+    return joiner.join(userIds);
   }
 
   /**
    * Set this field value from a normalized String : a user id
+   * @param value 
    */
+  @Override
   public void setStringValue(String value) {
     SilverTrace.info("form", "MultipleUserField.setStringValue",
         "root.MSG_GEN_ENTER_METHOD", "value = " + value);
@@ -214,40 +247,48 @@ public class MultipleUserField implements Field {
       setUserIds(null);
     } else {
       StringTokenizer tokenizer = new StringTokenizer(value, ",");
-      Collection<String> userIds = new ArrayList<String>();
+      Collection<String> extractedIds = new ArrayList<String>();
       while (tokenizer.hasMoreTokens()) {
-        userIds.add(tokenizer.nextToken());
+        extractedIds.add(tokenizer.nextToken());
       }
-      setUserIds(userIds.toArray(new String[0]));
+      setUserIds(extractedIds.toArray(new String[extractedIds.size()]));
     }
   }
 
   /**
    * Returns true if this field isn't read only.
+   * @param value
+   * @return 
    */
+  @Override
   public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
 
   /**
    * Returns true if this field is not set.
+   * @return 
    */
+  @Override
   public boolean isNull() {
-    return (getUserIds() == null);
+    return this.userIds == null;
   }
 
   /**
    * Set to null this field.
-   * @throw FormException when the field is mandatory.
-   * @throw FormException when the field is read only.
+   * @throws FormException  when the field is read only or when the field is mandatory.
    */
+  @Override
   public void setNull() throws FormException {
-    setUserIds(null);
+    this.userIds = null;
   }
 
   /**
    * Tests equality beetwen this field and the specified field.
+   * @param o
+   * @return 
    */
+  @Override
   public boolean equals(Object o) {
     String[] usersMine = getUserIds();
 
@@ -260,29 +301,31 @@ public class MultipleUserField implements Field {
         Arrays.sort(usersMine);
         Arrays.sort(usersYours);
       }
-
       for (int i = 0; i < usersMine.length; i++) {
         if (!usersMine[i].equals(usersYours[i])) {
           return false;
         }
       }
-
       return true;
-    } else
+    } else {
       return false;
+    }
   }
 
   /**
    * Compares this field with the specified field.
+   * This is nonsense to compare arrays.
+   * @param o
+   * @return 
    */
+  @Override
   public int compareTo(Object o) {
-    // this is nonsense to compare arrays
     return 0;
   }
 
+  @Override
   public int hashCode() {
-    String[] s = getUserIds();
-    return ("" + s).hashCode();
+    return ("" + Arrays.toString(this.userIds)).hashCode();
   }
 
   /**

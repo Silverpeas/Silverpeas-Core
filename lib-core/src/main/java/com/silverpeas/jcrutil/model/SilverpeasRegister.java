@@ -24,10 +24,15 @@
 
 package com.silverpeas.jcrutil.model;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Iterator;
-import java.util.List;
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.JcrConstants;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.jackrabbit.core.nodetype.InvalidNodeTypeDefException;
+import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
+import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
+import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
+import org.apache.jackrabbit.core.nodetype.compact.CompactNodeTypeDefReader;
+import org.apache.jackrabbit.core.nodetype.compact.ParseException;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.NamespaceException;
@@ -36,17 +41,9 @@ import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Workspace;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
-
-import org.apache.jackrabbit.core.nodetype.InvalidNodeTypeDefException;
-import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
-import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
-import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
-import org.apache.jackrabbit.core.nodetype.compact.CompactNodeTypeDefReader;
-import org.apache.jackrabbit.core.nodetype.compact.ParseException;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.JcrConstants;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.List;
 
 public class SilverpeasRegister {
   /**
@@ -96,9 +93,9 @@ public class SilverpeasRegister {
       // Acquire the NodeTypeRegistry
       NodeTypeRegistry ntreg = ntmgr.getNodeTypeRegistry();
       // Loop through the prepared NodeTypeDefs
-      for (Iterator i = ntdList.iterator(); i.hasNext();) {
+      for (Object aNtdList : ntdList) {
         // Get the NodeTypeDef...
-        NodeTypeDef ntd = (NodeTypeDef) i.next();
+        NodeTypeDef ntd = (NodeTypeDef) aNtdList;
         // ...and register it
         try {
           ntreg.registerNodeType(ntd);

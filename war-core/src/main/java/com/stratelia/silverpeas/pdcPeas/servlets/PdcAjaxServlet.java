@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.form.fieldDisplayer.PdcFieldDisplayer;
+import com.silverpeas.form.displayers.PdcFieldDisplayer;
 
 /**
  * Servlet used in Ajax mode to update the positions of a PDC field.

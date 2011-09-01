@@ -69,8 +69,8 @@ public class MultilangMessage {
    */
   public String toString() {
     String result = "[" + message;
-    for (int i = 0; i < params.length; i++) {
-      result += "," + params[i];
+    for (String param : params) {
+      result += "," + param;
     }
     result += "]";
     return result;

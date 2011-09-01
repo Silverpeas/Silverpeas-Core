@@ -93,7 +93,7 @@ abstract public class BrowsePanelProvider extends PanelProvider {
   public void setMiniFilter(int filterIndex, String filterValue) {
     // Select case for all
     if (filterIndex == 999) {
-      PanelMiniFilterSelect theFilter = (PanelMiniFilterSelect) getSelectMiniFilter();
+      PanelMiniFilterSelect theFilter = getSelectMiniFilter();
       cacheManager.setSelected(m_what, ids, theFilter.isSelectAllFunction());
       theFilter.setSelectAllFunction(!theFilter.isSelectAllFunction());
     }

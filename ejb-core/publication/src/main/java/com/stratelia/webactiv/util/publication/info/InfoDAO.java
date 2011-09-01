@@ -96,7 +96,7 @@ public class InfoDAO {
       ModelDetail modelDetail = null;
       ArrayList<ModelDetail> list = new ArrayList<ModelDetail>();
       while (rs.next()) {
-        id = new Integer(rs.getInt(1)).toString();
+        id = Integer.toString(rs.getInt(1));
         if (!id.equals(memId)) {
           // this is a new model
           if (name.length() > 0) {
@@ -165,7 +165,7 @@ public class InfoDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
       rs = prepStmt.executeQuery();
       /*
        * if (rs.next()) { String id = new Integer(rs.getInt(1)).toString(); String name =
@@ -183,7 +183,7 @@ public class InfoDAO {
       while (rs.next()) {
         if (!firstModelPartReaden) {
           // It's the first part of the model
-          id = new Integer(rs.getInt(1)).toString();
+          id = Integer.toString(rs.getInt(1));
           name = rs.getString(2);
           description = rs.getString(3);
           imageName = rs.getString(4);
@@ -467,11 +467,8 @@ public class InfoDAO {
     Collection<InfoTextDetail> textList = infos.getInfoTextList();
 
     if (textList != null) {
-      Iterator<InfoTextDetail> textListIterator = textList.iterator();
 
-      while (textListIterator.hasNext()) {
-        InfoTextDetail infoText = textListIterator.next();
-
+      for (InfoTextDetail infoText : textList) {
         addInfoText(con, infos.getPK(), infoText);
       }
     }
@@ -480,11 +477,8 @@ public class InfoDAO {
     Collection<InfoImageDetail> imageList = infos.getInfoImageList();
 
     if (imageList != null) {
-      Iterator<InfoImageDetail> imageListIterator = imageList.iterator();
 
-      while (imageListIterator.hasNext()) {
-        InfoImageDetail infoImage = imageListIterator.next();
-
+      for (InfoImageDetail infoImage : imageList) {
         addInfoImage(con, infos.getPK(), infoImage);
       }
     }
@@ -493,11 +487,8 @@ public class InfoDAO {
     Collection<InfoLinkDetail> linkList = infos.getInfoLinkList();
 
     if (linkList != null) {
-      Iterator<InfoLinkDetail> linkListIterator = linkList.iterator();
 
-      while (linkListIterator.hasNext()) {
-        InfoLinkDetail infoLink = linkListIterator.next();
-
+      for (InfoLinkDetail infoLink : linkList) {
         addInfoLink(con, infos.getPK(), infoLink);
       }
     }
@@ -521,11 +512,8 @@ public class InfoDAO {
     // Treatement of the infoText
     if (infos.getInfoTextList() != null) {
       Collection<InfoTextDetail> textList = infos.getInfoTextList();
-      Iterator<InfoTextDetail> textListIterator = textList.iterator();
 
-      while (textListIterator.hasNext()) {
-        InfoTextDetail infoText = textListIterator.next();
-
+      for (InfoTextDetail infoText : textList) {
         updateInfoText(con, infoText, infoPK);
       }
     }
@@ -533,11 +521,8 @@ public class InfoDAO {
     // Treatement of the infoImage
     if (infos.getInfoImageList() != null) {
       Collection<InfoImageDetail> imageList = infos.getInfoImageList();
-      Iterator<InfoImageDetail> imageListIterator = imageList.iterator();
 
-      while (imageListIterator.hasNext()) {
-        InfoImageDetail infoImage = imageListIterator.next();
-
+      for (InfoImageDetail infoImage : imageList) {
         updateInfoImage(con, infoPK, infoImage);
       }
     }
@@ -546,11 +531,8 @@ public class InfoDAO {
     Collection<InfoLinkDetail> linkList = infos.getInfoLinkList();
 
     if (linkList != null) {
-      Iterator<InfoLinkDetail> linkListIterator = linkList.iterator();
 
-      while (linkListIterator.hasNext()) {
-        InfoLinkDetail infoLink = linkListIterator.next();
-
+      for (InfoLinkDetail infoLink : linkList) {
         addInfoLink(con, infoPK, infoLink);
       }
     }

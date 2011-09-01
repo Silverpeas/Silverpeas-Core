@@ -52,7 +52,7 @@ public interface FieldDisplayer {
    */
   public void displayScripts(PrintWriter out,
       FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException;
+      PagesContext pagesContext) throws java.io.IOException;
 
   /**
    * Prints the HTML value of the field. The value format may be adapted to a local language. The
@@ -65,7 +65,7 @@ public interface FieldDisplayer {
   public void display(PrintWriter out,
       Field field,
       FieldTemplate template,
-      PagesContext PagesContext) throws FormException;
+      PagesContext pagesContext) throws FormException;
 
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
@@ -76,7 +76,7 @@ public interface FieldDisplayer {
   public List<String> update(List<FileItem> items,
       Field field,
       FieldTemplate template,
-      PagesContext PagesContext)
+      PagesContext pagesContext)
       throws FormException;
 
   /**
@@ -88,7 +88,7 @@ public interface FieldDisplayer {
   public List<String> update(String value,
       Field field,
       FieldTemplate template,
-      PagesContext PagesContext)
+      PagesContext pagesContext)
       throws FormException;
 
   /*

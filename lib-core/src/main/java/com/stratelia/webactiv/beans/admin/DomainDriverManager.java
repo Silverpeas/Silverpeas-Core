@@ -24,6 +24,8 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.domains.DomainDriverFactory;
+
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -40,7 +42,6 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -139,14 +140,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
-      throws Exception {
-    return new UserDetail[0];
+  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws Exception {
+    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
   }
 
   @Override
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return new Group[0];
+    return ArrayUtil.EMPTY_GROUP_ARRAY;
   }
 
   @Override
@@ -317,7 +317,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public String[] getUserMemberGroupIds(String userId) throws Exception {
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**
@@ -399,12 +399,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   @Override
   public UserDetail[] getUsersBySpecificProperty(String propertyName, String value)
       throws Exception {
-    return new UserDetail[0];
+    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
   }
 
   @Override
   public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
-    return new UserDetail[0];
+    return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
   }
 
   @Override
@@ -445,6 +445,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
     return uds;
   }
+
 
   /**
    * Indexing all users information of given domain
@@ -558,6 +559,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get Group detail from specific domain
       domainDriver.deleteGroup(gr.specificId);
+      
+      // Delete index to given group
+      unindexGroup(groupId);
+      
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.deleteGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "group Id: '"
@@ -757,7 +762,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**
@@ -814,6 +819,60 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
     return groups;
   }
+  
+  public GroupRow[] getAllGroupOfDomain(String domainId) throws Exception {
+    getOrganizationSchema();
+    try {
+      return organization.group.getAllGroupsOfDomain(Integer.parseInt(domainId));
+    } catch (AdminException e) {
+      throw new AdminException("DomainDriverManager.getGroupIdsOfDomain", SilverpeasException.ERROR,
+          "admin.admin.MSG_ERR_GET_ALL_GROUPS", "domainId = " + domainId, e);
+    } finally {
+      releaseOrganizationSchema();
+    }
+  }
+  
+  /**
+   * Indexing all groups information of given domain
+   * @param domainId
+   * @throws Exception
+   */
+  public void indexAllGroups(String domainId) throws Exception {
+    GroupRow[] tabGroup = getAllGroupOfDomain(domainId);
+    for (GroupRow group : tabGroup) {
+      indexGroup(group);
+    }
+  }
+
+  /**
+   * Indexing a group
+   * @param groupId
+   */
+  public void indexGroup(GroupRow group) {
+
+    FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", Integer.toString(group.id));
+    indexEntry.setLastModificationDate(new Date());
+    indexEntry.setTitle(group.name);
+    indexEntry.setPreView(group.description);
+
+    // index some group informations
+    indexEntry.addField("DomainId", Integer.toString(group.domainId));
+    indexEntry.addField("SpecificId", group.specificId);
+    indexEntry.addField("SuperGroupId", Integer.toString(group.superGroupId));
+    indexEntry.addField("SynchroRule", group.rule);
+
+    IndexEngineProxy.addIndexEntry(indexEntry);
+  }
+
+  /**
+   * Unindexing a group
+   * @param groupId
+   */
+  public void unindexGroup(String groupId) {
+    FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", groupId);
+    IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
+  }
+  
 
   /**
    * @param sKey

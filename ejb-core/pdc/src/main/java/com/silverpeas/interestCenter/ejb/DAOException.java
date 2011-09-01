@@ -51,6 +51,7 @@ public class DAOException extends SilverpeasException {
     super(callingClass, ERROR, message, extraParams, nested);
   }
 
+  @Override
   public String getModule() {
     return "InterestCenter";
   }

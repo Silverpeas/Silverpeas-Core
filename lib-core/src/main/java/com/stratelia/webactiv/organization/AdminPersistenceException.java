@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,36 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
 
 public class AdminPersistenceException extends AdminException {
 
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public AdminPersistenceException(String callingClass, int errorLevel,
-      String message) {
+  public AdminPersistenceException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AdminPersistenceException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public AdminPersistenceException(String callingClass, int errorLevel, String message,
+          String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AdminPersistenceException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public AdminPersistenceException(String callingClass, int errorLevel, String message,
+          Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AdminPersistenceException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public AdminPersistenceException(String callingClass, int errorLevel, String message,
+          String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 }

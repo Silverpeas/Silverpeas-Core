@@ -30,15 +30,7 @@
 
 package com.stratelia.webactiv.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Vector;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -52,7 +44,13 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Vector;
 
 /**
  * This object implements and extends the ConfigurationStore interface for XML files. As a
@@ -79,7 +77,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @author jpouyadou
  * @version
  */
-public class XMLConfigurationStore extends Object implements ConfigurationStore {
+public class XMLConfigurationStore implements ConfigurationStore {
   /**
    * XML document root
    */
@@ -150,7 +148,7 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
           + m_ConfigFileName + "'");
     }
     // m_XMLConfig.getDocumentElement().normalize();
-    ((org.apache.xerces.dom.NodeImpl) (m_XMLConfig)).normalize();
+    m_XMLConfig.normalize();
     m_RootNode = findNode(m_XMLConfig, rootString);
     if (m_RootNode == null) {
       throw new Exception("E6000-0023:Invalid configuration file '"
@@ -318,8 +316,7 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
 
     // get all node descendants, and concatenate all their string values. --TODO
     // What about sublevels?
-    for (int i = 0; i < paramNodes.length; i++) {
-      Node paramNode = paramNodes[i];
+    for (Node paramNode : paramNodes) {
       NodeList paramList = paramNode.getChildNodes();
       int paramsize = paramList.getLength();
       for (int pi = 0; pi < paramsize; pi++) {
@@ -354,8 +351,9 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
         // standard text, concatenate the value with other values
         else if (psn instanceof Text) {
           String v;
-          if ((v = psn.getNodeValue()) == null)
+          if ((v = psn.getNodeValue()) == null) {
             return (null);
+          }
           vres.add(v.trim());
         }
       }
@@ -458,8 +456,8 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
     Node name = m_XMLConfig.createElement("param-name");
     Node description = m_XMLConfig.createElement("param-description");
     Node nameValue = m_XMLConfig.createTextNode(key);
-    for (int i = 0; i < values.length; i++) {
-      Node vValue = m_XMLConfig.createTextNode(values[i]);
+    for (String value : values) {
+      Node vValue = m_XMLConfig.createTextNode(value);
       Node v = m_XMLConfig.createElement("param-value");
       param.appendChild(v);
       v.appendChild(vValue);
@@ -704,8 +702,8 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
       System.exit(0);
     }
     System.out.println("Names found:");
-    for (int i = 0; i < names.length; i++) {
-      System.out.println(names[i]);
+    for (String name : names) {
+      System.out.println(name);
     }
 
   }

@@ -24,11 +24,11 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
+import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-
-import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * @author jboulet
@@ -82,7 +82,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param CellAlign
+   * @param cellAlign
    */
   public void setCellAlign(String cellAlign) {
     this.cellAlign = cellAlign;
@@ -100,28 +100,25 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
    */
   public String[] getSelectedValues() {
     ArrayList<String> selectedValues = new ArrayList<String>();
-    Iterator<Integer> iterator = selected.iterator();
 
-    while (iterator.hasNext()) {
-      selectedValues.add(values.get(iterator.next().intValue()));
+    for (Integer aSelected : selected) {
+      selectedValues.add(values.get(aSelected.intValue()));
     }
 
-    return (String[]) selectedValues.toArray(new String[selectedValues.size()]);
+    return selectedValues.toArray(new String[selectedValues.size()]);
   }
 
   /**
    * @return
    */
   public void setSelectedValues(String[] astrSelectedValues) {
-    int index = -1;
-
     selected.clear();
-
     // Verify that the provided values exist among all values
-    for (int i = 0; i < astrSelectedValues.length; i++) {
-      index = values.indexOf(astrSelectedValues[i]);
-      if (index != -1)
-        selected.add(new Integer(index));
+    for (String astrSelectedValue : astrSelectedValues) {
+      int index = values.indexOf(astrSelectedValue);
+      if (index != -1) {
+        selected.add(index);
+      }
     }
   }
 
@@ -147,7 +144,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param maxlength
+   * @param fMultiselect
    */
   public void setMultiselect(boolean fMultiselect) {
     multiselect = fMultiselect;
@@ -161,7 +158,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param maxlength
+   * @param strColor
    */
   public void setColor(String strColor) {
     color = strColor;
@@ -217,7 +214,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   }
 
   /**
-   * @param likeText
+   * @param fReadOnly
    */
   public void setReadOnly(boolean fReadOnly) {
     readOnly = fReadOnly;
@@ -306,7 +303,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
 
     // Options
     if (iterSelected.hasNext())
-      iSelected = iterSelected.next().intValue();
+      iSelected = iterSelected.next();
 
     for (int i = 0; i < labels.size(); i++) {
       syntax.append("\n<option value=\"");
@@ -317,7 +314,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
         syntax.append(" selected");
 
         if (iterSelected.hasNext())
-          iSelected = ((Integer) iterSelected.next()).intValue();
+          iSelected = iterSelected.next();
       }
 
       syntax.append(">");
@@ -337,7 +334,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
    * @see
    */
   public String print() {
-    StringBuffer result = new StringBuffer("<td ");
+    StringBuilder result = new StringBuilder("<td ");
 
     if (getCellAlign() != null) {
       if (getCellAlign().equalsIgnoreCase("center")

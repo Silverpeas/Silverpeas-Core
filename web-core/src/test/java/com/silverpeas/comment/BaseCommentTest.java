@@ -43,8 +43,14 @@ public abstract class BaseCommentTest {
   public static void boostrapMessagingSystem() throws Exception {
     if (jmsTestFacade == null) {
       jmsTestFacade = new JMSTestFacade();
-      jmsTestFacade.bootstrap();
-      jmsTestFacade.newTopic(CommentActionNotifier.TOPIC_NAME);
+    }
+    jmsTestFacade.bootstrap();
+    jmsTestFacade.newTopic(CommentActionNotifier.TOPIC_NAME);
+  }
+
+  public static void shutdownMessagingSystem() throws Exception {
+    if (jmsTestFacade != null) {
+      jmsTestFacade.shutdown();
     }
   }
 }

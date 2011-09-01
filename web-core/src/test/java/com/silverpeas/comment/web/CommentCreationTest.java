@@ -23,83 +23,54 @@
  */
 package com.silverpeas.comment.web;
 
-import java.util.UUID;
+import com.silverpeas.comment.BaseCommentTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.rest.ResourceCreationTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.rest.RESTWebService.*;
+import static com.silverpeas.comment.web.CommentTestResources.*;
 
 /**
  * Unit tests on the creation of a comment through the CommentResource web service.
  */
-public class CommentCreationTest extends BaseCommentResourceTest {
+public class CommentCreationTest extends ResourceCreationTest<CommentTestResources> {
 
   private UserDetail user;
   private String sessionKey;
   private CommentEntity theComment;
+  
+  public CommentCreationTest() {
+    super(JAVA_PACKAGE, SPRING_CONTEXT);
+  }
+  
+  @BeforeClass
+  public static void prepareMessagingContext() throws Exception {
+    BaseCommentTest.boostrapMessagingSystem();
+  }
+  
+  @AfterClass
+  public static void releaseMessagingContext() throws Exception {
+    BaseCommentTest.shutdownMessagingSystem();
+  }
 
   @Before
-  public void createAUserAndPrepareAComment() {
+  public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    theComment = CommentEntity.fromComment(aUser(user).commentTheResource(CONTENT_ID).
+    theComment = CommentEntity.fromComment(theUser(user).commentTheResource(CONTENT_ID).
         inComponent(COMPONENT_INSTANCE_ID).withAsText("ceci est un commentaire"));
   }
 
   @Test
-  public void postACommentByANonAuthenticatedUser() {
-    WebResource resource = resource();
-    ClientResponse response = resource.path(RESOURCE_PATH).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, theComment);
-    int recievedStatus = response.getStatus();
-    int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    assertThat(recievedStatus, is(unauthorized));
-  }
-
-  @Test
-  public void postACommentWithADeprecatedSession() {
-    WebResource resource = resource();
-    ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, theComment);
-    int recievedStatus = response.getStatus();
-    int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    assertThat(recievedStatus, is(unauthorized));
-  }
-
-  @Test
-  public void postANonAuthorizedComment() {
-    denieAuthorizationToUsers();
-
-    WebResource resource = resource();
-    ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, sessionKey).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, theComment);
-    int recievedStatus = response.getStatus();
-    int forbidden = Status.FORBIDDEN.getStatusCode();
-    assertThat(recievedStatus, is(forbidden));
-  }
-
-  @Test
   public void postANewComment() {
-    WebResource resource = resource();
-    ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, sessionKey).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, theComment);
+    ClientResponse response = post(theComment, at(aResourceURI()));
     int recievedStatus = response.getStatus();
     int created = Status.CREATED.getStatusCode();
     assertThat(recievedStatus, is(created));
@@ -111,14 +82,12 @@ public class CommentCreationTest extends BaseCommentResourceTest {
    */
   @Test
   public void postAnAlreadyExistingComment() {
-    CommentEntity aComment = CommentEntity.fromComment(aUser(user).commentTheResource(CONTENT_ID).
-        inComponent(COMPONENT_INSTANCE_ID).andSaveItWithAsText("coucou"));
-    WebResource resource = resource();
-    ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, sessionKey).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aComment);
+    Comment existingComment = theUser(user).commentTheResource(CONTENT_ID).
+        inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou");
+    getTestResources().save(existingComment);
+    CommentEntity aComment = CommentEntity.fromComment(existingComment);
+
+    ClientResponse response = post(aComment, at(aResourceURI()));
     int recievedStatus = response.getStatus();
     int created = Status.CREATED.getStatusCode();
     assertThat(recievedStatus, is(created));
@@ -129,14 +98,39 @@ public class CommentCreationTest extends BaseCommentResourceTest {
   @Test
   public void postAnInvalidComment() {
     CommentEntity aComment = new CommentEntity();
-    WebResource resource = resource();
-    ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, sessionKey).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aComment);
+    ClientResponse response = post(aComment, at(aResourceURI()));
     int recievedStatus = response.getStatus();
     int badRequest = Status.BAD_REQUEST.getStatusCode();
     assertThat(recievedStatus, is(badRequest));
+  }
+
+  @Override
+  public String aResourceURI() {
+    return RESOURCE_PATH;
+  }
+
+  @Override
+  public String anUnexistingResourceURI() {
+    return RESOURCE_PATH + "/toto";
+  }
+
+  @Override
+  public CommentEntity aResource() {
+    return theComment;
+  }
+
+  @Override
+  public String getSessionKey() {
+    return sessionKey;
+  }
+
+  @Override
+  public Class<?> getWebEntityClass() {
+    return CommentEntity.class;
+  }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[] { COMPONENT_INSTANCE_ID };
   }
 }

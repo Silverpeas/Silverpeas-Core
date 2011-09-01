@@ -48,12 +48,12 @@ public class GoToTopic extends GoTo {
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+          HttpServletResponse res) throws Exception {
     String componentId = req.getParameter("ComponentId");
     NodePK pk = new NodePK(objectId, componentId);
     NodeDetail node = getNodeBm().getHeader(pk);
     SilverTrace.info("peasUtil", "GoToTopic.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+            "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
     String gotoURL = URLManager.getURL(null, componentId) + node.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
@@ -61,8 +61,8 @@ public class GoToTopic extends GoTo {
   public NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+              NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       displayError(null);

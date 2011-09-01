@@ -27,7 +27,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.ejb.RemoveException;
@@ -60,6 +59,9 @@ import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  This object is used by all the components jsp that have access to the session.
@@ -81,7 +83,8 @@ public class MainSessionController extends AdminReference implements Clipboard {
   private Date userLastRequest = null;
   private String userLanguage = null;
   private ContentManager contentManager = null;
-  Hashtable<String, GenericPanel> genericPanels = new Hashtable<String, GenericPanel>();
+  Map<String, GenericPanel> genericPanels =
+          Collections.synchronizedMap(new HashMap<String, GenericPanel>());
   Selection selection = null;
   private String userSpace = null;
   AlertUser m_alertUser = null;
@@ -98,14 +101,13 @@ public class MainSessionController extends AdminReference implements Clipboard {
   private List<GlobalSilverContent> lastResults = null;
   private boolean allowPasswordChange;
 
-  public boolean isAppInMaintenance() {
+  public final boolean isAppInMaintenance() {
     return appInMaintenance;
   }
 
   public void setAppModeMaintenance(boolean mode) {
-    SilverTrace.info("peasCore",
-        "MainSessionController.setAppModeMaintenance()",
-        "root.MSG_GEN_PARAM_VALUE", "mode=" + new Boolean(mode).toString());
+    SilverTrace.info("peasCore", "MainSessionController.setAppModeMaintenance()",
+        "root.MSG_GEN_PARAM_VALUE", "mode=" + String.valueOf(mode));
     appInMaintenance = mode;
   }
 
@@ -161,7 +163,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
         "authenticationKey = " + authenticationKey + " sessionId=" + sessionId);
     try {
       // Authenticate the user
-      this.userId = m_Admin.authenticate(authenticationKey, sessionId, isAppInMaintenance());
+      this.userId = getAdminService().authenticate(authenticationKey, sessionId, isAppInMaintenance());
       this.sessionId = sessionId;
       this.userPreferences = SilverpeasServiceProvider.getPersonalizationService()
           .getUserSettings(userId);
@@ -220,7 +222,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   public GenericPanel getGenericPanel(String panelKey) {
-    return (GenericPanel) genericPanels.get(panelKey);
+    return genericPanels.get(panelKey);
   }
 
   // ------------------- Selection Functions -----------------------------
@@ -252,8 +254,8 @@ public class MainSessionController extends AdminReference implements Clipboard {
       SilverTrace.info("peasCore", "MainSessionController.getClipboard()",
           "root.MSG_GEN_ENTER_METHOD");
       try {
-        m_ClipboardBm = ((ClipboardBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class)).create(
+        m_ClipboardBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class).create(
             "MainClipboard");
       } catch (Exception e) {
         throw new PeasCoreRuntimeException(
@@ -357,7 +359,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
    */
   public UserDetail getCurrentUserDetail() {
     try {
-      return m_Admin.getUserDetail(this.getUserId());
+      return getAdminService().getUserDetail(this.getUserId());
     } catch (Exception e) {
       SilverTrace.error("peasCore",
           "MainSessionController.getCurrentUserDetail",
@@ -370,14 +372,14 @@ public class MainSessionController extends AdminReference implements Clipboard {
    * Return the parameters for the given component
    */
   public List<Parameter> getComponentParameters(String sComponentId) {
-    return m_Admin.getComponentParameters(sComponentId);
+    return getAdminService().getComponentParameters(sComponentId);
   }
 
   /**
    * Return the value of the parameter for the given component and the given name of parameter
    */
   public String getComponentParameterValue(String sComponentId, String parameterName) {
-    return m_Admin.getComponentParameterValue(sComponentId, parameterName);
+    return getAdminService().getComponentParameterValue(sComponentId, parameterName);
   }
 
   /**
@@ -395,7 +397,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
         "MainSessionController.getUserAvailComponentIds",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return m_Admin.getAvailCompoIds(getUserId());
+      return getAdminService().getAvailCompoIds(getUserId());
     } catch (Exception e) {
       SilverTrace.error("peasCore",
           "MainSessionController.getUserAvailComponentIds",
@@ -411,7 +413,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
     SilverTrace.info("peasCore", "MainSessionController.getUserAvailSpaceIds",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return m_Admin.getClientSpaceIds(m_Admin.getUserSpaceIds(userId));
+      return getAdminService().getClientSpaceIds(getAdminService().getUserSpaceIds(userId));
     } catch (Exception e) {
       SilverTrace.error("peasCore",
           "MainSessionController.getUserAvailSpaceIds",
@@ -428,11 +430,11 @@ public class MainSessionController extends AdminReference implements Clipboard {
         "MainSessionController.getUserManageableSpaceIds",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      UserDetail user = m_Admin.getUserDetail(userId);
+      UserDetail user = getAdminService().getUserDetail(userId);
       if (user.getAccessLevel().equals("A") || userId.equals("0")) {
-        return m_Admin.getClientSpaceIds(m_Admin.getAllSpaceIds());
+        return getAdminService().getClientSpaceIds(getAdminService().getAllSpaceIds());
       } else {
-        return m_Admin.getClientSpaceIds(m_Admin.getUserManageableSpaceIds(
+        return getAdminService().getClientSpaceIds(getAdminService().getUserManageableSpaceIds(
             userId));
       }
     } catch (Exception e) {
@@ -477,7 +479,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
         "MainSessionController.getUserManageableGroupIds",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return m_Admin.getUserManageableGroupIds(userId);
+      return getAdminService().getUserManageableGroupIds(userId);
     } catch (Exception e) {
       SilverTrace.error("peasCore",
           "MainSessionController.getUserManageableGroupIds",
@@ -497,7 +499,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
     try {
       // Set the space
       if (sSpaceId != null) {
-        SpaceInstLight spaceInst = m_Admin.getSpaceInstLightById(sSpaceId);
+        SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(sSpaceId);
 
         newInfos.setCurrentSpaceId(sSpaceId);
         newInfos.setCurrentSpaceName(spaceInst.getName(getFavoriteLanguage()));
@@ -505,7 +507,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
       // Set the current component and profiles
       if (sComponent != null) {
         String sCurCompoLabel = "";
-        ComponentInst componentInst = m_Admin.getComponentInst(sComponent);
+        ComponentInst componentInst = getAdminService().getComponentInst(sComponent);
 
         // if (componentInst.getLabel() != null &&
         // componentInst.getLabel().length() != 0)
@@ -513,7 +515,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
         newInfos.setCurrentComponentId(sComponent);
         newInfos.setCurrentComponentName(componentInst.getName());
         newInfos.setCurrentComponentLabel(sCurCompoLabel);
-        newInfos.setCurrentProfile(m_Admin.getCurrentProfiles(this.getUserId(),
+        newInfos.setCurrentProfile(getAdminService().getCurrentProfiles(this.getUserId(),
             componentInst));
       }
     } catch (Exception e) {

@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
@@ -555,12 +556,6 @@ public class VersioningBmEJB implements SessionBean {
         return newVersion;
       }
 
-      if (worker == null) {
-        throw new VersioningRuntimeException(
-            "VersioninBmEJB.addNonOrderedValidatedVersion",
-            SilverpeasRuntimeException.ERROR,
-            "versioning.EX_NOVALIDATOR_IN_VALIDATED_LIST", doc);
-      }
       String docUrl = getDocumentUrl(doc);
 
       try {
@@ -1352,23 +1347,17 @@ public class VersioningBmEJB implements SessionBean {
     message.append(resources.getString("versioning.URL"));
     message.append(" - ");
     message.append(documentUrl);
-
-    String[] notifUserList = new String[1];
-    notifUserList[0] = Integer.toString(userID);
-
     NotificationSender notifSender = new NotificationSender(doc.getPk().getComponentName());
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, resources.getString("notification.title"),
         message.toString());
 
     int adminId = getFirstAdministrator(orgCtr, userID);
-
     notifMetaData.setSender(String.valueOf(adminId));
-    notifMetaData.addUserRecipients(notifUserList);
+    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(userID)));
     notifMetaData.setSource(resources.getString("notification.title"));
 
-    if ((documentUrl != null)
-        && (documentUrl.length() > URLManager.getApplicationURL().length())) {
+    if (documentUrl != null  && (documentUrl.length() > URLManager.getApplicationURL().length())) {
       notifMetaData.setLink(documentUrl.substring(
           URLManager.getApplicationURL().length())); // Remove the application element
     }

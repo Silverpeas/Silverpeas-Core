@@ -23,13 +23,14 @@
  */
 package com.silverpeas.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import com.google.common.collect.Sets;
+
 import java.util.Set;
 
 public interface MimeTypes {
 
   public final String DEFAULT_MIME_TYPE = "application/octet-stream";
+  public final String RTF_MIME_TYPE = "application/rtf";
   public final String PDF_MIME_TYPE = "application/pdf";
   public final String WORD_MIME_TYPE = "application/msword";
   public final String EXCEL_MIME_TYPE1 = "application/x-msexcel";
@@ -77,16 +78,16 @@ public interface MimeTypes {
   public final String MIME_TYPE_OO_IMAGE = "application/vnd.oasis.opendocument.image";
   // Extension .odm (Document principal)
   public final String MIME_TYPE_OO_MASTER = "application/vnd.oasis.opendocument.text-master";
-  public static final Set<String> MS_OFFICE_MIME_TYPES = new HashSet<String>(Arrays.asList(new String[]{
-        WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2}));
-  public static final Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<String>(Arrays.asList(new String[]{
+  public static final Set<String> MS_OFFICE_MIME_TYPES = Sets.newHashSet(
+        WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2);
+  public static final Set<String> OPEN_OFFICE_MIME_TYPES = Sets.newHashSet(
         WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
         EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
         POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
         POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
         MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA,
-        MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER}));
-  public static final Set<String> IMAGE_EXTENTIONS = new HashSet<String>(Arrays.asList(new String[]{
+        MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER);
+  public static final Set<String> IMAGE_EXTENTIONS = Sets.newHashSet(
         "gif", "GIF", "jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP", "pcd", "PCD", "tga",
-        "TGA", "tif", "TIF"}));
+        "TGA", "tif", "TIF");
 }

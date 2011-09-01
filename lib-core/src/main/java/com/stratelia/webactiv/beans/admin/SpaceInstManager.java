@@ -237,6 +237,9 @@ public class SpaceInstManager {
 
       // Load the space detail
       SpaceRow spaceRow = ddManager.organization.space.getSpace(idAsInt(spaceId));
+      if (spaceRow == null) {
+        return null;
+      }
 
       SpaceInstLight spaceInstLight = new SpaceInstLight(spaceRow);
 

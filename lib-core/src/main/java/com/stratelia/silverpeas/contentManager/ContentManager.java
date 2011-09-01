@@ -23,7 +23,6 @@
  */
 package com.stratelia.silverpeas.contentManager;
 
-
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.URLIcone;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -32,6 +31,8 @@ import com.stratelia.silverpeas.util.JoinStatement;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import javax.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,9 +42,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -51,15 +52,62 @@ import java.util.TreeSet;
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents
  * (documentation, ....)
  */
-public class ContentManager extends Object implements Serializable {
+@Named("contentManager")
+public class ContentManager implements Serializable {
 
+  private final static List<ContentPeas> s_acContentPeas = new ArrayList<ContentPeas>();
+
+  static {
+    // -------------------------------------------------
+    // We don't have enough time to do the parsing !!!
+    // We hard coded for this time !!!!
+    // -------------------------------------------------
+
+    ContentPeas contentFB = new ContentPeas("fileBoxPlus");
+    ContentPeas contentWP = new ContentPeas("whitePages");
+    ContentPeas contentQR = new ContentPeas("questionReply");
+    ContentPeas contentKMelia = new ContentPeas("kmelia");
+    ContentPeas contentSurvey = new ContentPeas("survey");
+    ContentPeas contentToolbox = new ContentPeas("toolbox");
+    ContentPeas contentQuickInfo = new ContentPeas("quickinfo");
+    ContentPeas contentAlmanach = new ContentPeas("almanach");
+    ContentPeas contentQuizz = new ContentPeas("quizz");
+    ContentPeas contentForums = new ContentPeas("forums");
+    ContentPeas contentPollingStation = new ContentPeas("pollingStation");
+    ContentPeas contentBookmark = new ContentPeas("bookmark");
+    ContentPeas contentChat = new ContentPeas("chat");
+    ContentPeas contentInfoLetter = new ContentPeas("infoLetter");
+    ContentPeas contentEL = new ContentPeas("expertLocator");
+    ContentPeas contentWebSites = new ContentPeas("webSites");
+    ContentPeas contentGallery = new ContentPeas("gallery");
+    ContentPeas contentBlog = new ContentPeas("blog");
+
+    // Put all the existing contents in the array of contents
+    s_acContentPeas.add(contentFB);
+    s_acContentPeas.add(contentWP);
+    s_acContentPeas.add(contentQR);
+    s_acContentPeas.add(contentKMelia);
+    s_acContentPeas.add(contentSurvey);
+    s_acContentPeas.add(contentToolbox);
+    s_acContentPeas.add(contentQuickInfo);
+    s_acContentPeas.add(contentAlmanach);
+    s_acContentPeas.add(contentQuizz);
+    s_acContentPeas.add(contentForums);
+    s_acContentPeas.add(contentPollingStation);
+    s_acContentPeas.add(contentBookmark);
+    s_acContentPeas.add(contentChat);
+    s_acContentPeas.add(contentInfoLetter);
+    s_acContentPeas.add(contentEL);
+    s_acContentPeas.add(contentWebSites);
+    // s_acContentPeas.add(contentDocumentation);
+    s_acContentPeas.add(contentGallery);
+    s_acContentPeas.add(contentBlog);
+  }
   // Container peas
-  private static boolean s_bDescriptorsRead = false;
-  private static ArrayList<ContentPeas> s_acContentPeas = null;
-  private static Hashtable<String, String> assoComponentIdInstanceId = null;
+  private static Map<String, String> assoComponentIdInstanceId = null;
   // Association SilverContentId (the key) internalContentId (the value) (cache)
   private static HashMap<String, String> assoSilverContentIdInternalComponentId =
-      new HashMap<String, String>(1000);
+          new HashMap<String, String>(1000);
   // Datebase properties
   private static String m_dbName = JNDINames.CONTENTMANAGER_DATASOURCE;
   private static String m_sInstanceTable = "SB_ContentManager_Instance";
@@ -68,82 +116,22 @@ public class ContentManager extends Object implements Serializable {
 
   static {
     try {
-      assoComponentIdInstanceId = new Hashtable<String, String>(loadAsso(null));
+      assoComponentIdInstanceId = new HashMap<String, String>(loadAsso(null));
     } catch (ContentManagerException e) {
       SilverTrace.error("contentManager", "ContentManager.initStatic",
-          "root.EX_CLASS_NOT_INITIALIZED",
-          "assoComponentIdInstanceId initialization failed !", e);
+          "root.EX_CLASS_NOT_INITIALIZED", "assoComponentIdInstanceId initialization failed !", e);
     }
   }
   // Container manager
   private ContainerManager m_containerManager = null;
 
   public ContentManager() throws ContentManagerException {
-    // If the container descriptors (.xml) have not been read, do it
-    if (!s_bDescriptorsRead) {
-      // -------------------------------------------------
-      // We don't have enough time to do the parsing !!!
-      // We hard coded for this time !!!!
-      // -------------------------------------------------
-
-      ContentPeas contentFB = new ContentPeas("fileBoxPlus");
-      ContentPeas contentWP = new ContentPeas("whitePages");
-      ContentPeas contentQR = new ContentPeas("questionReply");
-      ContentPeas contentKMelia = new ContentPeas("kmelia");
-      ContentPeas contentSurvey = new ContentPeas("survey");
-      ContentPeas contentToolbox = new ContentPeas("toolbox");
-      ContentPeas contentQuickInfo = new ContentPeas("quickinfo");
-      ContentPeas contentAlmanach = new ContentPeas("almanach");
-      ContentPeas contentQuizz = new ContentPeas("quizz");
-      ContentPeas contentForums = new ContentPeas("forums");
-      ContentPeas contentPollingStation = new ContentPeas("pollingStation");
-      ContentPeas contentBookmark = new ContentPeas("bookmark");
-      ContentPeas contentChat = new ContentPeas("chat");
-      ContentPeas contentInfoLetter = new ContentPeas("infoLetter");
-      ContentPeas contentEL = new ContentPeas("expertLocator");
-      ContentPeas contentWebSites = new ContentPeas("webSites");
-      // ContentPeas contentDocumentation = new ContentPeas("documentation");
-      ContentPeas contentGallery = new ContentPeas("gallery");
-      ContentPeas contentBlog = new ContentPeas("blog");
-
-      // Put all the existing contents in the array of contents
-      s_acContentPeas = new ArrayList<ContentPeas>();
-      s_acContentPeas.add(contentFB);
-      s_acContentPeas.add(contentWP);
-      s_acContentPeas.add(contentQR);
-      s_acContentPeas.add(contentKMelia);
-      s_acContentPeas.add(contentSurvey);
-      s_acContentPeas.add(contentToolbox);
-      s_acContentPeas.add(contentQuickInfo);
-      s_acContentPeas.add(contentAlmanach);
-      s_acContentPeas.add(contentQuizz);
-      s_acContentPeas.add(contentForums);
-      s_acContentPeas.add(contentPollingStation);
-      s_acContentPeas.add(contentBookmark);
-      s_acContentPeas.add(contentChat);
-      s_acContentPeas.add(contentInfoLetter);
-      s_acContentPeas.add(contentEL);
-      s_acContentPeas.add(contentWebSites);
-      // s_acContentPeas.add(contentDocumentation);
-      s_acContentPeas.add(contentGallery);
-      s_acContentPeas.add(contentBlog);
-
-      // Set the read flag to true
-      s_bDescriptorsRead = true;
-    }
-
-    // Load the instanceId-componentId cache
-    /*
-     * if (s_asAssoInstanceId == null && s_asAssoComponentId == null) { s_asAssoInstanceId = new
-     * ArrayList(); s_asAssoComponentId = new ArrayList(); this.loadAsso(null); }
-     */
-
     try {
       m_containerManager = new ContainerManager();
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.ContentManager",
-          SilverpeasException.ERROR,
-          "contentManager.EX_CANT_INSTANCIATE_CONTAINERMANAGER", "", e);
+              SilverpeasException.ERROR,
+              "contentManager.EX_CANT_INSTANCIATE_CONTAINERMANAGER", "", e);
     }
   }
 
@@ -155,10 +143,10 @@ public class ContentManager extends Object implements Serializable {
    * @param sContainerType
    * @param sContentType
    * @return
-   * @throws ContentManagerException 
+   * @throws ContentManagerException
    */
   public int registerNewContentInstance(Connection connection, String sComponentId,
-      String sContainerType, String sContentType) throws ContentManagerException {
+          String sContainerType, String sContentType) throws ContentManagerException {
     boolean bCloseConnection = false;
 
     // Check the minimum required
@@ -174,21 +162,21 @@ public class ContentManager extends Object implements Serializable {
       int newInstanceId = DBUtil.getNextId(m_sInstanceTable, "instanceId");
       // Insert the association container - content
       String sSQLStatement = "INSERT INTO " + m_sInstanceTable
-          + "(instanceId, componentId, containerType, contentType) ";
+              + "(instanceId, componentId, containerType, contentType) ";
       sSQLStatement += "VALUES (" + newInstanceId + ",'" + sComponentId + "','"
-          + sContainerType + "','" + sContentType + "')";
+              + sContainerType + "','" + sContentType + "')";
       // Execute the insertion
       SilverTrace.info("contentManager",
-          "ContentManager.registerNewContentInstance",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ContentManager.registerNewContentInstance",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
       addAsso(sComponentId, newInstanceId);
       return newInstanceId;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.registerNewContentInstance",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_REGISTER_CONTENT_INSTANCE",
-          "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
+              SilverpeasException.ERROR, "contentManager.EX_CANT_REGISTER_CONTENT_INSTANCE",
+              "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -204,7 +192,7 @@ public class ContentManager extends Object implements Serializable {
       }
     } catch (Exception e) {
       SilverTrace.error("contentManager", "ContentManager.closeConnection",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+              "root.EX_CONNECTION_CLOSE_FAILED", "", e);
     }
   }
 
@@ -215,10 +203,10 @@ public class ContentManager extends Object implements Serializable {
    * @param sComponentId
    * @param sContainerType
    * @param sContentType
-   * @throws ContentManagerException 
+   * @throws ContentManagerException
    */
   public void unregisterNewContentInstance(Connection connection, String sComponentId,
-      String sContainerType, String sContentType) throws ContentManagerException {
+          String sContainerType, String sContentType) throws ContentManagerException {
     boolean bCloseConnection = false;
     this.checkParameters(sComponentId, sContainerType, sContentType);
     PreparedStatement prepStmt = null;
@@ -231,20 +219,20 @@ public class ContentManager extends Object implements Serializable {
       // Remove the association container - content
       String sSQLStatement = "DELETE FROM " + m_sInstanceTable + " WHERE (";
       sSQLStatement += "componentId = '" + sComponentId
-          + "') AND (containerType = '" + sContainerType
-          + "') AND (contentType = '" + sContentType + "')";
+              + "') AND (containerType = '" + sContainerType
+              + "') AND (contentType = '" + sContentType + "')";
 
       // Execute the insertion
       SilverTrace.info("contentManager",
-          "ContentManager.unregisterNewContentInstance",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ContentManager.unregisterNewContentInstance",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
       removeAsso(sComponentId);
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.unregisterNewContentInstance",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_UNREGISTER_CONTENT_INSTANCE",
-          "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
+              SilverpeasException.ERROR, "contentManager.EX_CANT_UNREGISTER_CONTENT_INSTANCE",
+              "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -257,35 +245,35 @@ public class ContentManager extends Object implements Serializable {
    * Return the ContentPeas corresponding to the given componentId
    * @param sComponentId
    * @return
-   * @throws ContentManagerException 
+   * @throws ContentManagerException
    */
   public ContentPeas getContentPeas(String sComponentId) throws ContentManagerException {
     // Get the ContentType
     String sContentType = this.getContentType(sComponentId);
     SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
-        "sContentType= " + sContentType + " sComponentId=" + sComponentId);
+            "sContentType= " + sContentType + " sComponentId=" + sComponentId);
 
     // Get the ContentPeas from the ContentType
-    for (int nI = 0; nI < s_acContentPeas.size(); nI++) {
+    for (ContentPeas s_acContentPea : s_acContentPeas) {
       SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
-          "Type= " + s_acContentPeas.get(nI).getType());
-      if ((s_acContentPeas.get(nI)).getType().equals(sContentType)) {
+          "Type= " + s_acContentPea.getType());
+      if (s_acContentPea.getType().equals(sContentType)) {
         SilverTrace.info("contentManager", "ContentManager.getContentPeas", "", "Type Trouvé= "
-            + s_acContentPeas.get(nI).getType() + "   " + sContentType);
-        return s_acContentPeas.get(nI);
+            + s_acContentPea.getType() + "   " + sContentType);
+        return s_acContentPea;
       }
     }
     SilverTrace.info("contentManager", "ContentManager.getContentPeas",
-        "contentManager.EX_UNKNOWN_CONTENT_PEAS", "sComponentId: " + sComponentId);
+            "contentManager.EX_UNKNOWN_CONTENT_PEAS", "sComponentId: " + sComponentId);
     return null;
   }
 
   // Return the Content type corresponding to the given componentId
   private String getContentType(String componentId)
-      throws ContentManagerException {
+          throws ContentManagerException {
     // Build the SQL statement
     String sSQLStatement = "SELECT contentType FROM " + m_sInstanceTable
-        + " WHERE (componentId = '" + componentId + "')";
+            + " WHERE (componentId = '" + componentId + "')";
     // Get the contentType from the DB Query
     String sContentType = this.getFirstStringValue(sSQLStatement);
     return sContentType;
@@ -296,7 +284,7 @@ public class ContentManager extends Object implements Serializable {
    * all the silverpeas contents (documentation, ....)
    * @param sContentType
    * @param asUserContentRoles
-   * @return 
+   * @return
    */
   public List<URLIcone> getContentURLIcones(String sContentType, List<String> asUserContentRoles) {
     // !!!!!!! HARD CODED FOR THE MOMENT (call th econtentPeas instead)
@@ -322,7 +310,7 @@ public class ContentManager extends Object implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL()  + "/util/icons/publicationAdd.gif");
+        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/publicationAdd.gif");
         // uiCreation.setAlternateText("Créer un document");
         uiCreation.setAlternateText("fileBoxPlus.CreateNewDocument");
         uiCreation.setActionURL("CreateQuery");
@@ -380,7 +368,8 @@ public class ContentManager extends Object implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/expertLocator_to_add.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/expertLocator_to_add.gif");
         // uiCreation.setAlternateText("Créer une fiche");
         uiCreation.setAlternateText("expertLocator.CreateAUsercard");
         uiCreation.setActionURL("createQuery");
@@ -412,21 +401,24 @@ public class ContentManager extends Object implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
         // uiCreation.setAlternateText("Poser une question");
         uiCreation.setAlternateText("questionReply.AriseAQuestion");
         uiCreation.setActionURL("CreateQQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_addQR.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_addQR.gif");
         // uiCreation.setAlternateText("Ajouter une FAQ");
         uiCreation.setAlternateText("questionReply.AddAFAQ");
         uiCreation.setActionURL("CreateQueryQR");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
         // uiCreation.setAlternateText("Visualiser toutes les questions");
         uiCreation.setAlternateText("questionReply.AllQuestions");
         uiCreation.setActionURL("ConsultReceiveQuestions");
@@ -435,14 +427,16 @@ public class ContentManager extends Object implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
         // uiCreation.setAlternateText("Poser une question");
         uiCreation.setAlternateText("questionReply.AriseAQuestion");
         uiCreation.setActionURL("CreateQQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
         // uiCreation.setAlternateText("Visualiser toutes les questions");
         uiCreation.setAlternateText("questionReply.AllQuestions");
         uiCreation.setActionURL("ConsultReceiveQuestions");
@@ -465,46 +459,46 @@ public class ContentManager extends Object implements Serializable {
   }
 
   private void checkParameters(String sComponentId, String sContainerType,
-      String sContentType) throws ContentManagerException {
+          String sContentType) throws ContentManagerException {
     // Check if the given componentId is not null
     if (sComponentId == null) {
       throw new ContentManagerException("ContentManager.checkParameters",
-          SilverpeasException.ERROR, "contentManager.EX_COMPONENTID_NULL");
+              SilverpeasException.ERROR, "contentManager.EX_COMPONENTID_NULL");
     }
 
     // Check if the given componentId is not empty
     if (sComponentId.length() == 0) {
       throw new ContentManagerException("ContentManager.checkParameters",
-          SilverpeasException.ERROR, "contentManager.EX_COMPONENTID_EMPTY");
+              SilverpeasException.ERROR, "contentManager.EX_COMPONENTID_EMPTY");
     }
 
     // Check if the given containerType is not null
     if (sContainerType == null) {
       throw new ContentManagerException("ContentManager.checkParameters",
-          SilverpeasException.ERROR, "contentManager.EX_CONTAINERTYPE_NULL");
+              SilverpeasException.ERROR, "contentManager.EX_CONTAINERTYPE_NULL");
     }
 
     // Check if the given containerType is not empty
     if (sContainerType.length() == 0) {
       throw new ContentManagerException("ContentManager.checkParameters",
-          SilverpeasException.ERROR, "contentManager.EX_CONTAINERTYPE_EMPTY");
+              SilverpeasException.ERROR, "contentManager.EX_CONTAINERTYPE_EMPTY");
     }
 
     // Check if the given contentType is not null
     if (sContentType == null) {
       throw new ContentManagerException("ContentManager.checkParameters",
-          SilverpeasException.ERROR, "contentManager.EX_CONTENTTYPE_NULL");
+              SilverpeasException.ERROR, "contentManager.EX_CONTENTTYPE_NULL");
     }
 
     // Check if the given contentType is not empty
     if (sContentType.length() == 0) {
       throw new ContentManagerException("ContentManager.checkParameters",
-          SilverpeasException.ERROR, "contentManager.EX_CONTENTTYPE_EMPTY");
+              SilverpeasException.ERROR, "contentManager.EX_CONTENTTYPE_EMPTY");
     }
   }
 
   private String getFirstStringValue(String sSQLStatement)
-      throws ContentManagerException {
+          throws ContentManagerException {
     Connection connection = null;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
@@ -516,7 +510,7 @@ public class ContentManager extends Object implements Serializable {
 
       // Execute the query
       SilverTrace.info("contentManager", "ContentManager.getFirstStringValue",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -528,8 +522,8 @@ public class ContentManager extends Object implements Serializable {
       return sValue;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.getFirstStringValue",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
-          "sSQLStatement: " + sSQLStatement, e);
+              SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
+              "sSQLStatement: " + sSQLStatement, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -541,9 +535,9 @@ public class ContentManager extends Object implements Serializable {
    * SilverContentId in return
    */
   public int addSilverContent(Connection connection, String sInternalContentId,
-      String sComponentId, String sAuthorId) throws ContentManagerException {
+          String sComponentId, String sAuthorId) throws ContentManagerException {
     return addSilverContent(connection, sInternalContentId, sComponentId,
-        sAuthorId, null);
+            sAuthorId, null);
   }
 
   /**
@@ -551,8 +545,8 @@ public class ContentManager extends Object implements Serializable {
    * SilverContentId in return
    */
   public int addSilverContent(Connection connection, String sInternalContentId,
-      String sComponentId, String sAuthorId, SilverContentVisibility scv)
-      throws ContentManagerException {
+          String sComponentId, String sAuthorId, SilverContentVisibility scv)
+          throws ContentManagerException {
     //
     // creation d'un objet java.sql.Date qui represente la date systeme.
     //
@@ -579,29 +573,29 @@ public class ContentManager extends Object implements Serializable {
       int nContentInstanceId = this.getContentInstanceId(sComponentId);
 
       SilverTrace.info("contentManager", "ContentManager.addSilverContent",
-          "root.MSG_GEN_PARAM_VALUE", "nContentInstanceId= "
-          + nContentInstanceId);
+              "root.MSG_GEN_PARAM_VALUE", "nContentInstanceId= "
+              + nContentInstanceId);
 
       // Compute the next silverContentId
       int newSilverContentId = DBUtil.getNextId(m_sSilverContentTable,
-          new String("silverContentId"));
+              "silverContentId");
 
       SilverTrace.info("contentManager", "ContentManager.addSilverContent",
-          "root.MSG_GEN_PARAM_VALUE", "newSilverContentId= "
-          + newSilverContentId);
+              "root.MSG_GEN_PARAM_VALUE", "newSilverContentId= "
+              + newSilverContentId);
 
       // Insert the silverContent
       String sSQLStatement =
-          "INSERT INTO "
-          + m_sSilverContentTable
-          + "(silverContentId, internalContentId, contentInstanceid, authorId, creationDate, beginDate, endDate, isVisible) ";
+              "INSERT INTO "
+              + m_sSilverContentTable
+              + "(silverContentId, internalContentId, contentInstanceid, authorId, creationDate, beginDate, endDate, isVisible) ";
       sSQLStatement += "VALUES (" + newSilverContentId + ",'"
-          + sInternalContentId + "'," + nContentInstanceId + ","
-          + Integer.parseInt(sAuthorId) + ",?, ? , ? , ? )";
+              + sInternalContentId + "'," + nContentInstanceId + ","
+              + Integer.parseInt(sAuthorId) + ",?, ? , ? , ? )";
 
       // Execute the insertion
       SilverTrace.info("contentManager", "ContentManager.addSilverContent",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.setDate(1, systemDate);
       prepStmt.setString(2, scv.getBeginDate());
@@ -612,9 +606,9 @@ public class ContentManager extends Object implements Serializable {
       return newSilverContentId;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.addSilverContent",
-          SilverpeasException.ERROR,
-          "contentManager.EX_CANT_ADD_SILVER_CONTENT", "sInternalContentId: "
-          + sInternalContentId + "    sComponentId: " + sComponentId, e);
+              SilverpeasException.ERROR,
+              "contentManager.EX_CANT_ADD_SILVER_CONTENT", "sInternalContentId: "
+              + sInternalContentId + "    sComponentId: " + sComponentId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -627,55 +621,54 @@ public class ContentManager extends Object implements Serializable {
    * Remove a silver content Called when a content remove a document
    */
   public void removeSilverContent(Connection connection, int nSilverContentId,
-      String sComponentId) throws ContentManagerException {
+          String sComponentId) throws ContentManagerException {
     PreparedStatement prepStmt = null;
     try {
       // delete the silverContent
       String sSQLStatement = "DELETE FROM " + m_sSilverContentTable
-          + " WHERE (silverContentId = " + nSilverContentId + ")";
+              + " WHERE (silverContentId = " + nSilverContentId + ")";
 
       // Execute the delete
       SilverTrace.info("contentManager", "ContentManager.removeSilverContent",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
       // Unregistered the object in the container
       m_containerManager.silverContentIsRemoved(connection, nSilverContentId,
-          m_containerManager.getContainerInstanceId(sComponentId));
+              m_containerManager.getContainerInstanceId(sComponentId));
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.removeSilverContent",
-          SilverpeasException.ERROR,
-          "contentManager.EX_CANT_REMOVE_SILVER_CONTENT", "nSilverContentId: "
-          + nSilverContentId + "   sComponentId: " + sComponentId, e);
+              SilverpeasException.ERROR,
+              "contentManager.EX_CANT_REMOVE_SILVER_CONTENT", "nSilverContentId: "
+              + nSilverContentId + "   sComponentId: " + sComponentId, e);
     } finally {
       DBUtil.close(prepStmt);
     }
   }
 
   private int getSilverContentId(Statement stmt, String sInternalContentId,
-      String sComponentId, boolean isGlobalSearch)
-      throws ContentManagerException {
+          String sComponentId, boolean isGlobalSearch)
+          throws ContentManagerException {
     ResultSet resSet = null;
     StringBuffer sSQLStatement = new StringBuffer();
     int nSilverContentId = -1;
 
     try {
       // Get the SilverContentId
-      sSQLStatement.append("SELECT silverContentId FROM "
-          + m_sSilverContentTable);
-      sSQLStatement.append(" WHERE (internalContentId = '" + sInternalContentId
-          + "') AND (contentInstanceId = ");
+      sSQLStatement.append("SELECT silverContentId FROM ").append(m_sSilverContentTable);
+      sSQLStatement.append(" WHERE (internalContentId = '").append(sInternalContentId).append(
+              "') AND (contentInstanceId = ");
       if (isGlobalSearch) {
-        sSQLStatement.append(" (select instanceId from " + m_sInstanceTable
-            + " where componentId='" + sComponentId + "') ) ");
+        sSQLStatement.append(" (select instanceId from ").append(m_sInstanceTable).
+                append(" where componentId='").append(sComponentId).append("') ) ");
       } else {
-        sSQLStatement.append(this.getContentInstanceId(sComponentId) + ") ");
+        sSQLStatement.append(this.getContentInstanceId(sComponentId)).append(") ");
       }
 
       // Execute the search
       SilverTrace.info("contentManager", "ContentManager.getSilverContentId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       resSet = stmt.executeQuery(sSQLStatement.toString());
       // Fetch the result
 
@@ -684,7 +677,7 @@ public class ContentManager extends Object implements Serializable {
       }
     } catch (SQLException excep_select) {
       SilverTrace.warn("contentManager", "ContentManager.getSilverContentId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
     } finally {
       DBUtil.close(resSet);
     }
@@ -697,7 +690,7 @@ public class ContentManager extends Object implements Serializable {
    * remove a document
    */
   public int getSilverContentId(String sInternalContentId, String sComponentId)
-      throws ContentManagerException {
+          throws ContentManagerException {
     Connection connection = null;
     Statement stmt = null;
     int silverContentId;
@@ -706,15 +699,15 @@ public class ContentManager extends Object implements Serializable {
       connection = DBUtil.makeConnection(m_dbName);
       stmt = connection.createStatement();
       silverContentId = getSilverContentId(stmt, sInternalContentId,
-          sComponentId, false);
+              sComponentId, false);
 
       return silverContentId;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.getSilverContentId",
-          SilverpeasException.ERROR,
-          "contentManager.EX_CANT_GET_SILVERCONTENTID", "sComponentId: "
-          + sComponentId + "    sInternalContentId: " + sInternalContentId,
-          e);
+              SilverpeasException.ERROR,
+              "contentManager.EX_CANT_GET_SILVERCONTENTID", "sComponentId: "
+              + sComponentId + "    sInternalContentId: " + sInternalContentId,
+              e);
     } finally {
       DBUtil.close(stmt);
       closeConnection(connection);
@@ -726,7 +719,7 @@ public class ContentManager extends Object implements Serializable {
    * instanceId The list is not null and not empty !! Called when a content remove a document
    */
   public SortedSet<Integer> getSilverContentId(List<String> documentFeature)
-      throws ContentManagerException {
+          throws ContentManagerException {
     Connection connection = null;
     Statement stmt = null;
     SortedSet<Integer> alSilverContentId = new TreeSet<Integer>();
@@ -747,8 +740,7 @@ public class ContentManager extends Object implements Serializable {
 
         // add the result into the sortedSet
         if (silverContentId != -1) {
-          // le composant dont instanceId et objectId courant
-          // fait partie du PDC
+          // le composant dont instanceId et objectId courant fait partie du PDC
           alSilverContentId.add(Integer.valueOf(silverContentId));
         }
 
@@ -757,10 +749,10 @@ public class ContentManager extends Object implements Serializable {
       return alSilverContentId;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.getSilverContentId",
-          SilverpeasException.ERROR,
-          "contentManager.EX_CANT_GET_SILVERCONTENTID", "sComponentId: "
-          + sComponentId + "    sInternalContentId: " + sInternalContentId,
-          e);
+              SilverpeasException.ERROR,
+              "contentManager.EX_CANT_GET_SILVERCONTENTID", "sComponentId: "
+              + sComponentId + "    sInternalContentId: " + sInternalContentId,
+              e);
     } finally {
       try {
         DBUtil.close(stmt);
@@ -769,28 +761,27 @@ public class ContentManager extends Object implements Serializable {
         }
       } catch (Exception e) {
         SilverTrace.error("contentManager",
-            "ContentManager.getSilverContentId",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+                "ContentManager.getSilverContentId",
+                "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }
   }
 
   private String getInternalContentIdFromCache(String sSilverContentId) {
-    return (String) assoSilverContentIdInternalComponentId.get(sSilverContentId);
+    return assoSilverContentIdInternalComponentId.get(sSilverContentId);
   }
 
   private void putInternalContentIdIntoCache(String sSilverContentId,
-      String sInternalContentId) {
+          String sInternalContentId) {
     assoSilverContentIdInternalComponentId.put(sSilverContentId,
-        sInternalContentId);
+            sInternalContentId);
   }
 
   /**
    * Return the InternalContentId corresponding to the given SilverContentId Called when a content
    * remove a document
    */
-  public String getInternalContentId(int nSilverContentId)
-      throws ContentManagerException {
+  public String getInternalContentId(int nSilverContentId) throws ContentManagerException {
     String sSilverContentId = String.valueOf(nSilverContentId);
     String sInternalContentId = getInternalContentIdFromCache(sSilverContentId);
     if (sInternalContentId == null) {
@@ -803,13 +794,13 @@ public class ContentManager extends Object implements Serializable {
 
         // Get the InternalContentId
         String sSQLStatement = "SELECT internalContentId FROM "
-            + m_sSilverContentTable + " WHERE (silverContentId = "
-            + nSilverContentId + ")";
+                + m_sSilverContentTable + " WHERE (silverContentId = "
+                + nSilverContentId + ")";
 
         // Execute the search
         SilverTrace.info("contentManager",
-            "ContentManager.getInternalContentId", "root.MSG_GEN_PARAM_VALUE",
-            "sSQLStatement= " + sSQLStatement);
+                "ContentManager.getInternalContentId", "root.MSG_GEN_PARAM_VALUE",
+                "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         resSet = prepStmt.executeQuery();
 
@@ -821,9 +812,9 @@ public class ContentManager extends Object implements Serializable {
         putInternalContentIdIntoCache(sSilverContentId, sInternalContentId);
       } catch (Exception e) {
         throw new ContentManagerException(
-            "ContentManager.getInternalContentId", SilverpeasException.ERROR,
-            "contentManager.EX_CANT_GET_INTERNALCONTENTID",
-            "nSilverContentId: " + nSilverContentId, e);
+                "ContentManager.getInternalContentId", SilverpeasException.ERROR,
+                "contentManager.EX_CANT_GET_INTERNALCONTENTID",
+                "nSilverContentId: " + nSilverContentId, e);
       } finally {
         DBUtil.close(resSet, prepStmt);
         closeConnection(connection);
@@ -835,43 +826,18 @@ public class ContentManager extends Object implements Serializable {
   /**
    * Return the content instance Id corresponding to the componentId
    */
-  public int getContentInstanceId(String sComponentId)
-      throws ContentManagerException {
+  public int getContentInstanceId(String sComponentId) throws ContentManagerException {
     int contentInstanceId = -1;
 
-    // Find the index of the component in the cache
-    /*
-     * int nIndex = 0; for (nIndex = 0; nIndex < s_asAssoComponentId.size(); nIndex++) { if
-     * (((String) s_asAssoComponentId.get(nIndex)).equals(sComponentId)) { contentInstanceId =
-     * ((Integer) s_asAssoInstanceId.get(nIndex)).intValue(); break; } }
-     */
-
     String sContentInstanceId = getInstanceId(sComponentId);
-
-    // check the index
-    // if (nIndex < 0 || s_asAssoComponentId.size() == 0 || nIndex >
-    // s_asAssoComponentId.size() - 1)
     if (sContentInstanceId != null) {
       contentInstanceId = Integer.parseInt(sContentInstanceId);
     } else {
-      // throw new
-      // ContentManagerException("ContentManager.getContentInstanceId",SilverpeasException.ERROR,"contentManager.EX_CANNOT_FOUND_COMPONENTID",
-      // "sComponentId: " + sComponentId);
-
       // the given instance is not registered. This code is used to maintains
       // compatibility with previous versions.
       String componentName = extractComponentNameFromInstanceId(sComponentId);
       contentInstanceId = registerNewContentInstance(null, sComponentId,
           "containerPDC", componentName);
-
-      // The container must be registered too.
-      /*
-       * ContainerManager containerManager = new ContainerManager();
-       * containerManager.registerNewContainerInstance(null, sComponentId, "containerPDC",
-       * componentName);
-       */
-
-      // loadAsso(null);
     }
 
     return contentInstanceId;
@@ -883,29 +849,28 @@ public class ContentManager extends Object implements Serializable {
     for (int i = 0; i < instanceId.length(); i++) {
       character = instanceId.charAt(i);
       if (character == '0' || character == '1' || character == '2'
-          || character == '3' || character == '4' || character == '5'
-          || character == '6' || character == '7' || character == '8'
-          || character == '9') {
+              || character == '3' || character == '4' || character == '5'
+              || character == '6' || character == '7' || character == '8'
+              || character == '9') {
         SilverTrace.info("contentManager",
-            "ContentManager.extractComponentNameFromInstanceId",
-            "root.MSG_GEN_PARAM_VALUE", "componentName = " + componentName);
+                "ContentManager.extractComponentNameFromInstanceId",
+                "root.MSG_GEN_PARAM_VALUE", "componentName = " + componentName);
         return instanceId.substring(0, i);
       }
     }
     return instanceId;
   }
 
-  private Hashtable<String, String> getAsso() throws ContentManagerException {
+  private Map<String, String> getAsso() throws ContentManagerException {
     return assoComponentIdInstanceId;
   }
 
-  private String getInstanceId(String componentId)
-      throws ContentManagerException {
-    return (String) getAsso().get(componentId);
+  private String getInstanceId(String componentId) throws ContentManagerException {
+    return getAsso().get(componentId);
   }
 
   private void addAsso(String componentId, int instanceId)
-      throws ContentManagerException {
+          throws ContentManagerException {
     getAsso().put(componentId, java.lang.Integer.toString(instanceId));
   }
 
@@ -914,12 +879,12 @@ public class ContentManager extends Object implements Serializable {
   }
 
   // Load the cache instanceId-componentId
-  private static Hashtable<String, String> loadAsso(Connection connection)
+  private static Map<String, String> loadAsso(Connection connection)
       throws ContentManagerException {
     boolean bCloseConnection = false;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
-    Hashtable<String, String> tempAsso = new Hashtable<String, String>();
+    Map<String, String> tempAsso = new HashMap<String, String>();
     try {
       if (connection == null) {
         // Open connection
@@ -929,11 +894,11 @@ public class ContentManager extends Object implements Serializable {
 
       // Get the instanceId
       String sSQLStatement = "SELECT instanceId, componentId FROM "
-          + m_sInstanceTable;
+              + m_sInstanceTable;
 
       // Execute the insertion
       SilverTrace.info("contentManager", "ContentManager.loadAsso",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -943,7 +908,7 @@ public class ContentManager extends Object implements Serializable {
       }
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.loadAsso",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_LOAD_ASSO_CACHE", "", e);
+              SilverpeasException.ERROR, "contentManager.EX_CANT_LOAD_ASSO_CACHE", "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       try {
@@ -952,7 +917,7 @@ public class ContentManager extends Object implements Serializable {
         }
       } catch (Exception e) {
         SilverTrace.error("contentManager", "ContentManager.loadAsso",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+                "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }
     return tempAsso;
@@ -960,7 +925,7 @@ public class ContentManager extends Object implements Serializable {
 
   public JoinStatement getPositionsByGenericSearch(String authorId,
       String afterDate, String beforeDate) throws ContentManagerException {
-    StringBuffer sSQLStatement = new StringBuffer(1000);
+    StringBuilder sSQLStatement = new StringBuilder(1000);
 
     JoinStatement joinStatement = new JoinStatement();
     List<String> alGivenTables = new ArrayList<String>();
@@ -1002,8 +967,7 @@ public class ContentManager extends Object implements Serializable {
    * @param alSilverContentId - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
    */
-  public List<String> getInstanceId(List<Integer> alSilverContentId)
-      throws ContentManagerException {
+  public List<String> getInstanceId(List<Integer> alSilverContentId) throws ContentManagerException {
     Connection connection = null;
     StringBuffer sSQLStatement = new StringBuffer();
     PreparedStatement prepStmt = null;
@@ -1013,8 +977,8 @@ public class ContentManager extends Object implements Serializable {
       // Open connection
       connection = DBUtil.makeConnection(m_dbName);
 
-      sSQLStatement.append("select I.componentId from " + m_sInstanceTable
-          + " I, " + m_sSilverContentTable + " C ");
+      sSQLStatement.append("select I.componentId from ").append(m_sInstanceTable).append(" I, ").
+              append(m_sSilverContentTable).append(" C ");
       sSQLStatement.append(" where I.instanceId = C.contentInstanceId ");
       sSQLStatement.append(" and C.silverContentId = ?");
 
@@ -1023,9 +987,7 @@ public class ContentManager extends Object implements Serializable {
 
       // Loop on the alSilverContentId
       String instanceId = "";
-      Integer oneSilverContentId = null;
-      for (int i = 0; i < alSilverContentId.size(); i++) {
-        oneSilverContentId = alSilverContentId.get(i);
+      for (Integer oneSilverContentId : alSilverContentId) {
         prepStmt.setInt(1, oneSilverContentId.intValue());
         SilverTrace.info("contentManager", "ContentManager.getInstanceId",
             "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
@@ -1045,8 +1007,8 @@ public class ContentManager extends Object implements Serializable {
       return alInstanceIds;
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.getInstanceId",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID",
-          "", e);
+              SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID",
+              "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -1059,7 +1021,7 @@ public class ContentManager extends Object implements Serializable {
    * @return une liste de silvercontentId
    */
   public List<Integer> getSilverContentIdByInstanceId(String instanceId)
-      throws ContentManagerException {
+          throws ContentManagerException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
@@ -1069,15 +1031,15 @@ public class ContentManager extends Object implements Serializable {
       con = DBUtil.makeConnection(m_dbName);
 
       String sSQLStatement = "select C.silverContentId from "
-          + m_sInstanceTable + " I, " + m_sSilverContentTable + " C ";
+              + m_sInstanceTable + " I, " + m_sSilverContentTable + " C ";
       sSQLStatement += " where I.instanceId = C.contentInstanceId ";
       sSQLStatement += " and I.componentId like ? ";
 
       // Execute the search
       SilverTrace.info("contentManager",
-          "ContentManager.getSilverContentIdByInstanceId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
-          + " instranceId=" + instanceId);
+              "ContentManager.getSilverContentIdByInstanceId",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
+              + " instranceId=" + instanceId);
       prepStmt = con.prepareStatement(sSQLStatement);
       prepStmt.setString(1, instanceId);
 
@@ -1091,8 +1053,8 @@ public class ContentManager extends Object implements Serializable {
       return allSilverContentIds;
     } catch (Exception e) {
       throw new ContentManagerException(
-          "ContentManager.getSilverContentIdByInstanceId",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID", "", e);
+              "ContentManager.getSilverContentIdByInstanceId",
+              SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID", "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(con);
@@ -1100,7 +1062,7 @@ public class ContentManager extends Object implements Serializable {
   }
 
   public List<SilverContent> getSilverContentBySilverContentIds(List<Integer> alSilverContentIds)
-      throws ContentManagerException {
+          throws ContentManagerException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
@@ -1109,26 +1071,26 @@ public class ContentManager extends Object implements Serializable {
       // Open connection
       con = DBUtil.makeConnection(m_dbName);
 
-      StringBuffer where = new StringBuffer();
+      StringBuilder where = new StringBuilder();
       int sizeOfIds = alSilverContentIds.size();
       for (int i = 0; i < sizeOfIds - 1; i++) {
-        where.append(" silverContentId = "
-            + (alSilverContentIds.get(i)).toString() + " or ");
+        where.append(" silverContentId = ").append((alSilverContentIds.get(i)).toString()).append(
+                " or ");
       }
       if (sizeOfIds != 0) {
-        where.append(" silverContentId = "
-            + (alSilverContentIds.get(sizeOfIds - 1)).toString());
+        where.append(" silverContentId = ").append(
+                (alSilverContentIds.get(sizeOfIds - 1)).toString());
       }
 
       String sSQLStatement =
-          "select silverContentName, silverContentDescription, silverContentUrl from "
-          + m_sSilverContentTable;
+              "select silverContentName, silverContentDescription, silverContentUrl from "
+              + m_sSilverContentTable;
       sSQLStatement += " where " + where.toString();
 
       // Execute the search
       SilverTrace.info("contentManager",
-          "ContentManager.getSilverContentBySilverContentIds",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ContentManager.getSilverContentBySilverContentIds",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = con.prepareStatement(sSQLStatement);
 
       resSet = prepStmt.executeQuery();
@@ -1136,15 +1098,15 @@ public class ContentManager extends Object implements Serializable {
       // Fetch the result
       while (resSet.next()) {
         silverContents.add(new SilverContent(resSet.getString(1), resSet.getString(2), resSet.
-            getString(3)));
+                getString(3)));
       }
 
       return silverContents;
     } catch (Exception e) {
       throw new ContentManagerException(
-          "ContentManager.getSilverContentBySilverContentIds",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID",
-          "", e);
+              "ContentManager.getSilverContentBySilverContentIds",
+              SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID",
+              "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(con);
@@ -1152,8 +1114,8 @@ public class ContentManager extends Object implements Serializable {
   }
 
   public void updateSilverContentVisibilityAttributes(
-      SilverContentVisibility scv, String instanceId, int silverObjectId)
-      throws ContentManagerException {
+          SilverContentVisibility scv, String instanceId, int silverObjectId)
+          throws ContentManagerException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     try {
@@ -1169,8 +1131,8 @@ public class ContentManager extends Object implements Serializable {
 
         // Execute the update
         SilverTrace.info("contentManager",
-            "ContentManager.updateSilverContentVisibilityAttributes",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+                "ContentManager.updateSilverContentVisibilityAttributes",
+                "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
         prepStmt = con.prepareStatement(sSQLStatement.toString());
 
         prepStmt.setString(1, scv.getBeginDate());
@@ -1180,9 +1142,9 @@ public class ContentManager extends Object implements Serializable {
       }
     } catch (Exception e) {
       throw new ContentManagerException(
-          "ContentManager.updateSilverContentVisibilityAttributes",
-          SilverpeasException.ERROR,
-          "contentManager.EX_CANT_UPDATE_SILVER_CONTENT", e);
+              "ContentManager.updateSilverContentVisibilityAttributes",
+              SilverpeasException.ERROR,
+              "contentManager.EX_CANT_UPDATE_SILVER_CONTENT", e);
     } finally {
       DBUtil.close(prepStmt);
       closeConnection(con);

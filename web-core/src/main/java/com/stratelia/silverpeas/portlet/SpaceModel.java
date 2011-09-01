@@ -193,8 +193,8 @@ public class SpaceModel {
 
     if (spaceColumns.size() > 0) {
       columnRatios = null;
-      for (int col = 0; col < spaceColumns.size(); col++) {
-        SpaceColumn sc = (SpaceColumn) spaceColumns.get(col);
+      for (Object spaceColumn : spaceColumns) {
+        SpaceColumn sc = (SpaceColumn) spaceColumn;
 
         if (columnRatios == null) {
           columnRatios = sc.getColumnWidth();

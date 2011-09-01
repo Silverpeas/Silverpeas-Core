@@ -50,7 +50,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testCreateComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
-    DBUtil.getInstance(con);
+    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK(null, null, "kmelia18");
     ForeignPK foreignKey = new ForeignPK("200", "kmelia18");
     int ownerId = RandomGenerator.getRandomInt();
@@ -81,7 +81,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testGetComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
-    DBUtil.getInstance(con);
+    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);
@@ -101,7 +101,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testDeleteComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
-    DBUtil.getInstance(con);
+    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);
@@ -124,7 +124,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testUpdateComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
-    DBUtil.getInstance(con);
+    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment comment = commentDAO.getComment(con, pk);
     assertNotNull(comment);
@@ -163,7 +163,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testMoveComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
-    DBUtil.getInstance(con);
+    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);

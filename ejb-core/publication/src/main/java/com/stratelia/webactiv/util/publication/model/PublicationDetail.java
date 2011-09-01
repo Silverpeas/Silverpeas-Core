@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
@@ -770,7 +770,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return getXmlFields(null);
   }
 
-  @SuppressWarnings("unchecked")
   public List<XMLField> getXmlFields(String language) {
     if (xmlFields == null) {
       try {

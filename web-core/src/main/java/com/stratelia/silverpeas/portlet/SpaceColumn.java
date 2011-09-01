@@ -202,7 +202,7 @@ public class SpaceColumn {
    * @return the ratios used to construct the column frameset
    */
   public String getRowRatios() {
-    StringBuffer ratios = new StringBuffer();
+    StringBuilder ratios = new StringBuilder();
 
     if (portlets.size() == 0) {
       ratios.append("100%");

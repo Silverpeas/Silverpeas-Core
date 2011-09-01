@@ -35,10 +35,10 @@ import com.stratelia.silverpeas.classifyEngine.Criteria;
 public class InterestCenter implements Cloneable, java.io.Serializable {
 
   private static final long serialVersionUID = -7711570385270494209L;
-
-  /** This constant indicates that pk reference in class was not initilized */
+  /**
+   * This constant indicates that pk reference in class was not initilized
+   */
   public static final int NULLID = -1;
-
   private int id;
   private String name;
   private String query;
@@ -59,11 +59,21 @@ public class InterestCenter implements Cloneable, java.io.Serializable {
   }
 
   /**
-   * Full constructor
-   */
+  * 
+  * @param iD
+  * @param name
+  * @param query
+  * @param workSpaceID
+  * @param peasID
+  * @param authorID
+  * @param afterDate
+  * @param beforeDate
+  * @param pcdContext
+  * @param ownerID 
+  */
   public InterestCenter(int iD, String name, String query, String workSpaceID,
-      String peasID, String authorID, java.util.Date afterDate,
-      java.util.Date beforeDate, List<Criteria> pcdContext, int ownerID) {
+          String peasID, String authorID, java.util.Date afterDate,
+          java.util.Date beforeDate, List<Criteria> pcdContext, int ownerID) {
     this.id = iD;
     this.name = name;
     this.query = query;
@@ -156,20 +166,16 @@ public class InterestCenter implements Cloneable, java.io.Serializable {
     this.ownerID = ownerID;
   }
 
-  /**
-   * Overriden toString method for debug/trace purposes
-   */
+  @Override
   public String toString() {
     return "InterestCenter object : [ ID = " + id + ", name = " + name
-        + ", query = " + query + ", workSpaceID = " + workSpaceID
-        + ", peaseID = " + peasID + ", authorID = " + authorID
-        + ", afterDate = " + afterDate + ", beforeDate = " + beforeDate
-        + ", pcdContext = " + pdcContext + ", ownerID = " + ownerID + " ];";
+            + ", query = " + query + ", workSpaceID = " + workSpaceID
+            + ", peaseID = " + peasID + ", authorID = " + authorID
+            + ", afterDate = " + afterDate + ", beforeDate = " + beforeDate
+            + ", pcdContext = " + pdcContext + ", ownerID = " + ownerID + " ];";
   }
 
-  /**
-   * Support Cloneable Interface
-   */
+  @Override
   public Object clone() {
     try {
       return super.clone();

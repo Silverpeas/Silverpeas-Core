@@ -25,10 +25,13 @@ package com.stratelia.webactiv.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class GoToSpace extends GoTo {
 
@@ -40,6 +43,14 @@ public class GoToSpace extends GoTo {
     OrganizationController organization = new OrganizationController();
     SpaceInstLight space = organization.getSpaceInstLightById(objectId);
     if (space != null && space.getShortId() != null) {
+      HttpSession session = req.getSession(true);
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+      if (gef != null && helper != null) {
+        gef.setSpaceId(space.getFullId());
+        helper.setSpaceIdAndSubSpaceId(space.getFullId());
+      }
       return "SpaceId=" + objectId;
     }
     return null;

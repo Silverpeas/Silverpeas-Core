@@ -26,17 +26,17 @@ package com.silverpeas.versioning.control;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Locale;
 
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
@@ -94,15 +94,12 @@ public class ScheduledReservedFile
           "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + expiryDate.toString());
 
-      Collection documents = getVersioningBm().getAllFilesReservedByDate(
-          expiryDate, false);
+      Collection<Document> documents = getVersioningBm().getAllFilesReservedByDate(expiryDate, false);
       SilverTrace.info("versioning",
           "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "Documents = " + documents.size());
 
-      Iterator it = documents.iterator();
-      while (it.hasNext()) {
-        Document doc = (Document) it.next();
+      for (Document doc : documents) {
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
         messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.
@@ -134,9 +131,7 @@ public class ScheduledReservedFile
       messageBody = new StringBuffer();
       messageBody_en = new StringBuffer();
 
-      Iterator itA = documents.iterator();
-      while (itA.hasNext()) {
-        Document doc = (Document) itA.next();
+      for (Document doc : documents) {
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
         messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.
@@ -169,10 +164,7 @@ public class ScheduledReservedFile
       messageBody = new StringBuffer();
       messageBody_en = new StringBuffer();
 
-      Iterator itL = documents.iterator();
-      while (itL.hasNext()) {
-        Document doc = (Document) itL.next();
-
+      for (Document doc : documents) {
         // envoyer une notif
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
@@ -273,7 +265,7 @@ public class ScheduledReservedFile
         "root.MSG_GEN_PARAM_VALUE", " notifMetaData.getLanguages() = "
         + notifMetaData.getLanguages());
 
-    notifMetaData.addUserRecipient(Integer.toString(doc.getOwnerId()));
+    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(doc.getOwnerId())));
 
     String url = URLManager.getURL(null, null, doc.getInstanceId())
         + "GoToFilesTab?Id=" + doc.getForeignKey().getId();

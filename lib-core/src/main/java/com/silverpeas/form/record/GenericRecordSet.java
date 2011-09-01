@@ -35,7 +35,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
@@ -91,8 +91,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public DataRecord getRecord(String recordId, String language)
       throws FormException {
-    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language))
+    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
       language = null;
+    }
     return getGenericRecordSetManager().getRecord(recordTemplate, recordId, language);
   }
 
@@ -129,10 +130,11 @@ public class GenericRecordSet implements RecordSet, Serializable {
    */
   @Override
   public void save(DataRecord record) throws FormException {
-    if (record.isNew())
+    if (record.isNew()) {
       insert(record);
-    else
+    } else {
       update(record);
+    }
   }
 
   private void indexRecord(String recordId, String formName,
@@ -143,11 +145,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     DataRecord data = getRecord(recordId, language);
     if (data != null) {
       String[] fieldNames = data.getFieldNames();
-      String fieldName = null;
-
       Field field = null;
-      for (int f = 0; f < fieldNames.length; f++) {
-        fieldName = fieldNames[f];
+      for (String fieldName : fieldNames) {
         field = data.getField(fieldName);
         if (field != null) {
           FieldTemplate fieldTemplate = recordTemplate
@@ -156,8 +155,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
             String fieldType = fieldTemplate.getTypeName();
             String fieldDisplayerName = fieldTemplate.getDisplayerName();
             try {
-              if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
+              if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
                 fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
+              }
               FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
                   fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
@@ -181,13 +181,13 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
       throws FormException {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       indexRecord(recordId, formName, indexEntry, null);
-    else {
+    } else {
       List<String> languages =
           getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, recordId);
-      for (int l = 0; l < languages.size(); l++) {
-        indexRecord(recordId, formName, indexEntry, languages.get(l));
+      for (String language : languages) {
+        indexRecord(recordId, formName, indexEntry, language);
       }
     }
   }

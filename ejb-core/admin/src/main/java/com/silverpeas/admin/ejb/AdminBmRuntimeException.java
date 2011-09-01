@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class AdminBmRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = -4953377031915598557L;
+
   public AdminBmRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }

@@ -1,19 +1,9 @@
 package com.silverpeas.tools.checkAttachments;
 
-import java.io.File;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.tools.checkAttachments.model.CheckAttachmentDetail;
 import com.silverpeas.tools.checkAttachments.model.OrphanAttachment;
 import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -40,28 +30,37 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
+
+import java.io.File;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public class CheckAttachmentsBatch {
 
-  private final String contextAttachment = "Attachment";
+  private static final String contextAttachment = "Attachment";
   private String language = null;
 
   public CheckAttachmentsBatch() {
   }
 
-  public List<CheckAttachmentDetail> check(String attachmentType, String reqLanguage) throws
-      Exception {
+  public List<CheckAttachmentDetail> check(String attachmentType, String reqLanguage) {
     List<CheckAttachmentDetail> listAttachments = null;
     try {
       // get all attachments
       this.language = reqLanguage;
       listAttachments = getAttachments(attachmentType);
     } catch (Exception e) {
-      e.printStackTrace();
+       SilverTrace.error("admin", "CheckAttachmentBatch.check()",
+                "root.MSG_GEN_PARAM_VALUE", e);
       throw new AttachmentRuntimeException("CheckAttachmentsBatch.check()",
-          SilverpeasException.ERROR,
-          "Erreur lors de la recuperation des attachments", e);
+          SilverpeasException.ERROR, "Erreur lors de la recuperation des attachments", e);
     }
     return listAttachments;
   }
@@ -80,10 +79,10 @@ public class CheckAttachmentsBatch {
     //Get all spaces
     String[] spaces = oc.getAllRootSpaceIds();
     if (spaces != null) {
-      for (int i = 0; i < spaces.length; i++) {
+      for (String space : spaces) {
         SilverTrace.info("admin", "CheckAttachmentBatch.getOrphansFiles(context)",
-            "root.MSG_GEN_PARAM_VALUE", "spaceid = " + spaces[i]);
-        String[] componentsId = oc.getAllComponentIdsRecur(spaces[i]);
+            "root.MSG_GEN_PARAM_VALUE", "spaceid = " + space);
+        String[] componentsId = oc.getAllComponentIdsRecur(space);
         //get all components name Folders
         for (int j = 0; componentsId != null && j < componentsId.length; j++) {
           String pathFolder = FileRepositoryManager.getAbsolutePath(componentsId[j])
@@ -95,21 +94,21 @@ public class CheckAttachmentsBatch {
           File[] listFiles = path.listFiles();
 
           if (listFiles != null) {
-            for (int k = 0; k < listFiles.length; k++) {
+            for (File listFile : listFiles) {
               SilverTrace.info("admin", "CheckAttachmentBatch.getOrphansFiles(context)",
-                  "root.MSG_GEN_PARAM_VALUE", "file = " + listFiles[k].getName());
-              if (getAttachmentsByPhysicalName(listFiles[k].getName()).isEmpty()) {
+                  "root.MSG_GEN_PARAM_VALUE", "file = " + listFile.getName());
+              if (getAttachmentsByPhysicalName(listFile.getName()).isEmpty()) {
                 OrphanAttachment orphanAttachment = new OrphanAttachment();
-                orphanAttachment.setPhysicalName(listFiles[k].getName());
+                orphanAttachment.setPhysicalName(listFile.getName());
                 ComponentInstLight componentInst = oc.getComponentInstLight(componentsId[j]);
                 SpaceInstLight spaceInst = oc.getSpaceInstLightById(
                     componentInst.getDomainFatherId());
                 orphanAttachment.setSpaceLabel(spaceInst.getName(language));
                 orphanAttachment.setComponentLabel(
                     componentInst.getLabel(language) + " (" + componentsId[j] + ")");
-                orphanAttachment.setSize(listFiles[k].length());
+                orphanAttachment.setSize(listFile.length());
                 orphanAttachment.setContext(context);
-                orphanAttachment.setPath(pathFolder + File.separator + listFiles[k].getName());
+                orphanAttachment.setPath(pathFolder + File.separator + listFile.getName());
                 orphansList.add(orphanAttachment);
               }
             }
@@ -130,12 +129,12 @@ public class CheckAttachmentsBatch {
    */
   public List<AttachmentDetail> getAttachmentsByPhysicalName(String physicalName) {
     List<AttachmentDetail> listAttachements = new ArrayList<AttachmentDetail>();
-    AttachmentDetail attDetail = null;
-    String query = "select attachmentId, instanceId from sb_attachment_attachment where attachmentPhysicalName=?";
+    String query = "SELECT attachmentId, instanceId FROM sb_attachment_attachment WHERE attachmentPhysicalName = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    Connection con = openConnection();
+    Connection con = null;
     try {
+      con = openConnection();
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, physicalName);
       rs = prepStmt.executeQuery();
@@ -143,19 +142,18 @@ public class CheckAttachmentsBatch {
         String attachmentId = String.valueOf(rs.getInt(1));
         String instanceId = rs.getString(2);
         AttachmentPK attPK = new AttachmentPK(attachmentId, instanceId);
-        attDetail = AttachmentController.searchAttachmentByPK(attPK);
+        AttachmentDetail attDetail = AttachmentController.searchAttachmentByPK(attPK);
         if (attDetail != null) {
-          SilverTrace.info("admin",
-              "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
+          SilverTrace.info("admin", "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
               "root.MSG_GEN_PARAM_VALUE", "attDetail = " + attDetail.getPK().getId());
           listAttachements.add(attDetail);
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (SQLException e) {
+      SilverTrace.error("admin", "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
+              "root.MSG_GEN_PARAM_VALUE", e);
       throw new AttachmentRuntimeException("CheckAttachmentsBatch.getAttachmentsByPhysicalName()",
-          SilverpeasException.ERROR,
-          "Erreur lors de la recuperation des attachments", e);
+          SilverpeasException.ERROR, "Erreur lors de la recuperation des attachments", e);
     } finally {
       // fermeture
       DBUtil.close(rs, prepStmt);
@@ -203,7 +201,7 @@ public class CheckAttachmentsBatch {
 
           if (display) {
             CheckAttachmentDetail cad = new CheckAttachmentDetail();
-            cad.setAttachmentId(new Long(attachmentId).longValue());
+            cad.setAttachmentId(Long.parseLong(attachmentId));
             cad.setPhysicalName(attDetail.getPhysicalName());
             cad.setLogicalName(attDetail.getLogicalName(language));
             cad.setSize(attDetail.getSize());
@@ -284,24 +282,24 @@ public class CheckAttachmentsBatch {
       RemoteException {
     List<NodePK> nodesPK = (List<NodePK>) pubDetail.getPublicationBm().getAllFatherPK(pubDetail.
         getPK());
-    Collection path = null;
-    StringBuffer linkedPathString = new StringBuffer();
-    StringBuffer pathString = new StringBuffer();
+    Collection<NodeDetail> path = null;
+    StringBuilder linkedPathString = new StringBuilder();
+    StringBuilder pathString = new StringBuilder();
     if (nodesPK != null && !nodesPK.isEmpty()) {
-      NodePK firstNodePK = (NodePK) nodesPK.get(0);
+      NodePK firstNodePK = nodesPK.get(0);
       path = getPath(firstNodePK.getId(), firstNodePK.getInstanceId());
       if (path != null) {
         int nbItemInPath = path.size();
-        Iterator iterator = path.iterator();
+        Iterator<NodeDetail> iterator = path.iterator();
         boolean alreadyCut = false;
         int i = 0;
         NodeDetail nodeInPath = null;
         while (iterator.hasNext()) {
-          nodeInPath = (NodeDetail) iterator.next();
+          nodeInPath = iterator.next();
           if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
             if (!nodeInPath.getNodePK().getId().equals("0")) {
               linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(nodeInPath.
-                  getNodePK().getId()).append("')\">").append(Encode.javaStringToHtmlString(nodeInPath.
+                  getNodePK().getId()).append("')\">").append(EncodeHelper.javaStringToHtmlString(nodeInPath.
                   getName())).append("</a>");
               pathString.append(nodeInPath.getName());
               if (iterator.hasNext()) {
@@ -361,7 +359,7 @@ public class CheckAttachmentsBatch {
   public PublicationBm getPublicationBm() {
     PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.PUBLICATIONBM_EJBHOME,
           PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
@@ -376,7 +374,7 @@ public class CheckAttachmentsBatch {
   public NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {

@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.peasUtil.GoTo;
 import com.silverpeas.util.security.ComponentSecurity;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
@@ -38,6 +39,7 @@ public class GoToDocument extends GoTo {
 
   private static final long serialVersionUID = 1L;
 
+  @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
     // Check first if document exists
@@ -80,8 +82,7 @@ public class GoToDocument extends GoTo {
         }
 
         if (isAccessAuthorized) {
-          return req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
-              + '/' + req.getContextPath() + new VersioningUtil().getDocumentVersionURL(componentId,
+          return URLManager.getFullApplicationURL(req) + new VersioningUtil().getDocumentVersionURL(componentId,
               version.getLogicalName(), version.getDocumentPK().getId(), version.getPk().getId());
         }
       }

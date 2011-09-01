@@ -185,6 +185,18 @@ public class UserFull extends UserDetail {
     return false;
   }
 
+  public boolean isAtLeastOnePropertyUpdatableByUser() {
+    if (m_pDomainDriver != null) {
+      String[] properties = m_pDomainDriver.getPropertiesNames();
+      for (String property : properties) {
+        if (isPropertyUpdatableByUser(property)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public DomainProperty getProperty(String property) {
     if (m_pDomainDriver != null) {
       return m_pDomainDriver.getProperty(property);
@@ -206,7 +218,7 @@ public class UserFull extends UserDetail {
     if (other instanceof UserFull) {
       UserFull cmpUser = (UserFull) other;
       if (super.equals(cmpUser)) {
-        String[] keys = m_hInfos.keySet().toArray(new String[0]);
+        String[] keys = m_hInfos.keySet().toArray(new String[m_hInfos.size()]);
         boolean isTheSame = true;
         for (int i = 0; (i < keys.length) && isTheSame; i++) {
           isTheSame = getValue(keys[i]).equals(cmpUser.getValue(keys[i]));

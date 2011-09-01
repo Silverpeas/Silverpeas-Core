@@ -24,10 +24,6 @@
 
 package com.silverpeas.portlets.portal;
 
-import java.io.Serializable;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
@@ -35,6 +31,9 @@ import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 
 /**
  * PortletWindowDataImpl provides concrete implementation of PortletWindowData interface
@@ -46,7 +45,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   private String portletWindowName;
   private String portletName;
   private String title;
-  private StringBuffer content;
+  private CharSequence content;
   private boolean view;
   private boolean edit;
   private boolean help;
@@ -61,17 +60,18 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   public PortletWindowDataImpl() {
   }
 
+  @Override
   public void init(HttpServletRequest request,
       PortletRegistryContext portletRegistryContext, String portletWindowName)
       throws PortletRegistryException {
-    String portletName = portletRegistryContext
+    String thePortletName = portletRegistryContext
         .getPortletName(portletWindowName);
-    setPortletName(portletName);
+    setPortletName(thePortletName);
     setPortletWindowName(portletWindowName);
     setRequestURL(request.getRequestURL());
-    setView(portletRegistryContext.hasView(portletName));
-    setEdit(portletRegistryContext.hasEdit(portletName));
-    setHelp(portletRegistryContext.hasHelp(portletName));
+    setView(portletRegistryContext.hasView(thePortletName));
+    setEdit(portletRegistryContext.hasEdit(thePortletName));
+    setHelp(portletRegistryContext.hasHelp(thePortletName));
     setRemove(true);
     setRowNumber(portletRegistryContext.getRowNumber(portletWindowName));
     setWidth(portletRegistryContext.getWidth(portletWindowName));
@@ -81,6 +81,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.portletName = portletName;
   }
 
+  @Override
   public String getPortletName() {
     return portletName;
   }
@@ -97,10 +98,12 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     return requestURL;
   }
 
+  @Override
   public String getPortletWindowName() {
     return this.portletWindowName;
   }
 
+  @Override
   public String getTitle() {
     return this.title;
   }
@@ -109,14 +112,16 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.title = title;
   }
 
-  public StringBuffer getContent() {
+  @Override
+  public CharSequence getContent() {
     return this.content;
   }
 
-  public void setContent(StringBuffer content) {
+  public void setContent(CharSequence content) {
     this.content = content;
   }
 
+  @Override
   public boolean isView() {
     return this.view;
   }
@@ -125,10 +130,12 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.view = view;
   }
 
+  @Override
   public String getViewURL() {
     return getPortletModeURL(ChannelMode.VIEW.toString());
   }
 
+  @Override
   public boolean isEdit() {
     return this.edit;
   }
@@ -137,6 +144,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.edit = edit;
   }
 
+  @Override
   public boolean isRemove() {
     return this.remove;
   }
@@ -145,10 +153,12 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.remove = remove;
   }
 
+  @Override
   public String getEditURL() {
     return getPortletModeURL(ChannelMode.EDIT.toString());
   }
 
+  @Override
   public boolean isHelp() {
     return this.help;
   }
@@ -157,43 +167,45 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.help = help;
   }
 
+  @Override
   public String getHelpURL() {
     return getPortletModeURL(ChannelMode.HELP.toString());
   }
 
+  @Override
   public boolean isNormalized() {
-    String currentWindowState = getCurrentWindowState();
-    if (currentWindowState.equals(ChannelState.NORMAL.toString()))
-      return true;
-    return false;
+    String aCurrentWindowState = getCurrentWindowState();
+    return ChannelState.NORMAL.toString().equals(aCurrentWindowState);
   }
 
+  @Override
   public String getNormalizedURL() {
     return getPortletWindowStateURL(ChannelState.NORMAL.toString());
   }
 
+  @Override
   public boolean isMaximized() {
-    String currentWindowState = getCurrentWindowState();
-    if (currentWindowState.equals(ChannelState.MAXIMIZED.toString()))
-      return true;
-    return false;
+    String aCurrentWindowState = getCurrentWindowState();
+    return ChannelState.MAXIMIZED.toString().equals(aCurrentWindowState);
   }
 
+  @Override
   public String getMaximizedURL() {
     return getPortletWindowStateURL(ChannelState.MAXIMIZED.toString());
   }
 
+  @Override
   public boolean isMinimized() {
-    String currentWindowState = getCurrentWindowState();
-    if (currentWindowState.equals(ChannelState.MINIMIZED.toString()))
-      return true;
-    return false;
+    String aCurrentWindowState = getCurrentWindowState();
+    return ChannelState.MINIMIZED.toString().equals(aCurrentWindowState);
   }
 
+  @Override
   public String getMinimizedURL() {
     return getPortletWindowStateURL(ChannelState.MINIMIZED.toString());
   }
 
+  @Override
   public String getCurrentMode() {
     return this.currentMode;
   }
@@ -206,6 +218,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     }
   }
 
+  @Override
   public String getCurrentWindowState() {
     return this.currentWindowState;
   }
@@ -218,8 +231,9 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     }
   }
 
+  @Override
   public String getRemoveURL() {
-    StringBuffer processURL = new StringBuffer(getRequestURL());
+    StringBuilder processURL = new StringBuilder(getRequestURL());
 
     processURL.append("?").append(WindowInvokerConstants.DRIVER_ACTION).append(
         "=").append(WindowInvokerConstants.RENDER).append("&").append(
@@ -242,6 +256,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.rowNumber = rowNumber;
   }
 
+  @Override
   public Integer getRowNumber() {
     return this.rowNumber;
   }
@@ -250,26 +265,27 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     this.width = width;
   }
 
+  @Override
   public String getWidth() {
     return width;
   }
 
+  @Override
   public boolean isThin() {
-    if (width != null && width.equals(PortletRegistryConstants.WIDTH_THIN))
-      return true;
-    return false;
+    return width != null && PortletRegistryConstants.WIDTH_THIN.equals(width);
   }
 
+  @Override
   public boolean isThick() {
-    if (width != null && width.equals(PortletRegistryConstants.WIDTH_THICK))
-      return true;
-    return false;
+    return width != null && PortletRegistryConstants.WIDTH_THICK.equals(width);
   }
 
+  @Override
   public String getSpaceId() {
     return spaceId;
   }
 
+  @Override
   public void setSpaceId(String context) {
     this.spaceId = context;
   }
@@ -283,7 +299,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   }
 
   private String getPortletModeURL(String portletMode) {
-    StringBuffer processURL = new StringBuffer(getRequestURL());
+    StringBuilder processURL = new StringBuilder(getRequestURL());
 
     processURL.append("?").append(WindowInvokerConstants.DRIVER_ACTION).append(
         "=").append(WindowInvokerConstants.RENDER).append("&").append(
@@ -306,7 +322,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   }
 
   private String getPortletWindowStateURL(String portletWindowState) {
-    StringBuffer processURL = new StringBuffer(getRequestURL());
+    StringBuilder processURL = new StringBuilder(getRequestURL());
 
     processURL.append("?").append(WindowInvokerConstants.DRIVER_ACTION).append(
         "=").append(WindowInvokerConstants.RENDER).append("&").append(
@@ -328,16 +344,19 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     return processURL.toString();
   }
 
+  @Override
   public int compareTo(Object o) {
     Integer otherRowNumber = ((PortletWindowDataImpl) o).getRowNumber();
     int value = getRowNumber().compareTo(otherRowNumber);
     return value;
   }
 
+  @Override
   public boolean equals(Object o) {
     return super.equals(o);
   }
 
+  @Override
   public int hashCode() {
     assert false : "hashCode not designed";
     return 42; // any arbitrary constant will do

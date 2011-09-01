@@ -24,11 +24,6 @@
 
 package com.silverpeas.importExport.control;
 
-import java.io.File;
-import java.util.Date;
-
-import org.apache.poi.hpsf.SummaryInformation;
-
 import com.silverpeas.util.MSdocumentPropertiesManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -41,7 +36,10 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import java.util.Iterator;
+import org.apache.poi.hpsf.SummaryInformation;
+
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 public class PublicationImportExport {
@@ -127,9 +125,8 @@ public class PublicationImportExport {
    */
   public static void addNodesToPublication(PublicationPK pubPK, List nodes) {
     try {
-      Iterator nodesIterator = nodes.iterator();
-      while (nodesIterator.hasNext()) {
-        Integer coordinateId = (Integer) nodesIterator.next();
+      for (Object node : nodes) {
+        Integer coordinateId = (Integer) node;
         getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(),
             pubPK));
       }
@@ -148,7 +145,7 @@ public class PublicationImportExport {
     PublicationBm publicationBm = null;
     try {
       PublicationBmHome publicationBmHome =
-          (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
           PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {

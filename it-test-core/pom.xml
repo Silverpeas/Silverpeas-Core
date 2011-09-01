@@ -4,12 +4,12 @@
 <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.8-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>it-test-core</artifactId>
-  <version>5.7-SNAPSHOT</version>
+  <version>5.8-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Integration Test Core</name>
   <description>

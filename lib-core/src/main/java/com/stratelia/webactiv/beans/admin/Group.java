@@ -24,11 +24,12 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.Serializable;
-
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class Group extends Object implements Serializable, Comparable<Group> {
+import java.io.Serializable;
+
+public class Group implements Serializable, Comparable<Group> {
 
   private static final long serialVersionUID = 4430574302630237352L;
   private String id = null;
@@ -38,7 +39,7 @@ public class Group extends Object implements Serializable, Comparable<Group> {
   private String name = "";
   private String description = "";
   private String rule = null;
-  private String[] m_sUserIds = new String[0];
+  private String[] m_sUserIds = ArrayUtil.EMPTY_STRING_ARRAY;
 
   private int nbUsers = -1;
 
@@ -151,10 +152,7 @@ public class Group extends Object implements Serializable, Comparable<Group> {
    * Set the list of users in the group
    */
   public void setUserIds(String[] sUserIds) {
-    if (sUserIds != null)
-      m_sUserIds = sUserIds;
-    else
-      m_sUserIds = new String[0];
+    m_sUserIds = ArrayUtil.nullToEmpty(sUserIds);
   }
 
   /**

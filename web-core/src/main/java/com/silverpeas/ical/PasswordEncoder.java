@@ -34,7 +34,7 @@ public final class PasswordEncoder {
   public static final String encodePassword(String password) throws Exception {
     byte[] bytes = StringUtils.encodeString(password, StringUtils.UTF_8);
     String base64 = StringUtils.encodeBASE64(bytes);
-    StringBuffer buffer = new StringBuffer(base64);
+    StringBuilder buffer = new StringBuilder(base64);
     String seed = Long.toString(System.currentTimeMillis());
     seed = seed.substring(seed.length() - 3);
     String encoded = seed + buffer.reverse().toString();

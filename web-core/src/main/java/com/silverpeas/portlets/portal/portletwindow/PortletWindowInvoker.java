@@ -24,6 +24,8 @@
 
 package com.silverpeas.portlets.portal.portletwindow;
 
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +53,7 @@ import com.sun.portal.container.WindowRequestReader;
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowErrorCode;
 import com.sun.portal.portletcontainer.invoker.WindowInvoker;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * PortletWindowInvoker, is dervied from the abstract base class WindowInvoker.
@@ -60,9 +63,13 @@ public class PortletWindowInvoker extends WindowInvoker {
   public static final String JAVAX_PORTLET_TITLE = "javax.portlet.title";
   private WindowRequestReader windowRequestReader = null;
 
-  private static Logger logger = Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
+  private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
       "com.silverpeas.portlets.PCDLogMessages");
+  private final static ResourceLocator messages =
+          new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle",
+          "");
 
+  @Override
   public void init(ServletContext servletContext, HttpServletRequest request,
       HttpServletResponse response) throws InvokerException {
     super.init(servletContext, request, response);
@@ -74,6 +81,7 @@ public class PortletWindowInvoker extends WindowInvoker {
    * information for the current user. The implementation uses the configured logical to physical
    * user info mapping configured at deployment time to calculate this.
    */
+  @Override
   public Map getUserInfoMap(HttpServletRequest request) throws InvokerException {
     return PortletWindowInvokerUtils.getUserInfoMap(getPortletWindowContext(),
         getPortletWindowName());
@@ -83,6 +91,7 @@ public class PortletWindowInvoker extends WindowInvoker {
    * Implementation of the abstract method defined in the base class. Gets the container
    * implementation configured to be used
    */
+  @Override
   public Container getContainer() {
     return ContainerFactory.getContainer(ContainerType.PORTLET_CONTAINER);
   }
@@ -92,6 +101,7 @@ public class PortletWindowInvoker extends WindowInvoker {
    * <web application name>/<portlet name>/<portletWindow name> <web application name>/<portlet
    * name> is stored in the display profile during deployment time.
    */
+  @Override
   public EntityID getEntityID(HttpServletRequest request) throws InvokerException {
     return PortletWindowInvokerUtils.getEntityID(getPortletWindowContext(), getPortletWindowName());
   }
@@ -99,6 +109,7 @@ public class PortletWindowInvoker extends WindowInvoker {
   /**
    * Implementation of the abstract method defined in the base class.
    */
+  @Override
   public ChannelURLFactory getPortletWindowURLFactory(String desktopURLPrefix,
       HttpServletRequest request) throws InvokerException {
     return new PortletWindowURLFactory(desktopURLPrefix);
@@ -108,6 +119,7 @@ public class PortletWindowInvoker extends WindowInvoker {
    * Implementation of the abstract method defined in the base class.
    */
 
+  @Override
   public WindowRequestReader getWindowRequestReader() throws InvokerException {
     return windowRequestReader;
   }
@@ -115,6 +127,7 @@ public class PortletWindowInvoker extends WindowInvoker {
   /**
    * Implementation of the abstract method defined in the base class.
    */
+  @Override
   public boolean isMarkupSupported(String contentType, String locale, ChannelMode mode,
       ChannelState state)
       throws InvokerException {
@@ -137,11 +150,12 @@ public class PortletWindowInvoker extends WindowInvoker {
         }
       }
     } catch (PortletWindowContextException ex) {
-      ex.printStackTrace();
+      logger.log(Level.SEVERE, ex.getMessage(), ex);
     }
     return supported;
   }
 
+  @Override
   public String getDefaultTitle() throws InvokerException {
     // First obtain title from portlet window registry
     String title = PortletWindowInvokerUtils.getPortletWindowTitle(
@@ -157,11 +171,26 @@ public class PortletWindowInvoker extends WindowInvoker {
     return title;
   }
 
+  @Override
+  public String getTitle() throws InvokerException {
+    if (!isDefined(super.getTitle()) || super.getTitle().equals(getDefaultTitle())) {
+      MainSessionController sessionController = (MainSessionController) getOriginalRequest().getSession().
+            getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      messages.setLanguage(sessionController.getFavoriteLanguage());
+      String portletTitle = getDefaultTitle();
+      setTitle(messages.getString(portletTitle, portletTitle));
+    }
+    return super.getTitle();
+  }
+  
+  
+
   /**
    * Implementation of the abstract method defined in the base class. Get the list of logical roles
    * that the current user belongs to. The implementation uses the configured logical to physical
    * role mapping configured at deployment time to calculate this.
    */
+  @Override
   public List getRoleList(HttpServletRequest request) throws InvokerException {
     //
     // set logical roles only if roleMapping is not empty

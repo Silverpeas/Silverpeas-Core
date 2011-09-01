@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * Day.java
  * this object represent the day in the monthCalendar viewGenerator
@@ -36,10 +33,10 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.Calendar;
 import java.util.Date;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /*
  * CVS Informations
@@ -64,24 +61,23 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * Class declaration
  * @author
  */
-class Day extends Object {
+class Day {
 
-  private Date date = null;
+  private Date date;
 
-  private String name = null;
+  private String name;
 
-  private String numbers = null;
+  private String numbers;
 
-  private boolean isInThisMonth = false;
+  private boolean isInThisMonth;
 
   /**
    * Creates new Day
    */
   public Day(Date date, String name, String numbers, boolean isInThisMonth) {
     this.date = date;
-    SilverTrace.info("viewgenerator", "Day()", "root.MSG_GEN_PARAM_VALUE",
-        "date = " + date.toString());
-
+    SilverTrace.info("viewgenerator", "Day()", "root.MSG_GEN_PARAM_VALUE", "date = "
+        + date.toString());
     this.name = name;
     this.numbers = numbers;
     this.isInThisMonth = isInThisMonth;
@@ -94,6 +90,9 @@ class Day extends Object {
    */
   public Day(Date date) {
     this.date = date;
+    this.name = null;
+    this.numbers = null;
+    this.isInThisMonth = false;
     SilverTrace.info("viewgenerator", "Day(date)", "root.MSG_GEN_PARAM_VALUE",
         "date = " + date.toString());
   }
@@ -151,16 +150,11 @@ class Day extends Object {
    */
   public boolean isCurrentDay() {
     Calendar cal = Calendar.getInstance();
-
     cal.clear(Calendar.HOUR);
     cal.clear(Calendar.HOUR_OF_DAY);
     cal.clear(Calendar.MINUTE);
     cal.clear(Calendar.SECOND);
     cal.clear(Calendar.MILLISECOND);
-
-    if (date.compareTo(cal.getTime()) == 0)
-      return true;
-    else
-      return false;
+    return date.equals(cal.getTime());
   }
 }

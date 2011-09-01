@@ -23,15 +23,16 @@
  */
 package com.stratelia.webactiv.organization;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
 
 /**
  * A UserRoleTable object manages the ST_UserRole table.
@@ -85,26 +86,19 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException 
    */
   public UserRoleRow getUserRole(int instanceId, String roleName, int inherited) throws AdminPersistenceException {
-    UserRoleRow[] userRoles = getRows(SELECT_USERROLE_BY_ROLENAME, new int[]{instanceId, inherited},
-        new String[]{roleName}).toArray(new UserRoleRow[0]);
+    List<UserRoleRow> userRoles = getRows(SELECT_USERROLE_BY_ROLENAME, new int[]{instanceId, inherited},
+        new String[]{roleName});
 
-    if (userRoles.length == 0) {
+    if (userRoles.isEmpty()) {
       return null;
     }
     
-    if (userRoles.length >= 2) {
+    if (userRoles.size() >= 2) {
       SilverTrace.error("admin", "UserRoleTable.getUserRole", "root.MSG_GEN_PARAM_VALUE", "# = " +
-          userRoles.length + ", instanceId = " + instanceId + ", roleName = " + roleName);
+          userRoles.size() + ", instanceId = " + instanceId + ", roleName = " + roleName);
     }
-    //if (userRoles.length == 1) {
-      return userRoles[0];
-    //}
+    return userRoles.get(0);
 
-    /*throw new AdminPersistenceException("UserRoleTable.getUserRole",
-        SilverpeasException.ERROR,
-        "admin.EX_ERR_USERROLE_NAME_INSTANCEID_FOUND_TWICE",
-        "instance id : '" + instanceId + "', userrole name: '" + roleName
-        + "'");*/
   }
   static final private String SELECT_USERROLE_BY_ROLENAME = "select "
       + USERROLE_COLUMNS
@@ -116,7 +110,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException 
    */
   public UserRoleRow[] getAllUserRoles() throws AdminPersistenceException {
-    return getRows(SELECT_ALL_USERROLES).toArray(new UserRoleRow[0]);
+    List<UserRoleRow> rows = getRows(SELECT_ALL_USERROLES);
+    return rows.toArray(new UserRoleRow[rows.size()]);
   }
   static final private String SELECT_ALL_USERROLES = "select "
       + USERROLE_COLUMNS + " from ST_UserRole";
@@ -128,7 +123,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException 
    */
   public UserRoleRow[] getAllUserRolesOfInstance(int instanceId) throws AdminPersistenceException {
-    return getRows(SELECT_ALL_INSTANCE_USERROLES, instanceId).toArray(new UserRoleRow[0]);
+    List<UserRoleRow> rows = getRows(SELECT_ALL_INSTANCE_USERROLES, instanceId);
+    return rows.toArray(new UserRoleRow[rows.size()]);
   }
   static final private String SELECT_ALL_INSTANCE_USERROLES = "select "
       + USERROLE_COLUMNS + " from ST_UserRole where instanceId = ? ";
@@ -140,13 +136,15 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException 
    */
   public String[] getAllUserRoleIdsOfInstance(int instanceId) throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_INSTANCE_USERROLE_IDS, instanceId).toArray(new String[0]);
+    List<String> ids = getIds(SELECT_ALL_INSTANCE_USERROLE_IDS, instanceId);
+    return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_INSTANCE_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId is null";
 
   public String[] getAllObjectUserRoleIdsOfInstance(int instanceId) throws AdminPersistenceException {
-    return getIds(SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS, instanceId).toArray(new String[0]);
+    List<String> ids = getIds(SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS, instanceId);
+    return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId is not null";
@@ -163,7 +161,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
       AdminPersistenceException {
     int[] params = new int[]{instanceId, objectId};
     String[] sParams = new String[]{objectType};
-    return getIds(SELECT_ALL_OBJECT_USERROLE_IDS, params, sParams).toArray(new String[0]);
+    List<String > ids = getIds(SELECT_ALL_OBJECT_USERROLE_IDS, params, sParams);
+    return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_OBJECT_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId = ? and objectType = ? ";
@@ -175,7 +174,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException 
    */
   public UserRoleRow[] getDirectUserRolesOfUser(int userId) throws AdminPersistenceException {
-    return getRows(SELECT_USER_USERROLES, userId).toArray(new UserRoleRow[0]);
+    List<UserRoleRow> rows = getRows(SELECT_USER_USERROLES, userId);
+    return rows.toArray(new UserRoleRow[rows.size()]);
   }
   static final private String SELECT_USER_USERROLES = "select "
       + USERROLE_COLUMNS + " from ST_UserRole, ST_UserRole_User_Rel"
@@ -188,7 +188,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException 
    */
   public UserRoleRow[] getDirectUserRolesOfGroup(int groupId) throws AdminPersistenceException {
-    return getRows(SELECT_GROUP_USERROLES, groupId).toArray(new UserRoleRow[0]);
+    List<UserRoleRow> rows = getRows(SELECT_GROUP_USERROLES, groupId);
+    return rows.toArray(new UserRoleRow[rows.size()]);
   }
   static final private String SELECT_GROUP_USERROLES = "select " + USERROLE_COLUMNS
       + " from ST_UserRole, ST_UserRole_Group_Rel where id = userRoleId" + " and groupId = ? ";
@@ -203,7 +204,8 @@ public class UserRoleTable extends Table<UserRoleRow> {
       AdminPersistenceException {
     String[] columns = new String[]{"name", "description"};
     String[] values = new String[]{sampleUserRole.name, sampleUserRole.description};
-    return getMatchingRows(USERROLE_COLUMNS, columns, values).toArray(new UserRoleRow[0]);
+    List<UserRoleRow> rows = getMatchingRows(USERROLE_COLUMNS, columns, values);
+    return rows.toArray(new UserRoleRow[rows.size()]);
   }
 
   /**

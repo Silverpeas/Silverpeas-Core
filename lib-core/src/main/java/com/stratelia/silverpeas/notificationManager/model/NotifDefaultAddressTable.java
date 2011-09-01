@@ -24,15 +24,16 @@
 
 package com.stratelia.silverpeas.notificationManager.model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.AbstractTable;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
 
-public class NotifDefaultAddressTable extends AbstractTable {
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressRow> {
 
   /**
    * Builds a new NotifDefaultAddressTable
@@ -51,8 +52,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
    */
   public NotifDefaultAddressRow getNotifDefaultAddress(int id)
       throws UtilException {
-    return (NotifDefaultAddressRow) getUniqueRow(
-        SELECT_NOTIFDEFAULTADDRESS_BY_ID, id);
+    return getUniqueRow(SELECT_NOTIFDEFAULTADDRESS_BY_ID, id);
   }
 
   static final private String SELECT_NOTIFDEFAULTADDRESS_BY_ID = "select "
@@ -64,9 +64,9 @@ public class NotifDefaultAddressTable extends AbstractTable {
    */
   public NotifDefaultAddressRow[] getAllByUserId(int userId)
       throws UtilException {
-    return (NotifDefaultAddressRow[]) getRows(
-        SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID, userId).toArray(
-        new NotifDefaultAddressRow[0]);
+    List<NotifDefaultAddressRow> rows = getRows(
+        SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID, userId);
+    return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID = "select "
@@ -77,8 +77,8 @@ public class NotifDefaultAddressTable extends AbstractTable {
    * Returns all the rows.
    */
   public NotifDefaultAddressRow[] getAllRows() throws UtilException {
-    return (NotifDefaultAddressRow[]) getRows(SELECT_ALL_NOTIFDEFAULTADDRESS)
-        .toArray(new NotifDefaultAddressRow[0]);
+    List<NotifDefaultAddressRow> rows =  getRows(SELECT_ALL_NOTIFDEFAULTADDRESS);
+    return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_NOTIFDEFAULTADDRESS = "select "
@@ -89,7 +89,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
    */
   public NotifDefaultAddressRow getNotifDefaultAddress(String query)
       throws UtilException {
-    return (NotifDefaultAddressRow) getUniqueRow(query);
+    return getUniqueRow(query);
   }
 
   /**
@@ -97,8 +97,8 @@ public class NotifDefaultAddressTable extends AbstractTable {
    */
   public NotifDefaultAddressRow[] getNotifDefaultAddresss(String query)
       throws UtilException {
-    return (NotifDefaultAddressRow[]) getRows(query).toArray(
-        new NotifDefaultAddressRow[0]);
+    List<NotifDefaultAddressRow> rows =  getRows(query);
+    return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 
   /**
@@ -117,8 +117,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
   /**
    * Update the given NotifDefaultAddressRow
    */
-  public void update(NotifDefaultAddressRow notifDefaultAddress)
-      throws UtilException {
+  public void update(NotifDefaultAddressRow notifDefaultAddress) throws UtilException {
     updateRow(UPDATE_NOTIFDEFAULTADDRESS, notifDefaultAddress);
   }
 
@@ -153,15 +152,15 @@ public class NotifDefaultAddressTable extends AbstractTable {
    */
   public void dereferenceUserId(int userId) throws UtilException {
     NotifDefaultAddressRow[] notifDefaultAddressToBeDeleted = getAllByUserId(userId);
-    for (int i = 0; i < notifDefaultAddressToBeDeleted.length; i++) {
-      delete(notifDefaultAddressToBeDeleted[i].getId());
+    for (NotifDefaultAddressRow aNotifDefaultAddressToBeDeleted : notifDefaultAddressToBeDeleted) {
+      delete(aNotifDefaultAddressToBeDeleted.getId());
     }
   }
 
   /**
    * Fetch the current NotifDefaultAddress row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  protected NotifDefaultAddressRow fetchRow(ResultSet rs) throws SQLException {
     return new NotifDefaultAddressRow(rs.getInt("id"), rs.getInt("userId"), rs
         .getInt("notifAddressId"));
   }
@@ -170,8 +169,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
    * Prepares the statement to update the given row
    */
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) throws SQLException {
-    NotifDefaultAddressRow r = (NotifDefaultAddressRow) row;
+      NotifDefaultAddressRow r) throws SQLException {
     update.setInt(1, r.getUserId());
     update.setInt(2, r.getNotifAddressId());
     update.setInt(3, r.getId());
@@ -181,8 +179,7 @@ public class NotifDefaultAddressTable extends AbstractTable {
    * Prepares the statement to insert the given row
    */
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) throws SQLException {
-    NotifDefaultAddressRow r = (NotifDefaultAddressRow) row;
+      NotifDefaultAddressRow r) throws SQLException {
     if (r.getId() == -1) {
       r.setId(getNextId());
     }

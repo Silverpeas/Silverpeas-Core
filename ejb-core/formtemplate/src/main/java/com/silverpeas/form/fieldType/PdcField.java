@@ -25,7 +25,7 @@ package com.silverpeas.form.fieldType;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import com.silverpeas.form.fieldDisplayer.PdcFieldDisplayer;
+import com.silverpeas.form.displayers.PdcFieldDisplayer;
 
 /**
  * A PDC field describes the positions on axis of PDC of a publication.

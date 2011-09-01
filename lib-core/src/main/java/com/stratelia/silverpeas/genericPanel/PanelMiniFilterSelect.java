@@ -61,14 +61,14 @@ public class PanelMiniFilterSelect extends PanelMiniFilterToken {
   public String getHTMLDisplay() {
     StringBuffer sb = new StringBuffer();
 
-    sb.append("<input type='checkbox' name='" + m_Text
-        + "All' value='' onClick=selectAll('" + m_Text + "')>&nbsp;");
-    sb.append("<a href=\"javascript:submitOperation('GENERICPANELMINIFILTER"
-        + '_' + m_Label + '_' + Integer.toString(m_Index) + "','')\">");
-    sb.append("<img src=\"" + ((m_isSelectAllFunction) ? m_IconS : m_IconU)
-        + "\" border=0 align=absmiddle alt=\""
-        + ((m_isSelectAllFunction) ? m_AltS : m_AltU) + "\" title=\""
-        + ((m_isSelectAllFunction) ? m_TitleS : m_TitleU) + "\"></a>");
+    sb.append("<input type='checkbox' name='").append(m_Text).append(
+        "All' value='' onClick=selectAll('").append(m_Text).append("')>&nbsp;");
+    sb.append("<a href=\"javascript:submitOperation('GENERICPANELMINIFILTER" + '_').append(
+        m_Label).append('_').append(Integer.toString(m_Index)).append("','')\">");
+    sb.append("<img src=\"").append((m_isSelectAllFunction) ? m_IconS : m_IconU).append(
+        "\" border=0 align=absmiddle alt=\"").append(
+        (m_isSelectAllFunction) ? m_AltS : m_AltU).append("\" title=\"").append(
+        (m_isSelectAllFunction) ? m_TitleS : m_TitleU).append("\"></a>");
     return sb.toString();
   }
 }

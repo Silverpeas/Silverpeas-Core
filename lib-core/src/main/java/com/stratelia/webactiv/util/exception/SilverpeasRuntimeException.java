@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.util.exception;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.Collection;
 import java.util.Iterator;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * SilverpeasRuntimeException est la racine de la hiérarchie des exception runtime silverpeas. Les
@@ -151,7 +151,7 @@ abstract public class SilverpeasRuntimeException extends RuntimeException implem
       Collection<Throwable> exceptions = SilverpeasException
           .getChainedExceptions(getNested());
       for (Iterator<Throwable> i = exceptions.iterator(); i.hasNext();) {
-        e = (Throwable) i.next();
+        e = i.next();
         if (!i.hasNext()) {
           s.println("nested (Deepest) : ");
         } else {
@@ -176,7 +176,7 @@ abstract public class SilverpeasRuntimeException extends RuntimeException implem
       Collection<Throwable> exceptions = SilverpeasException
           .getChainedExceptions(getNested());
       for (Iterator<Throwable> i = exceptions.iterator(); i.hasNext();) {
-        e = (Throwable) i.next();
+        e = i.next();
         if (!i.hasNext()) {
           w.println("nested (Deepest) : ");
         } else {

@@ -128,7 +128,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
     List roles = new ArrayList();
     try {
       ZipEntry webXMLEntry = jar.getEntry(WEB_INF_PREFIX + WEB_XML);
-      webXMLStream = (InputStream) jar.getInputStream(webXMLEntry);
+      webXMLStream = jar.getInputStream(webXMLEntry);
       roles = PortletWebAppUpdater.getRoles(webXMLStream);
     } catch (IOException ioe) {
       throw new PortletRegistryException("errorGettingRoles", ioe);

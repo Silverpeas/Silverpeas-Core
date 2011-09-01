@@ -94,7 +94,7 @@ public class IconWA extends AbstractIcon {
     String action = getAction();
     String iconName = getIconName();
     String altText = getAltText();
-    StringBuffer str = new StringBuffer();
+    StringBuilder str = new StringBuilder();
 
     if (!action.equals("")) {
       str.append("<a href=\"").append(action).append("\">");

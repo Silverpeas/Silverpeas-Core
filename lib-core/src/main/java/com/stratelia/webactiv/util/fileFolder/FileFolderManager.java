@@ -35,21 +35,16 @@ package com.stratelia.webactiv.util.fileFolder;
  * @version
  */
 import com.silverpeas.util.MimeTypes;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.io.FilenameUtils;
 
 public class FileFolderManager {
 
@@ -59,7 +54,7 @@ public class FileFolderManager {
    * @param chemin le chemin du repertoire
    * @return une Collection d'objets File qui representent les repertoires (et
    * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
-   * @throws UtilException 
+   * @throws UtilException
    */
   public static Collection<File> getAllSubFolder(String chemin) throws UtilException {
     List<File> resultat = new ArrayList<File>();
@@ -144,7 +139,7 @@ public class FileFolderManager {
    * @param chemin le chemin du repertoire du site
    * @return une Collection d'objets File qui representent les fichiers du site
    * web contenus dans le repertoire passe en parametre et ses sous repertoires
-   * @throws UtilException 
+   * @throws UtilException
    */
   public static Collection<File> getAllWebPages(String chemin) throws UtilException {
     List<File> resultat = new ArrayList<File>();
@@ -205,7 +200,7 @@ public class FileFolderManager {
   /**
    * creation d'un repertoire
    * @param chemin le chemin du repertoire
-   * @throws UtilException 
+   * @throws UtilException
    */
   public static void createFolder(String chemin) throws UtilException {
     SilverTrace.info("util", "FileFolderManager.createFolder",
@@ -240,11 +235,11 @@ public class FileFolderManager {
       File newDirectory = new File(newCheminRep);
       if (!directory.renameTo(newDirectory)) {
         SilverTrace.error("util", "FileFolderManager.renameFolder",
-            "util.EX_REPOSITORY_RENAME", cheminRep.toString() + " en "
-            + newCheminRep.toString());
+            "util.EX_REPOSITORY_RENAME", cheminRep + " en "
+            + newCheminRep);
         throw new UtilException("FileFolderManager.renameFolder",
-            "util.EX_REPOSITORY_RENAME", cheminRep.toString() + " en "
-            + newCheminRep.toString());
+            "util.EX_REPOSITORY_RENAME", cheminRep + " en "
+            + newCheminRep);
       }
     } else {
       SilverTrace.error("util", "FileFolderManager.renameFolder",
@@ -293,14 +288,7 @@ public class FileFolderManager {
       try {
         /* Création d'un nouveau fichier sous la bonne arborescence */
         File file = new File(directory, nomFichier);
-
-        /* ecriture du contenu du fichier */
-        /* si le fichier etait deja existant : ecrasement du contenu */
-        FileWriter file_write = new FileWriter(file);
-        BufferedWriter flux_out = new BufferedWriter(file_write);
-        flux_out.write(contenuFichier);
-        flux_out.close();
-        file_write.close();
+        FileUtils.writeStringToFile(file, contenuFichier, "UTF-8");
       } catch (IOException e) {
         throw new UtilException("FileFolderManager.createFile",
             "util.EX_CREATE_FILE_ERROR", e);
@@ -360,26 +348,11 @@ public class FileFolderManager {
    */
   public static String getCode(String cheminFichier, String nomFichier)
       throws UtilException {
-    /* res = contenu du fichier : "<HTML> ..." */
-    String ligne;
-    String res = "";
-
     File directory = new File(cheminFichier);
     if (directory.isDirectory()) {
       try {
         File file = new File(directory, nomFichier);
-
-        /* lecture du contenu du fichier */
-        FileReader file_read = new FileReader(file);
-        BufferedReader flux_in = new BufferedReader(file_read);
-
-        while ((ligne = flux_in.readLine()) != null) {
-          res = res + ligne;
-          // Debug.debug(700, "util fileFolderManager", "getCode : res = "+res,
-          // null, null);
-        }
-        flux_in.close();
-        // file_read.close();
+        return FileUtils.readFileToString(file, "UTF-8");
       } catch (IOException e) {
         SilverTrace.debug("util", "FileFolderManager.getCode",
             "result = null, fichier absent", e);
@@ -391,7 +364,6 @@ public class FileFolderManager {
       throw new UtilException("fileFolderManager.getCode",
           "util.util.EX_WRONG_CHEMLIN_SPEC", cheminFichier);
     }
-    return res;
   }
 
   private FileFolderManager() {

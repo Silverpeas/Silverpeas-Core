@@ -24,12 +24,6 @@
 
 package com.silverpeas.pdc.ejb;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.SessionContext;
-
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
@@ -46,6 +40,10 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import javax.ejb.SessionContext;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PdcBmEJB implements javax.ejb.SessionBean {
 
@@ -109,7 +107,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     return getSilverContentsByIds(silverContentIds);
   }
 
-  public Value getValue(String axisId, String valueId) throws RemoteException {
+  public Value getValue(String axisId, String valueId) {
     SilverTrace.info("Pdc", "PdcBmEJB.getValue", "root.MSG_GEN_PARAM_VALUE",
         "axisId = " + axisId + ", valueId = " + valueId);
     Value value = null;
@@ -126,7 +124,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     return value;
   }
 
-  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException {
+  public String createDaughterValueWithId(String axisId, Value value) {
       String daughterId = null;
       try{
           daughterId = getPdcBm().createDaughterValueWithId(value, value.getFatherId(), axisId);
@@ -138,7 +136,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
   }
 
   public int addPosition(int pubId, ClassifyPosition position, String componentId,
-      boolean alertSubscribers) throws RemoteException {
+      boolean alertSubscribers) {
       int positionId = -1;
       try{
           positionId = getPdcBm().addPosition(pubId, position, componentId, alertSubscribers);
@@ -149,13 +147,11 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
       return positionId;
   }
 
-  public List<Value> getDaughters(String axisId, String valueId)
-      throws RemoteException {
+  public List<Value> getDaughters(String axisId, String valueId) {
     return getPdcBm().getDaughters(axisId, valueId);
   }
 
-  public List<Value> getSubAxisValues(String axisId, String valueId)
-      throws RemoteException {
+  public List<Value> getSubAxisValues(String axisId, String valueId) {
     return getPdcBm().getSubAxisValues(axisId, valueId);
   }
 
@@ -297,19 +293,15 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
       if (contentP != null) {
         try {
           // we are going to search only SilverContent of this instanceId
-          ContentInterface contentInterface = (ContentInterface) contentP
-              .getContentInterface();
-
+          ContentInterface contentInterface = contentP.getContentInterface();
           silverContentTempo = contentInterface.getSilverContentById(
               allSilverContentIds, instanceId, null, new ArrayList<String>());
         } catch (ContentManagerException c) {
           throw new PdcBmRuntimeException("PdcBmEJB.getSilverContentsByIds",
-              SilverpeasRuntimeException.ERROR,
-              "root.EX_CANT_GET_REMOTE_OBJECT", c);
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
         } catch (Exception e) {
           throw new PdcBmRuntimeException("PdcBmEJB.getSilverContentsByIds",
-              SilverpeasRuntimeException.ERROR,
-              "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
         }
 
         alSilverContents

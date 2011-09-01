@@ -33,10 +33,7 @@ public class WarFileFilter implements FileFilter {
 
   public boolean accept(File fileName) {
     String fName = fileName.getName();
-    if (fName.endsWith(WAR_EXTENSION) || fName.endsWith(WAR_DEPLOYED_EXTENSION))
-      return true;
-    else
-      return false;
+    return fName.endsWith(WAR_EXTENSION) || fName.endsWith(WAR_DEPLOYED_EXTENSION);
   }
 
 }

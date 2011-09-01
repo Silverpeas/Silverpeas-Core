@@ -157,16 +157,17 @@ abstract public class CacheManager {
 
   public void setSelected(CacheType what, String[] ids, boolean isSelected) {
     if (ids != null) {
-      for (int i = 0; i < ids.length; i++) {
-        if (StringUtil.isDefined(ids[i])) {
-          setSelected(what, ids[i], isSelected);
+      for (String id : ids) {
+        if (StringUtil.isDefined(id)) {
+          setSelected(what, id, isSelected);
         }
       }
     }
   }
 
   public String[] getSelectedIds(CacheType what) {
-    return getSelected(what).toArray(new String[0]);
+    Set<String> selectedStrings =  getSelected(what);
+    return getSelected(what).toArray(new String[getSelected(what).size()]);
   }
 
   public int getSelectedNumber(CacheType what) {

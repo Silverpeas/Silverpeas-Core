@@ -27,11 +27,6 @@
 
 package com.silverpeas.jobManagerPeas.control;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-
 import com.silverpeas.jobManagerPeas.JobManagerService;
 import com.silverpeas.jobManagerPeas.JobManagerSettings;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -43,6 +38,10 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Class declaration
@@ -102,6 +101,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     JobManagerService jrp = new JobManagerService("13", "JRP",
         JobManagerService.LEVEL_OPERATION, m_context
         + URLManager.getURL(URLManager.CMP_JOBORGANIZATIONPEAS) + "Main",
+        null, false);
+    JobManagerService jsp = new JobManagerService("14", "JSP",
+        JobManagerService.LEVEL_OPERATION, m_context
+        + URLManager.getURL(URLManager.CMP_JOBSEARCHPEAS) + "Main",
         null, false);
 
     // tools
@@ -163,7 +166,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
     if (getUserDetail().isAccessAdmin()) {
       // l'administrateur à accès au tout
-      String[] id = { "11", "13", "12" };
+      String[] id = { "11", "13", "12", "14" };
       jDesigner = new JobManagerService("1", "JD",
           JobManagerService.LEVEL_SERVICE, null, id, false);
 
@@ -217,7 +220,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           services.put(jabout.getId(), jabout);
 
           jTools = new JobManagerService("4", "JTOOLS",
-              JobManagerService.LEVEL_SERVICE, null, ids.toArray(new String[0]), false);
+              JobManagerService.LEVEL_SERVICE, null, ids.toArray(new String[ids.size()]), false);
           services.put(jTools.getId(), jTools);
         }
       }
@@ -226,7 +229,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jdp.getId(), jdp);
       services.put(jrp.getId(), jrp);
       services.put(jspp.getId(), jspp);
-      // services.put(jst.getId(), jst);
+      services.put(jsp.getId(), jsp);
 
       services.put(jSTAT.getId(), jSTAT);
       services.put(jSTAT1.getId(), jSTAT1);
@@ -238,8 +241,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       // services.put(jImportExport.getId(), jImportExport);
     } else if (isManager) {
       if (getUserDetail().isAccessDomainManager()) {
-        // l'administrateur du composant à accès seulement à certaine
-        // fonction
+        // l'administrateur du composant à accès seulement à certaines
+        // fonctions
         String[] id3 = { "11", "13", "12" };
         jDesigner = new JobManagerService("1", "JD",
             JobManagerService.LEVEL_SERVICE, null, id3, false);
@@ -251,7 +254,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         services.put(jrp.getId(), jrp);
         services.put(jspp.getId(), jspp);
       } else {
-        // l'administrateur d'espace à accès seulement à certaine fonction
+        // l'administrateur d'espace à accès seulement à certaines fonctions
         if (getUserManageableGroupIds().size() > 0) {
           // Il est également gestionnaire de groupe, il a acces au
           // référentiel
@@ -354,22 +357,17 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   // 2 => action
   // 3 => acteur
   public JobManagerService[] getServices(int level) {
-    SilverTrace.debug("jobManagerPeas",
-        "jobManagerPeasSessionController.getServices()",
+    SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER level=" + level);
     List<JobManagerService> listServices = new ArrayList<JobManagerService>();
-    Enumeration<JobManagerService> enumer = services.elements();
-    while (enumer.hasMoreElements()) {
-      JobManagerService jms = enumer.nextElement();
+    for (JobManagerService jms : services.values()) {
       if (jms.getLevel() == level) {
-        SilverTrace.debug("jobManagerPeas",
-            "jobManagerPeasSessionController.getServices()",
-            "root.MSG_GEN_PARAM_VALUE", " jms id=" + jms.getId()
-            + "  jms label=" + jms.getLabel());
+        SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
+            "root.MSG_GEN_PARAM_VALUE", " jms id=" + jms.getId() + "  jms label=" + jms.getLabel());
         listServices.add(jms);
       }
     }
-    return (JobManagerService[]) listServices.toArray(new JobManagerService[0]);
+    return listServices.toArray(new JobManagerService[listServices.size()]);
   }
 
   public JobManagerService[] getSubServices(JobManagerService jmsParent) {
@@ -382,12 +380,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + jmsParent.getLabel());
     List<JobManagerService> listChild = new ArrayList<JobManagerService>();
     String[] idSubServices = jmsParent.getIdSubServices();
-    for (int i = 0; i < idSubServices.length; i++) {
-      JobManagerService jmsChild = services.get(idSubServices[i]);
+    for (String idSubService : idSubServices) {
+      JobManagerService jmsChild = services.get(idSubService);
       if (jmsChild != null) {
-        SilverTrace
-            .debug(
-            "jobManagerPeas",
+        SilverTrace.debug("jobManagerPeas",
             "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
             "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
             + jmsChild.getId() + " jmsChild label="
@@ -395,7 +391,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         listChild.add(jmsChild);
       }
     }
-    return listChild.toArray(new JobManagerService[0]);
+    return listChild.toArray(new JobManagerService[listChild.size()]);
   }
 
   public JobManagerService[] getSubServices(String idService) {
@@ -418,11 +414,11 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       // première initialisation de
       // idCurrentServiceActif
       // resset du flag actif du service courant
-      ((JobManagerService) services.get(this.idCurrentServiceActif))
+      services.get(this.idCurrentServiceActif)
           .setActif(false);
     }
     //
-    JobManagerService newService = (JobManagerService) services
+    JobManagerService newService = services
         .get(idNewService);
     newService.setActif(true);
     this.idCurrentServiceActif = idNewService;
@@ -431,9 +427,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     // correspondant au nouveau service
     JobManagerService[] jms = this.getSubServices(newService);
     idCurrentOperationActif = null;
-    for (int i = 0; i < jms.length; i++) {
-      if (jms[i].isActif())
-        idCurrentOperationActif = jms[i].getId();
+    for (JobManagerService jm : jms) {
+      if (jm.isActif()) {
+        idCurrentOperationActif = jm.getId();
+      }
     }
 
     // contrôle si l'attribut idCurrentServiceActif à bien une valeur
@@ -496,7 +493,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           String valeur = groupe.substring(j, j + 1);
           total = total + Integer.parseInt(valeur);
         }
-        if (total != Integer.parseInt(serial.substring(i * 1, i * 1 + 1)))
+        if (total != Integer.parseInt(serial.substring(i, i + 1)))
           validSequence = false;
       }
     } catch (Exception e) {

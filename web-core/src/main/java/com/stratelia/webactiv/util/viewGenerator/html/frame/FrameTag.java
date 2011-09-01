@@ -32,6 +32,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class FrameTag extends TagSupport {
+  
+  private static final long serialVersionUID = -1212798870876622646L;
   private static final String FRAME_PAGE_ATT = "pageContextFrame";
   private String title;
 

@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.8-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -46,6 +46,11 @@
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -108,16 +113,13 @@
       <classifier>jdk1.6-j2ee1.4</classifier>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.mockejb</groupId>
-      <artifactId>mockejb</artifactId>
-      <version>0.6-beta2</version>
-      <scope>compile</scope>
+     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <scope>compile</scope>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
   </dependencies>
 

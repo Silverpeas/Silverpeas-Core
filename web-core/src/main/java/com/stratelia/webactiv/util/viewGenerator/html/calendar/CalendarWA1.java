@@ -24,15 +24,15 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.calendar;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
  * Class declaration
@@ -162,7 +162,7 @@ public class CalendarWA1 extends AbstractCalendar {
         while (calendarEvents.getTime().compareTo(event.getEndDate()) <= 0) {
           if (calendarEvents.get(Calendar.MONTH) == currentMonth) {
             int dayNumber = calendarEvents.get(Calendar.DAY_OF_MONTH);
-            dayWithEvents.add(new Integer(dayNumber));
+            dayWithEvents.add(dayNumber);
           }
           calendarEvents.add(Calendar.DATE, 1);
         }
@@ -185,10 +185,7 @@ public class CalendarWA1 extends AbstractCalendar {
       currentDate = calendar.getTime();
       d = DateUtil.getInputDate(currentDate, language);
 
-      if (nonSelectableDays != null && nonSelectableDays.contains(currentDate))
-        isSelectableDate = false;
-      else
-        isSelectableDate = true;
+      isSelectableDate = !(nonSelectableDays != null && nonSelectableDays.contains(currentDate));
 
       // If day has events
       dayStyle = monthDayStyle;

@@ -52,7 +52,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
    * @see
    */
   public String printBefore() {
-    StringBuffer result = new StringBuffer(50);
+    StringBuilder result = new StringBuilder(50);
 
     result
         .append("<table cellpadding=\"5\" cellspacing=\"0\" border=\"0\" width=\"98%\" class=\"tableBoard\"><tr><td>");
@@ -66,7 +66,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
    * @see
    */
   public String printAfter() {
-    StringBuffer result = new StringBuffer(20);
+    StringBuilder result = new StringBuilder(20);
 
     result.append("</td></tr></table>");
 
@@ -79,7 +79,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
    * @see
    */
   public String print() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     result.append(printBefore());
     result.append(getBody());

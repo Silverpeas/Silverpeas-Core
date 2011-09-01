@@ -1,10 +1,5 @@
 package com.silverpeas.tools.domainSP2LDAP;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -15,11 +10,14 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class DomainSP2LDAPBatch
 {
   private OrganizationController organizationController;
   private AdminController adminController;
-  public final String DOMAIN_SILVERPEAS_ID = "0";
+  public static final String DOMAIN_SILVERPEAS_ID = "0";
   
   public OrganizationController getOrganizationController() {
     if (organizationController == null)
@@ -61,27 +59,24 @@ public class DomainSP2LDAPBatch
 		  SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "Utilisateurs du domaine Silverpeas="+listLDAPUsersIds.length, null);
 		  if (listLDAPUsersIds.length==0)
 		    return returnListLDAPUsers;
-		  
-		  for (int i=0; i<listLDAPUsersIds.length; i++)
-		  {
-		    UserDetail userDetailLDAP = getOrganizationController().getUserDetail(listLDAPUsersIds[i]);
-		    String keyName = (userDetailLDAP.getFirstName()+userDetailLDAP.getLastName()).toLowerCase();
-		    listLDAPUsers.put(keyName, userDetailLDAP);
-		  }
+
+      for (String listLDAPUsersId : listLDAPUsersIds) {
+        UserDetail userDetailLDAP = getOrganizationController().getUserDetail(listLDAPUsersId);
+        String keyName = (userDetailLDAP.getFirstName() + userDetailLDAP.getLastName()).toLowerCase();
+        listLDAPUsers.put(keyName, userDetailLDAP);
+      }
 		  
       // get all users from domainSilverpeas
       String[] listSilverpeasUsersIds = adminController.getUserIdsOfDomain(DOMAIN_SILVERPEAS_ID);
       boolean processGroups = false;
-      for (int i=0; i<listSilverpeasUsersIds.length; i++)
-      {
-        UserDetail userDetail = getOrganizationController().getUserDetail(listSilverpeasUsersIds[i]);
-        String keyName = (userDetail.getFirstName()+userDetail.getLastName()).toLowerCase();
+      for (String listSilverpeasUsersId : listSilverpeasUsersIds) {
+        UserDetail userDetail = getOrganizationController().getUserDetail(listSilverpeasUsersId);
+        String keyName = (userDetail.getFirstName() + userDetail.getLastName()).toLowerCase();
         //user to migrate
-        if (listLDAPUsers.containsKey(keyName))
-        {
+        if (listLDAPUsers.containsKey(keyName)) {
           //Delete ldap user entry
           UserDetail userDetailLDAP = listLDAPUsers.get(keyName);
-          
+
           adminController.synchronizeRemoveUser(userDetailLDAP.getId());
 
           //update silverpeas user entry (withe ldap infos)
@@ -91,37 +86,36 @@ public class DomainSP2LDAPBatch
           //Users processed
           processedUsers.put(keyName, userDetail);
           processGroups = true;
-        }
-        else
+        } else {
           notProcessedSPUsers.put(keyName, userDetail);
+        }
       }
       
       if (processGroups) {
         // Move groups from domainSP to mixtDomain
         Group[] groups = getOrganizationController().getAllGroups();
         SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "DEBUT Migration des groupes du domaine SP vers le domaine mixte...", null);
-        for (int i=0; i<groups.length; i++)
-        {
-          Group group = groups[i];
+        for (Group group : groups) {
           boolean processGroup = false;
-          
-          if (DOMAIN_SILVERPEAS_ID.equals(group.getDomainId()))
-          {
+
+          if (DOMAIN_SILVERPEAS_ID.equals(group.getDomainId())) {
             UserDetail[] usersOfGroup = getAdminController().getAllUsersOfGroup(group.getId());
-            for (int j=0; j<usersOfGroup.length && !processGroup; j++) {
-              UserDetail userDetail = (UserDetail) usersOfGroup[j];  
-              String userKeyName = (userDetail.getFirstName()+userDetail.getLastName()).toLowerCase();
-              if (processedUsers.containsKey(userKeyName))
+            for (int j = 0; j < usersOfGroup.length && !processGroup; j++) {
+              UserDetail userDetail = usersOfGroup[j];
+              String userKeyName = (userDetail.getFirstName() + userDetail.getLastName()).toLowerCase();
+              if (processedUsers.containsKey(userKeyName)) {
                 processGroup = true;
+              }
             }
-              
-            if (processGroup)
-            {
+
+            if (processGroup) {
               int nextId = DBUtil.getNextId("ST_GROUP", "specificId");
-              group.setSpecificId(new Integer(nextId).toString());
+              group.setSpecificId(Integer.toString(nextId));
               group.setDomainId(null);
               adminController.updateGroup(group);
-              SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "- Groupe "+group.getName()+" avec "+group.getUserIds().length+" utilisateurs d&eacute;plac&eacute;s dans le domaine Mixte", null);
+              SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
+                  "- Groupe " + group.getName() + " avec " + group.getUserIds().length + " utilisateurs d&eacute;plac&eacute;s dans le domaine Mixte",
+                  null);
             }
           }
         }

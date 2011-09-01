@@ -196,7 +196,7 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
     Set keys = map.keySet();
     Iterator itr = keys.iterator();
     while (itr.hasNext()) {
-      list.add((String) map.get(itr.next()));
+      list.add(map.get(itr.next()));
     }
     return list;
   }

@@ -36,25 +36,17 @@ public class Axis implements java.io.Serializable {
   /**
    * The object which contains attributes of an axe
    */
-  private AxisHeader header = null;
+  private AxisHeader header;
 
   /**
    * The list which contains sorted values of a tree
    */
-  private List<Value> values = null;
-
-  //
-  // Constructor
-  //
+  private List<Value> values;
 
   public Axis(AxisHeader header, List<Value> values) {
     this.header = header;
     this.values = values;
   }
-
-  //
-  // public methods
-  //
 
   /**
    * Returns attributs of an axe.

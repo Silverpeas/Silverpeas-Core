@@ -29,6 +29,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
+import com.silverpeas.util.StringUtil;
 
 /**
  * A UserField stores a user reference.
@@ -83,16 +84,17 @@ public class UserField implements Field {
    * Returns the string value of this field : aka the user name.
    */
   public String getValue() {
+    String userId = getUserId();
     SilverTrace.info("form", "UserField.getValue", "root.MSG_GEN_PARAM_VALUE",
-        "userId = " + getUserId());
-    if (getUserId() == null)
-      return null;
-    if (getUserId().equals(""))
-      return "";
+        "userId = " + userId);
+    if (!StringUtil.isDefined(userId)) {
+      return userId;
+    }
 
     UserDetail user = organizationController.getUserDetail(getUserId());
-    if (user == null)
+    if (user == null) {
       return "user(" + getUserId() + ")";
+    }
 
     return user.getFirstName() + " " + user.getLastName();
   }
@@ -135,9 +137,9 @@ public class UserField implements Field {
    * Returns the User referenced by this field.
    */
   public Object getObjectValue() {
-    if (getUserId() == null)
+    if (getUserId() == null) {
       return null;
-
+    }
     return organizationController.getUserDetail(getUserId());
   }
 
@@ -159,10 +161,11 @@ public class UserField implements Field {
    * Returns true if the value is a String and this field isn't read only.
    */
   public boolean acceptObjectValue(Object value) {
-    if (value instanceof UserDetail)
+    if (value instanceof UserDetail) {
       return !isReadOnly();
-    else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -213,8 +216,9 @@ public class UserField implements Field {
     if (o instanceof UserField) {
       String t = ((UserField) o).getUserId();
       return ((s == null && t == null) || s.equals(t));
-    } else
+    } else {
       return false;
+    }
   }
 
   /**
@@ -222,26 +226,29 @@ public class UserField implements Field {
    */
   public int compareTo(Object o) {
     String s = getValue();
-    if (s == null)
+    if (s == null) {
       s = "";
-
+    }
     if (o instanceof UserField) {
       String t = ((UserField) o).getValue();
-      if (t == null)
+      if (t == null) {
         t = "";
+      }
 
       if (s.equals(t)) {
         s = getUserId();
-        if (s == null)
+        if (s == null) {
           s = "";
+        }
         t = ((UserField) o).getUserId();
-        if (t == null)
+        if (t == null) {
           t = "";
+        }
       }
-
       return s.compareTo(t);
-    } else
+    } else {
       return -1;
+    }
   }
 
   public int hashCode() {

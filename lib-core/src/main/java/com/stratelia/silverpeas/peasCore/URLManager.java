@@ -39,9 +39,6 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * @author t.leroi
  */
 public class URLManager {
-  // List only available for bus-components (NOT FOR INSTANCIABLE COMPONENTS
-  // !!!)
-
   public final static String CMP_ADMIN = "admin";
   public final static String CMP_AGENDA = "agenda";
   public final static String CMP_ATTACHMENT = "attachment";
@@ -65,6 +62,7 @@ public class URLManager {
   public final static String CMP_JOBDOMAINPEAS = "jobDomainPeas";
   public final static String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";
   public final static String CMP_JOBORGANIZATIONPEAS = "jobOrganizationPeas";
+  public final static String CMP_JOBSEARCHPEAS = "jobSearchPeas";
   public final static String CMP_JOBREPORTPEAS = "jobReportPeas";
   public final static String CMP_JOBTOOLSPEAS = "jobToolsPeas";
   public final static String CMP_SELECTIONPEAS = "selectionPeas";
@@ -97,6 +95,7 @@ public class URLManager {
   public final static int URL_MESSAGE = 7;
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
+  private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL", "/silverpeas");
   static Properties specialsURL = null;
   static Admin admin = null;
   static String httpMode = null;
@@ -108,8 +107,7 @@ public class URLManager {
     specialsURL = resources.getProperties();
     admin = new Admin();
     httpMode = resources.getString("httpMode");
-    String universalLinks = resources.getString("displayUniversalLinks", "false");
-    displayUniversalLinks = "true".equals(universalLinks);
+    displayUniversalLinks = resources.getBoolean("displayUniversalLinks", false);
   }
 
   /**
@@ -174,30 +172,22 @@ public class URLManager {
    * Construit l'URL standard afin d'acceder à un composant
    *
    * @param componentName  - le nom du jobPeas
-   * @param sSpace         - l'id de l'espace (WA151)
    * @param sComponentId   - l'id de l'instance de composant (trucsAstuces1042)
    * @param isGlobalSearch - boolean (vrai si nous sommes en recherche Globale)
    */
-  private static String buildStandardURL(String componentName,
-      String sComponentId, boolean isGlobalSearch) {
-    String standardURL = "/" + admin.getRequestRouter(componentName) + "/"
-        + sComponentId + "/";
+  private static String buildStandardURL(String componentName, String sComponentId,
+      boolean isGlobalSearch) {
+    String standardURL = '/' + admin.getRequestRouter(componentName) + '/' + sComponentId + '/';
 
     if (isGlobalSearch) {
-      if (componentName.equals("sources") || componentName.equals("whitePages")
-          || componentName.equals("expertLocator")
-          || componentName.equals("infoTracker")
-          || componentName.equals("documentation")) {
-        standardURL = "/RpdcSearch/" + sComponentId
-            + "/GlobalContentForward?contentURL=Consult?";
+      if ("sources".equals(componentName) || "whitePages".equals(componentName)
+          || "expertLocator".equals(componentName) || "infoTracker".equals(componentName)
+          || "documentation".equals(componentName)) {
+        standardURL = "/RpdcSearch/" + sComponentId + "/GlobalContentForward?contentURL=Consult?";
       }
     } else {
-      if (componentName.equals("sources") /*
-           * || componentName.equals("whitePages")
-           */
-          || componentName.equals("expertLocator")
-          || componentName.equals("infoTracker")
-          || componentName.equals("documentation")) {
+      if ("sources".equals(componentName)  || "expertLocator".equals(componentName)
+          || "infoTracker".equals(componentName) || "documentation".equals(componentName)) {
         standardURL = "/RpdcSearch/" + sComponentId + "/";
       }
     }
@@ -217,12 +207,6 @@ public class URLManager {
    * @return The Application web context.
    */
   public static String getApplicationURL() {
-    if (applicationURL == null) {
-      applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
-      if (applicationURL == null) {
-        applicationURL = "/silverpeas";
-      }
-    }
     return applicationURL;
   }
 
@@ -235,8 +219,10 @@ public class URLManager {
   public static String getServerURL(HttpServletRequest request) {
     String absoluteUrl = "";
     if(request != null) {
-      absoluteUrl = request.getScheme() + "://" + request.getServerName() + ':' + request.
-        getServerPort();
+      absoluteUrl = request.getScheme() + "://" + request.getServerName();
+      if (request.getServerPort() != 80) {
+        absoluteUrl += ":" + request.getServerPort(); 
+      }
     }
     ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
     return generalSettings.getString("httpServerBase", absoluteUrl);
@@ -245,8 +231,6 @@ public class URLManager {
   public static String getHttpMode() {
     return httpMode;
   }
-
-  private static String applicationURL = null;
 
   /**
    * @return

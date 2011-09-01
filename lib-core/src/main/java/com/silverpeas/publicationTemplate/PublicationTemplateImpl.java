@@ -79,14 +79,17 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String viewTypeFile = "";
   private String updateTypeFile = "";
   private String externalId = "";
+  private String searchResultFileName = "";
   private RecordTemplate template = null;
   private RecordTemplate searchTemplate = null;
   private RecordTemplate viewTemplate = null;
   private RecordTemplate updateTemplate = null;
+  private RecordTemplate searchResultTemplate = null;
   private RecordSet recordSet = null;
   private Form updateForm = null;
   private Form viewForm = null;
-  //private Form searchForm = null;
+  private Form searchResultForm = null;
+  // private Form searchForm = null;
   private ArrayList<TemplateFile> templateFiles = new ArrayList<TemplateFile>();
 
   /**
@@ -164,7 +167,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       viewForm = getForm(viewFileName, viewTypeFile);
     }
     return viewForm;
-
   }
 
   /**
@@ -206,17 +208,17 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @Override
   public Form getSearchForm() throws PublicationTemplateException {
     Form searchForm = null;
-//    if (searchForm == null) {
-      if (isSearchable()) {
-        RecordTemplate templateForm = loadRecordTemplate(searchFileName);
-        try {
-          searchForm = new XmlSearchForm(templateForm);
-        } catch (FormException e) {
-          throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
+    // if (searchForm == null) {
+    if (isSearchable()) {
+      RecordTemplate templateForm = loadRecordTemplate(searchFileName);
+      try {
+        searchForm = new XmlSearchForm(templateForm);
+      } catch (FormException e) {
+        throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
               "form.EX_CANT_GET_FORM", null, e);
-        }
       }
-    //}
+    }
+    // }
     return searchForm;
   }
 
@@ -259,7 +261,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       templateForm = loadRecordTemplate(currentFileName);
       mergeTemplate(templateForm);
       try {
-        form = (Form) new XmlForm(templateForm);
+        form = new XmlForm(templateForm);
       } catch (FormException e) {
         throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
             "form.EX_CANT_GET_FORM", null, e);
@@ -273,7 +275,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       try {
         HtmlForm viewFormHtml = new HtmlForm(templateForm);
         viewFormHtml.setFileName(htmlFileName);
-        form = (Form) viewFormHtml;
+        form = viewFormHtml;
       } catch (FormException e) {
         throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
             "form.EX_CANT_GET_FORM", null, e);
@@ -282,8 +284,11 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return form;
   }
 
+
   /**
-   * merge the data template with the form template
+   * Merge the data template with the form template
+   * @param formTemplate
+   * @throws PublicationTemplateException
    */
   private void mergeTemplate(RecordTemplate formTemplate) throws PublicationTemplateException {
     RecordTemplate dataTemplate = getRecordTemplate();
@@ -457,6 +462,10 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     }
   }
 
+  /**
+   * This method saves current templates inside a sub directory
+   * @throws PublicationTemplateException
+   */
   public void saveRecordTemplates() throws PublicationTemplateException {
     String subDir = fileName.substring(0, fileName.lastIndexOf('.'))
         + File.separator;
@@ -472,11 +481,17 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     if (searchTemplate != null) {
       saveRecordTemplate(searchTemplate, subDir, "search.xml");
     }
+    if (searchResultTemplate != null) {
+      saveRecordTemplate(searchResultTemplate, subDir, "searchresult.xml");
+    }
   }
 
   /**
    * Save a recordTemplate to xml file
    * @param recordTemplate the object to save as xml File
+   * @param subDir the sub directory where saving the xml file
+   * @param xmlFileName the xml file name
+   * @throws PublicationTemplateException
    */
   private void saveRecordTemplate(RecordTemplate recordTemplate, String subDir,
       String xmlFileName) throws PublicationTemplateException {
@@ -494,7 +509,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
           throw new PublicationTemplateException(
               "PublicationTemplateImpl.saveRecordTemplate",
               "form.EX_ERR_CASTOR_SAVE_PUBLICATION_TEMPLATE", "xmlDirPath = "
-              + xmlDirPath, e);
+                  + xmlDirPath, e);
         }
       }
       String xmlFilePath = PublicationTemplateManager.makePath(
@@ -601,11 +616,42 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.viewTemplate = viewTemplate;
   }
 
+  /**
+   * @return the searchResultTemplateFileName
+   */
+  public String getSearchResultFileName() {
+    return searchResultFileName;
+  }
+
+  /**
+   * @param resultTemplateFileName the resultTemplateFileName to set
+   */
+  public void setSearchResultFileName(String searchResultFileName) {
+    this.searchResultFileName = searchResultFileName;
+  }
+
   @Override
   public boolean isSearchable() {
     return (searchFileName != null && searchFileName.trim().length() > 0);
   }
+  
+  /**
+   * @return the searchResultTemplate
+   */
+  public RecordTemplate getSearchResultTemplate() {
+    return searchResultTemplate;
+  }
 
+  /**
+   * @param searchResultTemplate the searchResultTemplate to set
+   */
+  public void setSearchResultTemplate(RecordTemplate searchResultTemplate) {
+    this.searchResultTemplate = searchResultTemplate;
+  }
+
+  /**
+   * @return a copy of the current PublicationTemplate implementation
+   */
   public PublicationTemplateImpl basicClone() {
     PublicationTemplateImpl cloneTemplate = new PublicationTemplateImpl();
     cloneTemplate.setName(getName());
@@ -620,14 +666,23 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setViewTypeFile(getViewTypeFile());
     cloneTemplate.setUpdateTypeFile(getUpdateTypeFile());
     cloneTemplate.setExternalId(getExternalId());
+    cloneTemplate.setSearchResultFileName(getSearchResultFileName());
     return cloneTemplate;
   }
-  
+
   /**
    * Gets an instance of a GenericRecordSet objects manager.
    * @return a GenericRecordSetManager instance.
    */
   protected GenericRecordSetManager getGenericRecordSetManager() {
     return GenericRecordSetManager.getInstance();
+  }
+
+  @Override
+  public Form getSearchResultForm() throws PublicationTemplateException {
+    if (searchResultForm == null) {
+      searchResultForm = getForm(searchResultFileName, null);
+    }
+    return searchResultForm;
   }
 }

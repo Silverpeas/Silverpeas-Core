@@ -32,7 +32,7 @@ import com.silverpeas.util.EncodeHelper;
  * @version 1.0
  * @deprecated Use {@link EncodeHelper} instead
  */
-public class Encode extends Object {
+public class Encode {
   /**
    * Convert a java string to a javascript string Replace \,\n,\r and "
    * @param javastring Java string to encode
