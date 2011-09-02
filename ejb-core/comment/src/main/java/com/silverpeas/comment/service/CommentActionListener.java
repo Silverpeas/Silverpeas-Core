@@ -28,7 +28,6 @@ import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.io.Serializable;
 import static com.silverpeas.notification.NotificationTopic.*;
 import static com.silverpeas.comment.service.CommentActionNotifier.*;
 

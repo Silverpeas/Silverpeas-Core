@@ -52,7 +52,7 @@ public class CommentBuilder {
    */
   public Comment buildWith(final String author, final String text) {
     String now = (new Date()).toString();
-    return new Comment(new CommentPK(String.valueOf(i++)),
+    return new Comment(new CommentPK(String.valueOf(i++), COMPONENT_ID),
         new CommentPK(RESOURCE_ID, SPACE_ID, COMPONENT_ID), 1, author, text, now, now);
   }
 

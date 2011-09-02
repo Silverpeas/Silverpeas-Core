@@ -24,15 +24,12 @@
 
 package com.silverpeas.comment.service;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.List;
-
-
-
 import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
-import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -54,12 +51,13 @@ import javax.inject.Named;
  */
 @Named("commentService")
 public class DefaultCommentService extends CommentActionNotifier implements CommentService {
+  
+  private static final String SETTINGS_PATH = "com.stratelia.webactiv.util.comment.Comment";
+  private static final String MESSAGES_PATH = "com.stratelia.webactiv.util.comment.multilang.comment";
+  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
 
   @Inject
   private CommentDAO commentDAO;
-
-  @Inject
-  private NotificationPublisher publisher;
 
   /**
    * Constructs a new DefaultCommentService instance.
@@ -351,5 +349,20 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    */
   protected OrganizationController getOrganizationController() {
     return new OrganizationController();
+  }
+
+  @Override
+  public Comment getContent(String contentId) {
+    return getComment(new CommentPK(contentId));
+  }
+
+  @Override
+  public ResourceLocator getComponentSettings() {
+    return settings;
+  }
+
+  @Override
+  public ResourceLocator getComponentMessages(String language) {
+    return new ResourceLocator(MESSAGES_PATH, language);
   }
 }
