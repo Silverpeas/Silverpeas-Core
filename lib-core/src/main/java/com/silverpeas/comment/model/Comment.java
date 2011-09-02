@@ -24,6 +24,8 @@
 
 package com.silverpeas.comment.model;
 
+import com.silverpeas.SilverpeasContent;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
@@ -32,7 +34,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @author Georgy Shakirin
  * @version 1.0
  */
-public class Comment implements java.io.Serializable {
+public class Comment implements SilverpeasContent {
 
   private static final long serialVersionUID = 3738544756345055840L;
   private CommentPK pk;
@@ -134,5 +136,38 @@ public class Comment implements java.io.Serializable {
     str.append("getModificationDate() = ").append(
         getModificationDate());
     return str.toString();
+  }
+
+  @Override
+  public UserDetail getCreator() {
+    if (ownerDetail == null) {
+      OrganizationController organizationController = getOrganizationController();
+      ownerDetail = organizationController.getUserDetail(String.valueOf(owner_id));
+    }
+    return ownerDetail;
+  }
+
+  @Override
+  public String getTitle() {
+    return "";
+  }
+
+  @Override
+  public String getURL() {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public String getId() {
+    return pk.getId();
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return pk.getInstanceId();
+  }
+  
+  private OrganizationController getOrganizationController() {
+    return new OrganizationController();
   }
 }
