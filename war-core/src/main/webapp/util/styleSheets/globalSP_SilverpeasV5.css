@@ -179,10 +179,8 @@ Definition des class de style Silverpeas
 	margin-bottom:10px;
 		background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
 		background: -moz-linear-gradient(top, #fff, #e5e5e5);
-		/* For Internet Explorer 5.5 - 7 */
-		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
-		/* For Internet Explorer 8 */
-		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
+		-pie-background: linear-gradient(#ffffff, #e5e5e5);
+		behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 		min-height:14px;
 	}
 
@@ -193,14 +191,15 @@ Definition des class de style Silverpeas
 	border-left:0;
 	margin:0;
 	padding:5px;
-	font-size:110%;	
     background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
 	background: -moz-linear-gradient(top, #fff, #e5e5e5);
-	/* For Internet Explorer 5.5 - 7 */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5);
-	/* For Internet Explorer 8 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffffff, endColorstr=#ffe5e5e5)";
+	-pie-background: linear-gradient(#ffffff, #e5e5e5);
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	min-height:14px;
+}
+
+.header h4{
+	font-size:110%;
 }
 
 * html 	.bgDegradeGris {
@@ -2342,6 +2341,8 @@ td.browsebar a:hover {
 .attachments {
 	min-width: 310px;
 	position:relative;
+	z-index:10
+
 }
 
 .attachments h4 {
