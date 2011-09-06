@@ -27,7 +27,10 @@ package com.stratelia.silverpeas.silverpeasinitialize;
  * Title: Description: Copyright: Copyright (c) 2001 Company:
  * @author TLE
  * @version 1.0
+ * @deprecated Please use the Silverpeas Notification API defined in the package
+ * com.silverpeas.notification
  */
+@Deprecated
 public interface CallBack {
 
   public void subscribe();

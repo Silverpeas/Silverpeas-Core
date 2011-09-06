@@ -158,6 +158,27 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
   public boolean isEqualTo(DateTime anotherDatable) {
     return super.equals(anotherDatable);
   }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    DateTime other;
+    if (obj.getClass().getName().equals("java.util.Date")) {
+      other = new DateTime((java.util.Date) obj);
+    } else if (getClass() != obj.getClass()) {
+      return false;
+    } else {
+      other = (DateTime) obj;
+    }
+    return isEqualTo(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 
   /**
    * Is the date in this datetime before the specified date.
@@ -184,5 +205,13 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
    */
   public boolean isEqualTo(Date otherDate) {
     return otherDate.isEqualTo(new Date(this));
+  }
+  
+  /**
+   * Converts this date time to a date. The time part of this date time is lost.
+   * @return a date representation of this date time.
+   */
+  public Date toDate() {
+    return new Date(this);
   }
 }

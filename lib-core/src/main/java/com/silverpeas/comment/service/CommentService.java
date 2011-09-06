@@ -23,6 +23,7 @@
  */
 package com.silverpeas.comment.service;
 
+import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
@@ -33,7 +34,7 @@ import java.util.List;
 /**
  * User: ehugonnet Date: 21/03/11 Time: 09:54
  */
-public interface CommentService {
+public interface CommentService extends SilverpeasComponentService {
   void createComment(Comment cmt);
 
   void createAndIndexComment(Comment cmt);

@@ -51,8 +51,8 @@ public class CommentBuilder {
    * @return a Comment instance.
    */
   public Comment buildWith(final String author, final String text) {
-    String now = (new Date()).toString();
-    return new Comment(new CommentPK(String.valueOf(i++)),
+    Date now = new Date();
+    return new Comment(new CommentPK(String.valueOf(i++), COMPONENT_ID),
         new CommentPK(RESOURCE_ID, SPACE_ID, COMPONENT_ID), 1, author, text, now, now);
   }
 
@@ -64,7 +64,7 @@ public class CommentBuilder {
    * @return a Comment instance.
    */
   public Comment buildOrphelanWith(final String author, final String text) {
-    String now = (new Date()).toString();
+    Date now = new Date();
     return new Comment(new CommentPK(String.valueOf(i++)),
         new CommentPK(RESOURCE_ID), 1, author, text, now, now);
   }

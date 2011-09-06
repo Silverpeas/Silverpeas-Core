@@ -36,7 +36,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * the kind of event they are interested. The callback function will be invoked by a CallBackManager
  * at the firing of a such event.
  * The callback function is represented by an object implementing the CallBack interface.
+ *
+ * @deprecated Please use the Silverpeas Notification API defined in the package
+ * com.silverpeas.notification
  */
+@Deprecated
 public class CallBackManager {
   // Actions [int parameter, string parameter, extra parameter]
   // ----------------------------------------------------------

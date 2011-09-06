@@ -32,12 +32,14 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
+import javax.inject.Named;
 import static org.mockito.Mockito.*;
 
 /**
  * This a wrapper of the comment service in order to mock some of the inner methods like, for
  * example, the access to the data source.
  */
+@Named("commentServiceForTest")
 public class MyDefaultCommentService extends DefaultCommentService {
 
   private CommentDAO mockedDAO = null;
@@ -48,13 +50,15 @@ public class MyDefaultCommentService extends DefaultCommentService {
    */
   public MyDefaultCommentService() {
     super();
-      Comment aComment = CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé");
+      Comment aComment1 = CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé");
+      Comment aComment2 = CommentBuilder.getBuilder().buildWith("Titi", "Repasses demain");
       List<Comment> comments = new ArrayList<Comment>();
-      comments.add(aComment);
-      comments.add(CommentBuilder.getBuilder().buildWith("Titi", "Repasses demain"));
+      comments.add(aComment1);
+      comments.add(aComment2);
       mockedDAO = mock(CommentDAO.class);
       when(mockedDAO.getAllCommentsByForeignKey(any(ForeignPK.class))).thenReturn(comments);
-      when(mockedDAO.getComment(any(CommentPK.class))).thenReturn(aComment);
+      when(mockedDAO.getComment(any(CommentPK.class))).thenReturn(aComment1);
+      when(mockedDAO.saveComment(any(Comment.class))).thenReturn(aComment1.getCommentPK());
 
       UserDetail userDetail = new UserDetail();
       userDetail.setFirstName("Toto");

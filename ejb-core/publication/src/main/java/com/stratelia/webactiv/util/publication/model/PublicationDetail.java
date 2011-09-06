@@ -43,6 +43,8 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -567,6 +569,11 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getCreatorId() {
     return creatorId;
   }
+  
+  public UserDetail getCreator() {
+    OrganizationController controller = new OrganizationController();
+    return controller.getUserDetail(getCreatorId());
+  }
 
   public int getImportance() {
     return importance;
@@ -801,10 +808,10 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     String fieldValue = "";
 
     try {
-      List<XMLField> xmlFields = getXmlFields(language);
+      List<XMLField> theXmlFields = getXmlFields(language);
       XMLField xmlField = null;
-      for (int x = 0; x < xmlFields.size(); x++) {
-        xmlField = xmlFields.get(x);
+      for (int x = 0; x < theXmlFields.size(); x++) {
+        xmlField = theXmlFields.get(x);
         if (fieldName.equals(xmlField.getName())) {
           fieldValue = xmlField.getValue();
           if (fieldValue == null) {
