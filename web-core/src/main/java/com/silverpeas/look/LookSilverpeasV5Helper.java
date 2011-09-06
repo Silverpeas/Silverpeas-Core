@@ -71,7 +71,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private boolean displayPDCInHomePage = true;
   private List<TopItem> topItems = null;
   private List<String> topSpaceIds = null; // sublist of topItems
-  private String mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
+  private String mainFrame = "MainFrameSilverpeasV5.jsp";
   private String spaceId = null;
   private String subSpaceId = null;
   private String componentId = null;
@@ -184,7 +184,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   public LookSilverpeasV5Helper(MainSessionController mainSessionController,
-          ResourceLocator resources) {
+      ResourceLocator resources) {
     init(mainSessionController, resources);
   }
 
@@ -201,11 +201,11 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
-            "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
-            mainSessionController.getFavoriteLanguage());
+        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+        mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
       this.messages = new ResourceLocator(resources.getString("MessageBundle"),
-              mainSessionController.getFavoriteLanguage());
+          mainSessionController.getFavoriteLanguage());
     }
     initProperties();
     getTopItems();
@@ -222,8 +222,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
       displayUserMenu = UserMenuDisplay.DISABLE;
     } else {
       displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
-              PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
-      if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
+          PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
+      if (isMenuPersonalisationEnabled() &&
+          mainSC.getPersonalization().getDisplay().isNotDefault()) {
         this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
       }
       enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
@@ -233,8 +234,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public boolean isMenuPersonalisationEnabled() {
     return UserMenuDisplay.DISABLE != UserMenuDisplay.valueOf(resources.getString(
-            "displayUserFavoriteSpace", PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).
-            toUpperCase());
+        "displayUserFavoriteSpace", PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).
+        toUpperCase());
   }
 
   protected MainSessionController getMainSessionController() {
@@ -354,7 +355,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public String getWallPaper(String spaceId) {
     String hasWallpaper = "0";
     if (StringUtil.isDefined(spaceId) && SilverpeasLook.getSilverpeasLook().hasSpaceWallpaper(
-            spaceId)) {
+        spaceId)) {
       hasWallpaper = "1";
     }
     return hasWallpaper;
@@ -369,7 +370,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     int nbConnectedUsers = 0;
     if (shouldDisplayConnectedUsers) {
       // Remove the current user
-      nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().
+      nbConnectedUsers =
+          SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().
               getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
@@ -441,7 +443,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (topItems == null) {
       topItems = new ArrayList<TopItem>();
       topSpaceIds = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
+      StringTokenizer tokenizer =
+          new StringTokenizer(resources.getString("componentsTop", ""), ",");
       while (tokenizer.hasMoreTokens()) {
         String itemId = tokenizer.nextToken();
 
@@ -500,11 +503,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setMainFrame(String newMainFrame) {
     if (StringUtil.isDefined(newMainFrame)) {
-      if (newMainFrame.startsWith("/")) {
-        this.mainFrame = newMainFrame;
-      } else {
-        this.mainFrame = "/admin/jsp/" + newMainFrame;
-      }
+      this.mainFrame = newMainFrame;
     }
   }
 
@@ -531,7 +530,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       currentFunction = "Main";
     }
     return URLManager.getApplicationURL() + URLManager.getURL("useless", currentComponentId)
-            + currentFunction;
+        + currentFunction;
   }
 
   @Override
@@ -543,7 +542,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public String getDate() {
     if (formatter == null) {
       formatter = new SimpleDateFormat(resources.getString("DateFormat", "dd/MM/yyyy"),
-              new Locale(mainSC.getFavoriteLanguage()));
+          new Locale(mainSC.getFavoriteLanguage()));
     }
     return formatter.format(new Date());
   }
@@ -558,10 +557,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   private PublicationHelper getPublicationHelper() throws ClassNotFoundException,
-          InstantiationException, IllegalAccessException {
+      InstantiationException, IllegalAccessException {
     if (kmeliaTransversal == null) {
       String helperClassName = resources.getString("publicationHelper",
-              "com.stratelia.webactiv.kmelia.KmeliaTransversal");
+          "com.stratelia.webactiv.kmelia.KmeliaTransversal");
       Class<?> helperClass = Class.forName(helperClassName);
       kmeliaTransversal = (PublicationHelper) helperClass.newInstance();
       kmeliaTransversal.setMainSessionController(mainSC);
@@ -587,10 +586,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
     List<PublicationDetail> publis = null;
     try {
       publis = (List<PublicationDetail>) getPublicationBm().getDetailsByFatherPK(nodePK, null,
-              true);
+          true);
     } catch (RemoteException e) {
       SilverTrace.error("lookSilverpeasV5", "LookSilverpeasV5Helper.getPublications",
-              "root.MSG_GEN_PARAM_VALUE", e);
+          "root.MSG_GEN_PARAM_VALUE", e);
     }
     List<PublicationDetail> filteredPublis = new ArrayList<PublicationDetail>();
     PublicationDetail publi;
@@ -607,7 +606,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (publicationBm == null) {
       try {
         publicationBm =
-                EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
                 PublicationBmHome.class).create();
       } catch (Exception e) {
         throw new EJBException(e);
@@ -617,41 +616,41 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   public String getSpaceHomePage(String spaceId, HttpServletRequest request)
-          throws UnsupportedEncodingException {
+      throws UnsupportedEncodingException {
     SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
     // Page d'accueil de l'espace = Composant
     if (spaceStruct != null
-            && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
-            && spaceStruct.getFirstPageExtraParam() != null
-            && spaceStruct.getFirstPageExtraParam().length() > 0) {
+        && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
+        && spaceStruct.getFirstPageExtraParam() != null
+        && spaceStruct.getFirstPageExtraParam().length() > 0) {
       if (getOrganizationController().isComponentAvailable(
-              spaceStruct.getFirstPageExtraParam(), getUserId())) {
+          spaceStruct.getFirstPageExtraParam(), getUserId())) {
         return URLManager.getSimpleURL(URLManager.URL_COMPONENT,
-                spaceStruct.getFirstPageExtraParam());
+            spaceStruct.getFirstPageExtraParam());
       }
     }
 
     // Page d'accueil de l'espace = URL
     if (spaceStruct != null
-            && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE)
-            && (spaceStruct.getFirstPageExtraParam() != null)
-            && (spaceStruct.getFirstPageExtraParam().length() > 0)) {
+        && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE)
+        && (spaceStruct.getFirstPageExtraParam() != null)
+        && (spaceStruct.getFirstPageExtraParam().length() > 0)) {
       String destination = spaceStruct.getFirstPageExtraParam();
       destination = getParsedDestination(destination, "%ST_USER_LOGIN%",
-              getMainSessionController().getCurrentUserDetail().getLogin());
+          getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
-              URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
+          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
               "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
-              URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
+          URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
-              URLEncoder.encode(request.getSession().getId(), "UTF-8"));
+          URLEncoder.encode(request.getSession().getId(), "UTF-8"));
 
       // !!!! Add the password : this is an uggly patch that use a session
       // variable set in the "AuthenticationServlet" servlet
       HttpSession session = request.getSession();
       return getParsedDestination(destination, "%ST_USER_PASSWORD%",
-              (String) session.getAttribute("Silverpeas_pwdForHyperlink"));
+          (String) session.getAttribute("Silverpeas_pwdForHyperlink"));
     }
     return null;
   }

@@ -117,12 +117,12 @@ function getContext() {
 
 function getDomainsBarPage()
 {
-	return "/admin/jsp/DomainsBarSilverpeasV5.jsp";
+	return "DomainsBarSilverpeasV5.jsp";
 }
 
 function getTopBarPage()
 {
-	return "/admin/jsp/TopBarSilverpeasV5.jsp";
+	return "TopBarSilverpeasV5.jsp";
 }
 
 function loadThisPage() {

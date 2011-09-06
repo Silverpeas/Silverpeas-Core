@@ -47,8 +47,6 @@ String			topBarParams			= "";
 String			frameBottomParams		= "";
 boolean			login					= false;
 
-//System.out.println("attachmentId = "+attachmentId);
-
 if (m_MainSessionCtrl == null)
 {
 %>
@@ -63,7 +61,7 @@ else
 	if (helper == null)
 	{
 		helper = new LookSilverpeasV5Helper(m_MainSessionCtrl, gef.getFavoriteLookSettings());
-		helper.setMainFrame("/admin/jsp/MainFrameSilverpeasV5.jsp");
+		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
 
 		session.setAttribute("Silverpeas_LookHelper", helper);
 		login = true;
@@ -73,13 +71,10 @@ else
 	if (StringUtil.isDefined(componentIdFromRedirect))
 		componentExists = (organizationCtrl.getComponentInstLight(componentIdFromRedirect) != null);
 
-	//System.out.println("componentExists = "+componentExists);
 
 	if (!componentExists)
 	{
 		String spaceId = m_MainSessionCtrl.getFavoriteSpace();
-		//System.out.println("favoriteSpace = "+spaceId);
-
 		boolean spaceExists = false;
 		if (StringUtil.isDefined(spaceIdFromRedirect)) {
 			spaceExists = (organizationCtrl.getSpaceInstById(spaceIdFromRedirect) != null);
@@ -108,7 +103,7 @@ else
 		frameBottomParams += "&amp;Login=1";
 	}
 
-	if (!"/admin/jsp/MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
+	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
 	{
 		session.setAttribute("RedirectToSpaceId", spaceIdFromRedirect);
 		%>
