@@ -26,8 +26,12 @@ package com.silverpeas;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * A service specific to a Silverpeas component.
- * It defines the common methods a service of a Silverpeas component must provide.
+ * A service providing the transversal operations related to a given Silverpeas component.
+ * 
+ * A Silverpeas component aims to manage a given type of content and it is based upon some settings
+ * and i18n messages. Some capabilities of a Silverpeas component are provided by a service that is
+ * a bean with business logic transversal methods; the core business logic of the component should 
+ * be provided by the resources themselves (see the DDD (Domain Driven Development) approach).
  */
 public interface SilverpeasComponentService {
   
@@ -37,7 +41,7 @@ public interface SilverpeasComponentService {
    * @param contentId the unique identifier of the content to get.
    * @return a Silverpeas content.
    */
-  <T extends SilverpeasContent> T getContent(String contentId);
+  <T extends SilverpeasContent> T getContentById(String contentId);
   
   /**
    * Gets the settings of this Silverpeas component.

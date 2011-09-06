@@ -146,7 +146,7 @@ public class CommentUserNotificationService extends CommentActionListener {
         SilverpeasComponentService service = register.get(component);
         try {
           SilverpeasContent commentedContent =
-                  service.getContent(newComment.getForeignKey().getId());
+                  service.getContentById(newComment.getForeignKey().getId());
           Set<String> recipients = getInterestedUsers(newComment.getCreator(), commentedContent);
           NotificationMetaData notification = createNotification(
                   component + "." + SUBJECT_COMMENT_ADDING,

@@ -154,7 +154,7 @@ public class CommentUserNotificationServiceTest {
   protected void setUpClassifiedComments() {
     ForeignPK classifiedPk = new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID);
     for (int i = 0; i < 5; i++) {
-      String date = (new Date()).toString();
+      Date date = new Date();
       UserDetail commentAuthor = new UserDetail();
       commentAuthor.setId(String.valueOf(i));
       Comment aComment = new Comment(new CommentPK(String.valueOf(i), CLASSIFIED_INSTANCEID),
@@ -162,7 +162,7 @@ public class CommentUserNotificationServiceTest {
       aComment.setOwnerDetail(commentAuthor);
       classifiedComments.add(aComment);
     }
-    String date = new Date().toString();
+    Date date = new Date();
     UserDetail commentAuthor = new UserDetail();
     commentAuthor.setId(String.valueOf(COMMENT_AUTHORID));
     concernedComment = new Comment(

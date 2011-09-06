@@ -36,7 +36,7 @@ public class ClassifiedService implements SilverpeasComponentService {
   public static final String COMPONENT_NAME = "classifieds";
 
   @Override
-  public Classified getContent(String contentId) {
+  public Classified getContentById(String contentId) {
     if (!classifieds.containsKey(contentId)) {
       throw new RuntimeException("classified of id " + contentId + " not found");
     }

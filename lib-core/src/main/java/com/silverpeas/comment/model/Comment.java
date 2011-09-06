@@ -28,6 +28,7 @@ import com.silverpeas.SilverpeasContent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.util.Date;
 
 /**
  * This object contains the description of document
@@ -41,23 +42,25 @@ public class Comment implements SilverpeasContent {
   private WAPrimaryKey foreign_key;
   private int owner_id;
   private String message;
-  private String creation_date;
-  private String modification_date;
+  private Date creation_date;
+  private Date modification_date;
   private UserDetail ownerDetail;
 
   private void init(CommentPK pk, WAPrimaryKey foreign_key, int owner_id,
-      String message, String creation_date, String modification_date) {
+      String message, Date creation_date, Date modification_date) {
     this.pk = pk;
     this.foreign_key = foreign_key;
     this.owner_id = owner_id;
     this.message = message;
-    this.creation_date = creation_date;
-    this.modification_date = modification_date;
+    this.creation_date = new Date(creation_date.getTime());
+    if (modification_date != null) {
+      this.modification_date = new Date(modification_date.getTime());
+    }
   }
 
   public Comment(CommentPK pk, WAPrimaryKey foreign_key, int owner_id,
-      String owner, String message, String creation_date,
-      String modification_date) {
+      String owner, String message, Date creation_date,
+      Date modification_date) {
     init(pk, foreign_key, owner_id, message, creation_date,
         modification_date);
   }
@@ -97,20 +100,25 @@ public class Comment implements SilverpeasContent {
     return this.message;
   }
 
-  public void setCreationDate(String creation_date) {
-    this.creation_date = creation_date;
+  public void setCreationDate(Date creation_date) {
+    this.creation_date = new Date(creation_date.getTime());
   }
 
-  public String getCreationDate() {
-    return this.creation_date;
+  @Override
+  public Date getCreationDate() {
+    return new Date(this.creation_date.getTime());
   }
 
-  public void setModificationDate(String modification_date) {
-    this.modification_date = modification_date;
+  public void setModificationDate(Date modification_date) {
+    this.modification_date = new Date(modification_date.getTime());
   }
 
-  public String getModificationDate() {
-    return this.modification_date;
+  public Date getModificationDate() {
+    Date date = null;
+    if (this.modification_date != null) {
+      date = new Date(this.modification_date.getTime());
+    }
+    return date;
   }
   
   public UserDetail getOwnerDetail() {

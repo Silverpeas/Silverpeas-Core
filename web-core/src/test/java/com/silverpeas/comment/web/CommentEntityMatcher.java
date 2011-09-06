@@ -25,6 +25,7 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.model.Comment;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
@@ -32,6 +33,8 @@ import org.hamcrest.Description;
  * A matcher between a web comment entity and a comment it should represent.
  */
 public class CommentEntityMatcher extends BaseMatcher<CommentEntity> {
+  
+  private static final FastDateFormat dateFormat = FastDateFormat.getInstance("dd/MM/yyyy");
 
   private Comment comment;
 
@@ -52,9 +55,9 @@ public class CommentEntityMatcher extends BaseMatcher<CommentEntity> {
       match = comment.getCommentPK().getId().equals(actual.getId()) &&
           comment.getCommentPK().getInstanceId().equals(actual.getComponentId()) &&
           comment.getForeignKey().getId().equals(actual.getResourceId()) &&
-          comment.getCreationDate().equals(actual.getCreationDate()) &&
+          dateFormat.format(comment.getCreationDate()).equals(actual.getCreationDate()) &&
           comment.getMessage().equals(actual.getText()) &&
-          comment.getModificationDate().equals(actual.getModificationDate()) &&
+          dateFormat.format(comment.getModificationDate()).equals(actual.getModificationDate()) &&
           comment.getOwnerDetail().getId().equals(actual.getAuthor().getId());
           if (!actual.getAuthor().getAvatar().isEmpty()) {
             match &= actual.getAuthor().getAvatar().endsWith(comment.getOwnerDetail().getAvatar());

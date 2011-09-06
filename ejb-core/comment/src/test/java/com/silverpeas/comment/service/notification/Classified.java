@@ -25,6 +25,7 @@ package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.SilverpeasContent;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.Date;
 
 /**
  * A silverpeas content to use in tests.
@@ -76,6 +77,11 @@ public class Classified implements SilverpeasContent {
   public Classified entitled(String title) {
     this.title = title;
     return this;
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return new Date();
   }
   
 }
