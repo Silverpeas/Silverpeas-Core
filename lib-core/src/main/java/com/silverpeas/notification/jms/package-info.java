@@ -23,8 +23,9 @@
  */
 
 /**
- * <p>The JMS adapter to the notification API.</p>
- * <p>It provides an implementation of the Silverpeas notification API built upon the JMS
- * technology.</p>
+ * <p>The JMS adapter of the Silverpeas Notification API.</p>
+ * <p>It provides an implementation of API upon the JMS technology. In order to be effective, each
+ * topic must exists before use; they have to be then declared in the configuration file corresponding
+ * to the underlying JMS system. (Topics aren't built dynbamically.)</p>
  */
 package com.silverpeas.notification.jms;

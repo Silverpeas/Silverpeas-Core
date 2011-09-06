@@ -193,6 +193,27 @@ public class Date extends java.util.Date implements Datable<Date>, Cloneable {
     return isInSameMonthInYear(self, other) && self.get(DAY_OF_MONTH) == other.get(DAY_OF_MONTH);
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    Date other;
+    if (obj.getClass().getName().equals("java.util.Date")) {
+      other = new Date((java.util.Date) obj);
+    } else if (getClass() != obj.getClass()) {
+      return false;
+    } else {
+      other = (Date) obj;
+    }
+    return isEqualTo(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   /**
    * Is the two specified calendar dates are in both a date in the same year?
    * @param date1 the date1 to compare with.

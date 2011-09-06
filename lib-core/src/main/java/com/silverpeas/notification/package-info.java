@@ -23,10 +23,14 @@
  */
 
 /**
- * Provides an API for subscribing to notifications sent on specific topics and for publishing messages
- * about some events or actions occuring in Silverpeas. In this API, a notification is a message
- * sent by a publisher onto a specific topic. Subscribers to this topic will be then informed of the
- * incoming notification through a callback with the message passed as parameter.
+ * Provides an API for pusblishing and for receiving notifications about some topics. A topic refers
+ * the nature of information that will be carried by the notifications; for example, a topic can
+ * be related to the actions (add and removal) on the comments over the contents managed in Silverpeas.
+ * A notification is a message sent by a publisher over a specific topic. Objects interested by such
+ * messages have to subscribe for notifications about this topic; theses are
+ * subscribers that will be then informed of the incoming notifications through a callback with the
+ * message passed as parameter.
+ * 
  * The API can also be used for posting messages to several end-points (one to many user
  * communication for example).
  * The API decouples the client from the specific messaging system (JMS, AMQP, ...) used to provide

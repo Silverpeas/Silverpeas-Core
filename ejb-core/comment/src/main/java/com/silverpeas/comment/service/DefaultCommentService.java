@@ -352,7 +352,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   }
 
   @Override
-  public Comment getContent(String contentId) {
+  public Comment getContentById(String contentId) {
     return getComment(new CommentPK(contentId));
   }
 

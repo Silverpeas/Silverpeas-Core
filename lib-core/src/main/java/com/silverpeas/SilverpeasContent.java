@@ -25,10 +25,15 @@ package com.silverpeas;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * A content managed in the Silverpeas collaborative portal.
- * This interface defines the common properties all kinds of content has to provide.
+ * 
+ * A content in Silverpeas is resource with a content (that can be empty); for example, a publication
+ * in Silverpeas is a content.
+ * This interface defines the common properties the different type of content in Silverpeas has
+ * to support.
  */
 public interface SilverpeasContent extends Serializable {
   
@@ -39,7 +44,7 @@ public interface SilverpeasContent extends Serializable {
   String getId();
   
   /**
-   * Gets the unique identifier of the Silverpeas component instance that handles this content.
+   * Gets the unique identifier of the Silverpeas component instance that manages this content.
    * @return the unique identifier of the component instance.
    */
   String getComponentInstanceId();
@@ -51,14 +56,20 @@ public interface SilverpeasContent extends Serializable {
   String getURL();
   
   /**
-   * Gets the creator of this content.
+   * Gets the author that has created this content.
    * @return the detail about the user that created this content.
    */
   UserDetail getCreator();
   
   /**
+   * Gets the date at which this content was created.
+   * @return the date at which this content was created.
+   */
+  Date getCreationDate();
+  
+  /**
    * Gets the title of this content if any.
-   * @return the content title. Can be empty if no title was set or no title is defined for the
+   * @return the resource title. Can be empty if no title was set or no title is defined for a such
    * content.
    */
   String getTitle();

@@ -266,13 +266,10 @@ public class CommentEntity implements Exposable {
    * @param the language to use to encode the display date.
    * @return the resulting display date.
    */
-  private static String encodeToDisplayDate(String date, String language) {
-    String displayDate = date;
-    if (isDefined(date)) {
-      try {
+  private static String encodeToDisplayDate(java.util.Date date, String language) {
+    String displayDate;
+    if (date != null) {
         displayDate = DateUtil.getOutputDate(date, language);
-      } catch (ParseException ex) {
-      }
     } else {
       displayDate = DateUtil.getOutputDate(Date.today(), language);
     }
@@ -286,15 +283,14 @@ public class CommentEntity implements Exposable {
    * @param language the language in which the date is encoded.
    * @return the resulting decoded date.
    */
-  private static String decodeFromDisplayDate(String displayDate, String language) {
-    String date = displayDate;
+  private static java.util.Date decodeFromDisplayDate(String displayDate, String language) {
+    java.util.Date date = new java.util.Date();
     if (isDefined(displayDate)) {
       try {
-        date = DateUtil.date2SQLDate(date, language);
+        String sqlDate = DateUtil.date2SQLDate(displayDate, language);
+        date = new Date(DateUtil.parseDate(sqlDate));
       } catch (ParseException ex) {
       }
-    } else {
-      date = DateUtil.date2SQLDate(Date.today());
     }
     return date;
   }
