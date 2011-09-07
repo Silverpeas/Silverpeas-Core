@@ -23,6 +23,7 @@
  */
 package com.silverpeas.scheduler;
 
+import com.silverpeas.scheduler.trigger.CronJobTrigger;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,6 +31,7 @@ import com.silverpeas.scheduler.trigger.TimeUnit;
 import java.util.Calendar;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.concurrent.Callable;
 import org.junit.After;
 import org.junit.Before;
@@ -195,6 +197,22 @@ public class SchedulerTest {
     int minute = calendar.get(Calendar.MINUTE);
     String cron = minute + " * * * *";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
+    scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+  }
+  
+  @Test
+  public void aScheduledJobAtAGivenTimeInEveryDayShouldBeFound() throws Exception {
+    String cron = "0 5 * * *";
+    JobTrigger trigger = JobTrigger.triggerAt(cron);
+    scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+  }
+  
+  @Test
+  public void aScheduledJobAtWithATwoDigitsShouldBeFound() throws Exception {
+    String cron = "05 13 * * *";
+    CronJobTrigger trigger = (CronJobTrigger) JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertTrue(scheduler.isJobScheduled(JOB_NAME));
   }
