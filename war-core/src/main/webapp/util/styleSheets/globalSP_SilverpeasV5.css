@@ -4090,7 +4090,10 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #classification #list_pdc_position.field {
-  width: 98%;
+	width: 98%;
+	clear:both;
+	display:block;
+	float:none;
 }
 
 #classification.preview .list_pdc_position {
