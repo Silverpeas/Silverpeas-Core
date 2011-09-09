@@ -643,7 +643,6 @@ public class ImportExport {
     for (PublicationType publicationType : listPubType) {
       String pubId = Integer.toString(publicationType.getId());
       // pour chaque publication : parcourir ses noeuds
-      @SuppressWarnings("unchecked")
       List<NodePositionType> listNodePositionType = publicationType.getNodePositionsType().
           getListNodePositionType();
       for (NodePositionType nodePositionType : listNodePositionType) {
