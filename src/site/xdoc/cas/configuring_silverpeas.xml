@@ -39,8 +39,8 @@
         Set the various parameters (supposing that the keystore you have generated following the <a href="certificates.html">documentation</a> is in C:\Java\keystore.jks) :
       </p>
       <ul>
-        <li><b>javax.net.ssl.trustStore</b>=C:\Java\keystore.jks</li>
-        <li><b>ssl.keystore</b>=C:\Java\keystore.jks</li>
+        <li><b>javax.net.ssl.trustStore</b>=C:\\Java\\keystore.jks</li>
+        <li><b>ssl.keystore</b>=C:\\Java\\keystore.jks</li>
         <li><b>ssl.keystore.password</b>=changeit</li>
       </ul>
     </section>

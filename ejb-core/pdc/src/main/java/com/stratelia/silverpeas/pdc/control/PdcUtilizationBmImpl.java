@@ -191,6 +191,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
   /**
    * Create an used axis into the data base.
    * @param usedAxis - the object which contains all data about utilization of an axis
+   * @param treeId 
    * @return usedAxisId
    */
   @Override
@@ -204,11 +205,6 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
         return 1;
       } else {
         dao.add(usedAxis);
-        // une fois cette axe rajouté, il faut tenir compte de la propagation
-        // des choix aux niveaux
-        // obligatoire/facultatif et variant/invariante
-        // PAS ENCORE UTILE
-        // PdcUtilizationDAO.updateAllUsedAxis(con, usedAxis);
       }
     } catch (Exception exce_create) {
       throw new PdcException("PdcUtilizationBmImpl.addUsedAxis",

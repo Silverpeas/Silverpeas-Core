@@ -1,6 +1,7 @@
 *.iws
 *.ipr
 *.iml
+catalog.xml
 target
 .sonar-ide.properties
 /lib-core/.settings
