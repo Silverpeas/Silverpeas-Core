@@ -108,9 +108,9 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
 	String		sNbObjects			= "";
 	String		language			= resource.getLanguage();
 	
-    out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
 		// il peut y avoir aucun axe primaire dans un 1er temps
 		if (axis != null && axis.size()>0){
+		  	out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
             for (int i=0; i<axis.size(); i++){
 				searchAxis		= (SearchAxis) axis.get(i);
                 axisId			= searchAxis.getAxisId();
@@ -120,11 +120,11 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
                 if (nbPositions != 0)
                 {
                     out.println("<tr>");
-                    out.println("<td class=\"txtlibform\" width=\"30%\" nowrap><img src=\""+axisTypeIcon+"\" alt=\""+axisLabel+"\" align=\"absmiddle\">&nbsp;"+axisName+"&nbsp;"+displaySynonymsAxis(activeThesaurus, jargon, axisId)+":</td>");
+                    out.println("<td class=\"txtlibform\" width=\"30%\" nowrap><img src=\""+axisTypeIcon+"\" alt=\""+axisLabel+"\" align=\"absmiddle\"/>&nbsp;"+axisName+"&nbsp;"+displaySynonymsAxis(activeThesaurus, jargon, axisId)+":</td>");
                     if (showAllAxis)
                     	out.println("<td><select name=\"Axis"+axisId+"\" size=\"1\">");
                     else
-                    	out.println("<td><select name=\"Axis"+axisId+"\" size=\"1\" onChange=\"javascript:addValue(this, '"+axisId+"');\">");
+                    	out.println("<td><select name=\"Axis"+axisId+"\" size=\"1\" onchange=\"javascript:addValue(this, '"+axisId+"');\">");
                     out.println("<option value=\"\"></option>");
                     List values = searchAxis.getValues();
                     for (int v=0; v<values.size(); v++)
@@ -167,10 +167,8 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
                     out.println("</tr>");                        
                }
 			}// fin du for
-		} else {
-			out.println("<tr><td width=\"100%\" class=\"txtnav\" bgcolor=\"EDEDED\">&nbsp;</td></tr>");
-		} // fin du else
-    out.println("</table>");
+            out.println("</table>");
+		}
 }
 
 %>
@@ -402,6 +400,7 @@ function addValue(selectItem, axisId)
 		document.AdvancedSearch.Ids.value = axisId;
 		document.AdvancedSearch.action = "GlobalDeleteCriteria";
 	}
+	$.progressMessage();
 	document.AdvancedSearch.submit();
 }
 
