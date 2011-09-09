@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -61,6 +62,9 @@ public class GoToDocument extends GoTo {
     VersioningUtil versioningUtil = new VersioningUtil();
     Document document = versioningUtil.getDocument(version.getDocumentPK());
     String foreignId = document.getForeignKey().getId();
+    if (StringUtil.isDefined(componentId)) {
+      setGefSpaceId(req, componentId);
+    }
 
     if (isLoggedIn) {
       boolean isAccessAuthorized = false;

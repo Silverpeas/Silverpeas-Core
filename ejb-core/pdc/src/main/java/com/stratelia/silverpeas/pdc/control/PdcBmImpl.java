@@ -118,13 +118,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @param type - the whished type of the axe.
    * @return a sorted list.
    */
-  @SuppressWarnings("unchecked")
   @Override
   public List<AxisHeader> getAxisByType(String type) throws PdcException {
     try {
       Collection<AxisHeaderPersistence> axis = dao.findByWhereClause(new AxisPK("useless"),
-              " AxisType='"
-              + type + "' order by AxisOrder ");
+              " AxisType='" + type + "' order by AxisOrder ");
       return persistence2AxisHeaders(axis);
     } catch (PersistenceException exce_select) {
       throw new PdcException("PdcBmImpl.getAxisByType",

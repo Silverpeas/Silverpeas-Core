@@ -24,26 +24,17 @@
 
 package com.silverpeas.pdc.ejb;
 
+
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentPeas;
-import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.contentManager.*;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
-import javax.ejb.SessionContext;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.SessionContext;
 
 public class PdcBmEJB implements javax.ejb.SessionBean {
 

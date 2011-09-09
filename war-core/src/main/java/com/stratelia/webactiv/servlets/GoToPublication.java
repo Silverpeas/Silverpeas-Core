@@ -55,6 +55,9 @@ public class GoToPublication extends GoTo {
       componentId = pub.getPK().getInstanceId();
     }
 
+    // Set GEF and look helper space identifier
+    setGefSpaceId(req, componentId);
+    
     SilverTrace.info("peasUtil", "GoToPublication.doPost", "root.MSG_GEN_PARAM_VALUE",
             "componentId = " + componentId);
     String gotoURL = URLManager.getURL(null, componentId) + pub.getURL();

@@ -24,10 +24,8 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
-//import java.util.ArrayList;
-import java.util.List;
-
 import com.stratelia.silverpeas.classifyEngine.PertinentAxis;
+import java.util.List;
 
 /**
  * @author Nicolas EYSSERIC
