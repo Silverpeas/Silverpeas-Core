@@ -153,7 +153,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
 
     try {
       if (parameters.containsKey("cols")) {
-        cols = (Integer.valueOf(parameters.get("cols"))).intValue();
+        cols = Integer.valueOf(parameters.get("cols"));
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "RadioButtonDisplayer.display",

@@ -95,9 +95,8 @@ public class SpaceInstManager {
     spaceInst.setLanguage(spaceInstToCopy.getLanguage());
 
     // Create a copy of space translations
-    Iterator<Translation> translations = spaceInstToCopy.getTranslations().values().iterator();
-    while (translations.hasNext()) {
-      spaceInst.addTranslation(translations.next());
+    for (Translation translation : spaceInstToCopy.getTranslations().values()) {
+      spaceInst.addTranslation(translation);
     }
     spaceInst.setDisplaySpaceFirst(spaceInstToCopy.isDisplaySpaceFirst());
     spaceInst.setPersonalSpace(spaceInstToCopy.isPersonalSpace());

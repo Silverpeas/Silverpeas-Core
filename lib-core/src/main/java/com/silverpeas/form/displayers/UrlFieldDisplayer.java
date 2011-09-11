@@ -162,7 +162,7 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
       // Suggestions used ?
       String paramSuggestions =
           parameters.containsKey("suggestions") ? parameters.get("suggestions") : "false";
-      boolean useSuggestions = Boolean.valueOf(paramSuggestions).booleanValue();
+      boolean useSuggestions = Boolean.valueOf(paramSuggestions);
       List<String> suggestions = null;
       if (useSuggestions) {
         TextFieldImpl textField = (TextFieldImpl) field;

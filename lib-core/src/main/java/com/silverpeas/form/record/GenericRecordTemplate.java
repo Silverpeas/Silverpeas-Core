@@ -64,9 +64,8 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   Map<String, IndexedFieldTemplate> getFields() {
     if (fields == null || fields.isEmpty()) {
-      Iterator<FieldTemplate> fieldsIter = fieldList.iterator();
-      while (fieldsIter.hasNext()) {
-        GenericFieldTemplate field = (GenericFieldTemplate) fieldsIter.next();
+      for (FieldTemplate aFieldList : fieldList) {
+        GenericFieldTemplate field = (GenericFieldTemplate) aFieldList;
         field.setTemplateName(templateName);
         addFieldTemplate(field);
       }
@@ -96,9 +95,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   @Override
   public FieldTemplate[] getFieldTemplates() {
     FieldTemplate[] fieldsArray = new FieldTemplate[getFields().keySet().size()];
-    Iterator<IndexedFieldTemplate> fieldsEnum = getFields().values().iterator();
-    while (fieldsEnum.hasNext()) {
-      IndexedFieldTemplate field = fieldsEnum.next();
+    for (IndexedFieldTemplate field : getFields().values()) {
       fieldsArray[field.index] = field.fieldTemplate;
     }
     return fieldsArray;

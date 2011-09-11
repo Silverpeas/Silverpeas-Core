@@ -125,7 +125,7 @@ public class ForgottenPasswordMailParameters {
   }
 
   private static String replaceLineSeparators(String s) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     if (s != null) {
       int index = s.indexOf(TEXT_LINE_SEPARATOR);
       while (index != -1) {

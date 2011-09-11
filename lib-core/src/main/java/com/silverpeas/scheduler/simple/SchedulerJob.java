@@ -252,11 +252,11 @@ abstract public class SchedulerJob
       currentMonth = calInit.get(Calendar.MONTH);
       currentYear = calInit.get(Calendar.YEAR);
     }
-    if (calInit.getActualMinimum(Calendar.MONTH) == currentMonth.intValue()) {
+    if (calInit.getActualMinimum(Calendar.MONTH) == currentMonth) {
       currentMonth = calInit.getActualMaximum(Calendar.MONTH);
-      currentYear = currentYear.intValue() - 1;
+      currentYear = currentYear - 1;
     } else {
-      currentMonth = currentMonth.intValue() - 1;
+      currentMonth = currentMonth - 1;
     }
     nextTimeStamp = 0;
     bRunnable = true;
@@ -289,7 +289,7 @@ abstract public class SchedulerJob
 
     for (Integer minute : startMinutes) {
       try {
-        workInt = minute.intValue();
+        workInt = minute;
 
         if ((workInt < 0) || (workInt > 59)) {
           throw new SchedulerException(
@@ -308,7 +308,7 @@ abstract public class SchedulerJob
 
     for (Integer hours : startHours) {
       try {
-        workInt = hours.intValue();
+        workInt = hours;
 
         if ((workInt < 0) || (workInt > 23)) {
           throw new SchedulerException(
@@ -327,7 +327,7 @@ abstract public class SchedulerJob
 
     for (Integer days : startDaysOfMonth) {
       try {
-        workInt = days.intValue();
+        workInt = days;
 
         if ((workInt < 1) || (workInt > 31)) {
           throw new SchedulerException(
@@ -347,7 +347,7 @@ abstract public class SchedulerJob
     workVector = new ArrayList<Integer>();
     for (Integer month : startMonths) {
       try {
-        workInt = month.intValue();
+        workInt = month;
 
         if ((workInt < 1) || (workInt > 12)) {
           throw new SchedulerException(
@@ -370,7 +370,7 @@ abstract public class SchedulerJob
     workVector = new ArrayList<Integer>();
     for (Integer daysOfWeek : startDaysOfWeek) {
       try {
-        workInt = daysOfWeek.intValue();
+        workInt = daysOfWeek;
 
         if ((workInt < 0) || (workInt > 6)) {
           throw new SchedulerException(
@@ -381,25 +381,25 @@ abstract public class SchedulerJob
         // implementation .... :-))
         switch (workInt) {
           case 0:
-            workVector.add(Integer.valueOf(Calendar.SUNDAY));
+            workVector.add(Calendar.SUNDAY);
             break;
           case 1:
-            workVector.add(Integer.valueOf(Calendar.MONDAY));
+            workVector.add(Calendar.MONDAY);
             break;
           case 2:
-            workVector.add(Integer.valueOf(Calendar.TUESDAY));
+            workVector.add(Calendar.TUESDAY);
             break;
           case 3:
-            workVector.add(Integer.valueOf(Calendar.WEDNESDAY));
+            workVector.add(Calendar.WEDNESDAY);
             break;
           case 4:
-            workVector.add(Integer.valueOf(Calendar.THURSDAY));
+            workVector.add(Calendar.THURSDAY);
             break;
           case 5:
-            workVector.add(Integer.valueOf(Calendar.FRIDAY));
+            workVector.add(Calendar.FRIDAY);
             break;
           case 6:
-            workVector.add(Integer.valueOf(Calendar.SATURDAY));
+            workVector.add(Calendar.SATURDAY);
             break;
         }
       } catch (ClassCastException aException) {
@@ -665,11 +665,11 @@ abstract public class SchedulerJob
 
     currentTime = getMillisecondsOfCalendar(calcCalendar);
 
-    calcCalendar.set(Calendar.YEAR, currentYear.intValue());
-    calcCalendar.set(Calendar.MONTH, currentMonth.intValue());
-    calcCalendar.set(Calendar.DAY_OF_MONTH, currentDayOfMonth.intValue());
-    calcCalendar.set(Calendar.HOUR_OF_DAY, currentHour.intValue());
-    calcCalendar.set(Calendar.MINUTE, currentMinute.intValue());
+    calcCalendar.set(Calendar.YEAR, currentYear);
+    calcCalendar.set(Calendar.MONTH, currentMonth);
+    calcCalendar.set(Calendar.DAY_OF_MONTH, currentDayOfMonth);
+    calcCalendar.set(Calendar.HOUR_OF_DAY, currentHour);
+    calcCalendar.set(Calendar.MINUTE, currentMinute);
 
     SilverTrace.debug(MODULE_NAME, "SchedulerJob.getNextTimeStamp",
         "Start TimeStamp: "
@@ -717,15 +717,15 @@ abstract public class SchedulerJob
           }
         }
       }
-      calcCalendar.set(Calendar.MINUTE, currentMinute.intValue());
+      calcCalendar.set(Calendar.MINUTE, currentMinute);
 
       // Get new hour
       if (carryMinute) {
         if (vHours.isEmpty()) // Default ('*') -> Hit every hour
         {
           int maxHour = calcCalendar.getActualMaximum(Calendar.HOUR_OF_DAY);
-          if (currentHour.intValue() < maxHour) {
-            currentHour = currentHour.intValue() + 1;
+          if (currentHour < maxHour) {
+            currentHour = currentHour + 1;
             carryHour = false;
             carryDayOfMonth = false;
             carryMonth = false;
@@ -755,7 +755,7 @@ abstract public class SchedulerJob
             }
           }
         }
-        calcCalendar.set(Calendar.HOUR_OF_DAY, currentHour.intValue());
+        calcCalendar.set(Calendar.HOUR_OF_DAY, currentHour);
       }
 
       // Get new day of month
@@ -763,8 +763,8 @@ abstract public class SchedulerJob
         if (vDaysOfMonth.isEmpty()) // Default ('*') -> Hit every month
         {
           int maxMonth = calcCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-          if (currentDayOfMonth.intValue() < maxMonth) {
-            currentDayOfMonth = currentDayOfMonth.intValue() + 1;
+          if (currentDayOfMonth < maxMonth) {
+            currentDayOfMonth = currentDayOfMonth + 1;
             carryDayOfMonth = false;
             carryMonth = false;
           } else {
@@ -791,7 +791,7 @@ abstract public class SchedulerJob
             }
           }
         }
-        calcCalendar.set(Calendar.DAY_OF_MONTH, currentDayOfMonth.intValue());
+        calcCalendar.set(Calendar.DAY_OF_MONTH, currentDayOfMonth);
       }
 
       // Get new month
@@ -799,8 +799,8 @@ abstract public class SchedulerJob
         if (vMonths.isEmpty()) // Default ('*') -> Hit every month
         {
           int maxMonth = calcCalendar.getActualMaximum(Calendar.MONTH);
-          if (currentMonth.intValue() < maxMonth) {
-            currentMonth = currentMonth.intValue() + 1;
+          if (currentMonth < maxMonth) {
+            currentMonth = currentMonth + 1;
             carryMonth = false;
           } else {
             currentMonth = calcCalendar.getActualMinimum(Calendar.MONTH);
@@ -823,19 +823,19 @@ abstract public class SchedulerJob
             }
           }
         }
-        calcCalendar.set(Calendar.MONTH, currentMonth.intValue());
+        calcCalendar.set(Calendar.MONTH, currentMonth);
       }
 
       // Get new year
       if (carryMonth) {
         // Prevent Check for the 'ever carry' of one element lists
         if ((!firstYearAccess)
-            || ((currentMinute.intValue() == 0)
-            && (currentHour.intValue() == 0)
-            && (currentDayOfMonth.intValue() == 1) && (currentMonth.intValue() == 0))) {
+            || ((currentMinute == 0)
+            && (currentHour == 0)
+            && (currentDayOfMonth == 1) && (currentMonth == 0))) {
           // Hit every year
-          currentYear = currentYear.intValue() + 1;
-          calcCalendar.set(Calendar.YEAR, currentYear.intValue());
+          currentYear = currentYear + 1;
+          calcCalendar.set(Calendar.YEAR, currentYear);
         }
 
         firstYearAccess = false;
@@ -844,13 +844,13 @@ abstract public class SchedulerJob
       // If time stamp is greater than the current time check the day of week
       if (getMillisecondsOfCalendar(calcCalendar) > currentTime) {
         // Check eventualy day movement while calculations
-        if (calcCalendar.get(Calendar.DAY_OF_MONTH) == currentDayOfMonth.intValue()) {
+        if (calcCalendar.get(Calendar.DAY_OF_MONTH) == currentDayOfMonth) {
           // Check for correct day of week
           if (vDaysOfWeek.isEmpty()) {
             validTimeStamp = true;
           } else {
             for (Integer dayOfWeek : vDaysOfWeek) {
-              if (calcCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeek.intValue()) {
+              if (calcCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeek) {
                 validTimeStamp = true;
                 break;
               }

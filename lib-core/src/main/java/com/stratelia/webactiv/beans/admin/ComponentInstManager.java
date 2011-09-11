@@ -40,7 +40,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class ComponentInstManager {
@@ -82,9 +81,8 @@ public class ComponentInstManager {
     componentInst.setLanguage(componentInstToCopy.getLanguage());
 
     // Create a copy of component translations
-    Iterator<Translation> translations = componentInstToCopy.getTranslations().values().iterator();
-    while (translations.hasNext()) {
-      componentInst.addTranslation(translations.next());
+    for (Translation translation : componentInstToCopy.getTranslations().values()) {
+      componentInst.addTranslation(translation);
     }
 
     componentInst.setPublic(componentInstToCopy.isPublic());

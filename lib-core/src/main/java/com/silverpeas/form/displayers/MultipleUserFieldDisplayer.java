@@ -87,7 +87,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
 
     }
     if (template.isMandatory()) {
-      StringBuffer html = new StringBuffer();
+      StringBuilder html = new StringBuilder();
       html.append("   if (isWhitespace(stripInitialWhitespace(document.forms['")
           .append(PagesContext.getFormName())
           .append("'].elements['")
@@ -138,7 +138,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
 
     String userNames = "";
     String userIds = "";
-    StringBuffer html = new StringBuffer();
+    StringBuilder html = new StringBuilder();
 
     String fieldName = template.getFieldName();
 

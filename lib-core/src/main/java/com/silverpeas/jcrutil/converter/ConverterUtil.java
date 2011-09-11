@@ -85,9 +85,8 @@ public class ConverterUtil {
    */
   public static String convertToJcrPath(String name) {
     String coolName = name.replaceAll(" ", SPACE_TOKEN);
-    StringBuffer buffer = new StringBuffer(coolName.length() + 10);
-    StringTokenizer tokenizer = new StringTokenizer(coolName, PATH_SEPARATOR,
-        true);
+    StringBuilder buffer = new StringBuilder(coolName.length() + 10);
+    StringTokenizer tokenizer = new StringTokenizer(coolName, PATH_SEPARATOR, true);
     while (tokenizer.hasMoreTokens()) {
       String token = tokenizer.nextToken();
       if (PATH_SEPARATOR.equals(token)) {

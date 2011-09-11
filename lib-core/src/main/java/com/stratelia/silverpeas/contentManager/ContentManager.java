@@ -741,7 +741,7 @@ public class ContentManager implements Serializable {
         // add the result into the sortedSet
         if (silverContentId != -1) {
           // le composant dont instanceId et objectId courant fait partie du PDC
-          alSilverContentId.add(Integer.valueOf(silverContentId));
+          alSilverContentId.add(silverContentId);
         }
 
       }
@@ -988,7 +988,7 @@ public class ContentManager implements Serializable {
       // Loop on the alSilverContentId
       String instanceId = "";
       for (Integer oneSilverContentId : alSilverContentId) {
-        prepStmt.setInt(1, oneSilverContentId.intValue());
+        prepStmt.setInt(1, oneSilverContentId);
         SilverTrace.info("contentManager", "ContentManager.getInstanceId",
             "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
             + " silverContentId=" + oneSilverContentId);
@@ -1047,7 +1047,7 @@ public class ContentManager implements Serializable {
 
       // Fetch the result
       while (resSet.next()) {
-        allSilverContentIds.add(Integer.valueOf(resSet.getInt(1)));
+        allSilverContentIds.add(resSet.getInt(1));
       }
 
       return allSilverContentIds;

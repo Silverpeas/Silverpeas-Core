@@ -23,15 +23,15 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
-import java.util.Comparator;
-
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+
+import java.util.Comparator;
 
 public class ComponentInstLightSorter implements Comparator<ComponentInstLight> {
 
   @Override
   public int compare(ComponentInstLight o1, ComponentInstLight o2) {
-    return Integer.valueOf(o1.getOrderNum()).compareTo(Integer.valueOf(o2.getOrderNum()));
+    return Integer.valueOf(o1.getOrderNum()).compareTo(o2.getOrderNum());
   }
 
 }

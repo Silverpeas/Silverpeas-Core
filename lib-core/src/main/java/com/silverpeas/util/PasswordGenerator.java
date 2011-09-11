@@ -107,43 +107,43 @@ public class PasswordGenerator {
     int length = (maxLength > minLength
         ? minLength + random(maxLength - minLength + 1) : minLength);
     for (int i = 0; i < length; i++) {
-      indexes.add(new Integer(i));
+      indexes.add(i);
     }
     char[] result = new char[length];
     int currentIndex;
     if (atLeastOneUpperCaseChar) {
       currentIndex = random(indexes.size());
-      result[indexes.get(currentIndex).intValue()] = randomUpperCaseChar();
+      result[indexes.get(currentIndex)] = randomUpperCaseChar();
       indexes.remove(currentIndex);
     }
     if (atLeastOneLowerCaseChar) {
       currentIndex = random(indexes.size());
-      result[indexes.get(currentIndex).intValue()] = randomLowerCaseChar();
+      result[indexes.get(currentIndex)] = randomLowerCaseChar();
       indexes.remove(currentIndex);
     }
     if (atLeastOneNumberChar) {
       currentIndex = random(indexes.size());
-      result[indexes.get(currentIndex).intValue()] = randomNumberChar();
+      result[indexes.get(currentIndex)] = randomNumberChar();
       indexes.remove(currentIndex);
     }
     if (atLeastOneSpecialChar) {
       currentIndex = random(indexes.size());
-      result[indexes.get(currentIndex).intValue()] = randomSpecialChar();
+      result[indexes.get(currentIndex)] = randomSpecialChar();
       indexes.remove(currentIndex);
     }
     for (Integer indexe : indexes) {
       switch (random(4)) {
         case 0:
-          result[indexe.intValue()] = randomUpperCaseChar();
+          result[indexe] = randomUpperCaseChar();
           break;
         case 1:
-          result[indexe.intValue()] = randomLowerCaseChar();
+          result[indexe] = randomLowerCaseChar();
           break;
         case 2:
-          result[indexe.intValue()] = randomNumberChar();
+          result[indexe] = randomNumberChar();
           break;
         case 3:
-          result[indexe.intValue()] = randomSpecialChar();
+          result[indexe] = randomSpecialChar();
           break;
       }
     }

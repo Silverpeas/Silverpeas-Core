@@ -303,7 +303,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
     if (result == null) {
       return false;
     }
-    return result.intValue() >= 1;
+    return result >= 1;
   }
   static final private String SELECT_COUNT_USERROLE_USER_REL = "select count(*) from ST_UserRole_User_Rel"
       + " where userId = ? and userRoleId = ?";
@@ -405,7 +405,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
     if (result == null) {
       return false;
     }
-    return result.intValue() >= 1;
+    return result >= 1;
   }
   static final private String SELECT_COUNT_USERROLE_GROUP_REL =
       "select count(*) from ST_UserRole_Group_Rel where groupId = ? and userRoleId = ?";

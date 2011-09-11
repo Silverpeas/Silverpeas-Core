@@ -24,25 +24,22 @@
 package com.silverpeas.util.web.servlet;
 
 import com.silverpeas.util.StringUtil;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.stratelia.webactiv.util.exception.UtilException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
-import com.stratelia.webactiv.util.exception.UtilException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  * Utility class for file uploading.
@@ -103,9 +100,7 @@ public class FileUploadUtil {
    */
   public static String getParameter(List<FileItem> items, String parameterName,
       String defaultValue, String encoding) {
-    Iterator<FileItem> iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = iter.next();
+    for (FileItem item : items) {
       if (item.isFormField() && parameterName.equals(item.getFieldName())) {
         try {
           return item.getString(encoding);
@@ -154,9 +149,7 @@ public class FileUploadUtil {
   }
 
   public static FileItem getFile(List<FileItem> items, String parameterName) {
-    Iterator<FileItem> iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = iter.next();
+    for (FileItem item : items) {
       if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
         return item;
       }
@@ -165,9 +158,7 @@ public class FileUploadUtil {
   }
 
   public static FileItem getFile(List<FileItem> items) {
-    Iterator<FileItem> iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = iter.next();
+    for (FileItem item : items) {
       if (!item.isFormField()) {
         return item;
       }
