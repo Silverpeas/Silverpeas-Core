@@ -35,7 +35,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -250,7 +249,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Set or unset the isMandatory flag
    */
   public void setMandatory(Boolean isMandatory) {
-    this.mandatory = isMandatory.booleanValue();
+    this.mandatory = isMandatory;
   }
 
   /**
@@ -300,10 +299,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   @Override
   public Map<String, String> getParameters(String language) {
-    Iterator<Parameter> parametersIter = parametersObj.iterator();
-
-    while (parametersIter.hasNext()) {
-      Parameter parameter = parametersIter.next();
+    for (Parameter parameter : parametersObj) {
       addParameter(parameter.getName(), parameter.getValue(language));
     }
     return parameters;
@@ -345,9 +341,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
 
   public Map<String, String> getLabels() {
     if (labels == null || labels.isEmpty()) {
-      Iterator<Label> labelsIter = labelsObj.iterator();
-      while (labelsIter.hasNext()) {
-        Label label = labelsIter.next();
+      for (Label label : labelsObj) {
         addLabel(label.getLabel(), label.getLanguage());
       }
     }
@@ -407,10 +401,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     }
 
     List<String> langs = new ArrayList<String>();
-    Iterator<String> iter = labels.keySet().iterator();
-
-    while (iter.hasNext()) {
-      String lang = iter.next();
+    for (String lang : labels.keySet()) {
       langs.add(labels.get(lang));
     }
 

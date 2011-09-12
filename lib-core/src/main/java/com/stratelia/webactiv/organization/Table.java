@@ -770,7 +770,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getInteger", SilverpeasException.ERROR,
               "admin.EX_ERR_NOT_UNIQUE_ROW");
     }
-    return Integer.valueOf(result);
+    return result;
   }
 
   protected int insertRow(String insertQuery, T row) throws AdminPersistenceException {
@@ -896,7 +896,7 @@ public abstract class Table<T> {
         valret = true;
       }
       theQuery.append(column).append(" = ?");
-      theVect.add(new Integer(value));
+      theVect.add(value);
     }
     return valret;
   }

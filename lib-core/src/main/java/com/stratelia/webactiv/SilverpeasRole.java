@@ -28,6 +28,6 @@ public enum SilverpeasRole {
   admin, publisher, writer, user, reader, supervisor;
 
   public boolean isInRole(String role) {
-    return this.equals(valueOf(role));
+    return this == valueOf(role);
   }
 }

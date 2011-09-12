@@ -23,23 +23,21 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 public abstract class Schema {
 
@@ -136,10 +134,9 @@ public abstract class Schema {
 
   public synchronized void close() {
     SilverTrace.info("util", "Schema.close()", "root.MSG_GEN_ENTER_METHOD");
-    Iterator i = statementsMap.values().iterator();
 
-    while (i.hasNext()) {
-      DBUtil.close((Statement) i.next());
+    for (Object o : statementsMap.values()) {
+      DBUtil.close((Statement) o);
     }
     statementsMap.clear();
     try {
@@ -193,11 +190,6 @@ public abstract class Schema {
   public PreparedStatement getStatement(String query) throws SQLException {
     SilverTrace.info("util", "Schema.getStatement()",
         "root.MSG_GEN_ENTER_METHOD", query);
-    /*
-     * PreparedStatement statement =(PreparedStatement) statementsMap.get(query); if (statement ==
-     * null) { statement = connection.prepareStatement(query); statementsMap.put(query, statement);
-     * } return statement;
-     */
     PreparedStatement statement = getConnection().prepareStatement(query);
     SilverTrace.info("util", "Schema.getStatement()",
         "root.MSG_GEN_PARAM_VALUE", "statement=" + statement);

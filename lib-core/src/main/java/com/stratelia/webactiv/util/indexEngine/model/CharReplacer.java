@@ -30,16 +30,12 @@ import java.util.Map;
 /**
  * A CharReplacer replace all the occurences of a given chars' set in a String with replacement
  * chars.
- * 
- * <PRE>
- * CharReplacer r = new CharReplacer();
- * r.setReplacement(&quot;éèê&quot;, &quot;e&quot;);
- * r.setReplacement(&quot;àâ&quot;, &quot;a&quot;);
- * r.setReplacement(&quot;!,.;&quot;, null);
- * 
- * // print &quot;evenement a Grenoble&quot;
- * System.out.println(r.replace(&quot;événement à Grenoble!&quot;));
- * </PRE>
+ * <p/>
+ * <PRE> CharReplacer r = new CharReplacer(); r.setReplacement(&quot;éèê&quot;, &quot;e&quot;);
+ * r.setReplacement(&quot;àâ&quot;, &quot;a&quot;); r.setReplacement(&quot;!,.;&quot;, null);
+ * <p/>
+ * // print &quot;evenement a Grenoble&quot; System.out.println(r.replace(&quot;événement à
+ * Grenoble!&quot;)); </PRE>
  */
 public class CharReplacer {
   /**
@@ -65,12 +61,9 @@ public class CharReplacer {
    * replacement string is shorter then the toBeReplaced string all the missing characters are
    * assumed equal to the last. If the replacement string is empty all occurences of the
    * toBeReplaced characters will be pruned. This statements are equivalent :
-   * 
-   * <PRE>
-   * setReplacement(&quot;éèê&quot;, &quot;e&quot;);
-   * setReplacement(&quot;éèê&quot;, &quot;eee&quot;);
-   * setReplacement(&quot;éèê&quot;, &quot;eeeeeeeee&quot;);
-   * </PRE>
+   * <p/>
+   * <PRE> setReplacement(&quot;éèê&quot;, &quot;e&quot;); setReplacement(&quot;éèê&quot;,
+   * &quot;eee&quot;); setReplacement(&quot;éèê&quot;, &quot;eeeeeeeee&quot;); </PRE>
    */
   public void setReplacement(String toBeReplaced, String replacement) {
     for (int i = 0; i < toBeReplaced.length(); i++) {
@@ -84,8 +77,7 @@ public class CharReplacer {
         replacementChar = replacement.charAt(replacement.length() - 1);
       }
 
-      replacementMap.put(new Character(toBeReplaced.charAt(i)), new Character(
-          replacementChar));
+      replacementMap.put(toBeReplaced.charAt(i), replacementChar);
     }
   }
 
@@ -95,21 +87,17 @@ public class CharReplacer {
    */
   public String replace(String s) {
     final int length = s.length();
-    StringBuffer result = new StringBuffer(length);
-
-    int getPos;
-    char oldChar;
+    StringBuilder result = new StringBuilder(length);
     char newChar;
-    Character c;
+    for (int getPos = 0; getPos < length; getPos++) {
+      char oldChar = s.charAt(getPos);
 
-    for (getPos = 0; getPos < length; getPos++) {
-      oldChar = s.charAt(getPos);
-
-      c = (Character) replacementMap.get(new Character(oldChar));
-      if (c != null)
-        newChar = c.charValue();
-      else
+      Character c = (Character) replacementMap.get(oldChar);
+      if (c != null) {
+        newChar = c;
+      } else {
         newChar = oldChar;
+      }
 
       if (newChar != '\u0000') {
         result.append(newChar);

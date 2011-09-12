@@ -291,36 +291,41 @@ public class PdcSearchRequestRouterHelper {
       pdcSC.setSecondaryAxis(showSecondarySearchAxis);
     }
 
-    SearchAxis axis = null;
-
     SilverTrace.info("pdcPeas",
         "PdcPeasRequestRouterHelper.setAttributesAdvancedSearch()",
         "root.MSG_GEN_PARAM_VALUE", "avant getAxis(P)");
 
     // we get primary and eventually secondary axis
     List<SearchAxis> primarySearchAxis = pdcSC.getAxis("P");
-    for (int p = 0; p < primarySearchAxis.size(); p++) {
-      axis = (SearchAxis) primarySearchAxis.get(p);
-      axis.setValues(pdcSC.getDaughterValues(
-          Integer.toString(axis.getAxisId()), "0"));
+    List<SearchAxis> pertinentPrimaryAxis = new ArrayList<SearchAxis>();
+    for (SearchAxis axis : primarySearchAxis) {
+      List<Value> values = pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0");
+      if (values != null && !values.isEmpty()) {
+        axis.setValues(values);
+        pertinentPrimaryAxis.add(axis);
+      }
     }
-
+    
     SilverTrace.info("pdcPeas",
         "PdcPeasRequestRouterHelper.setAttributesAdvancedSearch()",
         "root.MSG_GEN_PARAM_VALUE", "avant getAxis(S)");
     List<SearchAxis> secondarySearchAxis = null;
+    List<SearchAxis> pertinentSecondaryAxis = new ArrayList<SearchAxis>();
     if ("YES".equals(showSecondarySearchAxis)) {
       // user wants to see secondary axis
       secondarySearchAxis = pdcSC.getAxis("S");
-      for (int s = 0; s < secondarySearchAxis.size(); s++) {
-        axis = (SearchAxis) secondarySearchAxis.get(s);
-        axis.setValues(pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0"));
+      for (SearchAxis axis : secondarySearchAxis) {
+        List<Value> values = pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0");
+        if (values != null && !values.isEmpty()) {
+          axis.setValues(values);
+          pertinentSecondaryAxis.add(axis);
+        }
       }
     }
 
     // We set axis into the request
-    request.setAttribute("ShowPrimaryAxis", primarySearchAxis);
-    request.setAttribute("ShowSecondaryAxis", secondarySearchAxis);
+    request.setAttribute("ShowPrimaryAxis", pertinentPrimaryAxis);
+    request.setAttribute("ShowSecondaryAxis", pertinentSecondaryAxis);
     request.setAttribute("ShowSndSearchAxis", pdcSC.getSecondaryAxis());
 
     SilverTrace.info("pdcPeas",

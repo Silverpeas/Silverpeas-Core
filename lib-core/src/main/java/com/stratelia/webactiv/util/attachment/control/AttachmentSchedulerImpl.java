@@ -113,10 +113,8 @@ public class AttachmentSchedulerImpl
         folderToAnalyse = new File(detailPathToAnalyse);
         File[] filesList = folderToAnalyse.listFiles();
         AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
-        AttachmentPK foreignPK = new AttachmentPK(attachmentId, "useless",
-            componentId);
-        for (int j = 0; j < filesList.length; j++) {
-          File file = filesList[j];
+        AttachmentPK foreignPK = new AttachmentPK(attachmentId, "useless", componentId);
+        for (File file : filesList) {
           String fileName = file.getName();
           String physicalName = Long.toString(System.currentTimeMillis()) + ".3d";
           String logicalName = fileName.substring(0, fileName.lastIndexOf('.')) + ".3d";

@@ -823,7 +823,7 @@ public class ContainerManager implements java.io.Serializable {
       List<Integer> alFilteredPositions = new ArrayList<Integer>();
 
       while (resSet.next()) {
-        alFilteredPositions.add(Integer.valueOf(resSet.getInt(1)));
+        alFilteredPositions.add(resSet.getInt(1));
       }
 
       return alFilteredPositions;

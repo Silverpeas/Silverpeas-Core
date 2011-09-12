@@ -72,8 +72,8 @@ public class RepositoriesTypeManager {
   public void processImport(UserDetail userDetail,
       RepositoriesType repositoriesType, boolean isPOIUsed) {
 
-    List listRep_Type = repositoriesType.getListRepositoryType();
-    Iterator itListRep_Type = listRep_Type.iterator();
+    List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
+    Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
     OrganizationController orgaController = null;
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport();
@@ -83,7 +83,7 @@ public class RepositoriesTypeManager {
     int topicId = -1;
     String sPath = null;
     while (itListRep_Type.hasNext()) {
-      RepositoryType rep_Type = (RepositoryType) itListRep_Type.next();
+      RepositoryType rep_Type = itListRep_Type.next();
 
       componentId = rep_Type.getComponentId();
       topicId = rep_Type.getTopicId();
@@ -119,9 +119,9 @@ public class RepositoriesTypeManager {
           GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(
               userDetail, componentId);
 
-          Iterator itListcontenuPath = getPathContent(path);
+          Iterator<File> itListcontenuPath = getPathContent(path);
           while (itListcontenuPath.hasNext()) {
-            File file = (File) itListcontenuPath.next();
+            File file = itListcontenuPath.next();
             if (file.isFile()) {
               importFile(file, topicId, massiveReport, gedIE, attachmentIE,
                   versioningIE, pdcIE, isPOIUsed, isVersioningUsed, isDraftUsed);
@@ -217,7 +217,7 @@ public class RepositoriesTypeManager {
         attachmentIE.copyFile(componentId, attDetail, versioningIE
             .getVersioningPath(componentId));
         if (attDetail.getSize() != 0) {
-          List attachments = new ArrayList();
+          List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
           attachments.add(attDetail);
           versioningIE.importDocuments(pubDetailToCreate.getPK().getId(), componentId, attachments, 
               Integer.parseInt(userDetail.getId()), pubDetailToCreate.isIndexable(), 
@@ -262,9 +262,9 @@ public class RepositoriesTypeManager {
       AttachmentImportExport attachmentIE, VersioningImportExport versioningIE,
       PdcImportExport pdcIE, String componentId, int topicId,
       boolean isPOIUsed, boolean isVersioningUsed, boolean isDraftUsed) {
-    Iterator itListcontenuPath = getPathContent(path);
+    Iterator<File> itListcontenuPath = getPathContent(path);
     while (itListcontenuPath.hasNext()) {
-      File file = (File) itListcontenuPath.next();
+      File file = itListcontenuPath.next();
       if (file.isFile()) {
         importFile(file, topicId, massiveReport, gedIE, attachmentIE,
             versioningIE, pdcIE, isPOIUsed, isVersioningUsed, isDraftUsed);
@@ -295,9 +295,9 @@ public class RepositoriesTypeManager {
       PdcImportExport pdcIE, String componentId, int topicId,
       boolean isPOIUsed, boolean isVersioningUsed, boolean isDraftUsed)
       throws ImportExportException {
-    Iterator itListcontenuPath = getPathContent(path);
+    Iterator<File> itListcontenuPath = getPathContent(path);
     while (itListcontenuPath.hasNext()) {
-      File file = (File) itListcontenuPath.next();
+      File file = itListcontenuPath.next();
       if (file.isFile()) {
         importFile(file, topicId, massiveReport, gedIE, attachmentIE,
             versioningIE, pdcIE, isPOIUsed, isVersioningUsed, isDraftUsed);
@@ -314,16 +314,16 @@ public class RepositoriesTypeManager {
     }
   }
 
-  private Iterator getPathContent(File path) {
+  private Iterator<File> getPathContent(File path) {
     SilverTrace.debug("importExport", "RepositoriesTypeManager.getPathContent",
         "root.MSG_GEN_ENTER_METHOD", "path = " + path.getPath());
     // Récupération du contenu du dossier
     String[] listContenuStringPath = path.list();
-    List listcontenuPath = convertListStringToListFile(listContenuStringPath,
-        path.getPath());
-
+    
     // Tri alphabétique du contenu
     Arrays.sort(listContenuStringPath);
+    
+    List<File> listcontenuPath = convertListStringToListFile(listContenuStringPath, path.getPath());
 
     return listcontenuPath.iterator();
   }
@@ -335,8 +335,8 @@ public class RepositoriesTypeManager {
    * @param path - chemin des fichiers contenu dans les chaines de caractères.
    * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
-  private List convertListStringToListFile(String[] listFileName, String path) {
-    List listFile = new ArrayList();
+  private List<File> convertListStringToListFile(String[] listFileName, String path) {
+    List<File> listFile = new ArrayList<File>();
     if (listFileName == null) {
       return null;
     }
