@@ -97,11 +97,13 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk16</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <scope>provided</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>

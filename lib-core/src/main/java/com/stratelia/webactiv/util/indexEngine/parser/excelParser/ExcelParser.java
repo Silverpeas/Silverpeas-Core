@@ -24,19 +24,22 @@
 
 package com.stratelia.webactiv.util.indexEngine.parser.excelParser;
 
+import com.google.common.io.Closeables;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.parser.PipedParser;
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 
 /**
  * ExcelParser parse an excel file
@@ -48,41 +51,37 @@ public class ExcelParser extends PipedParser {
   }
 
   /**
-   * outPutContent read the text content of a pdf file and store it in out to be ready to be indexed
+   *Read the text content of a pdf file and store it in out to be ready to be indexed.
+   * @param out
+   * @param path
+   * @param encoding
+   * @throws IOException 
    */
-  public void outPutContent(Writer out, String path, String encoding)
-      throws IOException {
-    POIFSFileSystem fs = null;
-    HSSFWorkbook workbook = null;
+  @Override
+  public void outPutContent(Writer out, String path, String encoding) throws IOException {
     FileInputStream file = new FileInputStream(path);
     try {
-      fs = new POIFSFileSystem(file);
-      workbook = new HSSFWorkbook(fs);
+      POIFSFileSystem fs = new POIFSFileSystem(file);
+      HSSFWorkbook workbook = new HSSFWorkbook(fs);
 
       HSSFSheet sheet = null;
       for (int nbSheet = 0; nbSheet < workbook.getNumberOfSheets(); nbSheet++) {
         // extract sheet's name
         out.write(workbook.getSheetName(nbSheet));
         SilverTrace.debug("indexEngine", "ExcelParser.outputContent",
-            "root.MSG_GEN_PARAM_VALUE", "sheetName = "
-            + workbook.getSheetName(nbSheet));
-
+            "root.MSG_GEN_PARAM_VALUE", "sheetName = " + workbook.getSheetName(nbSheet));
         sheet = workbook.getSheetAt(nbSheet);
-
-        Iterator<HSSFRow> rows = sheet.rowIterator();
-        HSSFRow row = null;
+        Iterator<Row> rows = sheet.rowIterator();
         while (rows.hasNext()) {
-          row = rows.next();
-          Iterator<HSSFCell> cells = row.cellIterator();
-          HSSFCell cell = null;
+          Row row = rows.next();
+          Iterator<Cell> cells = row.cellIterator();
           while (cells.hasNext()) {
-            cell = cells.next();
+            Cell cell = cells.next();
             if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
               out.write(cell.getStringCellValue());
               out.write(' ');
               SilverTrace.debug("indexEngine", "ExcelParser.outputContent",
-                  "root.MSG_GEN_PARAM_VALUE", "cellValue = "
-                  + cell.getStringCellValue());
+                  "root.MSG_GEN_PARAM_VALUE", "cellValue = " + cell.getStringCellValue());
             }
           }
         }
@@ -91,8 +90,7 @@ public class ExcelParser extends PipedParser {
       SilverTrace.error("indexEngine", "ExcelParser.outPutContent()",
           "indexEngine.MSG_IO_ERROR_WHILE_READING", path, ioe);
     } finally {
-      if (file != null)
-        file.close();
+      IOUtils.closeQuietly(file);
     }
   }
 }

@@ -53,7 +53,7 @@ public class MSdocumentPropertiesManager {
     DocumentInputStream stream = null;
     PropertySet ps = null;
     try {
-      inputStream = new FileInputStream(new File(fileName));
+      inputStream = new FileInputStream(fileName);
       POIFSFileSystem fs = new POIFSFileSystem(inputStream);
 
       // DirectoryEntry directory = fs.getRoot();
@@ -80,11 +80,10 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return DocumentSummaryInformation of an Office document
-   * @param file
+   * @param fileName
    * @return DocumentSummaryInformation
    */
-  public DocumentSummaryInformation getDocumentSummaryInformation(
-      String fileName) {
+  public DocumentSummaryInformation getDocumentSummaryInformation(String fileName) {
     InputStream inputStream = null;
     DocumentInputStream stream = null;
     PropertySet ps = null;
@@ -100,9 +99,7 @@ public class MSdocumentPropertiesManager {
       // on estime que l'exception est dû au fait que nous ne sommes pas en
       // présence d'un fichier OLE2 (office)
       SilverTrace.warn("MSdocumentPropertiesManager.getSummaryInformation()",
-          "SilverpeasException.WARNING",
-          "util.EXE_CANT_GET_SUMMARY_INFORMATION" + ex.getMessage());
-      // System.out.println("pb getDocumentSummaryInformation:"+ex.getMessage());
+          "SilverpeasException.WARNING", "util.EXE_CANT_GET_SUMMARY_INFORMATION" + ex.getMessage());
     } finally {
       Closeables.closeQuietly(stream);
       Closeables.closeQuietly(inputStream);
@@ -112,7 +109,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Title of an Office document
-   * @param File
+   * @param fileName 
    * @return String
    */
   public String getTitle(String fileName) {
@@ -121,7 +118,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Subject of an Office document
-   * @param File
+   * @param fileName
    * @return String
    */
   public String getSubject(String fileName) {
@@ -130,7 +127,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Author of an Office document
-   * @param File
+   * @param fileName
    * @return String
    */
   public String getAuthor(String fileName) {
@@ -139,7 +136,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Comments of an Office document
-   * @param File
+   * @param fileName
    * @return String
    */
   public String getComments(String fileName) {
@@ -148,7 +145,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Security of an Office document
-   * @param File
+   * @param fileName
    * @return String
    */
   public int getSecurity(String fileName) {
@@ -157,7 +154,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Keywords of an Office document
-   * @param File
+   * @param fileName
    * @return String
    */
   public String getKeywords(String fileName) {
@@ -166,7 +163,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return SILVERID of an Office document
-   * @param String
+   * @param fileName
    * @return String
    */
   public String getSilverId(String fileName) {
@@ -175,7 +172,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return SILVERNAME of an Office document
-   * @param String
+   * @param fileName
    * @return String
    */
   public String getSilverName(String fileName) {
@@ -184,7 +181,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return LastSaveDateTime of an Office document
-   * @param String
+   * @param fileName
    * @return Date
    */
   public Date getLastSaveDateTime(String fileName) {
@@ -193,7 +190,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return CreateDateTime of an Office document
-   * @param String
+   * @param fileName
    * @return Date
    */
   public Date getLastCreateDateTime(String fileName) {
@@ -202,7 +199,7 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return if an Office document has a SummaryInformation
-   * @param SummaryInformation
+   * @param fileName
    * @return boolean
    */
   public boolean isSummaryInformation(String fileName) {
@@ -216,9 +213,9 @@ public class MSdocumentPropertiesManager {
   /**
    * Return The value of a personalizable Property of an Office document
    * (DocumentSummaryInformation)
-   * @param File - The Office document
-   * @param String - The name of the property
-   * @return String - The Value of the property
+   * @param fileName - The Office document
+   * @param propertyName - The name of the property
+   * @return The Value of the property
    */
   public String getPropertyValue(String fileName, String propertyName) {
     return "";

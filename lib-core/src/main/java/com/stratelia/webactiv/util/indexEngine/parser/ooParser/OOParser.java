@@ -102,7 +102,7 @@ public class OOParser implements Parser {
             "root.MSG_PARAM_VALUE", "file=" + file.toString());
     org.jdom.Document xmlDocContent = new org.jdom.Document();
     org.jdom.Document xmlMeta = new org.jdom.Document();
-    StringBuffer parsingResult = new StringBuffer();
+    StringBuilder parsingResult = new StringBuilder();
 
     try {
       List files = (List) file;
