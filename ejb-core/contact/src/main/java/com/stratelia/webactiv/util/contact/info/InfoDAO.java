@@ -25,15 +25,15 @@
 //TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.util.contact.info;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.contact.info.model.InfoPK;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class InfoDAO {
 
@@ -73,12 +73,11 @@ public class InfoDAO {
     InfoPK infoPK = new InfoPK("unknown", pubPK);
     String tableName = infoPK.getTableName();
 
-    newId = DBUtil.getNextId(tableName, new String("infoId"));
+    newId = DBUtil.getNextId(tableName, "infoId");
     infoPK.setId(new Integer(newId).toString());
 
     if (!hasInfo(con, pubPK, modelId)) {
-      String insertStatement = "INSERT INTO " + tableName
-          + " values ( ? , ? , ? , ? )";
+      String insertStatement = "INSERT INTO " + tableName + " values ( ? , ? , ? , ? )";
       PreparedStatement prepStmt = null;
 
       try {
