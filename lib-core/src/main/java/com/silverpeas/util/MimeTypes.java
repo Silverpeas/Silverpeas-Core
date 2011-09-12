@@ -56,6 +56,7 @@ public interface MimeTypes {
       "application/vnd.openxmlformats-officedocument.presentationml.presentation";
   public final String POWERPOINT_2007_TEMPLATE_MIME_TYPE = "application/vnd.openxmlformats-officedocument.presentationml.template";
   public final String POWERPOINT_2007_EXTENSION = "application/vnd.ms-powerpoint";
+  public final String RSS_MIME_TYPE = "application/rss+xml";
   public final String JAR_EXTENSION = "jar";
   public final String WAR_EXTENSION = "war";
   public final String EAR_EXTENSION = "ear";
