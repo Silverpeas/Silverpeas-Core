@@ -97,13 +97,6 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk16</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    -->
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -324,6 +317,20 @@
       <testResource>
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
+        <excludes>
+          <exclude>**/*.odp</exclude>
+          <exclude>**/*.doc</exclude>
+          <exclude>**/*.docx</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*.odp</include>
+          <include>**/*.doc</include>
+          <include>**/*.docx</include>
+        </includes>
       </testResource>
     </testResources>
     <filters>
