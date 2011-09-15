@@ -32,8 +32,8 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 
 /**
  *
@@ -62,16 +62,16 @@ public class DefaultClassificationGettingTest extends ResourceGettingTest<PdcTes
     assertThat(classification, is(undefined()));
   }
   
-  @Test
-  public void getDefaultClassificationForAComponentInstance() throws Exception {
-    PdcClassification theClassification =
-            aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build();
-    getTestResources().save(theClassification);
-    PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
-    assertNotNull(classification);
-    assertThat(classification, not(undefined()));
-    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
-  }
+//  @Test
+//  public void getDefaultClassificationForAComponentInstance() throws Exception {
+//    PdcClassification theClassification =
+//            aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build();
+//    getTestResources().save(theClassification);
+//    PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
+//    assertNotNull(classification);
+//    assertThat(classification, not(undefined()));
+//    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
+//  }
 
   @Override
   public String[] getExistingComponentInstances() {
@@ -91,7 +91,7 @@ public class DefaultClassificationGettingTest extends ResourceGettingTest<PdcTes
   @Override
   public PdcClassificationEntity aResource() {
     PdcClassification theClassification =
-            aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build();
+            aPdcClassification().onResource(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
     PdcClassificationEntity entity = null;
     try {

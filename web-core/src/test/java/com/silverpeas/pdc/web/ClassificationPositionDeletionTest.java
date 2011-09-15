@@ -33,7 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.PdcClassification.*;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
 
 /**
@@ -55,7 +55,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest<Pdc
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
     getTestResources().save(
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID));
+            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build());
   }
 
   @Test
@@ -116,7 +116,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest<Pdc
     PdcClassificationEntity entity = null;
     try {
       entity = getTestResources().toWebEntity(aPdcClassification().onResource(CONTENT_ID).inComponent(
-              COMPONENT_INSTANCE_ID), theUser);
+              COMPONENT_INSTANCE_ID).build(), theUser);
     } catch (ThesaurusException ex) {
       fail(ex.getMessage());
     }

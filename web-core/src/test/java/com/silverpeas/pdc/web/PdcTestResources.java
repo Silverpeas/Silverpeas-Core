@@ -23,9 +23,9 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import javax.inject.Named;
 import java.util.List;
-import com.silverpeas.pdc.web.beans.PdcClassification;
 import com.silverpeas.pdc.web.mock.PdcBmMock;
 import com.silverpeas.pdc.web.mock.ContentManagerMock;
 import com.silverpeas.personalization.UserPreferences;
@@ -110,12 +110,12 @@ public class PdcTestResources extends TestResources {
    * @param classification the PdC classification of a resource.
    * @param forUser for whom user the web entity should be built.
    * @return the web entity representing the specified PdC classification and for the specified user.
-   * @throws ThesaurusException if an error occurs while settings the synonyms.
+   * @throws ThesaurusException if an error olean ccurs while settings the synonyms.
    */
   public PdcClassificationEntity toWebEntity(final PdcClassification classification,
           final UserDetail forUser) throws ThesaurusException {
     return aPdcClassificationEntity(
-            fromPositions(classification.getPositions()),
+            fromPdcClassification(classification),
             inLanguage(FRENCH),
             atURI(URI.create(CLASSIFICATION_URI))).
             withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser));

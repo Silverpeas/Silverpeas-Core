@@ -112,7 +112,7 @@ public class PdcDefaultClassificationResource extends RESTWebService {
               atURI(getUriInfo().getAbsolutePath()));
       if (userPreferences.isThesaurusEnabled()) {
         UserThesaurusHolder theUserThesaurus =
-                pdcServiceProvider.getThesaurusOfUser(getUserDetail());
+                pdcServiceProvider().getThesaurusOfUser(getUserDetail());
         theClassificationEntity.withSynonymsFrom(theUserThesaurus);
       }
       return theClassificationEntity;

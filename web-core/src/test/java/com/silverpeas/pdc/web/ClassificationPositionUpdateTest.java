@@ -23,10 +23,10 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import com.silverpeas.pdc.web.beans.PdcClassification;
 import com.silverpeas.rest.ResourceUpdateTest;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -35,15 +35,13 @@ import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.test.context.ContextConfiguration;
 import static com.silverpeas.pdc.web.PdcTestResources.JAVA_PACKAGE;
 import static com.silverpeas.pdc.web.PdcTestResources.SPRING_CONTEXT;
-import static com.silverpeas.pdc.web.beans.PdcClassification.aPdcClassification;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.aPdcClassification;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static org.hamcrest.Matchers.equalTo;
@@ -70,7 +68,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTest
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
     theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
+            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
   }
 
@@ -97,7 +95,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTest
   }
 
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
-    ClassifyPosition position = theClassification.getPositions().get(0);
+    ClassifyPosition position = theClassification.getPositions().iterator().next();
     position.getListClassifyValue().clear();
     return PdcPositionEntity.fromClassifyPosition(position, FRENCH, URI.create(CLASSIFICATION_URI));
   }
@@ -116,7 +114,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTest
 
   @Override
   public PdcPositionEntity aResource() {
-    ClassifyPosition position = theClassification.getPositions().get(0);
+    ClassifyPosition position = theClassification.getPositions().iterator().next();
     return PdcPositionEntity.fromClassifyPosition(position, FRENCH, URI.create(CLASSIFICATION_URI));
   }
 

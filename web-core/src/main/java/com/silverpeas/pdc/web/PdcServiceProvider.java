@@ -23,6 +23,7 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -33,9 +34,12 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
+import static com.silverpeas.pdc.model.PdcClassification.*;
 
 /**
  * A provider of services on the classification plan (named PdC). This class implements the adaptor
@@ -124,7 +128,8 @@ public class PdcServiceProvider {
     if (positions.size() == 1) {
       for (UsedAxis anAxis : axis) {
         if (anAxis.getMandatory() == 1) {
-          throw new PdcPositionDeletionException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR,
+          throw new PdcPositionDeletionException(getClass().getSimpleName(),
+                  SilverTrace.TRACE_LEVEL_ERROR,
                   "Pdc.CANNOT_DELETE_VALUE");
         }
       }
@@ -146,6 +151,30 @@ public class PdcServiceProvider {
           ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
     return getPdcBm().getPositions(silverObjectId, componentId);
+  }
+
+  /**
+   * Gets the predefined PdC classification to use for classifying new contents in the specified
+   * node of the specified component instance. If the node isn't set, then the predefined PdC
+   * classification of the component instance is looking for.
+   * @param nodeId the unique identifier of the node. A node is way in Silverpeas to categorize
+   * contents in a Silverpeas component.
+   * @param componentId the unique identifier of the component.
+   * @return a default PdC classification to use to classify contents.
+   * @throws PdcException if an error occurs while getting the PdC classification.
+   */
+  PdcClassification getPreDefinedClassificationForContentsIn(String nodeId, String componentId)
+          throws PdcException {
+    if ("kemlia1".equals(componentId)) {
+      try {
+        List<ClassifyPosition> positions = getAllPositions("8", componentId);
+        return aClassificationFromPositions(positions).forResource(nodeId).inComponentInstance(
+                nodeId);
+      } catch (ContentManagerException ex) {
+        Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
+      }
+    }
+    return NO_DEFINED_CLASSIFICATION;
   }
 
   /**
