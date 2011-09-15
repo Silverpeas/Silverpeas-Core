@@ -21,8 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.web;
+package com.silverpeas.pdc.web.matchers;
 
+import com.silverpeas.pdc.web.PdcEntity;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;

@@ -23,9 +23,9 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import javax.inject.Inject;
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.pdc.web.beans.PdcClassification;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONUnmarshaller;
@@ -40,8 +40,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.PdcClassification.*;
-import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
+import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 
 /**
  * Unit tests on the serialization/deserialization of Pdc entities in/from JSON by using the 
@@ -81,7 +81,7 @@ public class JSONSerializationTest {
 
   private PdcClassificationEntity aPdcClassificationEntity() throws ThesaurusException {
     PdcClassification classification = aPdcClassification().onResource(CONTENT_ID).inComponent(
-            COMPONENT_INSTANCE_ID);
+            COMPONENT_INSTANCE_ID).build();
     return resources.toWebEntity(classification, resources.aUser());
   }
 }

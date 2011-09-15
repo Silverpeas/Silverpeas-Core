@@ -19,32 +19,32 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
+import org.junit.Test;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import com.silverpeas.rest.ResourceGettingTest;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 
 /**
- * Unit tests on the getting of the classification of a resource on the classification plan (named
- * PdC).
+ *
+ * @author mmoquillon
  */
-public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTestResources> {
+public class DefaultClassificationGettingTest extends ResourceGettingTest<PdcTestResources> {
 
   private String sessionKey;
   private UserDetail theUser;
 
-  public ResourceClassificationGettingTest() {
+  public DefaultClassificationGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
 
@@ -55,56 +55,56 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
     getTestResources().enableThesaurus();
   }
 
-  /**
-   * Asking the classification of a non-classified resource should sent back an undefined
-   * classification. An undefined classification is an object without any classification
-   * positions.
-   */
   @Test
-  public void undefinedClassificationGetting() {
+  public void getNoDefaultClassificartionForAComponentInstance() {
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
     assertThat(classification, is(undefined()));
   }
 
   @Test
-  public void nominalClassificationWithSynonymsGetting() throws Exception {
+  public void getDefaultClassificationForANodeInAComponentInstance() throws Exception {
     PdcClassification theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+            aPdcClassification().onResource(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
-    PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
+    PdcClassificationEntity classification = getAt(NODE_DEFAULT_CLASSIFICATION_PATH,
+            PdcClassificationEntity.class);
     assertNotNull(classification);
     assertThat(classification, not(undefined()));
     assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
   }
 
   @Test
-  public void nominalClassificationWithoutAnySynonymsGetting() throws Exception {
-    PdcClassification theClassification = aPdcClassification().
-            onResource(CONTENT_ID).
-            inComponent(COMPONENT_INSTANCE_ID).buildWithNoSynonyms();
+  public void getDefaultClassificationForAComponentInstance() throws Exception {
+    PdcClassification theClassification =
+            aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
-    PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
+    PdcClassificationEntity classification = getAt(COMPONENT_DEFAULT_CLASSIFICATION_PATH,
+            PdcClassificationEntity.class);
     assertNotNull(classification);
-    System.out.println(classification);
     assertThat(classification, not(undefined()));
     assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
   }
 
   @Override
+  public String[] getExistingComponentInstances() {
+    return new String[]{COMPONENT_INSTANCE_ID};
+  }
+
+  @Override
   public String aResourceURI() {
-    return CONTENT_CLASSIFICATION_PATH;
+    return NODE_DEFAULT_CLASSIFICATION_PATH;
   }
 
   @Override
   public String anUnexistingResourceURI() {
-    return UNKNOWN_CONTENT_CLASSIFICATION_PATH;
+    return UNKNOWN_DEFAULT_CLASSIFICATION_PATH;
   }
 
   @Override
   public PdcClassificationEntity aResource() {
     PdcClassification theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+            aPdcClassification().onResource(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
     PdcClassificationEntity entity = null;
     try {
@@ -128,10 +128,5 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
   private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           Exception {
     return getTestResources().toWebEntity(classification, theUser);
-  }
-
-  @Override
-  public String[] getExistingComponentInstances() {
-    return new String[] { COMPONENT_INSTANCE_ID };
   }
 }

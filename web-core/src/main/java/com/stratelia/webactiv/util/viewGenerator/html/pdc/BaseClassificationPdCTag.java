@@ -56,6 +56,7 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
   private static final String BROWSING_CONTEXT = "browseContext";
   private String componentId;
   private String contentId;
+  private String nodeId;
   private PdcTagOperation operation;
 
   /**
@@ -99,6 +100,26 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
   public String getContentId() {
     return contentId;
   }
+  
+  /**
+   * Gets the identifier of the node to which the content belongs.
+   * A node is an hierarchic way to organize the contents. A node can represents a category, a topic,
+   * or a folder and its semantic depends on the Silverpeas component that handle the content.
+   * @return the identifier of the node or an empty string.
+   */
+  public String getNodeId() {
+    return nodeId;
+  }
+
+  /**
+   * Sets the identifier of the node to which the content belongs (if any).
+   * A node is an hierarchic way to organize the contents. A node can represents a category, a topic,
+   * or a folder and its semantic depends on the Silverpeas component that handle the content.
+   * @param nodeId the identifier of the node.
+   */
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
+  }
 
   /**
    * Gets the invoked operation.
@@ -135,7 +156,6 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
   private ElementContainer initWidget() throws JspException {
-    String context = URLManager.getApplicationURL();
     ElementContainer xhtmlcontainer = new ElementContainer();
     MultiPartElement classification;
     if (getInvokedOperation() == READ_CLASSIFICATION) {
@@ -168,7 +188,7 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
     String function = getPdcPluginFunction();
     String script = "$('#classification').pdc('" + function + "', {resource: {context: '" + context
             + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
-            + "'}, title: '" + resources.getString("pdcPeas.classifyPublication")
+            + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString("pdcPeas.classifyPublication")
             + "', positionLabel: '" + resources.getString("pdcPeas.position")
             + "', positionsLabel: '" + resources.getString("pdcPeas.positions") + "'";
     if (getInvokedOperation() != READ_CLASSIFICATION) {

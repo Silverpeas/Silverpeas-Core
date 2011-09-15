@@ -23,6 +23,7 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.rest.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -59,6 +60,8 @@ public class PdcClassificationEntity implements Exposable {
   private URI uri;
   @XmlElement
   private List<PdcPositionEntity> positions = new ArrayList<PdcPositionEntity>();
+  @XmlElement
+  private boolean modifiable = true;
 
   /**
    * Creates a non-defined PdC classification.
@@ -74,10 +77,22 @@ public class PdcClassificationEntity implements Exposable {
           final List<ClassifyPosition> fromPositions,
           String inLanguage,
           final URI atURI) {
-    PdcClassificationEntity classification = new PdcClassificationEntity(atURI);
-    classification.setClassificationPositions(
+    PdcClassificationEntity entity = new PdcClassificationEntity(atURI);
+    entity.setClassificationPositions(
             fromClassifyPositions(fromPositions, inLanguage, atURI));
-    return classification;
+    return entity;
+  }
+  
+  public static PdcClassificationEntity aPdcClassificationEntity(
+          final PdcClassification classification,
+          String inLanguage,
+          final URI atURI) {
+    List<ClassifyPosition> fromPositions = new ArrayList<ClassifyPosition>(classification.getPositions());
+    PdcClassificationEntity entity = new PdcClassificationEntity(atURI);
+    entity.setClassificationPositions(
+            fromClassifyPositions(fromPositions, inLanguage, atURI));
+    entity.setModifiable(classification.isModifiable());
+    return entity;
   }
 
   /**
@@ -105,6 +120,15 @@ public class PdcClassificationEntity implements Exposable {
    */
   public static List<ClassifyPosition> fromPositions(final List<ClassifyPosition> positions) {
     return positions;
+  }
+  
+  /**
+   * A convenient method to enhance the readability of creators.
+   * @param a PdC classification.
+   * @return the PdC classification.
+   */
+  public static PdcClassification fromPdcClassification(final PdcClassification classification) {
+    return classification;
   }
   
   /**
@@ -144,8 +168,17 @@ public class PdcClassificationEntity implements Exposable {
    * @return an unmodifiable list of a Web representation of each classification positions in this
    * classification.
    */
+  @XmlTransient
   public List<PdcPositionEntity> getClassificationPositions() {
     return Collections.unmodifiableList(positions);
+  }
+
+  /**
+   * Is the PdC classification represented by this web entity can be changed?
+   * @return true if the represented PdC classification is modifiable, false otherwise.
+   */
+  public boolean isModifiable() {
+    return modifiable;
   }
 
   @Override
@@ -208,6 +241,10 @@ public class PdcClassificationEntity implements Exposable {
   public void setClassificationPositions(final List<PdcPositionEntity> positions) {
     this.positions.clear();
     this.positions.addAll(positions);
+  }
+  
+  protected void setModifiable(boolean modifiable) {
+    this.modifiable = modifiable;
   }
   
   private static class PositionComparator implements Comparator<PdcPositionEntity> {

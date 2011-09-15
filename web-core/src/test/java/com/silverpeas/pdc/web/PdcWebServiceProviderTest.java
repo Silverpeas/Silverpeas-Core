@@ -23,18 +23,20 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import java.util.List;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.silverpeas.pdc.web.beans.PdcClassification;
+import com.silverpeas.pdc.web.beans.PdcClassificationBuilder;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.util.ArrayList;
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import org.junit.After;
@@ -45,8 +47,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.PdcClassification.*;
-import static com.silverpeas.pdc.web.ClassifyPositionMatcher.*;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
+import static com.silverpeas.pdc.web.matchers.ClassifyPositionMatcher.*;
 
 /**
  * Unit tests on the PdcWebServiceProvider operations.
@@ -89,16 +91,16 @@ public class PdcWebServiceProviderTest {
 
   //@Test
   public void classifyAContent() throws Exception {
-    PdcClassification aPdcClassification = aPdcClassification();
+    PdcClassification aPdcClassification = aPdcClassification().build();
     pdcWebServiceProvider.classifyContent(withContentPk(), fromPositionsIn(aPdcClassification));
     List<ClassifyPosition> actualPositions = getPositions();
-    assertThat(actualPositions, is(equalTo(aPdcClassification.getPositions())));
+    assertThat(actualPositions, is(equalTo(new ArrayList<ClassifyPosition>(aPdcClassification.getPositions()))));
   }
 
   @Test(expected=ContentManagerException.class)
   public void classifyAnUnexistingContent() throws Exception {
     pdcWebServiceProvider.classifyContent(withAnUnexistingContentPK(),
-            fromPositionsIn(aPdcClassification()));
+            fromPositionsIn(aPdcClassification().build()));
   }
   
   @Test(expected=JAXBException.class)
@@ -125,7 +127,7 @@ public class PdcWebServiceProviderTest {
     return user;
   }
 
-  private PdcClassification aPdcClassification() {
+  private PdcClassificationBuilder aPdcClassification() {
     return aPdcClassificationWithoutAnySynonyms().onResource(CONTENT_ID).inComponent(
             COMPONENT_INSTANCE_ID);
   }
