@@ -53,10 +53,22 @@
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewClassificationTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>The identifier of the component instance for which the PdC is configured.
+      <description>The identifier of the component instance for which the PdC is configured. If a
+      default classification exists for the specified component instance, then it will be taken into
+      account for classifying the content.
       </description>
       <name>componentId</name>
       <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the node (if any) to which the new content will belong. If this
+      attribute is set and a default classification exists for this node, then it will be taken into
+      account instead of the component's one for classifying the content.
+      </description>
+      <name>nodeId</name>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

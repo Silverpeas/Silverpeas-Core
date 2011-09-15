@@ -45,5 +45,4 @@ public class PdcNewClassificationTag extends BaseClassificationPdCTag {
     return SKIP_BODY;
   }
 
-  
 }

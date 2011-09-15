@@ -35,6 +35,7 @@
  * The classification is expected to be formatted in JSON as:
  * {
  *   uri: the URI of the classification in the Web,
+ *   modifiable: a property indicating if this classification can be edited, 
  *   positions: [ the positions onto the PdC ]
  * }
  * Each position of a classification is represented in JSON as:
@@ -99,11 +100,15 @@
      * The resource for which the classification on the PdC has to be rendered or edited. It is
      * defined by the web application context under which the resource is published, the component
      * instance that handle it and the identifier of the content to classify or being classified.
+     * Optionally, the node to which the content belongs can be indicated. For the creation of a
+     * new content, the node has to be indicated so that a default classification associated with it
+     * can be requested.
      */
     resource: {
       context: '/silverpeas',
       component: '',
-      content: ''
+      content: '',
+      node: ''
     },
     /**
      * The title of the HTML section that will be rendered by this plugin.
@@ -188,10 +193,24 @@
           dataType: 'json',
           cache: false,
           success: function(pdc) {
-            var selection = [];
             $this.data('pdc', pdc);
-            prepareClassificationArea($this);
-            renderClassificationEditionBox($this, selection);
+            $.ajax({
+              url: settings.defaultClassificationURI,
+              dataType: 'json',
+              cache: false,
+              success: function(classification) {
+                prepareClassificationArea($this);
+                renderClassificationEditionBox($this, []);
+                if (classification.positions.length > 0) {
+                  $this.data('classification', classification);
+                  if (classification.modifiable) {
+                    renderPositions($this)
+                  } else {
+                    $this.attr('style', 'display: none;')
+                  }
+                }
+              }
+            });            
           }
         });
       })
@@ -285,6 +304,8 @@
     if ( options ) {
       $.extend( true, settings, options );
     }
+    settings.defaultClassificationURI = settings.resource.context + '/services/pdc/' +
+      settings.resource.component + '/default/' + settings.resource.node;
     settings.classificationURI = settings.resource.context + '/services/pdc/' +
       settings.resource.component + '/' + settings.resource.content;
     settings.pdcURI = settings.resource.context + '/services/pdc/' + settings.resource.component;
