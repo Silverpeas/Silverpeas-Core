@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
-import static com.silverpeas.pdc.web.ClassifyPositionMatcher.*;
+import static com.silverpeas.pdc.web.matchers.ClassifyPositionMatcher.*;
 
 /**
  * Unit tests on the PdcWebServiceProvider operations.

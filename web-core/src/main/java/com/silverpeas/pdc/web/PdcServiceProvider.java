@@ -157,15 +157,15 @@ public class PdcServiceProvider {
    * Gets the predefined PdC classification to use for classifying new contents in the specified
    * node of the specified component instance. If the node isn't set, then the predefined PdC
    * classification of the component instance is looking for.
-   * @param nodeId the unique identifier of the node. A node is way in Silverpeas to categorize
-   * contents in a Silverpeas component.
+   * @param nodeId the unique identifier of the node. A node is a generic way in Silverpeas to
+   * categorize contents in a Silverpeas component.
    * @param componentId the unique identifier of the component.
    * @return a default PdC classification to use to classify contents.
    * @throws PdcException if an error occurs while getting the PdC classification.
    */
   PdcClassification getPreDefinedClassificationForContentsIn(String nodeId, String componentId)
           throws PdcException {
-    if ("kemlia1".equals(componentId)) {
+    if ("kmelia1".equals(componentId)) {
       try {
         List<ClassifyPosition> positions = getAllPositions("8", componentId);
         return aClassificationFromPositions(positions).forResource(nodeId).inComponentInstance(

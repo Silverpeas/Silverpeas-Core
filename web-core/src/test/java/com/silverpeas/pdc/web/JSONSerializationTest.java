@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
-import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
+import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 
 /**
  * Unit tests on the serialization/deserialization of Pdc entities in/from JSON by using the 

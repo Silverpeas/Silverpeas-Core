@@ -25,7 +25,6 @@ package com.silverpeas.pdc.web.mock;
 
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import com.silverpeas.pdc.web.beans.PdcClassificationBuilder;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
@@ -45,7 +44,6 @@ import javax.inject.Named;
 
 import static org.mockito.Mockito.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 import static com.silverpeas.pdc.model.PdcClassification.*;
 
@@ -133,7 +131,8 @@ public class PdcBmMock extends PdcBmImpl {
 
   public void addClassification(final PdcClassification classification) {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentInstanceId())
-            && CONTENT_ID.equals(classification.getResourceId())) {
+            && (CONTENT_ID.equals(classification.getResourceId()) || !classification.
+            isForADefinedResource() || NODE_ID.equals(classification.getResourceId()))) {
       this.positions.clear();
       for (ClassifyPosition position : classification.getPositions()) {
         addPosition(position);

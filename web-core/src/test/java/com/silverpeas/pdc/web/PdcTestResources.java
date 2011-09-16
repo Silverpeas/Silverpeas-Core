@@ -114,10 +114,18 @@ public class PdcTestResources extends TestResources {
    */
   public PdcClassificationEntity toWebEntity(final PdcClassification classification,
           final UserDetail forUser) throws ThesaurusException {
+    String uri;
+    if (NODE_ID.equals(classification.getResourceId())) {
+      uri = NODE_DEFAULT_CLASSIFICATION_URI;
+    } else if (CONTENT_ID.equals(classification.getResourceId())) {
+      uri = CLASSIFICATION_URI;
+    } else {
+      uri = COMPONENT_DEFAULT_CLASSIFICATION_URI;
+    }
     return aPdcClassificationEntity(
             fromPdcClassification(classification),
             inLanguage(FRENCH),
-            atURI(URI.create(CLASSIFICATION_URI))).
+            atURI(URI.create(uri))).
             withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser));
   }
   

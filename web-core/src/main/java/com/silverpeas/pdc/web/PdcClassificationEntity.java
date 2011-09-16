@@ -168,6 +168,7 @@ public class PdcClassificationEntity implements Exposable {
    * @return an unmodifiable list of a Web representation of each classification positions in this
    * classification.
    */
+  @XmlTransient
   public List<PdcPositionEntity> getClassificationPositions() {
     return Collections.unmodifiableList(positions);
   }

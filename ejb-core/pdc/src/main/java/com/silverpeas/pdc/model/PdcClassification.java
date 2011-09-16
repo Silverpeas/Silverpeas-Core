@@ -112,6 +112,20 @@ public class PdcClassification {
     return resourceId;
   }
   
+  /**
+   * Is this classification onto the PdC is for a defined resource?
+   * 
+   * If this classification serves as a template for a whole component instance, then false is
+   * returned. If it serves as a template for the contents belonging to a node in a component instance,
+   * then true is returned as the resource refers this node. Otherwise the resource refers a given
+   * content and true is also returned.
+   * @return true if this classification is for a resource (the contents of a node or a given content).
+   * False otherwise.
+   */
+  public boolean isForADefinedResource() {
+    return resourceId != null && !resourceId.trim().isEmpty();
+  }
+  
   protected PdcClassification() {
     
   }

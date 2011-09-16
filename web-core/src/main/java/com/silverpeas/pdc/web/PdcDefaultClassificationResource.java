@@ -24,8 +24,6 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import java.util.List;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.rest.RESTWebService;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -34,13 +32,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
-import static com.silverpeas.pdc.web.PdcServiceProvider.*;
 
 /**
  * A REST Web resource that represents the default classification set for a node within a component
@@ -58,40 +56,44 @@ import static com.silverpeas.pdc.web.PdcServiceProvider.*;
  */
 @Service
 @Scope("request")
-@Path("pdc/{componentId}/default/{nodeId}")
+@Path("pdc/{componentId}/default")
 public class PdcDefaultClassificationResource extends RESTWebService {
   
   @Inject
   private PdcServiceProvider pdcServiceProvider;
   @PathParam("componentId")
   private String componentId;
-  @PathParam("nodeId")
-  private String nodeId;
   
   @Override
   protected String getComponentId() {
     return componentId;
   }
-  
-  protected String getNodeId() {
-    return nodeId;
-  }
 
   /**
-   * Gets the default classification on the PdC set for the requested resource identified by the URI.
+   * Gets the default classification on the PdC that is set for the contents in the node identified
+   * by the query part of the request URI. If no node identifier is provided in the URI, the default
+   * classification set for the whole component instance is seeked.
+   * 
+   * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
+   * contents of the component instance. If no default classification onto the PdC is defined
+   * for the requested node, a default classification is then looking backward among the parent
+   * nodes up to the component instance itself.
+   * 
    * The PdC classification is sent back in JSON.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the requested resource, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return a web entity representing the default PdC classification set for the resource. The entity is 
-   * serialized in JSON.
+   * @return a web entity representing the requested default PdC classification. If no default 
+   * classification is defined along the path of the nodes up to the component instance, then an
+   * empty classification is sent back.
    */
   @GET
   @Produces({MediaType.APPLICATION_JSON})
-  public PdcClassificationEntity getDefaultPdCClassification() {
+  public PdcClassificationEntity getDefaultPdCClassificationForContentsInNode(
+          @QueryParam("nodeId") String nodeId) {
     checkUserPriviledges();
     try {
-      return theDefaultClassification();
+      return theDefaultClassificationOfNode(nodeId);
     } catch (PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -99,9 +101,9 @@ public class PdcDefaultClassificationResource extends RESTWebService {
     }
   }
   
-  private PdcClassificationEntity theDefaultClassification() throws Exception {
+  private PdcClassificationEntity theDefaultClassificationOfNode(String nodeId) throws Exception {
     PdcClassification classification = pdcServiceProvider().getPreDefinedClassificationForContentsIn(
-            getNodeId(), getComponentId());
+            nodeId, getComponentId());
     if (classification == PdcClassification.NO_DEFINED_CLASSIFICATION) {
       return undefinedClassification();
     } else {
@@ -109,7 +111,7 @@ public class PdcDefaultClassificationResource extends RESTWebService {
       PdcClassificationEntity theClassificationEntity = aPdcClassificationEntity(
               fromPdcClassification(classification),
               inLanguage(userPreferences.getLanguage()),
-              atURI(getUriInfo().getAbsolutePath()));
+              atURI(getUriInfo().getRequestUri()));
       if (userPreferences.isThesaurusEnabled()) {
         UserThesaurusHolder theUserThesaurus =
                 pdcServiceProvider().getThesaurusOfUser(getUserDetail());

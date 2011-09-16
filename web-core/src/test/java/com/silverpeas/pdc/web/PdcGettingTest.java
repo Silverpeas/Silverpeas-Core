@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.PdcEntityMatcher.*;
+import static com.silverpeas.pdc.web.matchers.PdcEntityMatcher.*;
 
 /**
  * Unit tests on the getting of the PdC configured for a given component instance.

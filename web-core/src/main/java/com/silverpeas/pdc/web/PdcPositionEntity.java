@@ -53,11 +53,11 @@ import static com.silverpeas.util.StringUtil.isDefined;
 public class PdcPositionEntity implements Exposable {
 
   private static final long serialVersionUID = 6314816355055147378L;
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private List<PdcPositionValue> values = new ArrayList<PdcPositionValue>();
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   private URI uri;
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   private String id;
 
   /**
@@ -74,11 +74,11 @@ public class PdcPositionEntity implements Exposable {
           String inLanguage, final URI inClassificationByURI) {
     String positionId = String.valueOf(position.getPositionId());
     return new PdcPositionEntity(
-            fromClassifyValues(position.getListClassifyValue(), inLanguage)).
-            withURI(URI.create(inClassificationByURI.toString() + "/" + positionId)).
+            fromClassifyValues(position.getListClassifyValue(), inLanguage)).withURI(
+            inClassificationByURI, positionId).
             withId(positionId);
   }
-  
+
   /**
    * Creates a web entity representing a new position on the Pdc and that is valued with the
    * specified PdC axis values.
@@ -88,7 +88,7 @@ public class PdcPositionEntity implements Exposable {
   public static PdcPositionEntity createNewPositionWith(final List<PdcPositionValue> values) {
     return new PdcPositionEntity(values);
   }
-  
+
   /**
    * Gets the business classification position this web entity represents.
    * @return a ClassifyPosition instance represented by this web entity.
@@ -138,7 +138,7 @@ public class PdcPositionEntity implements Exposable {
       return false;
     }
     return !(this.values != other.values && (this.values == null
-        || !this.values.equals(other.values)));
+            || !this.values.equals(other.values)));
   }
 
   @Override
@@ -162,7 +162,7 @@ public class PdcPositionEntity implements Exposable {
       valueArray.append("]");
     }
     String uriAsStr = "";
-    if (getURI() != null)  {
+    if (getURI() != null) {
       uriAsStr = getURI().toString();
     }
     return "PdcPositionEntity{id=" + getId() + ", uri=" + uriAsStr + ", values="
@@ -184,7 +184,7 @@ public class PdcPositionEntity implements Exposable {
   protected PdcPositionEntity(final List<PdcPositionValue> values) {
     setPositionValues(values);
   }
-  
+
   /**
    * Sets the synonyms for each value of this position from the specified thesaurus.
    * @param userThesaurus a user thesaurus from which synonyms can be get.
@@ -195,17 +195,25 @@ public class PdcPositionEntity implements Exposable {
       pdcPositionValue.setSynonyms(userThesaurus.getSynonymsOf(pdcPositionValue));
     }
   }
-  
-  private PdcPositionEntity withURI(final URI positionURI) {
-    this.uri = positionURI;
+
+  private PdcPositionEntity withURI(final URI baseURI, String positionId) {
+    final String positionPath = "/" + positionId;
+    final String query = baseURI.getRawQuery();
+    if (!isDefined(query)) {
+      this.uri = URI.create(baseURI.toString() + positionPath);
+    } else {
+      String requestURI = baseURI.toString();
+      this.uri = URI.create(requestURI.substring(0, requestURI.lastIndexOf("?")) + positionPath
+              + "?" + query);
+    }
     return this;
   }
-  
+
   private PdcPositionEntity withId(final String id) {
     this.id = id;
     return this;
   }
-  
+
   private void setPositionValues(final List<PdcPositionValue> values) {
     this.values.clear();
     this.values.addAll(values);

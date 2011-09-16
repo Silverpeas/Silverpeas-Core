@@ -30,7 +30,7 @@ import org.junit.Before;
 import com.silverpeas.rest.ResourceGettingTest;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
+import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
 import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
@@ -54,33 +54,46 @@ public class DefaultClassificationGettingTest extends ResourceGettingTest<PdcTes
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
   }
-  
+
   @Test
   public void getNoDefaultClassificartionForAComponentInstance() {
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
     assertThat(classification, is(undefined()));
   }
-  
-//  @Test
-//  public void getDefaultClassificationForAComponentInstance() throws Exception {
-//    PdcClassification theClassification =
-//            aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build();
-//    getTestResources().save(theClassification);
-//    PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
-//    assertNotNull(classification);
-//    assertThat(classification, not(undefined()));
-//    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
-//  }
+
+  @Test
+  public void getDefaultClassificationForANodeInAComponentInstance() throws Exception {
+    PdcClassification theClassification =
+            aPdcClassification().onResource(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+    getTestResources().save(theClassification);
+    PdcClassificationEntity classification = getAt(NODE_DEFAULT_CLASSIFICATION_PATH,
+            PdcClassificationEntity.class);
+    assertNotNull(classification);
+    assertThat(classification, not(undefined()));
+    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
+  }
+
+  @Test
+  public void getDefaultClassificationForAComponentInstance() throws Exception {
+    PdcClassification theClassification =
+            aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build();
+    getTestResources().save(theClassification);
+    PdcClassificationEntity classification = getAt(COMPONENT_DEFAULT_CLASSIFICATION_PATH,
+            PdcClassificationEntity.class);
+    assertNotNull(classification);
+    assertThat(classification, not(undefined()));
+    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
+  }
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[] { COMPONENT_INSTANCE_ID };
+    return new String[]{COMPONENT_INSTANCE_ID};
   }
 
   @Override
   public String aResourceURI() {
-    return DEFAULT_CLASSIFICATION_PATH;
+    return NODE_DEFAULT_CLASSIFICATION_PATH;
   }
 
   @Override
@@ -111,7 +124,7 @@ public class DefaultClassificationGettingTest extends ResourceGettingTest<PdcTes
   public Class<?> getWebEntityClass() {
     return PdcClassificationEntity.class;
   }
-  
+
   private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           Exception {
     return getTestResources().toWebEntity(classification, theUser);

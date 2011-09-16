@@ -305,7 +305,10 @@
       $.extend( true, settings, options );
     }
     settings.defaultClassificationURI = settings.resource.context + '/services/pdc/' +
-      settings.resource.component + '/default/' + settings.resource.node;
+      settings.resource.component + '/default';
+    if (settings.resource.node != null && settings.resource.node.length > 0) {
+      settings.defaultClassificationURI += '?nodeId=' + settings.resource.node;
+    }
     settings.classificationURI = settings.resource.context + '/services/pdc/' +
       settings.resource.component + '/' + settings.resource.content;
     settings.pdcURI = settings.resource.context + '/services/pdc/' + settings.resource.component;
