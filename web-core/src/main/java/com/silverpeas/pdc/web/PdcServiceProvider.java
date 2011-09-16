@@ -106,7 +106,7 @@ public class PdcServiceProvider {
   public void updatePosition(final ClassifyPosition position, String contentId, String componentId)
           throws ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
-    getPdcBm().updatePosition(position, contentId, silverObjectId);
+    getPdcBm().updatePosition(position, componentId, silverObjectId);
   }
 
   /**
