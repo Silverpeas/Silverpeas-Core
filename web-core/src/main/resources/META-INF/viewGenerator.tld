@@ -535,9 +535,18 @@
       com.stratelia.webactiv.util.viewGenerator.html.window.WindowTag
     </tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        true or false to indicate if the browse bar is displayed or not.
+      </description>
+      <name>browseBarVisible</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
-    <description>Simple tag to define a Window browsebar. It should be declared and used before a Window.</description>
+    <description>Simple tag to define a Window browse bar. It should be declared and used before a Window.</description>
     <name>browseBar</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarTag
