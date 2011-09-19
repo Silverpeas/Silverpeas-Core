@@ -23,16 +23,6 @@
  */
 package com.silverpeas.versioning.importExport;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
@@ -60,6 +50,16 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author neysseri
@@ -519,7 +519,7 @@ public class VersioningImportExport {
     String logicalName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
     String type = FileRepositoryManager.getFileExtension(logicalName);
     String mimeType = AttachmentController.getMimeType(logicalName);
-    String physicalName = new Long(new Date().getTime()).toString() + "." + type;
+    String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
 
     File fileToCreate = new File(path + physicalName);
     while (fileToCreate.exists()) {
@@ -528,7 +528,7 @@ public class VersioningImportExport {
           + fileToCreate.getAbsolutePath());
 
       // To prevent overwriting
-      physicalName = new Long(new Date().getTime()).toString() + "." + type;
+      physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
       fileToCreate = new File(path + physicalName);
     }
     SilverTrace.info("versioning", "VersioningImportExport.copyFile()",

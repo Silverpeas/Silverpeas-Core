@@ -27,6 +27,12 @@
       <groupId>org.dbunit</groupId>
       <artifactId>dbunit</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>poi</groupId>
+          <artifactId>poi</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.sun.jndi</groupId>
@@ -102,7 +108,7 @@
       <artifactId>h2</artifactId>
       <scope>compile</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
