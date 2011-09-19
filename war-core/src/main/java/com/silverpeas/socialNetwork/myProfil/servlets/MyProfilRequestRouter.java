@@ -286,11 +286,11 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
           userLoginQuestion,
           userLoginAnswer,
           properties);
-      request.setAttribute("Message", sc.getString("myProfile.MessageOK"));
+      request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
     } catch (AuthenticationBadCredentialException e) {
-      request.setAttribute("Message", sc.getString("myProfile.Error_bad_credential"));
+      request.setAttribute("MessageNOK", sc.getString("myProfile.Error_bad_credential"));
     } catch (AuthenticationException e) {
-      request.setAttribute("Message", sc.getString("myProfile.Error_unknown"));
+      request.setAttribute("MessageNOK", sc.getString("myProfile.Error_unknown"));
     }
   }
 

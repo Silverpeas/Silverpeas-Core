@@ -21,7 +21,8 @@ boolean 	isPasswordChangeAllowed		= ((Boolean) request.getAttribute("isPasswordC
 Integer     minLengthPwd 				= (Integer) request.getAttribute("minLengthPwd");
 Boolean		blanksAllowedInPwd 			= (Boolean) request.getAttribute("blanksAllowedInPwd");
 String 		action 						= (String) request.getAttribute("Action");
-String 		message 					= (String) request.getAttribute("Message");
+String 		messageOK 					= (String) request.getAttribute("MessageOK");
+String 		messageNOK 					= (String) request.getAttribute("MessageNOK");
 
 
 String fieldAttribute = " disabled=\"disabled\" ";
@@ -39,9 +40,13 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 	<p><fmt:message key="profil.subnav.display" /> : <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
 </div>
 
-<% if (StringUtil.isDefined(message)) { %>
+<% if (StringUtil.isDefined(messageOK)) { %>
 <div class="inlineMessage-ok">
-	<%=message %>
+	<%=messageOK %>
+</div>
+<% } else if (StringUtil.isDefined(messageNOK)) {%>
+<div class="inlineMessage-nok">
+	<%=messageNOK %>
 </div>
 <% } %>
 
