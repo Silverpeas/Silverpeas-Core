@@ -33,10 +33,7 @@ import org.apache.poi.hpsf.DocumentSummaryInformation;
 import org.apache.poi.hpsf.PropertySet;
 import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hpsf.SummaryInformation;
-import org.apache.poi.poifs.filesystem.DirectoryEntry;
-import org.apache.poi.poifs.filesystem.DocumentEntry;
-import org.apache.poi.poifs.filesystem.DocumentInputStream;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.poifs.filesystem.*;
 
 public class MSdocumentPropertiesManager {
 
@@ -55,13 +52,11 @@ public class MSdocumentPropertiesManager {
     try {
       inputStream = new FileInputStream(fileName);
       POIFSFileSystem fs = new POIFSFileSystem(inputStream);
-
-      // DirectoryEntry directory = fs.getRoot();
-      DirectoryEntry directory = fs.getRoot();
+      DirectoryNode directory = fs.getRoot();
       DocumentEntry document = (DocumentEntry) directory.getEntry("\005SummaryInformation");
       stream = new DocumentInputStream(document);
       ps = PropertySetFactory.create(stream);
-    } catch (Exception ex) {
+    }catch (Exception ex) {
       // on estime que l'exception est dû au fait que nous ne sommes pas en
       // présence d'un fichier OLE2 (office)
       SilverTrace.warn("MSdocumentPropertiesManager.getSummaryInformation()",
