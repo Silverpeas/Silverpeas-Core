@@ -83,8 +83,7 @@ public class WorkListDAO {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = conn.prepareStatement(ADD_WORKERS);
-      for (int i = 0; i < workers.size(); i++) {
-        Worker worker = workers.get(i);
+      for (Worker worker : workers) {
         if (worker == null) {
           throw new VersioningRuntimeException("WorkListDAO.addWorkers",
               SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT");

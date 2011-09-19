@@ -43,6 +43,7 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 
 import com.silverpeas.jcrutil.JcrConstants;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.versioning.jcr.JcrDocumentDao;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
@@ -123,7 +124,7 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
       out.flush();
       out.close();
       fileNode.getNode(JcrConstants.JCR_CONTENT).setProperty(
-          JcrConstants.JCR_DATA, new ByteArrayInputStream(new byte[0]));
+          JcrConstants.JCR_DATA, new ByteArrayInputStream(ArrayUtil.EMPTY_BYTE_ARRAY));
       fileNode.remove();
       document.setSize(new Long(updateddocument.length()).intValue());
       if (tempSave) {
