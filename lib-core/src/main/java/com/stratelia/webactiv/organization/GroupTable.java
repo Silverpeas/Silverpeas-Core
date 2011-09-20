@@ -34,7 +34,7 @@ import com.stratelia.webactiv.beans.admin.SynchroGroupReport;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 

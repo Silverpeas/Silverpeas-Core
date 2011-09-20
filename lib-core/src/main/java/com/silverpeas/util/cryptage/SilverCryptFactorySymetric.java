@@ -25,7 +25,7 @@ package com.silverpeas.util.cryptage;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
