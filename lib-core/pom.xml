@@ -339,6 +339,12 @@
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
     </dependency>
+    <dependency>
+      <artifactId>xmlbeans</artifactId>
+      <groupId>org.apache.xmlbeans</groupId>
+      <type>jar</type>      
+      <classifier>jdk6</classifier>
+    </dependency>
   </dependencies>
 
   <build>

@@ -121,8 +121,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
 
   public void serialize() throws FileNotFoundException, IOException {
     FileOutputStream out = new FileOutputStream(new File(m_ConfigFileName));
-    XMLSerializer ser = new XMLSerializer(out, new OutputFormat("xml", "UTF-8",
-        false));
+    XMLSerializer ser = new XMLSerializer(out, new OutputFormat("xml", "UTF-8", false));
     ser.serialize(m_XMLConfig);
     out.close();
   }
