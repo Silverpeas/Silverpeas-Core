@@ -24,12 +24,12 @@
 
 package com.stratelia.webactiv.util.indexEngine;
 
-import com.silverpeas.util.StringUtil;
-import java.io.File;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.io.File;
 
 /**
  * Class declaration
@@ -49,6 +49,7 @@ public class IndexEngineInitialize implements IInitialize {
    * default on Windows, it's C:\Documents and Settings\neysseri\Local Settings\TEMP and /tmp on
    * Unix
    */
+  @Override
   public boolean Initialize() {
     // Remove all remaining *.lock files in index path
     String indexPath = GeneralPropertiesManager.getString("uploadsIndexPath");
@@ -96,8 +97,6 @@ public class IndexEngineInitialize implements IInitialize {
    * @return true if the file is a lucene's lock file, false otherwise.
    */
   protected boolean isLockFile(String fileName) {
-    // return (("commit.lock".equalsIgnoreCase(fileName)) ||
-    // ("write.lock".equalsIgnoreCase(fileName)));
     return fileName.startsWith("lucene-")
         || ("write.lock".equalsIgnoreCase(fileName));
   }
