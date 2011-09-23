@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,24 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.tika.msoffice;
 
-package org.apache.lucene.search.spell;
+import java.text.NumberFormat;
 
-import org.apache.lucene.util.PriorityQueue;
+import org.apache.tika.sax.XHTMLContentHandler;
+import org.xml.sax.SAXException;
 
 /**
- * Sorts SuggestWord instances
+ * Number cell.
  */
-final class SuggestWordQueueImpl extends PriorityQueue {
+public class NumberCell implements Cell {
 
-  SuggestWordQueueImpl(int size) {
-    initialize(size);
-  }
+    private final double number;
 
-  protected final boolean lessThan(Object a, Object b) {
-    SuggestWord wa = (SuggestWord) a;
-    SuggestWord wb = (SuggestWord) b;
-    int val = wa.compareTo(wb);
-    return val < 0;
-  }
+    private final NumberFormat format;
+
+    public NumberCell(double number, NumberFormat format) {
+        this.number = number;
+        this.format = format;
+    }
+
+    public void render(XHTMLContentHandler handler) throws SAXException {
+        handler.characters(format.format(number));
+    }
+
+    public String toString() {
+        return "Numeric Cell: " + format.format(number);
+    }
 }
