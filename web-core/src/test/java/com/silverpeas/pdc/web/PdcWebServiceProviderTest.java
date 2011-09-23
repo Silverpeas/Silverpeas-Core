@@ -89,7 +89,7 @@ public class PdcWebServiceProviderTest {
     assertThat(aProvider, is(equalTo(pdcWebServiceProvider)));
   }
 
-  //@Test
+  @Test
   public void classifyAContent() throws Exception {
     PdcClassification aPdcClassification = aPdcClassification().build();
     pdcWebServiceProvider.classifyContent(withContentPk(), fromPositionsIn(aPdcClassification));

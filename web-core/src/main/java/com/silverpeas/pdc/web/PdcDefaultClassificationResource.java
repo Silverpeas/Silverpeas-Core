@@ -41,11 +41,12 @@ import org.springframework.stereotype.Service;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 /**
- * A REST Web resource that represents the default classification set for a node within a component
- * instance.
+ * A REST Web resource that represents the default classification defined within a component
+ * instance for its new contents.
  * 
- * With a default classification, any new contents added to a node could be classified onto the
- * classification plan (named PdC) with this default classification.
+ * A default classification onto the PdC can be defined for the contents in a node or for the
+ * whole component instance. The default classification can be used either as a template to
+ * classify a new content or as the classification to automatically apply to all new contents.
  * 
  * A classification on the PdC is defined by a set of different positions on the axis of the PdC.
  * A position is a set of one or more values in the axis of the PdC.
@@ -76,7 +77,7 @@ public class PdcDefaultClassificationResource extends RESTWebService {
    * 
    * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
    * contents of the component instance. If no default classification onto the PdC is defined
-   * for the requested node, a default classification is then looking backward among the parent
+   * for the requested node, a default classification is then looked backward among the parent
    * nodes up to the component instance itself.
    * 
    * The PdC classification is sent back in JSON.

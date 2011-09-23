@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <personalization id="1000" languages="fr" look="Initial" personalwspace=""
+  thesaurusstatus="0" draganddropstatus="1" webdaveditingstatus="1" menuDisplay="DISABLE"/>
+  <personalization id="1010" languages="en" look="Silverpeas" personalwspace="WA47"
+  thesaurusstatus="0"  draganddropstatus="1" webdaveditingstatus="1" menuDisplay="ALL"/>
+</dataset>

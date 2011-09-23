@@ -56,7 +56,7 @@ public class DefaultClassificationGettingTest extends ResourceGettingTest<PdcTes
   }
 
   @Test
-  public void getNoDefaultClassificartionForAComponentInstance() {
+  public void getNoDefaultClassificationForAComponentInstance() {
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
     assertThat(classification, is(undefined()));
