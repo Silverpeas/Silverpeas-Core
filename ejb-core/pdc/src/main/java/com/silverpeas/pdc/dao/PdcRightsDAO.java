@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.pdc.DAO;
+package com.silverpeas.pdc.dao;
 
 import com.stratelia.webactiv.util.DBUtil;
 

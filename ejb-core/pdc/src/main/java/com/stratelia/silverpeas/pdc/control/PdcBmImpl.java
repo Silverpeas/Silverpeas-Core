@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.silverpeas.pdc.DAO.PdcRightsDAO;
+import com.silverpeas.pdc.dao.PdcRightsDAO;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;

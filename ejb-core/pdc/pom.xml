@@ -10,7 +10,11 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>pdc</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Plan De Classement</name>
+  <name>PdC service</name>
+  <description>
+    Provides business beans and services to define a classification plan, to parameterize it for
+    a Silverpeas component instance, to classify a content, etc.
+  </description>
 
   <dependencies>
     <dependency>
@@ -25,5 +29,55 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.synyx.hades</groupId>
+      <artifactId>org.synyx.hades</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+  
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <filters>
+      <filter>src/test/filters/filters.properties</filter>
+    </filters>
+  </build>
 </project>

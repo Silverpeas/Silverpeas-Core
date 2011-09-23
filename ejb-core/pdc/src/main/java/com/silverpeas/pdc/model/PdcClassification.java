@@ -23,47 +23,63 @@
  */
 package com.silverpeas.pdc.model;
 
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
- * A classification of a content in Silverpeas onto the classification plan (named PdC).
+ * A classification of a content in Silverpeas on the classification plan (named PdC).
  * 
  * A classification of a content is made up of one or more positions on the axis of the PdC. Each
- * position consist of one or several values on some PdC's axis. A classification cannot have two or
+ * position consists of one or several values on some PdC's axis. A classification cannot have two or
  * more identical positions; each of them must be unique.
+ * 
+ * It can also represent, for a Silverpeas component instance or for a node in a component instance,
+ * a predefined classification with which any published contents can be classified on the PdC. In
+ * this case, the resourceId attribute, if not null, will refer a node in the Silverpeas component
+ * instance for which the contents will be classified with the classification.
  */
-public class PdcClassification {
+@Entity
+@NamedQuery(name="PdcClassification.findPredefinedClassificationByComponentInstanceId",
+        query="from PdcClassification where instanceId=?1 and contentId is null")
+public class PdcClassification implements Serializable {
   
   /**
    * Represents an empty classification (id est no classification onto the PdC).
    */
   public static final PdcClassification NO_DEFINED_CLASSIFICATION = new PdcClassification();
+  private static final long serialVersionUID = 4032206628783381447L;
   
-  /**
-   * Creates a classification onto the PdC from the specified positions. By default the
-   * classification is modifiable.
-   * @param positions a set of positions with which a content is classified.
-   * @return a modifiable PdC classification.
-   */
-  public static PdcClassification aClassificationFromPositions(final Collection<ClassifyPosition> positions) {
-    PdcClassification classification = new PdcClassification().modifiable();
-    classification.setPositions(positions);
-    return classification;
-  }
+  @Id
+  @GeneratedValue(strategy= GenerationType.AUTO)
+  private Long id;
   
-  private Set<ClassifyPosition> positions = new HashSet<ClassifyPosition>();
-  private boolean modifiable = false;
+  @OneToMany(cascade= CascadeType.ALL, orphanRemoval=true)
+  private Set<PdcPosition> positions = new HashSet<PdcPosition>();
+  private boolean modifiable = true;
+  @Column(nullable=false)
+  @NotNull
+  @Size(min=2)
   private String instanceId = "";
-  private String resourceId = "";
+  private String contentId = null;
+  private String nodeId = null;
   
   /**
    * Gets the positions on the PdC's axis with which the content is classified.
+   * Positions on the PdC can be added or removed with the returned set.
    * @return a set of positions of this classification.
    */
-  public Set<ClassifyPosition> getPositions() {
+  public Set<PdcPosition> getPositions() {
     return positions;
   }
   
@@ -94,8 +110,15 @@ public class PdcClassification {
     return this;
   }
   
-  public PdcClassification forResource(String resourceId) {
-    this.resourceId = resourceId;
+  public PdcClassification forContent(String contentId) {
+    this.contentId = contentId;
+    this.nodeId = null;
+    return this;
+  }
+  
+  public PdcClassification forNode(String nodeId) {
+    this.nodeId = nodeId;
+    this.contentId = null;
     return this;
   }
   
@@ -108,35 +131,39 @@ public class PdcClassification {
     return instanceId;
   }
 
-  public String getResourceId() {
-    return resourceId;
+  public String getContentId() {
+    return contentId;
+  }
+  
+  public String getNodeId() {
+    return nodeId;
   }
   
   /**
-   * Is this classification onto the PdC is for a defined resource?
+   * Is this classification on the PdC is a predefined one to classify any new contents in the given
+   * node or for the given whole component instance?
    * 
-   * If this classification serves as a template for a whole component instance, then false is
-   * returned. If it serves as a template for the contents belonging to a node in a component instance,
-   * then true is returned as the resource refers this node. Otherwise the resource refers a given
-   * content and true is also returned.
-   * @return true if this classification is for a resource (the contents of a node or a given content).
-   * False otherwise.
+   * If this classification serves as a template for classifying contents in a whole component
+   * instance or in a node, then true is returned.
+   * If this classification is the one of a given content, then false is returned.
+   * @return true if this classification is a predefined one, false otherwise.
    */
-  public boolean isForADefinedResource() {
-    return resourceId != null && !resourceId.trim().isEmpty();
+  public boolean isPredefinedClassification() {
+    return contentId == null;
   }
   
-  protected PdcClassification() {
+  public PdcClassification() {
     
   }
   
   /**
-   * Sets the specified positions to this classification.
-   * If the classification has already some positions, they are replaced with the specified ones.
-   * @param positions the positions onto the PdC to set.
+   * Sets the positions on the PdC for this classification.
+   * @param thePositions the position to set in this classification.
+   * @return itself.
    */
-  protected void setPositions(final Collection<ClassifyPosition> positions) {
+  public PdcClassification withPositions(final Set<PdcPosition> thePositions) {
     this.positions.clear();
-    this.positions.addAll(positions);
+    this.positions.addAll(thePositions);
+    return this;
   }
 }
