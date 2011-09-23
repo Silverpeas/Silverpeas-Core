@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,24 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.tika.msoffice;
 
-package org.apache.lucene.search.spell;
-
-import org.apache.lucene.util.PriorityQueue;
+import org.apache.tika.sax.XHTMLContentHandler;
+import org.xml.sax.SAXException;
 
 /**
- * Sorts SuggestWord instances
+ * Linked cell. This class decorates another content cell with a hyperlink.
  */
-final class SuggestWordQueueImpl extends PriorityQueue {
+public class LinkedCell extends CellDecorator {
 
-  SuggestWordQueueImpl(int size) {
-    initialize(size);
-  }
+    private final String link;
 
-  protected final boolean lessThan(Object a, Object b) {
-    SuggestWord wa = (SuggestWord) a;
-    SuggestWord wb = (SuggestWord) b;
-    int val = wa.compareTo(wb);
-    return val < 0;
-  }
+    public LinkedCell(Cell cell, String link) {
+        super(cell);
+        this.link = link;
+    }
+
+    public void render(XHTMLContentHandler handler) throws SAXException {
+        handler.startElement("a", "href", link);
+        super.render(handler);
+        handler.endElement("a");
+    }
+
 }

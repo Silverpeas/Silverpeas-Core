@@ -36,7 +36,7 @@ import java.util.Map;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It

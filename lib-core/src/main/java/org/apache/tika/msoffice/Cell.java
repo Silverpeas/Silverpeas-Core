@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,24 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.tika.msoffice;
 
-package org.apache.lucene.search.spell;
-
-import org.apache.lucene.util.PriorityQueue;
+import org.apache.tika.sax.XHTMLContentHandler;
+import org.xml.sax.SAXException;
 
 /**
- * Sorts SuggestWord instances
+ * Cell of content. Classes that implement this interface are used by
+ * Tika parsers (currently just the MS Excel parser) to keep track of
+ * individual pieces of content before they are rendered to the XHTML
+ * SAX event stream.
  */
-final class SuggestWordQueueImpl extends PriorityQueue {
+public interface Cell {
 
-  SuggestWordQueueImpl(int size) {
-    initialize(size);
-  }
+    /**
+     * Renders the content to the given XHTML SAX event stream.
+     *
+     * @param handler
+     * @throws SAXException
+     */
+    void render(XHTMLContentHandler handler) throws SAXException;
 
-  protected final boolean lessThan(Object a, Object b) {
-    SuggestWord wa = (SuggestWord) a;
-    SuggestWord wb = (SuggestWord) b;
-    int val = wa.compareTo(wb);
-    return val < 0;
-  }
 }
