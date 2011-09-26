@@ -327,16 +327,14 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
     return (this.name);
   }
 
-  public Hashtable getKeyValuePairs() {
-    Hashtable keyValuePairs = new Hashtable();
+  public Hashtable<String, String> getKeyValuePairs() {
+    Hashtable<String, String> keyValuePairs = new Hashtable<String, String>();
 
     if (parameters != null && parameters.size() > 0) {
       String keys = null;
       String values = null;
 
-      Parameter parameter = null;
-      for (int p = 0; p < parameters.size(); p++) {
-        parameter = (Parameter) parameters.get(p);
+      for (Parameter parameter : parameters) {
         if (parameter != null && "keys".equals(parameter.getName()))
           keys = parameter.getValue();
         if (parameter != null && "values".equals(parameter.getName()))
