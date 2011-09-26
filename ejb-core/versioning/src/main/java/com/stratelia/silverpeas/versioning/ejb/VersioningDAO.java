@@ -368,8 +368,7 @@ public class VersioningDAO {
       }
       List<Worker> workers = document.getWorkList();
       if (workers != null && !workers.isEmpty()) {
-        for (int i = 0; i < workers.size(); i++) {
-          Worker worker = workers.get(i);
+        for (Worker worker : workers) {
           worker.setDocumentId(newId);
           worker.setInstanceId(document.getPk().getComponentName());
         }
@@ -490,8 +489,7 @@ public class VersioningDAO {
       throws SQLException, VersioningRuntimeException {
     List<Worker> workers = document.getWorkList();
     if (workers != null && !workers.isEmpty()) {
-      for (int i = 0; i < workers.size(); i++) {
-        Worker worker = workers.get(i);
+      for (Worker worker : workers) {
         worker.setDocumentId(Integer.parseInt(document.getPk().getId()));
       }
       WorkListDAO.removeAllWorkers(conn, document.getPk());
@@ -1088,8 +1086,8 @@ public class VersioningDAO {
         "root.MSG_GEN_ENTER_METHOD", "instanceId = " + instanceId);
     List<Document> documentsOfInstance = getDocumentsByInstanceId(con, instanceId);
     Document document = null;
-    for (int d = 0; d < documentsOfInstance.size(); d++) {
-      document = documentsOfInstance.get(d);
+    for (Document aDocumentsOfInstance : documentsOfInstance) {
+      document = aDocumentsOfInstance;
       deleteDocument(con, document.getPk());
     }
   }
@@ -1347,13 +1345,13 @@ public class VersioningDAO {
       VersioningRuntimeException {
     SilverTrace.debug("versioning", "VersioningDAO.insertAccessListContent",
         "root.MSG_GEN_PARAM_VALUE", "accessId = " + accessId);
-    for (int i = 0; i < groupsIds.size(); i++) {
-      int groupId = Integer.parseInt(groupsIds.get(i));
+    for (String groupsId : groupsIds) {
+      int groupId = Integer.parseInt(groupsId);
       insertAccessListContentRow(conn, "G", groupId, accessId);
     }
 
-    for (int i = 0; i < usersIds.size(); i++) {
-      int userId = Integer.parseInt(usersIds.get(i));
+    for (String usersId : usersIds) {
+      int userId = Integer.parseInt(usersId);
       insertAccessListContentRow(conn, "U", userId, accessId);
     }
   }
@@ -1372,12 +1370,12 @@ public class VersioningDAO {
     SilverTrace.debug("versioning",
         "VersioningDAO.insertAccessGroupsListContent",
         "root.MSG_GEN_PARAM_VALUE", "accessId = " + accessId);
-    for (int i = 0; i < groupsIds.size(); i++) {
-      int groupId = Integer.parseInt(groupsIds.get(i));
+    for (String groupsId : groupsIds) {
+      int groupId = Integer.parseInt(groupsId);
       insertAccessListContentRow(conn, "G", groupId, accessId);
     }
-    for (int i = 0; i < usersIds.size(); i++) {
-      int userId = Integer.parseInt(usersIds.get(i));
+    for (String usersId : usersIds) {
+      int userId = Integer.parseInt(usersId);
       insertAccessListContentRow(conn, "U", userId, accessId);
     }
   }
@@ -1489,7 +1487,7 @@ public class VersioningDAO {
 
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        results.add(new Integer(rs.getInt(1)).toString());
+        results.add(Integer.toString(rs.getInt(1)));
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -1590,7 +1588,7 @@ public class VersioningDAO {
       + accessListTableName + " where componentId = ?)";
 
   public static int getMaxOrderNumber(Connection con, WAPrimaryKey foreignKey) throws SQLException {
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select max(documentOrderNum)");
     selectQuery.append(" from ").append(documentTableName);
     selectQuery.append(" where foreignId = ? ");

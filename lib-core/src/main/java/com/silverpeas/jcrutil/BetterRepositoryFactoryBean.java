@@ -152,7 +152,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
    */
   public static String replaceVariables(Properties variables, String value,
       boolean ignoreMissing) throws IllegalArgumentException {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     // Value:
     // +--+-+--------+-+-----------------+

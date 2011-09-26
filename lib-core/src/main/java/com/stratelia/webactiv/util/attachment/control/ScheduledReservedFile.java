@@ -23,26 +23,25 @@
  */
 package com.stratelia.webactiv.util.attachment.control;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Locale;
-
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
 
 public class ScheduledReservedFile
         implements SchedulerEventListener {
@@ -97,18 +96,16 @@ public class ScheduledReservedFile
               "ScheduledReservedFile.doScheduledReservedFile()",
               "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + attachments.size());
 
-      Iterator<AttachmentDetail> it = attachments.iterator();
-      while (it.hasNext()) {
-        AttachmentDetail att = it.next();
+      for (AttachmentDetail att : attachments) {
         messageBody.append(message.getString("attachment.notifName")).append(
-                " '").append(att.getLogicalName()).append("'");
+            " '").append(att.getLogicalName()).append("'");
         messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").append(att.
-                getLogicalName()).append("'");
+            getLogicalName()).append("'");
         SilverTrace.info("attachment",
-                "ScheduledAlertUser.doScheduledAlertUser()",
-                "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+            "ScheduledAlertUser.doScheduledAlertUser()",
+            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         createMessage(message, messageBody, message_en, messageBody_en, att,
-                false, false);
+            false, false);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
       }
@@ -130,18 +127,16 @@ public class ScheduledReservedFile
       messageBody = new StringBuffer();
       messageBody_en = new StringBuffer();
 
-      Iterator<AttachmentDetail> itA = attachments.iterator();
-      while (itA.hasNext()) {
-        AttachmentDetail att = itA.next();
+      for (AttachmentDetail att : attachments) {
         messageBody.append(message.getString("attachment.notifName")).append(
-                " '").append(att.getLogicalName()).append("' ");
+            " '").append(att.getLogicalName()).append("' ");
         messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").append(att.
-                getLogicalName()).append("' ");
+            getLogicalName()).append("' ");
         SilverTrace.info("attachment",
-                "ScheduledAlertUser.doScheduledAlertUser()",
-                "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+            "ScheduledAlertUser.doScheduledAlertUser()",
+            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         createMessage(message, messageBody, message_en, messageBody_en, att,
-                true, false);
+            true, false);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
       }
@@ -163,20 +158,17 @@ public class ScheduledReservedFile
       messageBody = new StringBuffer();
       messageBody_en = new StringBuffer();
 
-      Iterator<AttachmentDetail> itL = attachments.iterator();
-      while (itL.hasNext()) {
-        AttachmentDetail att = itL.next();
-
+      for (AttachmentDetail att : attachments) {
         // envoyer une notif
         messageBody.append(message.getString("attachment.notifName")).append(
-                " '").append(att.getLogicalName()).append("'");
+            " '").append(att.getLogicalName()).append("'");
         messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").append(att.
-                getLogicalName()).append("'");
+            getLogicalName()).append("'");
         SilverTrace.info("attachment",
-                "ScheduledAlertUser.doScheduledAlertUser()",
-                "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+            "ScheduledAlertUser.doScheduledAlertUser()",
+            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         createMessage(message, messageBody, message_en, messageBody_en, att,
-                false, true);
+            false, true);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
 

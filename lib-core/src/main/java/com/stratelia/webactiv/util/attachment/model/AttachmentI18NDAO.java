@@ -24,6 +24,12 @@
 
 package com.stratelia.webactiv.util.attachment.model;
 
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,12 +38,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 public class AttachmentI18NDAO {
   private static String attachmentTableName = "SB_Attachment_AttachmentI18N";
@@ -79,7 +79,7 @@ public class AttachmentI18NDAO {
 
   public static List<AttachmentDetailI18N> getTranslations(Connection con, WAPrimaryKey foreignKey)
       throws SQLException {
-    StringBuffer selectStatement = new StringBuffer();
+    StringBuilder selectStatement = new StringBuilder();
     selectStatement.append("select ").append(attachmentTableColumns);
     selectStatement.append(" from ").append(attachmentTableName);
     selectStatement.append(" where attachmentId= ? and instanceId= ? ");

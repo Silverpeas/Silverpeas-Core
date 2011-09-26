@@ -172,10 +172,10 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
     if (result == null) {
       return false;
-    } else {
-      return result.intValue() >= 1;
     }
+    return result >= 1;
   }
+
   static final private String SELECT_COUNT_GROUPUSERROLE_USER_REL =
       "select count(*) from ST_GroupUserRole_User_Rel"
       + " where userId = ? and groupUserRoleId = ?";
@@ -243,9 +243,8 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
     if (result == null) {
       return false;
-    } else {
-      return result.intValue() >= 1;
     }
+    return result >= 1;
   }
   static final private String SELECT_COUNT_GROUPUSERROLE_GROUP_REL =
       "select count(*) from ST_GroupUserRole_Group_Rel"

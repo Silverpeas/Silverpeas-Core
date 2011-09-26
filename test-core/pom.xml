@@ -27,6 +27,12 @@
       <groupId>org.dbunit</groupId>
       <artifactId>dbunit</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>poi</groupId>
+          <artifactId>poi</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.sun.jndi</groupId>

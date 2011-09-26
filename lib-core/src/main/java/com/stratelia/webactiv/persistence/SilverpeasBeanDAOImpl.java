@@ -589,7 +589,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         if (integer == null) {
           prepStmt.setInt(count, -1);
         } else {
-          prepStmt.setInt(count, integer.intValue());
+          prepStmt.setInt(count, integer);
         }
         count++;
       } else if (isLong(type)) {
@@ -597,7 +597,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         if (l == null) {
           prepStmt.setLong(count, 0);
         } else {
-          prepStmt.setLong(count, l.longValue());
+          prepStmt.setLong(count, l);
         }
         count++;
       } else if (isBoolean(type)) {
@@ -605,7 +605,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         if (l == null) {
           prepStmt.setBoolean(count, false);
         } else {
-          prepStmt.setBoolean(count, l.booleanValue());
+          prepStmt.setBoolean(count, l);
         }
         count++;
       } else if (isString(type)) {
@@ -629,7 +629,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         if (f == null) {
           prepStmt.setFloat(count, 0);
         } else {
-          prepStmt.setFloat(count, f.floatValue());
+          prepStmt.setFloat(count, f);
         }
         count++;
       } else if (isDouble(type)) {
@@ -637,7 +637,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         if (d == null) {
           prepStmt.setDouble(count, 0);
         } else {
-          prepStmt.setDouble(count, d.doubleValue());
+          prepStmt.setDouble(count, d);
         }
         count++;
       } else {

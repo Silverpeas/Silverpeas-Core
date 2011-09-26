@@ -238,7 +238,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     if (result == null) {
       return false;
     }
-    return result.intValue() >= 1;
+    return result >= 1;
   }
   static final private String SELECT_COUNT_SPACEUSERROLE_USER_REL = "select count(*) from "
       + "ST_SpaceUserRole_User_Rel where userId = ? and spaceUserRoleId = ?";
@@ -321,7 +321,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     if (result == null) {
       return false;
     } else {
-      return result.intValue() >= 1;
+      return result >= 1;
     }
   }
   static final private String SELECT_COUNT_SPACEUSERROLE_GROUP_REL =

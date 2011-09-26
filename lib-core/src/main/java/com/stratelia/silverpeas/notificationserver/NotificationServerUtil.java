@@ -26,6 +26,12 @@ package com.stratelia.silverpeas.notificationserver;
 import com.google.common.base.Charsets;
 import com.stratelia.silverpeas.notificationserver.xml.NotifyContentHandler;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,12 +39,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 public class NotificationServerUtil {
 
@@ -162,7 +162,7 @@ public class NotificationServerUtil {
             String strValue = value.toString();
             if (strValue.startsWith("#DATE#")) {
               strValue = strValue.substring(6, strValue.length());
-              result.put(key.toString(), new Date(Long.valueOf(strValue).longValue()));
+              result.put(key.toString(), new Date(Long.valueOf(strValue)));
             } else {
               result.put(key.toString(), strValue);
             }
@@ -189,7 +189,7 @@ public class NotificationServerUtil {
       String strValue = value.toString();
       if (strValue.startsWith("#DATE#")) {
         strValue = strValue.substring(6);
-        result.put(key.toString(), new Date(Long.valueOf(strValue).longValue()));
+        result.put(key.toString(), new Date(Long.valueOf(strValue)));
       } else {
         result.put(key.toString(), strValue);
       }

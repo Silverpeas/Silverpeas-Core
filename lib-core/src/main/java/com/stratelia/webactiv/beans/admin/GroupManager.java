@@ -823,13 +823,13 @@ public class GroupManager {
       ArrayList<Integer> alRoot = new ArrayList<Integer>();
       for (int nI = 0; nI < aGroup.length; nI++) {
         if (aGroup[nI].getSuperGroupId() == null) {
-          alRoot.add(new Integer(nI));
+          alRoot.add(nI);
         }
       }
       AdminGroupInst[] aAdminGroupInst = new AdminGroupInst[alRoot.size()];
       for (int nI = 0; nI < alRoot.size(); nI++) {
         aAdminGroupInst[nI] = new AdminGroupInst();
-        aAdminGroupInst[nI].setGroup(aGroup[alRoot.get(nI).intValue()]);
+        aAdminGroupInst[nI].setGroup(aGroup[alRoot.get(nI)]);
         aAdminGroupInst[nI].setChildrenAdminGroupInst(this.getChildrenGroupInst(ddManager, 
             aAdminGroupInst[nI].getGroup().getId(), aGroup));
       }

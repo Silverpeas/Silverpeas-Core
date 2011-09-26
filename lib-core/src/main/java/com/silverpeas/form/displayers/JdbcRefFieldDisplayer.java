@@ -24,19 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.apache.ecs.AlignType;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.A;
-import org.apache.ecs.html.IMG;
-import org.apache.ecs.html.Input;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
@@ -46,6 +33,18 @@ import com.silverpeas.form.fieldType.JdbcRefField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.ecs.AlignType;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.html.A;
+import org.apache.ecs.html.IMG;
+import org.apache.ecs.html.Input;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer {
 
@@ -90,7 +89,7 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer {
     A link = new A();
     link.setHref("#");
 
-    StringBuffer onclick = new StringBuffer(200).append("javascript:SP_openWindow('")
+    StringBuilder onclick = new StringBuilder(200).append("javascript:SP_openWindow('")
         .append(URLManager.getApplicationURL()).append("/RselectionPeas/jsp/Main")
         .append("?SelectionType=JdbcConnector")
         .append("&formIndex=").append(pagesContext.getFormIndex());

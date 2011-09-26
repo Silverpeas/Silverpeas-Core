@@ -435,7 +435,7 @@ public class GraphicElementFactory {
       setLook(spaceLookStyle);
       String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
       if (StringUtil.isDefined(lookStyle)) {
-        code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+        code.append("<link id=\"specificCSSid\" rel=\"stylesheet\" type=\"text/css\" href=\"");
         code.append(lookStyle).append("\"/>\n");
       }
     } else {
@@ -464,7 +464,7 @@ public class GraphicElementFactory {
     String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
 
     if (StringUtil.isDefined(lookStyle)) {
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+      code.append("<link id=\"specificCSSid\" rel=\"stylesheet\" type=\"text/css\" href=\"");
       code.append(lookStyle).append("\"/>\n");
     }
   }

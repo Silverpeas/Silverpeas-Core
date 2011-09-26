@@ -183,11 +183,16 @@
         settings.mode = 'creation';
         classification.positions = []; 
         $this.data('classification', classification);
-        $.getJSON(settings.pdcURI, function(pdc) {
-          var selection = [];
-          $this.data('pdc', pdc);
-          prepareClassificationArea($this);
-          renderClassificationEditionBox($this, selection);
+        $.ajax({
+          url: settings.pdcURI,
+          dataType: 'json',
+          cache: false,
+          success: function(pdc) {
+            var selection = [];
+            $this.data('pdc', pdc);
+            prepareClassificationArea($this);
+            renderClassificationEditionBox($this, selection);
+          }
         });
       })
     },
@@ -218,9 +223,14 @@
       var $this = $(this);
       if ($this.data('classification') == null) {
         init( options );
-        $.getJSON(settings.classificationURI, function(classification) {
-          $this.data('classification', classification);
-        })
+        $.ajax({
+          url: settings.classificationURI,
+          dataType: 'json',
+          cache: false,
+          success: function(classification) {
+            $this.data('classification', classification);
+          }
+        });
       }
       var classification = $this.data('classification');
       if (classification.positions.length == 0) {
@@ -276,7 +286,7 @@
       $.extend( true, settings, options );
     }
     settings.classificationURI = settings.resource.context + '/services/pdc/' +
-    settings.resource.component + '/' + settings.resource.content;
+      settings.resource.component + '/' + settings.resource.content;
     settings.pdcURI = settings.resource.context + '/services/pdc/' + settings.resource.component;
     if (settings.resource.content != null && settings.resource.content.length > 0) {
       settings.pdcURI = settings.pdcURI + '?contentId=' + settings.resource.content;
@@ -426,6 +436,7 @@
           data: $.toJSON(position),
           contentType: "application/json",
           dataType: "json",
+          cache: false,
           success: function(classification) {
             $("#pdc-addition-box").dialog( "destroy" );
             $("#pdc-update-box").dialog( "destroy" );
@@ -552,15 +563,20 @@
    * resource.
    */
   function loadClassification( $this ) {
-    $.getJSON(settings.classificationURI, function(classification) {
-      $this.data('classification', classification);
-      if (classification.positions.length == 0 && settings.mode == 'view') {
-        $this.hide();
-      } else {
-        prepareClassificationArea($this);
-        renderPositions( $this );
+    $.ajax({
+      url: settings.classificationURI,
+      dataType: 'json',
+      cache: false,
+      success: function(classification) {
+        $this.data('classification', classification);
+        if (classification.positions.length == 0 && settings.mode == 'view') {
+          $this.hide();
+        } else {
+          prepareClassificationArea($this);
+          renderPositions( $this );
+        }
       }
-    })
+    });
   }
   
   /**
@@ -590,13 +606,18 @@
               src: settings.update.icon,  
               alt: settings.update.title
             }).click(function () {
-              $.getJSON(settings.pdcURI, function(pdc) {
-                $this.data('pdc', pdc);
-                updatePosition($this, position);
-              })
+              $.ajax({
+                url: settings.pdcURI,
+                dataType: 'json',
+                cache: false,
+                success: function(pdc) {
+                  $this.data('pdc', pdc);
+                  updatePosition($this, position);
+                }
+              });
             }))).append($('<a>', {
-            href: '#', 
-            title: settings.deletion.title + ' ' + posId
+              href: '#', 
+              title: settings.deletion.title + ' ' + posId
           }).addClass('delete').
             append($('<img>', {
               src: settings.deletion.icon,  
@@ -618,10 +639,15 @@
       $('<a>', {
         href: '#'
       }).addClass('add_position').html(settings.addition.title).click(function() {
-        $.getJSON(settings.pdcURI, function(pdc) {
-          $this.data('pdc', pdc);
-          addNewPosition($this);
-        })
+        $.ajax({
+          url: settings.pdcURI,
+          dataType: 'json',
+          cache: false,
+          success: function(pdc) {
+            $this.data('pdc', pdc);
+            addNewPosition($this);
+          }
+        });
       }).appendTo($('#allpositions'))
     }
   }
@@ -667,8 +693,8 @@
    */
   function renderPdCAxisFields( $this, theAxis, axisSection, selectedValues ) {
     var hasMandatoryAxis = false, hasInvariantAxis = false;
-    // browse the axis of the PdC
-    $.each(theAxis, function(axisindex, anAxis) {
+    // browse the axis of the PdC and for each of them print out a select HTML element
+    $.each(theAxis, function(axisIndex, anAxis) {
       var currentAxisDiv = $('<div>').addClass('champs').appendTo($('<div>').addClass('field').
         append($('<label >', {
           'for': anAxis.id
@@ -686,49 +712,46 @@
         if (theValue == '-') {
           selectedValues[anAxis.id] = null;
         } else {
-          selectedValues[anAxis.id] = $.parseJSON(theValue);
+          selectedValues[anAxis.id] = anAxis.values[theValue];
         }
       });
       var path = [];
       
-      // browse the values of the current axis
-      $.each(anAxis.values, function(valueindex, aValue) {
+      // browse the values of the current axis and for each of them print out an option HTML element
+      // within the select (representing the current axis)
+      if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
+        selectedValues[anAxis.id] = anAxis.values[anAxis.values.length - 1];
+      $.each(anAxis.values, function(valueIndex, aValue) {
+        var level = '';
         path.splice(aValue.level, path.length - aValue.level);
         path[aValue.level] = aValue.term;
         aValue.meaning = path.join(' / ');
-        var level = '', optionAttr = "value='" + $.toJSON(aValue) + "'", selected = false;
         if (aValue.id != '/0/') {
           for (var i = 0; i < aValue.level; i++) {
             level += '&nbsp;&nbsp;';
           }
+          var option =
+            $('<option>').attr('value', valueIndex).html(level + aValue.term).appendTo(axisValuesSelection);
           if (aValue.ascendant) {
-            optionAttr = 'value="A" class="intfdcolor51" disabled="disabled"';
-          }
-          if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id) ||
-            (aValue.id == anAxis.invariantValue)) {
-            selected = true;
-            selectedValues[anAxis.id] = aValue;
+            option.attr('value', 'A').attr('disabled', 'disabled').addClass("intfdcolor51");
           }
           if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
-            optionAttr += ' disabled="disabled"';
+            selectedValues[anAxis.id] = aValue;
+            option.attr('disabled', 'disabled');
           }
-          var option =
-            $('<option ' + optionAttr + '>').html(level + aValue.term).appendTo(axisValuesSelection);
-          if (selected) option.attr('selected', 'selected');
+          if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id)) {
+            option.attr('selected', 'selected');
+          }
         }
       });
       
-      var defaultValue = '', disabled = '', selected = false;
+      var option = $('<option>').attr('value', '-').prependTo(axisValuesSelection);
       if (anAxis.mandatory) {
-        defaultValue = settings.edition.mandatoryAxisDefaultValue;
-        disabled = ' disabled="disabled" class="emphasis" ';
+        option.attr('disabled', 'disabled').addClass('emphasis').html(settings.edition.mandatoryAxisDefaultValue);
       }
       if (selectedValues[anAxis.id] == null) {
-        selected = true;
+        option.attr('selected', 'selected');
       }
-      var option =
-        $('<option value="-"' + disabled + '>').html(defaultValue).prependTo(axisValuesSelection);
-      if (selected) option.attr('selected', 'selected');
       if (selectedValues[anAxis.id] != null) {
         $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);
       }

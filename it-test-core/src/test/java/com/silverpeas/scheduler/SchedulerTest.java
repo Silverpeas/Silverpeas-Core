@@ -145,6 +145,24 @@ public class SchedulerTest {
     await().atMost(62, SECONDS).until(jobIsFired());
     assertTrue(eventHandler.isJobSucceeded());
   }
+  
+  @Test
+  public void schedulingAJobExecutionWithACronExpressionHavingTwoDigitsInOneOfItsValueShouldRunThatJobAtTheExpectedTime() throws
+      Exception {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, 1);
+    int minute = calendar.get(Calendar.MINUTE);
+    String cron = "0" + minute + " * * * *";
+    JobTrigger trigger = JobTrigger.triggerAt(cron);
+    ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    assertNotNull(job);
+    assertEquals(JOB_NAME, job.getName());
+    assertEquals(eventHandler, job.getSchedulerEventListener());
+    assertEquals(trigger, job.getTrigger());
+    assertFalse(eventHandler.isJobFired());
+    await().atMost(62, SECONDS).until(jobIsFired());
+    assertTrue(eventHandler.isJobSucceeded());
+  }
 
 
   /**

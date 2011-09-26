@@ -167,13 +167,11 @@ public class VersioningUtil {
       throws RemoteException {
     HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
     List<Reader> no_readers = getAllNoReader(document);
-    for (int i = 0; i < no_readers.size(); i++) {
-      Reader reader = no_readers.get(i);
+    for (Reader reader : no_readers) {
       mapRead.put(String.valueOf(reader.getUserId()), reader);
     }
     List<Reader> readers = document.getReadList();
-    for (int i = 0; i < readers.size(); i++) {
-      Reader reader = readers.get(i);
+    for (Reader reader : readers) {
       mapRead.put(String.valueOf(reader.getUserId()), reader);
     }
     return mapRead;
@@ -187,8 +185,7 @@ public class VersioningUtil {
     List<Reader> writers = new ArrayList<Reader>();
     writers.addAll(getAllUsersForProfile(document, writer.toString()).values());
     int creator_id = getDocumentCreator(document.getPk());
-    for (int i = 0; i < writers.size(); i++) {
-      Reader user = writers.get(i);
+    for (Reader user : writers) {
       if (user.getUserId() == creator_id) {
         noReaderMap.put(String.valueOf(creator_id), user);
         break;
@@ -224,42 +221,36 @@ public class VersioningUtil {
     ComponentInst componentInst = orgCntr.getComponentInst(document.getForeignKey().getComponentName());
 
     HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
-    ProfileInst profileInst = null;
-
     // Get profile instance for given profile
-    profileInst = componentInst.getProfileInst(nameProfile);
+    ProfileInst profileInst = componentInst.getProfileInst(nameProfile);
     if (profileInst != null) {
       ArrayList<String> groupIds = new ArrayList<String>();
       ArrayList<String> userIds = new ArrayList<String>();
       groupIds.addAll(profileInst.getAllGroups());
       userIds.addAll(profileInst.getAllUsers());
-
-      Group group = null;
-
       // For all users of all groups generate UserDetail and then put
       // pair (users id, UsersDetail) to HashTable
-      for (int i = 0; i < groupIds.size(); i++) {
-        group = orgCntr.getGroup(groupIds.get(i));
+      for (String groupId : groupIds) {
+        Group group = orgCntr.getGroup(groupId);
         String[] usersGroup = group.getUserIds();
-        for (int j = 0; j < usersGroup.length; j++) {
+        for (String anUsersGroup : usersGroup) {
           // This check avoids duplicate users
-          if (!mapRead.containsKey(usersGroup[j])
-              && !noReaderMap.containsKey(usersGroup[j])) {
-            UserDetail ud = orgCntr.getUserDetail(usersGroup[j]);
+          if (!mapRead.containsKey(anUsersGroup) && !noReaderMap.containsKey(anUsersGroup)) {
+            UserDetail ud = orgCntr.getUserDetail(anUsersGroup);
             Reader ru = new Reader(Integer.parseInt(ud.getId()), 0, document.getInstanceId(), 0);
-            mapRead.put(usersGroup[j], ru);
+            mapRead.put(anUsersGroup, ru);
           }
         }
       }
 
       // For all users generate UserDetail and then put
       // pair (users id, UsersDetail) to HashTable
-      for (int i = 0; i < userIds.size(); i++) {
+      for (String userId : userIds) {
         // This check avoids duplicate users
-        if (!mapRead.containsKey(userIds.get(i)) && !noReaderMap.containsKey(userIds.get(i))) {
-          UserDetail ud = orgCntr.getUserDetail(userIds.get(i));
+        if (!mapRead.containsKey(userId) && !noReaderMap.containsKey(userId)) {
+          UserDetail ud = orgCntr.getUserDetail(userId);
           Reader ru = new Reader(Integer.parseInt(ud.getId()), 0, document.getInstanceId(), 0);
-          mapRead.put(userIds.get(i), ru);
+          mapRead.put(userId, ru);
         }
       }
     }
@@ -637,10 +628,12 @@ public class VersioningUtil {
     Selection sel = getSelection();
 
     if (isAccessListExist(role)) {
-      if (role.equals(READER)) {
+      if (READER.equals(role)) {
         // We only get Ids
-        sel.setSelectedElements(getReadersAccessListUsers().toArray(new String[0]));
-        sel.setSelectedSets(getReadersAccessListGroups().toArray(new String[0]));
+        List<String> users = getReadersAccessListUsers();
+        sel.setSelectedElements(users.toArray(new String[users.size()]));
+        List<String> groups = getReadersAccessListUsers();
+        sel.setSelectedSets(groups.toArray(new String[groups.size()]));
       } else {
         List<Worker> workersUsers = getWorkersAccessListUsers();
         List<Worker> workersGroups = getWorkersAccessListGroups();

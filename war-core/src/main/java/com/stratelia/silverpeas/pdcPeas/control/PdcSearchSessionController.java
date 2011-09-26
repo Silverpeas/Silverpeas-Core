@@ -1516,16 +1516,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
       return new ArrayList<SearchAxis>();
     } else {
-      if (isShowOnlyPertinentAxisAndValues()) {
-        return getPdcBm().getPertinentAxisByInstanceIds(searchContext,
-            viewType, getCopyOfInstanceIds());
-      } else {
-        // we get all axis (pertinent or not) from a type P or S
-        List<AxisHeader> axis = getPdcBm().getAxisByType(viewType);
-        // we have to transform all axis (AxisHeader) into SearchAxis to make
-        // the display into jsp transparent
-        return transformAxisHeadersIntoSearchAxis(axis);
-      }
+      // we get all axis (pertinent or not) from a type P or S
+      List<AxisHeader> axis = getPdcBm().getAxisByType(viewType);
+      // we have to transform all axis (AxisHeader) into SearchAxis to make
+      // the display into jsp transparent
+      return transformAxisHeadersIntoSearchAxis(axis);
     }
   }
 

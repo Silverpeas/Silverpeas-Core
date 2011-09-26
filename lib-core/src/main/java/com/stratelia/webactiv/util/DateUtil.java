@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util;
 
@@ -40,6 +37,7 @@ import java.util.TimeZone;
 
 /**
  * DateUtil is an helper class for date manipulation.
+ *
  * @author squere
  */
 public class DateUtil {
@@ -47,9 +45,9 @@ public class DateUtil {
   private static final long millisPerHour = 60l * 60l * 1000l;
   private static final long millisPerMinute = 60l * 1000l;
   private static Map<String, FastDateFormat> outputFormatters =
-      new HashMap<String, FastDateFormat>(5);
+          new HashMap<String, FastDateFormat>(5);
   private static Map<String, SimpleDateFormat> inputParsers =
-      new HashMap<String, SimpleDateFormat>(5);
+          new HashMap<String, SimpleDateFormat>(5);
   /**
    * Format and parse dates.
    */
@@ -62,6 +60,7 @@ public class DateUtil {
   public static final FastDateFormat ICALDAY_FORMATTER;
   public static final FastDateFormat ICALDATE_FORMATTER;
   public static final FastDateFormat ICALUTCDATE_FORMATTER;
+  public static final FastDateFormat ISO8601_FORMATTER;
   /**
    * Format and parse dates.
    */
@@ -82,7 +81,9 @@ public class DateUtil {
     ICALDAY_FORMATTER = FastDateFormat.getInstance("yyyyMMdd");
     ICALDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss");
     ICALUTCDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'",
-        TimeZone.getTimeZone("UTC"));
+            TimeZone.getTimeZone("UTC"));
+    ISO8601_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone(
+            "UTC"));
   }
 
   /**
@@ -109,7 +110,7 @@ public class DateUtil {
   }
 
   public static String getOutputDate(String dateDB, String language)
-      throws ParseException {
+          throws ParseException {
     if (!StringUtil.isDefined(dateDB)) {
       return "";
     }
@@ -130,8 +131,8 @@ public class DateUtil {
       return "";
     }
     FastDateFormat formatter = FastDateFormat.getInstance(getMultilangProperties(
-        language).getString("dateOutputFormat")
-        + " " + getMultilangProperties(language).getString("hourOutputFormat"));
+            language).getString("dateOutputFormat")
+            + " " + getMultilangProperties(language).getString("hourOutputFormat"));
     return formatter.format(date);
   }
 
@@ -146,7 +147,7 @@ public class DateUtil {
   }
 
   public static String getInputDate(String dateDB, String language)
-      throws ParseException {
+          throws ParseException {
     if (!StringUtil.isDefined(dateDB)) {
       return "";
     }
@@ -163,7 +164,7 @@ public class DateUtil {
    * @return A Date representation of the String in the language specific format.
    */
   public static Date stringToDate(String string, String language)
-      throws ParseException {
+          throws ParseException {
     SimpleDateFormat format = getDateInputFormat(language);
     try {
       return format.parse(string);
@@ -175,7 +176,7 @@ public class DateUtil {
   }
 
   public static Date stringToDate(String date, String hour, String language)
-      throws ParseException {
+          throws ParseException {
     try {
       SimpleDateFormat format;
       if (hour == null || "".equals(hour.trim())) {
@@ -253,7 +254,7 @@ public class DateUtil {
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String lang) {
     return new SimpleDateFormat(getMultilangProperties(lang).getString("dateInputFormat") + " "
-        + getMultilangProperties(lang).getString("hourOutputFormat"));
+            + getMultilangProperties(lang).getString("hourOutputFormat"));
   }
 
   /**
@@ -265,7 +266,7 @@ public class DateUtil {
    */
   public static ResourceLocator getMultilangProperties(String language) {
     return new ResourceLocator(
-        "com.stratelia.webactiv.util.date.multilang.date", language);
+            "com.stratelia.webactiv.util.date.multilang.date", language);
   }
 
   /**
@@ -291,7 +292,7 @@ public class DateUtil {
     SimpleDateFormat sdf = new SimpleDateFormat(format);
     return sdf.parse(date);
   }
-
+  
   /**
    * Test if two dates are equal
    * @param date1 first date
@@ -392,7 +393,7 @@ public class DateUtil {
   public static String getFormattedTime(Date date) {
     String time = formatTime(date);
     SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = "
-        + time);
+            + time);
     return time;
   }
 
@@ -615,7 +616,7 @@ public class DateUtil {
    */
   public static Date parseISO8601Date(final String date) throws ParseException {
     return DateUtils.parseDate(date, ISO8601DATE_FORMATTER.getPattern(),
-          ISO8601DAY_FORMATTER.getPattern());
+            ISO8601DAY_FORMATTER.getPattern());
   }
 
   /**

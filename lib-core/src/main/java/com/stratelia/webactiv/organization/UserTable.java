@@ -450,7 +450,7 @@ public class UserTable extends Table<UserRow> {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ids.get(i).intValue();
+      idsArray[i] = ids.get(i);
     }
     List<String> result =
         getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
@@ -506,7 +506,7 @@ public class UserTable extends Table<UserRow> {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ids.get(i).intValue();
+      idsArray[i] = ids.get(i);
     }
     List<UserRow> rows = getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
     return rows.toArray(new UserRow[rows.size()]);

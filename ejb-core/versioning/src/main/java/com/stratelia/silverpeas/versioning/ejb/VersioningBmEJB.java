@@ -69,7 +69,7 @@ public class VersioningBmEJB implements SessionBean {
 
   private static final long serialVersionUID = 4838684224693087726L;
   public final static String DATE_FORMAT = "yyyy/MM/dd";
-  private static ResourceLocator resources = new ResourceLocator(
+  private static final ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.versioning.Versioning", "");
 
   public Document getDocument(DocumentPK pk) {
@@ -259,10 +259,8 @@ public class VersioningBmEJB implements SessionBean {
         VersioningDAO.checkDocumentIn(con, documentPK);
       }
       List<DocumentVersion> versions = VersioningDAO.getDocumentVersions(con, documentPK);
-      Iterator<DocumentVersion> iter = versions.iterator();
-      while (iter.hasNext()) {
-        RepositoryHelper.getJcrDocumentService().deleteDocument(
-            iter.next());
+      for (DocumentVersion version : versions) {
+        RepositoryHelper.getJcrDocumentService().deleteDocument(version);
       }
     } catch (Exception re) {
       throw new VersioningRuntimeException("VersioningBmEJB.checkDocumentIn",
@@ -585,8 +583,7 @@ public class VersioningBmEJB implements SessionBean {
    * Finds first validator in list of workers
    */
   private Worker findValidator(ArrayList<Worker> workList) {
-    for (int i = 0; i < workList.size(); i++) {
-      Worker worker = workList.get(i);
+    for (Worker worker : workList) {
       if (worker.isApproval()) {
         return worker;
       }
@@ -782,9 +779,7 @@ public class VersioningBmEJB implements SessionBean {
   public void deleteDocumentsByForeignPK(ForeignPK foreignPK) {
     try {
       List<Document> documents = getDocuments(foreignPK);
-      Document document = null;
-      for (int d = 0; d < documents.size(); d++) {
-        document = documents.get(d);
+      for (Document document : documents) {
         deleteDocument(document.getPk());
         deleteIndex(document);
       }
@@ -1061,9 +1056,7 @@ public class VersioningBmEJB implements SessionBean {
       return false;
     }
 
-    for (int i = 0; i < wList.size(); i++) {
-      Worker worker = wList.get(i);
-
+    for (Worker worker : wList) {
       if (worker.isApproval() && worker.getId() == userID) {
         return true; // providede user can validate
       }
@@ -1232,7 +1225,6 @@ public class VersioningBmEJB implements SessionBean {
       String comment, java.util.Date validationDate, int validatorId,
       Connection conn) {
     DocumentVersion newVersion = (DocumentVersion) docVersion.clone();
-    ;
     newVersion.setType(DocumentVersion.TYPE_DEFAULT_VERSION);
     newVersion.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
 
@@ -1291,7 +1283,7 @@ public class VersioningBmEJB implements SessionBean {
     String language = getDefaultUserLanguage(userID);
     ResourceLocator resources = new ResourceLocator(
         "com.stratelia.webactiv.util.versioning.multilang.versioning", language);
-    StringBuffer message = new StringBuffer();
+    StringBuilder message = new StringBuilder();
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
     OrganizationController orgCtr = new OrganizationController();
@@ -1490,9 +1482,7 @@ public class VersioningBmEJB implements SessionBean {
     String path = FileRepositoryManager.getAbsolutePath(documentPK.getInstanceId(), ctx);
 
     // for each version, we remove according file
-    DocumentVersion version = null;
-    for (int v = 0; v < versions.size(); v++) {
-      version = versions.get(v);
+    for (DocumentVersion version : versions) {
       deleteVersionFile(version, path);
     }
   }

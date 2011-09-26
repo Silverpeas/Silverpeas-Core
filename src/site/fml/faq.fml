@@ -31,7 +31,37 @@
 
   <part id="tech-admin">
     <title>Technical Administration</title>
-
+    <faq id="jboss">
+      <question>
+        JBoss Hornet Q won't start with AIO library ?
+      </question>
+      <answer>
+        <p>Symptoms: </p>        
+        <ul>
+          <li>Silverpeas doesn't start.</li>
+          <li>You have something like this in the 
+            <i>booot.log</i>
+          </li>
+        </ul>
+        <source>
+ERROR [AbstractKernelController] Error installing to Start: name=JMSServerManager state=Create: HornetQException[errorCode=205 message=Can't open file]
+        at org.hornetq.core.asyncio.impl.AsynchronousFileImpl.init(Native Method) [:6.0.0.20100911-M5]
+        at org.hornetq.core.asyncio.impl.AsynchronousFileImpl.open(AsynchronousFileImpl.java:206) [:6.0.0.20100911-M5]
+        </source>
+        <ol>
+          <li>Stop Silverpeas.</li>
+          <li>Edit the file 
+            <i>hornetq-configuration.xml</i> adding just before the closing tag
+            <b>"configuration"</b> :
+            <source><![CDATA[<journal-type>NIO</journal-type>]]>
+            </source>
+          </li>
+          <li>Restart Silverpeas </li>
+          <li>Check the logs for verifying that the fix is done.</li>
+        </ol>                
+        <p>Jboss should be ok.</p>
+      </answer>
+    </faq>
     <faq id="jcr">
       <question>
         How to fix a corrupted JCR ?

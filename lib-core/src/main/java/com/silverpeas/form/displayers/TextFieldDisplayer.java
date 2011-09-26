@@ -23,16 +23,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.img;
-import org.apache.ecs.xhtml.input;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -45,6 +35,15 @@ import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -160,7 +159,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     // Suggestions used ?
     String paramSuggestions =
         parameters.containsKey("suggestions") ? parameters.get("suggestions") : "false";
-    boolean useSuggestions = Boolean.valueOf(paramSuggestions).booleanValue();
+    boolean useSuggestions = Boolean.valueOf(paramSuggestions);
     List<String> suggestions = null;
     if (useSuggestions) {
       TextFieldImpl textField = (TextFieldImpl) field;

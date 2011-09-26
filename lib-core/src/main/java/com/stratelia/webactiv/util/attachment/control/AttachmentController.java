@@ -529,10 +529,8 @@ public class AttachmentController {
     AttachmentPK fk =
         new AttachmentPK(foreignKey.getId(), foreignKey.getSpace(), foreignKey.getComponentName());
     Vector<AttachmentDetail> attachmentDetails = searchAttachmentByCustomerPK(fk);
-    Iterator<AttachmentDetail> it = attachmentDetails.iterator();
 
-    while (it.hasNext()) {
-      AttachmentDetail aD = it.next();
+    for (AttachmentDetail aD : attachmentDetails) {
       deleteIndex(aD);
     }
   }

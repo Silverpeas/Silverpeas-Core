@@ -840,8 +840,7 @@ public class NodeDAO {
         newId = Integer.parseInt(nd.getNodePK().getId());
       } else {
         /* Recherche de la nouvelle PK de la table */
-        newId = DBUtil.getNextId(nd.getNodePK().getTableName(), new String(
-            "nodeId"));
+        newId = DBUtil.getNextId(nd.getNodePK().getTableName(), "nodeId");
       }
     } catch (Exception e) {
       throw new NodeRuntimeException("NodeDAO.insertRow()",

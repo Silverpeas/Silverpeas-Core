@@ -121,9 +121,7 @@ public class SilverpeasAccessManager implements AccessManager {
       } else if (validateFileNode(id)) {
         Set<SilverpeasUserPrincipal> principals =
             subject.getPrincipals(SilverpeasUserPrincipal.class);
-        Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
-        while (iter.hasNext()) {
-          SilverpeasUserPrincipal principal = iter.next();
+        for (SilverpeasUserPrincipal principal : principals) {
           if (checkUserIsOwner(principal, id)) {
             return true;
           }
@@ -196,9 +194,7 @@ public class SilverpeasAccessManager implements AccessManager {
   protected boolean isPathAutorized(Path path) {
     Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
     Path.Element[] elements = path.getElements();
-    Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
-    while (iter.hasNext()) {
-      SilverpeasUserPrincipal principal = iter.next();
+    for (SilverpeasUserPrincipal principal : principals) {
       for (Path.Element element : elements) {
         if (principal.getUserProfile(element.getName().getLocalName()) != null) {
           return true;
@@ -323,9 +319,7 @@ public class SilverpeasAccessManager implements AccessManager {
       } else if (validateFileNode(path)) {
         Set<SilverpeasUserPrincipal> principals =
             subject.getPrincipals(SilverpeasUserPrincipal.class);
-        Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
-        while (iter.hasNext()) {
-          SilverpeasUserPrincipal principal = iter.next();
+        for (SilverpeasUserPrincipal principal : principals) {
           if (checkUserIsOwner(principal, path)) {
             return true;
           }

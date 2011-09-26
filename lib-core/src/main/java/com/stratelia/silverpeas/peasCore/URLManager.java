@@ -23,15 +23,15 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+
+
 import com.silverpeas.util.ComponentHelper;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
-
-import static com.silverpeas.util.StringUtil.isDefined;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
@@ -135,6 +135,7 @@ public class URLManager {
     return buildStandardURL(sureCompName, sComponentId, false);
   }
 
+  @Deprecated
   public static String getURL(String sComponentName) {
     return getURL(sComponentName, null, null);
   }
@@ -163,8 +164,6 @@ public class URLManager {
    * @return la chaine de caractères à concaténer
    */
   public static String getEndURL(String spaceId, String componentId) {
-    // return
-    // URLEncoder.encode("&componentId="+componentId+"&spaceId="+spaceId);
     return "&componentId=" + componentId + "&spaceId=" + spaceId;
   }
 
@@ -196,6 +195,8 @@ public class URLManager {
 
   /**
    * Returns kmelia for parameter kmelia23
+   * @param sClientComponentId
+   * @return  
    */
   public static String getComponentNameFromComponentId(String sClientComponentId) {
     return ComponentHelper.getInstance().extractComponentName(sClientComponentId);
@@ -264,6 +265,9 @@ public class URLManager {
     String url = "";
     if (appendContext) {
       url = getApplicationURL();
+    }
+    if(url.endsWith("/")) {
+      url = url.substring(0, url.length() -1);
     }
     switch (type) {
       case URL_SPACE:

@@ -435,10 +435,7 @@ public class AdminCache {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
       SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForUser",
           "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
-      Hashtable<String, String[]> spaceTable;
-      Iterator<Hashtable<String, String[]>> itHm = m_hAvailCompoIdsCache.values().iterator();
-      while (itHm.hasNext()) {
-        spaceTable = itHm.next();
+      for (Hashtable<String, String[]> spaceTable : m_hAvailCompoIdsCache.values()) {
         spaceTable.remove(userId);
       }
     }

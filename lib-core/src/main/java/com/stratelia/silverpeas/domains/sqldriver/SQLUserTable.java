@@ -237,7 +237,7 @@ public class SQLUserTable {
       statement = c.prepareStatement(theQuery);
       rs = statement.executeQuery();
       while (rs.next()) {
-        theResult.add(new Integer(rs.getInt(1)));
+        theResult.add(rs.getInt(1));
       }
     } catch (SQLException e) {
       throw new AdminException("SQLUserTable.getDirectGroupIdsOfUser",

@@ -1,6 +1,7 @@
 *.iws
 *.ipr
 *.iml
+catalog.xml
 target
 .sonar-ide.properties
 /lib-core/.settings
@@ -43,3 +44,7 @@ target
 /ejb-core/formtemplate/.settings
 /ejb-core/formtemplate/.classpath
 /ejb-core/versioning/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/calendar/.settings
+/ejb-core/calendar/.classpath
+/ejb-core/calendar/.project
+/ejb-core/calendar/src/main/resources/META-INF/MANIFEST.MF

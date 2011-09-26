@@ -102,7 +102,7 @@ public class OOParser implements Parser {
             "root.MSG_PARAM_VALUE", "file=" + file.toString());
     org.jdom.Document xmlDocContent = new org.jdom.Document();
     org.jdom.Document xmlMeta = new org.jdom.Document();
-    StringBuffer parsingResult = new StringBuffer();
+    StringBuilder parsingResult = new StringBuilder();
 
     try {
       List files = (List) file;
@@ -131,9 +131,8 @@ public class OOParser implements Parser {
       // Process Meta data file
       List children = xmlMeta.getRootElement().getChildren();
       if (children != null) {
-        Iterator i = children.iterator();
-        while (i.hasNext()) {
-          Element currentElement = (Element) i.next();
+        for (Object aChildren : children) {
+          Element currentElement = (Element) aChildren;
           if (currentElement.getChild(TITLE, NS_DC) != null) {
             parsingResult.append(" ").append(currentElement.getChild(TITLE, NS_DC).getText());
           }
@@ -145,7 +144,7 @@ public class OOParser implements Parser {
           }
           if (currentElement.getChild(INITIAL_CREATOR, NS_OOMETA) != null) {
             parsingResult.append(" ").append(currentElement.getChild(INITIAL_CREATOR, NS_OOMETA).
-                    getText());
+                getText());
           }
           if (currentElement.getChild(KEYWORD, NS_OOMETA) != null) {
             parsingResult.append(" ").append(currentElement.getChild(KEYWORD, NS_OOMETA).getText());
@@ -231,8 +230,8 @@ public class OOParser implements Parser {
   public boolean deleteDir(File dir) {
     if (dir.isDirectory()) {
       String[] children = dir.list();
-      for (int i = 0; i < children.length; i++) {
-        boolean success = deleteDir(new File(dir, children[i]));
+      for (String child : children) {
+        boolean success = deleteDir(new File(dir, child));
         if (!success) {
           return false;
         }

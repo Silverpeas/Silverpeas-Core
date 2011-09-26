@@ -233,12 +233,11 @@ public class NotificationSender implements java.io.Serializable {
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
       boolean first = true;
-      Iterator<UserRecipient> it = usersSet.iterator();
-      while (it.hasNext()) {
+      for (UserRecipient anUsersSet : usersSet) {
         if (!first) {
           users.append(", ");
         }
-        users.append(orgaController.getUserDetail(it.next().getUserId()).getDisplayedName());
+        users.append(orgaController.getUserDetail(anUsersSet.getUserId()).getDisplayedName());
         first = false;
       }
     }
@@ -251,12 +250,11 @@ public class NotificationSender implements java.io.Serializable {
     StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
       boolean first = true;
-      Iterator<GroupRecipient> itG = groupsSet.iterator();
-      while (itG.hasNext()) {
+      for (GroupRecipient aGroupsSet : groupsSet) {
         if (!first) {
           groups.append(", ");
         }
-        groups.append(orgaController.getGroup(itG.next().getGroupId()).getName());
+        groups.append(orgaController.getGroup(aGroupsSet.getGroupId()).getName());
         first = false;
       }
     }
@@ -294,27 +292,25 @@ public class NotificationSender implements java.io.Serializable {
     StringBuilder listReceivers = new StringBuilder(500);
     listReceivers.append(content);
     boolean first = true;
-    Iterator<UserRecipient> it = usersSet.iterator();
-    while (it.hasNext()) {
+    for (UserRecipient anUsersSet : usersSet) {
       if (first) {
         listReceivers.append('\n');
         listReceivers.append(m_Multilang.getString("NameOfReceivers"));
       } else {
         listReceivers.append(", ");
       }
-      listReceivers.append(orgaController.getUserDetail(it.next().getUserId()).getDisplayedName());
+      listReceivers.append(orgaController.getUserDetail(anUsersSet.getUserId()).getDisplayedName());
       first = false;
     }
     first = true;
-    Iterator<GroupRecipient> itG = groupsSet.iterator();
-    while (itG.hasNext()) {
+    for (GroupRecipient aGroupsSet : groupsSet) {
       if (first) {
         listReceivers.append('\n');
         listReceivers.append(m_Multilang.getString("NameOfGroupReceivers"));
       } else {
         listReceivers.append(", ");
       }
-      listReceivers.append(orgaController.getGroup(itG.next().getGroupId()).getName());
+      listReceivers.append(orgaController.getGroup(aGroupsSet.getGroupId()).getName());
       first = false;
     }
     return listReceivers.toString();

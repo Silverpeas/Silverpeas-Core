@@ -33,15 +33,15 @@ package com.stratelia.silverpeas.util;
  * @version 1.0
  */
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class LongText {
   public final static int PART_SIZE_MAX = 1998;
@@ -90,7 +90,7 @@ public class LongText {
     PreparedStatement stmt = null;
     Connection privateConnection = null;
     ResultSet rs = null;
-    StringBuffer valret = new StringBuffer();
+    StringBuilder valret = new StringBuilder();
     String theQuery = "select bodyContent from ST_LongText where id = ? order by orderNum";
 
     try {

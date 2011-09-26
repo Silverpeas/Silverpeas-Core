@@ -171,7 +171,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
     try {
       if (parameters.containsKey("cols")) {
-        cols = (Integer.valueOf(parameters.get("cols"))).intValue();
+        cols = Integer.valueOf(parameters.get("cols"));
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",

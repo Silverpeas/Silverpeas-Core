@@ -23,6 +23,7 @@
  */
 package com.silverpeas.peasUtil;
 
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -122,7 +123,7 @@ public abstract class RssServlet<T> extends HttpServlet {
           channel.setLocation(componentUrl);
 
           // exportation du channel
-          res.setContentType("application/rss+xml");
+          res.setContentType(MimeTypes.RSS_MIME_TYPE);
           res.setHeader("Content-Disposition", "inline; filename=feeds.rss");
           Writer writer = res.getWriter();
           RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");

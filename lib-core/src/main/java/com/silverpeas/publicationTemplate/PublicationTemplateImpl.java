@@ -231,9 +231,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         "root.MSG_GEN_PARAM_VALUE", "name=" + name);
     Form form = null;
     if (templateFiles != null) {
-      Iterator<TemplateFile> files = templateFiles.iterator();
-      while (files.hasNext()) {
-        TemplateFile file = files.next();
+      for (TemplateFile file : templateFiles) {
         if (file.getName().compareToIgnoreCase(name) == 0) {
           form = getForm(file.getFileName(), file.getTypeName());
           return form;

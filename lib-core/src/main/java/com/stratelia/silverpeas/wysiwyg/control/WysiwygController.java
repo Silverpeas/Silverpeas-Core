@@ -372,11 +372,9 @@ public class WysiwygController {
   public static void deleteFile(String componentId, String objectId, String language) {
     AttachmentPK foreignKey = new AttachmentPK(objectId, "useless", componentId);
     List<AttachmentDetail> files = AttachmentController.searchAttachmentByCustomerPK(foreignKey);
-    Iterator<AttachmentDetail> f = files.iterator();
-    while (f.hasNext()) {
-      AttachmentDetail file = f.next();
+    for (AttachmentDetail file : files) {
       if (file != null
-              && file.getPhysicalName().equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
+          && file.getPhysicalName().equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
         AttachmentController.deleteAttachment(file);
       }
     }

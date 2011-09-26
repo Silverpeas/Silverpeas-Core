@@ -110,7 +110,7 @@
 	            property = properties[p];
                 if (StringUtil.isDefined(userFull.getValue(property)) && resource.getSetting(property, true)) {
             %>
-                <tr>
+                <tr id="<%=property%>">
                   <td class="txtlibform" width="30%"><%= userFull.getSpecificLabel(resource.getLanguage(), property)%></td>
                   <td >
                     <%=userFull.getValue(property)%>
