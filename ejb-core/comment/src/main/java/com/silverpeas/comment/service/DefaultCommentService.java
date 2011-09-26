@@ -24,16 +24,13 @@
 
 package com.silverpeas.comment.service;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.List;
-
-
-
 import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -53,7 +50,11 @@ import javax.inject.Named;
  * injection.
  */
 @Named("commentService")
-public class DefaultCommentService implements CommentService {
+public class DefaultCommentService extends CommentActionNotifier implements CommentService {
+  
+  private static final String SETTINGS_PATH = "com.stratelia.webactiv.util.comment.Comment";
+  private static final String MESSAGES_PATH = "com.stratelia.webactiv.util.comment.multilang.comment";
+  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
 
   @Inject
   private CommentDAO commentDAO;
@@ -84,10 +85,7 @@ public class DefaultCommentService implements CommentService {
   public void createComment(final Comment cmt) {
     CommentPK newPK = getCommentDAO().saveComment(cmt);
     cmt.setCommentPK(newPK);
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(CallBackManager.ACTION_COMMENT_ADD,
-        Integer.parseInt(cmt.getForeignKey().getId()),
-        cmt.getForeignKey().getComponentName(), cmt);
+    notifyCommentAdding(cmt);
   }
 
   /**
@@ -149,12 +147,7 @@ public class DefaultCommentService implements CommentService {
   public void deleteComment(final Comment comment) {
     deleteIndex(comment);
     getCommentDAO().removeComment(comment.getCommentPK());
-
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(CallBackManager.ACTION_COMMENT_REMOVE,
-        Integer.parseInt(comment.getForeignKey().getId()),
-        comment.getForeignKey().getComponentName(),
-        comment);
+    notifyCommentRemoval(comment);
   }
 
   /**
@@ -356,5 +349,20 @@ public class DefaultCommentService implements CommentService {
    */
   protected OrganizationController getOrganizationController() {
     return new OrganizationController();
+  }
+
+  @Override
+  public Comment getContentById(String contentId) {
+    return getComment(new CommentPK(contentId));
+  }
+
+  @Override
+  public ResourceLocator getComponentSettings() {
+    return settings;
+  }
+
+  @Override
+  public ResourceLocator getComponentMessages(String language) {
+    return new ResourceLocator(MESSAGES_PATH, language);
   }
 }

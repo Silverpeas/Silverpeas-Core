@@ -34,8 +34,14 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
+  <ctx:component-scan base-package="com.silverpeas.notification"/>
   <ctx:component-scan base-package="com.silverpeas.rest"/>
   <ctx:component-scan base-package="com.silverpeas.comment.web"/>
+
+  <!-- the notification publisher factory through which a notification publisher is accessed.
+        It bootstraps the actual messaging system backend -->
+  <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherFactory"
+        factory-method="getFactory"/>
   <import resource="spring-personalization.xml" />
   <import resource="spring-jdbc-datasource.xml" />
 </beans>

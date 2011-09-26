@@ -58,7 +58,7 @@ public class CommentBuilder {
     Comment comment = new Comment(new CommentPK("", componentId), new PublicationPK(
             resourceId, componentId), Integer.valueOf(user.getId()), user.getDisplayedName(),
             theText,
-            now.toString(), now.toString());
+            now, now);
     comment.setOwnerDetail(user);
     return comment;
   }

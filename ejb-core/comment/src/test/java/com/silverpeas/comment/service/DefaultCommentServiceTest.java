@@ -23,37 +23,42 @@
  */
 package com.silverpeas.comment.service;
 
+import javax.inject.Named;
 import com.silverpeas.comment.model.Comment;
 import java.util.List;
+import javax.inject.Inject;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Unit tests on the DefaultCommentService behaviour.
  */
-public class DefaultCommentServiceTest {
+
+public class DefaultCommentServiceTest extends AbstractCommentTest {
+
+  @Inject
+  private MyCommentActionListener listener;
+
+  @Inject
+  @Named("commentServiceForTest")
+  private CommentService commentService;
 
   public DefaultCommentServiceTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
   @Before
   public void setUp() {
+    assertNotNull(listener);
+    assertNotNull(commentService);
+    listener.reset();
   }
 
   @After
   public void tearDown() {
+    listener.reset();
   }
 
   /**
@@ -65,65 +70,49 @@ public class DefaultCommentServiceTest {
   }
 
   /**
-   * When a comment is added, then any callbacks registered for a such events should be invoked.
+   * When a comment is added, then any listeners subscribed for a such events should be invoked.
    * @throws Exception if an error occurs during the test execution.
    */
   @Test
-  public void callbacksShouldBeInvokedAtCommentAdding() throws Exception {
-    CommentCallBack callback = new CommentCallBack();
-    callback.subscribeForCommentAdding();
+  public void subscribersShouldBeInvokedAtCommentAdding() throws Exception {
     getCommentService().createComment(CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé"));
-    assertTrue(callback.isInvoked());
-    assertEquals(1, callback.getInvocationCount());
-    assertTrue(callback.isCommentAdded());
-    assertFalse(callback.isCommentRemoved());
+    assertThat(listener.isInvoked(), is(true));
+    assertEquals(1, listener.getInvocationCount());
+    assertTrue(listener.isCommentAdded());
+    assertFalse(listener.isCommentRemoved());
   }
 
   /**
-   * When a comment is deleted, then any callbacks registered for a such events should be invoked.
+   * When a comment is deleted, then any listeners subscribed for a such events should be invoked.
    * @throws Exception if an error occurs during the test execution.
    */
   @Test
-  public void callbacksShouldBeInvokedAtCommentDeletion() throws Exception {
-    CommentCallBack callback = new CommentCallBack();
-    callback.subscribeForCommentRemoving();
-
+  public void subscribersShouldBeInvokedAtCommentDeletion() throws Exception {
     CommentService commentController = getCommentService();
     List<Comment> allComments = commentController.getAllCommentsOnPublication(
         CommentBuilder.getResourcePrimaryPK());
     commentController.deleteComment(allComments.get(0).getCommentPK());
-    assertTrue(callback.isInvoked());
-    assertEquals(1, callback.getInvocationCount());
-    assertFalse(callback.isCommentAdded());
-    assertTrue(callback.isCommentRemoved());
+    assertThat(listener.isInvoked(), is(true));
+    assertEquals(1, listener.getInvocationCount());
+    assertFalse(listener.isCommentAdded());
+    assertTrue(listener.isCommentRemoved());
   }
 
   /**
-   * When several comments are deleted, then any callbacks registered for a such events
+   * When several comments are deleted, then any listeners subscribed for a such events
    * should be invoked.
    * @throws Exception if an error occurs during the test execution.
    */
   @Test
-  public void callbacksShouldBeInvokedAtSeveralCommentsDeletion() throws Exception {
-    CommentCallBack callback = new CommentCallBack();
-    callback.subscribeForCommentRemoving();
-
+  public void subscribersShouldBeInvokedAtSeveralCommentsDeletion() throws Exception {
     CommentService commentController = getCommentService();
     List<Comment> allComments = commentController.getAllCommentsOnPublication(
         CommentBuilder.getResourcePrimaryPK());
     commentController.deleteAllCommentsOnPublication(CommentBuilder.getResourcePrimaryPK());
-    assertTrue(callback.isInvoked());
-    assertEquals(allComments.size(), callback.getInvocationCount());
-    assertFalse(callback.isCommentAdded());
-    assertTrue(callback.isCommentRemoved());
-  }
-
-  @Test
-  public void invocationWithIllegalArgumentsShouldDoesNothing() throws Exception {
-    CommentCallBack callback = new CommentCallBack();
-    callback.subscribeForCommentAdding();
-    getCommentService().createComment(CommentBuilder.getBuilder().buildOrphelanWith("Toto", "Vu à la télé"));
-    assertFalse(callback.isInvoked());
+    assertThat(listener.isInvoked(), is(true));
+    assertEquals(allComments.size(), listener.getInvocationCount());
+    assertFalse(listener.isCommentAdded());
+    assertTrue(listener.isCommentRemoved());
   }
 
   /**
@@ -131,65 +120,9 @@ public class DefaultCommentServiceTest {
    * @return a DefaultCommentService object to test.
    */
   protected CommentService getCommentService() {
-    return new MyDefaultCommentService();
+    //return new MyDefaultCommentService();
+    return commentService;
   }
 
-  /**
-   * The callback to use within the unit tests.
-   */
-  private static class CommentCallBack extends CallBackOnCommentAction {
 
-    private int invocation = 0;
-    private boolean commentAdded = false;
-    private boolean commentRemoved = false;
-
-    @Override
-    public void subscribe() {
-      throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Has this callback been invoked?
-     * @return true if this callback has been invoked at least one time, false otherwise.
-     */
-    public boolean isInvoked() {
-      return invocation > 0;
-    }
-
-    /**
-     * Is a comment added?
-     * @return true if the callback was invoked for comment adding.
-     */
-    public boolean isCommentAdded() {
-      return commentAdded;
-    }
-
-    /**
-     * Is a comment removed?
-     * @return true if the callback was invoked for comment removing.
-     */
-    public boolean isCommentRemoved() {
-      return commentRemoved;
-    }
-
-    /**
-     * Gets the count of invocation of this callback by a CallBackManager.
-     * @return the invocation count.
-     */
-    public int getInvocationCount() {
-      return invocation;
-    }
-
-    @Override
-    public void commentAdded(int authorId, String resourceId, Comment addedComment) {
-      invocation++;
-      commentAdded = true;
-    }
-
-    @Override
-    public void commentRemoved(int authorId, String resourceId, Comment removedComment) {
-      invocation++;
-      commentRemoved = true;
-    }
-  }
 }

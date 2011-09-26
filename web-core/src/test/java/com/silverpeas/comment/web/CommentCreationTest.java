@@ -23,6 +23,9 @@
  */
 package com.silverpeas.comment.web;
 
+import com.silverpeas.comment.BaseCommentTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.rest.ResourceCreationTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -46,9 +49,19 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
   public CommentCreationTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
+  
+  @BeforeClass
+  public static void prepareMessagingContext() throws Exception {
+    BaseCommentTest.boostrapMessagingSystem();
+  }
+  
+  @AfterClass
+  public static void releaseMessagingContext() throws Exception {
+    BaseCommentTest.shutdownMessagingSystem();
+  }
 
   @Before
-  public void createAUserAndPrepareAComment() {
+  public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
     theComment = CommentEntity.fromComment(theUser(user).commentTheResource(CONTENT_ID).
