@@ -122,7 +122,7 @@ public class Comment implements SilverpeasContent {
   }
   
   public UserDetail getOwnerDetail() {
-    return ownerDetail;
+    return getCreator();
   }
 
   public void setOwnerDetail(UserDetail ownerDetail) {
