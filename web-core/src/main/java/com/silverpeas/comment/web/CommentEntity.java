@@ -110,7 +110,6 @@ public class CommentEntity implements Exposable {
         componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
         decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
         decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
-    comment.setOwnerDetail(author.toUser());
     return comment;
   }
 
