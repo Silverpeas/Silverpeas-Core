@@ -26,6 +26,7 @@ package com.silverpeas.comment.model;
 
 import com.silverpeas.SilverpeasContent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.util.Date;
@@ -63,6 +64,11 @@ public class Comment implements SilverpeasContent {
       Date modification_date) {
     init(pk, foreign_key, owner_id, message, creation_date,
         modification_date);
+  }
+  
+  public Comment(CommentPK pk, WAPrimaryKey contentPk, String authorId, String message, Date creationDate,
+      Date modificationDate) {
+    init(pk, contentPk, Integer.valueOf(authorId), message, creationDate, modificationDate);
   }
 
   public void setCommentPK(CommentPK pk) {
@@ -176,6 +182,7 @@ public class Comment implements SilverpeasContent {
   }
   
   private OrganizationController getOrganizationController() {
-    return new OrganizationController();
+    OrganizationControllerFactory factory = OrganizationControllerFactory.getFactory();
+    return factory.getOrganizationController();
   }
 }

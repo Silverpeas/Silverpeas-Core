@@ -42,6 +42,12 @@
         It bootstraps the actual messaging system backend -->
   <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherFactory"
         factory-method="getFactory"/>
+        
+  <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
+  <bean id="organizationControllerFactory"
+        class="com.stratelia.webactiv.beans.admin.OrganizationControllerFactory"
+        factory-method="getFactory" />
+        
   <import resource="spring-personalization.xml" />
   <import resource="spring-jdbc-datasource.xml" />
 </beans>

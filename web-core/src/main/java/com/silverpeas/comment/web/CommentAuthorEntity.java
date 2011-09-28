@@ -29,6 +29,7 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -146,7 +147,8 @@ public class CommentAuthorEntity implements Serializable {
    * @return a UserDetail instance.
    */
   public UserDetail toUser() {
-    OrganizationController controller = new OrganizationController();
+    OrganizationController controller = OrganizationControllerFactory.getFactory().
+            getOrganizationController();
     return controller.getUserDetail(id);
   }
 

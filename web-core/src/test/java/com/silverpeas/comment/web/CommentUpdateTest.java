@@ -47,8 +47,8 @@ public class CommentUpdateTest extends ResourceUpdateTest<CommentTestResources> 
   }
 
   @Before
-  public void createAUserAndAComment() {
-    user = aUser();
+  public void prepareTestResources() {
+    user = save(aUser());
     sessionKey = authenticate(user);
     Comment commentToUseInTest = theUser(user).commentTheResource(CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).withAsText("ceci est un commentaire");

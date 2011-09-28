@@ -178,7 +178,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public void setFirstName(String sFirstName) {
     if (sFirstName != null) {
-      m_sFirstName = sFirstName;
+      m_sFirstName = sFirstName.trim();
     } else {
       m_sFirstName = "";
     }
@@ -198,7 +198,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public void setLastName(String sLastName) {
     if (sLastName != null) {
-      m_sLastName = sLastName;
+      m_sLastName = sLastName.trim();
     } else {
       m_sLastName = "";
     }
@@ -301,14 +301,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public String getDisplayedName() {
-    StringBuilder displayedName = new StringBuilder("");
-    if (getFirstName() != null) {
-      displayedName.append(getFirstName()).append(' ');
-    }
-    if (getLastName() != null) {
-      displayedName.append(getLastName());
-    }
-    return displayedName.toString();
+    return (getFirstName() + " " + getLastName()).trim();
   }
 
   @Override
