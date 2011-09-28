@@ -6,6 +6,7 @@ package com.silverpeas.comment.dao;
 
 import java.util.Date;
 import com.silverpeas.comment.dao.jdbc.JDBCCommentRequester;
+import com.silverpeas.comment.mock.OrganizationControllerMocking;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.components.model.SilverpeasJndiCase;
@@ -15,22 +16,39 @@ import java.io.IOException;
 import javax.naming.NamingException;
 import org.dbunit.database.IDatabaseConnection;
 import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import java.sql.Connection;
+import javax.inject.Inject;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author ehugonnet
- */
-public class CommentDAOTest extends AbstractJndiCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="/spring-comment-dao.xml")
+public class CommentDAOTest {
 
   private JDBCCommentRequester commentDAO = new JDBCCommentRequester();
+  protected static SilverpeasJndiCase baseTest;
+  
+  @Inject
+  private OrganizationControllerMocking organizationController;
 
   public CommentDAOTest() {
+  }
+  
+  private UserDetail aUser() {
+    UserDetail user = new UserDetail();
+    user.setFirstName(RandomGenerator.getRandomString());
+    user.setLastName((RandomGenerator.getRandomString()));
+    user.setId(String.valueOf(RandomGenerator.getRandomInt()));
+    organizationController.saveUser(user);
+    return user;
   }
 
   @BeforeClass
@@ -39,8 +57,16 @@ public class CommentDAOTest extends AbstractJndiCase {
             "create-database.ddl");
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
-    executeDDL(databaseConnection, baseTest.getDdlFile());
+    AbstractJndiCase.executeDDL(databaseConnection, baseTest.getDdlFile());
     baseTest.getDatabaseTester().closeConnection(databaseConnection);
+  }
+  
+  @Before
+  public void prepareTest() throws Exception {
+    baseTest.setUp();
+    UserDetail user = new UserDetail();
+    user.setId("10");
+    organizationController.saveUser(user);
   }
 
   /**
@@ -54,11 +80,10 @@ public class CommentDAOTest extends AbstractJndiCase {
     DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK(null, null, "kmelia18");
     ForeignPK foreignKey = new ForeignPK("200", "kmelia18");
-    int ownerId = RandomGenerator.getRandomInt();
-    String owner = RandomGenerator.getRandomString();
+    UserDetail author = aUser();
     String message = RandomGenerator.getRandomString();
     Date creationDate = aDate();
-    Comment cmt = new Comment(pk, foreignKey, ownerId, owner, message, creationDate, null);
+    Comment cmt = new Comment(pk, foreignKey, author.getId(), message, creationDate, null);
     CommentPK result = commentDAO.saveComment(con, cmt);
     assertNotNull(result);
     assertEquals("kmelia18", result.getInstanceId());
@@ -66,8 +91,8 @@ public class CommentDAOTest extends AbstractJndiCase {
     assertEquals("11", result.getId());
     Comment savedComment = commentDAO.getComment(con, result);
     assertNotNull(savedComment);
-    assertEquals(ownerId, savedComment.getOwnerId());
-    assertEquals("", savedComment.getOwner());
+    assertEquals(author.getId(), String.valueOf(savedComment.getOwnerId()));
+    assertEquals(author.getDisplayedName(), savedComment.getOwner());
     assertEquals(message, savedComment.getMessage());
     assertEquals(creationDate, savedComment.getCreationDate());
     assertNull(savedComment.getModificationDate());

@@ -30,6 +30,8 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -48,8 +50,12 @@ public class AdminReference implements ApplicationContextAware {
   }
 
   @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    admin = applicationContext.getBean("adminController", Admin.class);
+  public void setApplicationContext(ApplicationContext applicationContext) {
+    try {
+      admin = applicationContext.getBean("adminController", Admin.class);
+    } catch (Exception ex) {
+      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
+    }
   }
   
   /**

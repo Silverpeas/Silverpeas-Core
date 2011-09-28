@@ -50,7 +50,7 @@ public class AbstractJndiCase {
     baseTest.setUp();
   }
 
-  protected static void executeDDL(IDatabaseConnection databaseConnection, String filename) {
+  public static void executeDDL(IDatabaseConnection databaseConnection, String filename) {
     Connection connection = null;
     try {
       connection = databaseConnection.getConnection();
@@ -62,7 +62,7 @@ public class AbstractJndiCase {
     }
   }
 
-  protected static String loadDDL(String filename) throws IOException {
+  public static String loadDDL(String filename) throws IOException {
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(new InputStreamReader(
