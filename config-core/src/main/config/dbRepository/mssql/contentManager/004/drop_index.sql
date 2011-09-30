@@ -1,0 +1,1 @@
+DROP INDEX SB_ContentManager_Content.IN_ContentManager_Content_DLB;
