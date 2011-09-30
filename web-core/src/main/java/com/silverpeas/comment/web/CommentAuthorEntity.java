@@ -28,6 +28,8 @@ import org.springframework.web.context.WebApplicationContext;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -145,14 +147,9 @@ public class CommentAuthorEntity implements Serializable {
    * @return a UserDetail instance.
    */
   public UserDetail toUser() {
-    UserDetail user = new UserDetail();
-    user.setId(id);
-    if (isDefined(fullName)) {
-      int separatorBetweenFirstAndLastName = fullName.indexOf(" ");
-      user.setFirstName(fullName.substring(0, separatorBetweenFirstAndLastName));
-      user.setLastName(fullName.substring(separatorBetweenFirstAndLastName + 1));
-    }
-    return user;
+    OrganizationController controller = OrganizationControllerFactory.getFactory().
+            getOrganizationController();
+    return controller.getUserDetail(id);
   }
 
   private CommentAuthorEntity(final UserDetail userDetail) {

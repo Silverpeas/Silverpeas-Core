@@ -24,7 +24,9 @@
 
 package com.silverpeas.importExport.control;
 
-import com.silverpeas.util.MSdocumentPropertiesManager;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -36,7 +38,6 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import org.apache.poi.hpsf.SummaryInformation;
 
 import java.io.File;
 import java.util.Date;
@@ -51,49 +52,43 @@ public class PublicationImportExport {
    * Méthodes permettant de récupérer un objet publication dont les méta-données sont générées à
    * partir des informations du fichier destiné à être attaché à celle ci. Utilisation de l'api POI
    * dans le cas des fichiers MSoffice.
+   *
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
-   * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
-   * informations qui iront renseigner les méta-données de la publication à creer
+   * @param file       - fichier destiné à être attaché à la publication d'où l'on extrait les
+   *                   informations qui iront renseigner les méta-données de la publication à creer
    * @return renvoie un objet PublicationDetail
    */
   public static PublicationDetail convertFileInfoToPublicationDetail(UserDetail userDetail,
       File file, boolean isPOIUsed) {
 
     // For reading the properties in an Office document
-    MSdocumentPropertiesManager MSdpManager = new MSdocumentPropertiesManager();
-
-    PublicationDetail pubDetail = null;
-    SummaryInformation si = null;
-    String nomPub = null;
-    String description = null;
-    String motsClefs = null;
-    String content = null;
+    MetadataExtractor metadataExtractor = new MetadataExtractor();
+    String nomPub;
+    String description;
+    String motsClefs;
+    String content;
     String fileName = file.getName();
-    String poiTitle = null;
-    String poiSubject = null;
-    String poiKeywords = null;
     if (isPOIUsed) {
       try {
-        si = MSdpManager.getSummaryInformation(file.getAbsolutePath());
-        poiTitle = si.getTitle();
-        poiSubject = si.getSubject();
-        poiKeywords = si.getKeywords();
-        nomPub = ((poiTitle == null) || (poiTitle.trim().length() == 0) ? fileName : poiTitle);// si
-        // le
-        // champs
-        // corespondant
-        // est
-        // vide,
-        // on
-        // affecte
-        // le
-        // nom
-        // physique
-        // du
-        // fichier
-        description = ((poiSubject == null) || (poiSubject.trim().length() == 0) ? "" : poiSubject);
-        motsClefs =
-            ((poiKeywords == null) || (poiKeywords.trim().length() == 0) ? "" : poiKeywords);
+        MetaData metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+        String poiKeywords = metaData.getKeywords();
+        if (StringUtil.isDefined(metaData.getTitle())) {
+          nomPub = metaData.getTitle();
+        } else {
+          nomPub = fileName;
+        }
+
+        if (StringUtil.isDefined(metaData.getSubject())) {
+          description = metaData.getSubject();
+        } else {
+          description = "";
+        }
+
+        if (StringUtil.isDefined(metaData.getKeywords())) {
+          motsClefs = metaData.getKeywords();
+        } else {
+          motsClefs = "";
+        }
         content = "fichier(s) importé(s)";
       } catch (Exception ex) {
         // on estime que l'exception est dû au fait que nous ne sommes pas en présence d'un
@@ -109,18 +104,16 @@ public class PublicationImportExport {
       motsClefs = "";
       content = "";
     }
-    pubDetail =
-        new PublicationDetail("unknown"/* id */, nomPub/* nom */, description/* description */,
-        new Date()/* date de création */, new Date()/* date de début de validité */,
-        null/* date de fin de validité */, userDetail.getId()/* id user */,
-        "5"/* importance */, null/* version de la publication */, motsClefs/* keywords */,
-        content);
+    PublicationDetail pubDetail =
+        new PublicationDetail("unknown", nomPub, description, new Date(), new Date(), null,
+            userDetail.getId(), "5", null, motsClefs, content);
     return pubDetail;
   }
 
   /**
    * Add nodes (coordinatesId) to a publication
-   * @param PublicationDetail , List of coordinateId
+   *
+   * @param pubPK , List of coordinateId
    * @return nothing
    */
   public static void addNodesToPublication(PublicationPK pubPK, List nodes) {
@@ -146,7 +139,7 @@ public class PublicationImportExport {
     try {
       PublicationBmHome publicationBmHome =
           EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
+              PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
@@ -157,6 +150,7 @@ public class PublicationImportExport {
 
   /**
    * Get unbalanced publications
+   *
    * @param componentId
    * @return ArrayList of publicationDetail
    */

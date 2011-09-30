@@ -23,6 +23,7 @@
  */
 package com.silverpeas.comment.dao.jdbc;
 
+import java.util.Date;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -30,14 +31,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.sql.Statement;
+import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**
  * A specific JDBC requester dedicated on the comments persisted in the underlying data source.
@@ -77,8 +81,12 @@ public class JDBCCommentRequester {
       prep_stmt = con.prepareStatement(insert_query);
       prep_stmt.setInt(1, newId);
       prep_stmt.setInt(2, cmt.getOwnerId());
-      prep_stmt.setString(3, cmt.getCreationDate());
-      prep_stmt.setString(4, cmt.getModificationDate());
+      prep_stmt.setString(3, date2SQLDate(cmt.getCreationDate()));
+      String modifDate = null;
+      if (cmt.getModificationDate() != null) {
+        modifDate = date2SQLDate(cmt.getModificationDate());
+      }
+      prep_stmt.setString(4, modifDate);
       prep_stmt.setString(5, cmt.getMessage());
       prep_stmt.setInt(6, Integer.parseInt(cmt.getForeignKey().getId()));
       prep_stmt.setString(7, cmt.getCommentPK().getComponentName());
@@ -122,7 +130,7 @@ public class JDBCCommentRequester {
     try {
       prep_stmt = con.prepareStatement(update_query);
       prep_stmt.setInt(1, cmt.getOwnerId());
-      prep_stmt.setString(2, cmt.getModificationDate());
+      prep_stmt.setString(2, date2SQLDate(cmt.getModificationDate()));
       prep_stmt.setString(3, cmt.getMessage());
       prep_stmt.setInt(4, Integer.parseInt(cmt.getForeignKey().getId()));
       prep_stmt.setString(5, cmt.getCommentPK().getComponentName());
@@ -177,9 +185,18 @@ public class JDBCCommentRequester {
       if (rs.next()) {
         pk.setComponentName(rs.getString("instanceId"));
         WAPrimaryKey father_id = new CommentPK(String.valueOf(rs.getInt("foreignId")));
-        return new Comment(pk, father_id, rs.getInt("commentOwnerId"), "",
-            rs.getString("commentComment"), rs.getString("commentCreationDate"),
-            rs.getString("commentModificationDate"));
+        try {
+          Date modifDate = null;
+          String sqlModifDate = rs.getString("commentModificationDate");
+          if (StringUtil.isDefined(sqlModifDate)) {
+            modifDate = parseDate(rs.getString("commentModificationDate"));
+          }
+          return new Comment(pk, father_id, rs.getInt("commentOwnerId"), "",
+              rs.getString("commentComment"), parseDate(rs.getString("commentCreationDate")),
+              modifDate);
+        } catch (ParseException ex) {
+          throw new SQLException(ex.getMessage(), ex);
+        }
       }
       return null;
     } finally {
@@ -257,9 +274,13 @@ public class JDBCCommentRequester {
         pk = new CommentPK(String.valueOf(rs.getInt("commentId")));
         pk.setComponentName(rs.getString("instanceId"));
         WAPrimaryKey father_id = (WAPrimaryKey) new CommentPK(String.valueOf(rs.getInt("foreignId")));
-        cmt = new Comment(pk, father_id, rs.getInt("commentOwnerId"), "", rs.getString(
-            "commentComment"), rs.getString("commentCreationDate"),
-            rs.getString("commentModificationDate"));
+        try {
+          cmt = new Comment(pk, father_id, rs.getInt("commentOwnerId"), "", rs.getString(
+              "commentComment"), parseDate(rs.getString("commentCreationDate")),
+              parseDate(rs.getString("commentModificationDate")));
+        } catch (ParseException ex) {
+          throw new SQLException(ex.getMessage(), ex);
+        }
         comments.add(cmt);
       }
     } finally {

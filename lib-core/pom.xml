@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.silverpeas</groupId>
@@ -76,14 +78,6 @@
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-scratchpad</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
@@ -261,12 +255,6 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
     </dependency>
@@ -310,6 +298,47 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-scratchpad</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <type>jar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>stax</groupId>
+          <artifactId>stax-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parsers</artifactId>
+    </dependency>
+    <dependency>
+      <artifactId>xmlbeans</artifactId>
+      <groupId>org.apache.xmlbeans</groupId>
+      <type>jar</type>      
+      <classifier>jdk6</classifier>
+    </dependency>
   </dependencies>
 
   <build>
@@ -319,17 +348,23 @@
         <filtering>true</filtering>
         <excludes>
           <exclude>**/*.odp</exclude>
+          <exclude>index/kmelia*/**/*.*</exclude>
+          <exclude>**/*.odt</exclude>
           <exclude>**/*.doc</exclude>
           <exclude>**/*.docx</exclude>
+          <exclude>**/*.zip</exclude>
         </excludes>
       </testResource>
       <testResource>
         <directory>src/test/resources</directory>
         <filtering>false</filtering>
         <includes>
+          <include>index/kmelia*/**/*.*</include>
           <include>**/*.odp</include>
+          <include>**/*.odt</include>
           <include>**/*.doc</include>
           <include>**/*.docx</include>
+          <include>**/*.zip</include>
         </includes>
       </testResource>
     </testResources>

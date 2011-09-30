@@ -23,24 +23,26 @@
  */
 package com.silverpeas.comment.service;
 
+import javax.inject.Named;
 import javax.inject.Inject;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 
 /**
  * Unit tests on the dependencies injection of the service on the comments.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-comment.xml")
-public class DependenciesInjectionTest {
+public class DependenciesInjectionTest extends AbstractCommentTest {
 
   @Inject
+  @Named("commentService")
   private DefaultCommentService service;
 
   public DependenciesInjectionTest() {
+  }
+
+  @Test
+  public void emtpyTest() {
+    assertTrue(true);
   }
 
   /**
