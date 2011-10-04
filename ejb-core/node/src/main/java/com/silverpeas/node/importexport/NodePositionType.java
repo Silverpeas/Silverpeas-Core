@@ -28,25 +28,28 @@
 package com.silverpeas.node.importexport;
 
 /**
- * Classe utilisée pour le (un)marshalling Castor
+ * Class used for Castor (un)marshalling 
  * @author sdevolder
  */
 public class NodePositionType {
 
-  private int id;
+  private int id = -1;
+  private String explicitPath;
 
-  /**
-   * @return
-   */
   public int getId() {
     return id;
   }
 
-  /**
-   * @param i
-   */
   public void setId(int i) {
     id = i;
+  }
+
+  public void setExplicitPath(String explicitPath) {
+    this.explicitPath = explicitPath;
+  }
+
+  public String getExplicitPath() {
+    return explicitPath;
   }
 
 }
