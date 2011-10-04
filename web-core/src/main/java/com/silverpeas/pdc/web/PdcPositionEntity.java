@@ -23,16 +23,19 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcAxisValue;
+import java.util.Collections;
+import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.rest.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -54,7 +57,7 @@ public class PdcPositionEntity implements Exposable {
 
   private static final long serialVersionUID = 6314816355055147378L;
   @XmlElement(required = true)
-  private List<PdcPositionValue> values = new ArrayList<PdcPositionValue>();
+  private List<PdcPositionValueEntity> values = new ArrayList<PdcPositionValueEntity>();
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -78,6 +81,22 @@ public class PdcPositionEntity implements Exposable {
             inClassificationByURI, positionId).
             withId(positionId);
   }
+  
+  /**
+   * Creates a Web entity representing a position on the PdC from the specified business
+   * classification position. It is expressed in the specified language and it is located in the
+   * PdC classification identified by the specified URI. 
+   * @param position the position on the PdC the web entity should represent.
+   * @param inLanguage the language in which the position should expressed.
+   * @param inClassificationByURI the URI identifying the PdC classification to which the position
+   * belongs.
+   * @return a PdcPositionEntity instance.
+   */
+  public static PdcPositionEntity fromPdcPosition(final PdcPosition position, String inLanguage,
+          final URI inClassificationByURI) {
+    return new PdcPositionEntity(fromPdcAxisValues(position.getValues(), inLanguage)).withURI(
+            inClassificationByURI, position.getId()).withId(position.getId());
+  }
 
   /**
    * Creates a web entity representing a new position on the Pdc and that is valued with the
@@ -85,7 +104,7 @@ public class PdcPositionEntity implements Exposable {
    * @param values a list of representations of PdC axis values.
    * @return a PdcPositionEntity instance.
    */
-  public static PdcPositionEntity createNewPositionWith(final List<PdcPositionValue> values) {
+  public static PdcPositionEntity createNewPositionWith(final List<PdcPositionValueEntity> values) {
     return new PdcPositionEntity(values);
   }
 
@@ -95,7 +114,7 @@ public class PdcPositionEntity implements Exposable {
    */
   public ClassifyPosition toClassifyPosition() {
     List<ClassifyValue> classifyValues = new ArrayList<ClassifyValue>(this.values.size());
-    for (PdcPositionValue value : values) {
+    for (PdcPositionValueEntity value : values) {
       classifyValues.add(value.toClassifyValue());
     }
     int positionId = -1;
@@ -118,7 +137,7 @@ public class PdcPositionEntity implements Exposable {
    * Gets the values of this position.
    * @return an unmodifiable list of PdC position values.
    */
-  public List<PdcPositionValue> getPositionValues() {
+  public List<PdcPositionValueEntity> getPositionValues() {
     return Collections.unmodifiableList(values);
   }
 
@@ -153,7 +172,7 @@ public class PdcPositionEntity implements Exposable {
   @Override
   public String toString() {
     StringBuilder valueArray = new StringBuilder("[");
-    for (PdcPositionValue pdcPositionValue : getPositionValues()) {
+    for (PdcPositionValueEntity pdcPositionValue : getPositionValues()) {
       valueArray.append(pdcPositionValue.toString()).append(", ");
     }
     if (valueArray.length() > 1) {
@@ -169,11 +188,20 @@ public class PdcPositionEntity implements Exposable {
             + valueArray.toString() + "}";
   }
 
-  private static List<PdcPositionValue> fromClassifyValues(final List<ClassifyValue> values,
+  private static List<PdcPositionValueEntity> fromClassifyValues(final List<ClassifyValue> values,
           String inLanguage) {
-    List<PdcPositionValue> positionValues = new ArrayList<PdcPositionValue>(values.size());
+    List<PdcPositionValueEntity> positionValues = new ArrayList<PdcPositionValueEntity>(values.size());
     for (ClassifyValue value : values) {
-      positionValues.add(PdcPositionValue.fromClassifiyValue(value, inLanguage));
+      positionValues.add(PdcPositionValueEntity.fromClassifiyValue(value, inLanguage));
+    }
+    return positionValues;
+  }
+  
+  private static List<PdcPositionValueEntity> fromPdcAxisValues(final Collection<PdcAxisValue> values,
+          String inLanguage) {
+    List<PdcPositionValueEntity> positionValues = new ArrayList<PdcPositionValueEntity>(values.size());
+    for (PdcAxisValue value : values) {
+      positionValues.add(PdcPositionValueEntity.fromPdcAxisValue(value, inLanguage));
     }
     return positionValues;
   }
@@ -181,7 +209,7 @@ public class PdcPositionEntity implements Exposable {
   private PdcPositionEntity() {
   }
 
-  protected PdcPositionEntity(final List<PdcPositionValue> values) {
+  protected PdcPositionEntity(final List<PdcPositionValueEntity> values) {
     setPositionValues(values);
   }
 
@@ -191,7 +219,7 @@ public class PdcPositionEntity implements Exposable {
    * @throws ThesaurusException if an error occurs while getting the synonyms of this position's values.
    */
   protected void setSynonymsFrom(final UserThesaurusHolder userThesaurus) throws ThesaurusException {
-    for (PdcPositionValue pdcPositionValue : values) {
+    for (PdcPositionValueEntity pdcPositionValue : values) {
       pdcPositionValue.setSynonyms(userThesaurus.getSynonymsOf(pdcPositionValue));
     }
   }
@@ -214,7 +242,7 @@ public class PdcPositionEntity implements Exposable {
     return this;
   }
 
-  private void setPositionValues(final List<PdcPositionValue> values) {
+  private void setPositionValues(final List<PdcPositionValueEntity> values) {
     this.values.clear();
     this.values.addAll(values);
   }

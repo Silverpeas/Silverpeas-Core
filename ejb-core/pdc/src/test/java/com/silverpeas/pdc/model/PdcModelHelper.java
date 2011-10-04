@@ -21,43 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.comment.web;
-
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Date;
+package com.silverpeas.pdc.model;
 
 /**
- * The builder of comments for testing purpose.
+ * A helper class used to facilitate the creation of entities for the unit tests.
  */
-public class CommentBuilder {
-
-  private String resourceId;
-  private String componentId;
-  private UserDetail user;
-
-  public CommentBuilder withUser(final UserDetail user) {
-    this.user = user;
-    return this;
+public final class PdcModelHelper {
+  
+  public static PdcAxisValue withValueId(long id, final PdcAxisValue value) {
+    value.setId(id);
+    return value;
   }
-
-  public CommentBuilder commentTheResource(String resourceId) {
-    this.resourceId = resourceId;
-    return this;
+  
+  public static PdcPosition aPdcPosition(long id) {
+    return new PdcPosition(id);
   }
-
-  public CommentBuilder inComponent(String componentId) {
-    this.componentId = componentId;
-    return this;
+  
+  public static PdcClassification aPdcClassification(long id) {
+    return new PdcClassification(id);
   }
-
-  public Comment withAsText(String theText) {
-    Date now = new Date();
-    Comment comment = new Comment(new CommentPK("", componentId), new PublicationPK(
-            resourceId, componentId), user.getId(), theText, now, now);
-    comment.setOwnerDetail(user);
-    return comment;
+  
+  public static PdcClassification aPredefinedPdcClassification(long id) {
+    return new PdcClassification(id).unmodifiable();
+  }
+  
+  public static Long idOf(final PdcClassification classification) {
+    Long id = classification.getId();
+    return id == null ? null:id.longValue();
   }
 }

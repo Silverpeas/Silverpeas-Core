@@ -62,7 +62,7 @@ public class PdcAxis {
   @XmlElement
   private boolean invariant = false;
   @XmlElement(required = true)
-  private List<PdcAxisValue> values = new ArrayList<PdcAxisValue>();
+  private List<PdcAxisValueEntity> values = new ArrayList<PdcAxisValueEntity>();
 
   /**
    * Creates a PdC axis from the specified configured axis for a specific component instance and in
@@ -79,7 +79,7 @@ public class PdcAxis {
   public static PdcAxis fromTheUsedAxis(final UsedAxis axis, String inLanguage,
           final UserThesaurusHolder withThesaurus) throws ThesaurusException {
     String andOriginValue = axis._getBaseValuePath() + axis.getBaseValue() + "/";
-    List<PdcAxisValue> theAxisValues =
+    List<PdcAxisValueEntity> theAxisValues =
             fromValues(axis._getAxisValues(), andOriginValue, inLanguage, withThesaurus);
     PdcAxis pdcAxis = new PdcAxis(axis.getAxisId(), axis._getAxisName(inLanguage)).
             withAsPdcAxisValues(theAxisValues, andOriginValue).
@@ -146,7 +146,7 @@ public class PdcAxis {
    * Gets the values that made up this axis.
    * @return an unmodifiable list of axis' values.
    */
-  public List<PdcAxisValue> getValues() {
+  public List<PdcAxisValueEntity> getValues() {
     return Collections.unmodifiableList(values);
   }
 
@@ -156,7 +156,7 @@ public class PdcAxis {
    * @param values the PdC values to set.
    * @return itself.
    */
-  public PdcAxis withAsPdcAxisValues(final List<PdcAxisValue> values, String originValueId) {
+  public PdcAxis withAsPdcAxisValues(final List<PdcAxisValueEntity> values, String originValueId) {
     this.originValue = originValueId;
     this.values.addAll(values);
     return this;
@@ -207,7 +207,7 @@ public class PdcAxis {
   @Override
   public String toString() {
     StringBuilder axisValuesArray = new StringBuilder("[");
-    for (PdcAxisValue value : getValues()) {
+    for (PdcAxisValueEntity value : getValues()) {
       axisValuesArray.append(value.toString()).append(", ");
     }
     if (axisValuesArray.length() > 1) {
@@ -220,11 +220,11 @@ public class PdcAxis {
             + ", values=" + axisValuesArray.toString() + '}';
   }
 
-  private static List<PdcAxisValue> fromValues(final List<Value> values, String originValueId,
+  private static List<PdcAxisValueEntity> fromValues(final List<Value> values, String originValueId,
           String inLanguage, final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
-    List<PdcAxisValue> axisValues = new ArrayList<PdcAxisValue>();
+    List<PdcAxisValueEntity> axisValues = new ArrayList<PdcAxisValueEntity>();
     for (Value value : values) {
-      PdcAxisValue axisValue = PdcAxisValue.fromValue(value, inLanguage);
+      PdcAxisValueEntity axisValue = PdcAxisValueEntity.fromValue(value, inLanguage);
       if (isFather(axisValue.getId(), originValueId)) {
         axisValue.setAsAscendant();
         if (axisValue.getId().equals(originValueId)) {
@@ -242,7 +242,7 @@ public class PdcAxis {
     return axisValues;
   }
 
-  private static PdcAxisValue withSynonym(final PdcAxisValue axisValue,
+  private static PdcAxisValueEntity withSynonym(final PdcAxisValueEntity axisValue,
           final UserThesaurusHolder thesaurus) throws ThesaurusException {
     axisValue.setSynonyms(thesaurus.getSynonymsOf(axisValue));
     return axisValue;

@@ -62,7 +62,7 @@ public class PdcTestResources extends TestResources {
   private ThesaurusManager thesaurusManager;
   @Inject
   ContentManagerMock contentManager;
-  
+
   /**
    * Gets the PdC business service used in tests.
    * @return a PdcBm object.
@@ -78,7 +78,7 @@ public class PdcTestResources extends TestResources {
   public ContentManager getContentManager() {
     return this.contentManager;
   }
-  
+
   /**
    * Gets a holder of thesaurus for the specified user.
    * @param user the user for which a thesaurus holder should be get.
@@ -87,7 +87,7 @@ public class PdcTestResources extends TestResources {
   public UserThesaurusHolder aThesaurusHolderFor(final UserDetail user) {
     return UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser(user));
   }
-  
+
   /**
    * Saves the specified PdC classification in the current test context.
    * @param classification the classification on which the test will work.
@@ -101,7 +101,7 @@ public class PdcTestResources extends TestResources {
    * @return the PdC classification in use in the test or null if no classification were saved.
    */
   public PdcClassification getPdcClassification() {
-   return pdcBm.getClassification(CONTENT_ID, COMPONENT_INSTANCE_ID);
+    return pdcBm.getClassification(CONTENT_ID, COMPONENT_INSTANCE_ID);
   }
 
   /**
@@ -115,33 +115,43 @@ public class PdcTestResources extends TestResources {
   public PdcClassificationEntity toWebEntity(final PdcClassification classification,
           final UserDetail forUser) throws ThesaurusException {
     String uri;
-    if (NODE_ID.equals(classification.getResourceId())) {
+    if (NODE_ID.equals(classification.getNodeId())) {
       uri = NODE_DEFAULT_CLASSIFICATION_URI;
-    } else if (CONTENT_ID.equals(classification.getResourceId())) {
+    } else if (CONTENT_ID.equals(classification.getContentId())) {
       uri = CLASSIFICATION_URI;
     } else {
       uri = COMPONENT_DEFAULT_CLASSIFICATION_URI;
     }
-    return aPdcClassificationEntity(
-            fromPdcClassification(classification),
-            inLanguage(FRENCH),
-            atURI(URI.create(uri))).
-            withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser));
+    if (classification.isPredefined()) {
+      // if predefined one, then the classification is a true PdcClassification instance (not a wrapper)
+      return aPdcClassificationEntity(
+              fromPdcClassification(classification),
+              inLanguage(FRENCH),
+              atURI(URI.create(uri))).
+              withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser));
+    } else {
+      // if not a predefined one, then the classification is a wrapper managing ClassifyPosition instances.
+      return aPdcClassificationEntity(
+              fromPositions(classification.getClassifyPositions()),
+              inLanguage(FRENCH),
+              atURI(URI.create(uri))).
+              withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser));
+    }
   }
-  
+
   public String toJSON(final PdcClassificationEntity classification) {
     StringBuilder builder = new StringBuilder("{\"positions\":[");
     List<PdcPositionEntity> positions = classification.getClassificationPositions();
     for (int p = 0; p < positions.size(); p++) {
       PdcPositionEntity position = classification.getClassificationPositions().get(p);
-      List<PdcPositionValue> values = position.getPositionValues();
+      List<PdcPositionValueEntity> values = position.getPositionValues();
       if (p > 0) {
         builder.append(",");
       }
       builder.append("{\"uri\":\"").append(position.getURI()).append("\",\"id\":\"").append(position.
               getId()).append("\",\"values\": [");
       for (int v = 0; v < values.size(); v++) {
-        PdcPositionValue value = values.get(v);
+        PdcPositionValueEntity value = values.get(v);
         List<String> synonyms = value.getSynonyms();
         if (v > 0) {
           builder.append(",");
@@ -176,5 +186,4 @@ public class PdcTestResources extends TestResources {
             USER_ID);
     preferences.enableThesaurus(true);
   }
-
 }

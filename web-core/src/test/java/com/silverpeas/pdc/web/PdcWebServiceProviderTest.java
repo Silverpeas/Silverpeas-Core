@@ -94,7 +94,7 @@ public class PdcWebServiceProviderTest {
     PdcClassification aPdcClassification = aPdcClassification().build();
     pdcWebServiceProvider.classifyContent(withContentPk(), fromPositionsIn(aPdcClassification));
     List<ClassifyPosition> actualPositions = getPositions();
-    assertThat(actualPositions, is(equalTo(new ArrayList<ClassifyPosition>(aPdcClassification.getPositions()))));
+    assertThat(actualPositions, is(equalTo(aPdcClassification.getClassifyPositions())));
   }
 
   @Test(expected=ContentManagerException.class)
@@ -128,7 +128,7 @@ public class PdcWebServiceProviderTest {
   }
 
   private PdcClassificationBuilder aPdcClassification() {
-    return aPdcClassificationWithoutAnySynonyms().onResource(CONTENT_ID).inComponent(
+    return aPdcClassificationWithoutAnySynonyms().onContent(CONTENT_ID).inComponent(
             COMPONENT_INSTANCE_ID);
   }
 

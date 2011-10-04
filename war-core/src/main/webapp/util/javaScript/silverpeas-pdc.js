@@ -305,7 +305,7 @@
       $.extend( true, settings, options );
     }
     settings.defaultClassificationURI = settings.resource.context + '/services/pdc/' +
-      settings.resource.component + '/default';
+      settings.resource.component + '/classification';
     if (settings.resource.node != null && settings.resource.node.length > 0) {
       settings.defaultClassificationURI += '?nodeId=' + settings.resource.node;
     }

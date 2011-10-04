@@ -70,7 +70,7 @@ public class JSONSerializationTest {
   public void deserializePositionsFromJSON() throws Exception {
     PdcClassificationEntity theExpectedClassification = aPdcClassificationEntity();
     JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
-            PdcPositionEntity.class, PdcPositionValue.class);
+            PdcPositionEntity.class, PdcPositionValueEntity.class);
     JSONUnmarshaller um = new JSONUnmarshallerImpl(context, JSONConfiguration.DEFAULT);
     PdcClassificationEntity classification = um.unmarshalFromJSON(
             new StringReader(resources.toJSON(theExpectedClassification)),
@@ -80,7 +80,7 @@ public class JSONSerializationTest {
   }
 
   private PdcClassificationEntity aPdcClassificationEntity() throws ThesaurusException {
-    PdcClassification classification = aPdcClassification().onResource(CONTENT_ID).inComponent(
+    PdcClassification classification = aPdcClassification().onContent(CONTENT_ID).inComponent(
             COMPONENT_INSTANCE_ID).build();
     return resources.toWebEntity(classification, resources.aUser());
   }

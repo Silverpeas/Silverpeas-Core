@@ -55,7 +55,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest<Pdc
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
     getTestResources().save(
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build());
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build());
   }
 
   @Test
@@ -115,7 +115,7 @@ public class ClassificationPositionDeletionTest extends ResourceDeletionTest<Pdc
   public PdcClassificationEntity aResource() {
     PdcClassificationEntity entity = null;
     try {
-      entity = getTestResources().toWebEntity(aPdcClassification().onResource(CONTENT_ID).inComponent(
+      entity = getTestResources().toWebEntity(aPdcClassification().onContent(CONTENT_ID).inComponent(
               COMPONENT_INSTANCE_ID).build(), theUser);
     } catch (ThesaurusException ex) {
       fail(ex.getMessage());

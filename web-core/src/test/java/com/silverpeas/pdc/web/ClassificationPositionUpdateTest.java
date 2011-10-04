@@ -68,7 +68,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTest
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
     theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
   }
 
@@ -95,7 +95,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTest
   }
 
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
-    ClassifyPosition position = theClassification.getPositions().iterator().next();
+    ClassifyPosition position = theClassification.getClassifyPositions().get(0);
     position.getListClassifyValue().clear();
     return PdcPositionEntity.fromClassifyPosition(position, FRENCH, URI.create(CLASSIFICATION_URI));
   }
@@ -114,7 +114,7 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTest
 
   @Override
   public PdcPositionEntity aResource() {
-    ClassifyPosition position = theClassification.getPositions().iterator().next();
+    ClassifyPosition position = theClassification.getClassifyPositions().get(0);
     return PdcPositionEntity.fromClassifyPosition(position, FRENCH, URI.create(CLASSIFICATION_URI));
   }
 
@@ -136,11 +136,11 @@ public class ClassificationPositionUpdateTest extends ResourceUpdateTest<PdcTest
   @Override
   public PdcPositionEntity anInvalidResource() {
     ClassificationPlan pdc = aClassificationPlan();
-    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
+    ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
     List<Value> values = pdc.getValuesOfAxisByName("Période");
     Value value = values.get(values.size() - 1);
-    PdcPositionValue positionValue =
-            PdcPositionValue.aPositionValue(Integer.valueOf(value.getAxisId()),
+    PdcPositionValueEntity positionValue =
+            PdcPositionValueEntity.aPositionValue(Integer.valueOf(value.getAxisId()),
             value.getPath() + value.getPK().getId() + "/");
     positionValue.setTreeId(value.getTreeId());
     positionsValues.add(positionValue);

@@ -23,7 +23,22 @@
  */
 package com.silverpeas.pdc.service;
 
+import com.silverpeas.pdc.dao.PdcClassificationDAO;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import java.rmi.RemoteException;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import static com.silverpeas.pdc.model.PdcClassification.*;
 
 /**
  * The service aiming at classifying the contents in Silverpeas on the classification plan (named
@@ -50,7 +65,13 @@ import com.silverpeas.pdc.model.PdcClassification;
  * children nodes. Therefore, if a predefined classification is not found for a given node, then
  * it is seeked back upto the root node (that is the component instance ifself).
  */
+@Named
+@Transactional
 public class PdcClassificationService {
+  
+  @Inject
+  private PdcClassificationDAO dao;
+  private NodeBm nodeBm;
   
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the specified
@@ -65,7 +86,26 @@ public class PdcClassificationService {
    * in the specified node or an empty classification.
    */
   public PdcClassification getPreDefinedClassification(String nodeId, String instanceId) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    try {
+      PdcClassification classification = null;
+      NodePK nodeToSeek = new NodePK(nodeId, instanceId);
+      while(classification == null && !nodeToSeek.isUndefined()) {
+        classification = dao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
+                nodeToSeek.getInstanceId());
+        NodeDetail node = getNodeBm().getDetail(nodeToSeek);
+        nodeToSeek = node.getFatherPK();
+      }
+      if (classification == null) {
+        classification = getPreDefinedClassification(instanceId);
+      }
+      return classification;
+    } catch (RemoteException ex) {
+      throw new PdcRuntimeException(getClass().getSimpleName() + ".getPreDefinedClassification()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+          ex);
+    } catch(Exception ex) {
+      throw new EntityNotFoundException(ex.getMessage());
+    }
   }
   
   /**
@@ -80,18 +120,44 @@ public class PdcClassificationService {
    * published within the component instance or an empty classification.
    */
   public PdcClassification getPreDefinedClassification(String instanceId) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    PdcClassification classification = dao.findPredefinedClassificationByComponentInstanceId(instanceId);
+    if (classification == null) {
+      classification = NONE_CLASSIFICATION;
+    }
+    return classification;
   }
   
   /**
-   * Registers the specified predefined classification on the PdC.
+   * Saves the specified predefined classification on the PdC.
    * 
-   * The node (if any) and the component instance for which this classification has to be registered
+   * The node (if any) and the component instance for which this classification has to be saved
    * are indicated by the specified classification itself. If no node is refered by it, then the
    * predefined classification will serv for the whole component instance.
    * @param classification the predefined classification to register.
    */
-  public void registerPreDefinedClassification(final PdcClassification classification) {
-    throw new UnsupportedOperationException("Not yet implemented");
+  public void savePreDefinedClassification(final PdcClassification classification) {
+    if (!classification.isPredefined()) {
+      throw new IllegalArgumentException("The classification isn't a predefined one");
+    }
+    dao.saveAndFlush(classification);
+  }
+  
+  protected NodeBm getNodeBm() {
+    if (nodeBm == null) {
+      try {
+        NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+        nodeBm = home.create();
+      } catch (Exception ex) {
+        throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+          ex);
+      }
+    }
+    return nodeBm;
+  }
+  
+  protected void setNodeBm(final NodeBm nodeBm) {
+    this.nodeBm = nodeBm;
   }
 }

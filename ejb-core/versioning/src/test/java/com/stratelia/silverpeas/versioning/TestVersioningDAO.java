@@ -81,7 +81,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
 
   @Test
   public void testGetDocumentById() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     DocumentPK pk = new DocumentPK(1, null, INSTANCE_ID);
     Document doc = VersioningDAO.getDocument(con, pk);
@@ -101,7 +101,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
 
   @Test
   public void testGetDocument() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     DocumentPK pk = new DocumentPK(1, null, INSTANCE_ID);
     Document doc = VersioningDAO.getDocument(con, pk);
@@ -122,7 +122,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
 
   @Test
   public void testGetDocumentsByForeignKey() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     ForeignPK fpk = new ForeignPK("4", INSTANCE_ID);
     List<Document> docs = VersioningDAO.getDocuments(con, fpk);
@@ -181,7 +181,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
 
   @Test
   public void testCreateNewDocument() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     Document doc = new Document();
     doc.setPk(new DocumentPK(1, INSTANCE_ID));

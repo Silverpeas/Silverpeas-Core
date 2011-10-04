@@ -23,6 +23,7 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcAxisValue;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.List;
@@ -46,7 +47,7 @@ import static com.silverpeas.util.StringUtil.*;
  * the term identifiers from which a path of the translated terms can be easily retrieved.
  */
 @XmlRootElement
-public class PdcPositionValue extends PdcValue {
+public class PdcPositionValueEntity extends PdcValueEntity {
 
   private static final long serialVersionUID = -6826039385078009600L;
   
@@ -59,11 +60,11 @@ public class PdcPositionValue extends PdcValue {
    * @param inLanguage  the language in which the terms of the value should be translated.
    * @return a representation of the PdC position value.
    */
-  public static PdcPositionValue fromClassifiyValue(final ClassifyValue value,
+  public static PdcPositionValueEntity fromClassifiyValue(final ClassifyValue value,
           String inLanguage) {
     List<Value> termPath = value.getFullPath();
     Value term = value.getFullPath().get(termPath.size() - 1);
-    PdcPositionValue positionValue = new PdcPositionValue(
+    PdcPositionValueEntity positionValue = new PdcPositionValueEntity(
             withId(value.getValue()),
             inAxis(value.getAxisId()),
             withTranslatedMeaningOf(value, inLanguage));
@@ -75,14 +76,30 @@ public class PdcPositionValue extends PdcValue {
   }
   
   /**
+   * Creates a new PdC position value fom the specified value of PdC's axis.
+   * @param value a value of a PdC's axis.
+   * @param inLanguage  the language in which the terms of the value should be translated.
+   * @return a representation of the PdC position value.
+   */
+  static PdcPositionValueEntity fromPdcAxisValue(PdcAxisValue value, String inLanguage) {
+    PdcPositionValueEntity positionValue = new PdcPositionValueEntity(
+            withId(value.getId()), 
+            inAxis(value.getAxisId()),
+            withTranslatedMeaningOf(value, inLanguage));
+    String treeId = String.valueOf(value.getAxisId());
+    positionValue.setTreeId(treeId);
+    return positionValue;
+  }
+  
+  /**
    * Gets a value of a position in the PdC by specifying both the axis to which the value
    * belongs and its identifier.
    * @param axisId the identifier of the axis to which the value belongs.
    * @param valueId the identifier of the value itself.
    * @return a PdC position value.
    */
-  public static PdcPositionValue aPositionValue(int axisId, String valueId) {
-    return new PdcPositionValue(valueId, axisId, "");
+  public static PdcPositionValueEntity aPositionValue(int axisId, String valueId) {
+    return new PdcPositionValueEntity(valueId, axisId, "");
   }
   
   /**
@@ -114,7 +131,7 @@ public class PdcPositionValue extends PdcValue {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final PdcPositionValue other = (PdcPositionValue) obj;
+    final PdcPositionValueEntity other = (PdcPositionValueEntity) obj;
     if (!super.equals(other)) {
       return false;
     }
@@ -152,18 +169,27 @@ public class PdcPositionValue extends PdcValue {
   private static int inAxis(int axisId) {
     return axisId;
   }
+  
+  private static int inAxis(String axisId) {
+    return Integer.valueOf(axisId);
+  }
 
   private static String withTranslatedMeaningOf(final ClassifyValue value, String inLanguage) {
     LocalizedClassifyValue localizedValue = LocalizedClassifyValue.decorate(value, inLanguage);
     return localizedValue.getLocalizedPath();
   }
+  
+  private static String withTranslatedMeaningOf(PdcAxisValue value, String inLanguage) {
+    LocalizedPdcAxisValue localizedValue = LocalizedPdcAxisValue.decorate(value, inLanguage);
+    return localizedValue.getLocalizedPath();
+  }
 
-  protected PdcPositionValue() {
+  protected PdcPositionValueEntity() {
     super();
   }
   
 
-  private PdcPositionValue(String id, int axisId, String path) {
+  private PdcPositionValueEntity(String id, int axisId, String path) {
     super(id, axisId);
     this.meaning = path;
   }

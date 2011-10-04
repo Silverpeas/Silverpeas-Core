@@ -70,7 +70,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
   @Test
   public void nominalClassificationWithSynonymsGetting() throws Exception {
     PdcClassification theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
@@ -81,7 +81,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
   @Test
   public void nominalClassificationWithoutAnySynonymsGetting() throws Exception {
     PdcClassification theClassification = aPdcClassification().
-            onResource(CONTENT_ID).
+            onContent(CONTENT_ID).
             inComponent(COMPONENT_INSTANCE_ID).buildWithNoSynonyms();
     getTestResources().save(theClassification);
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
@@ -104,7 +104,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
   @Override
   public PdcClassificationEntity aResource() {
     PdcClassification theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
     PdcClassificationEntity entity = null;
     try {

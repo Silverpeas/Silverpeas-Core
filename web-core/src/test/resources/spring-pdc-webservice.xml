@@ -36,6 +36,7 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.rest"/>
   <ctx:component-scan base-package="com.silverpeas.pdc.web"/>
+  <ctx:component-scan base-package="com.silverpeas.pdc.service"/>
   <import resource="spring-personalization.xml" />
   <import resource="spring-jdbc-datasource.xml" />
   

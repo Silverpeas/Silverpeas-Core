@@ -510,7 +510,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     return axis;
   }
 
-  private String getTreeId(String axisId) throws PdcException {
+  public String getTreeId(String axisId) throws PdcException {
     // get the header of the axis to obtain the rootId.
     AxisHeaderPersistence axisHeader = getAxisHeaderPersistence(axisId);
     int treeId = -1;

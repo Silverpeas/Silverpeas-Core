@@ -41,15 +41,21 @@ import org.springframework.stereotype.Service;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 /**
- * A REST Web resource that represents the default classification defined within a component
- * instance for its new contents.
+ * A REST Web resource that represents the predefined classifications on the PdC to classify the
+ * contents that are published into a given node of a given component instance or in a whole
+ * component instance.
  * 
- * A default classification onto the PdC can be defined for the contents in a node or for the
- * whole component instance. The default classification can be used either as a template to
- * classify a new content or as the classification to automatically apply to all new contents.
+ * A predefined classification on the PdC can be created and attached either to a component instance
+ * or to a a node of a component instance. It then can be used as a default classification to
+ * automatically classify the contents or as a classification template from which the contents can
+ * be classified on the PdC.
+ * 
+ * A node in a component instance is a generic way in Silverpeas to categorize hierarchically
+ * the contents; they are divided into a tree of nodes. A node can represent a topic, a tag or
+ * a folder for example.
  * 
  * A classification on the PdC is defined by a set of different positions on the axis of the PdC.
- * A position is a set of one or more values in the axis of the PdC.
+ * A position is a set of one or more values of axis.
  * 
  * The positions of a given classification can be accessed with this Web resource by the URI of the
  * position; classifications and positions are exposed in the Web by Silverpeas and are thus
@@ -57,8 +63,8 @@ import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
  */
 @Service
 @Scope("request")
-@Path("pdc/{componentId}/default")
-public class PdcDefaultClassificationResource extends RESTWebService {
+@Path("pdc/{componentId}/classification")
+public class PdcPredefinedClassificationResource extends RESTWebService {
   
   @Inject
   private PdcServiceProvider pdcServiceProvider;
@@ -90,11 +96,11 @@ public class PdcDefaultClassificationResource extends RESTWebService {
    */
   @GET
   @Produces({MediaType.APPLICATION_JSON})
-  public PdcClassificationEntity getDefaultPdCClassificationForContentsInNode(
+  public PdcClassificationEntity getPredefinedPdCClassificationForContentsInNode(
           @QueryParam("nodeId") String nodeId) {
     checkUserPriviledges();
     try {
-      return theDefaultClassificationOfNode(nodeId);
+      return thePredefinedClassificationOfNode(nodeId);
     } catch (PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -102,10 +108,10 @@ public class PdcDefaultClassificationResource extends RESTWebService {
     }
   }
   
-  private PdcClassificationEntity theDefaultClassificationOfNode(String nodeId) throws Exception {
+  private PdcClassificationEntity thePredefinedClassificationOfNode(String nodeId) throws Exception {
     PdcClassification classification = pdcServiceProvider().getPreDefinedClassificationForContentsIn(
             nodeId, getComponentId());
-    if (classification == PdcClassification.NO_DEFINED_CLASSIFICATION) {
+    if (classification == PdcClassification.NONE_CLASSIFICATION) {
       return undefinedClassification();
     } else {
       UserPreferences userPreferences = getUserPreferences();

@@ -23,11 +23,14 @@
  */
 package com.silverpeas.pdc.model;
 
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -55,8 +58,11 @@ public class PdcPosition implements Serializable {
   @GeneratedValue(strategy= GenerationType.AUTO)
   private Long id;
   
-  @OneToMany(cascade={CascadeType.ALL}, orphanRemoval=true)
+  @OneToMany(fetch= FetchType.EAGER)
   private Set<PdcAxisValue> axisValues = new HashSet<PdcAxisValue>();
+
+  public PdcPosition() {
+  }
 
   public String getId() {
     return id.toString();
@@ -70,5 +76,48 @@ public class PdcPosition implements Serializable {
   public Set<PdcAxisValue> getValues() {
     return axisValues;
   }
+  
+  /**
+   * Adds the specified value for this position.
+   * @param value the value to add.
+   * @return itself.
+   */
+  public PdcPosition withValue(final PdcAxisValue value) {
+    axisValues.add(value);
+    return this;
+  }
+  
+  /**
+   * Adds the specified collection of values for this position.
+   * @param values the collection of values to add.
+   * @return itself.
+   */
+  public PdcPosition withValues(final Collection<PdcAxisValue> values) {
+    axisValues.addAll(values);
+    return this;
+  }
+  
+  protected PdcPosition(long id) {
+    this.id = id;
+  }
 
+  @Override
+  public String toString() {
+    return "PdcPosition{" + "id=" + id + ", axisValues=" + axisValues + '}';
+  }
+  
+  /**
+   * Converts this position to a ClassifyPosition instance. This method is for compatibility with
+   * the old way to manage the classification.
+   * @return a ClassifyPosition instance.
+   * @throws PdcException if an error occurs while transforming this position.
+   */
+  public ClassifyPosition toClassifyPosition() throws PdcException {
+    ClassifyPosition position = new ClassifyPosition();
+    position.setPositionId(Integer.valueOf(getId()));
+    for (PdcAxisValue pdcAxisValue : getValues()) {
+      position.getValues().add(pdcAxisValue.toClassifyValue());
+    }
+    return position;
+  }
 }

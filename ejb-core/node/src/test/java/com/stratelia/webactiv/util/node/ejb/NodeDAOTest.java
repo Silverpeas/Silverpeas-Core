@@ -60,7 +60,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetTree() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     List<NodeDetail> tree = NodeDAO.getTree(connection, nodePK);
@@ -176,7 +176,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testIsSameNameSameLevelOnCreation() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dbConnection.getConnection();
     NodePK pk = new NodePK(null, INSTANCE_ID);
     NodeDetail detail = new NodeDetail();
@@ -207,7 +207,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testIsSameNameSameLevelOnUpdate() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK pk = new NodePK("1", INSTANCE_ID);
     NodeDetail detail = new NodeDetail();
@@ -246,7 +246,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetChildrenPKs() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     Collection<NodePK> children = NodeDAO.getChildrenPKs(connection, nodePK);
@@ -268,7 +268,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetDescendantPKs() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection children = NodeDAO.getDescendantPKs(connection,
@@ -312,7 +312,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetDescendantDetailsConnectionNodePK() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection children = NodeDAO.getDescendantDetails(
@@ -410,7 +410,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetDescendantDetailsConnectionNodeDetail() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     NodeDetail parent = new NodeDetail();
@@ -514,7 +514,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetHeadersByLevel() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection children = NodeDAO.getHeadersByLevel(connection,
@@ -614,7 +614,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetAllHeaders() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     List tree = NodeDAO.getTree(connection, nodePK);
@@ -730,7 +730,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetAnotherPath() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection tree = NodeDAO.getAnotherPath(connection, nodePK);
@@ -847,7 +847,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetAnotherHeader() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("2", INSTANCE_ID);
     NodePK result = NodeDAO.selectByPrimaryKey(connection, nodePK);
@@ -947,7 +947,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetChildrenDetailsConnectionNodePK() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     Collection<NodeDetail> children = NodeDAO.getChildrenDetails(
@@ -1045,7 +1045,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetChildrenDetailsConnectionNodePKString() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     Collection<NodeDetail> children = NodeDAO.getChildrenDetails(connection, nodePK, "nodename");
@@ -1142,7 +1142,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testGetChildrenNumber() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     assertEquals(3, NodeDAO.getChildrenNumber(connection, nodePK));
@@ -1153,7 +1153,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testSelectByPrimaryKey() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("2", INSTANCE_ID);
     NodePK detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
@@ -1265,7 +1265,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
 /*  @Test
   public void testSelectByNameAndFatherId() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("2", INSTANCE_ID);
     NodePK detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Déclassées", 0);
@@ -1390,7 +1390,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @Test
   public void testSelectByFatherPrimaryKey() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     Collection children = NodeDAO.getChildrenPKs(connection, nodePK);

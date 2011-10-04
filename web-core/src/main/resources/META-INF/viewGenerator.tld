@@ -64,7 +64,7 @@
     </attribute>
     <attribute>
       <description>The identifier of the node (if any) to which the new content will belong. If this
-      attribute is set and a default classification exists for this node, then it will be taken into
+      attribute is set and a predefined classification exists for this node, then it will be taken into
       account instead of the component's one for classifying the content.
       </description>
       <name>nodeId</name>

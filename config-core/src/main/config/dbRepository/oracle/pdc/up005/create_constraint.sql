@@ -1,8 +1,3 @@
-alter table PdcAxisValue 
-  add constraint FK_PdcAxisValue_ParentId
-  foreign key (parent_id) 
-  references PdcAxisValue;
-
 alter table PdcClassification_PdcPosition 
   add constraint FK_PdcClassification_PdcPosition_PositionId
   foreign key (positions_id) 

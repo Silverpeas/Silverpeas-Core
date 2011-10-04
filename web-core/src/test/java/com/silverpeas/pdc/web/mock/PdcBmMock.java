@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.pdc.model.ValuePK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,7 +46,7 @@ import javax.inject.Named;
 import static org.mockito.Mockito.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
-import static com.silverpeas.pdc.model.PdcClassification.*;
+import static com.silverpeas.pdc.web.beans.TestPdcClassification.*;
 
 /**
  * A decorator of the PdcBm implementation by mocking some of its services for testing purpose.
@@ -129,12 +130,28 @@ public class PdcBmMock extends PdcBmImpl {
     return pdc.getValuesOfAxisById(String.valueOf(treeId));
   }
 
+  @Override
+  public Value getValue(String axisId, String valueId) throws PdcException {
+    Value theValue = null;
+    ClassificationPlan pdc = aClassificationPlan();
+    for (Value aValue : pdc.getValuesOfAxisById(axisId)) {
+      if (aValue.getPK().getId().equals(valueId)) {
+        theValue = aValue;
+        break;
+      }
+    }
+    if (theValue == null) {
+      throw new PdcException(getClass().getSimpleName() + ".getValue()", SilverpeasException.ERROR,
+              "root.NO_EX_MESSAGE");
+    }
+    return theValue;
+  }
+
   public void addClassification(final PdcClassification classification) {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentInstanceId())
-            && (CONTENT_ID.equals(classification.getResourceId()) || !classification.
-            isForADefinedResource() || NODE_ID.equals(classification.getResourceId()))) {
+            && (CONTENT_ID.equals(classification.getContentId()))) {
       this.positions.clear();
-      for (ClassifyPosition position : classification.getPositions()) {
+      for (ClassifyPosition position : classification.getClassifyPositions()) {
         addPosition(position);
       }
     }
@@ -148,7 +165,7 @@ public class PdcBmMock extends PdcBmImpl {
     PdcClassification classification = null;
     if (COMPONENT_INSTANCE_ID.equals(inComponentId) && CONTENT_ID.equals(contentId) && !positions.
             isEmpty()) {
-      classification = aClassificationFromPositions(positions).forResource(contentId).
+      classification = aClassificationFromPositions(positions).ofContent(contentId).
               inComponentInstance(inComponentId);
     }
     return classification;

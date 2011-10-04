@@ -35,11 +35,6 @@ ALTER TABLE SB_Pdc_Group_Rights
 ADD CONSTRAINT FK_Pdc_Group_Rights_2 FOREIGN KEY (groupId) REFERENCES ST_Group(id)
 ;
 
-alter table PdcAxisValue 
-  add constraint FK_PdcAxisValue_ParentId
-  foreign key (parent_id) 
-  references PdcAxisValue;
-
 alter table PdcClassification_PdcPosition 
   add constraint FK_PdcClassification_PdcPosition_PositionId
   foreign key (positions_id) 

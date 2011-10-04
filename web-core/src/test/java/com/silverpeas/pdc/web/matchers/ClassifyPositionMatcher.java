@@ -25,6 +25,7 @@ package com.silverpeas.pdc.web.matchers;
 
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import java.util.Collections;
 import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -45,13 +46,14 @@ public class ClassifyPositionMatcher extends TypeSafeMatcher<List<ClassifyPositi
   }
 
   @Override
-  protected boolean matchesSafely(List<ClassifyPosition> positions) {
+  protected boolean matchesSafely(List<ClassifyPosition> actualPositions) {
     boolean matches = true;
-    if (positions.size() != expectedPositions.size()) {
+    if (actualPositions.size() != expectedPositions.size()) {
       matches = false;
     } else {
-      for (int p = 0; p < positions.size(); p++) {
-        List<ClassifyValue> actualValues = positions.get(p).getListClassifyValue();
+      Collections.reverse(actualPositions);
+      for (int p = 0; p < actualPositions.size(); p++) {
+        List<ClassifyValue> actualValues = actualPositions.get(p).getListClassifyValue();
         List<ClassifyValue> expectedValues = expectedPositions.get(p).getListClassifyValue();
         if (actualValues.size() != expectedValues.size()) {
           matches = false;

@@ -80,7 +80,7 @@ public class PdcWebServiceProvider {
 
   private PdcClassificationEntity fromJSON(String classification) throws JAXBException {
     JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
-            PdcPositionEntity.class, PdcPositionValue.class);
+            PdcPositionEntity.class, PdcPositionValueEntity.class);
     JSONUnmarshaller unmarshaller = new JSONUnmarshallerImpl(context, JSONConfiguration.DEFAULT);
     try {
     return unmarshaller.unmarshalFromJSON(new StringReader(classification),

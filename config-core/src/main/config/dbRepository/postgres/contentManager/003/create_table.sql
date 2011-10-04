@@ -17,3 +17,10 @@ CREATE TABLE SB_ContentManager_Content
 	endDate				varchar(10)	NULL,
 	isVisible			int		NULL
 );
+
+ALTER TABLE SB_ContentManager_Content ADD 
+	 CONSTRAINT PK_ContentManager_Content PRIMARY KEY
+	(
+		silverContentId
+	)   
+;

@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -34,12 +35,10 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
-import static com.silverpeas.pdc.model.PdcClassification.*;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A provider of services on the classification plan (named PdC). This class implements the adaptor
@@ -57,6 +56,8 @@ public class PdcServiceProvider {
   private ThesaurusManager thesaurusManager;
   @Inject
   private ContentManager contentManager;
+  @Inject
+  private PdcClassificationService classificationService;
 
   /**
    * A convenient method to enhance the readability of method calls when a component identifier is
@@ -165,16 +166,11 @@ public class PdcServiceProvider {
    */
   PdcClassification getPreDefinedClassificationForContentsIn(String nodeId, String componentId)
           throws PdcException {
-    if ("kmelia1".equals(componentId)) {
-      try {
-        List<ClassifyPosition> positions = getAllPositions("8", componentId);
-        return aClassificationFromPositions(positions).forResource(nodeId).inComponentInstance(
-                nodeId);
-      } catch (ContentManagerException ex) {
-        Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
-      }
+    if (isDefined(nodeId)) {
+      return classificationService.getPreDefinedClassification(nodeId, componentId);
+    } else {
+      return classificationService.getPreDefinedClassification(componentId);
     }
-    return NO_DEFINED_CLASSIFICATION;
   }
 
   /**

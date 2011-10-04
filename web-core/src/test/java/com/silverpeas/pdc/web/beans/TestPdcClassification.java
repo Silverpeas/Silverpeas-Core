@@ -21,43 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.comment.web;
+package com.silverpeas.pdc.web.beans;
 
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Date;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The builder of comments for testing purpose.
+ * A classification on the PdC enriched to be used in tests.
  */
-public class CommentBuilder {
-
-  private String resourceId;
-  private String componentId;
-  private UserDetail user;
-
-  public CommentBuilder withUser(final UserDetail user) {
-    this.user = user;
-    return this;
+public class TestPdcClassification extends PdcClassification {
+  private static final long serialVersionUID = 3802281273787399719L;
+  
+  private List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
+  
+  public static PdcClassification aClassificationFromPositions(final List<ClassifyPosition> positions) {
+    TestPdcClassification classification = new TestPdcClassification();
+    classification.setClassifyPositions(positions);
+    return classification;
   }
 
-  public CommentBuilder commentTheResource(String resourceId) {
-    this.resourceId = resourceId;
-    return this;
+  @Override
+  public List<ClassifyPosition> getClassifyPositions() {
+    return positions;
   }
-
-  public CommentBuilder inComponent(String componentId) {
-    this.componentId = componentId;
-    return this;
+  
+  public void setClassifyPositions(final List<ClassifyPosition> positions) {
+    this.positions.clear();
+    this.positions.addAll(positions);
   }
-
-  public Comment withAsText(String theText) {
-    Date now = new Date();
-    Comment comment = new Comment(new CommentPK("", componentId), new PublicationPK(
-            resourceId, componentId), user.getId(), theText, now, now);
-    comment.setOwnerDetail(user);
-    return comment;
-  }
+  
 }

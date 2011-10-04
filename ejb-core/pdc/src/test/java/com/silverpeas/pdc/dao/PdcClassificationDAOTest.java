@@ -23,35 +23,116 @@
  */
 package com.silverpeas.pdc.dao;
 
-import com.silverpeas.pdc.model.PdcClassification;
 import java.util.List;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.silverpeas.pdc.TestResources;
+import com.silverpeas.pdc.model.PdcClassification;
+import java.util.ArrayList;
+import javax.inject.Inject;
+import javax.sql.DataSource;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static com.silverpeas.pdc.matchers.PdcClassificationMatcher.*;
+import static com.silverpeas.pdc.matchers.PdcClassificationListMatcher.*;
 
 /**
- *
- * @author mmoquillon
+ * Unit tests on the different operations provided by the PdcClassification DAO.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/spring-pdc.xml", "/spring-pdc-embbed-datasource.xml"})
+@TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class PdcClassificationDAOTest {
-  
+
+  @Inject
+  private PdcClassificationDAO dao;
+  @Inject
+  private DataSource dataSource;
+  @Inject
+  private TestResources resources;
+
   public PdcClassificationDAOTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
+  @Before
+  public void generalSetUp() throws Exception {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+            PdcClassificationDAOTest.class.getClassLoader().getResourceAsStream(
+            "com/silverpeas/pdc/dao/pdc-dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
   }
 
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  /**
-   * Test of findPredefinedClassificationByComponentInstanceId method, of class PdcClassificationDAO.
-   */
   @Test
-  public void testFindPredefinedClassificationByComponentInstanceId() {
-    assertTrue(true);
+  @Transactional
+  public void findPredefinedClassificationByComponentInstanceId() {
+    String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
+    PdcClassification theExpectedClassification = resources.
+            predefinedClassificationForComponentInstance(componentInstanceId);
+    PdcClassification thePredefinedClassification =
+            dao.findPredefinedClassificationByComponentInstanceId(componentInstanceId);
+    assertThat(thePredefinedClassification, notNullValue());
+    assertThat(thePredefinedClassification, is(equalTo(theExpectedClassification)));
+  }
+
+  @Test
+  @Transactional
+  public void findNoPredefinedClassificationByComponentInstanceId() {
+    String componentInstanceId = resources.componentInstanceWithoutPredefinedClassification();
+    PdcClassification thePredefinedClassification =
+            dao.findPredefinedClassificationByComponentInstanceId(componentInstanceId);
+    assertThat(thePredefinedClassification, nullValue());
+  }
+
+  @Test
+  @Transactional
+  public void findNoPredefinedClassificationByNullComponentInstanceId() {
+    PdcClassification thePredefinedClassification =
+            dao.findPredefinedClassificationByComponentInstanceId(null);
+    assertThat(thePredefinedClassification, nullValue());
+  }
+
+  @Test
+  @Transactional
+  public void findPredefinedClassificationByNodeId() {
+    String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
+    String nodeId = resources.nodesIdOfComponentInstance(componentInstanceId).get(0);
+    PdcClassification theExpectedClassification = resources.predefinedClassificationForNode(
+            nodeId, componentInstanceId);
+
+    PdcClassification thePredefinedClassification =
+            dao.findPredefinedClassificationByNodeId(nodeId, componentInstanceId);
+    assertThat(thePredefinedClassification, notNullValue());
+    assertThat(thePredefinedClassification, is(equalTo(theExpectedClassification)));
+  }
+
+  @Test
+  @Transactional
+  public void findPredefinedClassificationByNullNodeId() {
+    String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
+    PdcClassification thePredefinedClassification =
+            dao.findPredefinedClassificationByNodeId(null, componentInstanceId);
+    assertThat(thePredefinedClassification, nullValue());
+  }
+
+  @Test
+  @Transactional
+  public void findNoPredefinedClassificationByNodeId() {
+    String componentInstanceId = resources.componentInstanceWithoutPredefinedClassification();
+    String nodeId = resources.nodesIdOfComponentInstance(componentInstanceId).get(0);
+    PdcClassification thePredefinedClassification =
+            dao.findPredefinedClassificationByNodeId(nodeId, componentInstanceId);
+    assertThat(thePredefinedClassification, nullValue());
   }
 }

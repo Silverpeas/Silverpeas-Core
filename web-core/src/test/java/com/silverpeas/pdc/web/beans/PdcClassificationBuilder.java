@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.ArrayList;
 import java.util.List;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
-import static com.silverpeas.pdc.model.PdcClassification.*;
+import static com.silverpeas.pdc.web.beans.TestPdcClassification.*;
 
 /**
  * A classification of a resource on the PdC. This is a representation of a classification for
@@ -38,7 +38,7 @@ import static com.silverpeas.pdc.model.PdcClassification.*;
  */
 public class PdcClassificationBuilder {
 
-  private String resourceId;
+  private String contentId;
   private String componentId;
 
   public static PdcClassificationBuilder aPdcClassification() {
@@ -53,8 +53,8 @@ public class PdcClassificationBuilder {
     return new PdcClassificationBuilder();
   }
 
-  public PdcClassificationBuilder onResource(String resourceId) {
-    this.resourceId = resourceId;
+  public PdcClassificationBuilder onContent(String contentId) {
+    this.contentId = contentId;
     return this;
   }
 
@@ -67,8 +67,8 @@ public class PdcClassificationBuilder {
     return componentId;
   }
 
-  public String getResourceId() {
-    return resourceId;
+  public String getContentId() {
+    return contentId;
   }
 
   private PdcClassificationBuilder() {
@@ -103,7 +103,7 @@ public class PdcClassificationBuilder {
     positionValues.add(classifyValue);  
     positions.add(new ClassifyPosition(positionValues));
     
-    return aClassificationFromPositions(positions).forResource(resourceId).inComponentInstance(
+    return aClassificationFromPositions(positions).ofContent(contentId).inComponentInstance(
             componentId);
   }
 
@@ -120,7 +120,7 @@ public class PdcClassificationBuilder {
     positionValues.add(classifyValue);
     positions.add(new ClassifyPosition(positionValues));
     
-    return aClassificationFromPositions(positions).forResource(resourceId).inComponentInstance(
+    return aClassificationFromPositions(positions).ofContent(contentId).inComponentInstance(
             componentId);
   }
   

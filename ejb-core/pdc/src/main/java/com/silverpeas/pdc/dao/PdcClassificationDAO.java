@@ -24,13 +24,30 @@
 package com.silverpeas.pdc.dao;
 
 import com.silverpeas.pdc.model.PdcClassification;
-import java.util.List;
 import org.synyx.hades.dao.GenericDao;
 
 /**
- * DAO through which the persisted classification on the PdC can be retrieved.
+ * DAO that handles the persistence of PdcClassification beans.
  */
 public interface PdcClassificationDAO extends GenericDao<PdcClassification, Long> {
+
+  /**
+   * Finds the predefined classification on the PdC that is set for the whole specified component
+   * instance.
+   * @param instanceId the unique identifier of the component instance.
+   * @return the predefined classification that is set to the component instance, or null if no
+   * predefined classification was set for the component instance.
+   */
+  PdcClassification findPredefinedClassificationByComponentInstanceId(String instanceId);
   
-  List<PdcClassification> findPredefinedClassificationByComponentInstanceId(String instanceId);
+  /**
+   * Finds the predefined classification on the PdC that is set for the contents in the specified
+   * node of the specified component instance.
+   * @param nodeId the unique identifier of the node.
+   * @param instanceId the unique identifier of the component instance to which the node belongs.
+   * @return either the predefined classification associated with the node or null if no predefined 
+   * classification exists for that node.
+   */
+  PdcClassification findPredefinedClassificationByNodeId(String nodeId, String instanceId);
+  
 }

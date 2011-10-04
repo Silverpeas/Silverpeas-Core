@@ -64,7 +64,7 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest<PdcTe
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
     theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
   }
   
@@ -99,16 +99,16 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest<PdcTe
   }
 
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
-    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
+    ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
     return PdcPositionEntity.createNewPositionWith(positionsValues);
   }
   
   private PdcPositionEntity aNewPdcPosition() {
     ClassificationPlan pdc = aClassificationPlan();
-    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
+    ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
     List<Value> values = pdc.getValuesOfAxisByName("Période");
     Value value = values.get(values.size() - 1);
-    PdcPositionValue positionValue = PdcPositionValue.aPositionValue(Integer.valueOf(value.getAxisId()),
+    PdcPositionValueEntity positionValue = PdcPositionValueEntity.aPositionValue(Integer.valueOf(value.getAxisId()),
               value.getPath() + value.getPK().getId() + "/");
     positionValue.setTreeId(value.getTreeId());
     positionsValues.add(positionValue);

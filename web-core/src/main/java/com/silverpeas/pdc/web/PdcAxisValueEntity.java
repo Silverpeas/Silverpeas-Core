@@ -39,7 +39,7 @@ import static com.silverpeas.util.StringUtil.*;
  * a part of an axis branch whose its level attribute indicates its position in the tree from the root.
  */
 @XmlRootElement
-public class PdcAxisValue extends PdcValue {
+public class PdcAxisValueEntity extends PdcValueEntity {
   private static final long serialVersionUID = -1689709605873362349L;
   
   @XmlElement(required=true)
@@ -58,12 +58,12 @@ public class PdcAxisValue extends PdcValue {
    * @param inLanguage the language of the user.
    * @return a PdcAxisValue instance.
    */
-  public static PdcAxisValue fromValue(final Value value, String inLanguage) {
+  public static PdcAxisValueEntity fromValue(final Value value, String inLanguage) {
     String axisId = value.getAxisId();
     if (!isDefined(axisId) || axisId.equalsIgnoreCase("unknown")) {
       axisId = value.getTreeId();
     }
-    PdcAxisValue axisValue = new PdcAxisValue(
+    PdcAxisValueEntity axisValue = new PdcAxisValueEntity(
             withId(value.getFullPath()),
             withTerm(value.getName(inLanguage)),
             inAxis(axisId)).
@@ -125,7 +125,7 @@ public class PdcAxisValue extends PdcValue {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final PdcAxisValue other = (PdcAxisValue) obj;
+    final PdcAxisValueEntity other = (PdcAxisValueEntity) obj;
     if (!super.equals(other)) {
       return false;
     }
@@ -184,7 +184,7 @@ public class PdcAxisValue extends PdcValue {
     return levelNumber;
   }
   
-  protected PdcAxisValue() {
+  protected PdcAxisValueEntity() {
     super();
   }
   
@@ -204,12 +204,12 @@ public class PdcAxisValue extends PdcValue {
     this.origin = false;
   }
   
-  private PdcAxisValue(String withId, String withTerm, int inAxisId) {
+  private PdcAxisValueEntity(String withId, String withTerm, int inAxisId) {
     super(withId, inAxisId);
     this.term = withTerm;
   }
   
-  private PdcAxisValue inTree(String treeId, int levelInTree) {
+  private PdcAxisValueEntity inTree(String treeId, int levelInTree) {
     setTreeId(treeId);
     this.level = levelInTree;
     return this;
