@@ -33,6 +33,10 @@ public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
 
   private static final long serialVersionUID = -562523990230139481L;
   private String setIn;
+  
+  public PdcClassificationPositionsTag() {
+    System.out.println("PdcClassificationPositionsTag");
+  }
 
   public String getSetIn() {
     return setIn;
@@ -43,14 +47,13 @@ public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
   }
 
   @Override
-  public int doStartTag() throws JspException {
+  public void doTag() throws JspException {
     if (isPdcUsed()) {
       ElementContainer xhtmlcontainer = new ElementContainer();
       String script = getSetIn() + " = $.toJSON( $('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID
               + "').pdc('positions') );";
       xhtmlcontainer.addElement(script);
-      xhtmlcontainer.output(pageContext.getOut());
+      xhtmlcontainer.output(getOut());
     }
-    return SKIP_BODY;
   }
 }

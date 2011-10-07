@@ -15,7 +15,7 @@
     </description>
     <name>pdcClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
-    <body-content>JSP</body-content>
+    <body-content>empty</body-content>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured.
       </description>
@@ -51,7 +51,7 @@
     </description>
     <name>pdcNewClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewClassificationTag</tag-class>
-    <body-content>JSP</body-content>
+    <body-content>empty</body-content>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured.
       </description>
@@ -69,7 +69,7 @@
     </description>
     <name>pdcValidateClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationValidationTag</tag-class>
-    <body-content>JSP</body-content>
+    <body-content>empty</body-content>
     <attribute>
       <description>The name of the Javascript variable that will accept the error message when the
       classification of the content isn't valid. The message is concatenated at the variable'value.
@@ -96,7 +96,7 @@
     </description>
     <name>pdcPositions</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
-    <body-content>JSP</body-content>
+    <body-content>empty</body-content>
     <attribute>
       <description>The name of the Javascript variable that will accept the positions set through the
       pdcNewClassification tag.
