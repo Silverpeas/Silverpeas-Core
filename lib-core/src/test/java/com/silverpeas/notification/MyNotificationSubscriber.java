@@ -35,18 +35,17 @@ public class MyNotificationSubscriber implements NotificationSubscriber {
 
   @Inject
   private MessageSubscribingService subscribingService;
-
   private String id;
-  private SilverpeasNotification<String> event;
+  private SilverpeasNotification notification;
 
   @Override
   @SuppressWarnings("unchecked")
-  public <T extends Serializable> void onNotification(SilverpeasNotification<T> event, NotificationTopic onTopic) {
-    this.event = (SilverpeasNotification<String>) event;
+  public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
+    this.notification = (SilverpeasNotification) notification;
   }
 
-  public SilverpeasNotification<String> getReceivedEvent() {
-    return event;
+  public SilverpeasNotification getReceivedNotification() {
+    return notification;
   }
 
   @Override
@@ -68,5 +67,4 @@ public class MyNotificationSubscriber implements NotificationSubscriber {
   public void unsubscribeForNotifications(NotificationTopic onTopic) {
     subscribingService.unsubscribe(this, onTopic);
   }
-
 }

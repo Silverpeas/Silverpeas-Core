@@ -29,8 +29,6 @@ public class CommentDAOTest extends AbstractJndiCase {
 
   private JDBCCommentRequester commentDAO = new JDBCCommentRequester();
 
-
-
   public CommentDAOTest() {
   }
 

@@ -23,54 +23,34 @@
  */
 package com.silverpeas.notification;
 
+import com.silverpeas.jms.JMSTestFacade;
 import javax.inject.Named;
 import javax.inject.Inject;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.ExpectedException;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.notification.NotificationTopic.*;
 
 /**
- * Unit test on the publishing of a silverpeas event.
+ * Unit test on the subscription to a topic for receiving notifications.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-notification.xml")
-public class NotificationSubscriptionTest {
-
-  private static JMSTestFacade jmsTestFacade;
+public class NotificationSubscriptionTest extends NotificationServiceTest {
 
   @Inject
-  private NotificationPublisher eventPublisher;
-
+  private NotificationPublisher publisher;
   @Inject
   @Named("myNotificationSubscriber")
-  private NotificationSubscriber eventSubscriber;
+  private NotificationSubscriber subscriber;
 
   public NotificationSubscriptionTest() {
   }
 
-  @BeforeClass
-  public static void bootstrapJMS() throws Exception {
-    jmsTestFacade = new JMSTestFacade();
-    jmsTestFacade.bootstrap();
-  }
-
-  @AfterClass
-  public static void shutdownJMS() throws Exception {
-    jmsTestFacade.shutdown();
-  }
-
   @Before
   public void setUp() throws Exception {
-    assertNotNull(eventSubscriber);
+    assertNotNull(subscriber);
   }
 
   @After
@@ -79,31 +59,42 @@ public class NotificationSubscriptionTest {
 
   @Test
   public void theSubscriptionToAnExistingTopicShouldSucceed() {
-    eventSubscriber.subscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
-    eventSubscriber.unsubscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
+    subscriber.subscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
+    subscriber.unsubscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
+  }
+
+  @Test
+  public void theSubscriptionASecondTimeToAnExistingTopicShouldDoNothing() {
+    subscriber.subscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
+    subscriber.subscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
+    subscriber.unsubscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
   }
 
   @Test
   @ExpectedException(SubscriptionException.class)
   public void theSubscriptionToAnUnexistingTopicShouldFailed() {
-    eventSubscriber.subscribeForNotifications(onTopic("unknown"));
+    subscriber.subscribeForNotifications(onTopic("unknown"));
   }
 
   @Test
   public void unsubscribeToANonSubscribedTopicShouldDoNothing() {
-    eventSubscriber.unsubscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
+    subscriber.unsubscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
   }
 
   @Test
   public void aSubscribedListenerShouldReceivePublishedEvents() {
-    eventSubscriber.subscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
+    subscriber.subscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
 
-    NotificationSource sender = new NotificationSource().withComponentInstanceId("toto1").withUserId("simpson");
-    SilverpeasNotification<String> expectedEvent = new SilverpeasNotification<String>(sender, "coucou");
-    eventPublisher.publish(expectedEvent, onTopic(JMSTestFacade.DEFAULT_TOPIC));
+    MyResource resource = new MyResource("toto");
+    NotificationSource sender = new NotificationSource().withComponentInstanceId("toto1").withUserId(
+      "simpson");
+    SilverpeasNotification expectedNotif = new SilverpeasNotification(sender,
+      resource);
+    publisher.publish(expectedNotif, onTopic(JMSTestFacade.DEFAULT_TOPIC));
 
-    SilverpeasNotification<String> receivedEvent = ((MyNotificationSubscriber)eventSubscriber).getReceivedEvent();
-    assertThat(receivedEvent.getObject(), is(expectedEvent.getObject()));
-    assertThat(receivedEvent.getSource(), is(expectedEvent.getSource()));
+    SilverpeasNotification receivedNotif = ((MyNotificationSubscriber) subscriber).
+      getReceivedNotification();
+    assertThat(receivedNotif.getObject(), is(expectedNotif.getObject()));
+    assertThat(receivedNotif.getSource(), is(expectedNotif.getSource()));
   }
 }

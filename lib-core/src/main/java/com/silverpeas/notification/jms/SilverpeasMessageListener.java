@@ -52,12 +52,16 @@ public class SilverpeasMessageListener implements MessageListener {
 
   @Override
   public void onMessage(Message msg) {
+    ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
     try {
+      Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
       ObjectMessage message = (ObjectMessage) msg;
-      SilverpeasNotification<?> notification = (SilverpeasNotification) message.getObject();
+      SilverpeasNotification notification = (SilverpeasNotification) message.getObject();
       this.subscriber.onNotification(notification, NotificationTopic.onTopic(topic));
     } catch (JMSException ex) {
       throw new PublishingException(ex);
+    } finally {
+      Thread.currentThread().setContextClassLoader(originalTCCL);
     }
   }
 
@@ -69,6 +73,14 @@ public class SilverpeasMessageListener implements MessageListener {
   public SilverpeasMessageListener forTopic(String topicName) {
     this.topic = topicName;
     return this;
+  }
+
+  /**
+   * Gets the name of the topic to which this listener listens incoming messages.
+   * @return the topic name.
+   */
+  public String getTopic() {
+    return topic;
   }
 
   private SilverpeasMessageListener(final NotificationSubscriber subscriber) {

@@ -68,12 +68,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <scope>compile</scope>
@@ -109,12 +103,41 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+<<<<<<< HEAD
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+=======
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner-jms</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockejb</groupId>
+      <artifactId>mockejb</artifactId>
+      <version>0.6-beta2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>compile</scope>
+>>>>>>> c6700b5... Feature #1871. Ends the Notification API definition and its default implementation built on JMS. The JMS adapter (the implementation provider of the Notification API) is made up of two parts: the implementation of the Notification API (the implementation frontend) and a wrapper around the JMS system (the implementation backend) managing the life-cycle of the connections and the sessions with the underlying JMS ssystem. The session management policy can be changed or refined without impacting the frontend. Comments notification uses now the new Silverpeas Notification API (the old callback system is considered as deprecated).
     </dependency>
   </dependencies>
 

@@ -36,13 +36,14 @@ import java.util.Set;
  * instance and in what a given object or resource is involved. For example, the creation of a
  * publication can be notified with the publication (or its unique identifier) as object of the
  * announcement.
- * @param <T> the type of the object involved in the notification. The object must be serializable
- * in order to be transported into the subscribers through the underlying messaging system.
+ *
+ * This class can be extended in order to represent a specified type of notifications with which
+ * some publishers and subscribers work on.
  */
-public class SilverpeasNotification<T extends Serializable> implements Serializable {
+public class SilverpeasNotification implements Serializable {
   private static final long serialVersionUID = -570734131630845982L;
   private final NotificationSource source;
-  private final T object;
+  private final Serializable object;
   private Map<String, String> parameters = new HashMap<String, String>();
 
   /**
@@ -51,7 +52,7 @@ public class SilverpeasNotification<T extends Serializable> implements Serializa
    * @param source the source of the notification.
    * @param object the object on which the notification is focusing.
    */
-  public SilverpeasNotification(final NotificationSource source, final T object) {
+  public SilverpeasNotification(final NotificationSource source, final Serializable object) {
     this.source = source;
     this.object = object;
   }
@@ -60,7 +61,7 @@ public class SilverpeasNotification<T extends Serializable> implements Serializa
    * Gets the object focusing by this notification.
    * @return the object involving in an event or an action this notification informs.
    */
-  public T getObject() {
+  public Serializable getObject() {
     return object;
   }
 

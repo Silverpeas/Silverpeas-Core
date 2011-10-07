@@ -23,17 +23,15 @@
  */
 package com.silverpeas.notification;
 
-import java.io.Serializable;
 import java.util.EventListener;
 
 /**
- * A subscriber to notifications published on a given topic in Silverpeas. The subscriber will be
- * notified of the events or actions occuring in Silverpeas and about the subscribed topics.
+ * A subscriber of notifications published on a given topic in Silverpeas. The subscriber will be
+ * notified of the events or actions occuring in Silverpeas and about the subscribed topic.
  *
- * At subscription, the subscriber indicates the topic of notifications it is interested on. It will
- * be then informed of such notifications through the onNotification() callback.
- * The subscriber can subscribe several topics so that it will recieve the notification published on
- * each of the subscribed topic.
+ * At subscription, the subscriber indicates the topic of the notifications it is interested on.
+ * It will be then informed of such notifications through the onNotification() callback; so that
+ * the subscriber is also a notification listener. The subscriber can subscribe several topics.
  */
 public interface NotificationSubscriber extends EventListener {
 
@@ -54,6 +52,7 @@ public interface NotificationSubscriber extends EventListener {
   /**
    * Subscribes to notifications received on the specified topic.
    * If the topic doesn't exist, a SubscriptionException is thrown.
+   * If the subscriber is already subscribed to the specified topic, nothing is done.
    * @param onTopic the topic on which this listener listens.
    */
   void subscribeForNotifications(final NotificationTopic onTopic);
@@ -67,10 +66,8 @@ public interface NotificationSubscriber extends EventListener {
 
   /**
    * Callback called at the reception of a notification on the topic on which it is listening.
-   * @param <T> the type of the object involved by the notification.
    * @param notification the received notification .
    * @param onTopic the topic for which the notification was emitted.
    */
-   <T extends Serializable> void onNotification(final SilverpeasNotification<T> notification,
-    final NotificationTopic onTopic);
+   void onNotification(final SilverpeasNotification notification, final NotificationTopic onTopic);
 }

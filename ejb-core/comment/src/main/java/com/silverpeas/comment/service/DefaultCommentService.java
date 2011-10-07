@@ -32,8 +32,8 @@ import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -53,10 +53,13 @@ import javax.inject.Named;
  * injection.
  */
 @Named("commentService")
-public class DefaultCommentService implements CommentService {
+public class DefaultCommentService extends CommentActionNotifier implements CommentService {
 
   @Inject
   private CommentDAO commentDAO;
+
+  @Inject
+  private NotificationPublisher publisher;
 
   /**
    * Constructs a new DefaultCommentService instance.
@@ -84,10 +87,7 @@ public class DefaultCommentService implements CommentService {
   public void createComment(final Comment cmt) {
     CommentPK newPK = getCommentDAO().saveComment(cmt);
     cmt.setCommentPK(newPK);
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(CallBackManager.ACTION_COMMENT_ADD,
-        Integer.parseInt(cmt.getForeignKey().getId()),
-        cmt.getForeignKey().getComponentName(), cmt);
+    notifyCommentAdding(cmt);
   }
 
   /**
@@ -149,12 +149,7 @@ public class DefaultCommentService implements CommentService {
   public void deleteComment(final Comment comment) {
     deleteIndex(comment);
     getCommentDAO().removeComment(comment.getCommentPK());
-
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(CallBackManager.ACTION_COMMENT_REMOVE,
-        Integer.parseInt(comment.getForeignKey().getId()),
-        comment.getForeignKey().getComponentName(),
-        comment);
+    notifyCommentRemoval(comment);
   }
 
   /**

@@ -255,29 +255,6 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner-jms</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockejb</groupId>
-      <artifactId>mockejb</artifactId>
-      <version>0.6-beta2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
     </dependency>

@@ -21,10 +21,19 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.comment.service;
+
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.notification.NotificationSource;
+import com.silverpeas.notification.SilverpeasNotification;
 
 /**
- * <p>The JMS adapter to the notification API.</p>
- * <p>It provides an implementation of the Silverpeas notification API built upon the JMS
- * technology.</p>
+ *
  */
-package com.silverpeas.notification.jms;
+public class CommentRemovalNotification extends SilverpeasNotification {
+  private static final long serialVersionUID = -581350545681556054L;
+
+  public CommentRemovalNotification(NotificationSource source, Comment object) {
+    super(source, object);
+  }
+}

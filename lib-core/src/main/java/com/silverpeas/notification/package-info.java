@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides an API for subscribing to notifications on specific topics and for publishing messages
+ * Provides an API for subscribing to notifications sent on specific topics and for publishing messages
  * about some events or actions occuring in Silverpeas. In this API, a notification is a message
  * sent by a publisher onto a specific topic. Subscribers to this topic will be then informed of the
  * incoming notification through a callback with the message passed as parameter.
