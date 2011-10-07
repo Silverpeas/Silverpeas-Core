@@ -29,7 +29,9 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.ResourceLocator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.SimpleTagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
@@ -41,7 +43,7 @@ import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation
 /**
  * The base tag for all concrete tags on the PdC classification of a content.
  */
-public abstract class BaseClassificationPdCTag extends TagSupport {
+public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   private static final long serialVersionUID = -486056418553072731L;
   /**
@@ -58,6 +60,10 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
   private String contentId;
   private String nodeId;
   private PdcTagOperation operation;
+
+  public BaseClassificationPdCTag() {
+    System.out.println("BaseClassificationPdCTag");
+  }
 
   /**
    * Sets the unique identifier of the Silverpeas component instance to which the resource
@@ -86,7 +92,7 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
    */
   public String getComponentId() {
     if (!isDefined(componentId)) {
-      String[] context = (String[]) pageContext.getRequest().getAttribute(BROWSING_CONTEXT);
+      String[] context = getRequestAttribute(BROWSING_CONTEXT);
       componentId = context[3];
     }
     return componentId;
@@ -218,8 +224,7 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
    * @throws JspTagException  if an error occurs while fetching the resources.
    */
   protected ResourcesWrapper getResources() throws JspTagException {
-    ResourcesWrapper resources = (ResourcesWrapper) pageContext.getRequest().getAttribute(
-            RESOURCES_KEY);
+    ResourcesWrapper resources = getRequestAttribute(RESOURCES_KEY);
     String language = resources.getLanguage();
     resources = new ResourcesWrapper(new ResourceLocator(
             "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
@@ -248,10 +253,22 @@ public abstract class BaseClassificationPdCTag extends TagSupport {
    * @return true if the component instance uses the PdC, false otherwise.
    */
   protected boolean isPdcUsed() {
-    MainSessionController sessionController = (MainSessionController) pageContext.getSession().
-            getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    MainSessionController sessionController = getSessionAttribute(
+            MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String parameterValue = sessionController.getComponentParameterValue(getComponentId(),
             USE_PDC_COMPONENT_PARAMETER);
     return getBooleanValue(parameterValue);
-  } 
+  }
+
+  protected <T> T getRequestAttribute(String name) {
+    return (T) getJspContext().getAttribute(name, PageContext.REQUEST_SCOPE);
+  }
+
+  protected <T> T getSessionAttribute(String name) {
+    return (T) getJspContext().getAttribute(name, PageContext.SESSION_SCOPE);
+  }
+  
+  protected JspWriter getOut() {
+    return getJspContext().getOut();
+  }
 }

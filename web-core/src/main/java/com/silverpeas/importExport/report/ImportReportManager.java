@@ -29,20 +29,19 @@ import java.util.HashMap;
 
 public final class ImportReportManager {
   private static ImportReport importReport = null;
-  private static HashMap componentReportMap = null;
+  private static HashMap<String, ComponentReport> componentReportMap = null;
 
   private ImportReportManager() {
   }
 
   public static void init() {
     importReport = new ImportReport();
-    componentReportMap = new HashMap();
+    componentReportMap = new HashMap<String, ComponentReport>();
     importReport.setStartDate(new Date());
   }
 
   public static ComponentReport getComponentReport(String componentId) {
-    ComponentReport componentReport = (ComponentReport) componentReportMap
-        .get(componentId);
+    ComponentReport componentReport = componentReportMap.get(componentId);
     if (componentReport == null) {
       componentReport = new ComponentReport(componentId);
       componentReportMap.put(componentId, componentReport);

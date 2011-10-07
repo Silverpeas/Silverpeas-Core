@@ -23,6 +23,22 @@
  */
 package com.silverpeas.importExport.control;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -40,6 +56,7 @@ import com.silverpeas.importExport.model.PublicationType;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
+import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
@@ -80,20 +97,6 @@ import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -171,6 +174,15 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     return nodeBm;
   }
+  
+  private List<NodePositionType> processTopics(String userId, List<NodePositionType> topics, String componentId) {
+    if (isKmax()) {
+      return topics;
+    }
+    List<NodePositionType> existingTopics = new ArrayList<NodePositionType>();
+    existingTopics = getExistingTopics(userId, topics, componentId);
+    return existingTopics;
+  }
 
   /**
    * Methode de creation ou mise a  jour d'une publication utilisee par le manager d'importation de
@@ -183,20 +195,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   private PublicationDetail processPublicationDetail(UnitReport unitReport, UserDetail userDetail,
-          PublicationDetail pubDetailToCreate,
-          List<com.silverpeas.node.importexport.NodePositionType> listOfNodeTypes) {
-    // verification des ids de theme
-
-    List<com.silverpeas.node.importexport.NodePositionType> existingTopics = new ArrayList<com.silverpeas.node.importexport.NodePositionType>();
-    if (isKmax()) {
-      existingTopics = listOfNodeTypes;
-    } else {
-      existingTopics = getExistingTopics(listOfNodeTypes, pubDetailToCreate.getPK().getInstanceId());
-    }
+          PublicationDetail pubDetailToCreate, List<NodePositionType> listOfNodeTypes) {
+    // checking topics
+    List<NodePositionType> existingTopics =
+        processTopics(userDetail.getId(), listOfNodeTypes, pubDetailToCreate.getPK().getInstanceId());
 
     if (existingTopics.isEmpty() && !isKmax()) {
-      // Aucun id ne correspond a  un theme du composant
-      // Le classement de la publication est impossible
+      // Ids are not corresponding to any topics
+      // Classification is not possible
       unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_TOPIC);
       return null;
@@ -208,7 +214,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       }
       String pubId = null;
 
-      // Verification de l'existance d'une publication de meme nom dans le premier node donne
+      // check if publication with same name exists into first topic
       boolean pubIdExists = false;
       if (pubDetailToCreate.getId() != null) {
         try {
@@ -219,10 +225,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
       }
       if (!pubIdExists) {
         try {
-          Iterator<com.silverpeas.node.importexport.NodePositionType> itListNode_Type = existingTopics.
-                  iterator();
+          Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
           if (itListNode_Type.hasNext()) {
-            com.silverpeas.node.importexport.NodePositionType node_Type = itListNode_Type.next();
+            NodePositionType node_Type = itListNode_Type.next();
             pubDet_temp = getPublicationBm().getDetailByNameAndNodeId(pubDetailToCreate.getPK(),
                     pubDetailToCreate.getName(), node_Type.getId());
           }
@@ -261,7 +266,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         pubDet_temp = pubDetailToCreate;
       }
 
-      // Traitement de la vignette
+      // Processing thumbnail...
       if (pubIdExists && StringUtil.isDefined(pubDetailToCreate.getImage())) {
         processThumbnail(pubDetailToCreate.getImage(), pubDet_temp);
       }
@@ -275,15 +280,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
           unitReport.setError(UnitReport.ERROR_ERROR);
         }
       } else {
-        // Ajout de la publication aux topics
-        Iterator<com.silverpeas.node.importexport.NodePositionType> itListNode_Type = existingTopics.
-                iterator();
+        // Adding publication into topics
+        Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
         if (!pubAlreadyExist) {
-          com.silverpeas.node.importexport.NodePositionType node_Type = itListNode_Type.next();
+          // creating new publication in first topic 
+          NodePositionType node_Type = itListNode_Type.next();
           try {
-            com.stratelia.webactiv.util.node.model.NodePK topicPK = new com.stratelia.webactiv.util.node.model.NodePK(java.lang.Integer.
-                    toString(node_Type.getId()),
-                    pubDetailToCreate.getPK());
+            NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.getPK());
             pubId = createPublicationIntoTopic(pubDet_temp, topicPK, userDetail);
             pubDet_temp.getPK().setId(pubId);
           } catch (Exception e) {
@@ -293,20 +296,18 @@ public abstract class GEDImportExport extends ComponentImportExport {
         }
         if (isKmelia()) {
           while (itListNode_Type.hasNext()) {
-            // On ajoute la publication creee aux autres topics
-            com.silverpeas.node.importexport.NodePositionType node_Type = itListNode_Type.next();
+            // Adding publication into other topics
+            NodePositionType node_Type = itListNode_Type.next();
             try {
-              com.stratelia.webactiv.util.node.model.NodePK topicPK = new com.stratelia.webactiv.util.node.model.NodePK(java.lang.Integer.
-                      toString(node_Type.getId()), pubDetailToCreate.getPK());
+              NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.getPK());
               PublicationPK pubPK = new PublicationPK(pubId, pubDetailToCreate.getPK());
               if (pubAlreadyExist) {
-                // Verification dans le cas d une publication deja  existante de sa presence dans
-                // le theme
+                // check if existing publication is already in this topic
                 try {
                   getPublicationBm().getDetailByNameAndNodeId(pubDet_temp.getPK(),
                           pubDet_temp.getName(), node_Type.getId());
                 } catch (Exception ex) {
-                  // La publication n est pas dans le theme
+                  // this publication is not in this topic. Adding it...
                   addPublicationToTopic(pubPK, topicPK);
                 }
               } else {
@@ -609,9 +610,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
       if (f != null) {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
                 "importExport.EX_CANT_CREATE_CONTENT", "file = " + f.getPath());
-      } else {
-        throw new ImportExportException("GEDImportExport.createPublicationContent()",
-                "importExport.EX_CANT_CREATE_CONTENT", "file = null");
       }
     }
 
@@ -880,22 +878,58 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
   }
 
-  private List<com.silverpeas.node.importexport.NodePositionType> getExistingTopics(
-          List<com.silverpeas.node.importexport.NodePositionType> nodeTypes,
-          String componentId) {
-    List<com.silverpeas.node.importexport.NodePositionType> topics = new ArrayList<com.silverpeas.node.importexport.NodePositionType>();
-    for (com.silverpeas.node.importexport.NodePositionType node : nodeTypes) {
-      if (isTopicExist(node.getId(), componentId)) {
+  private List<NodePositionType> getExistingTopics(String userId, List<NodePositionType> nodeTypes,
+      String componentId) {
+    List<NodePositionType> topics = new ArrayList<NodePositionType>();
+    for (NodePositionType node : nodeTypes) {
+      if (node.getId() >= 0) {
+        // defined node must exists
+        if (isTopicExist(node.getId(), componentId)) {
+          topics.add(node);
+        }
+      } else if (StringUtil.isDefined(node.getExplicitPath()) && node.getId() == -1) {
+        // explicit mode is used. Topics must be created on-the-fly if needed.
+        String[] path = node.getExplicitPath().substring(1).split("/");
+        NodePK nodePK = new NodePK("unknown", componentId);
+        String parentId = NodePK.ROOT_NODE_ID;
+        for (String name : path) {
+          NodeDetail existingNode = null;
+          try {
+            existingNode = getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
+          } catch (Exception e) {
+            SilverTrace.info("importExport", "GEDImportExport.getExistingTopics", "root.MSG_GEN_PARAM_VALUE", "node named '"+name+"' in path '"+node.getExplicitPath()+"' does not exist");
+          }
+          if (existingNode != null) {
+            // topic exists
+            parentId = existingNode.getNodePK().getId();
+          } else {
+            // topic does not exists, creating it
+            NodeDetail newNode = new NodeDetail();
+            newNode.setName(name);
+            newNode.setNodePK(new NodePK("unknown", componentId));
+            newNode.setFatherPK(new NodePK(parentId, componentId));
+            newNode.setCreatorId(userId);
+            NodePK newNodePK = null;
+            try {
+              newNodePK = getNodeBm().createNode(newNode);
+            } catch (Exception e) {
+              SilverTrace.error("importExport", "GEDImportExport.getExistingTopics", "root.MSG_GEN_PARAM_VALUE", "Can't create node named '"+name+"' in path '"+node.getExplicitPath()+"'", e);
+              return new ArrayList<NodePositionType>();
+            }
+            parentId = newNodePK.getId();
+          }
+        }
+        node.setId(Integer.parseInt(parentId));
         topics.add(node);
       }
+      
     }
     return topics;
   }
 
   private boolean isTopicExist(int nodeId, String componentId) {
     try {
-      getNodeBm().getHeader(new com.stratelia.webactiv.util.node.model.NodePK(java.lang.Integer.
-              toString(nodeId), "useless", componentId));
+      getNodeBm().getHeader(new NodePK(Integer.toString(nodeId), "useless", componentId));
     } catch (Exception e) {
       return false;
     }

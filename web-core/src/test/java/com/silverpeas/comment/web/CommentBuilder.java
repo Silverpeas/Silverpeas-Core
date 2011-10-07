@@ -56,7 +56,9 @@ public class CommentBuilder {
   public Comment withAsText(String theText) {
     Date now = new Date();
     Comment comment = new Comment(new CommentPK("", componentId), new PublicationPK(
-            resourceId, componentId), user.getId(), theText, now, now);
+            resourceId, componentId), Integer.valueOf(user.getId()), user.getDisplayedName(),
+            theText,
+            now, now);
     comment.setOwnerDetail(user);
     return comment;
   }

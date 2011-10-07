@@ -23,11 +23,14 @@
  */
 package com.silverpeas.comment.web;
 
+import org.junit.AfterClass;
+import com.silverpeas.comment.BaseCommentTest;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.rest.ResourceUpdateTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -44,6 +47,16 @@ public class CommentUpdateTest extends ResourceUpdateTest<CommentTestResources> 
   
   public CommentUpdateTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
+  }
+  
+  @BeforeClass
+  public static void prepareMessagingContext() throws Exception {
+    BaseCommentTest.boostrapMessagingSystem();
+  }
+  
+  @AfterClass
+  public static void releaseMessagingContext() throws Exception {
+    BaseCommentTest.shutdownMessagingSystem();
   }
 
   @Before

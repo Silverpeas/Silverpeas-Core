@@ -32,6 +32,8 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -48,7 +50,7 @@ import static com.silverpeas.util.AssertArgument.*;
  */
 @Named("scheduler")
 public class QuartzScheduler
-    implements Scheduler {
+        implements Scheduler {
 
   /**
    * The key in the job data map that refers the scheduled job in the scheduler.
@@ -76,21 +78,21 @@ public class QuartzScheduler
       backend = quartzSchedulerFactory.getScheduler();
       backend.start();
       SilverTrace.info(MODULE_NAME, getClass().getSimpleName() + ".<init>()", "root.EX_NO_MESSAGE",
-          getClass().getSimpleName() + " is started");
+              getClass().getSimpleName() + " is started");
     } catch (org.quartz.SchedulerException ex) {
       SilverTrace.fatal(MODULE_NAME, getClass().getSimpleName() + ".<init>()",
-          "root.EX_NO_MESSAGE", getClass().getSimpleName() + " failed to start", ex);
+              "root.EX_NO_MESSAGE", getClass().getSimpleName() + " failed to start", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
 
   @Override
   public ScheduledJob scheduleJob(String jobName,
-      JobTrigger trigger,
-      SchedulerEventListener listener) throws SchedulerException {
+          JobTrigger trigger,
+          SchedulerEventListener listener) throws SchedulerException {
     checkArguments(jobName, trigger, listener);
     QuartzSchedulerJob job =
-        new QuartzSchedulerJob(jobName, trigger).withSchedulerEventListener(listener);
+            new QuartzSchedulerJob(jobName, trigger).withSchedulerEventListener(listener);
     JobDetail jobDetail = new JobDetail(jobName, QuartzJob.class);
     jobDetail.getJobDataMap().put(SCHEDULED_JOB, job);
     try {
@@ -98,18 +100,18 @@ public class QuartzScheduler
       return job;
     } catch (Exception ex) {
       SilverTrace.error(MODULE_NAME, getClass().getSimpleName() + ".scheduleJob()",
-          "root.EX_NO_MESSAGE", "The scheduling of the job '" + jobName + "' failed!", ex);
+              "root.EX_NO_MESSAGE", "The scheduling of the job '" + jobName + "' failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
 
   @Override
   public ScheduledJob scheduleJob(Job theJob,
-      JobTrigger trigger,
-      SchedulerEventListener listener) throws SchedulerException {
+          JobTrigger trigger,
+          SchedulerEventListener listener) throws SchedulerException {
     checkArguments(theJob, trigger);
     QuartzSchedulerJob job =
-        new QuartzSchedulerJob(theJob, trigger).withSchedulerEventListener(listener);
+            new QuartzSchedulerJob(theJob, trigger).withSchedulerEventListener(listener);
     JobDetail jobDetail = new JobDetail(theJob.getName(), QuartzJob.class);
     jobDetail.getJobDataMap().put(SCHEDULED_JOB, job);
     try {
@@ -117,7 +119,8 @@ public class QuartzScheduler
       return job;
     } catch (Exception ex) {
       SilverTrace.error(MODULE_NAME, getClass().getSimpleName() + ".scheduleJob()",
-          "root.EX_NO_MESSAGE", "The scheduling of the job '" + theJob.getName() + "' failed!", ex);
+              "root.EX_NO_MESSAGE", "The scheduling of the job '" + theJob.getName() + "' failed!",
+              ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -134,7 +137,7 @@ public class QuartzScheduler
       this.backend.deleteJob(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
     } catch (org.quartz.SchedulerException ex) {
       SilverTrace.error(MODULE_NAME, getClass().getSimpleName() + ".unscheduleJob()",
-          "root.EX_NO_MESSAGE", "The unscheduling of the job '" + jobName + "' failed!", ex);
+              "root.EX_NO_MESSAGE", "The unscheduling of the job '" + jobName + "' failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -144,7 +147,7 @@ public class QuartzScheduler
     checkJobName(jobName);
     try {
       JobDetail jobDetail =
-          this.backend.getJobDetail(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
+              this.backend.getJobDetail(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
       return jobDetail != null;
     } catch (org.quartz.SchedulerException ex) {
       return false;
@@ -155,11 +158,11 @@ public class QuartzScheduler
   public void shutdown() throws SchedulerException {
     try {
       SilverTrace.info(MODULE_NAME, getClass().getSimpleName() + ".shutdown()",
-          "root.EX_NO_MESSAGE", getClass().getSimpleName() + " is shutdown");
+              "root.EX_NO_MESSAGE", getClass().getSimpleName() + " is shutdown");
       this.backend.shutdown();
     } catch (org.quartz.SchedulerException ex) {
       SilverTrace.fatal(MODULE_NAME, getClass().getSimpleName() + ".shutdown()",
-          "root.EX_NO_MESSAGE", "The scheduler shutdown failed!", ex);
+              "root.EX_NO_MESSAGE", "The scheduler shutdown failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -172,7 +175,7 @@ public class QuartzScheduler
    * @throws Exception if an error occurs while scheduling the specified job.
    */
   private void schedule(final QuartzSchedulerJob job, final JobDetail jobDetail) throws
-      org.quartz.SchedulerException {
+          org.quartz.SchedulerException {
     Trigger quartzTrigger = triggerBuilder.buildFrom(job);
     this.backend.scheduleJob(jobDetail, quartzTrigger);
     job.setNextExecutionTime(quartzTrigger.getNextFireTime());
@@ -185,7 +188,7 @@ public class QuartzScheduler
    * @param listener the scheduler event listener should be not null.
    */
   private static void checkArguments(final String jobName, final JobTrigger trigger,
-      final SchedulerEventListener listener) {
+          final SchedulerEventListener listener) {
     checkJobName(jobName);
     checkJobTrigger(trigger);
     assertNotNull(listener, "The scheduler event listener shouldn't be null");
@@ -231,7 +234,7 @@ public class QuartzScheduler
       SchedulerEventListener eventListener = job.getSchedulerEventListener();
       job.setNextExecutionTime(jec.getNextFireTime());
       JobExecutionContext context = JobExecutionContext.createWith(job.getName(),
-          jec.getFireTime());
+              jec.getFireTime());
       if (eventListener == null) {
         try {
           job.execute(context);
@@ -247,7 +250,8 @@ public class QuartzScheduler
           try {
             eventListener.jobFailed(SchedulerEvent.jobFailed(context, ex));
           } catch (Exception e) {
-            SilverTrace.error(MODULE_NAME, QuartzScheduler.class.getName(), e.getMessage(), ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error while executing job "
+                    + job.getName() + ": " + e.getMessage(), e);
           }
         }
       }

@@ -39,10 +39,9 @@ public class PdcNewClassificationTag extends BaseClassificationPdCTag {
   private static final long serialVersionUID = 3377113335947703561L;
 
   @Override
-  public int doStartTag() throws JspException {
+  public void doTag() throws JspException {
     ElementContainer container = invoke(CREATE_CLASSIFICATION);
-    container.output(pageContext.getOut());
-    return SKIP_BODY;
+    container.output(getOut());
   }
 
 }

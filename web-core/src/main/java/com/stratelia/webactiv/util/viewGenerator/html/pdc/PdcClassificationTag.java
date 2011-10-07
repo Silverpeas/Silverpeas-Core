@@ -56,14 +56,13 @@ public class PdcClassificationTag extends BaseClassificationPdCTag {
   }
 
   @Override
-  public int doStartTag() throws JspException {
+  public void doTag() throws JspException {
     ElementContainer container;
     if (isEditable()) {
       container = invoke(OPEN_CLASSIFICATION);
     } else {
       container = invoke(READ_CLASSIFICATION);
     }
-    container.output(pageContext.getOut());
-    return SKIP_BODY;
+    container.output(getOut());
   }
 }

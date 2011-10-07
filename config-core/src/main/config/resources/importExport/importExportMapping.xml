@@ -238,6 +238,9 @@
         <castor:field name="id">
             <castor:bind-xml name="topicId" node="attribute"/>
         </castor:field>
+		<castor:field name="explicitPath">
+            <castor:bind-xml name="explicitPath" node="attribute"/>
+        </castor:field>
     </castor:class>
     <castor:class name="com.silverpeas.pdc.importExport.PdcPositionsType">
         <castor:map-to xml="pdcPositions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>

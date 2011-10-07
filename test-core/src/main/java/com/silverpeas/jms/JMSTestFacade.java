@@ -23,12 +23,16 @@
  */
 package com.silverpeas.jms;
 
-import com.mockrunner.ejb.EJBTestModule;
 import com.mockrunner.jms.JMSTestCaseAdapter;
 import com.mockrunner.jms.MessageManager;
 import com.mockrunner.mock.jms.MockMessage;
 import com.mockrunner.mock.jms.MockTopic;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import java.io.IOException;
 import javax.jms.Topic;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * A facade object on the JMS system dedicated to tests.
@@ -39,8 +43,8 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
    * The name of the topic created by default for testing purpose.
    */
   public static final String DEFAULT_TOPIC = "toto";
-  public static String JMS_FACTORY = "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
-  private EJBTestModule ejbTestModule;
+  public static String JMS_FACTORY =
+          "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
   private MockTopic topic;
 
   /**
@@ -49,9 +53,9 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
    */
   public void bootstrap() throws Exception {
     super.setUp();
-    ejbTestModule = createEJBTestModule();
-    ejbTestModule.bindToContext(JMS_FACTORY, getJMSMockObjectFactory().
-      createMockConnectionFactory());
+    prepareJndi();
+    Context context = getInitialContext();
+    context.rebind(JMS_FACTORY, getJMSMockObjectFactory().createMockConnectionFactory());
     topic = (MockTopic) newTopic(DEFAULT_TOPIC);
   }
 
@@ -64,7 +68,8 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
    */
   public Topic newTopic(String topicName) throws Exception {
     Topic newTopic = getDestinationManager().createTopic(topicName);
-    ejbTestModule.bindToContext("topic/" + topicName, newTopic);
+    Context context = getInitialContext();
+    context.rebind("topic/" + topicName, newTopic);
     return newTopic;
   }
 
@@ -77,6 +82,7 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
    */
   public void shutdown() throws Exception {
     super.tearDown();
+    cleanJndi();
   }
 
   /**
@@ -90,6 +96,18 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
   @Override
   public MockTopic getTopic(String string) {
     return super.getTopic(string);
+  }
+
+  private void prepareJndi() throws IOException {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+  }
+
+  private void cleanJndi() throws IOException {
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+  }
+
+  private Context getInitialContext() throws NamingException {
+    return new InitialContext();
   }
 
   @Override

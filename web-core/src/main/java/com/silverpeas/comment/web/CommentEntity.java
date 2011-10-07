@@ -34,12 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.silverpeas.calendar.Date;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.rest.Exposable;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Date;
 
 /**
  * The comment entity is a comment object that is exposed in the web as an entity (web entity).
@@ -107,10 +107,10 @@ public class CommentEntity implements Exposable {
    */
   public Comment toComment() {
     Comment comment = new Comment(new CommentPK(id, componentId), new PublicationPK(resourceId,
-            componentId), author.getId(), text,
-            decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
-            decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
-    comment.setOwnerDetail(author.toUser());
+        componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
+        decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
+        decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
+    comment.setOwnerDetail(getAuthor().toUser());
     return comment;
   }
 
@@ -266,12 +266,12 @@ public class CommentEntity implements Exposable {
    * @param the language to use to encode the display date.
    * @return the resulting display date.
    */
-  private static String encodeToDisplayDate(Date date, String language) {
-    String displayDate = null;
+  private static String encodeToDisplayDate(java.util.Date date, String language) {
+    String displayDate;
     if (date != null) {
-      displayDate = DateUtil.getOutputDate(date, language);
+        displayDate = DateUtil.getOutputDate(date, language);
     } else {
-      displayDate = DateUtil.getOutputDate(new Date(), language);
+      displayDate = DateUtil.getOutputDate(Date.today(), language);
     }
     return displayDate;
   }
@@ -283,15 +283,14 @@ public class CommentEntity implements Exposable {
    * @param language the language in which the date is encoded.
    * @return the resulting decoded date.
    */
-  private static Date decodeFromDisplayDate(String displayDate, String language) {
-    Date date = null;
+  private static java.util.Date decodeFromDisplayDate(String displayDate, String language) {
+    java.util.Date date = new java.util.Date();
     if (isDefined(displayDate)) {
       try {
-        date = DateUtil.stringToDate(displayDate, language);
+        String sqlDate = DateUtil.date2SQLDate(displayDate, language);
+        date = new Date(DateUtil.parseDate(sqlDate));
       } catch (ParseException ex) {
       }
-    } else {
-      date = new Date();
     }
     return date;
   }

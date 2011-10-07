@@ -153,7 +153,7 @@ public class ImportReport {
       if (unitReports != null) {
         for (UnitReport unitReport : unitReports) {
           if (unitReport.getError() != -1) {
-            logUnitReport(resource, unitReport);
+            sb.append(logUnitReport(resource, unitReport));
           }
         }
       }
@@ -161,7 +161,7 @@ public class ImportReport {
       List<MassiveReport> massiveReports = componentRpt.getListMassiveReports();
       if (massiveReports != null) {
         for (MassiveReport massiveReport : massiveReports) {
-          logMassiveReport(resource, massiveReport);
+          sb.append(logMassiveReport(resource, massiveReport));
         }
       }
       sb.append("\n");
@@ -200,7 +200,7 @@ public class ImportReport {
     if (unitReports != null) {
       for (UnitReport unitReport : unitReports) {
         if (unitReport.getError() != -1) {
-          logUnitReport(resource, unitReport);
+          sb.append(logUnitReport(resource, unitReport));
         }
       }
     }

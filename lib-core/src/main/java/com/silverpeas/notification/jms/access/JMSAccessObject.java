@@ -23,7 +23,6 @@
  */
 package com.silverpeas.notification.jms.access;
 
-import javax.jms.Message;
 import com.stratelia.webactiv.util.JNDINames;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
