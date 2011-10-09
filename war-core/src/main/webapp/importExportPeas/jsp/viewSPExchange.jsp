@@ -74,7 +74,7 @@ if (importReport != null)
 		{
 			componentRpt = (ComponentReport)itListcpnt.next();
 			
-			out.println("<br>"+resource.getString("importExportPeas.Composant")+" <b>" + componentRpt.getComponentName() + "</b> ("+componentRpt.getComponentId() + ")<br>");
+			out.println("<br>"+resource.getString("importExportPeas.Composant")+" <b><a href=\""+URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentRpt.getComponentId(), true)+"\">" + componentRpt.getComponentName() + "</a></b> ("+componentRpt.getComponentId() + ")<br>");
 			out.println(resource.getString("importExportPeas.NbPubCreated")+" : "+componentRpt.getNbPublicationsCreated() + "<br>");
 			out.println(resource.getString("importExportPeas.NbPubUpdated")+" : "+componentRpt.getNbPublicationsUpdated() + "<br>");
 			out.println(resource.getString("importExportPeas.NbTopicCreated")+" : "+componentRpt.getNbTopicsCreated() + "<br>");

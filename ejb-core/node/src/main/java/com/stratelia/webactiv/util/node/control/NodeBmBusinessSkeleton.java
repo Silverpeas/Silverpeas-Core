@@ -170,14 +170,22 @@ public interface NodeBmBusinessSkeleton {
   /**
    * Create a new Node object
    * @param nodeDetail the NodeDetail which contains data
-   * @param creatorPK the PK of the user who have create this node
+   * @param fatherDetail the parent of node to be added
    * @return the NodePK of the new Node
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.actor.model.ActorPK
    * @since 1.0
    */
   public NodePK createNode(NodeDetail nodeDetail, NodeDetail fatherDetail)
       throws RemoteException;
+  
+  /**
+   * Create a new Node object
+   * @param nodeDetail the NodeDetail which contains data
+   * @return the NodePK of the new Node
+   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @since 1.0
+   */
+  public NodePK createNode(NodeDetail nodeDetail) throws RemoteException;
 
   /**
    * Remove a node and its descendants

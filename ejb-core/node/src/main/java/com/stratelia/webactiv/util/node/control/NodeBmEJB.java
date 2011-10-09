@@ -513,11 +513,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   public NodeDetail getHeader(NodePK pk) throws RemoteException {
     Connection con = getConnection();
-
     try {
-      NodeDetail nodeDetail = NodeDAO.loadRow(con, pk);
-
-      return nodeDetail;
+      return NodeDAO.loadRow(con, pk);
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.getHeader()",
           SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_HEADER_FAILED",
@@ -740,6 +737,26 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           "node.GETTING_NUMBER_OF_SONS_FAILED", "nodeId = " + pk.getId(), re);
     } finally {
       freeConnection(con);
+    }
+  }
+  
+  public NodePK createNode(NodeDetail node) throws RemoteException {
+    NodePK parentPK = node.getFatherPK();
+    NodeDetail parent = getHeader(parentPK);
+    node.setPath(parent.getFullPath());
+    node.setLevel(parent.getLevel()+1);
+    node.setFatherPK(parentPK);
+    if (node.getLanguage() == null) {
+      // translation for the first time
+      node.setLanguage(I18NHelper.defaultLanguage);
+    }
+    try {
+      NodeDetail newNode = getNodeHome().create(node).getDetail();
+      createIndex(newNode, false);
+      return newNode.getNodePK();
+    } catch (Exception e) {
+      throw new NodeRuntimeException("NodeBmEJB.createNode()",
+          SilverpeasRuntimeException.ERROR, "node.CREATING_NODE_FAILED", e);
     }
   }
 
