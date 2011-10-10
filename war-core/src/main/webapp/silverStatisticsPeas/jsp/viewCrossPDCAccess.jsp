@@ -47,10 +47,8 @@ String monthBegin = "";
 String yearBegin = "";
 String monthEnd = "";
 String yearEnd = "";
-String spaceId = (String) request.getAttribute("SpaceId");
-String axisId = (String) request.getAttribute("AxisId");
-String axisValue = (String) request.getAttribute("AxisValue");
-Vector vPath = (Vector) request.getAttribute("Path");
+Integer firstAxis = (Integer) request.getAttribute("FirstAxis");
+Integer secondAxis = (Integer) request.getAttribute("SecondAxis");
 CrossStatisticVO crossAxis = (CrossStatisticVO) request.getAttribute("StatsData");
 
 browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
@@ -65,29 +63,6 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 <view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
-	// This function open a silverpeas window
-	function openSPWindow(fonction,windowName){
-		fonction = fonction + "?MonthBegin=" + accessFormulaire.MonthBegin.value;
-		fonction = fonction + "&YearBegin=" + accessFormulaire.YearBegin.value;		
-		fonction = fonction + "&FilterLibGroup=" + accessFormulaire.FilterLibGroup.value;		
-		fonction = fonction + "&FilterIdGroup=" + accessFormulaire.FilterIdGroup.value;		
-		fonction = fonction + "&FilterLibUser=" + accessFormulaire.FilterLibUser.value;		
-		fonction = fonction + "&FilterIdUser=" + accessFormulaire.FilterIdUser.value;
-		fonction = fonction + "&SpaceId=";		
-		SP_openWindow(fonction, windowName, '750', '550','scrollbars=yes, menubar=yes, resizable, alwaysRaised');
-	}
-	
-	function clearFilterGroup(){
-		pdcAccessForm.FilterLibGroup.value = "";
-		pdcAccessForm.FilterIdGroup.value = "";
-	}
-	
-	function clearFilterUser(){
-		pdcAccessForm.FilterLibUser.value = "";
-		pdcAccessForm.FilterIdUser.value = "";
-	}
-	
-	
 	function validerForm(){
 		if (checkForm()) {
 			$.progressMessage();
@@ -107,12 +82,6 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 		}
 		return true;
 	}
-
-	function openAxisStats(axisId) {
-		document.pdcAccessForm.AxisId.value = axisId;
-		document.pdcAccessForm.AxisValue.value = "/0/";
-		document.pdcAccessForm.submit();
-	}
 </script>
 </head>
 <body>
@@ -130,9 +99,6 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 
 <center>
   <form name="pdcAccessForm" action="ValidateViewCrossPDCAccess" method="post">
-    <input type="hidden" name="SpaceId" value="<%=(spaceId==null) ? "" : spaceId%>" />
-    <input type="hidden" name="AxisId" id="hiddenAxisId" value="<%=(axisId==null) ? "" : axisId%>" />
-    <input type="hidden" name="AxisValue" id="hiddenAxisValue" value="<%=(axisValue==null) ? "" : axisValue%>" />
     <input type="hidden" name="selectAxisError" id="hiddenSelectAxisError" value="<fmt:message key='silverStatisticsPeas.pdc.error.select' />" />
     <input type="hidden" name="sameAxisError" id="hiddenSameAxisError" value="<fmt:message key='silverStatisticsPeas.pdc.error.same' />" />
     <table width="100%" border="0" cellspacing="0" cellpadding="4">
@@ -255,20 +221,8 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 	  	</view:buttonPane>
 	  </center>
   </div>
-  <%
   
-   //Graphiques
-   /*
-   if (vStatsData != null)
-   {
-  %>
-		   	<div align="center">
-				<img src="<%=m_context%>/ChartServlet/?chart=USER_VENTIL_CHART&random=<%=(new Date()).getTime()%>">
-			</div>
-  <%
-  }*/
-  %>
-  <br>
+  <br/>
   
   <%
 
@@ -276,7 +230,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
  		List columns = (List) crossAxis.getColumnHeader();
  		List rows = (List) crossAxis.getFirstRow();
 		List statsArray = (List) crossAxis.getStatsArray();
-  	    ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"MonthEnd="+monthEnd+"&YearEnd="+yearEnd, request,session);
+  	    ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewCrossPDCAccess?FirstAxis="+firstAxis+"&SecondAxis="+secondAxis, request,session);
 		//arrayPane.setVisibleLineNumber(50);
         arrayPane.setExportData(true);
 		
