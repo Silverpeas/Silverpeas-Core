@@ -88,11 +88,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String exit = "";
     String indexIt = "";
 
-    actionWysiwyg = (String) request.getParameter("actionWysiwyg");
+    actionWysiwyg = request.getParameter("actionWysiwyg");
     SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "actionWysiwyg="+actionWysiwyg);
 
-    if (actionWysiwyg == null)
+    if (actionWysiwyg == null) {
         actionWysiwyg = "Load";
+    }
     
     if (actionWysiwyg.equals("SaveHtmlAndExit") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml")) {
         codeWysiwyg 	= request.getParameter("codeWysiwyg");
@@ -112,10 +113,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		indexIt			= (String) session.getAttribute("WYSIWYG_IndexIt");
 		exit			= request.getParameter("Exit");
 
-        if (actionWysiwyg.equals("SaveHtmlAndExit") || actionWysiwyg.equals("SaveHtml"))
+        if ("SaveHtmlAndExit".equals(actionWysiwyg) || "SaveHtml".equals(actionWysiwyg))
         {
-        	//codeWysiwyg = Encode.encodeSpecialChar(codeWysiwyg);
-        	
         	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) { 
 			
         		codeWysiwyg = codeWysiwyg.replaceAll("../../../../../", "/");
@@ -158,7 +157,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			}
         }
     }
-    else if (actionWysiwyg.equals("Load")) {
+    else if ("Load".equals(actionWysiwyg)) {
 
         spaceId = request.getParameter("SpaceId");
         session.setAttribute("WYSIWYG_SpaceId", spaceId);
