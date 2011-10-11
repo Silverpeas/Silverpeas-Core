@@ -51,7 +51,6 @@ String yearEnd = "";
 String spaceId = (String) request.getAttribute("SpaceId");
 String axisId = (String) request.getAttribute("AxisId");
 String axisValue = (String) request.getAttribute("AxisValue");
-Vector vPath = (Vector) request.getAttribute("Path");
 List vStatsData = (List)request.getAttribute("StatsData");
 
 %>
@@ -64,28 +63,6 @@ List vStatsData = (List)request.getAttribute("StatsData");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-	// This function open a silverpeas window
-	function openSPWindow(fonction,windowName){
-		fonction = fonction + "?MonthBegin=" + accessFormulaire.MonthBegin.value;
-		fonction = fonction + "&YearBegin=" + accessFormulaire.YearBegin.value;		
-		fonction = fonction + "&FilterLibGroup=" + accessFormulaire.FilterLibGroup.value;
-		fonction = fonction + "&FilterIdGroup=" + accessFormulaire.FilterIdGroup.value;		
-		fonction = fonction + "&FilterLibUser=" + accessFormulaire.FilterLibUser.value;		
-		fonction = fonction + "&FilterIdUser=" + accessFormulaire.FilterIdUser.value;
-		fonction = fonction + "&SpaceId=";		
-		SP_openWindow(fonction, windowName, '750', '550','scrollbars=yes, menubar=yes, resizable, alwaysRaised');
-	}
-	
-	function clearFilterGroup(){
-		pdcAccessForm.FilterLibGroup.value = "";
-		pdcAccessForm.FilterIdGroup.value = "";
-	}
-	
-	function clearFilterUser(){
-		pdcAccessForm.FilterLibUser.value = "";
-		pdcAccessForm.FilterIdUser.value = "";
-	}
-	
 	function validerForm(){
 		openAxisStats(0);
 	}
@@ -205,25 +182,12 @@ List vStatsData = (List)request.getAttribute("StatsData");
 	  	</view:buttonPane>
 	  </center>
   </div>
-  <%
   
-   //Graphiques
-   /*
-   if (vStatsData != null)
-   {
-  %>
-		   	<div align="center">
-				<img src="<%=m_context%>/ChartServlet/?chart=USER_VENTIL_CHART&random=<%=(new Date()).getTime()%>">
-			</div>
-  <%
-  }*/
-  %>
-  <br>
+  <br/>
   
   <%
 	// Tableau
-	//+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser	
-    ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"MonthEnd="+monthEnd+"&YearEnd="+yearEnd+"&SpaceId="+spaceId, request,session);
+	ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewPDCAccess?AxisId="+axisId+"&AxisValue="+axisValue, request,session);
   	arrayPane.setExportData(true);
     
   	//arrayPane.setExportDataURL("ExportPDCAccess");
