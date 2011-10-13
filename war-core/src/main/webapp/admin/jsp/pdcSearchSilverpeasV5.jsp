@@ -27,6 +27,17 @@
 
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ include file="../../pdcPeas/jsp/checkAdvancedSearch.jsp"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%-- Retrieve user menu display mode --%>
+<c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="com.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
+
 <%!
 
 String getValueIdFromPdcSearchContext(int axisId, SearchContext searchContext)
@@ -38,7 +49,7 @@ String getValueIdFromPdcSearchContext(int axisId, SearchContext searchContext)
 		return null;
 }
 
-boolean someAxisPertinent(List axis)
+boolean someAxisPertinent(List<SearchAxis> axis)
 {
 	SearchAxis	searchAxis	= null;
 	int			nbPositions	= -1;
@@ -56,7 +67,7 @@ boolean someAxisPertinent(List axis)
 	return false;
 }
 
-void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, ResourcesWrapper resource, String axisTypeIcon, JspWriter out) throws ThesaurusException, IOException {
+void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> axis, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, ResourcesWrapper resource, String axisTypeIcon, JspWriter out) throws ThesaurusException, IOException {
 	SearchAxis	searchAxis			= null;
 	int			axisId				= -1;
 	String		axisName			= null;
@@ -75,7 +86,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
             for (int i=0; i<axis.size(); i++){
 				searchAxis		= (SearchAxis) axis.get(i);
                 axisId			= searchAxis.getAxisId();
-                axisName		= Encode.javaStringToHtmlString(searchAxis.getAxisName(language));
+                axisName		= EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName(language));
                 nbPositions 	= searchAxis.getNbObjects();
                 valueInContext 	= getValueIdFromPdcSearchContext(axisId, searchContext);
                 if (nbPositions != 0)
@@ -92,7 +103,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
                     else
                     	out.println("<td width=\"10\"><select name=\"Axis"+axisId+"\" size=\"1\" onchange=\"javascript:addValue(this, '"+axisId+"');\">");
                     out.println("<option value=\"\"></option>");
-                    List values = searchAxis.getValues();
+                    List<Value> values = searchAxis.getValues();
                     for (int v=0; v<values.size(); v++)
                     {
                     	value = (Value) values.get(v);
@@ -141,10 +152,10 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
 %>
 <%
 //recuperation des parametres pour le PDC
-List			primaryAxis			= (List) request.getAttribute("ShowPrimaryAxis");
-List			secondaryAxis		= (List) request.getAttribute("ShowSecondaryAxis");
-SearchContext	searchContext		= (SearchContext) request.getAttribute("SearchContext");
-QueryParameters	parameters			= (QueryParameters) request.getAttribute("QueryParameters");
+List<SearchAxis> primaryAxis		= (List) request.getAttribute("ShowPrimaryAxis");
+List<SearchAxis> secondaryAxis		= (List) request.getAttribute("ShowSecondaryAxis");
+SearchContext	 searchContext		= (SearchContext) request.getAttribute("SearchContext");
+QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryParameters");
 
 boolean	isEmptySearchContext = true;
 // l'objet SearchContext n'est pas vide
@@ -155,60 +166,54 @@ if (searchContext != null && searchContext.getCriterias().size() > 0){
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
+
 <script type="text/javascript">
 function addValue(selectItem, axisId) 
 {
-	var valuePath = selectItem.value;
-	if (valuePath.length > 0)
-	{
-		document.AdvancedSearch.AxisId.value = axisId;
-		document.AdvancedSearch.ValueId.value = valuePath;
-		document.AdvancedSearch.action = "GlobalAddCriteria";
-	}
-	else
-	{
-		document.AdvancedSearch.Ids.value = axisId;
-		document.AdvancedSearch.action = "GlobalDeleteCriteria";
-	}
-	document.AdvancedSearch.target = "_self";
-	document.AdvancedSearch.submit();
+  var valuePath = selectItem.value;
+  if (valuePath.length > 0) {
+  	document.AdvancedSearch.AxisId.value = axisId;
+  	document.AdvancedSearch.ValueId.value = valuePath;
+  	document.AdvancedSearch.action = "GlobalAddCriteria";
+  } else {
+  	document.AdvancedSearch.Ids.value = axisId;
+  	document.AdvancedSearch.action = "GlobalDeleteCriteria";
+  }
+  document.AdvancedSearch.target = "_self";
+  document.AdvancedSearch.submit();
 }
 
-function sendQuery() 
-{		
-	document.AdvancedSearch.action = "AdvancedSearch";
-	document.AdvancedSearch.target = "MyMain";
-		
-	//displayStaticMessage();
-    //setTimeout("document.AdvancedSearch.submit();", 500);
-	document.AdvancedSearch.submit();
+function sendQuery() {		
+  document.AdvancedSearch.action = "AdvancedSearch";
+  document.AdvancedSearch.target = "MyMain";
+  	
+  //displayStaticMessage();
+  //setTimeout("document.AdvancedSearch.submit();", 500);
+  document.AdvancedSearch.submit();
 }
 
 function raz()
 {
-	document.AdvancedSearch.mode.value = "clear";
-	document.AdvancedSearch.action = "ChangeSearchTypeToExpert";
-	document.AdvancedSearch.target = "_self";
-	document.AdvancedSearch.submit();
+  document.AdvancedSearch.mode.value = "clear";
+  document.AdvancedSearch.action = "ChangeSearchTypeToExpert";
+  document.AdvancedSearch.target = "_self";
+  document.AdvancedSearch.submit();
 }
 
 function init()
 {
-	<%
-		if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
-			out.println("parent.showPdcFrame();");
-		} else {
-			out.println("parent.hidePdcFrame();");
-		}
-	%>
+<%
+  if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
+  	out.println("parent.showPdcFrame();");
+  } else {
+  	out.println("parent.hidePdcFrame();");
+  }
+%>
 }
 </script>
 </head>
@@ -235,11 +240,12 @@ function init()
   	<tr>
 	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20" height="1" alt=""/></td>
 <%
+
 	String axisIcon = resource.getIcon("pdcPeas.icoPrimaryAxis");
-	displayAxisByType(false, resource.getString("pdcPeas.primaryAxis"), primaryAxis, searchContext, new Boolean(false), null, resource, null, out);
+	displayAxisByType(false, resource.getString("pdcPeas.primaryAxis"), primaryAxis, searchContext, Boolean.FALSE, null, resource, null, out);
 	if (secondaryAxis != null){
 		axisIcon = resource.getIcon("pdcPeas.icoSecondaryAxis");
-		displayAxisByType(false, resource.getString("pdcPeas.secondaryAxis"), secondaryAxis, searchContext, new Boolean(false), null, resource, null, out);
+		displayAxisByType(false, resource.getString("pdcPeas.secondaryAxis"), secondaryAxis, searchContext, Boolean.FALSE, null, resource, null, out);
 	}
 %>
 	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20" height="1" alt=""/></td>
