@@ -439,8 +439,18 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         boolean setAdvancedSearchItems = processChangeSearchType(function, pdcSC, request);
 
         destination = doGlobalView(pdcSC, request, false, setAdvancedSearchItems);
+      } else if (function.equals("ResetPDCContext")) {
+        //remove PDC search context
+        pdcSC.removeAllCriterias();
+        
+        boolean setAdvancedSearchItems = true;
+        if (StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
+          // Exclusive case to display pertinent classification axis in PDC frame
+          // Advanced search items are useless in this case
+          setAdvancedSearchItems = false;
+        }
+        destination = doGlobalView(pdcSC, request, false, setAdvancedSearchItems);
       } else if (function.startsWith("LoadAdvancedSearch")) {
-
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
 
         PdcSearchRequestRouterHelper.saveFavoriteRequestAndSetPdcInfo(pdcSC, request);
