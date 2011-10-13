@@ -48,9 +48,8 @@ public class SpaceInstanciatorTest {
    */
   @Test
   public void atInitAllTemplatesAreAvailables() {
-    SpaceInstanciator.xmlPackage = XMLSPACETEMPLATES_DIR;
     Map<String, WAComponent> componentModels = new HashMap<String, WAComponent>();
-    SpaceInstanciator instanciator = new SpaceInstanciator(componentModels);
+    SpaceInstanciator instanciator = new SpaceInstanciator(componentModels, XMLSPACETEMPLATES_DIR);
     Map<String, SpaceTemplate> spaceTemplates = instanciator.getAllSpaceTemplates();
     assertNotNull(spaceTemplates);
     assertEquals(1, spaceTemplates.size());
@@ -63,9 +62,8 @@ public class SpaceInstanciatorTest {
    */
   @Test
   public void atInitNoTemplatesDirectoryImpliesNoTemplatesLoaded() {
-    SpaceInstanciator.xmlPackage = "toto";
     Map<String, WAComponent> componentModels = new HashMap<String, WAComponent>();
-    SpaceInstanciator instanciator = new SpaceInstanciator(componentModels);
+    SpaceInstanciator instanciator = new SpaceInstanciator(componentModels, "toto");
     Map<String, SpaceTemplate> spaceTemplates = instanciator.getAllSpaceTemplates();
     assertNotNull(spaceTemplates);
     assertTrue(spaceTemplates.isEmpty());
