@@ -144,7 +144,7 @@ public class TreeDAO {
       stmt = con.prepareStatement(deleteQuery);
       stmt.setInt(1, Integer.parseInt(treeId));
       stmt.setInt(2, Integer.parseInt(treeNodePK.getId()));
-      stmt.executeUpdate(deleteQuery);
+      stmt.executeUpdate();
     } finally {
       DBUtil.close(stmt);
     }
