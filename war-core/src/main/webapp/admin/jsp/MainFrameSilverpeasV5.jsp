@@ -81,17 +81,15 @@ else
 		//System.out.println("favoriteSpace = "+spaceId);
 
 		boolean spaceExists = false;
-		if (StringUtil.isDefined(spaceIdFromRedirect))
+		if (StringUtil.isDefined(spaceIdFromRedirect)) {
 			spaceExists = (organizationCtrl.getSpaceInstById(spaceIdFromRedirect) != null);
+		}
 
 		//System.out.println("spaceExists = "+spaceExists+" for spaceId = "+spaceIdFromRedirect);
 
-		if (spaceExists)
-		{
+		if (spaceExists) {
 			spaceId = spaceIdFromRedirect;
-		}
-		else
-		{
+		} else {
 			if (helper != null && helper.getSpaceId() != null) {
 				spaceId = helper.getSpaceId();
 			}
@@ -108,8 +106,9 @@ else
 		frameBottomParams 	= "?SpaceId=&amp;ComponentId="+componentIdFromRedirect;
 	}
 
-	if (login)
+	if (login) {
 		frameBottomParams += "&amp;Login=1";
+	}
 
 	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
 	{

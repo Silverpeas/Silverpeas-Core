@@ -28,6 +28,9 @@
 <%@ page import="com.silverpeas.look.LookHelper"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 
+<%@ page import="com.silverpeas.look.LookHelper"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
+
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 
 <%@ include file="../../pdcPeas/jsp/checkAdvancedSearch.jsp"%>
