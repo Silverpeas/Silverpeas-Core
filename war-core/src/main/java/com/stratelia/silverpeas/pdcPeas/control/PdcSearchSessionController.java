@@ -186,7 +186,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   // Component search type
   public static final String ALL_DATA_TYPE = "0";
-  private String dataType = null;
+  private String dataType = ALL_DATA_TYPE;
   private List<SearchTypeConfigurationVO> dataSearchTypes = null;
 
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
@@ -2798,7 +2798,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
   
   public boolean isDataTypeDefined() {
-    return !ALL_DATA_TYPE.equals(dataType);
+    return !ALL_DATA_TYPE.equals(getDataType());
   }
 
   /**

@@ -27,6 +27,7 @@
 
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ include file="../../pdcPeas/jsp/checkAdvancedSearch.jsp"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%!
 
 String getValueIdFromPdcSearchContext(int axisId, SearchContext searchContext)
@@ -152,7 +153,7 @@ if (searchContext != null && searchContext.getCriterias().size() > 0){
 	isEmptySearchContext = false;
 }
 
-Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
+Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -164,8 +165,8 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
    out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript">
-function addValue(selectItem, axisId) 
-{
+function addValue(selectItem, axisId) {
+	$.progressMessage();
 	var valuePath = selectItem.value;
 	if (valuePath.length > 0)
 	{
@@ -182,26 +183,20 @@ function addValue(selectItem, axisId)
 	document.AdvancedSearch.submit();
 }
 
-function sendQuery() 
-{		
+function sendQuery() {
 	document.AdvancedSearch.action = "AdvancedSearch";
 	document.AdvancedSearch.target = "MyMain";
-		
-	//displayStaticMessage();
-    //setTimeout("document.AdvancedSearch.submit();", 500);
 	document.AdvancedSearch.submit();
 }
 
-function raz()
-{
-	document.AdvancedSearch.mode.value = "clear";
-	document.AdvancedSearch.action = "ChangeSearchTypeToExpert";
+function raz() {
+	$.progressMessage();
+	document.AdvancedSearch.action = "ResetPDCContext";
 	document.AdvancedSearch.target = "_self";
 	document.AdvancedSearch.submit();
 }
 
-function init()
-{
+function init() {
 	<%
 		if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
 			out.println("parent.showPdcFrame();");
@@ -219,6 +214,7 @@ function init()
   <input type="hidden" name="ValueId"/>
   <input type="hidden" name="Ids"/>
   <input type="hidden" name="mode"/>
+  <input type="hidden" name="FromPDCFrame" value="true"/>
   <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_OnlyPDC %>"/>
   <input type="hidden" name="ResultPage" value=""/>
   <input type="hidden" name="SearchPage" value="/admin/jsp/pdcSearchSilverpeasV5.jsp"/>
@@ -247,5 +243,6 @@ function init()
 	</tr></table>
 </form>
 </center>
+<view:progressMessage/>
 </body>
 </html>
