@@ -39,7 +39,6 @@ import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
@@ -52,20 +51,11 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SpaceInstanciator {
 
-  protected static String xmlPackage = "";
+  protected static ResourceLocator configuration = new ResourceLocator(
+          "com.stratelia.webactiv.beans.admin.admin", "");
   private Map<String, SpaceTemplate> spaceTemplates = new HashMap<String, SpaceTemplate>();
   private final Map<String, WAComponent> allComponentsModels;
 
-  // Init Function
-  static {
-    try {
-      xmlPackage = (new ResourceLocator(
-          "com.stratelia.webactiv.beans.admin.admin", "")).getString("xmlSpaceTemplate").trim();
-    } catch (MissingResourceException mre) {
-      SilverTrace.fatal("admin", "Instanciateur.static",
-          "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", mre);
-    }
-  }
 
   /**
    * Constructs a new SpaceInstanciator instance with the specified component models.
@@ -74,6 +64,7 @@ public class SpaceInstanciator {
    */
   public SpaceInstanciator(Map<String, WAComponent> allComponentsModels) {
     this.allComponentsModels = allComponentsModels;
+    String xmlPackage = configuration.getString("xmlSpaceTemplate").trim();
     File file = new File(xmlPackage);
     String[] list = file.list();
     if (list != null) {
@@ -130,12 +121,11 @@ public class SpaceInstanciator {
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
           + templateName + "' NOT FOUND !!!!!!!!!");
       return null;
-    } else {
-      SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
+    } 
+    SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
           + templateName);
-      return makeSpaceInst(st);
-    }
+    return makeSpaceInst(st);
   }
 
   /**
@@ -171,4 +161,4 @@ public class SpaceInstanciator {
         + " NbCompo: " + space.getNumComponentInst());
     return space;
   }
-} // class
+} 
