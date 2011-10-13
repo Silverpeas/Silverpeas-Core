@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.importExportPeas.servlets;
 
@@ -59,6 +56,7 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class ImportDragAndDrop extends HttpServlet {
@@ -71,19 +69,19 @@ public class ImportDragAndDrop extends HttpServlet {
       super.init(config);
     } catch (ServletException se) {
       SilverTrace.fatal("importExportPeas", "ImportDragAndDrop.init",
-          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+              "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+          throws ServletException, IOException {
     doPost(req, res);
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse res)
-      throws ServletException, IOException {
+          throws ServletException, IOException {
     SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
     request.setCharacterEncoding("UTF-8");
     if (!FileUploadUtil.isRequestMultipart(request)) {
@@ -96,7 +94,7 @@ public class ImportDragAndDrop extends HttpServlet {
       if (!StringUtil.isDefined(topicId)) {
         String sessionId = request.getParameter("SessionId");
         HttpSession session =
-            SessionManager.getInstance().getSessionInfo(sessionId).getHttpSession();
+                SessionManager.getInstance().getSessionInfo(sessionId).getHttpSession();
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");
@@ -104,16 +102,16 @@ public class ImportDragAndDrop extends HttpServlet {
       String draftMode = request.getParameter("Draft");
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + " topicId = " + topicId
-          + " userId = " + userId + " ignoreFolders = " + ignoreFolders
-          + ", draftMode = " + draftMode);
+              "componentId = " + componentId + " topicId = " + topicId
+              + " userId = " + userId + " ignoreFolders = " + ignoreFolders
+              + ", draftMode = " + draftMode);
 
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
-          + File.separator + topicId + System.currentTimeMillis() + File.separator;
+              + File.separator + topicId + System.currentTimeMillis() + File.separator;
 
       List<FileItem> items = FileUploadUtil.parseRequest(request);
       SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "debut de la boucle");
+              "debut de la boucle");
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
@@ -124,16 +122,17 @@ public class ImportDragAndDrop extends HttpServlet {
               parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
             }
           }
-          SilverTrace.info("importExportPeas", "Drop.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
+          parentPath = FileUploadUtil.convertPathToServerOS(parentPath);
+          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
+                  "fileName = " + fileName);
           if (fileName != null) {
-            if (fileName.indexOf(File.separatorChar) >= 0) {
+            if (fileName.contains(File.separator)) {
               fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
-              parentPath = parentPath + File.separatorChar +
-                      fileName.substring(0, fileName.lastIndexOf(File.separatorChar));
+              parentPath = parentPath + File.separatorChar + fileName.substring(0, fileName.
+                      lastIndexOf(File.separatorChar));
             }
-            SilverTrace.info("importExportPeas", "Drop.doPost",
-                "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);
+            SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
+                    "fileName on Unix = " + fileName);
           }
           if (!"1".equals(ignoreFolders)) {
             fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
@@ -148,7 +147,7 @@ public class ImportDragAndDrop extends HttpServlet {
           }
         } else {
           SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
-              + item.getFieldName() + " - " + item.getString());
+                  + item.getFieldName() + " - " + item.getString());
         }
       }
       AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -165,7 +164,7 @@ public class ImportDragAndDrop extends HttpServlet {
       massiveReport.setRepositoryPath(savePath);
       ImportReportManager.addMassiveReport(massiveReport, componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(
-          userDetail, componentId);
+              userDetail, componentId);
       RepositoriesTypeManager rtm = new RepositoriesTypeManager();
 
       boolean isVersioningUsed = ImportExportHelper.isVersioningUsed(componentInst);
@@ -176,9 +175,9 @@ public class ImportDragAndDrop extends HttpServlet {
       try {
         // Traitement recursif specifique
         rtm.processImportRecursiveReplicate(massiveReport, userDetail,
-            new File(savePath), gedIE, attachmentIE, versioningIE, pdcIE,
-            componentId, Integer.parseInt(topicId), isPOIUsed,
-            isVersioningUsed, isDraftUsed);
+                new File(savePath), gedIE, attachmentIE, versioningIE, pdcIE,
+                componentId, Integer.parseInt(topicId), isPOIUsed,
+                isVersioningUsed, isDraftUsed);
         ImportReportManager.setEndDate(new Date());
       } catch (Exception ex) {
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);

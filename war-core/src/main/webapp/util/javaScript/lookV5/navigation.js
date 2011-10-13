@@ -177,7 +177,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	  }
 	  catch (e)
 	  {
-		  //frame named 'pdcFrame' does not exist
+		  //frame named 'topFrame' does not exist
 	  }
   }
 

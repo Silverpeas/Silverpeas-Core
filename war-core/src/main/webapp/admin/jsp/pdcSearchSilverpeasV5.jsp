@@ -163,7 +163,7 @@ if (searchContext != null && searchContext.getCriterias().size() > 0){
 	isEmptySearchContext = false;
 }
 
-Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
+Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -175,6 +175,7 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 <script type="text/javascript">
 function addValue(selectItem, axisId) 
 {
+  $.progressMessage();
   var valuePath = selectItem.value;
   if (valuePath.length > 0) {
   	document.AdvancedSearch.AxisId.value = axisId;
@@ -199,6 +200,7 @@ function sendQuery() {
 
 function raz()
 {
+  $.progressMessage();
   document.AdvancedSearch.mode.value = "clear";
   document.AdvancedSearch.action = "ChangeSearchTypeToExpert";
   document.AdvancedSearch.target = "_self";
@@ -224,6 +226,7 @@ function init()
   <input type="hidden" name="ValueId"/>
   <input type="hidden" name="Ids"/>
   <input type="hidden" name="mode"/>
+  <input type="hidden" name="FromPDCFrame" value="true"/>
   <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_OnlyPDC %>"/>
   <input type="hidden" name="ResultPage" value=""/>
   <input type="hidden" name="SearchPage" value="/admin/jsp/pdcSearchSilverpeasV5.jsp"/>
@@ -253,5 +256,6 @@ function init()
 	</tr></table>
 </form>
 </center>
+<view:progressMessage/>
 </body>
 </html>
