@@ -25,7 +25,11 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ page import="com.silverpeas.look.LookHelper"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
+
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
+
 <%@ include file="../../pdcPeas/jsp/checkAdvancedSearch.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -151,6 +155,8 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> a
 
 %>
 <%
+LookHelper  helper        = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+
 //recuperation des parametres pour le PDC
 List<SearchAxis> primaryAxis		= (List) request.getAttribute("ShowPrimaryAxis");
 List<SearchAxis> secondaryAxis		= (List) request.getAttribute("ShowSecondaryAxis");
@@ -173,8 +179,7 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 <view:looknfeel />
 
 <script type="text/javascript">
-function addValue(selectItem, axisId) 
-{
+function addValue(selectItem, axisId) {
   $.progressMessage();
   var valuePath = selectItem.value;
   if (valuePath.length > 0) {
@@ -192,28 +197,26 @@ function addValue(selectItem, axisId)
 function sendQuery() {		
   document.AdvancedSearch.action = "AdvancedSearch";
   document.AdvancedSearch.target = "MyMain";
-  	
-  //displayStaticMessage();
-  //setTimeout("document.AdvancedSearch.submit();", 500);
   document.AdvancedSearch.submit();
 }
 
-function raz()
-{
+function raz() {
   $.progressMessage();
-  document.AdvancedSearch.mode.value = "clear";
-  document.AdvancedSearch.action = "ChangeSearchTypeToExpert";
+  document.AdvancedSearch.action = "ResetPDCContext";  
   document.AdvancedSearch.target = "_self";
   document.AdvancedSearch.submit();
 }
 
-function init()
-{
+function init() {
 <%
-  if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
-  	out.println("parent.showPdcFrame();");
+  if (!helper.isDisplayPDCInHomePage() && !StringUtil.isDefined(parameters.getSpaceId())) {
+    out.println("parent.hidePdcFrame();");
   } else {
-  	out.println("parent.hidePdcFrame();");
+    if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
+      out.println("parent.showPdcFrame();");
+    } else {
+      out.println("parent.hidePdcFrame();");
+    }
   }
 %>
 }
