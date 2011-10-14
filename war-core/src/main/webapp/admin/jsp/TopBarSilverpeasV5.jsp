@@ -97,9 +97,6 @@ body {
 <script type="text/javascript">
 function goToHome() {
   top.bottomFrame.location.href = "<%=goToHome%>";
-<c:if test="${not curHelper.displayPDCInHomePage}">
-  parent.hidePdcFrame();
-</c:if>
 }
 
 function displayPDCFrame() {

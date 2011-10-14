@@ -209,14 +209,10 @@ function raz() {
 
 function init() {
 <%
-  if (!helper.isDisplayPDCInHomePage() && !StringUtil.isDefined(parameters.getSpaceId())) {
-    out.println("parent.hidePdcFrame();");
+  if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
+    out.println("parent.showPdcFrame();");
   } else {
-    if (someAxisPertinent(primaryAxis) || someAxisPertinent(secondaryAxis)) {
-      out.println("parent.showPdcFrame();");
-    } else {
-      out.println("parent.hidePdcFrame();");
-    }
+    out.println("parent.hidePdcFrame();");
   }
 %>
 }
