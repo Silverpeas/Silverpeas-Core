@@ -80,6 +80,23 @@ public class WysiwygControllerTest {
     String componentId = "webSite17";
     String result = WysiwygController.getNodePath(currentPath, componentId);
     assertThat(result, is("c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3"));
+    currentPath = "c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3";
+    result = WysiwygController.getNodePath(currentPath, componentId);
+    assertThat(result, is("c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3"));
+  }
+  
+  /**
+   * Test of getNodePath method, of class WysiwygController.
+   */
+  @Test
+  public void testGetNodePathOnLinux() {
+    String currentPath = "/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1";
+    String componentId = "webSites45";
+    String result = WysiwygController.getNodePath(currentPath, componentId);
+    assertThat(result, is("/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1"));
+    currentPath = "/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1/repertoire1/repertoire2/";
+    result = WysiwygController.getNodePath(currentPath, componentId);
+    assertThat(result, is("/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1"));
   }
 
   /**
