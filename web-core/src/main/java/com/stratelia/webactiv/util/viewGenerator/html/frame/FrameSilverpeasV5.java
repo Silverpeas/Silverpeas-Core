@@ -21,16 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * FrameSogreah.java
- * 
- * Created on 27 mars 2001, 15:22
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.frame;
 
 /**
@@ -51,6 +41,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
    * @return
    * @see
    */
+  @Override
   public String printBefore() {
     String result = "";
 
@@ -73,6 +64,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
    * @return
    * @see
    */
+  @Override
   public String printMiddle() {
     String result = "";
 
@@ -90,6 +82,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
    * @return
    * @see
    */
+  @Override
   public String printAfter() {
     String result = "";
     String iconsPath = getIconsPath();
@@ -118,6 +111,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
    * @return
    * @see
    */
+  @Override
   public String print() {
     String result = "";
 

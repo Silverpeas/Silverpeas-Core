@@ -21,16 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * SimpleGraphicElement.java
- * 
- * Created on 10 octobre 2000, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 /**
