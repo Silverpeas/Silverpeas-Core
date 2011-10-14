@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.apache.commons.io.FileUtils"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.io.*"%>
@@ -32,8 +33,7 @@
 	String creationDate	= resources.getOutputDate(new Date());
 	File fileDiscussion = (File) request.getAttribute("FileDiscussion");
 
-	FileReader file_read = new FileReader(fileDiscussion);
-    BufferedReader flux_in = new BufferedReader(file_read);
+	List<String> lines = FileUtils.readLines(fileDiscussion, "UTF-8");
 %>
 
 <html>
@@ -45,14 +45,11 @@
 </head>
 <body bgcolor="#FFFFFF" leftmargin="1" topmargin="1" marginwidth="1" marginheight="1">
 <% 
-	out.print("<BR><BR>");
-	String ligne;
-	while ((ligne = flux_in.readLine()) != null) {
-		out.print("<font color=\"#000000\" size=\"2\" face=\"Courier New, Courier, mono\">"+Encode.convertHTMLEntities(ligne)+"</font>");
-		out.print("<BR>");
+	out.print("<br/><br/>");
+	for (String line : lines) {
+		out.print("<font color=\"#000000\" size=\"2\" face=\"Courier New, Courier, mono\">"+Encode.convertHTMLEntities(line)+"</font>");
+		out.print("<br/>");
 	}
-	flux_in.close();
-	file_read.close();
 %>
 </body>
 </html>

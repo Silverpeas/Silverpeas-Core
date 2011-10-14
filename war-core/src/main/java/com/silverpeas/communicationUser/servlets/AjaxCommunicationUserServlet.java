@@ -24,21 +24,22 @@
 
 package com.silverpeas.communicationUser.servlets;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.io.FileUtils;
 
 import com.silverpeas.communicationUser.CommunicationUserException;
 import com.silverpeas.communicationUser.control.CommunicationUserSessionController;
@@ -113,26 +114,22 @@ public class AjaxCommunicationUserServlet extends HttpServlet {
         writer.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
 
         /* lecture du contenu du fichier */
-        FileReader file_read = new FileReader(fileDiscussion);
-        BufferedReader flux_in = new BufferedReader(file_read);
-        String ligne = null;
+        List<String> lines = FileUtils.readLines(fileDiscussion, "UTF-8");
         userId1 = "<" + commUserSC.getUserDetail().getDisplayedName() + ">"; // <currentUser>
         userId2 = "<" + commUserSC.getUserDetail(userId).getDisplayedName()+ ">"; // <User dest>
         String color = "#009900";
 
-        while ((ligne = flux_in.readLine()) != null) {
+        for (String line : lines) {
           writer.write("<tr>");
-          if (ligne.indexOf(userId1) > -1) {
+          if (line.indexOf(userId1) > -1) {
             color = "#009900";
-          } else if (ligne.indexOf(userId2) > -1) {
+          } else if (line.indexOf(userId2) > -1) {
             color = "#cc6600";
           }
           writer.write("<td valign=\"top\"><font color=\"" + color + "\">"
-              + EncodeHelper.escapeXml(ligne) + "</font></td>");
+              + EncodeHelper.escapeXml(line) + "</font></td>");
           writer.write("</tr>");
         }
-        flux_in.close();
-        file_read.close();
         writer.write("</table>");
         writer.write("</response>");
         writer.write("</ajax-response>");

@@ -81,10 +81,12 @@ else if (strGoToNew==null)
 		frameURL = URLManager.getApplicationURL()+homePage+param;
 	}
 } else {
-	frameURL = URLManager.getApplicationURL()+strGoToNew;
+    frameURL = URLManager.getApplicationURL()+strGoToNew;
+    if(strGoToNew.startsWith(URLManager.getApplicationURL())) {
+      frameURL = strGoToNew;
+    }	
 } 
 
-//System.out.println("frameBottom : frameURL = "+frameURL);
 
 session.removeAttribute("goto");
 session.removeAttribute("gotoNew");

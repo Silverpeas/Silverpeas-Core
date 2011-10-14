@@ -82,7 +82,6 @@ public class WysiwygController {
    * @param context type String: for example images
    * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
    * logical name of the file.
-   * @throws FinderException
    * @throws NamingException
    * @throws SQLException
    * @throws WysiwygException
@@ -225,11 +224,12 @@ public class WysiwygController {
     if (chemin != null) {
       chemin = supprAntiSlashFin(chemin);
       int longueur = componentId.length();
-      int index = chemin.lastIndexOf(componentId);
-      index = index + longueur;
-      String finChemin = chemin.substring(index);
+      int indexComponent = chemin.lastIndexOf(componentId);
+      indexComponent = indexComponent + longueur;
+      String finChemin = chemin.substring(indexComponent);
       finChemin = ignoreSlash(finChemin);
       finChemin = ignoreSlashAndAntislash(finChemin);
+      int index = -1;
       if(finChemin.contains("/")) {
         index = finChemin.indexOf('/');
       } else if(finChemin.contains("\\")) {
