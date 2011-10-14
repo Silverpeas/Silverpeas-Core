@@ -929,7 +929,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               String title = componentInst.getLabel(getLanguage());
               result.setTitle(title);
               result.setType("Wysiwyg");
-              titleLink = getUrl(m_sContext, indexEntry);
+              underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId);
+              titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
+              + "');document.location.href='" + underLink + "';";
             }
           }
         } else if (resultType.startsWith("Versioning")) {
