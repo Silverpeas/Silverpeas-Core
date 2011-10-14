@@ -23,19 +23,17 @@
  */
 package com.silverpeas.communicationUser.control;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
-import com.silverpeas.session.SessionInfo;
+import org.apache.commons.io.FileUtils;
 
 import com.silverpeas.communicationUser.CommunicationUserException;
+import com.silverpeas.session.SessionInfo;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -45,8 +43,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
-
-import com.stratelia.silverpeas.selection.*;
+import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -220,11 +217,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
           /* Création d'un nouveau fichier sous la bonne arborescence */
           File discussion = new File(directory, currentUserId + '.' + userId + ".txt");
           /* Ecriture dans le fichier */
-          FileWriter file_write = new FileWriter(discussion);
-          BufferedWriter flux_out = new BufferedWriter(file_write);
-          flux_out.write('\n');
-          flux_out.close();
-          file_write.close();
+          FileUtils.writeStringToFile(discussion, "\n", "UTF-8");
           return discussion;
         } else {
           SilverTrace.error("communicationUser",
@@ -245,15 +238,11 @@ public class CommunicationUserSessionController extends AbstractComponentSession
 
   public String getDiscussion(File fileDiscussion) throws CommunicationUserException {
     try {
-      FileReader file_read = new FileReader(fileDiscussion);
-      BufferedReader flux_in = new BufferedReader(file_read);
-      String ligne;
+      List<String> lines = FileUtils.readLines(fileDiscussion, "UTF-8");
       StringBuilder messages = new StringBuilder("");
-      while ((ligne = flux_in.readLine()) != null) {
-        messages.append(ligne).append("\n");
+      for (String line : lines) {
+        messages.append(line).append("\n");
       }
-      flux_in.close();
-      file_read.close();
       return messages.toString();
     } catch (IOException e) {
       throw new CommunicationUserException(
