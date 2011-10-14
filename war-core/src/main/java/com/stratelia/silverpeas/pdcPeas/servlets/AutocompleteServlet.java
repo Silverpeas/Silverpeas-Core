@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
+import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.searchEngine.model.SearchCompletion;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -34,6 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
+
+import static com.silverpeas.util.MimeTypes.*;
 
 /**
  *
@@ -52,7 +55,7 @@ public class AutocompleteServlet extends HttpServlet {
    */
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    response.setContentType("text/html;charset=UTF-8");
+        response.setContentType(SERVLET_HTML_CONTENT_TYPE);
     PrintWriter out = response.getWriter();
     try {
       ResourceLocator resourceSearchEngine = new ResourceLocator(
