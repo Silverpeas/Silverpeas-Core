@@ -99,7 +99,7 @@ public class HighlightGlossaryTerms {
 
     // highlights the term
     String replacement =
-        "<a href=\"#\" class=\"" + className + "\" title =\"" + definition + "\"> " + term +
+        "<a href=\"#\" class=\"" + className + "\" title =\"" + definition.replaceAll("\"", "&quot;") + "\"> " + term +
         " </a>";
 
     if (onlyFirst) {
