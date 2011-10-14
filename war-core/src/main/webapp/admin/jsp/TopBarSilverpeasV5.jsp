@@ -147,11 +147,17 @@ function reloadTopBar()
 			new ajax_ticker(xmlfile, "ticker", "someclass", 3500, "fade");
 		</script>
         <div id="outils">
-        	<a href="#" onclick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a>
-        <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
-		    outilDisplayed = true; 
-		%>
-			<a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>
+        	<% if (!isAnonymousAccess) { %>
+	        	<div class="avatarName">
+	        		<a href="<%=m_sContext%>/RMyProfil/jsp/Main" target="MyMain" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><img src="<%=m_sContext + helper.getUserDetail().getAvatar()%>" height="20px" alt="avatar"/> <%=helper.getUserFullName() %></a>
+	        	</div>
+        	<% } %>
+        	<div class="userNav">
+        		<a href="#" onclick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a>
+		        <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
+				    outilDisplayed = true; 
+				%>
+				<a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>
 		<% } %> 
 		<% if (helper.getSettings("glossaryVisible", false)) {
 				outilDisplayed = true; 
@@ -159,26 +165,29 @@ function reloadTopBar()
 				<a href="javascript:onClick=openPdc()"><%=helper.getString("lookSilverpeasV5.glossaire")%></a> 
 		<% } %> 
 		<% if (helper.getSettings("mapVisible", true)) {
-		    	if (outilDisplayed)
+		    	if (outilDisplayed) {
 		    		out.print(" | ");
+		    	}
 		    	outilDisplayed = true;
 		    %>
 				<a href="<%=m_sContext + "/admin/jsp/Map.jsp"%>" target="MyMain"><%=helper.getString("lookSilverpeasV5.Map")%></a> 
 		<% } %>
 		<% if (helper.getSettings("helpVisible", true)) { 
-			if (outilDisplayed)
+			if (outilDisplayed) {
 		    	out.print(" | ");
+			}
 		    outilDisplayed = true;
 		%>
 			<a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank"><%=helper.getString("lookSilverpeasV5.Help")%></a>
 		<% } %> 
 		<% if (!isAnonymousAccess && helper.getSettings("logVisible", true)) {
-			if (outilDisplayed)
+			if (outilDisplayed) {
 		    	out.print(" | ");
-		    outilDisplayed = true; 
+			}
 		%>
 			<a href="<%=m_sContext + "/LogoutServlet"%>" target="_top"><%=helper.getString("lookSilverpeasV5.logout")%></a>
 		<% } %>
+		</div>
         </div>
 
     <% if (topItems.size() > 0) { %>
