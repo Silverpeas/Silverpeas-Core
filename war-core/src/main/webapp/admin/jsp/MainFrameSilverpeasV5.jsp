@@ -122,8 +122,9 @@ else
 	}
 
 	String framesetRows = "115,100%,*,*,*";
-	if (helper.displayPDCFrame())
-		framesetRows = "115,100%,26,*,*,*";
+	if (helper.displayPDCFrame()) {
+      framesetRows = "115,100%,26,*,*,*";
+	}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
