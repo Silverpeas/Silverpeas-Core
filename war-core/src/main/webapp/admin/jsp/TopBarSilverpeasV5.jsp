@@ -30,6 +30,11 @@
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.silverpeas.look.TopItem"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%-- Retrieve user menu display mode --%>
+<c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
+
 <%
 LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
 ResourceLocator settings 		= gef.getFavoriteLookSettings();
@@ -43,17 +48,19 @@ if (goToFavoriteSpaceOnHomeLink) {
   goToHome += "&SpaceId="+m_MainSessionCtrl.getFavoriteSpace();
 }
 
-List topItems = helper.getTopItems();
+List<TopItem> topItems = helper.getTopItems();
 
 String homePage = new String (settings.getString("defaultHomepage"));
 
 boolean isAnonymousAccess 	= helper.isAnonymousAccess();
 
 String wallPaper = helper.getSpaceWallPaper();
-if (wallPaper == null)
-	wallPaper = gef.getIcon("wallPaper");
-if (wallPaper == null)
-	wallPaper = m_sContext+"/admin/jsp/icons/silverpeasV5/bandeauTop.jpg";
+if (wallPaper == null) {
+  wallPaper = gef.getIcon("wallPaper");
+}
+if (wallPaper == null) {
+  wallPaper = m_sContext+"/admin/jsp/icons/silverpeasV5/bandeauTop.jpg";
+}
 	
 boolean outilDisplayed = false;
 %>
@@ -63,9 +70,7 @@ boolean outilDisplayed = false;
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>entete</title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 <style type="text/css">
 #shortcuts {
 	bottom: 25px;
@@ -90,42 +95,39 @@ body {
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/tools.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>
 <script type="text/javascript">
-function goToHome()
-{
-	top.bottomFrame.location.href = "<%=goToHome%>";
+function goToHome() {
+  top.bottomFrame.location.href = "<%=goToHome%>";
+<c:if test="${not curHelper.displayPDCInHomePage}">
+  parent.hidePdcFrame();
+</c:if>
 }
 
-function displayPDCFrame()
-{
-	return <%=helper.displayPDCFrame()%>;
+function displayPDCFrame() {
+  return <%=helper.displayPDCFrame()%>;
 }
 
-function getConnectedUsersLabel(nb)
-{
-	if (nb == 1)
-		return " <%=helper.getString("lookSilverpeasV5.connectedUser")%>";
-	else
-		return " <%=helper.getString("lookSilverpeasV5.connectedUsers")%>";
+function getConnectedUsersLabel(nb) {
+  if (nb == 1) {
+    return " <%=helper.getString("lookSilverpeasV5.connectedUser")%>";
+  } else {
+    return " <%=helper.getString("lookSilverpeasV5.connectedUsers")%>";
+  }
 }
 
-function getContext()
-{
-	return "<%=m_sContext%>";
+function getContext() {
+  return "<%=m_sContext%>";
 }
 
-function getDomainsBarPage()
-{
-	return "DomainsBarSilverpeasV5.jsp";
+function getDomainsBarPage() {
+  return "DomainsBarSilverpeasV5.jsp";
 }
 
-function getTopBarPage()
-{
-	return "TopBarSilverpeasV5.jsp";
+function getTopBarPage() {
+  return "TopBarSilverpeasV5.jsp";
 }
 
-function loadThisPage()
-{
-	setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
+function loadThisPage() {
+  setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
 }
 
 function reloadTopBar()
@@ -196,7 +198,7 @@ function reloadTopBar()
             	for (int c=0; c<topItems.size(); c++) {
             		item = (TopItem) topItems.get(c);
             		
-            		//le composant est-il celui s�lectionn�
+            		//le composant est-il celui selectionne
             		cssStyle = "";
             		if (item.getId().equals(currentComponentId) || item.getId().equals(currentSpaceId))
             			cssStyle = "activeShortcut";
@@ -215,7 +217,7 @@ function reloadTopBar()
        <table border="0" cellspacing="0" cellpadding="0">
        		<tr>
             	<td>
-                <a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_JOBMANAGERPEAS)%>Main" target="_top"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
+                <a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_JOBMANAGERPEAS, null, null)%>Main" target="_top"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
                 </td>
             </tr>
         </table>
