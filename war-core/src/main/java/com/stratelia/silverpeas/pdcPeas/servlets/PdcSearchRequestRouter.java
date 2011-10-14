@@ -1004,7 +1004,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_EXPERT) {
       HttpSession session = request.getSession(true);
       LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-      if (!helper.isDisplayPDCInHomePage()) {
+      if (!helper.isDisplayPDCInHomePage() && !"clear".equals(request.getParameter("mode"))) {
         // Be careful only the queryParameters object is up to date. The method pdcSC.getSpaceId()
         // is sometimes wrong as the helper.getSpaceId()
         if (StringUtil.isDefined(pdcSC.getQueryParameters().getSpaceId())) {
