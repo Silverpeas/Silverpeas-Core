@@ -122,11 +122,7 @@ else
 
 	String framesetRows = "115,100%,*,*,*";
 	if (helper.displayPDCFrame()) {
-      if (!helper.isDisplayPDCInHomePage() && !StringUtil.isDefined(helper.getSpaceId())) {
-        framesetRows = "115,100%,0,*,*,*";
-      } else {
-		framesetRows = "115,100%,26,*,*,*";
-      }
+      framesetRows = "115,100%,26,*,*,*";
 	}
 %>
 

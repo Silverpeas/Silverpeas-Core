@@ -26,6 +26,10 @@ package com.silverpeas.util;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import com.silverpeas.util.i18n.I18NHelper;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
@@ -34,10 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
-public class StringUtil {
+public class StringUtil extends StringUtils {
 
   private static final String PATTERN_START = "{";
   private static final String PATTERN_END = "}";

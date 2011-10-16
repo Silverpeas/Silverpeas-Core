@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -65,6 +66,8 @@ import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import java.util.HashSet;
+
+import static com.silverpeas.util.MimeTypes.*;
 import static com.silverpeas.util.StringUtil.*;
 
 public class SPDesktopServlet extends HttpServlet {
@@ -135,7 +138,7 @@ public class SPDesktopServlet extends HttpServlet {
       DriverUtil.init(request);
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
               "DriverUtil initialized !");
-      response.setContentType("text/html;charset=UTF-8");
+      response.setContentType(SERVLET_HTML_CONTENT_TYPE);
 
       // Get the list of visible portlets(sorted by the row number)
       try {

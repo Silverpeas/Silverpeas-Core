@@ -188,7 +188,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public static final String ALL_DATA_TYPE = "0";
   private String dataType = ALL_DATA_TYPE;
   private List<SearchTypeConfigurationVO> dataSearchTypes = null;
-
+  
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
@@ -216,9 +216,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Using the following keys<br>
    * <ul>
    * <li>external.search.server.CPT.name=ADEF</li>
-   * <li>external.search.server.CPT.data.path=D:\\silverpeas\\silverpeas_adef\\data</li>
+   * <li>external.search.server.CPT.data.path=D:\\silverpeas\\data</li>
    * <li>external.search.server.CPT.component.filters=kmelia</li>
-   * <li>external.search.server.CPT.url=http://polyphonis-test.adef.intra/silverpeas</li>
+   * <li>external.search.server.CPT.url=http://monserveur/silverpeas</li>
    * </ul>
    * Where CPT is the number of external servers starting from 1 to N
    */
@@ -929,7 +929,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               String title = componentInst.getLabel(getLanguage());
               result.setTitle(title);
               result.setType("Wysiwyg");
-              titleLink = getUrl(m_sContext, indexEntry);
+              underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId);
+              titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
+              + "');document.location.href='" + underLink + "';";
             }
           }
         } else if (resultType.startsWith("Versioning")) {
@@ -2796,7 +2798,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public void setDataType(String dataType) {
     this.dataType = dataType;
   }
-  
+
   public boolean isDataTypeDefined() {
     return !ALL_DATA_TYPE.equals(getDataType());
   }
