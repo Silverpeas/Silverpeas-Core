@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -271,6 +272,14 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public String getUserId() {
     return userId;
+  }
+  
+  public UserDetail getUserDetail() {
+    return orga.getUserDetail(userId);
+  }
+  
+  public UserFull getUserFull() {
+    return orga.getUserFull(userId);
   }
 
   /*

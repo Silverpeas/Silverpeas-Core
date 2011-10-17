@@ -393,7 +393,7 @@ out.println(gef.getLookStyleSheet());
                 <% } else {
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.logout"), "javaScript:logout();", false);
                 %>
-                    <table border="0" cellpadding="0" cellspacing="2">
+                    <table border="0" cellpadding="0" cellspacing="2" id="userNav">
                         <tr><td colspan="2" align="right"><%=helper.getUserFullName()%></td></tr>
                         <tr><td colspan="2" align="right"><%=button.print()%></td></tr>
                     </table>

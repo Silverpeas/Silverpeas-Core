@@ -1065,11 +1065,6 @@ td.browsebar a:hover {
 	border-color: #FFFFFF;
 }
 
-/*.topBar {
-	background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/bandeauTop.jpg);
-	background-repeat: no-repeat;
-	background-position: left top;
-}*/
 #ticker {
 	position: absolute;
 	right: 5px;
@@ -1086,6 +1081,31 @@ td.browsebar a:hover {
 	/*IE6 bug fix when text is bold and fade effect (alpha filter) is enabled. Style inner DIV with same color as outer DIV*/
 	/*background-color: #FFFFFF;*/
 	width: 500px;
+}
+
+#topBar #outils div.avatarName {
+    display: inline;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+#topBar #outils div.avatarName a {
+	color: #000000;
+}
+
+#topBar #outils div.avatarName img {
+    border: 1px solid #BFBFBF;
+    margin-right: 0px;
+    margin-top: -2px;
+    vertical-align: middle;
+}
+
+#topBar #outils div.userNav {
+	display: inline;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
 }
 
 /****************************************/
@@ -1403,9 +1423,14 @@ td.browsebar a:hover {
 	color: #666666;
 }
 
+#domainsBar #loginBox #userNav {
+	display: none;
+}
+
 /****************************************/
-	/****** Look V5 - ViewGenerator *********/
-	/****************************************/ /* objet window */
+/****** Look V5 - ViewGenerator *********/
+/****************************************/ 
+/* objet window */
 .cellBrowseBar {
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
