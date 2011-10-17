@@ -24,16 +24,25 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
-import java.io.IOException;
+import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
 
 import javax.servlet.jsp.JspException;
-
-import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
+import java.io.IOException;
 
 public class WindowTag extends NeedWindowTag {
 
-  public static final String WINDOW_PAGE_ATT = "pageContextWindow";
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -9075732954978662710L;
+
+  private boolean browseBarVisible = true;
+
+  public boolean isBrowseBarVisible() {
+    return browseBarVisible;
+  }
+
+  public void setBrowseBarVisible(boolean browseBarVisible) {
+    this.browseBarVisible = browseBarVisible;
+  }
+
 
   @Override
   public int doEndTag() throws JspException {
@@ -49,6 +58,7 @@ public class WindowTag extends NeedWindowTag {
   @Override
   public int doStartTag() throws JspException {
     Window window = getWindow();
+    window.setBrowseBarVisibility(isBrowseBarVisible());
     try {
       pageContext.getOut().println(window.printBefore());
     } catch (IOException e) {
