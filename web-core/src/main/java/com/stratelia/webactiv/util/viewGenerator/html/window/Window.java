@@ -22,21 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * Window.java
- * 
- * Created on 07 decembre 2000, 11:26
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
-import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
+import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
 
 /**
  * The Window interface gives us the skeleton for all funtionnalities we need to display typical WA
@@ -82,13 +73,6 @@ public interface Window extends SimpleGraphicElement {
   public void setWidth(String width);
 
   /**
-   * Print the window in an html format. The string result must be displayed between html tag <BODY>
-   * et </BODY>
-   * @return The html based line code
-   */
-  public String print();
-
-  /**
    * Print the beginning of the window in an html format.
    * @return The html based line code
    */
@@ -99,5 +83,17 @@ public interface Window extends SimpleGraphicElement {
    * @return The html based line code
    */
   public String printAfter();
+
+  /**
+   * Indicates if this Window should display a Browsebar.
+   * @return  true if this Window should display a Browsebar - false otherwise.
+   */
+  public boolean isBrowseBarVisible();
+
+  /**
+   * Defines if this Window should display a Browsebar.
+   * @param  browseBarVisible set to true if this Window should display a Browsebar - false otherwise.
+   */
+  public void setBrowseBarVisibility(boolean browseBarVisible);
 
 }

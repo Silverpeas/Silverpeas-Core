@@ -21,19 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * WindowSogreah.java
- * 
- * Created on 10 octobre 2000, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 import com.silverpeas.util.StringUtil;
 
 /**
  * The default implementation of Window interface
+ *
  * @author neysseri
  * @version 1.0
  */
@@ -43,6 +37,7 @@ public class WindowWithContextualDiv extends AbstractWindow {
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public WindowWithContextualDiv() {
@@ -51,6 +46,7 @@ public class WindowWithContextualDiv extends AbstractWindow {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -58,9 +54,7 @@ public class WindowWithContextualDiv extends AbstractWindow {
   public String printBefore() {
     StringBuilder result = new StringBuilder(200);
     String width = getWidth();
-
     int nbCols = 1;
-
     if (getOperationPane().nbOperations() > 0) {
       nbCols = 2;
     }
@@ -70,35 +64,32 @@ public class WindowWithContextualDiv extends AbstractWindow {
       result.append(contextualDiv);
     }
 
-    result
-        .append("<table width=\"")
-        .append(width)
-        .append(
-            "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
-    result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
-    result.append(getBrowseBar().print());
-    result.append("</td>");
-    if (nbCols == 2) {
-      result
-          .append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
-      result.append(getOperationPane().print());
+    result.append("<table width=\"").append(width).append(
+        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
+    if (isBrowseBarVisible()) {
+      result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
+      result.append(getBrowseBar().print());
       result.append("</td>");
-    } else {
-      result
-          .append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
-      result.append("&nbsp;");
-      result.append("</td>");
+      if (nbCols == 2) {
+        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+        result.append(getOperationPane().print());
+        result.append("</td>");
+      } else {
+        result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+        result.append("&nbsp;");
+        result.append("</td>");
+      }
+      result.append("</tr>");
     }
-    result.append("</tr>");
-    result
-        .append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
-    result
-        .append("<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
+    result.append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
+    result.append(
+        "<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
     return result.toString();
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -106,7 +97,6 @@ public class WindowWithContextualDiv extends AbstractWindow {
   public String printAfter() {
     StringBuilder result = new StringBuilder(200);
     String iconsPath = getIconsPath();
-
     result.append("</td></tr></table></td></tr></table>");
     result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     result.append("<tr><td class=\"basGaucheWindow\">");
@@ -134,12 +124,13 @@ public class WindowWithContextualDiv extends AbstractWindow {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   @Override
   public String print() {
-    StringBuilder result = new StringBuilder();
+    StringBuilder result = new StringBuilder(500);
     result.append(printBefore());
     result.append(getBody());
     result.append(printAfter());

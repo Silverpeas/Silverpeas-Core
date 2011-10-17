@@ -22,19 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * WindowSogreah.java
- * 
- * Created on 10 octobre 2000, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 /**
  * The default implementation of Window interface
+ *
  * @author neysseri
  * @version 1.0
  */
@@ -42,6 +34,7 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public WindowWeb20V5() {
@@ -50,11 +43,13 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
+  @Override
   public String printBefore() {
-    StringBuilder result = new StringBuilder();
+    StringBuilder result = new StringBuilder(200);
     String width = getWidth();
 
     int nbCols = 1;
@@ -63,40 +58,38 @@ public class WindowWeb20V5 extends AbstractWindow {
       nbCols = 2;
     }
 
-    result
-        .append("<table width=\"")
-        .append(width)
-        .append(
-        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
+    result.append("<table width=\"").append(width);
+    result.append("\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
     result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
-    result.append(getBrowseBar().print());
+
+    if (isBrowseBarVisible()) {
+      result.append(getBrowseBar().print());
+    }
     result.append("</td>");
     if (nbCols == 2) {
-      result
-          .append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+      result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
       result.append(getOperationPane().print());
       result.append("</td>");
     } else {
-      result
-          .append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
+      result.append("<td align=\"right\" class=\"cellOperation\" nowrap=\"nowrap\">");
       result.append("&nbsp;");
       result.append("</td>");
     }
     result.append("</tr>");
-    result
-        .append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
-    result
-        .append("<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
+    result.append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
+    result.append("<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
     return result.toString();
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
+  @Override
   public String printAfter() {
-    StringBuilder result = new StringBuilder();
+    StringBuilder result = new StringBuilder(200);
     String iconsPath = getIconsPath();
 
     result.append("</td></tr></table>");
@@ -104,46 +97,39 @@ public class WindowWeb20V5 extends AbstractWindow {
     result.append("</tr>");
     result.append("</table>");
 
-    result
-        .append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     result.append("<tr><td class=\"basGaucheWindow\">");
-    result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td><td class=\"basMilieuWindow\">");
-    result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td><td class=\"basDroiteWindow\">");
-    result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("<img src=\"").append(iconsPath).append( "/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td></tr></table>");
 
-    result
-        .append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     result.append("<tr><td>");
-    result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"")
-        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
+    result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"");
+    result.append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td><td width=\"100%\">");
     result.append("&nbsp;");
     result.append("</td><td>");
-    result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
-        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
+    result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"");
+    result.append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td></tr></table>");
-
     return result.toString();
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   public String print() {
-    StringBuilder result = new StringBuilder();
-
+    StringBuilder result = new StringBuilder(500);
     result.append(printBefore());
     result.append(getBody());
     result.append(printAfter());
-
     return result.toString();
   }
 

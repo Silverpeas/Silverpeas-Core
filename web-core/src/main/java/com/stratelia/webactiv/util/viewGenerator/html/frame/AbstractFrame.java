@@ -22,15 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * Frame.java
- * 
- * Created on 27 march 2001, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.frame;
 
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -42,7 +33,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 public abstract class AbstractFrame implements Frame {
 
   private String titleFrame = null;
-  // private String iconsPath = null;
   private String top = null;
   private String bottom = null;
   private boolean hasMiddle = false;
@@ -60,46 +50,14 @@ public abstract class AbstractFrame implements Frame {
    * @see
    */
   public String getIconsPath() {
-    /*
-     * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
-     * generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
-     */
     return GraphicElementFactory.getIconsPath();
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String print();
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String printBefore();
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String printMiddle();
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String printAfter();
-
+ 
   /**
    * add a string on the top of the frame.
    */
+  @Override
   public void addTop(String top) {
     this.top = top;
   }
@@ -116,6 +74,7 @@ public abstract class AbstractFrame implements Frame {
   /**
    * add a string on the bottom of the frame.
    */
+  @Override
   public void addBottom(String bottom) {
     this.bottom = bottom;
   }
@@ -134,6 +93,7 @@ public abstract class AbstractFrame implements Frame {
    * @param title
    * @see
    */
+  @Override
   public void addTitle(String title) {
     this.titleFrame = title;
   }

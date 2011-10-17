@@ -22,18 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * AbstractWindow.java
- * 
- * Created on 07 fevrier 2001, 09:35
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.window;
-
-import java.util.List;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -46,6 +35,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
 
+import java.util.List;
+
 /**
  * @author neysseri
  * @version 1.0
@@ -57,6 +48,7 @@ public abstract class AbstractWindow implements Window {
   private GraphicElementFactory gef = null;
   private String body = null;
   private String width = null;
+  private boolean browserBarDisplayable = true;
 
   /**
    * Constructor declaration
@@ -131,26 +123,6 @@ public abstract class AbstractWindow implements Window {
     return this.width;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String printBefore();
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String printAfter();
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String print();
 
   /**
    * Method declaration
@@ -189,6 +161,7 @@ public abstract class AbstractWindow implements Window {
    * @return
    * @see
    */
+  @Override
   public BrowseBar getBrowseBar() {
     if (this.browseBar == null) {
       this.browseBar = getGEF().getBrowseBar();
@@ -217,5 +190,15 @@ public abstract class AbstractWindow implements Window {
       return "<div class=\"" + spaceIds + component.getName() + " " + componentId + "\">";
     }
     return null;
+  }
+
+  @Override
+  public boolean isBrowseBarVisible(){
+    return this.browserBarDisplayable;
+  }
+
+  @Override
+  public void setBrowseBarVisibility(boolean browseBarVisible){
+    this.browserBarDisplayable = browseBarVisible;
   }
 }
