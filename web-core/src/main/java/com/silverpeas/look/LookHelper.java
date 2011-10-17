@@ -122,4 +122,6 @@ public interface LookHelper {
   public abstract void setDisplayUserMenu(UserMenuDisplay userMenuDisplayMode);
 
   public abstract boolean isEnableUFSContainsState();
+  
+  public abstract boolean isDisplayPDCInHomePage();
 }

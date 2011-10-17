@@ -133,7 +133,7 @@ String pdcContext = m_context+"/Rpdc/jsp/";
 %>
 
 <%!
-int maxEltAuthorized = 5; // nombre min d'�l�ments avant la troncature du chemin 
+int maxEltAuthorized = 5; // nombre min d'elements avant la troncature du chemin 
 int nbShowedEltAuthorized = 2 ; // nombre de noeud que l'on veut afficher avant les ...
 String troncateSeparator = " ... ";
 String separatorPath = " / "; // separateur pour le chemin complet
@@ -145,92 +145,91 @@ String separatorPath = " / "; // separateur pour le chemin complet
 */
 
 /**
-* Cette m�thode construit un hyperlien � partir d'un nom et de son lien
-* @param unit - un objet contenant un nom et un lien. Cette valeur ne doit pas �tre nulle
+* Cette methode construit un hyperlien a partir d'un nom et de son lien
+* @param unit - un objet contenant un nom et un lien. Cette valeur ne doit pas etre nulle
 * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
 * @return le texte en dur ou au format hypelien
 */
 String linkedNode(Value unit, boolean isLinked){
-        String node = "";
-        
-        // Attention la partie hyperlink est � faire !!!!
-        if (isLinked){
-                node = "<a href="+(String)unit.getPath()+">"+(String)unit.getName()+"</a> ";
-        } else {
-                node = (String)unit.getName();
-        }
-
-        return node;
+  String node = "";
+  
+  // Attention la partie hyperlink est a faire !!!!
+  if (isLinked){
+    node = "<a href=" + unit.getPath() + ">" + unit.getName() + "</a> ";
+  } else {
+    node = unit.getName();
+  }
+  return node;
 }
 
 
 /**
-* Cette m�thode construit le chemin complet tronqu� pour acc�der � une valeur
-* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas �tre nulle
+* Cette methode construit le chemin complet tronque pour acceder a une valeur
+* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas etre nulle
 * @param completPath - le chemin que l'on veut tronquer
-* @param withLastValue - on garde ou non la valeur s�lectionn�e
-* @return completPath - le chemin fabriqu�
+* @param withLastValue - on garde ou non la valeur selectionnee
+* @return completPath - le chemin fabrique
 */
 String troncatePath(String completPath, ArrayList list, boolean isLinked, int withLastValue){
-		Value value = null;
-        // prend les nbShowedEltAuthorized 1er �l�ments
-        for (int nb=0; nb < nbShowedEltAuthorized; nb++){
-				value = (Value) list.get(nb);
-                completPath +=  linkedNode(value, isLinked)+separatorPath;
-                //completPath += (String)( (ArrayList)(list.get(nb)) ).get(0);
-        }
+  Value value = null;
+  // prend les nbShowedEltAuthorized 1er elements
+  for (int nb=0; nb < nbShowedEltAuthorized; nb++){
+	value = (Value) list.get(nb);
+    completPath +=  linkedNode(value, isLinked)+separatorPath;
+    //completPath += (String)( (ArrayList)(list.get(nb)) ).get(0);
+  }
 
-        // colle ici les points de suspension
-        completPath += troncateSeparator+separatorPath;
+  // colle ici les points de suspension
+  completPath += troncateSeparator+separatorPath;
 
-        // prend les nbShowedEltAuthorized derniers �l�ments
-        for (int nb=nbShowedEltAuthorized+withLastValue ; nb>withLastValue ; nb--){
-				value = (Value) list.get(list.size() - nb);
-                completPath +=  linkedNode(value, isLinked)+separatorPath;
-                //completPath += (String)((ArrayList)(list.get(list.size() - nb))).get(0);
-        }
+  // prend les nbShowedEltAuthorized derniers elements
+  for (int nb=nbShowedEltAuthorized+withLastValue ; nb>withLastValue ; nb--){
+	value = (Value) list.get(list.size() - nb);
+    completPath +=  linkedNode(value, isLinked)+separatorPath;
+    //completPath += (String)((ArrayList)(list.get(list.size() - nb))).get(0);
+  }
 
-        return completPath;
+  return completPath;
 }
 
 /**
-* Cette m�thode construit le chemin complet pour acc�der � une valeur
-* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas �tre nulle
+* Cette methode construit le chemin complet pour acceder a une valeur
+* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas etre nulle
 * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
-* @param withLastNode - 0 si l'on veut afficher le chemin complet de la valeur s�lectionn�e. 
-*                                               1 si l'on ne souhaite afficher que le chemin complet sans la valeur s�lectionn�e
-* @return completPath - le chemin fabriqu�
+* @param withLastNode - 0 si l'on veut afficher le chemin complet de la valeur selectionnee. 
+*                       1 si l'on ne souhaite afficher que le chemin complet sans la valeur selectionne
+* @return completPath - le chemin fabrique
 */
 String buildCompletPath(ArrayList list, boolean isLinked, int withLastValue){
-        String completPath = "";
-        // on regarde d'en un 1er temps le nombre d'�l�ment de la liste que l'on re�oit.
-        // si ce nombre est strictement sup�rieur � maxEltAuthorized alors on doit tronquer le chemin complet
-        // et l'afficher comme suit : noeud1 / noeud2 / ... / noeudn-1 / noeudn
-		Value value = null;
-        if (list.size() > maxEltAuthorized){
-                completPath = troncatePath(completPath,list,isLinked,withLastValue);
-        } else {
-                for (int nb=0; nb<list.size()-withLastValue;nb++ ){
-						value = (Value) list.get(nb);
-                        completPath += linkedNode(value, isLinked)+separatorPath;
-                }
-        }
+  String completPath = "";
+  // on regarde d'en un 1er temps le nombre d'element de la liste que l'on recoit.
+  // si ce nombre est strictement superieur a maxEltAuthorized alors on doit tronquer le chemin complet
+  // et l'afficher comme suit : noeud1 / noeud2 / ... / noeudn-1 / noeudn
+  Value value = null;
+  if (list.size() > maxEltAuthorized){
+    completPath = troncatePath(completPath,list,isLinked,withLastValue);
+  } else {
+    for (int nb=0; nb<list.size()-withLastValue;nb++ ){
+      value = (Value) list.get(nb);
+      completPath += linkedNode(value, isLinked)+separatorPath;
+    }
+  }
 
-        if ( (completPath == "") || (completPath.equals("/")) ){
-                completPath = null;
-        } else {
-                completPath = completPath.substring(0,completPath.length()-separatorPath.length()); // retire le dernier s�parateur
-        }
+  if ( (completPath == "") || (completPath.equals("/")) ){
+    completPath = null;
+  } else {
+    completPath = completPath.substring(0,completPath.length()-separatorPath.length()); // retire le dernier separateur
+  }
 
-        return completPath;
+  return completPath;
 }
 
 String buildCompletPath(ArrayList list){
-        return buildCompletPath(list,false,0);
+  return buildCompletPath(list,false,0);
 }
 
 String buildCompletPath(ArrayList list,boolean isLinked){
-        return buildCompletPath(list,isLinked,0);
+  return buildCompletPath(list,isLinked,0);
 }
 
 %>

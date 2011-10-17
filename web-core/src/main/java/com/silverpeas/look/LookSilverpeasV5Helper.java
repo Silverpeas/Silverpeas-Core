@@ -71,6 +71,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private boolean shouldDisplayContextualPDC = true;
   private boolean shouldDisplaySpaceIcons = true;
   private boolean shouldDisplayConnectedUsers = true;
+  private boolean displayPDCInHomePage = true;
   private List<TopItem> topItems = null;
   private List<String> topSpaceIds = null; // sublist of topItems
   private String mainFrame = "MainFrameSilverpeasV5.jsp";
@@ -218,6 +219,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     shouldDisplayContextualPDC = resources.getBoolean("displayContextualPDC", true);
     shouldDisplaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
     shouldDisplayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
+    displayPDCInHomePage = resources.getBoolean("displayPDCInHomePage", true);
     if (isAnonymousUser()) {
       displayUserMenu = UserMenuDisplay.DISABLE;
     } else {
@@ -706,5 +708,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
       shortcuts.add(shortcut);
     }
     return shortcuts;
+  }
+
+  /**
+   * @return the displayPDCInHomePage
+   */
+  public boolean isDisplayPDCInHomePage() {
+    return displayPDCInHomePage;
   }
 }
