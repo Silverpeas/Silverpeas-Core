@@ -24,21 +24,29 @@
 package com.silverpeas.pdc.web.beans;
 
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.ArrayList;
 import java.util.List;
+import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
+import static com.silverpeas.pdc.model.PdcAxisValue.*;
+import static com.silverpeas.pdc.model.PdcClassificationHelper.*;
 
 /**
  * A classification on the PdC enriched to be used in tests.
  */
 public class TestPdcClassification extends PdcClassification {
+
   private static final long serialVersionUID = 3802281273787399719L;
-  
   private List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
-  
-  public static PdcClassification aClassificationFromPositions(final List<ClassifyPosition> positions) {
+
+  public static PdcClassification aClassificationFromPositions(
+          final List<ClassifyPosition> positions) {
     TestPdcClassification classification = new TestPdcClassification();
     classification.setClassifyPositions(positions);
+    classification.buildPdcPositions();
     return classification;
   }
 
@@ -46,10 +54,29 @@ public class TestPdcClassification extends PdcClassification {
   public List<ClassifyPosition> getClassifyPositions() {
     return positions;
   }
-  
+
   public void setClassifyPositions(final List<ClassifyPosition> positions) {
     this.positions.clear();
     this.positions.addAll(positions);
   }
-  
+
+  private void buildPdcPositions() {
+    ClassificationPlan pdc = aClassificationPlan();
+    for (ClassifyPosition classifyPosition : positions) {
+      PdcPosition pdcPosition = newPdcPositionWithId((long)classifyPosition.getPositionId());
+      for (ClassifyValue classifyValue : classifyPosition.getValues()) {
+        String id =
+                classifyValue.getValue().substring(classifyValue.getValue().lastIndexOf("/") + 1);
+        String axisId = String.valueOf(classifyValue.getAxisId());
+        List<Value> axisValues = pdc.getValuesOfAxisById(axisId);
+        for (Value anAxisValue : axisValues) {
+          if (anAxisValue.getPK().getId().equals(id)) {
+            pdcPosition.getValues().add(aPdcAxisValueFromTreeNode(anAxisValue));
+            break;
+          }
+        }
+      }
+      getPositions().add(pdcPosition);
+    }
+  }
 }

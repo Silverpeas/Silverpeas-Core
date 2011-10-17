@@ -242,6 +242,10 @@ public class PdcClassification implements Serializable {
   protected Long getId() {
     return this.id;
   }
+  
+  protected void setId(Long id) {
+    this.id = id;
+  }
 
   @Override
   public String toString() {

@@ -9,9 +9,9 @@ alter table PdcClassification_PdcPosition
   references PdcClassification;
 
 alter table PdcPosition_PdcAxisValue 
-  add constraint FK_PdcPosition_PdcAxisValue_AxisValuesId
-  foreign key (axisValues_id) 
-  references PdcAxisValue;
+  add constraint FK_PdcPosition_PdcAxisValue_PdcAxisValueId
+  foreign key (axisValues_id, axisValues_axisId) 
+  references PdcAxisValue(id, axisId);
 
 alter table PdcPosition_PdcAxisValue 
   add constraint FK_PdcPosition_PdcAxisValue_PdcPositionId

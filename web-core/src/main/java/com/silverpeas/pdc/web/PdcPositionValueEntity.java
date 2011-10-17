@@ -83,7 +83,7 @@ public class PdcPositionValueEntity extends PdcValueEntity {
    */
   static PdcPositionValueEntity fromPdcAxisValue(PdcAxisValue value, String inLanguage) {
     PdcPositionValueEntity positionValue = new PdcPositionValueEntity(
-            withId(value.getId()), 
+            withId(value.getValuePath() + "/"), // the last '/' for compatibility with the old way 
             inAxis(value.getAxisId()),
             withTranslatedMeaningOf(value, inLanguage));
     String treeId = String.valueOf(value.getAxisId());

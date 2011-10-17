@@ -42,5 +42,8 @@
   
   <bean id="pdcWebServiceProvider" class="com.silverpeas.pdc.web.PdcWebServiceProvider"
         factory-method="aWebServiceProvider"/>
+        
+  <bean id="pdcServiceFactory" class="com.silverpeas.pdc.PdcServiceFactory"
+        factory-method="getFactory"/>
 </beans>
 

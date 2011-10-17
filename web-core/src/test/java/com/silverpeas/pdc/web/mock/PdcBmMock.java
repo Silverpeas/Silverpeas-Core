@@ -146,6 +146,18 @@ public class PdcBmMock extends PdcBmImpl {
     }
     return theValue;
   }
+  
+  @Override
+  public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
+    List<Value> fullPath = new ArrayList<Value>();
+    Value value = getValue(treeId, valueId);
+    fullPath.add(value);
+    while (value.hasFather()) {      
+      value = getValue(treeId, value.getFatherId());
+      fullPath.add(0, value);
+    }
+    return fullPath;
+  }
 
   public void addClassification(final PdcClassification classification) {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentInstanceId())

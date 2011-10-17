@@ -45,9 +45,10 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
 
   @Override
   public String getLocalizedPath() {
-    String path = getTermTranslatedIn(getLanguage());
-    if (path.length() > MAX_NUMBER_OF_RENDERED_PATH_NODE) {
-      path = buildTruncatedPath(path);
+    String path = getMeaningTranslatedIn(getLanguage());
+    String[] pathNodes = path.split("/");
+    if (pathNodes.length > MAX_NUMBER_OF_RENDERED_PATH_NODE) {
+      path = buildTruncatedPath(pathNodes);
     }
     if (path.equals(SEPARATOR_PATH)) {
       path = "";
@@ -125,8 +126,7 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
     this.language = forLanguage;
   }
 
-  private String buildTruncatedPath(String path) {
-    String[] splitedPath = path.split("/");
+  private String buildTruncatedPath(String[] splitedPath) {
     int nodeCount = splitedPath.length;
     return buildPathBetween(splitedPath, 0, NUMBER_OF_RENDERED_PATH_NODE_IN_TRUNCATION)
             + SEPARATOR_PATH + TRUNCATION_SEPARATOR + SEPARATOR_PATH

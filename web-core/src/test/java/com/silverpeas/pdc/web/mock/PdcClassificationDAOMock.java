@@ -25,13 +25,18 @@ package com.silverpeas.pdc.web.mock;
 
 import com.silverpeas.pdc.dao.PdcClassificationDAO;
 import com.silverpeas.pdc.model.PdcClassification;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Named;
+import javax.persistence.EntityNotFoundException;
 import org.synyx.hades.domain.Page;
 import org.synyx.hades.domain.Pageable;
 import org.synyx.hades.domain.Sort;
 import org.synyx.hades.domain.Specification;
+import static com.silverpeas.pdc.model.PdcClassificationHelper.*;
 
 /**
  * Mock of the PdcClassification service bean
@@ -39,34 +44,68 @@ import org.synyx.hades.domain.Specification;
 @Named("pdcClassificationDAO")
 public class PdcClassificationDAOMock implements PdcClassificationDAO {
 
+  private Map<Long, PdcClassification> classifications =
+          new ConcurrentHashMap<Long, PdcClassification>();
+  private static long idCounter = 0l;
+
   @Override
   public PdcClassification findPredefinedClassificationByComponentInstanceId(String instanceId) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    PdcClassification foundClassification = null;
+    for (PdcClassification pdcClassification : classifications.values()) {
+      if (pdcClassification.isPredefinedForTheWholeComponentInstance() && pdcClassification.
+              getComponentInstanceId().equals(instanceId)) {
+        foundClassification = pdcClassification;
+        break;
+      }
+    }
+    return foundClassification;
   }
 
   @Override
   public PdcClassification findPredefinedClassificationByNodeId(String nodeId, String instanceId) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    PdcClassification foundClassification = null;
+    for (PdcClassification pdcClassification : classifications.values()) {
+      if (pdcClassification.isOnlyPredefinedForANode() && pdcClassification.getComponentInstanceId().
+              equals(instanceId) && pdcClassification.getNodeId().equals(nodeId)) {
+        foundClassification = pdcClassification;
+        break;
+      }
+    }
+    return foundClassification;
   }
 
   @Override
   public PdcClassification save(PdcClassification t) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    PdcClassification classification;
+    if (isPersisted(t)) {
+      classification = readByPrimaryKey(idOf(t));
+      classification.getPositions().clear();
+      classification.getPositions().addAll(t.getPositions());
+    } else {
+      classification = t;
+      setClassificationId(classification, idCounter++);
+    }
+    classifications.put(idOf(classification), classification);
+    return classification;
   }
 
   @Override
   public List<PdcClassification> save(Collection<? extends PdcClassification> clctn) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    List<PdcClassification> saved = new ArrayList<PdcClassification>();
+    for (PdcClassification pdcClassification : clctn) {
+      saved.add(save(pdcClassification));
+    }
+    return saved;
   }
 
   @Override
   public PdcClassification saveAndFlush(PdcClassification t) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return save(t);
   }
 
   @Override
   public PdcClassification readByPrimaryKey(Long pk) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return classifications.get(pk);
   }
 
   @Override
@@ -111,7 +150,11 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
 
   @Override
   public void delete(PdcClassification t) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if (isPersisted(t)) {
+      classifications.remove(idOf(t));
+    } else {
+      throw new EntityNotFoundException();
+    }
   }
 
   @Override
@@ -128,6 +171,4 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   public void flush() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
-  
-  
 }

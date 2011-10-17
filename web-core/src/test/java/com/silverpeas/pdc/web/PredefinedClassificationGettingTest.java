@@ -36,8 +36,7 @@ import static com.silverpeas.pdc.web.PdcTestResources.*;
 import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 
 /**
- *
- * @author mmoquillon
+ * Unit tests on the predefined classification web resources.
  */
 public class PredefinedClassificationGettingTest extends ResourceGettingTest<PdcTestResources> {
 
@@ -55,18 +54,18 @@ public class PredefinedClassificationGettingTest extends ResourceGettingTest<Pdc
     getTestResources().enableThesaurus();
   }
 
-  //@Test
-  public void getNoDefaultClassificationForAComponentInstance() {
+  @Test
+  public void getNoPredefinedClassificationForAComponentInstance() {
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
     assertThat(classification, is(undefined()));
   }
 
-  //@Test
-  public void getDefaultClassificationForANodeInAComponentInstance() throws Exception {
+  @Test
+  public void getPredefinedClassificationForANodeInAComponentInstance() throws Exception {
     PdcClassification theClassification =
-            aPdcClassification().onContent(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build();
-    getTestResources().save(theClassification);
+            aPdcClassification().forNode(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build();
+    getTestResources().savePredefined(theClassification);
     PdcClassificationEntity classification = getAt(NODE_DEFAULT_CLASSIFICATION_PATH,
             PdcClassificationEntity.class);
     assertNotNull(classification);
@@ -74,11 +73,11 @@ public class PredefinedClassificationGettingTest extends ResourceGettingTest<Pdc
     assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
   }
 
-  //@Test
-  public void getDefaultClassificationForAComponentInstance() throws Exception {
+  @Test
+  public void getPredefinedClassificationForAComponentInstance() throws Exception {
     PdcClassification theClassification =
             aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build();
-    getTestResources().save(theClassification);
+    getTestResources().savePredefined(theClassification);
     PdcClassificationEntity classification = getAt(COMPONENT_DEFAULT_CLASSIFICATION_PATH,
             PdcClassificationEntity.class);
     assertNotNull(classification);

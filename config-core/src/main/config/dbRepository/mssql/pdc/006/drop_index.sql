@@ -5,4 +5,3 @@ DROP INDEX SB_Pdc_Utilization.IN_SB_Pdc_Utilization_2;
 
 drop index IDX_PdcClassification_InstanceId;
 drop index IDX_PdcClassification_ContentId;
-drop index IDX_PdcAxisValue_ParentId;

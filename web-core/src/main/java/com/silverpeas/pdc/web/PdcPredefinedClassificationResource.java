@@ -77,20 +77,20 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   }
 
   /**
-   * Gets the default classification on the PdC that is set for the contents in the node identified
-   * by the query part of the request URI. If no node identifier is provided in the URI, the default
-   * classification set for the whole component instance is seeked.
+   * Gets the predefined classification on the PdC that is set for the contents in the node
+   * identified by the query part of the request URI. If no node identifier is provided in the URI,
+   * the predefined classification set for the whole component instance is seeked.
    * 
    * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
-   * contents of the component instance. If no default classification onto the PdC is defined
-   * for the requested node, a default classification is then looked backward among the parent
+   * contents of the component instance. If no predefined classification onto the PdC is defined
+   * for the requested node, a predefined one is then looked backward among the parent
    * nodes up to the component instance itself.
    * 
    * The PdC classification is sent back in JSON.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the requested resource, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return a web entity representing the requested default PdC classification. If no default 
+   * @return a web entity representing the requested predefined PdC classification. If no predefined 
    * classification is defined along the path of the nodes up to the component instance, then an
    * empty classification is sent back.
    */

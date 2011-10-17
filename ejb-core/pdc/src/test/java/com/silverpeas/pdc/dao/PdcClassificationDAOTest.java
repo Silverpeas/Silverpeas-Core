@@ -23,10 +23,8 @@
  */
 package com.silverpeas.pdc.dao;
 
-import java.util.List;
 import com.silverpeas.pdc.TestResources;
 import com.silverpeas.pdc.model.PdcClassification;
-import java.util.ArrayList;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
@@ -44,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static com.silverpeas.pdc.matchers.PdcClassificationMatcher.*;
-import static com.silverpeas.pdc.matchers.PdcClassificationListMatcher.*;
 
 /**
  * Unit tests on the different operations provided by the PdcClassification DAO.

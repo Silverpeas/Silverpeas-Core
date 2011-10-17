@@ -40,6 +40,7 @@ public class PdcClassificationBuilder {
 
   private String contentId;
   private String componentId;
+  private String nodeId;
 
   public static PdcClassificationBuilder aPdcClassification() {
     return new PdcClassificationBuilder();
@@ -57,6 +58,11 @@ public class PdcClassificationBuilder {
     this.contentId = contentId;
     return this;
   }
+  
+  public PdcClassificationBuilder forNode(String nodeId) {
+    this.nodeId = nodeId;
+    return this;
+  }
 
   public PdcClassificationBuilder inComponent(String componentId) {
     this.componentId = componentId;
@@ -69,6 +75,10 @@ public class PdcClassificationBuilder {
 
   public String getContentId() {
     return contentId;
+  }
+  
+  public String getNodeId() {
+    return nodeId;
   }
 
   private PdcClassificationBuilder() {
@@ -103,8 +113,14 @@ public class PdcClassificationBuilder {
     positionValues.add(classifyValue);  
     positions.add(new ClassifyPosition(positionValues));
     
-    return aClassificationFromPositions(positions).ofContent(contentId).inComponentInstance(
-            componentId);
+    PdcClassification classification = aClassificationFromPositions(positions).inComponentInstance(
+            getComponentId());
+    if (getContentId() != null) {
+      classification = classification.ofContent(getContentId());
+    } else if (getNodeId() != null) {
+      classification = classification.forNode(getNodeId());
+    }
+    return classification;
   }
 
   public PdcClassification buildWithNoSynonyms() {

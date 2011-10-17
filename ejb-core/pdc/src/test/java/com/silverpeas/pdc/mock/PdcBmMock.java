@@ -232,7 +232,14 @@ public class PdcBmMock implements PdcBm {
 
   @Override
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
-    throw new UnsupportedOperationException("Not supported yet.");
+    List<Value> fullPath = new ArrayList<Value>();
+    Value value = getValue(treeId, valueId);
+    fullPath.add(value);
+    while (value.hasFather()) {      
+      value = getValue(treeId, value.getFatherId());
+      fullPath.add(0, value);
+    }
+    return fullPath;
   }
 
   @Override
@@ -425,5 +432,10 @@ public class PdcBmMock implements PdcBm {
   @Override
   public void indexAllAxis() throws PdcException {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public String getTreeId(String axisId) throws PdcException {
+    return axisId;
   }
 }

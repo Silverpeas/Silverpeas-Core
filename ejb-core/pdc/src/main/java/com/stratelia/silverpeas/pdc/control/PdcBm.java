@@ -286,6 +286,8 @@ public interface PdcBm {
    */
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException;
 
+  public String getTreeId(String axisId) throws PdcException;
+  
   /**
    * ****************************************************************
    */

@@ -40,10 +40,10 @@ public interface TestConstants {
   static final String CONTENT_PDC_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "?contentId=" + CONTENT_ID;
   static final String PDC_PATH_WITH_NO_CONTENT = "pdc/" + COMPONENT_INSTANCE_ID;
   static final String NODE_DEFAULT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID
-          + "/default?nodeId=" + NODE_ID;
+          + "/classification?nodeId=" + NODE_ID;
   static final String COMPONENT_DEFAULT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID
-          + "/default";
-  static final String UNKNOWN_DEFAULT_CLASSIFICATION_PATH = "pdc/kmelia3/default";
+          + "/classification";
+  static final String UNKNOWN_DEFAULT_CLASSIFICATION_PATH = "pdc/kmelia3/classification";
   static final String UNKNOWN_CONTENT_PDC_PATH = "pdc/kmelia3?contentId=2";
   static final String UNKNOWN_CONTENT_CLASSIFICATION_PATH = "pdc/kmelia3/2";
   static final String FRENCH = "fr";

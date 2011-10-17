@@ -25,13 +25,16 @@ package com.silverpeas.pdc.model;
 
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -59,9 +62,12 @@ public class PdcAxisValue implements Serializable {
   private static final long serialVersionUID = 2345886411781136417L;
   @Id
   private Long id;
+  @Id
   private Long axisId;
   @Transient
   private TreeNode treeNode;
+  @Transient
+  private List<? extends TreeNode> treeNodeParents = null;
 
   /**
    * Creates a value of a PdC's axis from the specified tree node.
@@ -71,7 +77,18 @@ public class PdcAxisValue implements Serializable {
    * @return a PdC axis value.
    */
   public static PdcAxisValue aPdcAxisValueFromTreeNode(final TreeNode treeNode) {
-    return new PdcAxisValue().fromTreeNode(treeNode).inAxisId(treeNode.getTreeId());
+    try {
+      List<? extends TreeNode> parents = null;
+      if (treeNode.hasFather()) {
+        PdcBm pdcBm = getPdcBm();
+        parents = pdcBm.getFullPath(treeNode.getFatherId(), treeNode.getTreeId());
+      }
+      return new PdcAxisValue().fromTreeNode(treeNode).withAsTreeNodeParents(parents).
+              inAxisId(treeNode.getTreeId());
+    } catch (PdcException ex) {
+      throw new PdcRuntimeException(PdcAxisValue.class.getSimpleName()
+              + ".aPdcAxisValueFromTreeNode()", SilverpeasException.ERROR, ex.getMessage(), ex);
+    }
   }
 
   public String getId() {
@@ -103,7 +120,7 @@ public class PdcAxisValue implements Serializable {
       return Collections.unmodifiableSet(children);
     } catch (PdcException ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getChildValues()",
-                SilverpeasException.ERROR, ex.getMessage(), ex);
+              SilverpeasException.ERROR, ex.getMessage(), ex);
     }
   }
 
@@ -117,7 +134,9 @@ public class PdcAxisValue implements Serializable {
     PdcAxisValue parent = null;
     TreeNode node = getTreeNode();
     if (node.hasFather()) {
-      parent = new PdcAxisValue().withId(node.getFatherId()).inAxisId(getAxisId());
+      int lastNodeIndex = treeNodeParents.size() - 1;
+      parent = new PdcAxisValue().fromTreeNode(treeNodeParents.get(lastNodeIndex)).inAxisId(
+              getAxisId()).withAsTreeNodeParents(treeNodeParents.subList(0, lastNodeIndex));
     }
     return parent;
   }
@@ -168,15 +187,12 @@ public class PdcAxisValue implements Serializable {
    * equivalent to the call of the getMeaning() method.
    */
   public String getMeaningTranslatedIn(String language) {
-    String meaning, theLanguage = (language == null ? "" : language);
+    String meaning = "", theLanguage = (language == null ? "" : language);
     PdcAxisValue theParent = getParentValue();
-    if (theParent.isBaseValue()) {
-      UsedAxis axis = getUsedAxis();
-      meaning = axis._getAxisName(theLanguage);
-    } else {
-      meaning = theParent.getMeaningTranslatedIn(theLanguage) + " / " + getTerm();
+    if (theParent != null) {
+      meaning = theParent.getMeaningTranslatedIn(theLanguage) + " / ";
     }
-    return meaning;
+    return meaning + getTerm();
   }
 
   /**
@@ -185,7 +201,7 @@ public class PdcAxisValue implements Serializable {
    * @return the path of its value.
    */
   public String getValuePath() {
-    return getTreeNode().getPath() + "/" + getId();
+    return getTreeNode().getPath() + getId();
   }
 
   protected PdcAxisValue() {
@@ -198,7 +214,11 @@ public class PdcAxisValue implements Serializable {
   protected UsedAxis getUsedAxis() {
     try {
       PdcBm pdc = getPdcBm();
-      return pdc.getUsedAxis(getAxisId());
+      UsedAxis usedAxis = pdc.getUsedAxis(getAxisId());
+      AxisHeader axisHeader = pdc.getAxisHeader(getAxisId());
+      usedAxis._setAxisHeader(axisHeader);
+      usedAxis._setAxisName(axisHeader.getName());
+      return usedAxis;
     } catch (PdcException ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getUsedAxis()",
               SilverpeasException.ERROR, ex.getMessage(), ex);
@@ -207,13 +227,18 @@ public class PdcAxisValue implements Serializable {
 
   /**
    * Gets the persisted representation of this axis value.
+   * By the same way, the parents of this tree node are also set.
    * @return a tree node representing this axis value in the persistence layer.
    */
   protected TreeNode getTreeNode() {
-    if (this.treeNode == null) {
+    if (this.treeNode == null || this.treeNodeParents == null) {
       try {
         PdcBm pdc = getPdcBm();
-        this.treeNode = pdc.getValue(getAxisId(), getId());
+        String treeId = pdc.getTreeId(getAxisId());
+        List<? extends TreeNode> paths = pdc.getFullPath(getId(), treeId);
+        int lastNodeIndex = paths.size() - 1;
+        this.treeNode = paths.get(lastNodeIndex);
+        this.treeNodeParents = paths.subList(0, lastNodeIndex);
       } catch (PdcException ex) {
         throw new PdcRuntimeException(getClass().getSimpleName() + ".getTreeNode()",
                 SilverpeasException.ERROR, ex.getMessage(), ex);
@@ -225,7 +250,7 @@ public class PdcAxisValue implements Serializable {
   protected void setId(long id) {
     this.id = id;
   }
-  
+
   protected PdcAxisValue withId(String id) {
     this.id = Long.valueOf(id);
     return this;
@@ -239,6 +264,11 @@ public class PdcAxisValue implements Serializable {
   protected PdcAxisValue fromTreeNode(final TreeNode treeNode) {
     this.id = Long.valueOf(treeNode.getPK().getId());
     this.treeNode = treeNode;
+    return this;
+  }
+
+  protected PdcAxisValue withAsTreeNodeParents(final List<? extends TreeNode> parents) {
+    this.treeNodeParents = parents;
     return this;
   }
 
@@ -257,13 +287,22 @@ public class PdcAxisValue implements Serializable {
    */
   public ClassifyValue toClassifyValue() throws PdcException {
     ClassifyValue value = new ClassifyValue(Integer.valueOf(getAxisId()), getValuePath());
-    PdcBm pdcBm = getPdcBm();
-    String treeId = getAxisId();
-    value.setFullPath(pdcBm.getFullPath(getId(), treeId));
+    List<Value> fullPath = new ArrayList<Value>();
+    for (TreeNode aTreeNode : this.treeNodeParents) {
+      fullPath.add(new Value(aTreeNode.getPK().getId(), aTreeNode.getTreeId(), aTreeNode.getName(),
+              aTreeNode.getDescription(), aTreeNode.getCreationDate(),
+              aTreeNode.getCreatorId(), aTreeNode.getPath(), aTreeNode.getLevelNumber(), aTreeNode.
+              getOrderNumber(), aTreeNode.getFatherId()));
+    }
+    fullPath.add(new Value(this.treeNode.getPK().getId(), this.treeNode.getTreeId(), this.treeNode.
+            getName(), this.treeNode.getDescription(), this.treeNode.getCreationDate(),
+            this.treeNode.getCreatorId(), this.treeNode.getPath(), this.treeNode.getLevelNumber(),
+            this.treeNode.getOrderNumber(), this.treeNode.getFatherId()));
+    value.setFullPath(fullPath);
     return value;
   }
 
-  private PdcBm getPdcBm() {
+  private static PdcBm getPdcBm() {
     return PdcServiceFactory.getFactory().getPdcManager();
   }
 }

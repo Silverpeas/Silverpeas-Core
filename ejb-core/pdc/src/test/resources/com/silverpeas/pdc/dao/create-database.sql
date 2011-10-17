@@ -2,7 +2,7 @@
     create table PdcAxisValue (
         id bigint not null,
         axisId bigint,
-        primary key (id)
+        primary key (id, axisId)
     );
 
     create table PdcClassification (
@@ -29,7 +29,8 @@
     create table PdcPosition_PdcAxisValue (
         PdcPosition_id bigint not null,
         axisValues_id bigint not null,
-        primary key (PdcPosition_id, axisValues_id)
+        axisValues_axisId bigint not null,
+        primary key (PdcPosition_id, axisValues_id, axisValues_axisId)
     );
 
     alter table PdcClassification_PdcPosition 
@@ -44,8 +45,8 @@
 
     alter table PdcPosition_PdcAxisValue 
         add constraint FK978A70086C4C2BA9 
-        foreign key (axisValues_id) 
-        references PdcAxisValue;
+        foreign key (axisValues_id, axisValues_axisId) 
+        references PdcAxisValue(id, axisId);
 
     alter table PdcPosition_PdcAxisValue 
         add constraint FK978A70086022C209 

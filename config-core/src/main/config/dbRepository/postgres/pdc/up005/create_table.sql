@@ -1,7 +1,7 @@
 create table PdcAxisValue (
   id int8 not null,
   axisId int8,
-  primary key (id)
+  primary key (id, axisId)
 );
 
 create table PdcClassification (
@@ -28,7 +28,6 @@ create table PdcPosition (
 create table PdcPosition_PdcAxisValue (
   PdcPosition_id int8 not null,
   axisValues_id int8 not null,
-  primary key (PdcPosition_id, axisValues_id)
+  axisValues_axisId bigint not null,
+  primary key (PdcPosition_id, axisValues_id, axisValues_axisId)
 );
-
-create sequence hibernate_sequence;
