@@ -50,12 +50,6 @@ public interface SilverpeasContent extends Serializable {
   String getComponentInstanceId();
   
   /**
-   * Gets the URL at which this content can be retrieved.
-   * @return the URL of this content.
-   */
-  String getURL();
-  
-  /**
    * Gets the author that has created this content.
    * @return the detail about the user that created this content.
    */
@@ -73,4 +67,10 @@ public interface SilverpeasContent extends Serializable {
    * content.
    */
   String getTitle();
+  
+  /**
+   * Gets the type of this content.
+   * @return the resource type. This can be Post, Message, Publication, Survey...
+   */
+  String getContributionType();
 }

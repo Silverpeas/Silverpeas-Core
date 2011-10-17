@@ -277,7 +277,8 @@ out.println(gef.getLookStyleSheet());
   <div id="recherche">
     <div id="submitRecherche">
       <form name="searchForm" action="<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch" method="post" target="MyMain">
-      <input name="query" size="30" id="query"/><input type="hidden" name="mode" value="clear"/>
+      <input name="query" size="30" id="query"/>
+      <input type="hidden" name="mode" value="clear"/>
       <a href="javascript:searchEngine()"><img src="icons/silverpeasV5/px.gif" width="20" height="20" border="0" alt=""/></a>
       </form>
     </div>
@@ -392,7 +393,7 @@ out.println(gef.getLookStyleSheet());
                 <% } else {
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.logout"), "javaScript:logout();", false);
                 %>
-                    <table border="0" cellpadding="0" cellspacing="2">
+                    <table border="0" cellpadding="0" cellspacing="2" id="userNav">
                         <tr><td colspan="2" align="right"><%=helper.getUserFullName()%></td></tr>
                         <tr><td colspan="2" align="right"><%=button.print()%></td></tr>
                     </table>

@@ -24,18 +24,20 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.silverpeas.form.displayers.PdcFieldDisplayer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import com.silverpeas.form.displayers.PdcFieldDisplayer;
+import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 
 /**
  * Servlet used in Ajax mode to update the positions of a PDC field.
+ *
  * @author ahedin
  */
 public class PdcAjaxServlet extends HttpServlet {
@@ -44,17 +46,18 @@ public class PdcAjaxServlet extends HttpServlet {
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-   * @param request The HTPP request.
+   *
+   * @param request  The HTPP request.
    * @param response The HTTP response.
    * @throws ServletException if a servlet-specific error occurs.
-   * @throws IOException if an I/O error occurs.
+   * @throws IOException      if an I/O error occurs.
    */
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     String fieldName = request.getParameter("fieldName");
     String positions = request.getParameter("positions");
     String language = request.getParameter("language");
-    response.setContentType("text/html;charset=UTF-8");
+    response.setContentType(SERVLET_HTML_CONTENT_TYPE);
     PrintWriter out = response.getWriter();
 
     PdcFieldDisplayer displayer = new PdcFieldDisplayer();

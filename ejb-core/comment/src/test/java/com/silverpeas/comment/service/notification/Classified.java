@@ -32,16 +32,15 @@ import java.util.Date;
  */
 public class Classified implements SilverpeasContent {
   
+  private static final long serialVersionUID = -5162002893531236283L;
   private String id;
   private String instanceId;
-  private String url;
   private UserDetail author;
   private String title;
   
   public Classified(String id, String instanceId) {
     this.id = id;
     this.instanceId = instanceId;
-    this.url = "/silverpeas/classifieds/" + instanceId + "/" + id;
   }
 
   @Override
@@ -52,11 +51,6 @@ public class Classified implements SilverpeasContent {
   @Override
   public String getComponentInstanceId() {
     return instanceId;
-  }
-
-  @Override
-  public String getURL() {
-    return url;
   }
 
   @Override
@@ -82,6 +76,11 @@ public class Classified implements SilverpeasContent {
   @Override
   public Date getCreationDate() {
     return new Date();
+  }
+
+  @Override
+  public String getContributionType() {
+    return "Classified";
   }
   
 }

@@ -303,7 +303,7 @@ int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
 
-<script language="JavaScript1.2">
+<script type="text/javascript">
 var icWindow = window;
 
 // opens popup for entering request name
@@ -373,6 +373,7 @@ function positionOfInput(inputName){
 }
 
 function viewAdvancedSearch(){
+	$.progressMessage();
 	document.AdvancedSearch.submit();
 }
 
@@ -383,6 +384,7 @@ function viewSecondaryAxis(show){
 	} else {
 		document.AdvancedSearch.ShowSndSearchAxis.value = "NO";
 	}
+	$.progressMessage();
 	document.AdvancedSearch.submit();
 }
 
@@ -578,21 +580,22 @@ function deleteUser()
 <%
 if (!isPDCSubscription) {
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
-	if (searchType == 2)
-	{
+	if (searchType == 2) {
 		// affichage de l'icone voir les axes secondaires ou les cacher
-		if (secondaryAxis == null) {
+		if ("NO".equalsIgnoreCase(showSndSearchAxis)) {
 			operationPane.addOperation(resource.getIcon("pdcPeas.icoDisplaySecondaryAxis"), resource.getString("pdcPeas.showSecondaryAxis"), "javascript:viewSecondaryAxis(true)");
 		} else {
 			operationPane.addOperation(resource.getIcon("pdcPeas.icoDisplayPrimaryAxis"), resource.getString("pdcPeas.hideSecondaryAxis"), "javascript:viewSecondaryAxis(false)");
 		}
 	}
 
-	if (!activeSelection.booleanValue() && searchType >= 1)
+	if (!activeSelection.booleanValue() && searchType >= 1) {
 		operationPane.addOperation(resource.getIcon("pdcPeas.icoSaveAsInterestCenter"), resource.getString("pdcPeas.saveAsInterestCenter"), "javascript:saveAsInterestCenter()");
-
-	if (activeSelection.booleanValue() && !isEmptySearchContext)
+	}
+	
+	if (activeSelection.booleanValue() && !isEmptySearchContext) {
 		operationPane.addOperation(resource.getIcon("pdcPeas.icoSearchPubli"), resource.getString("pdcPeas.searchResult"), "javascript:sendSelectionQuery()");
+	}
 	
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "LastResults", searchType==0);

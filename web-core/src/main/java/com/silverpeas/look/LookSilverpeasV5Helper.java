@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -70,6 +71,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private boolean shouldDisplayContextualPDC = true;
   private boolean shouldDisplaySpaceIcons = true;
   private boolean shouldDisplayConnectedUsers = true;
+  private boolean displayPDCInHomePage = true;
   private List<TopItem> topItems = null;
   private List<String> topSpaceIds = null; // sublist of topItems
   private String mainFrame = "MainFrameSilverpeasV5.jsp";
@@ -217,6 +219,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     shouldDisplayContextualPDC = resources.getBoolean("displayContextualPDC", true);
     shouldDisplaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
     shouldDisplayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
+    displayPDCInHomePage = resources.getBoolean("displayPDCInHomePage", true);
     if (isAnonymousUser()) {
       displayUserMenu = UserMenuDisplay.DISABLE;
     } else {
@@ -269,6 +272,14 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public String getUserId() {
     return userId;
+  }
+  
+  public UserDetail getUserDetail() {
+    return orga.getUserDetail(userId);
+  }
+  
+  public UserFull getUserFull() {
+    return orga.getUserFull(userId);
   }
 
   /*
@@ -697,5 +708,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
       shortcuts.add(shortcut);
     }
     return shortcuts;
+  }
+
+  /**
+   * @return the displayPDCInHomePage
+   */
+  public boolean isDisplayPDCInHomePage() {
+    return displayPDCInHomePage;
   }
 }

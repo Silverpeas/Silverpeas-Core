@@ -642,6 +642,8 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("YearBegin", statsSC.getYearConnection(statsSC.getYearBegin()));
         request.setAttribute("MonthEnd", statsSC.getMonth(statsSC.getMonthEnd()));
         request.setAttribute("YearEnd", statsSC.getYearConnection(statsSC.getYearEnd()));
+        request.setAttribute("AxisId", axisId);
+        request.setAttribute("AxisValue", axisValue);
 
         destination = "/silverStatisticsPeas/jsp/viewAccessPDC.jsp";
       } else if (function.startsWith("ViewCrossPDCAccess")) {

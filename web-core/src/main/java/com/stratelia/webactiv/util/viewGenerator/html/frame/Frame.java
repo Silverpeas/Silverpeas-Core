@@ -22,15 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * Frame.java
- * 
- * Created on 27 march 2001, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.frame;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
@@ -57,11 +48,6 @@ public interface Frame extends SimpleGraphicElement {
    */
   public void addBottom(String bottom);
 
-  /**
-   * Print the Frame in an html format
-   * @return The Frame representation
-   */
-  public String print();
 
   /**
    * Method declaration

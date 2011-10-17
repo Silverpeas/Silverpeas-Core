@@ -177,7 +177,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	  }
 	  catch (e)
 	  {
-		  //frame named 'pdcFrame' does not exist
+		  //frame named 'topFrame' does not exist
 	  }
   }
 
@@ -186,7 +186,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	  if (displayContextualPDC) {
 		  try
 		  {
-			  top.pdcFrame.location.href=getFooterPage()+"spaces="+spaceId+"&componentSearch="+componentId+"&FromPDCFrame=true";
+			  top.pdcFrame.location.href=getFooterPage()+"spaces="+spaceId+"&componentSearch="+componentId+"&FromPDCFrame=true&ResetPDCContext=true";
 		  }
 		  catch (e)
 		  {

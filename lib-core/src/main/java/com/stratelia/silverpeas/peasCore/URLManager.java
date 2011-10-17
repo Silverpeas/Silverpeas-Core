@@ -25,6 +25,7 @@ package com.stratelia.silverpeas.peasCore;
 
 
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.util.ComponentHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -310,5 +311,10 @@ public class URLManager {
 
   public static String getSimpleURL(int type, String id, boolean appendContext) {
     return getSimpleURL(type, id, "", appendContext);
+  }
+  
+  public static String getSearchResultURL(SilverpeasContent content) {
+    return getURL(null, null, content.getComponentInstanceId()) + "searchResult?Type=" +
+        content.getContributionType() + "&Id=" + content.getId();
   }
 }

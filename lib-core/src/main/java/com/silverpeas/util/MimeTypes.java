@@ -28,7 +28,7 @@ import com.google.common.collect.Sets;
 import java.util.Set;
 
 public interface MimeTypes {
-
+  public final String SERVLET_HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
   public final String DEFAULT_MIME_TYPE = "application/octet-stream";
   public final String RTF_MIME_TYPE = "application/rtf";
   public final String PDF_MIME_TYPE = "application/pdf";
