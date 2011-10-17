@@ -442,6 +442,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         destination = "/pdcPeas/jsp/pdcInComponent.jsp";
       } else if (function.startsWith("ChangeSearchType")) {
         boolean setAdvancedSearchItems = processChangeSearchType(function, pdcSC, request);
+        
+        if (StringUtil.getBooleanValue(request.getParameter("ResetPDCContext"))) {
+          // remove PDC search context
+          pdcSC.removeAllCriterias();
+        }
 
         destination = doGlobalView(pdcSC, request, false, setAdvancedSearchItems);
       } else if (function.equals("ResetPDCContext")) {
@@ -992,6 +997,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     if ("clear".equals(mode)) {
       clearUserChoices(pdcSC);
     }
+    
     if (saveUserChoice) {
       PdcSearchRequestRouterHelper.saveUserChoices(pdcSC, request);
     }
@@ -1004,14 +1010,15 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_EXPERT) {
       HttpSession session = request.getSession(true);
       LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-      if (!helper.isDisplayPDCInHomePage() && !"clear".equals(request.getParameter("mode"))) {
-        // Be careful only the queryParameters object is up to date. The method pdcSC.getSpaceId()
-        // is sometimes wrong as the helper.getSpaceId()
-        if (StringUtil.isDefined(pdcSC.getQueryParameters().getSpaceId())) {
+      if (!StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
+        // Context is different of PDC frame, always process PDC axis
+        initializePdcAxis(pdcSC, request);
+      } else {
+        if (helper.isDisplayPDCInHomePage() ||
+            (!helper.isDisplayPDCInHomePage() && StringUtil.isDefined(pdcSC.getQueryParameters()
+                .getSpaceId()))) {
           initializePdcAxis(pdcSC, request);
         }
-      } else {
-        initializePdcAxis(pdcSC, request);
       }
     }
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_XML) {
