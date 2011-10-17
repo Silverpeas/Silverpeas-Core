@@ -23,13 +23,14 @@
  */
 package com.stratelia.webactiv.util.publication.model;
 
-import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.base.Objects;
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
@@ -63,7 +64,7 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface,
+public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface, SilverpeasContent,
     Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
@@ -114,6 +115,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
+  
+  public static final String TYPE = "Publication";
 
   /**
    * Constructeur par dÃ©faut: nÃ©cÃ©ssaire au mapping castor du module d'importExport
@@ -1204,5 +1207,15 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     int hash = 7;
     hash = 23 * hash + (this.pk != null ? this.pk.hashCode() : 0);
     return hash;
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return getPK().getInstanceId();
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
   }
 }

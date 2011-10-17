@@ -167,11 +167,6 @@ public class Comment implements SilverpeasContent {
   }
 
   @Override
-  public String getURL() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
   public String getId() {
     return pk.getId();
   }
@@ -184,5 +179,10 @@ public class Comment implements SilverpeasContent {
   private OrganizationController getOrganizationController() {
     OrganizationControllerFactory factory = OrganizationControllerFactory.getFactory();
     return factory.getOrganizationController();
+  }
+
+  @Override
+  public String getContributionType() {
+    return "Comment";
   }
 }

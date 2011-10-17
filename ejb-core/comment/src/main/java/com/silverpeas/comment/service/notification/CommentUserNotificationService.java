@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -242,7 +243,7 @@ public class CommentUserNotificationService extends CommentActionListener {
       templates.put(language, template);
       notifMetaData.addLanguage(language, getNotificationSubject(subjectKey, messages), "");
     }
-    notifMetaData.setLink(content.getURL());
+    notifMetaData.setLink(URLManager.getSearchResultURL(content));
     notifMetaData.setComponentId(aComment.getCommentPK().getInstanceId());
     notifMetaData.setSender(aComment.getCreator().getId());
 
