@@ -166,11 +166,11 @@
           </reportPlugins>
         </configuration>
       </plugin>
-      <!--
+<!--
       <plugin>
         <groupId>com.github.github</groupId>
         <artifactId>site-maven-plugin</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
         <configuration>
           <description>Creating site</description>
           <override>false</override>
@@ -185,9 +185,7 @@
             <phase>site</phase>
           </execution>
         </executions>
-      </plugin>
-      -->
-
+      </plugin>-->
     </plugins>
   </build>
 
