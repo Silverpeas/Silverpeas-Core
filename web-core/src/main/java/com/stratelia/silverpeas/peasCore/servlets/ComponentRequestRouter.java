@@ -24,15 +24,16 @@
 
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import java.util.Date;
 
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import java.util.Date;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -131,6 +132,9 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         "root.MSG_GEN_PARAM_VALUE", "spaceId= " + spaceId);
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
+
+    // Set gef space space identifier for dynamic look purpose
+    setGefSpaceId(request, componentId, spaceId);
 
     boolean isSpaceInMaintenance = mainSessionCtrl.isSpaceInMaintenance(spaceId);
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
@@ -249,8 +253,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
             .getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
-        }
-        else {
+        } else {
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination '"
@@ -327,8 +330,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     if (componentId == null) {
       session.setAttribute("Silverpeas_" + getSessionControlBeanName(),
           component);
-    }
-    else {
+    } else {
       session.setAttribute("Silverpeas_" + getSessionControlBeanName() + "_"
           + componentId, component);
     }
@@ -337,5 +339,32 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED", "spaceId=" + spaceId
         + " | componentId=" + componentId);
     return component;
+  }
+
+  /**
+* Set GEF and look helper space identifier
+* @param req current HttpServletRequest
+* @param componentId the component identifier
+*/
+  private void setGefSpaceId(HttpServletRequest req, String componentId, String spaceId) {
+    HttpSession session = req.getSession(true);
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+    if (StringUtil.isDefined(componentId)) {
+      if (gef != null && helper != null) {
+        helper.setComponentIdAndSpaceIds(null, null, componentId);
+        String helperSpaceId = helper.getSubSpaceId();
+        if (!StringUtil.isDefined(helperSpaceId)) {
+          helperSpaceId = helper.getSpaceId();
+        }
+        gef.setSpaceId(helperSpaceId);
+      }
+    } else if (StringUtil.isDefined(spaceId)) {
+      if (gef != null && helper != null) {
+        helper.setSpaceId(spaceId);
+        gef.setSpaceId(spaceId);
+      }
+    }
   }
 }
