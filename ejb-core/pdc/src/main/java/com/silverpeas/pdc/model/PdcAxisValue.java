@@ -232,17 +232,7 @@ public class PdcAxisValue implements Serializable {
    */
   protected TreeNode getTreeNode() {
     if (this.treeNode == null || this.treeNodeParents == null) {
-      try {
-        PdcBm pdc = getPdcBm();
-        String treeId = pdc.getTreeId(getAxisId());
-        List<? extends TreeNode> paths = pdc.getFullPath(getId(), treeId);
-        int lastNodeIndex = paths.size() - 1;
-        this.treeNode = paths.get(lastNodeIndex);
-        this.treeNodeParents = paths.subList(0, lastNodeIndex);
-      } catch (PdcException ex) {
-        throw new PdcRuntimeException(getClass().getSimpleName() + ".getTreeNode()",
-                SilverpeasException.ERROR, ex.getMessage(), ex);
-      }
+      loadTreeNodes();
     }
     return this.treeNode;
   }
@@ -286,20 +276,42 @@ public class PdcAxisValue implements Serializable {
    * instance.
    */
   public ClassifyValue toClassifyValue() throws PdcException {
-    ClassifyValue value = new ClassifyValue(Integer.valueOf(getAxisId()), getValuePath());
+    ClassifyValue value = new ClassifyValue(Integer.valueOf(getAxisId()), getValuePath() + "/");
     List<Value> fullPath = new ArrayList<Value>();
-    for (TreeNode aTreeNode : this.treeNodeParents) {
+    for (TreeNode aTreeNode : getTreeNodeParents()) {
       fullPath.add(new Value(aTreeNode.getPK().getId(), aTreeNode.getTreeId(), aTreeNode.getName(),
               aTreeNode.getDescription(), aTreeNode.getCreationDate(),
               aTreeNode.getCreatorId(), aTreeNode.getPath(), aTreeNode.getLevelNumber(), aTreeNode.
               getOrderNumber(), aTreeNode.getFatherId()));
     }
-    fullPath.add(new Value(this.treeNode.getPK().getId(), this.treeNode.getTreeId(), this.treeNode.
-            getName(), this.treeNode.getDescription(), this.treeNode.getCreationDate(),
-            this.treeNode.getCreatorId(), this.treeNode.getPath(), this.treeNode.getLevelNumber(),
-            this.treeNode.getOrderNumber(), this.treeNode.getFatherId()));
+    TreeNode lastValue = getTreeNode();
+    fullPath.add(new Value(lastValue.getPK().getId(), lastValue.getTreeId(), lastValue.
+            getName(), lastValue.getDescription(), lastValue.getCreationDate(),
+            lastValue.getCreatorId(), lastValue.getPath(), lastValue.getLevelNumber(),
+            lastValue.getOrderNumber(), lastValue.getFatherId()));
     value.setFullPath(fullPath);
     return value;
+  }
+
+  protected List<? extends TreeNode> getTreeNodeParents() {
+    if (this.treeNodeParents == null) {
+      loadTreeNodes();
+    }
+    return this.treeNodeParents;
+  }
+
+  private void loadTreeNodes() {
+    try {
+      PdcBm pdc = getPdcBm();
+      String treeId = pdc.getTreeId(getAxisId());
+      List<? extends TreeNode> paths = pdc.getFullPath(getId(), treeId);
+      int lastNodeIndex = paths.size() - 1;
+      this.treeNode = paths.get(lastNodeIndex);
+      this.treeNodeParents = paths.subList(0, lastNodeIndex);
+    } catch (PdcException ex) {
+      throw new PdcRuntimeException(getClass().getSimpleName() + ".loadTreeNodes()",
+              SilverpeasException.ERROR, ex.getMessage(), ex);
+    }
   }
 
   private static PdcBm getPdcBm() {

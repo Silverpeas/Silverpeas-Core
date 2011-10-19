@@ -24,8 +24,10 @@
 package com.silverpeas.pdc.model;
 
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -113,7 +115,7 @@ public class PdcPosition implements Serializable {
    * @throws PdcException if an error occurs while transforming this position.
    */
   public ClassifyPosition toClassifyPosition() throws PdcException {
-    ClassifyPosition position = new ClassifyPosition();
+    ClassifyPosition position = new ClassifyPosition(new ArrayList<ClassifyValue>());
     position.setPositionId(Integer.valueOf(getId()));
     for (PdcAxisValue pdcAxisValue : getValues()) {
       position.getValues().add(pdcAxisValue.toClassifyValue());

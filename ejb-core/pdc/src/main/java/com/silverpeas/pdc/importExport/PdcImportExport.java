@@ -21,11 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc.importExport;
 
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * Classe gérant la manipulation des axes du pdc pour le module d'importExport.
@@ -58,12 +60,25 @@ public class PdcImportExport {
    * @throws PdcException
    */
   public boolean addPositions(int silverObjectId, String componentId, PdcPositionsType positions)
-      throws PdcException {
+          throws PdcException {
+    return addPositions(silverObjectId, componentId, positions.getListClassifyPosition());
+  }
+
+  /**
+   * Classifies the specified content on the PdC with the specified classification positions.
+   * @param silverObjectId the unique identifier of the content in Silverpeas.
+   * @param componentId the unique identifier of the component instance managing the content.
+   * @param positions the positions on the PdC.
+   * @return the status of the content classification: true meaning the content is correctly 
+   * classified on the PdC, false meaning the content cannot be classified.
+   * @throws PdcException 
+   */
+  public boolean addPositions(int silverObjectId, String componentId,
+          List<ClassifyPosition> positions)
+          throws PdcException {
     boolean result = true;
-    List<ClassifyPosition> listPositions = positions.getListClassifyPosition();
-    // récupération des positions valides
-    List<ClassifyPosition> validPositions = getValidPositions(componentId, listPositions);
-    if (listPositions.size() != validPositions.size()) {
+    List<ClassifyPosition> validPositions = getValidPositions(silverObjectId, componentId, positions);
+    if (positions.size() != validPositions.size()) {
       result = false;
     }
     if (validPositions != null) {
@@ -72,19 +87,37 @@ public class PdcImportExport {
           getPdcBm().addPosition(silverObjectId, classifyPos, componentId);
         } catch (PdcException ex) {
           result = false;
-          SilverTrace.error("Pdc", "PdcImportExport.addPositions(int,String,PdcPositionsType)",
-              "Pdc.CANNOT_INSERT_VALUE", ex);
+          SilverTrace.error("Pdc", "PdcImportExport.addPositions(int,String,List<ClassifyPosition>)",
+                  "Pdc.CANNOT_INSERT_VALUE", ex);
         }
       }
     }
     return result;
   }
 
-  public List<ClassifyPosition> getValidPositions(String componentId,
-      List<ClassifyPosition> positions) throws PdcException {
+  /**
+   * Gets the predefined positions on the PdC with which a content that belongs to the specified
+   * node of the specified component instance should be classified.
+   * @param nodeId the unique identifier of the node in which the content is registered.
+   * @param componentId the unique identifier of the component instance that owns the node.
+   * @return the prefined classification.
+   */
+  public PdcClassification getPredefinedClassification(String nodeId, String componentId) {
+    PdcClassification classification;
+    if (isDefined(nodeId)) {
+      classification =
+              getPdcClassificationService().getPreDefinedClassification(nodeId, componentId);
+    } else {
+      classification = getPdcClassificationService().getPreDefinedClassification(componentId);
+    }
+    return classification;
+  }
+
+  public List<ClassifyPosition> getValidPositions(int silverObjectId, String componentId,
+          List<ClassifyPosition> positions) throws PdcException {
     List<ClassifyPosition> validPositions = new ArrayList<ClassifyPosition>();
-    // récupération des axes utilisés par le composant
-    List<UsedAxis> usedAxis = getPdcBm().getUsedAxisByInstanceId(componentId);
+    // récupération des axes à utiliser pour le classement
+    List<UsedAxis> usedAxis = getPdcBm().getUsedAxisToClassify(componentId, silverObjectId);
     if (usedAxis != null && !usedAxis.isEmpty()) {
       if (positions != null) {
         for (ClassifyPosition classifyPos : positions) {
@@ -174,7 +207,7 @@ public class PdcImportExport {
    * @throws PdcException
    */
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
-      throws PdcException {
+          throws PdcException {
     List<ClassifyPosition> list = getPdcBm().getPositions(silverObjectId, sComponentId);
     if (list.isEmpty()) {
       return null;
@@ -253,13 +286,11 @@ public class PdcImportExport {
     return listChildrenPdcValue;
   }
 
-  /**
-   * @return l'EJB PdcBm
-   */
   private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = new PdcBmImpl();
-    }
-    return pdcBm;
+    return PdcServiceFactory.getFactory().getPdcManager();
+  }
+
+  private PdcClassificationService getPdcClassificationService() {
+    return PdcServiceFactory.getFactory().getPdcClassificationService();
   }
 }
