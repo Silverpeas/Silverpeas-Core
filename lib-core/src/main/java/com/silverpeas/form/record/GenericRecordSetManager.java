@@ -393,6 +393,28 @@ public class GenericRecordSetManager {
       }
     }
   }
+  
+  public void moveRecord(IdentifiedRecordTemplate templateFrom,
+      String recordIdFrom, IdentifiedRecordTemplate templateTo) throws FormException {
+    SilverTrace.debug("form", "GenericRecordSetManager.moveRecord",
+        "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom);
+
+    GenericDataRecord record = (GenericDataRecord) getRecord(templateFrom, recordIdFrom);
+    if (record != null) {
+      Connection con = null;
+
+      try {
+        con = getConnection();
+        updateTemplateId(con, templateFrom.getInternalId(), templateTo.getInternalId(),
+            recordIdFrom);
+      } catch (SQLException e) {
+        throw new FormException("GenericRecordSetManager.moveRecord",
+            "form.CANT_MOVE_RECORD_FROM_TEMPLATE_TO_ANOTHER", e);
+      } finally {
+        closeConnection(con);
+      }
+    }
+  }
 
   /**
    * Save the DataRecord registered by the pair (templateId, recordId).
@@ -992,6 +1014,21 @@ public class GenericRecordSetManager {
       DBUtil.close(rs, select);
     }
   }
+  
+  private void updateTemplateId(Connection con, int oldTemplateId, int newTemplateId, String externalId)
+      throws SQLException, FormException {
+    PreparedStatement update = null;
+
+    try {
+      update = con.prepareStatement(MOVE_RECORD);
+      update.setInt(1, newTemplateId);
+      update.setString(2, externalId);
+      update.setInt(3, oldTemplateId);
+      update.execute();
+    } finally {
+      DBUtil.close(update);
+    }
+  }
 
   private void closeConnection(Connection con) throws FormException {
     if (con != null) {
@@ -1055,6 +1092,8 @@ public class GenericRecordSetManager {
 
   static final private String DELETE_RECORD = "delete from " + RECORD_TABLE
       + " where recordId=?";
+  
+  static final private String MOVE_RECORD = "update " + RECORD_TABLE +" set templateId = ? where externalId = ? and templateId = ? ";
 
   /* Record fields table */
 
