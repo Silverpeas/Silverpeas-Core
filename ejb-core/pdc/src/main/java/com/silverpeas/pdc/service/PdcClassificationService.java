@@ -23,8 +23,13 @@
  */
 package com.silverpeas.pdc.service;
 
+import java.util.List;
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.dao.PdcClassificationDAO;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -68,11 +73,13 @@ import static com.silverpeas.pdc.model.PdcClassification.*;
 @Named
 @Transactional
 public class PdcClassificationService {
-  
+
   @Inject
   private PdcClassificationDAO dao;
   private NodeBm nodeBm;
-  
+  @Inject
+  private PdcBm pdcBm;
+
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the specified
    * node of the specified component instance.
@@ -89,7 +96,7 @@ public class PdcClassificationService {
     try {
       PdcClassification classification = null;
       NodePK nodeToSeek = new NodePK(nodeId, instanceId);
-      while(classification == null && !nodeToSeek.isUndefined()) {
+      while (classification == null && !nodeToSeek.isUndefined()) {
         classification = dao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
                 nodeToSeek.getInstanceId());
         NodeDetail node = getNodeBm().getDetail(nodeToSeek);
@@ -101,13 +108,13 @@ public class PdcClassificationService {
       return classification;
     } catch (RemoteException ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getPreDefinedClassification()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-          ex);
-    } catch(Exception ex) {
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+              ex);
+    } catch (Exception ex) {
       throw new EntityNotFoundException(ex.getMessage());
     }
   }
-  
+
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the specified
    * managed by the specified component instance. This method is for the component instances that
@@ -120,13 +127,14 @@ public class PdcClassificationService {
    * published within the component instance or an empty classification.
    */
   public PdcClassification getPreDefinedClassification(String instanceId) {
-    PdcClassification classification = dao.findPredefinedClassificationByComponentInstanceId(instanceId);
+    PdcClassification classification = dao.findPredefinedClassificationByComponentInstanceId(
+            instanceId);
     if (classification == null) {
       classification = NONE_CLASSIFICATION;
     }
     return classification;
   }
-  
+
   /**
    * Saves the specified predefined classification on the PdC.
    * 
@@ -141,22 +149,53 @@ public class PdcClassificationService {
     }
     dao.saveAndFlush(classification);
   }
-  
+
+  /**
+   * Classifies the specified content on the PdC with the specified classification.
+   * The content must exist in Silverpeas before being classified.
+   * If an error occurs while classifying the content, a runtime exception PdcRuntimeException is
+   * thrown.
+   * @param content the Silverpeas content to classify.
+   * @param withClassification the classification with which the content is positioned on the PdC.
+   */
+  public void classifyContent(final SilverpeasContent content,
+          final PdcClassification withClassification) throws PdcRuntimeException {
+    List<ClassifyPosition> positions = withClassification.getClassifyPositions();
+    try {
+      for (ClassifyPosition classifyPosition : positions) {
+        int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
+        pdcBm.addPosition(silverObjectId, classifyPosition, content.getComponentInstanceId());
+      }
+    } catch (PdcException ex) {
+      throw new PdcRuntimeException(getClass().getSimpleName() + ".classifyContent()", ex.
+              getErrorLevel(), ex.getMessage(), ex);
+    }
+  }
+
+  /**
+   * A convenient method to enhance the readability of method calls.
+   * @param classification a classification on the PdC.
+   * @return the classification.
+   */
+  public static PdcClassification withClassification(final PdcClassification classification) {
+    return classification;
+  }
+
   protected NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
         NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+                JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
         nodeBm = home.create();
       } catch (Exception ex) {
         throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-          ex);
+                SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+                ex);
       }
     }
     return nodeBm;
   }
-  
+
   protected void setNodeBm(final NodeBm nodeBm) {
     this.nodeBm = nodeBm;
   }

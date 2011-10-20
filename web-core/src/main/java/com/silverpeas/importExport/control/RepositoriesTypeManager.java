@@ -237,10 +237,10 @@ public class RepositoriesTypeManager {
       }
 
       // Compute the classification on the PdC
-      PdcClassification classification = pdcIE.getPredefinedClassification(String.valueOf(topicId),
-              componentId);
-      int silverObjectId = Integer.valueOf(pubDetailToCreate.getSilverObjectId());
-      pdcIE.addPositions(silverObjectId, componentId, classification.getClassifyPositions());
+//      PdcClassification classification = pdcIE.getPredefinedClassification(String.valueOf(topicId),
+//              componentId);
+//      int silverObjectId = Integer.valueOf(pubDetailToCreate.getSilverObjectId());
+//      pdcIE.addPositions(silverObjectId, componentId, classification.getClassifyPositions());
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverTrace.error("importExport", "RepositoriesTypeManager.importFile()",

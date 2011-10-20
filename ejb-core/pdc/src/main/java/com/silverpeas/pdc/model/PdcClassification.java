@@ -68,7 +68,7 @@ import javax.validation.constraints.Size;
 public class PdcClassification implements Serializable {
 
   /**
-   * Represents an empty classification (id est no classification onto the PdC).
+   * Represents an empty classification (id est no classification on the PdC).
    */
   public static final PdcClassification NONE_CLASSIFICATION = new PdcClassification();
   private static final long serialVersionUID = 4032206628783381447L;
@@ -104,6 +104,14 @@ public class PdcClassification implements Serializable {
    */
   public Set<PdcPosition> getPositions() {
     return positions;
+  }
+  
+  /**
+   * Is this classification empty?
+   * @return true if this classification is an empty one, false otherwise.
+   */
+  public boolean isEmpty() {
+    return getPositions().isEmpty();
   }
 
   /**

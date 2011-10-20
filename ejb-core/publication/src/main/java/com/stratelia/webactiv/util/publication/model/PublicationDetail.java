@@ -1235,4 +1235,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getContributionType() {
     return TYPE;
   }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return getSilverObjectId();
+  }
 }
