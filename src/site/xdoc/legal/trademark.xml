@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>Trade Mark</title>
+  </properties>
+  <head>
+    <link rel="alternate" type="application/rdf+xml" href="http://www.gnu.org/licenses/agpl-3.0.rdf"> </link>
+  </head>
+  <body>  
+    <h2> 1. Authorized Use of the Silverpeas Trademark</h2>
+    <h3>A. Silverpeas   Logo</h3>
+    <p>Silverpeas has developed a  family of "Conditional Use" Logos for 
+      those who wish to show their  support for Silverpeas and its products 
+      and services by displaying  such a logo in the user interface of a 
+      website. The "Conditional Use"  Logos may be used without specific 
+      written permission from Silverpeas. under the following conditions: 
+    </p>
+    <ul type="disc">
+      <li>The use       must not be detrimental, i.e., harmful or damaging, 
+        to the value of any of       the Silverpeas. Marks, or to Silverpeas 
+        Software, its brand       integrity, reputation or goodwill, as 
+        determined by Silverpeas.       in its sole discretion; 
+      </li>
+      <li>The       Silverpeas logo must be a "clickable" link that       leads directly to http://www.silverpeas.com/. </li>
+      <li>If the       website has password-protected areas, the 
+        "Conditional Use" Logo       must be placed only in areas that are not 
+        password-protected 
+      </li>
+      <li>If used in       an application released under the GPL, LGPL, MPL,
+        Silverpeas Public License       or any other Open Source Initiative 
+        (http://www.opensource.org) recognized       open source license, the 
+        application must be able to connect directly to       an Silverpeas 
+        Software server 
+      </li>
+      <li>The       limited license given herein does not include the right 
+        to use any       Silverpeas  logo or any other Silverpeas Logo as a 
+        trademark to promote your own products or       services. For example, 
+        no Silverpeas logo may be used on any       product packaging or 
+        documentation, such as (without limitation) on CD-ROM       or diskette 
+        labels or packaging, books or other publications. Any such use       
+        must be expressly authorized by Silverpeas. in a signed,       written 
+        agreement; 
+      </li>
+    </ul>
+    <h3>B. General.</h3>
+    <p>As a general  rule, no person or entity may use (or authorize the use
+      of)  the Silverpeas logo in any manner other than as expressly 
+      authorized by Silverpeas in a written agreement. Silverpeas reserves the
+      right to revoke any such authorization at any time  in its sole 
+      discretion, such as where use does not strictly conform to the  
+      requirements of this Trademark Policy and/or Silverpeas written  
+      authorization. 
+    </p>
+    <h3>C. Publications, Lectures, PowerPoint &amp; Other  Presentations.</h3>
+    <p>Third Parties may use Silverpeas  Marks (except Silverpeas Logos) in 
+      the titles of publications, such  as books or magazines, or in 
+      connection with presentations, provided that the  use: (i) is 
+      referential only; (ii) does not use the Silverpeas. Mark  as a 
+      trademark; and (iii) complies with this Trademark Policy. Silverpeas 
+      Marks must always be attributed with the proper symbol and  footnoted, 
+      as explained below, on all publications and presentations that are  
+      displayed to the public (sales, trade shows etc). 
+    </p>
+    <p>Since the Silverpeas Marks are used in these instances only to  
+      describe the content of the publication or presentation and are not used
+      as  trademarks to promote your own products and services, you should 
+      not attempt to  establish trademark or other proprietary rights by 
+      registering, or attempting  to register, the titles as trademarks, 
+      service marks, corporate names or trade  names. In addition, your name 
+      or mark and logo should appear in a prominent  location on the cover and
+      title page of all publications and on all materials  related to the 
+      presentations and should appear more prominent than the title  
+      incorporating the Silverpeas Marks on all printed materials related  to 
+      the publications or presentations.
+    </p>
+    <p>Please note that this Section 1(F) only permits referential use of a 
+      Silverpeas Mark (except any Silverpeas Logo) - it does not permit  use 
+      of any Silverpeas Mark as a trademark. Without the express  prior 
+      written consent of Silverpeas. No Silverpeas Mark  may be used as a 
+      trademark to promote any publication, lecture or other  presentation. 
+    </p>
+    <h2> 2. Unauthorized Use of Silverpeas Marks.</h2>
+    <h3>A. General.</h3>
+    <p>Unauthorized use of the Silverpeas Marks or marks that are 
+      confusingly similar may constitute an infringement  of Silverpeas 
+      trademark rights and is strictly prohibited.  Without the express prior 
+      written consent of Silverpeas, no Silverpeas. Mark may be used in a 
+      manner that implies an affiliation with or  sponsorship by Silverpeas. 
+    </p>
+    <h3>B. Third Party Marks.</h3>
+    <p>Unless expressly authorized by Silverpeas in writing, third parties 
+      generally may not use any Silverpeas. Marks as part of their company 
+      names, trademarks or logos. In  other words, no person or entity may 
+      combine any Silverpeas. Mark  with any third party trademark without the
+      express prior written consent of Silverpeas.
+    </p> 
+              
+                
+    <p>No third party may name or rename a product or service of its own to 
+      include  the word "Silverpeas" without the express prior written  
+      consent of Silverpeas. Furthermore, no third party may claim any  right 
+      to register, or attempt to register, a trademark in any territory if the
+      trademark in question includes "Silverpeas" or is in some  other way 
+      similar to any Silverpeas Mark.
+    </p> 
+                  
+                    
+    <p>In the event that Silverpeas. authorizes any of the above uses in  
+      writing, the Silverpeas. Mark must be at least as large as the  
+      trademark or logo of the other company. 
+    </p>
+    <h3>C. Internet Domain Names.</h3>
+    <p>No third party may register or attempt to  register an Internet 
+      domain name that includes "Silverpeas" or  any of the Silverpeas. Marks 
+      or any marks that are confusingly  similar to the Silverpeas. Marks. in a
+      way that is detrimental,  i.e., harmful or damaging, to the value of 
+      any of the Silverpeas Marks,  or to Silverpeas., its brand integrity, 
+      reputation or goodwill, as  determined by Silverpeas in its sole 
+      discretion. 
+    </p>
+    <h3>D. Damaging Use.</h3>
+    <p>The Silverpeas Marks may not be  used in a manner or with respect to 
+      products that will decrease the value of  the Silverpeas Marks or 
+      otherwise impair or damage Silverpeas brand integrity, reputation or 
+      goodwill, including (without  limitation) use in a manner that is 
+      unethical, offensive, disparaging,  defamatory, illegal or in bad taste.
+    </p>
+    <h2> 3. Guidelines for  Use of Silverpeas Marks.</h2>
+    <h3>A. Silverpeas Mark Table.</h3>
+    <p>Listed below is the current Silverpeas logo. This list will be 
+      updated from time to time, at the sole  discretion of Silverpeas. In 
+      addition, Silverpeas may,  at its sole discretion, modify the Silverpeas
+      logo at any time.  Please refer to the Silverpeas Mark Table 
+      periodically to ensure  your compliance. 
+    </p>
+    <h5>The Silverpeas Logo:</h5>
+    <p align="left">
+      <img width="328" height="202" alt="Logo SP" src="../images/logo_SP.jpg"/>
+      The absence of a trademark, service mark, trade name or logo from this 
+      list  does not constitute a waiver of Alfresco Software Ltd.'s trademark
+      or other  intellectual property rights. 
+    </p>
+    <h4>B. Proper Trademark Use.</h4>
+    <p>Always use Silverpeas Marks as  proper adjectives. A trademark is an 
+      adjective and must not be used as a verb  or noun or in the possessive 
+      or plural forms.
+    </p> 
+    <p>Examples of Proper Use: Silverpeas software, Silverpeas  application, 
+      Silverpeas database server, Silverpeas database  management system, 
+      Silverpeas code, Silverpeas source code,   Silverpeas training, 
+      Silverpeas support, Silverpeas services, Silverpeas partner.
+    </p>
+    <p> 
+      Do not alter Silverpeas Marks. When using a SilverpeasMark, never vary
+      the spelling, add hyphens, make one word two, or use a  possessive or 
+      plural form of the SilverpeasMark. Do not abbreviate  a Silverpeas Mark 
+      to create an acronym.
+    </p> 
+                                          
+                                            
+    <p>When using a Silverpeas logo, you must never modify the design, add  
+      or delete any words, or change any colors or proportions. The logo may 
+      be  scaled proportionally. The logo may in its entirety be displayed in 
+      black on  white background OR in white on dark - black or one-coloured -
+      background. The  typesize of the trademark notice symbol may be 
+      adjusted. 
+    </p>
+                                              
+                                                
+    <p>The Silverpeas Logo must be used as a stand-alone icon in  accordance 
+      with this Trademark Policy, without any other third party logos  and/or 
+      trademarks combined or associated with it. At least a margin  
+      corresponding to the height of the "W" in the logo should be left  empty
+      around the logo in the background color of the displayed logo. No  
+      additional text or graphics may be placed in the margin except trademark
+      symbols and the words of logo versions specifically designed by 
+      Silverpeas. 
+    </p>
+                                                  
+                                                    
+    <p>Any SilverpeasLogo shall only be used in conjunction with Silverpeas 
+      products and services, except as specifically agreed in writing  by 
+      Silverpeas or in Section 1(A) above. 
+    </p>
+    <h4>C. Provide Trademark Notice Symbols.</h4>
+    <p>When using any Silverpeas Mark,  you should use the TM symbol. This 
+      symbol provides notice to third parties of Silverpeas rights in its 
+      Marks. 
+                                                      
+                                                        
+      Silverpeas. word marks must bear the trademark notice symbol TM in  
+      the first and most prominent usage of a mark and again in the first 
+      appearance  of a word mark in the text or body of copy. Notice symbols 
+      must always appear  with all Silverpeas Logos. Wherever possible, 
+      trademark notice  symbols should be superscripted immediately after all 
+      Silverpeas.  Marks. Once proper trademark notice symbols are used, and a
+      Silverpeas Mark is correctly attributed to Silverpeas.(as further  
+      explained below), in permitted materials, it is not ordinarily necessary
+      to  mark subsequent appearances of the trademark in the same text. 
+    </p>
+    <h3>D. Link to Alfresco Software Ltd. Website.</h3>
+    <p>All uses of a Silverpeas Logo,  such as the "Content managed by 
+      Silverpeas" Logo, in a user interface  should be linked from the logo to
+      <a href="http://www.silverpeas.com/">www.silverpeas.com</a>. 
+    </p>
+    <h2>4. General.</h2>
+    <h3>A. What is a trademark?</h3>
+    <p>A trademark is a word, phrase, symbol or  design, or a combination of
+      those things, that distinguishes one company's  products and services 
+      from the products and services of another. Thus, although  a trademark 
+      is a symbol of the source of a product or service, a trademark is  not 
+      the good or service itself. For example, Silverpeas brands its content  
+      management product and its other products and services using the 
+      Silverpeas trademark and the other trademarks, service marks, trade 
+      names, and  logos identified in Section 3(A) of this Trademark Policy 
+      (collectively, the  "Silverpeas Marks" or "Marks"). 
+    </p>
+                                                          
+                                                            
+    <p>A service mark is simply a trademark that identifies the source of a 
+      service. A  logo is a trademark that incorporates a design of some sort,
+      such as the Silverpeas Mark that includes the "turbine" design. A 
+      trademark is  not the same as a copyright or a patent. 
+    </p>
+    <h2>B. Trademarks and the Silverpeas Public License License.</h2>
+    <p>The Silverpeas Public License is one of the  ways by which Silverpeas
+      distributes Silverpeas product. TheSilverpeasPublic License permits 
+      third parties to use  and redistribute the underlying software under 
+      certain circumstances. Such use  and/or redistribution of 
+      Silverpeassoftware products are much  welcomed by Silverpeas, but should
+      be distinguished from the use of  the Silverpeas Marks. The Silverpeas 
+      Public License does not provide any  license or right to use any 
+      SilverpeasMark in any form or media.  Thus, although a Silverpeas Public
+      License licensee may redistribute the  underlying software, a 
+      Silverpeas Public License licensee may not use any Silverpeas Mark in 
+      doing so without the express prior written permission of Alfresco  
+      Software Ltd. Otherwise, users could be misled into thinking that 
+      revisions  made by a Silverpeas Public License licensee were created or 
+      endorsed by Silverpeas, or that those revisions met the quality control 
+      standards of Silverpeas. 
+    </p>
+    <h3>C. To whom does this Trademark Policy apply?</h3>
+    <p>This Trademark Policy applies to all of  Silverpeas authorized 
+      partners, authorized resellers, licensees,  customers, and users of 
+      Silverpeas products and services, or  products that incorporate 
+      Silverpeas products or services, as  well as other third parties who 
+      wish to use the Silverpeas Marks  (referred to as "Third Parties" or 
+      "you"). However, except  as expressly provided in Section 1(A) below, 
+      this Trademark Policy does not  constitute a license, implied or 
+      otherwise, to use any Silverpeas  Mark or the Silverpeas company name. 
+      Although we encourage use of  the Silverpeas "Conditional use logos" as 
+      provided in  Section 1(A) above, generally, no person or entity may use 
+      any Silverpeas Mark without the prior, express written permission of 
+      Silverpeas.
+    </p>
+                                                              
+                                                                
+    <p>By adhering to this Trademark Policy, you help Silverpeas to  prevent 
+      confusion in the marketplace and to protect and enhance the value and  
+      integrity of its Marks. Silverpeas appreciates your cooperation in  this
+      effort. 
+    </p>
+    <h2>5. Miscellaneous.</h2>
+    <h3>A. Third Party Licensors.</h3>
+    <p>Some Silverpeas products  include technology used under license from 
+      third party licensors. You must not  use any such third party trademark 
+      without express permission from the owner.  This Trademark Policy is 
+      limited to Silverpeas. Marks and does not  apply to marks owned by third
+      parties. 
+    </p>
+    <h4>B. Possible Infringements.</h4>
+    <p>Please report any possible infringement  and/or misuse of any Silverpeas Mark and/or a violation of this  Trademark Policy at 
+      <a href="mailto:info@silverpeas.com">info@silverpeas.com</a> 
+    </p>
+    <h3>6. Questions, Comments and Reports of Misuse.</h3>
+    <p>Please contact Silverpeas at the email   
+      <a href="mailto:info@silverpeas.com">info@silverpeas.com</a>.
+    </p>
+  </body>
+</document>

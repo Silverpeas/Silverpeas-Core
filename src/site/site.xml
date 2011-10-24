@@ -76,7 +76,7 @@ pageTracker._trackPageview();
       <item name="Code Quality" href="quality.html" collapse="false"/>
     </menu>
     <menu ref="reports" />
-    <menu name="SilverpeasConfiguration" inherit="none">
+    <menu name="Configuration" inherit="none">
       <item name="Security" href="securing.html"  collapse="true"/>
       <item name="Migration" href="migration.html"  collapse="true"/>
       <item name="Configuring a reverse-proxy" href="proxy.html"  collapse="true"/>
@@ -87,6 +87,12 @@ pageTracker._trackPageview();
       <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="true" />
       <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html" collapse="true" />
     </menu>
+    <menu name="Licensing" inherit="none">
+      <item name="License" href="legal/licensing_gnu_affero.html" collapse="false"/>
+      <item name="Licensing FAQ" href="legal/licensing_faq.html" collapse="false"/>
+      <item name="FLOSS Exception" href="legal/floss_exception.html"/>
+      <item name="Silverpeas Trade Mark" href="legal/trademark.html" collapse="false"/>
+    </menu>    
     <menu ref="modules" />
   </body>
 </project>
