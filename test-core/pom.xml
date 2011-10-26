@@ -10,7 +10,8 @@
   <groupId>com.silverpeas.core</groupId>
   <artifactId>test-core</artifactId>
   <packaging>jar</packaging>
-  <name>Test Core</name>
+  <name>Test Core</name> 
+  <description>A library that provides the common classes dedicated in the writing of tests for Silverpeas code.</description>
 
   <dependencies>
     <dependency>

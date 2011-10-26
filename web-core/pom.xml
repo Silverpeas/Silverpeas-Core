@@ -11,7 +11,8 @@
   <artifactId>web-core</artifactId>
   <packaging>jar</packaging>
   <name>Web Core Library</name>
-
+  <description>A module providing all the basic services of Silverpeas on which can we can build the Web GUI.</description>
+  
   <dependencies>
     <dependency>
       <groupId>javax.transaction</groupId>
