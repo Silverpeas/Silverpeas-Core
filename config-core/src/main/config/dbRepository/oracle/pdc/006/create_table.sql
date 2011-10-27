@@ -50,9 +50,9 @@ CREATE TABLE SB_Pdc_Group_Rights
 ;
 
 create table PdcAxisValue (
-  id number(19,0) not null,
+  valueId number(19,0) not null,
   axisId number(19,0),
-  primary key (id, axisId)
+  primary key (valueId, axisId)
 );
 
 create table PdcClassification (
@@ -78,7 +78,7 @@ create table PdcPosition (
 
 create table PdcPosition_PdcAxisValue (
   PdcPosition_id number(19,0) not null,
-  axisValues_id number(19,0) not null,
+  axisValues_valueId number(19,0) not null,
   axisValues_axisId number(19,0) not null,
-  primary key (PdcPosition_id, axisValues_id, axisValues_axisId)
+  primary key (PdcPosition_id, axisValues_valueId, axisValues_axisId)
 );

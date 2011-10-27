@@ -47,5 +47,4 @@ public class PdcClassificationHelper {
   public static void setClassificationId(final PdcClassification classification, long id) {
     classification.setId(id);
   }
-  
 }

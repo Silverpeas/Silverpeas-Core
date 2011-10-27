@@ -76,6 +76,8 @@ public class PdcClassification implements Serializable {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @NotNull
+  @Size(min=1)
   private Set<PdcPosition> positions = new HashSet<PdcPosition>();
   private boolean modifiable = true;
   @Column(nullable = false)
@@ -247,6 +249,15 @@ public class PdcClassification implements Serializable {
     this.id = id;
   }
 
+  /**
+   * Gets the unique identifier of this classification on the PdC.
+   * The identifier is set when the classification is persisted over the Silverpeas runtime. If the
+   * content this classification is about were at a time unclassified, then the identifier of the 
+   * classification isn't expected to be not the one of the previous classification as they are
+   * considered distinct objects (the previous classification was removed from the persistence
+   * context in Silverpeas).
+   * @return the classification unique identifier.
+   */
   protected Long getId() {
     return this.id;
   }

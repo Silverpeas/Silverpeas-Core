@@ -54,6 +54,10 @@ public class PdcBmMock implements PdcBm {
   public void addTreeNodes(final List<TreeNode> treeNodes) {
     this.treeNodes.addAll(treeNodes);
   }
+  
+  public void addTreeNode(final TreeNode treeNode) {
+    this.treeNodes.add(treeNode);
+  }
 
   @Override
   public List<AxisHeader> getAxisByType(String type) throws PdcException {

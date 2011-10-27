@@ -23,6 +23,7 @@
  */
 package com.silverpeas.pdc.service;
 
+import java.util.Set;
 import java.util.List;
 import com.silverpeas.pdc.TestResources;
 import com.silverpeas.pdc.dao.PdcClassificationDAO;
@@ -31,6 +32,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import org.junit.AfterClass;
@@ -40,6 +43,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.matchers.PdcClassificationMatcher.*;
 import static com.silverpeas.pdc.model.PdcClassification.*;
+import static com.silverpeas.pdc.model.PdcAxisValue.*;
 
 /**
  * Unit tests on the operations provided by the service on the PdC classification.
@@ -128,17 +132,35 @@ public class PdcClassificationServiceTest {
     String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
     service.getPreDefinedClassification(resources.unexistingNodeId(), componentInstanceId);
   }
-  
+
   @Test
   public void saveAPredefinedClassification() {
     String componentInstanceId = "kmelia1000";
     String nodeId = "1000";
+    TreeNode treeNode = resources.addTreeNode("7", "2", "-1", "Renaissance");
     PdcClassification classification = aPredefinedPdcClassification(componentInstanceId).forNode(
-            nodeId);
+            nodeId).withPosition(new PdcPosition().withValue(aPdcAxisValueFromTreeNode(treeNode)));
+    service.savePreDefinedClassification(classification);
+
+    PdcClassification saved = dao.findPredefinedClassificationByNodeId(nodeId, componentInstanceId);
+    assertThat(saved, notNullValue());
+    assertThat(saved, is(equalTo(classification)));
+  }
+  
+  @Test
+  public void updateAPredefinedClassification() {
+    String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
+    PdcClassification classification = resources.
+            predefinedClassificationForComponentInstance(componentInstanceId);
+    Set<PdcPosition> positions = classification.getPositions();
+    PdcPosition aPosition = positions.iterator().next();
+    positions.remove(aPosition);
+    
    service.savePreDefinedClassification(classification);
    
-   PdcClassification saved = dao.findPredefinedClassificationByNodeId(nodeId, componentInstanceId);
-   assertThat(saved, notNullValue());
-   assertThat(saved, is(equalTo(classification)));
+   PdcClassification updated = dao.findPredefinedClassificationByComponentInstanceId(
+           componentInstanceId);
+    assertThat(updated, notNullValue());
+    assertThat(updated, is(equalTo(classification)));
   }
 }

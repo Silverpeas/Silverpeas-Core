@@ -23,10 +23,10 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.dao.PdcClassificationDAO;
 import java.util.ArrayList;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.silverpeas.pdc.dao.PdcClassificationDAO;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import javax.inject.Named;

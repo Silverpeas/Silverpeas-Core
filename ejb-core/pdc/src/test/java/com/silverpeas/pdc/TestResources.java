@@ -25,6 +25,7 @@ package com.silverpeas.pdc;
 
 import com.silverpeas.pdc.mock.PdcBmMock;
 import com.silverpeas.pdc.service.PdcClassificationService;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import com.silverpeas.pdc.model.PdcAxisValue;
@@ -47,6 +48,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.springframework.test.util.ReflectionTestUtils;
 import static org.mockito.Mockito.*;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * It wraps the resources and the parameters to use in the unit tests
@@ -119,6 +121,22 @@ public final class TestResources {
     } catch (RemoteException ex) {
       Logger.getLogger(TestResources.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
+  
+  public TreeNode addTreeNode(String nodeId, String treeId, String parentNodeId, String label) {
+    TreeNode treeNode = null;
+    if (isDefined(parentNodeId) && !parentNodeId.equals("-1")) {
+      try {
+        TreeNode parent = pdcBmMock.getValue(treeId, parentNodeId);
+        treeNode = aTreeNodeWithParent(nodeId, label, parent);
+      } catch (PdcException ex) {
+        Logger.getLogger(TestResources.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    } else {
+      treeNode = aRootTreeNode(nodeId, label, treeId);
+    }
+    pdcBmMock.addTreeNode(treeNode);
+    return treeNode;
   }
 
   public String unexistingNodeId() {

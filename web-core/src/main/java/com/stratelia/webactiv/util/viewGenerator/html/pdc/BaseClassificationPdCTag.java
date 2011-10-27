@@ -47,9 +47,9 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   private static final long serialVersionUID = -486056418553072731L;
   /**
-   * The key with which is associated the resource locator carried in the request.
+   * The key with which is associated the language of the user carried in his session.
    */
-  private static final String RESOURCES_KEY = "resources";
+  private static final String LANGUAGE_KEY = "resources";
   /**
    * The identifier of the XHTML tag within which the PdC classification will be displayed.
    */
@@ -224,9 +224,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @throws JspTagException  if an error occurs while fetching the resources.
    */
   protected ResourcesWrapper getResources() throws JspTagException {
-    ResourcesWrapper resources = getRequestAttribute(RESOURCES_KEY);
-    String language = resources.getLanguage();
-    resources = new ResourcesWrapper(new ResourceLocator(
+    String language = getSessionAttribute(LANGUAGE_KEY);
+    ResourcesWrapper resources = new ResourcesWrapper(new ResourceLocator(
             "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
     return resources;
 
@@ -241,6 +240,9 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
         break;
       case CREATE_CLASSIFICATION:
         function = "create";
+        break;
+      case PREDEFINE_CLASSIFICATION:
+        function = "predefine";
         break;
       default:
         throw new JspTagException("The operation to invoke is null!");

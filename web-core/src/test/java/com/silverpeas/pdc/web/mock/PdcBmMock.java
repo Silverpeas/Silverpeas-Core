@@ -159,6 +159,11 @@ public class PdcBmMock extends PdcBmImpl {
     return fullPath;
   }
 
+  @Override
+  public String getTreeId(String axisId) throws PdcException {
+    return axisId;
+  }
+
   public void addClassification(final PdcClassification classification) {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentInstanceId())
             && (CONTENT_ID.equals(classification.getContentId()))) {

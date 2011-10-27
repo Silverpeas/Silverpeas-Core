@@ -23,7 +23,12 @@
  */
 package com.silverpeas.pdc.web;
 
+import java.net.URI;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.rest.RESTWebService;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -65,12 +70,12 @@ import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 @Scope("request")
 @Path("pdc/{componentId}/classification")
 public class PdcPredefinedClassificationResource extends RESTWebService {
-  
+
   @Inject
   private PdcServiceProvider pdcServiceProvider;
   @PathParam("componentId")
   private String componentId;
-  
+
   @Override
   protected String getComponentId() {
     return componentId;
@@ -100,17 +105,68 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
           @QueryParam("nodeId") String nodeId) {
     checkUserPriviledges();
     try {
-      return thePredefinedClassificationOfNode(nodeId);
+      return asWebEntity(pdcServiceProvider().getPredefinedClassificationForContentsIn(
+              nodeId, getComponentId()));
     } catch (PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
-  
-  private PdcClassificationEntity thePredefinedClassificationOfNode(String nodeId) throws Exception {
-    PdcClassification classification = pdcServiceProvider().getPreDefinedClassificationForContentsIn(
-            nodeId, getComponentId());
+
+  /**
+   * Adds a new predefined position on the PdC for the content that will be published at the specified
+   * URI (the URI identifies either a given node of a given component instance or a given component
+   * instance).
+   * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
+   * returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authorized to access the comment, a 403 is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param newPosition a web entity representing the PdC position to add. The entity is passed 
+   * within the request and it is serialized in JSON.
+   * @return the response with the status of the position adding and, in the case of a successful
+   * operation, the new PdC classification of the resource resulting of the position adding.
+   */
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response addPdcPosition(@QueryParam("nodeId") String nodeId,
+          final PdcPositionEntity newPosition) {
+    checkUserPriviledges();
+    if (newPosition.getPositionValues().isEmpty()) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
+    try {
+      PdcPosition positionToAdd = newPosition.toPdcPosition();
+      PdcClassification classification = getAnExistingOrCreateANewClassificationFor(nodeId,
+              getComponentId());
+      classification.getPositions().add(positionToAdd);
+      classification = pdcServiceProvider().saveOrUpdatePredefinedClassification(classification);
+      String positionId = positionToAdd.getId();
+      URI newPositionURI = getUriInfo().getRequestUriBuilder().path(positionId).build();
+      return Response.created(newPositionURI).entity(asWebEntity(classification)).build();
+    } catch (PdcException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  private PdcClassification getAnExistingOrCreateANewClassificationFor(String nodeId,
+          String componentId) throws PdcException {
+    PdcClassification classification = pdcServiceProvider().
+            getPredefinedClassificationForContentsIn(nodeId, getComponentId());
+    if (classification == PdcClassification.NONE_CLASSIFICATION) {
+      // by default a predefined classification cannot be modified when used to classify new contents.
+      classification = new PdcClassification().unmodifiable().forNode(nodeId).inComponentInstance(
+              componentId);
+    }
+    return classification;
+  }
+
+  private PdcClassificationEntity asWebEntity(final PdcClassification classification) throws
+          Exception {
     if (classification == PdcClassification.NONE_CLASSIFICATION) {
       return undefinedClassification();
     } else {
@@ -127,7 +183,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
       return theClassificationEntity;
     }
   }
-  
+
   private PdcServiceProvider pdcServiceProvider() {
     return pdcServiceProvider;
   }

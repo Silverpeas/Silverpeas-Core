@@ -123,6 +123,14 @@ public class PdcPositionEntity implements Exposable {
     }
     return new ClassifyPosition(positionId, classifyValues);
   }
+  
+  public PdcPosition toPdcPosition() {
+    PdcPosition position = new PdcPosition().withId(id);
+    for (PdcPositionValueEntity valueEntity : values) {
+      position.getValues().add(valueEntity.toPdcAxisValue());
+    }
+    return position;
+  }
 
   @Override
   public URI getURI() {

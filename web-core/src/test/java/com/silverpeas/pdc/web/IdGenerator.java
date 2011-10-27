@@ -21,29 +21,53 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.util.viewGenerator.html.pdc;
+package com.silverpeas.pdc.web;
 
 /**
- * The operations the tags on the PdC classification supports.
+ * A generator of identifiers to use by DAO mocks and by tests.
  */
-public enum PdcTagOperation {
+public class IdGenerator {
+  private static IdGenerator instance = new IdGenerator();
+  private static long classificationIdCounter = 0L;
+  private static long positionIdCounter = 0L;
+
+  public long nextPositionId() {
+    return positionIdCounter++;
+  }
+
+  public long nextClassificationId() {
+    return classificationIdCounter++;
+  }
   
-  /**
-   * Reads the classification on the PdC of a given content.
-   */
-  READ_CLASSIFICATION,
-  /**
-   * Opens the classification on the PdC of a given content. By opening this classification, the
-   * user can change it.
-   */
-  OPEN_CLASSIFICATION,
-  /**
-   * Creates a new classification on the PdC for a new or an existing content.
-   */
-  CREATE_CLASSIFICATION,
-  /**
-   * Predefines the classification on the PdC of contents that will published in a given node
-   * of a given component instance.
-   */
-  PREDEFINE_CLASSIFICATION;
+  public String nextPositionIdAsString() {
+    return String.valueOf(positionIdCounter++);
+  }
+
+  public String nextClassificationIdAsString() {
+    return String.valueOf(classificationIdCounter++);
+  }
+
+  public long lastUsedPositionId() {
+    return positionIdCounter - 1;
+  }
+
+  public long lastUsedClassificationId() {
+    return classificationIdCounter - 1;
+  }
+  
+  public String lastUsedPositionIdAsString() {
+    return String.valueOf(positionIdCounter - 1);
+  }
+
+  public String lastUsedClassificationIdAsString() {
+    return String.valueOf(classificationIdCounter - 1);
+  }
+  
+  public static IdGenerator getGenerator() {
+    return instance;
+  }
+  
+  private IdGenerator() {
+    
+  }
 }

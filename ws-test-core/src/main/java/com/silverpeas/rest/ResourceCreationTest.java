@@ -23,6 +23,8 @@
  */
 package com.silverpeas.rest;
 
+import javax.ws.rs.core.MultivaluedMap;
+import com.sun.jersey.api.client.WebResource;
 import java.util.UUID;
 import com.sun.jersey.api.client.ClientResponse;
 import javax.ws.rs.core.MediaType;
@@ -63,11 +65,25 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
    * @return the response of the post.
    */
   public <T> ClientResponse post(final T entity, String atURI) {
-    return resource().path(atURI).
+    String thePath = atURI;
+    WebResource resource = resource();
+    if (thePath.contains("?")) {
+      String[] pathParts = thePath.split("\\?");
+      String query = pathParts[1];
+      thePath = pathParts[0];
+      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
+      resource = resource.queryParams(parameters);
+    }
+    return resource.path(thePath).
             header(HTTP_SESSIONKEY, getSessionKey()).
             accept(MediaType.APPLICATION_JSON).
             type(MediaType.APPLICATION_JSON).
             post(ClientResponse.class, entity);
+//    return resource().path(atURI).
+//            header(HTTP_SESSIONKEY, getSessionKey()).
+//            accept(MediaType.APPLICATION_JSON).
+//            type(MediaType.APPLICATION_JSON).
+//            post(ClientResponse.class, entity);
   }
 
   @Test

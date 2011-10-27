@@ -25,10 +25,13 @@ package com.silverpeas.pdc.web.mock;
 
 import com.silverpeas.pdc.dao.PdcClassificationDAO;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.web.IdGenerator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
@@ -46,7 +49,12 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
 
   private Map<Long, PdcClassification> classifications =
           new ConcurrentHashMap<Long, PdcClassification>();
-  private static long idCounter = 0l;
+  private IdGenerator generator = null;
+  
+  public void setIdGenerator(IdGenerator generator) {
+    this.generator = generator;
+  }
+  
 
   @Override
   public PdcClassification findPredefinedClassificationByComponentInstanceId(String instanceId) {
@@ -79,12 +87,15 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
     PdcClassification classification;
     if (isPersisted(t)) {
       classification = readByPrimaryKey(idOf(t));
-      classification.getPositions().clear();
-      classification.getPositions().addAll(t.getPositions());
+      if (t != classification) {
+        classification.getPositions().clear();
+        classification.getPositions().addAll(t.getPositions());
+      }
     } else {
       classification = t;
-      setClassificationId(classification, idCounter++);
+      setClassificationId(classification, IdGenerator.getGenerator().nextClassificationId());
     }
+    setPositionsId(classification.getPositions());
     classifications.put(idOf(classification), classification);
     return classification;
   }
@@ -170,5 +181,13 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   @Override
   public void flush() {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  private void setPositionsId(Set<PdcPosition> positions) {
+    for (PdcPosition pdcPosition : positions) {
+      if (pdcPosition.getId() == null || Integer.parseInt(pdcPosition.getId()) < 0) {
+        pdcPosition.withId(IdGenerator.getGenerator().nextPositionIdAsString());
+      }
+    }
   }
 }

@@ -23,8 +23,12 @@
  */
 package com.silverpeas.pdc.dao;
 
+import java.util.Iterator;
 import com.silverpeas.pdc.TestResources;
+import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
@@ -42,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static com.silverpeas.pdc.matchers.PdcClassificationMatcher.*;
+import static com.silverpeas.pdc.model.PdcModelHelper.*;
 
 /**
  * Unit tests on the different operations provided by the PdcClassification DAO.
@@ -131,5 +136,39 @@ public class PdcClassificationDAOTest {
     PdcClassification thePredefinedClassification =
             dao.findPredefinedClassificationByNodeId(nodeId, componentInstanceId);
     assertThat(thePredefinedClassification, nullValue());
+  }
+
+  @Test
+  @Transactional
+  public void saveAnExistingPredefinedClassification() {
+    String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
+    PdcClassification theExistingClassification = resources.
+            predefinedClassificationForComponentInstance(componentInstanceId);
+    removeAValueFromAPosition(theExistingClassification);
+
+    PdcClassification expectedClassification = dao.saveAndFlush(theExistingClassification);
+    assertThat(idOf(theExistingClassification), is(idOf(expectedClassification)));
+
+    PdcClassification actualClassification =
+            dao.findPredefinedClassificationByComponentInstanceId(componentInstanceId);
+    assertThat(actualClassification, is(equalTo(expectedClassification)));
+
+    assertThat(actualClassification.getPositions().size(),
+            is(theExistingClassification.getPositions().size()));
+    Set<PdcAxisValue> actualValues =
+            actualClassification.getPositions().iterator().next().getValues();
+    Set<PdcAxisValue> existingValues = theExistingClassification.getPositions().iterator().next().
+            getValues();
+    assertThat(actualValues.size(), is(existingValues.size()));
+  }
+
+  private void removeAValueFromAPosition(final PdcClassification classification) {
+    for (PdcPosition position : classification.getPositions()) {
+      if (position.getValues().size() > 1) {
+        PdcAxisValue value = position.getValues().iterator().next();
+        position.getValues().remove(value);
+        break;
+      }
+    }
   }
 }

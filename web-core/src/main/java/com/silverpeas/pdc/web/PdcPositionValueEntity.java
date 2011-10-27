@@ -111,6 +111,14 @@ public class PdcPositionValueEntity extends PdcValueEntity {
     ClassifyValue value = new ClassifyValue(getAxisId(), getId());
     return value;
   }
+  
+  /**
+   * Gets the business value of a PdC's axis this entity represents.
+   * @return a PdcAxisValue instance.
+   */
+  public PdcAxisValue toPdcAxisValue() {
+    return PdcAxisValue.aPdcAxisValue(getTermId(), String.valueOf(getAxisId()));
+  }
 
   /**
    * Gets the meaning vehiculed by this value. If the value is a single term, then the
@@ -193,4 +201,5 @@ public class PdcPositionValueEntity extends PdcValueEntity {
     super(id, axisId);
     this.meaning = path;
   }
+
 }

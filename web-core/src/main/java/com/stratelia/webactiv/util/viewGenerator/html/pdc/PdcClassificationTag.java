@@ -26,6 +26,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A tag that renders the classification of a content on the PdC configured for the Silverpeas
@@ -34,7 +35,6 @@ import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation
 public class PdcClassificationTag extends BaseClassificationPdCTag {
 
   private static final long serialVersionUID = 3377113335947703561L;
-  
   private boolean editable = false;
 
   /**
@@ -58,10 +58,14 @@ public class PdcClassificationTag extends BaseClassificationPdCTag {
   @Override
   public void doTag() throws JspException {
     ElementContainer container;
-    if (isEditable()) {
-      container = invoke(OPEN_CLASSIFICATION);
+    if (isDefined(getContentId())) {
+      if (isEditable()) {
+        container = invoke(OPEN_CLASSIFICATION);
+      } else {
+        container = invoke(READ_CLASSIFICATION);
+      }
     } else {
-      container = invoke(READ_CLASSIFICATION);
+      container = invoke(PREDEFINE_CLASSIFICATION);
     }
     container.output(getOut());
   }

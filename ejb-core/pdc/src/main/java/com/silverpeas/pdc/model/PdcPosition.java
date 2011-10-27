@@ -31,12 +31,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A position of a content on some axis of the classification plan (named PdC). The positions of 
@@ -54,20 +58,38 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class PdcPosition implements Serializable {
+
   private static final long serialVersionUID = 665144316569539208L;
-  
   @Id
-  @GeneratedValue(strategy= GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-  
-  @OneToMany(fetch= FetchType.EAGER)
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @NotNull
+  @Size(min = 1)
   private Set<PdcAxisValue> axisValues = new HashSet<PdcAxisValue>();
 
   public PdcPosition() {
   }
 
   public String getId() {
-    return id.toString();
+    if (id != null) {
+      return id.toString();
+    } else {
+      return null;
+    }
+  }
+  
+  /**
+   * Sets the specified identifier to this position. If the identifier is null or empty, no
+   * identifier is set.
+   * @param id the unique identifier of the position.
+   * @return itself.
+   */
+  public PdcPosition withId(String id) {
+    if(isDefined(id)) {
+    this.id = Long.valueOf(id);
+    }
+    return this;
   }
 
   /**
@@ -78,7 +100,7 @@ public class PdcPosition implements Serializable {
   public Set<PdcAxisValue> getValues() {
     return axisValues;
   }
-  
+
   /**
    * Adds the specified value for this position.
    * @param value the value to add.
@@ -88,7 +110,7 @@ public class PdcPosition implements Serializable {
     axisValues.add(value);
     return this;
   }
-  
+
   /**
    * Adds the specified collection of values for this position.
    * @param values the collection of values to add.
@@ -98,7 +120,7 @@ public class PdcPosition implements Serializable {
     axisValues.addAll(values);
     return this;
   }
-  
+
   protected PdcPosition(long id) {
     this.id = id;
   }
@@ -107,7 +129,7 @@ public class PdcPosition implements Serializable {
   public String toString() {
     return "PdcPosition{" + "id=" + id + ", axisValues=" + axisValues + '}';
   }
-  
+
   /**
    * Converts this position to a ClassifyPosition instance. This method is for compatibility with
    * the old way to manage the classification.
@@ -116,7 +138,9 @@ public class PdcPosition implements Serializable {
    */
   public ClassifyPosition toClassifyPosition() throws PdcException {
     ClassifyPosition position = new ClassifyPosition(new ArrayList<ClassifyValue>());
-    position.setPositionId(Integer.valueOf(getId()));
+    if (getId() != null) {
+      position.setPositionId(Integer.valueOf(getId()));
+    }
     for (PdcAxisValue pdcAxisValue : getValues()) {
       position.getValues().add(pdcAxisValue.toClassifyValue());
     }

@@ -41,7 +41,7 @@ public class TestPdcClassification extends PdcClassification {
 
   private static final long serialVersionUID = 3802281273787399719L;
   private List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
-
+  
   public static PdcClassification aClassificationFromPositions(
           final List<ClassifyPosition> positions) {
     TestPdcClassification classification = new TestPdcClassification();
@@ -63,7 +63,7 @@ public class TestPdcClassification extends PdcClassification {
   private void buildPdcPositions() {
     ClassificationPlan pdc = aClassificationPlan();
     for (ClassifyPosition classifyPosition : positions) {
-      PdcPosition pdcPosition = newPdcPositionWithId((long)classifyPosition.getPositionId());
+      PdcPosition pdcPosition = newPdcPositionWithId((long) classifyPosition.getPositionId());
       for (ClassifyValue classifyValue : classifyPosition.getValues()) {
         String id =
                 classifyValue.getValue().substring(classifyValue.getValue().lastIndexOf("/") + 1);

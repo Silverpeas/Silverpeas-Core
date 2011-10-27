@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Transient;
 
 /**
@@ -57,11 +58,12 @@ import javax.persistence.Transient;
  * that is also a base value of the axis as it has no parent (one of the root values of the axis).
  */
 @Entity
+@IdClass(PdcAxisValuePk.class)
 public class PdcAxisValue implements Serializable {
 
   private static final long serialVersionUID = 2345886411781136417L;
   @Id
-  private Long id;
+  private Long valueId;
   @Id
   private Long axisId;
   @Transient
@@ -90,9 +92,22 @@ public class PdcAxisValue implements Serializable {
               + ".aPdcAxisValueFromTreeNode()", SilverpeasException.ERROR, ex.getMessage(), ex);
     }
   }
+  
+  /**
+   * Creates a value of a PdC's axis from the specified value information.
+   * Currently, an axis of the PdC is persited as an hierarchical tree in which each node is a value
+   * of the axis. The parameters refers the unique identifier of the node and in the tree related to
+   * the axis identifier.
+   * @param valueId the unique identifier of the existing value.
+   * @param axisId the unique identifier of the axis the value belongs to.
+   * @return a PdC axis value.
+   */
+  public static PdcAxisValue aPdcAxisValue(String valueId, String axisId) {
+    return new PdcAxisValue().withId(valueId).inAxisId(axisId);
+  }
 
   public String getId() {
-    return id.toString();
+    return valueId.toString();
   }
 
   /**
@@ -231,18 +246,18 @@ public class PdcAxisValue implements Serializable {
    * @return a tree node representing this axis value in the persistence layer.
    */
   protected TreeNode getTreeNode() {
-    if (this.treeNode == null || this.treeNodeParents == null) {
+    if (this.treeNode == null || (this.treeNodeParents == null && this.treeNode.hasFather())) {
       loadTreeNodes();
     }
     return this.treeNode;
   }
 
   protected void setId(long id) {
-    this.id = id;
+    this.valueId = id;
   }
 
   protected PdcAxisValue withId(String id) {
-    this.id = Long.valueOf(id);
+    this.valueId = Long.valueOf(id);
     return this;
   }
 
@@ -252,7 +267,7 @@ public class PdcAxisValue implements Serializable {
   }
 
   protected PdcAxisValue fromTreeNode(final TreeNode treeNode) {
-    this.id = Long.valueOf(treeNode.getPK().getId());
+    this.valueId = Long.valueOf(treeNode.getPK().getId());
     this.treeNode = treeNode;
     return this;
   }
@@ -285,8 +300,8 @@ public class PdcAxisValue implements Serializable {
               getOrderNumber(), aTreeNode.getFatherId()));
     }
     TreeNode lastValue = getTreeNode();
-    fullPath.add(new Value(lastValue.getPK().getId(), lastValue.getTreeId(), lastValue.
-            getName(), lastValue.getDescription(), lastValue.getCreationDate(),
+    fullPath.add(new Value(lastValue.getPK().getId(), lastValue.getTreeId(), lastValue.getName(),
+            lastValue.getDescription(), lastValue.getCreationDate(),
             lastValue.getCreatorId(), lastValue.getPath(), lastValue.getLevelNumber(),
             lastValue.getOrderNumber(), lastValue.getFatherId()));
     value.setFullPath(fullPath);

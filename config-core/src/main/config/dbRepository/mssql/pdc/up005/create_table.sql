@@ -1,7 +1,7 @@
 create table PdcAxisValue (
-  id numeric(19,0) not null,
+  valueId numeric(19,0) not null,
   axisId numeric(19,0) null,
-  primary key (id, axisId)
+  primary key (valueId, axisId)
 );
 
 create table PdcClassification (
@@ -27,7 +27,7 @@ create table PdcPosition (
 
 create table PdcPosition_PdcAxisValue (
   PdcPosition_id number(19,0) not null,
-  axisValues_id number(19,0) not null,
+  axisValues_valueId number(19,0) not null,
   axisValues_axisId number(19,0) not null,
-  primary key (PdcPosition_id, axisValues_id, axisValues_axisId)
+  primary key (PdcPosition_id, axisValues_valueId, axisValues_axisId)
 );

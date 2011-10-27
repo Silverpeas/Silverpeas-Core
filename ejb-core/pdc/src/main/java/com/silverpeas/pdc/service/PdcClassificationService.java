@@ -120,7 +120,7 @@ public class PdcClassificationService {
    * managed by the specified component instance. This method is for the component instances that
    * don't support the categorization.
    * 
-   * In the case no predefined classification isn't set for the whole component instance, an empty
+   * In the case no predefined classification isn't set for the whole component instance, a none
    * classification is then returned.
    * @param instanceId the unique identifier of the Silverpeas component instance.
    * @return a predefined classification on the PdC ready to be used to classify a content
@@ -136,18 +136,21 @@ public class PdcClassificationService {
   }
 
   /**
-   * Saves the specified predefined classification on the PdC.
+   * Saves the specified predefined classification on the PdC. If a predefined classification
+   * already exists for the node (if any) and the component instance to which this classification is
+   * related, then it is replaced by the specified one.
    * 
    * The node (if any) and the component instance for which this classification has to be saved
    * are indicated by the specified classification itself. If no node is refered by it, then the
    * predefined classification will serv for the whole component instance.
    * @param classification the predefined classification to register.
    */
-  public void savePreDefinedClassification(final PdcClassification classification) {
+  public PdcClassification savePreDefinedClassification(final PdcClassification classification) {
     if (!classification.isPredefined()) {
       throw new IllegalArgumentException("The classification isn't a predefined one");
     }
-    dao.saveAndFlush(classification);
+    PdcClassification savedClassification = dao.saveAndFlush(classification);
+    return savedClassification;
   }
 
   /**

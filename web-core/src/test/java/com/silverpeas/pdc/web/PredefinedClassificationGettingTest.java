@@ -104,7 +104,7 @@ public class PredefinedClassificationGettingTest extends ResourceGettingTest<Pdc
   public PdcClassificationEntity aResource() {
     PdcClassification theClassification =
             aPdcClassification().onContent(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build();
-    getTestResources().save(theClassification);
+    getTestResources().savePredefined(theClassification);
     PdcClassificationEntity entity = null;
     try {
       entity = theWebEntityOf(theClassification);
