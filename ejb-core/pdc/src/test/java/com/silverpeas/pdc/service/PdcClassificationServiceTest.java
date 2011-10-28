@@ -138,7 +138,7 @@ public class PdcClassificationServiceTest {
     String componentInstanceId = "kmelia1000";
     String nodeId = "1000";
     TreeNode treeNode = resources.addTreeNode("7", "2", "-1", "Renaissance");
-    PdcClassification classification = aPredefinedPdcClassification(componentInstanceId).forNode(
+    PdcClassification classification = aPredefinedPdcClassificationForComponentInstance(componentInstanceId).forNode(
             nodeId).withPosition(new PdcPosition().withValue(aPdcAxisValueFromTreeNode(treeNode)));
     service.savePreDefinedClassification(classification);
 

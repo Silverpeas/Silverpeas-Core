@@ -46,17 +46,20 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><fmt:message key="GML.PDCPredefinePositions"/></title>
+    <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <view:looknfeel />
   </head>
   <body>
-    <view:window>
+    <view:window browseBarVisible="false">
       <view:frame>
         <div id="header">
           <view:pdcPredefinedClassification componentId="${componentId}" nodeId="${nodeId}"/>
           &nbsp;
-          <view:buttonPane>
-            <view:button label="${close}" action="javascript: window.close();"/>
-          </view:buttonPane>
+          <center>
+            <view:buttonPane>
+              <view:button label="${close}" action="javascript: window.close();"/>
+            </view:buttonPane>
+          </center>
         </div>
       </view:frame>
     </view:window>

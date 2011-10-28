@@ -51,12 +51,14 @@ import javax.validation.constraints.Size;
  * 
  * A classification of a content is made up of one or more positions on the axis of the PdC. Each
  * position consists of one or several values on some PdC's axis. A classification cannot have two or
- * more identical positions; each of them must be unique.
+ * more identical positions; each of them must be unique. 
  * 
  * It can also represent, for a Silverpeas component instance or for a node in a component instance,
  * a predefined classification with which any published contents can be classified on the PdC. In
- * this case, the resourceId attribute, if not null, will refer a node in the Silverpeas component
- * instance for which the contents will be classified with the classification.
+ * this case, the contentId attribute is null.
+ * 
+ * A classification can be or not modifiable; by default, a predefined classification, that is used
+ * to classify new contents, is not modifiable whereas a classification of a content can be modified.
  */
 @Entity
 @NamedQueries({
@@ -77,7 +79,7 @@ public class PdcClassification implements Serializable {
   private Long id;
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   @NotNull
-  @Size(min=1)
+  @Size(min = 1)
   private Set<PdcPosition> positions = new HashSet<PdcPosition>();
   private boolean modifiable = true;
   @Column(nullable = false)
@@ -88,15 +90,31 @@ public class PdcClassification implements Serializable {
   private String nodeId = null;
 
   /**
-   * Creates a predefined classification for the new contents in the specified component instance.
+   * Creates an empty predefined classification for the contents that will published in the
+   * specified component instance.
    * By default, a predefined classification isn't modifiable and servs to classify automatically 
    * new contents published in the specied component instance.
    * @param instanceId the unique identifier of the component instance to which the predefined
    * classification will be attached.
-   * @return a predefined classification.
+   * @return an empty predefined classification.
    */
-  public static PdcClassification aPredefinedPdcClassification(String inComponentInstanceId) {
-    return new PdcClassification().unmodifiable().inComponentInstance(inComponentInstanceId);
+  public static PdcClassification aPredefinedPdcClassificationForComponentInstance(String instanceId) {
+    return new PdcClassification().unmodifiable().inComponentInstance(instanceId);
+  }
+
+  /**
+   * Creates an empty classification on the PdC of the specified content published in the specified
+   * component instance.
+   * By default, the classification of a content can be updated.
+   * @param contentId the unique identifier of the content to classify.
+   * @param inComponentInstanceId the unique identifier of the component instance in which the
+   * content is published.
+   * @return an empty classification on the PdC.
+   */
+  public static PdcClassification aPdcClassificationOfContent(String contentId,
+          String inComponentInstanceId) {
+    return new PdcClassification().modifiable().ofContent(contentId).inComponentInstance(
+            inComponentInstanceId);
   }
 
   /**
@@ -107,7 +125,7 @@ public class PdcClassification implements Serializable {
   public Set<PdcPosition> getPositions() {
     return positions;
   }
-  
+
   /**
    * Is this classification empty?
    * @return true if this classification is an empty one, false otherwise.
@@ -221,7 +239,7 @@ public class PdcClassification implements Serializable {
    * Creates an empty classification on the PdC, ready to be completed for a given content published
    * in a given component instance. By default, a classification of a content is modifiable.
    */
-  public PdcClassification() {
+  protected PdcClassification() {
   }
 
   /**
@@ -261,7 +279,7 @@ public class PdcClassification implements Serializable {
   protected Long getId() {
     return this.id;
   }
-  
+
   protected void setId(Long id) {
     this.id = id;
   }
@@ -296,7 +314,6 @@ public class PdcClassification implements Serializable {
           final Collection<ClassifyPosition> positions) {
     PdcClassification classification = new PdcClassification();
     for (ClassifyPosition aPosition : positions) {
-      
     }
     return classification;
   }

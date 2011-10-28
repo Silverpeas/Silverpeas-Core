@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static com.silverpeas.pdc.model.PdcClassification.*;
 import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
@@ -43,7 +44,7 @@ import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 
 /**
- * Unit tests on the predefined classification web resources.
+ * Unit tests on the adding of positions with a predefined classification web resources.
  */
 public class PredefinedClassificationPositionAddingTest extends ResourceCreationTest<PdcTestResources> {
 
@@ -75,8 +76,8 @@ public class PredefinedClassificationPositionAddingTest extends ResourceCreation
     assertThat(receivedStatus, is(created));
 
     String addedPositionId = IdGenerator.getGenerator().lastUsedPositionIdAsString();
-    PdcClassification newPredefinedClassification = new PdcClassification().unmodifiable().
-            inComponentInstance(COMPONENT_INSTANCE_ID).
+    PdcClassification newPredefinedClassification =
+            aPredefinedPdcClassificationForComponentInstance(COMPONENT_INSTANCE_ID).
             withPosition(newPdcPosition.toPdcPosition().withId(addedPositionId));
     assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(
             newPredefinedClassification)));
@@ -95,7 +96,7 @@ public class PredefinedClassificationPositionAddingTest extends ResourceCreation
     assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(
             theClassification)));
   }
-  
+
   @Test
   public void addingANewPdcPositionWithoutAnyValues() {
     ClientResponse response = post(aPdcPositionWithoutAnyValues(), at(aResourceURI()));
@@ -151,7 +152,7 @@ public class PredefinedClassificationPositionAddingTest extends ResourceCreation
     positionsValues.add(positionValue);
     return PdcPositionEntity.createNewPositionWith(positionsValues);
   }
-  
+
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
     ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
     return PdcPositionEntity.createNewPositionWith(positionsValues);
