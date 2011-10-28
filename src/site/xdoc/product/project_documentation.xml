@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Projects documentation</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head>
+    <title>Projects documentation</title>
+  </head>
+  <body>
+    <section name="Projects documentation">
+      <img align="right" src="images/applications/projet_uk.png" alt="" />
+      <ul>
+        <li>Each project can open it's dedicated workspace</li>
+        <li>Manage tasks &amp; ressources</li>
+        <li>Organize the project life cycle documentation </li>
+        <li>Organize the artefacts documentation</li>
+        <li>Meetings organization, sharing agendas</li>
+        <li>Put to work a technical Wiki</li>
+        <li>Blog and dashboard of the project</li>
+      </ul>
+    </section>
+  </body>
+</document>

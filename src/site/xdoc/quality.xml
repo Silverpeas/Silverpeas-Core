@@ -30,12 +30,11 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Collaborating to Silverpeas</title>
+    <title>Quality of Silverpeas code</title>
     <author>Emmanuel Hugonnet</author>
     <author>Miguel Moquillon</author>
   </properties>
   <head>
-    <title>Quality of Silverpeas code</title>
   </head>
   <body>
     <section name="Sonar">

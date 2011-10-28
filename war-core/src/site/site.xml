@@ -36,26 +36,27 @@
   <skin>
     <groupId>com.silverpeas.services</groupId>
     <artifactId>silverpeas-site-skin</artifactId>
-    <version>1.5</version>
+    <version>1.6-SNAPSHOT</version>
   </skin>
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans 6.8" href="http://netbeans.org/downloads/index.html" img="http://netbeans.org/images_www/collateral/68/netbeans-110x32.png" />
-    <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/eclipse_bckgr_logo_fc_xsm.jpg" />
-    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/maven-feather.png" />
-    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/zeroturnaround.gif" />
+    <logo name="Netbeans 7.0" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
+    <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
+    <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
+    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" />
+    <logo name="Izpack" href="http://izpack.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_izPack.png" />
   </poweredBy>
   <body>
     <head>
       <script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
       </script>
       <script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-2015926-3");
-pageTracker._trackPageview();
-} catch(err) {}
+        try {
+        var pageTracker = _gat._getTracker("UA-2015926-3");
+        pageTracker._trackPageview();
+        } catch(err) {}
       </script>
     </head>
     <breadcrumbs>

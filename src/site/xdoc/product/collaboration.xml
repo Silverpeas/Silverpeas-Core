@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Collaborative Tools</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head>
+    <title>Collaborative Tools</title>
+  </head>
+  <body>
+    <section name="Collaborative Tools">
+      <p>
+        <img align="right" src="../images/applications/tools_uk.png" alt="" />
+      </p>
+      <subsection name="Collaborative tools">
+          <ul>
+            <li>Silverpeas is a collaborative workspace, called a portal, which uses different on-line tools for the creation, exchange and management of information and documents in real time.</li>
+            <li>Silverpeas is not an open source brick structure but a true platform with portlet intergration, where all tools interact freely with each other.</li>
+          </ul>
+      </subsection>    
+      <subsection name="Tools via the application bus">
+          <ul>
+            <li>Working via the application bus, a wide choice of Silverpeas tools such as document workflow, image galleries, forums, surveys, as well as instant messaging, notifications and subscription, contribute to efficient daily work practices by feeding collaborative workspaces.
+            </li>
+          </ul>
+      </subsection>    
+      <subsection name="Working together">
+          <ul>
+            <li>In normal business, people work together for the production of goods or services.
+              However, in collaborative work, a less hierarchical structure is needed, being based on the Taylorist model of organisation.
+            </li>
+          </ul>
+      </subsection>  
+      <subsection name="Open access">
+          <ul>
+            <li>In this new organisational model, anyone can be involved by simply adding their own contribution and without having to re-build what has already been set up. </li>
+          </ul>
+      </subsection>    
+      <subsection name="Examples in practice">
+          <ul>
+            <li>
+              <u>Example 1: A production line</u>            
+              <p>A foreman analyses the efficiency of a production line. When a problem is found, the foreman and designer work together to propose a solution which can be implemented immediately. If the designer and foreman are located thousands of miles from each other, as is common these days, then alternative tools to the telephone can be used. In this situation, the collaborative platform really comes into its own.</p>
+            </li>          
+            <li>
+              <u>Example 2: Project management and validation </u>
+              <p>A user is involved in a project with a validation process. The workflow can be managed so the 'todo' list and schedule is fed with information and updated in realtime. This is particularly useful for meetings and staying in contact with up to the minute news.</p>
+            </li>          
+          </ul>
+      </subsection>
+    </section>
+  </body>
+</document>
+        

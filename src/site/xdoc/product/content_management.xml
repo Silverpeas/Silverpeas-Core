@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Content Management</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head>
+    <title>Content Management</title>
+  </head>
+  <body>
+    <section name="Content Management">
+      <p>
+        <img align="right" src="../images/applications/CMS_uk.png" alt="" />
+      </p>  
+      <ul>
+        <li>
+          <strong>Quick and simple uploading:</strong>
+        </li>
+        <li>With Silverpeas, users can  upload contents simply and quickly, directly to a website, without the need for specialist web or IT skills.</li>
+        <li>The web designer can build a website with standard tools (Adobe Dreamweaver®) and use a tag library for positioning the contents on pages (statically or dynamically).</li>
+        <li>
+          <strong>Dynamic contents:</strong>
+        </li>
+        <li>The web design is independent from the content format.</li>
+        <li>The content can be presented on different websites.</li>
+        <li>
+          <strong>Visibility and online display control:</strong>
+        </li>
+        <li>Using the classification scheme, it is possible to choose on which pages the content will be visible. Only content declared as 
+          <em>visible</em> on the web will be displayed on web pages.
+        </li>
+        <li>
+          <strong>Validation workflow:</strong>
+        </li>
+        <li>The publication process can be organised around a validation workflow.</li>
+      </ul>
+    </section>
+  </body>
+</document>

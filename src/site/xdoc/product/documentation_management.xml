@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Electronic Documentation Management</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head> 
+    <title>Electronic Documentation Management</title>
+  </head>
+  <body>
+    <section name="Electronic Documentation Management">
+      <p>   
+        <img align="right" src="../images/applications/edm_uk.png" alt="" />
+      </p>
+      <subsection name="XML">
+        <ul>        
+          <li>The silverpeasTM EDM allows content to be created from an XML form, where a metadata description of the publication is stored.</li>         
+          <li>The EDM is a complete WYSIWYG Open source editor, which allows text from MS Word to be copied and pasted without the loss of formatting.</li>       
+        </ul>  
+      </subsection>
+      <subsection name="Attached files by drag and drop">
+        <ul>        
+          <li>Files of any format (MS Office, Pdf etc) can be attached using drag and drop straight onto the web page. This is a simple way of publishing because silverpeasTM can exploit the file properties such as title or author. </li>       
+        </ul>   
+      </subsection>  
+      <subsection name="Validation workfklow">
+        <ul>        
+          <li>A publication can follow a simple validation workflow: Writer –> publisher –> reader</li>         
+          <li>A more complex workflow with multiple steps and parallel or conditional connections, is of course possible.</li>       
+        </ul>   
+      </subsection> 
+      <subsection name="Classification">
+        <ul>        
+          <li>Publications can also be classified using the classification scheme.</li>       
+        </ul>
+      </subsection>
+      <subsection name="Theme Tracker">
+        <ul>             
+          <li>The EDM service is called "Theme tracker", organized by themes and sub-themes.</li>               
+          <li>All users with authoring rights on a Theme Tracker, can fill in forms, place files and download all types of files.</li>               
+          <li>Authors can create new publications in each theme with an unlimited number of levels.</li>               
+          <li>When a file is deposited, it will be automoatically indexed if it not readable by the search engine.</li>               
+          <li>The following file formats are supported by our search engine: MSOffice, Open Office, text, rtf and html.</li>               
+          <li>Template creation and modification of form templates is carried out by platform administrators and described in XML.</li>               
+          <li>An administration tool allows platform administrators to automatically manage new forms.</li>               
+          <li>The digitalizing system outputs an XML file which is imported into Silverpeas by the same import engine used for the retrieval of basic information.</li>               
+          <li>Most silverpeasTM services allow information to be pushed. It can be used to notify all or a section of the users of a service.</li>               
+          <li>The notification engine allows all users to choose a channel through which the alerts will arrive. By default, notifications are sent via email, but there is also an internal notification box at silverpeas.</li>           
+        </ul>     
+      </subsection>
+    </section>
+    <section name="Life-cycle">
+      <subsection name="Workflow">
+        <ul>             
+          <li>By default, the documentation manager allows one level of validation. The workflow engine allows more complex procedures to be deployed. (see 
+            <a href="http://www.silverpeas.com/en/27/workflow/">Workflow</a> )
+          </li>           
+        </ul>    
+      </subsection>  
+      <subsection name="Status">
+        <ul>             
+          <li>By default, publications in the documentation manager can have 4 types of status:       
+            <ul>                   
+              <li> Draft </li>                  
+              <li> Awaiting validation </li>                  
+              <li> Validated</li>                  
+              <li>Refused</li>                 
+            </ul>         
+          </li>     
+          <li>In the case of a workflow engine, the status can be defined by the workflow creator. </li>     
+          <li>The workflow engine allow alerts to be sent if a time-out is reached at any stage. It is also possible  to change status. </li>             
+        </ul> 
+      </subsection>
+      <subsection name="Publication visibility">
+        <ul>             
+          <li>Publications have a visibility start and end date.</li>             
+          <li>By default, the visibility start date is the date of creation of the publication. By defalut, there is no defined end date. </li>             
+        </ul> 
+      </subsection>         
+    </section>
+    <section name="Indexation and searches">
+      <subsection name="Metadata">
+        <ul>             
+          <li>Form settings can be set by the platform administrator via an on-line tool.</li>             
+          <li>The fields available are: text, text zone, rich text, check boxes, radio buttons, drop-down lists, date, user, url, image and file. </li>             
+          <li>When a  form is defined, it is possible to make the fields required. The design of the form can also be modified using html styles.</li>             
+          <li>SilverpeasTM allows multiple language use for its forms.</li>             
+          <li>The choice of form to be associated with a publication can be restricted, according to the place where the information is placed.</li>             
+        </ul>         
+      </subsection>
+      <subsection name="Classification and taxonomy">
+        <ul>             
+          <li>Silverpeas allows a classification scheme to be common to the whole platform. However; its use can be limited according to the space or service used.</li>             
+          <li>The classification tree structure is visible in the navigation part of the application or accessible via the search engine. </li>             
+          <li>The classification scheme is exported in XML format by default.</li>             
+        </ul>     
+      </subsection>        
+      <subsection name="Indexing">
+        <ul>             
+          <li>The SilverpeasTM search engine uses the Lucene Open Source component from the Apache Jakarta project.</li>             
+          <li>The search function is accessible from the home page and is always available whilst the Silverpeas platform is being used. The search engine also includes a function which recalls the results of the last search. </li>             
+          <li>The basic search is used to search using a character chain, on the entire contents of the platform data (metadata and attached files).</li>             
+          <li>The advanced search can be limited to a collaborative space, a service, an author, to publication dates or the axes of the classification scheme.</li>             
+        </ul>    
+      </subsection>         
+      <subsection name="The search engine">   
+        <ul>             
+          <li>Searches can be made on a restricted document group via the advanced search interface</li>             
+          <li>ET, OU and SAUF operators can be used</li>             
+          <li>Truncation to the right is allowed</li>             
+          <li>Searching between commas is allowed</li>           
+        </ul>             
+        <p>These functions are available on the full-text search, as well as for the search fields on a form.</p>    
+        <ul>             
+          <li>Searching can be done on pre-defined fields of a form</li>             
+          <li>Full-text search on attached files is allowed</li>            
+        </ul>  
+      </subsection>       
+      <subsection name="Requests and results">    
+        <ul>             
+          <li>The platform can save a request submitted to the search engine.</li>             
+          <li>Searches can be launched again later with a simple click.</li>             
+          <li>The list of saved requests is accessible from the personal space or advanced search interface.</li>             
+          <li>Only the last search result is saved.</li>             
+        </ul>        
+      </subsection> 
+    </section>
+  </body>
+</document>

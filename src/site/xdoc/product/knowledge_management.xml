@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Knowledge Management</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head>
+    <title>Knowledge Management</title>
+  </head>
+  <body>
+    <section name="Knowledge Management">
+      <p>
+        <img align="right" src="../images/applications/km_uk.png" alt="" />
+      </p>        
+      <p>SilverpeasTM Knowledge Management is built around 3 components: </p>   
+      <ul>
+        <li>A directory of Experts</li>
+        <li>A notification system</li>
+        <li>A knowledge database</li>
+      </ul>      
+      <p>The components promote the sharing and localization of knowledge, and are directly related to the classification scheme by theme.
+      </p> 
+      <p>
+        Users can use an existing axis to classify their questions.
+      </p> 
+      <p>
+        Users identified as competent experts on themes, receive notifications and can publish their answers.
+      </p> 
+      <p>
+        The knowledge base can be consulted by readers with read rights. Component animators are in charge of closing and moving exchanges.
+      </p> 
+      <p>
+        The knowledge base component allows the FAQ tree structure to be organised by theme.
+      </p> 
+      <p>
+        FAQ can be accessed via the tree structre or the search engine.
+      </p> 
+      <p>
+        The components' settings can be adjusted using a simple administration interface needing only basic IT skills.
+      </p> 
+      <p>
+        Associating components with the Experts directory:
+      </p> 
+      <p>
+        By associating the components with the experts directory, all parts can be associated to a technical expert, with the authorization to contribute and answer questions according to their field of expertise
+      </p> 
+      <p>
+        The Experts directory allows employees to be classified according to their skills, in association with classification plan. Experts are immediately identified and localized.
+      </p>
+    </section>
+  </body>
+</document>

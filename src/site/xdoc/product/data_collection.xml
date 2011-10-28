@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Data Collection</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head> 
+    <title>Data Collection</title>
+  </head>
+  <body>
+    <section name="Data Collection">
+      <p>
+        <img align="right" src="../images/applications/dca_uk.png" alt="" />
+      </p>
+      <ul>
+        <li>Gathering, checking, and aggregation of datas,</li>
+        <li>Formatting datas</li>
+        <li>Access rights management</li>
+        <li>Datas delivery, graphic generation</li>
+        <li>Datas monitoring and control</li>
+      </ul>
+      <p>DCA is a turnkey system to gather, control, monitor, and aggregate datas.
+        Data are sent via a web connection (mobile terminal, GPRS or wired connection) and are received via the protocol FTP. Flow of datas can be sent as XML or. Csv format.
+      </p>
+      <subsection name="Checking and collecting data">
+        <p>Datas are checked according to rules settings, and feed an error log. They are then ranked in points (sites) of measurement. It is possible to configure the structure of data collection points :</p>
+        <ul>
+          <li>Several devices or instruments for collection points</li>
+          <li>Organizational structure of collection points (such as a network of collection points).</li>
+        </ul>
+      </subsection> 
+      <subsection name="Formatting data">
+        <p>In the Graphic User Interface, it is possible to select data, then create charts and graphs upon time slots. It is also possible to attach documents (photos, scans ...) and to attach them in areas of measurement. These documents contain metadata (records) and the publisher may choose to make them available for specific people,  groups or evrybody (people who can access to the portal).
+        </p> 
+        <p>
+          The portal has a search engine to find the proper documents (by keyword or topic). Connection to the service DCA uses secure mode (https) via a web browser after authentication (username and password).
+        </p> 
+        <p>
+          There are three levels of access rights:
+        </p>
+        <ul>
+          <li>Observer (read only)</li>
+          <li>User (data changes and actions)</li>
+          <li>Administrator (settings management)</li>
+        </ul>
+      </subsection>
+      <subsection name="Availability of data">        
+        <p>Datas can be prompted via the Web GUI of DCA. Ergonomy is intuitive.  Datas are stored in a SQL database that can be encrypted. Old datas can be automatically archived.</p>
+      </subsection>
+      <subsection name="Datas monitoring">
+        <p>Datas can be checked by the "Data Warning" ® service, that schedules checking at regular intervals (every minute, every hour, every day ...). If abnormal values are detected, users are notified via various channels : sms e-mail, etc).</p>    
+      </subsection>
+    </section>
+  </body>
+</document>

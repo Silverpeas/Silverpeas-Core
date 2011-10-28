@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Applications</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head>
+    <title>Applications</title>
+  </head>
+  <body>
+    <section name="Applications">
+      <p>There are many players in the collaborative market, who can be broken down into 7 categories:</p>
+      <ul>   
+        <li>The majors such as Microsoft (Sharepoint), IBM (Quick’R), or Oracle (Collaboration suite),</li>
+        <li>The portals such as Plumtree or Vignette,</li>        
+        <li>The collaborative “bricks” associated with a EDM, such as Documentum’s eRoom or Livelink, or ERP such as Netweaver from SAP.</li>        
+        <li>Integrated Opensource such as Afresco, Exo, Jahia or Silverpeas</li>        
+        <li>Hosted Saas (software as a service) such as Google or Yahoo</li>        
+        <li>Open source specialists (best of breed) : shared diaries, wikis, blogs and search engines</li>        
+        <li>All the rest, based on or around groupware, such as Lotus Notes, Exchange, or Groupwise or even WCM (Web Content Management). </li>       
+      </ul>
+      <p>According to our assessment, only the first 5 categories are likely to realistically evolve into collaborative platforms worthy of the name. Most of these platforms can be permanently installed or made available in ASP mode.
+      </p> 
+      <p>
+        The free SaaS model has confidentiality problems concerning the exchange of information and cannot be considered as part of an industrial model.
+      </p> 
+      <p>
+        Ownership is limited  for this type of collaborative software, to buying a license or distribution rights. This market typically involves the open source community and often means paying for support and maintenance.
+      </p> 
+      <p>
+        Software editors have to be financially inventive to turn their investment into profit.
+        For example: a free beta version, a licensed stabilised version, advertising banners with free versions or a monthly rent in ASP mode.
+      </p> 
+      <p>
+        Aside from the free SaaS versions financed by advertising, the cost of owning a limited monthly license can range from a minimum of 2-5€ up to a maximum of 50-80€.
+      </p> 
+      <p>
+        We believe the most viable solutions include:   
+      </p>
+      <ul>
+        <li>Intuitive: where little or no training is needed</li>
+        <li>Integrated:  (rather than the Open-source brick-assembly model, which uses non-homogeneous ergonomy and sets up a distinct authentification process making search engines inefficient)</li>
+        <li>Service architecture based (SOA): allowing new services or functions to be added in a "mix" </li>
+        <li>Flexible and upgradable: allowing users to deploy their tools one after the other, according to need and use</li>
+        <li>Inter-changeable and inter-operable with the type of information stockage used and the respect of market standards (XML, JSR, SOA, etc.).</li>
+      </ul>
+    </section>
+  </body>
+</document>
