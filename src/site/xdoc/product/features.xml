@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Key Features of Silverpeas</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Aurore Allibe</author>
+  </properties>
+  <head>
+    <title>Key Features of Silverpeas</title>
+  </head>
+  <body>
+    <section name="Key features">
+      <p>
+        <img src="../images/applications/intranet_uk.png" alt="intranet" align="right" />
+      </p>
+      <ul>
+        <li>A "turnkey" web platform</li>
+        <li>More than 30 applications ready to use</li>        
+        <li>Easy structuring of collaborative work spaces</li>        
+        <li>Deployment as needed of applications in workspaces</li>        
+        <li>Strong technical architecture (data storage, application server, reverse proxy, LDAP synchronization, secure authentication, etc)</li>
+      </ul>
+      <p>
+        <a href="http://www.silverpeas.com">
+          <strong>Silverpeas</strong>
+        </a> is the editor of the Silverpeas Open source collaborative portal (under 
+        <a href="http://www.silverpeas.org/legal/1.licensing_gnu_affero.html">GNU Affero GPL V3</a>) developed in Java™.
+      </p>   
+      <subsection name="Classification and organisation">
+        <p>Silverpeas is used to classify the contents on themes, independant of the spaces and folders in which they are stored and to for subscribing to themes.</p>
+      </subsection>
+      <subsection name="User interface">
+        <p>The user interface has: </p>
+        <ul>
+          <li>simplified WYSIWYG interface for editing</li>
+          <li>an access to the portal via the Web browser</li>
+          <li>personalised tools for the workspacel</li>
+          <li>multilingual interfaces and glossaries (fr/en)</li>
+        </ul>
+      </subsection>
+      <subsection name="Operating Systems">
+        <p>Silverpeas operates under: </p>
+        <ul>
+          <li>Windows™ 
+            <img src="http://www.silverpeas.org/images/windows_logo_24X24.png" alt="" width="16" height="16" />
+          </li>
+          <li>MacOS X™ 
+            <img src="http://www.silverpeas.org/images/macos_logo_24X24.gif" alt="" width="16" height="16" />
+          </li>
+          <li>Linux 
+            <img src="http://www.silverpeas.org/images/linux_logo_24X24.png" alt="" width="16" height="16" />,
+          </li>
+          <li>with a relational database (SQL ANSI like Postgresql 
+            <img src="http://www.silverpeas.org/images/postgresql_logo_24X24.png" alt="" width="16" height="16" />), and a Java EE™ application server.
+          </li>
+        </ul>
+      </subsection>
+      <subsection name="Compatibility">
+        <p>Silverpeas is compatible with the Portlet specifications: 
+          <a href="http://jcp.org/en/jsr/detail?id=168">JSR 168</a> and 
+          <a href="http://jcp.org/en/jsr/detail?id=286">286</a>.
+        </p>
+        <p>It runs on a JDK 6 
+          <img src="http://www.silverpeas.org/images/java_logo_24X24.png" alt="" width="16" height="16" /> with a J2EE 1.4 Application server.
+        </p>
+      </subsection>
+      <subsection name="Software version">
+        <p>The latest available version is ${installer_stable_version} that you can download from the 
+          <a href="../installation.html">installation page</a>.
+        </p>
+        <p>Somme external links :  </p>
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.com/" rel="nofollow">Silverpeas</a>
+          </li>
+          <li>
+            <a href="http://fr.wikipedia.org/wiki/Portail:Logiciels_libres" title="Portail:Logiciels libres">Portail : Free software</a>
+          </li>
+        </ul>
+      </subsection>
+    </section>
+  </body>
+</document>

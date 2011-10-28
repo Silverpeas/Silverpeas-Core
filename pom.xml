@@ -138,18 +138,19 @@
               <version>2.4</version>
               <reportSets>
                 <reportSet>
-                  <reports>
-                    <report>cim</report>
+                  <reports>              
+                    <report>index</report>
+                    <report>summary</report>
+                    <report>project-team</report>
+                    <report>mailing-list</report>
+                    <report>issue-tracking</report>        
+                    <report>scm</report>
+                    <report>cim</report>  
                     <report>dependencies</report>
                     <report>dependency-convergence</report>
                     <report>dependency-management</report>
                     <report>distribution-management</report>
-                    <report>index</report>
-                    <report>issue-tracking</report>
                     <report>modules</report>
-                    <report>project-team</report>
-                    <report>license</report>
-                    <report>scm</report>
                   </reports>
                 </reportSet>
               </reportSets>
@@ -166,11 +167,11 @@
           </reportPlugins>
         </configuration>
       </plugin>
-      <!--
+<!--
       <plugin>
         <groupId>com.github.github</groupId>
         <artifactId>site-maven-plugin</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
         <configuration>
           <description>Creating site</description>
           <override>false</override>
@@ -185,9 +186,7 @@
             <phase>site</phase>
           </execution>
         </executions>
-      </plugin>
-      -->
-
+      </plugin>-->
     </plugins>
   </build>
 
@@ -237,7 +236,7 @@
   </modules>
 
   <properties>
-    <installer_stable_version>5.7.2</installer_stable_version>
+    <installer_stable_version>5.7.3</installer_stable_version>
     <installer_version>${project.version}</installer_version>
   </properties>
 

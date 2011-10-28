@@ -11,6 +11,7 @@
   <artifactId>config-core</artifactId>
   <packaging>pom</packaging>
   <name>Configuration Core</name>
+  <description>A module to store all the configuration for the core services of Silverpeas.</description>
 
   <build>
     <plugins>

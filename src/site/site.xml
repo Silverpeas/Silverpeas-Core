@@ -36,11 +36,11 @@
   <skin>
     <groupId>com.silverpeas.services</groupId>
     <artifactId>silverpeas-site-skin</artifactId>
-    <version>1.5</version>
+    <version>1.6-SNAPSHOT</version>
   </skin>
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans 7.0" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.png" />
+    <logo name="Netbeans 7.0" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
     <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
     <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
     <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" />
@@ -49,14 +49,14 @@
   <body>
     <head>
       <script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
       </script>
       <script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-2015926-3");
-pageTracker._trackPageview();
-} catch(err) {}
+        try {
+        var pageTracker = _gat._getTracker("UA-2015926-3");
+        pageTracker._trackPageview();
+        } catch(err) {}
       </script>
     </head>
     <breadcrumbs>
@@ -70,23 +70,42 @@ pageTracker._trackPageview();
       <item name="Installation" href="installation.html" collapse="false"/>
       <item name="Migration" href="migration.html" collapse="false"/>
       <item name="Source Code" href="source-repository.html" collapse="false"/>
-    </menu>    
-    <menu name="How to contribute" inherit="none">
-      <item name="Contribution" href="collaboration.html" collapse="false"/>
-      <item name="Code Quality" href="quality.html" collapse="false"/>
     </menu>
-    <menu ref="reports" />
-    <menu name="SilverpeasConfiguration" inherit="none">
+    <menu name="Configuration" inherit="none">
       <item name="Security" href="securing.html"  collapse="true"/>
       <item name="Migration" href="migration.html"  collapse="true"/>
       <item name="Configuring a reverse-proxy" href="proxy.html"  collapse="true"/>
     </menu>
+    <menu name="Product" inherit="none">
+      <item name="Key Features" href="product/features.html" collapse="true"/>
+      <item name="Collaboration" href="product/collaboration.html" collapse="true"/>
+      <item name="Applications" href="product/applications.html" collapse="true">
+        <item name="Social Network" href="product/social_network.html" collapse="true"/>
+        <item name="Electronic Documentation Management" href="product/documentation_management.html" collapse="true"/>
+        <item name="Content Management" href="product/content_management.html" collapse="true"/>
+        <item name="Data Collection" href="product/data_collection.html" collapse="true"/>       
+        <item name="Pictures Management" href="product/gallery.html" collapse="true"/> 
+        <item name="Knowledge Management" href="product/knowledge_management.html" collapse="true"/>     
+        <item name="Project Documentation" href="product/project_documentation.html" collapse="true"/>     
+      </item>
+    </menu> 
     <menu name="CAS" inherit="none">
       <item name="Introduction" href="cas/SSO-CAS.html" collapse="true"/>
       <item name="Certificates Configuration" href="cas/certificates.html" collapse="true" />
       <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="true" />
       <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html" collapse="true" />
     </menu>
-    <menu ref="modules" />
+    <menu ref="reports" />   
+    <menu name="How to contribute" inherit="none">
+      <item name="Contribution" href="collaboration.html" collapse="false"/>
+      <item name="Code Quality" href="quality.html" collapse="false"/>
+      <item name="Architecture" href="architecture.html" collapse="false"/>
+    </menu>
+    <menu name="Licensing" inherit="none">
+      <item name="License" href="legal/licensing_gnu_affero.html" collapse="false"/>
+      <item name="Licensing FAQ" href="legal/licensing_faq.html" collapse="false"/>
+      <item name="FLOSS Exception" href="legal/floss_exception.html"/>
+      <item name="Silverpeas Trade Mark" href="legal/trademark.html" collapse="false"/>
+    </menu> 
   </body>
 </project>

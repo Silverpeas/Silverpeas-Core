@@ -11,6 +11,7 @@
   <artifactId>war-core</artifactId>
   <packaging>war</packaging>
   <name>Core Webapp</name>
+  <description>The Web GUI for the core elements of Silverpeas : Administration, notifications and all the navigation.</description>
 
   <dependencies>
     <dependency>

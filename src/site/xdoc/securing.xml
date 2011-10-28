@@ -76,7 +76,7 @@ To create a new keystore from scratch, containing a single
       </p>
       </subsection>
       <subsection name="Configuring JBoss">
-      <p>The final step is to configure the Connector in the <i>$JBOSS_HOME/server/default/deploy/jbossweb-tomcat55.sar/server.xml</i> 
+      <p>The final step is to configure the Connector in the <i>$JBOSS_HOME/server/default/deploy/jbossweb.sar/server.xml</i> 
       file. An example &lt;Connector&gt; element for an SSL connector is included in the default server.xml file installed with Silverpeas. 
       It should look something like this:</p>
       <fieldset>

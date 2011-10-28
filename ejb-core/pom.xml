@@ -11,6 +11,7 @@
   <artifactId>ejb-core</artifactId>
   <packaging>pom</packaging>
   <name> EJB Core</name>
+  <description>A module to aggregate all the EJBs required for the core of Silverpeas.</description>
 
   <dependencies>
     <dependency>

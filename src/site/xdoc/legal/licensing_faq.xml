@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>GNU FAQ</title>
+  </properties>
+  <head>
+    <link rel="alternate" type="application/rdf+xml" href="http://www.gnu.org/licenses/agpl-3.0.rdf"> </link>
+  </head>
+  <body>  
+    <h2><a name="cxcontent2">Silverpeas Licensing FAQ</a></h2>
+    <ul>
+      <li class="none">
+        <p> 
+          <a href="#whymove">1. Why   move to GPL? </a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#whichversion">2. Which version of the GPL are you using? </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="#doesthismakeiteasier">3. Does GPL make it easier to include Silverpeas in open source projects? </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="#doesgplconflict">4. Does GPL conflict with 
+            Apache-licensed code.  Given that Silverpeas incorporates 
+            Apache-licensed code (Lucene  and others), can Silverpeas license this 
+            code as GPL? 
+          </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="#howwillgpl">5. How will GPL affect my current use of Silverpeas as a licensed (paid or unpaid) user? </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="#ourcompany">6. Our  company has a strict policy 
+            against use of GPL software. What will I  need to communicate to our 
+            Legal Department on our use of Silverpeas? 
+          </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="http://www.silverpeas.org/legal/silverpeaspartner">7. How will GPL affect my current use of Silverpeas as an Silverpeas partner? </a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#specificsolutions"> 8. Our  company markets specific 
+            solutions built on top of Silverpeas. What are  the implications of 
+            moving to GPL for our solution offerings? 
+          </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="#oemlicense">9. Our  company has executed an OEM 
+            license for Silverpeas for use as an embedded  component of our overall 
+            solution. What are the implications of a move  to GPL for us? 
+          </a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#currentuse"> 10. How will GPL affect my current use of Silverpeas release? </a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#flossexception"> 11. What is the FLOSS exception? Does it apply to me and what does it provide for? </a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#model"> 12. Is there a precedent for this licensing model? </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="#embeds">13. What happens if a popular open source 
+            project embeds and distributes Silverpeas. Is this allowable under the 
+            FLOSS exception? 
+          </a>
+        </p>
+      </li>
+      <li>
+        <p> 
+          <a href="#marketdev">14. How does this change in Silverpeas 
+            license model fit within the overall market development of open source 
+            business applications? 
+          </a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#policies"> 15. Will Silverpeas ever change its licensing policies again? </a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#addinfo"> 16. Where can I get additional information on Silverpeas  and Silverpeas licensing? </a>
+        </p>
+      </li>
+    </ul>
+    <h2> 
+      <a title="faq1"></a> 
+      <a name="whymove" id="whymove"></a>1. Why move to GPL? 
+    </h2>
+    <p> Silverpeas feels strongly that the future of software is open 
+      source. Not  a little open source mixed with a lot of proprietary 
+      source. Free and  open source software. It is open source, not hybrid 
+      models that will  drive true disruption in the software industry, with 
+      greater value  created for and by end-users. 
+    </p>
+    <p> The GNU General Public License  (“GPL”) is the ideal license to 
+      drive forward this industry disruption.  The GPL ensures that no vendor –
+      including Silverpeas – can control a  customer’s content. The GPL also 
+      provides the maximum assurance that  the open source community and not, 
+      ultimately, Silverpeas, protects  investments in our code. 
+    </p>
+    <p> We plan to be in business for a long  time, but wanted a license 
+      that guarantees our users that Silverpeas, the  code, will always be 
+      bigger and more enduring than Silverpeas, the  company. This enables our
+      community to invest in the Silverpeas code with  maximum confidence 
+      that the investment will grow over time, and not be  wasted. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="whichversion" title="faq2" id="whichversion"></a> 2. Which version of the GPL are you using? 
+    </h2>
+    <p> You may be aware that some licensors who use GPL allow their code 
+      to be  licensed under the current version of GPL or “any later version.”
+      This  means that the code may be accepted by a licensee under the 
+      current  version (which is now version 2) and any later version released
+      by the  Free Software Foundation, and the licensor may be bound by 
+      either sets  of terms, depending on the choice of the licensee. Some 
+      other GPL  projects, like the Linux projects, use a single version of 
+      GPL. We have  decided to follow the lead of Linux on this point. 
+    </p>
+    <p> As of  March, 2007, we expect a final release of GPL version 3 
+      over the next  few months. We are not certain what the final release of 
+      GPL version 3  will include, and the terms of the working drafts have 
+      differed  significantly, so at this time we have chosen to make our code
+      available under GPL version 2 only. When GPL version 3 is finalized 
+      and  released, we may reassess this decision. For the time being, we 
+      have  chosen version 2 only, to avoid forking of our code due to 
+      licensing  issues. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2>
+      <a name="doesthismakeiteasier" title="faq5" id="doesthismakeiteasier"></a> 3. Does this make it easier to include Silverpeas in open source projects? 
+    </h2>
+    <p> Yes, it does. Especially when you take into account our FLOSS  
+      Exception. Silverpeas’s GPL + FLOSS Exception policy gives the open  
+      source development community the world’s best content www with  freedom 
+      to embed it in other projects, from Drupal to Jasper Reports  to…you 
+      name it. In summary, the Silverpeas FLOSS Exception enables  software 
+      provided under existing OSI-approved open source licenses to  
+      incorporate the Silverpeas Community software without having to license 
+      the entire software package under the terms of the GPL. We prefer the  
+      GPL, but you may not – if you’re an open source-licensed project, we  
+      give you additional choice. Please see our 
+      <a href="http://www.silverpeas.org/legal/3.floss_exception.html">FLOSS Exception</a> page for more details. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="doesgplconflict" title="faq6" id="doesgplconflict"></a> 
+      4. Does GPL conflict with Apache-licensed  code. Given that Silverpeas 
+      incorporates Apache-licensed code (Spring,  Lucene, and others), can 
+      Silverpeas license this code as GPL? 
+    </h2>
+    <p> First off, this alleged incompatibility only applies to Silverpeas
+      Community, which is licensed under the GPL. Those using Silverpeas  
+      Enterprise get our software under a Commercial License, so they do not  
+      have to worry about this at all. 
+    </p>
+    <p> As for Silverpeas Community  (GPL license) and its incorporation 
+      of Apache-licensed software, there  is no definitive decision on 
+      whether, in fact, the GPL is incompatible  with Apache-licensed 
+      software. The Apache Software Foundation believes  that it is 
+      compatible, which view we agree with, while the Free  Software 
+      Foundation believes that it is not. Both groups are in  discussions to 
+      resolve this issue. It is believed that GPLv3 has  provisions that 
+      resolve the apparent incompatibility, as well. 
+    </p>
+    <p> However, as the issue comes down to patents, as the 
+      <a href="http://www.apache.org/licenses/GPL-compatibility.html">Apache Software Foundation </a>notes,
+      and as none of the Apache-licensed code that we incorporate into  
+      Silverpeas has patents on it, this is a non-issue for us. It means that 
+      we can integrate Apache-licensed code without running afoul of the  
+      apparent incompatibility between the two because the software we  
+      incorporate is not patented, which incompatibility apparently arises  
+      from conflicting patent provisions in the two licenses. 
+    </p>
+    <p> If we  were to incorporate Apache-licensed code that has patents 
+      on it,  however, we could still incorporate it into our GPL-licensed 
+      project  provided that we “pass through” those modules under their 
+      Apache  license. In this case, we would simply license Silverpeas 
+      Community under  the GPL (with a FLOSS Exception) and note that some 
+      modules are  separately licensed under Apache licenses. 
+    </p>
+    <p> Regardless of how  we do it, you should feel comfortable using our
+      100% open source  software. We will do whatever necessary to ensure you
+      can use our  software under open source licenses, preferably the GPL. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="howwillgpl" title="faq7" id="howwillgpl"></a> 5. How will GPL affect my current use of Silverpeas as a licensed (paid or unpaid) user? 
+    </h2>
+    <p> Regardless of whether you’re a paid (Silverpeas Enterprise) or 
+      unpaid  (Silverpeas Community) licensee, this license change will not 
+      affect your  use of any software you received from us prior to February 
+      20, 2007. 
+    </p>
+    <p> With the move to the GPL, your use will be affected depending on what kind of Silverpeas user you are: </p>
+    <ul>
+      <li> Silverpeas Community Users. Our re-licensing will not affect 
+        your rights  in code you have accepted under the modified MPL prior to 
+        February  2007. If you accepted code under that license, you can still 
+        use it  under that license. However, if you download an update from us 
+        of after  the February 2007 release of Silverpeas Community 2.0, the 
+        update will be  covered by the GPL plus 
+        <a href="http://www.silverpeas.org/legal/3.floss_exception.html">FLOSS exception</a>. 
+      </li>
+      <li>Silverpeas  Enterprise Users. We provide our paid Silverpeas 
+        Enterprise customers  with a Commercial License. So, in short, it will 
+        not affect you at all.  While we are strong advocates of open source 
+        licensing, we recognize  that some amongst our customers and partners 
+        may have different license  requirements. Our Commercial Licensing is 
+        designed to meet these  different needs for our paid customers. Our 
+        licensing change applies  only to our Silverpeas Community product. 
+      </li>
+    </ul>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="ourcompany" title="faq8" id="ourcompany"></a> 6. Our 
+      company has a strict policy against use of GPL software. What will  I 
+      need to communicate to our Legal Department on our use of Silverpeas? 
+    </h2>
+    <p> First off, we would encourage you to  try the demo of Silverpeas (see 
+      <a href="http://www.silverpeas.com/form_fr.jsp">Silverpeas demo/</a>.
+      It is the same code that we ship with Silverpeas  , but is more 
+      rigorously tested, has full production and  development support, is 
+      certified to work with leading third-party  software (databases, 
+      application servers, etc.), and comes with  improved documentation, 
+      immediate bug fixes, and other benefits. We  deliver it to you under a 
+      Commercial License, a license that we extend  when you decide to 
+      purchase an Silverpeas Enterprise Subscription. In  short, you can use 
+      Silverpeas Enterprise without worrying about the GPL,  if you’re 
+      concerned about it. (We prefer the GPL, but you may not, so  we give you
+      choice if you’re a paid subscriber.) 
+    </p>
+    <p> Your company  probably instituted its policy about GPL software 
+      for one of two  reasons: infringement risk and copyleft concerns. Some 
+      companies want  to be sure that every bit of software in the enterprise 
+      is backed by  warranties. If this is the case, you will need to use our 
+      Commercial  License (Silverpeas Enterprise). But most companies are more
+      concerned  about copyleft requirements -- which is the word used to 
+      describe the  requirement in the GPL that redistribution must only take 
+      place under  GPL terms. If that is the issue, you may or may not need 
+      our Commercial  License, depending on what you want to do with our 
+      software. Please see  our 
+      <a href="http://www.silverpeas.org/legal/1.licensing_gnu_affero.html">Licensing Policy page</a> for more information. 
+    </p>
+    <p> If, for whatever reason, you prefer to use Silverpeas Community, 
+      which is  licensed under the GPL, and you don’t plan to redistribute the
+      software  (with or without modifications to it), then a commonly 
+      accepted  industry view is that you may use the software without 
+      worrying about  needing to release your own source code (the 
+      modifications to Silverpeas  Community or code you integrate with it) as
+      open source software. The  copyleft requirements of the GPL are only 
+      triggered upon distribution.  It is therefore commonly understood that 
+      only when you distribute the  software outside your organization would 
+      you would need to release your  modifications under the GPL. This is not
+      legal advice from Silverpeas,  however – you should seek competent 
+      legal counsel to best guide you in  this matter. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="#silverpeaspartner" title="faq9" id="#silverpeaspartner"></a> 7. How will GPL affect my current use of Silverpeas as an Silverpeas partner? 
+    </h2>
+    <p> All Silverpeas partners work with and distribute Silverpeas.  Your
+      rights and responsibilities are completely unchanged by this  license 
+      change, which only affects Silverpeas  users. 
+    </p>
+    <p> If you are not an official partner and have been distributing 
+      Silverpeas, you will need to abide by the rights and restrictions of the
+      GPL. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="specificsolutions" title="faq10" id="specificsolutions"></a>
+      8. Our company markets  specific solutions built on top of Silverpeas. 
+      What are the implications  of moving to GPL for our solution offers? 
+    </h2>
+    <p> If you are an  official Silverpeas partner using Silverpeas 
+      Enterprise, there are no  implications whatsoever to our license change.
+      You will keep exercising  your Commercial License to Silverpeas 
+      Enterprise, which will have terms  mutually agreed upon between 
+      Silverpeas and you. 
+    </p>
+    <p> If you are not  an official Silverpeas partner and are combining 
+      Silverpeas with open  source-licensed software consistent with our FLOSS
+      Exception, you will  need to abide by the terms of our 
+      <a href="http://www.silverpeas.org/legal/3.floss_exception.html">FLOSS Exception</a> for any derivative works. 
+    </p>
+    <p> If you are not an official Silverpeas partner and are combining 
+      Silverpeas  with proprietary software or open source-licensed software 
+      that is not  consistent with our FLOSS Exception, you will need talk to 
+      us about a  Commercial License or license your software under the GPL. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="oemlicense" title="faq11" id="oemlicense"></a> 9. Our 
+      company has executed an OEM license for Silverpeas for use as an  
+      embedded component of our overall solution. What are the implications  
+      of a move to GPL for us? 
+    </h2>
+    <p> As an official Silverpeas partner,  you are using our software 
+      under a Commercial License. This change will  not affect you in any way.
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="currentuse" title="faq12" id="currentuse"></a> 10. How will GPL affect my current use of Silverpeas ? 
+    </h2>
+    <p> You will need to abide by the GPL modified by our FLOSS Exception 
+      if  you upgrade to a new release of Silverpeas. If you prefer to  remain
+      with a previous version of the software licensed under the MPL +  
+      Attribution (our 
+      <a href="http://www.silverpeas.org/legal/1.licensing_gnu_affero.html">Silverpeas Public License</a>), you will need to continue to abide by the terms of that license. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="flossexception" title="faq13" id="flossexception"></a> 11. What is the FLOSS exception? Does it apply to me and what does it provide for? 
+    </h2>
+    <p> Silverpeas’s 
+      <a href="http://www.silverpeas.org/legal/3.floss_exception.html">FLOSS Exception</a>
+      allows specified Free/Libre and Open Source Software ("FLOSS") software
+      to be able to use specified GPL-licensed Silverpeas software despite 
+      the  fact that some of these other FLOSS licenses are not compatible 
+      with  GPL. It is a way of allowing specified open source-licensed 
+      software  projects to integrate with Silverpeas without having to change
+      the  license covering their projects to GPL. 
+    </p>
+    <p> The Silverpeas FLOSS  Exception is only relevant to licensees 
+      wishing to integrate the  Silverpeas Community software with other open 
+      source-licensed projects.  Please visit our 
+      <a href="http://www.silverpeas.org/legal/1.licensing_gnu_affero.html">Licensing Policy</a> page for more details. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="model" title="faq14" id="model"></a> 12. Is there a precedent for this licensing model? 
+    </h2>
+    <p> Yes. MySQL and others have used FLOSS exceptions for some time. 
+      They  are increasingly common in the software industry as a way to 
+      provide  all the benefits of the GPL while allowing GPL-licensed 
+      software to  integrate well with other open source-licensed projects, 
+      which might  otherwise not be integrated due to license incompatibility.
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="embeds" title="faq15" id="embeds"></a> 13. What happens 
+      if a popular open source project embeds and distributes Silverpeas. Is 
+      this allowable under the FLOSS exception? 
+    </h2>
+    <p> If an open source project is licensed under one of the specified licenses in 
+      <a href="http://www.silverpeas.org/legal/3.floss_exception.html">Silverpeas’s FLOSS Exception</a>,
+      then it may embed GPL-licensed Silverpeas software without requiring 
+      its  software to also be licensed under the GPL. Please review the 
+      Silverpeas  FLOSS Exception to ensure you are in compliance. 
+    </p>
+    <p> As a  potential Silverpeas customer, why would I choose to license
+      Silverpeas  directly from you rather then take the embedded offering 
+      from an  existing open source vendor? 
+    </p>
+    <p> This depends on what you are  seeking. It may well be that the 
+      embedded offering, or its equivalent,  is not available from Silverpeas.
+      This is one of the wonderful things  about open source: the community 
+      has theoretically unlimited resources  to tailor the Silverpeas version 
+      of the software to a diverse set of  needs. We help to start or continue
+      “the content management  conversation” with Silverpeas – we don’t 
+      expect to be the complete  conversation. 
+    </p>
+    <p> However, for those looking for Silverpeas  Enterprise – certified,
+      rigorously tested, and supported software with  access to the vibrant 
+      and growing Silverpeas Network – this is only  available from Silverpeas
+      or one of our official partners. 
+    </p>
+    <p> The choice is yours. </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="marketdev" title="faq16" id="marketdev"></a> 14. How 
+      does this change in Silverpeas’s license model fit within the overall  
+      market development of open source business applications? 
+    </h2>
+    <p> The  software industry is dividing into two camps: monolithic, 
+      proprietary  stacks (where vendors seek to provide an end-to-end 
+      solution for all  computing needs) and best-of-breed, open source and 
+      open standards  stacks. We are part of this latter camp, and believe 
+      open source offers  customers unparalleled choice, cost savings, and 
+      exceptional software.  While much of the open source software 
+      applications market is still  stuck “half-way” between proprietary and 
+      open source software, we  believe that we are on the front-end of a 
+      growing trend toward greater  openness in software licensing, and thus 
+      greater benefits for  customers. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="policies" title="faq17" id="policies"></a> 15. Will Silverpeas ever change its licensing policies again? 
+    </h2>
+    <p> Over time, we may need to streamline our licensing policies to 
+      respond  to developer needs and to ensure the stability and commercial 
+      viability  of our products. Any changes to our policy will be posted on 
+      our  website. But of course, if we change our policy, and you have 
+      received  a license to our code under our free licensing terms, that 
+      will not  terminate the rights you have already been granted. Any 
+      changes will  only apply going forward to new releases of our code. 
+    </p>
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+    <h2> 
+      <a name="addinfo" title="faq18" id="addinfo"></a> 16. Where can I get additional information on Silverpeas 5.0 and Silverpeas licensing? 
+    </h2>
+    Please visit our 
+    <a href="http://www.silverpeas.com/">Products page</a> for information on Silverpeas 5.0 . You can find our licensing information 
+    <a href="licensing_gnu_affero.html">here</a>.
+    <p align="left">
+      <a href="#cxcontent2">
+        <img border="0" src="../images/top.gif" alt="Haut" />
+      </a>
+    </p>
+  </body>
+</document>

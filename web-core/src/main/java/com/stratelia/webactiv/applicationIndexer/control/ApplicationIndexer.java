@@ -24,13 +24,13 @@
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.pdc.PdcIndexer;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
-import org.apache.commons.lang.StringUtils;
 
 public class ApplicationIndexer extends AbstractIndexer {
 
@@ -123,11 +123,11 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   String firstLetterToUpperCase(String str) {
-    return StringUtils.capitalize(str);
+    return StringUtil.capitalize(str);
   }
 
   String firstLetterToLowerCase(String str) {
-    return StringUtils.uncapitalize(str);
+    return StringUtil.uncapitalize(str);
   }
 
   ComponentIndexerInterface getIndexer(ComponentInstLight compoInst) {
@@ -203,6 +203,9 @@ public class ApplicationIndexer extends AbstractIndexer {
     }
     if ("webPages".equalsIgnoreCase(packageName)) {
       return "webpages";
+    }
+    if ("resourcesManager".equalsIgnoreCase(packageName)) {
+      return "resourcesmanager";
     }
     if ("mydb".equalsIgnoreCase(packageName)) {
       return "mydb";

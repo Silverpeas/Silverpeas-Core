@@ -27,17 +27,18 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
-import static javax.servlet.http.HttpServletResponse.*;
+import static javax.servlet.http.HttpServletResponse.SC_CREATED;
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
 
 /**
  *
@@ -59,17 +60,21 @@ public class AutoRedirectServlet extends HttpServlet {
           throws ServletException, IOException {
     prepareResponseHeader(response);
     String strGoTo = request.getParameter("goto");
-    String domainId = request.getParameter("domainId");
+    String strDomainId = request.getParameter("domainId");
+    int domainId = 0;
+    if (StringUtil.isInteger(strDomainId)) {
+      domainId = Integer.parseInt(strDomainId);
+    }
     String componentGoTo = request.getParameter("ComponentId");
     String spaceGoTo = request.getParameter("SpaceId");
     String attachmentGoTo = request.getParameter("AttachmentId");
     HttpSession session = request.getSession();
     PrintWriter out = response.getWriter();
+    String mainFrameParams = "";
+    String componentId = null;
+    String spaceId = null;
     try {
 
-      String mainFrameParams = "";
-      String componentId = null;
-      String spaceId = null;
       if (strGoTo != null) {
         session.setAttribute("gotoNew", strGoTo);
         String urlToParse = strGoTo;
@@ -77,7 +82,7 @@ public class AutoRedirectServlet extends HttpServlet {
           int indexOf = urlToParse.indexOf("&componentId=");
           componentId = urlToParse.substring(indexOf + 13, urlToParse.length());
         } else {
-          urlToParse = urlToParse.substring(1); //remove first "/"
+          urlToParse = urlToParse.substring(1);
           int indexBegin = urlToParse.indexOf('/') + 1;
           int indexEnd = urlToParse.indexOf('/', indexBegin);
           componentId = urlToParse.substring(indexBegin, indexEnd);
@@ -86,50 +91,48 @@ public class AutoRedirectServlet extends HttpServlet {
             componentId = null;
           }
         }
-        if(StringUtil.isDefined(componentId) && !StringUtil.isAlpha(componentId)) {
+        if (isSilverpeasIdValid(componentId)) {
           mainFrameParams = "?ComponentIdFromRedirect=" + componentId;
           session.setAttribute("RedirectToComponentId", componentId);
         }
-      } else if (componentGoTo != null) {
+      } else if (isSilverpeasIdValid(componentGoTo)) {
         componentId = componentGoTo;
         mainFrameParams = "?ComponentIdFromRedirect=" + componentId;
         session.setAttribute("RedirectToComponentId", componentId);
-        if (attachmentGoTo != null) {
-          String foreignId = request.getParameter("ForeignId");
+        String foreignId = request.getParameter("ForeignId");
+        if (isSilverpeasIdValid(attachmentGoTo) && isSilverpeasIdValid(foreignId)) {
           String type = request.getParameter("Mapping");
-
           //Contruit l'url vers l'objet du composant contenant le fichier
           strGoTo = URLManager.getURL(null, componentId) + "searchResult?Type=Publication&Id=" + foreignId;
           session.setAttribute("gotoNew", strGoTo);
-
           //Ajoute l'id de l'attachment pour ouverture automatique
           session.setAttribute("RedirectToAttachmentId", attachmentGoTo);
           session.setAttribute("RedirectToMapping", type);
         }
-      } else if (spaceGoTo != null) {
+      } else if (isSilverpeasIdValid(spaceGoTo)) {
         spaceId = spaceGoTo;
         session.setAttribute("RedirectToSpaceId", spaceId);
       }
 
       SilverTrace.info("authentication", "autoRedirect.jsp", "root.MSG_GEN_PARAM_VALUE",
               "componentId = " + componentId + ", spaceId = " + spaceId);
-
       MainSessionController mainController = (MainSessionController) session.getAttribute(
-              MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+              MAIN_SESSION_CONTROLLER_ATT);
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+              GE_FACTORY_SESSION_ATT);
 
       //The user is either not connector or as the anonymous user. He comes back to the login page.
       if (mainController == null || (gef != null && UserDetail.isAnonymousUser(mainController.
               getUserId()) && (strGoTo == null && componentGoTo == null && spaceGoTo == null))) {
-        String loginUrl = response.encodeRedirectURL(
-                URLManager.getApplicationURL() + "/Login.jsp?DomainId=" + domainId);
+        String loginUrl = response.encodeRedirectURL(URLManager.getApplicationURL() + "/Login.jsp?DomainId=" + domainId);
         out.println("<script>");
         out.print("top.location=\"");
         out.print(loginUrl);
         out.println("\";");
         out.println("</script>");
       } else {
-        if (isAccessibleComponent(componentId, mainController) || isAccessibleSpace(spaceId, mainController)) {
+        if (isAccessibleComponent(componentId, mainController) || isAccessibleSpace(spaceId,
+                mainController)) {
           response.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
         } else if (mainController.isAppInMaintenance() && !mainController.getCurrentUserDetail().
                 isAccessAdmin()) {
@@ -160,13 +163,18 @@ public class AutoRedirectServlet extends HttpServlet {
   }
 
   private boolean isAccessibleSpace(String spaceId, MainSessionController mainController) {
-    return StringUtil.isDefined(spaceId)&& !mainController.getOrganizationController().
-    isSpaceAvailable(spaceId, mainController.getUserId());
+    return StringUtil.isDefined(spaceId) && !mainController.getOrganizationController().
+            isSpaceAvailable(spaceId, mainController.getUserId());
   }
 
   private boolean isAccessibleComponent(String componentId, MainSessionController mainController) {
-    return StringUtil.isDefined(componentId) && !StringUtil.isAlpha(componentId) && !mainController
-        .getOrganizationController().isComponentAvailable(componentId, mainController.getUserId());
+    return StringUtil.isDefined(componentId) && !StringUtil.isAlpha(componentId) && !mainController.
+            getOrganizationController().isComponentAvailable(componentId, mainController.getUserId());
+  }
+
+  private boolean isSilverpeasIdValid(String silverpeasId) {
+    return StringUtil.isDefined(silverpeasId) && !StringUtil.isAlpha(silverpeasId) && StringUtil.
+            isAlphanumeric(silverpeasId);
   }
 
   // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

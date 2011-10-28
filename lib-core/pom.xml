@@ -13,6 +13,7 @@
   <artifactId>lib-core</artifactId>
   <packaging>jar</packaging>
   <name>Lib Core</name>
+  <description>A module providing all the basic services of Silverpeas on which can rely the EJBs and the web parts.</description>
 
   <dependencies>
     <dependency>
@@ -245,6 +246,10 @@
     <dependency>
       <groupId>net.htmlparser.jericho</groupId>
       <artifactId>jericho-html</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
