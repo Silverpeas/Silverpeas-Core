@@ -100,7 +100,7 @@ public class PortletAdmin implements PortletAdminMBean {
     Boolean registerSuccess = Boolean.FALSE;
 
     if (prepareSuccess) {
-      File preparedWarFile = new File(warFileName, warName);
+      File preparedWarFile = new File(warFileName);
       registerSuccess = registerPortlet(warFileName, roles, userinfo, preparedWarFile);
     }
 
