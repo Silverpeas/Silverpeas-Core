@@ -106,7 +106,7 @@ public class PdcImportExport {
     PdcClassification classification;
     if (isDefined(nodeId)) {
       classification =
-              getPdcClassificationService().getPreDefinedClassification(nodeId, componentId);
+              getPdcClassificationService().findAPreDefinedClassification(nodeId, componentId);
     } else {
       classification = getPdcClassificationService().getPreDefinedClassification(componentId);
     }

@@ -122,6 +122,7 @@
      * The label to use for the HTML section into which the positions of the resource will be rendered.
      */
     positionsLabel: 'Positions',
+    inheritedPositionsLabel: "Positions héritées d'un thème parent",
     /**
      * The messages to print when the validation of a classification fails. The messages depend on
      * the type of the validation failure.
@@ -182,17 +183,24 @@
      */
     predefine: function( options ) {
       return this.each(function() {
-        var $this = $(this), classification = new Object();
+        var $this = $(this);
         init( options );
         settings.mode = 'predefinition';
-        /*loadClassification( $this, settings.defaultClassificationURI );*/
         loadPdC($this, function ($this) {
           loadClassification($this, settings.defaultClassificationURI, function($this, uri) {
             var classification = $this.data('classification');
             renderClassificationFrame($this);
+            //            if (escape(classification.uri).search(escape(settings.defaultClassificationURI)) == -1) {
+            //              renderInheritedPositions($this, classification.positions);
+            //              classification = {
+            //                uri: settings.defaultClassificationURI, 
+            //                positions: new Array()
+            //              };
+            //              $this.data('classification', classification);
+            //            }
             renderClassificationEditionFrame($this, []);
             if (classification.positions.length > 0) {
-              renderPositions($this, settings.defaultClassificationURI)
+              renderPositions($this);
             }
           });
         });
@@ -246,7 +254,7 @@
               $this.hide();
             } else {
               renderClassificationFrame($this);
-              renderPositions( $this, uri );
+              renderPositions( $this );
             }
           });
         })
@@ -334,6 +342,29 @@
   /**
    * Renders the area into which the classification on the PdC of the resource will be displayed.
    */
+  function renderInheritedPositions ( $this, positions ) {
+    $('<fieldset>').append($('<legend>').addClass('header').html('Inherited Classsification')).append($('<div>', {
+      id: 'list_inherited_pdc_position'
+    }).append($('<div>', {
+      id: 'allinheritedpositions'
+    }))).appendTo($this);
+    var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($('#allinheritedpositions'));
+    $.each(positions, function(posindex, position) {
+      var posId = posindex + 1, values =  [];
+      var currentPositionSection = $('<li>').appendTo(positionsSection).append($('<span>').addClass('pdc_position').
+        html(settings.positionLabel + ' ' + posId));
+
+      $.each(position.values, function(valindex, value) {
+        values.push(textFrom(value));
+      });
+ 
+      currentPositionSection.append($('<ul>').html(values.join('')));
+    });
+  }
+  
+  /**
+   * Renders the area into which the classification on the PdC of the resource will be displayed.
+   */
   function renderClassificationFrame ( $this ) {
     var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.title));
     if ($this.is('fieldset')) {
@@ -356,8 +387,12 @@
       id: 'list_pdc_position'
     });
     if (settings.mode != 'view') {
+      var classification = $this.data('classification'), positionsLabel = settings.positionsLabel;
+//      if (settings.mode == 'predefinition' && classification.inherited) {
+//        positionsLabel = settings.inheritedPositionsLabel;
+//      }
       listOfPositions.addClass('field').
-      append($('<label for="' + settings.positionsLabel + '">').html(settings.positionsLabel).hide()).
+      append($('<label for="Positions">').html(positionsLabel).hide()).
       append($('<div>', {
         id: 'allpositions'
       }).addClass('champs')).appendTo($('<div>').addClass('fields').appendTo($this));
@@ -442,11 +477,19 @@
    */
   function deletePosition( $this, uri, positionId ) {
     if (window.confirm( settings.deletion.confirmation )) {
+      var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
+      var uri_position = uri_parts[0] + '/' + positionId + '?' + uri_parts[1];
       $.ajax({
-        url: uri + "/" + positionId,
+        url: uri_position,
         type: "DELETE",
         success: function() {
-          removePositionFromClassification($this, positionId);
+          var classification = $this.data('classification');
+          removePositionFromClassification($this, classification, positionId);
+          if(classification.positions.length == 0 && settings.mode == 'predefinition') {
+            loadClassification($this, classification.uri, function() {
+              refreshClassification($this);
+            });
+          }
         },
         error: function(request) {
           if (request.status == 409) {
@@ -464,13 +507,14 @@
   function submitPosition( $this, uri, position ) {
     if (checkPositionIsValid($this, position)) {
       if (settings.mode == 'edition' || settings.mode == 'predefinition') {
-        var method = "POST";
+        var method = "POST", uri_position = uri;
         if (position.id != null) {
-          uri = settings.classificationURI + '/' + position.id;
+          var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
+          uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
           method = "PUT";
         }
         $.ajax({
-          url: uri,
+          url: uri_position,
           type: method,
           data: $.toJSON(position),
           contentType: "application/json",
@@ -583,8 +627,8 @@
   /**
    * Removes the specified position from the classification of the resource.
    */
-  function removePositionFromClassification($this, positionId ) {
-    var positions = $this.data('classification').positions;
+  function removePositionFromClassification($this, classification, positionId ) {
+    var positions = classification.positions;
     for(var i = 0; i < positions.length; i++) {
       if (positions[i].id == positionId) {
         positions.splice(i, 1);
@@ -649,11 +693,12 @@
   }
   
   /**
-   * Renders the positions in the classification on the PdC of the resource.
+   * Renders the positions of the classification on the PdC of the resource.
    */
-  function renderPositions( $this, uri ) {
-    if ($this.data('classification').positions.length > 0) {
-      $('label[for="' + settings.positionsLabel + '"]').show();
+  function renderPositions( $this ) {
+    var classification = $this.data('classification');
+    if (classification.positions.length > 0) {
+      $('label[for="Positions"]').show();
       var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($('#allpositions'));
       $.each($this.data('classification').positions, function(posindex, position) {
         var posId = posindex + 1, values =  [];
@@ -674,8 +719,8 @@
             append($('<img>', {
               src: settings.update.icon,  
               alt: settings.update.title
-            }).click(function () {
-              updatePosition($this, uri, position);
+            }).click(function () {            
+              updatePosition($this, classification.uri, position);
             }))).append($('<a>', {
             href: '#', 
             title: settings.deletion.title + ' ' + posId
@@ -684,10 +729,11 @@
               src: settings.deletion.icon,  
               alt: settings.deletion.title
             }).click(function () {
-              if (settings.mode != 'creation')
-                deletePosition($this, uri, position.id);
+              if (settings.mode != 'creation') {
+                deletePosition($this, classification.uri, position.id);
+              }
               else
-                removePositionFromClassification($this, position.id);
+                removePositionFromClassification($this, classification, position.id);
             })));
         }
           
@@ -700,7 +746,7 @@
       $('<a>', {
         href: '#'
       }).addClass('add_position').html(settings.addition.title).click(function() {
-        addNewPosition($this, uri);
+        addNewPosition($this, classification.uri);
       }).appendTo($('#allpositions'))
     }
   }
@@ -836,16 +882,16 @@
         'id': 'valid_position', 
         'href': '#'
       }).addClass('add_position').html(settings.addition.title).click(function() {
+        var classification = $this.data('classification');
         var position = aPositionWith(selectedValues);
         if (settings.mode == 'creation') {
-          var classification = $this.data('classification');
           if (checkPositionIsValid($this, position)) {
             position.id = classification.positions.length;
             classification.positions.push(position);
             refreshClassification($this);
           }
         } else {
-          submitPosition($this, settings.defaultClassificationURI, position);
+          submitPosition($this, classification.uri, position);
         }
       }));
     }

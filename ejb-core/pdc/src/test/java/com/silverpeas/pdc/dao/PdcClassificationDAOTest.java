@@ -23,18 +23,19 @@
  */
 package com.silverpeas.pdc.dao;
 
-import java.util.Iterator;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import com.silverpeas.pdc.TestResources;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
+import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class PdcClassificationDAOTest {
 
   @Before
   public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
             PdcClassificationDAOTest.class.getClassLoader().getResourceAsStream(
             "com/silverpeas/pdc/dao/pdc-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
@@ -138,19 +139,29 @@ public class PdcClassificationDAOTest {
     assertThat(thePredefinedClassification, nullValue());
   }
 
+  @Test(expected=RuntimeException.class)
+  public void saveANewPredefinedClassificationWithUnknownAxisValue() {
+    PdcClassification newClassification = PdcClassification.
+            aPredefinedPdcClassificationForComponentInstance("kmelia200").
+            withPosition(new PdcPosition().withValue(PdcAxisValue.aPdcAxisValue("20", "10")));
+    saveClassification(newClassification);
+  }
+
+  /**
+   * Modifies an existing predefined classification and saves it (with the modifications); Tests
+   * the predefined classification is correcly updated.
+   */
   @Test
-  @Transactional
   public void saveAnExistingPredefinedClassification() {
     String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
     PdcClassification theExistingClassification = resources.
             predefinedClassificationForComponentInstance(componentInstanceId);
     removeAValueFromAPosition(theExistingClassification);
 
-    PdcClassification expectedClassification = dao.saveAndFlush(theExistingClassification);
+    PdcClassification expectedClassification = saveClassification(theExistingClassification);
     assertThat(idOf(theExistingClassification), is(idOf(expectedClassification)));
 
-    PdcClassification actualClassification =
-            dao.findPredefinedClassificationByComponentInstanceId(componentInstanceId);
+    PdcClassification actualClassification = findClassificationById(idOf(expectedClassification));
     assertThat(actualClassification, is(equalTo(expectedClassification)));
 
     assertThat(actualClassification.getPositions().size(),
@@ -162,6 +173,26 @@ public class PdcClassificationDAOTest {
     assertThat(actualValues.size(), is(existingValues.size()));
   }
 
+  /**
+   * Saves a classification with positions similar to those of another predefined classification.
+   * The axis values in database should be unique, so they should be shared by several positions.
+   */
+  @Test
+  public void saveAPredefinedClassificationWithSomeAlreadyExistingAxisValues() {
+    String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
+    PdcClassification theExistingClassification = resources.
+            predefinedClassificationForComponentInstance(componentInstanceId);
+    Set<PdcPosition> theExistingPositions = copy(theExistingClassification.getPositions());
+
+    PdcClassification theNewClassification = PdcClassification.
+            aPredefinedPdcClassificationForComponentInstance("kmelia100").
+            withPositions(theExistingPositions);
+    theNewClassification = saveClassification(theNewClassification);
+    
+    PdcClassification savedClassification = findClassificationById(idOf(theNewClassification));
+    assertThat(savedClassification, is(equalTo(theNewClassification)));
+  }
+
   private void removeAValueFromAPosition(final PdcClassification classification) {
     for (PdcPosition position : classification.getPositions()) {
       if (position.getValues().size() > 1) {
@@ -170,5 +201,30 @@ public class PdcClassificationDAOTest {
         break;
       }
     }
+  }
+
+  /**
+   * Copies the specified positions to another ones. The copied positions are new and as such they
+   * don't have their unique identifier set.
+   * @param positions the positions on the PdC to copy.
+   * @return the copied positions on the PdC (not saved).
+   */
+  private Set<PdcPosition> copy(final Set<PdcPosition> positions) {
+    Set<PdcPosition> positionCopies = new HashSet<PdcPosition>();
+    for (PdcPosition pdcPosition : positions) {
+      PdcPosition copy = new PdcPosition().withValues(pdcPosition.getValues());
+      positionCopies.add(copy);
+    }
+    return positionCopies;
+  }
+  
+  @Transactional
+  private PdcClassification saveClassification(final PdcClassification classification) {
+    return dao.saveAndFlush(classification);
+  }
+  
+  @Transactional
+  private PdcClassification findClassificationById(Long id) {
+    return dao.readByPrimaryKey(id);
   }
 }

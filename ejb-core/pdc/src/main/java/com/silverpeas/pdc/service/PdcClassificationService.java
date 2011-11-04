@@ -23,6 +23,10 @@
  */
 package com.silverpeas.pdc.service;
 
+import com.silverpeas.pdc.model.PdcAxisValue;
+import com.silverpeas.pdc.model.PdcPosition;
+import java.util.ArrayList;
+import com.silverpeas.pdc.dao.PdcAxisValueDAO;
 import java.util.List;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.dao.PdcClassificationDAO;
@@ -75,29 +79,34 @@ import static com.silverpeas.pdc.model.PdcClassification.*;
 public class PdcClassificationService {
 
   @Inject
-  private PdcClassificationDAO dao;
+  private PdcClassificationDAO classificationDao;
+  @Inject
+  private PdcAxisValueDAO valueDao;
   private NodeBm nodeBm;
   @Inject
   private PdcBm pdcBm;
 
   /**
-   * Gets the predefined classification on the PdC that was set for any new contents in the specified
+   * Finds a predefined classification on the PdC that was set for any new contents in the specified
    * node of the specified component instance.
    * 
-   * If the predefined classification is not found for the specified node, then it is seeked back upto
+   * If no predefined classification is found for the specified node, then it is seeked back upto
    * the root node (that is the component instance ifself). In the case no predefined classification
-   * isn't set for the whole component instance, an empty classification is then returned.
+   * is set for the whole component instance, an empty classification is then returned. To get the
+   * predefined classification that is set exactly for the specified node (if any), then use the
+   * @see PdcClassificationService#getPreDefinedClassification(java.lang.String, java.lang.String) 
+   * method.
    * @param nodeId the unique identifier of the node.
    * @param instanceId the unique identifier of the Silverpeas component instance.
    * @return a predefined classification on the PdC ready to be used to classify a content published
    * in the specified node or an empty classification.
    */
-  public PdcClassification getPreDefinedClassification(String nodeId, String instanceId) {
+  public PdcClassification findAPreDefinedClassification(String nodeId, String instanceId) {
     try {
       PdcClassification classification = null;
       NodePK nodeToSeek = new NodePK(nodeId, instanceId);
       while (classification == null && !nodeToSeek.isUndefined()) {
-        classification = dao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
+        classification = classificationDao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
                 nodeToSeek.getInstanceId());
         NodeDetail node = getNodeBm().getDetail(nodeToSeek);
         nodeToSeek = node.getFatherPK();
@@ -117,17 +126,40 @@ public class PdcClassificationService {
 
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the specified
-   * managed by the specified component instance. This method is for the component instances that
+   * node of the specified component instance.
+   * 
+   * In the case no predefined classification is set for the specified node, a none classification
+   * is then returned.
+   * @param nodeId the unique node identifier.
+   * @param instanceId the unique component instance identifier.
+   * @return a predefined classification on the PdC associated with the specified node or an empty
+   * classification.
+   */
+  public PdcClassification getPreDefinedClassification(String nodeId, String instanceId) {
+    NodePK nodeToSeek = new NodePK(nodeId, instanceId);
+    PdcClassification classification =
+            classificationDao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
+            nodeToSeek.getInstanceId());
+    if (classification == null) {
+      classification = NONE_CLASSIFICATION;
+    }
+    return classification;
+  }
+
+  /**
+   * Gets the predefined classification on the PdC that was set for any new contents managed in the
+   * specified component instance. This method is for the component instances that
    * don't support the categorization.
    * 
-   * In the case no predefined classification isn't set for the whole component instance, a none
+   * In the case no predefined classification is set for the whole component instance, a none
    * classification is then returned.
    * @param instanceId the unique identifier of the Silverpeas component instance.
    * @return a predefined classification on the PdC ready to be used to classify a content
    * published within the component instance or an empty classification.
    */
   public PdcClassification getPreDefinedClassification(String instanceId) {
-    PdcClassification classification = dao.findPredefinedClassificationByComponentInstanceId(
+    PdcClassification classification = classificationDao.
+            findPredefinedClassificationByComponentInstanceId(
             instanceId);
     if (classification == null) {
       classification = NONE_CLASSIFICATION;
@@ -149,7 +181,17 @@ public class PdcClassificationService {
     if (!classification.isPredefined()) {
       throw new IllegalArgumentException("The classification isn't a predefined one");
     }
-    PdcClassification savedClassification = dao.saveAndFlush(classification);
+    PdcClassification savedClassification = NONE_CLASSIFICATION;
+    if (classification.isEmpty()) {
+      classificationDao.delete(classification);
+    } else {
+      List<PdcAxisValue> allValues = new ArrayList<PdcAxisValue>();
+      for (PdcPosition aPosition : classification.getPositions()) {
+        allValues.addAll(aPosition.getValues());
+      }
+      valueDao.save(allValues);
+      savedClassification = classificationDao.saveAndFlush(classification);
+    }
     return savedClassification;
   }
 

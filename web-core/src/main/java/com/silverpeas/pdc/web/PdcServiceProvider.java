@@ -164,14 +164,16 @@ public class PdcServiceProvider {
    * @return a default PdC classification to use to classify contents.
    * @throws PdcException if an error occurs while getting the PdC classification.
    */
-  PdcClassification getPredefinedClassificationForContentsIn(String nodeId, String componentId)
+  PdcClassification findPredefinedClassificationForContentsIn(String nodeId, String componentId)
           throws PdcException {
     if (isDefined(nodeId)) {
-      return classificationService.getPreDefinedClassification(nodeId, componentId);
+      return classificationService.findAPreDefinedClassification(nodeId, componentId);
     } else {
       return classificationService.getPreDefinedClassification(componentId);
     }
   }
+  
+  
 
   PdcClassification saveOrUpdatePredefinedClassification(
           final PdcClassification predefinedClassification) {

@@ -99,7 +99,7 @@ public class PdcClassificationServiceTest {
     PdcClassification expectedClassification = resources.predefinedClassificationForNode(
             deeperNodeId, componentInstanceId);
 
-    PdcClassification actualClassification = service.getPreDefinedClassification(deeperNodeId,
+    PdcClassification actualClassification = service.findAPreDefinedClassification(deeperNodeId,
             componentInstanceId);
     assertThat(actualClassification, is(equalTo(expectedClassification)));
   }
@@ -109,7 +109,7 @@ public class PdcClassificationServiceTest {
     String componentInstanceId = resources.componentInstanceWithoutPredefinedClassification();
     List<String> nodeIds = resources.nodesIdOfComponentInstance(componentInstanceId);
     String deeperNodeId = nodeIds.get(nodeIds.size() - 1);
-    PdcClassification actualClassification = service.getPreDefinedClassification(deeperNodeId,
+    PdcClassification actualClassification = service.findAPreDefinedClassification(deeperNodeId,
             componentInstanceId);
     assertThat(actualClassification, is(equalTo(NONE_CLASSIFICATION)));
   }
@@ -122,7 +122,7 @@ public class PdcClassificationServiceTest {
     PdcClassification expectedClassification = resources.
             predefinedClassificationForComponentInstance(componentInstanceId);
 
-    PdcClassification actualClassification = service.getPreDefinedClassification(deeperNodeId,
+    PdcClassification actualClassification = service.findAPreDefinedClassification(deeperNodeId,
             componentInstanceId);
     assertThat(actualClassification, is(equalTo(expectedClassification)));
   }
@@ -130,7 +130,7 @@ public class PdcClassificationServiceTest {
   @Test(expected = EntityNotFoundException.class)
   public void throwExceptionWhenGettingPredefinedClassificationForAnUnkonwnNode() {
     String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
-    service.getPreDefinedClassification(resources.unexistingNodeId(), componentInstanceId);
+    service.findAPreDefinedClassification(resources.unexistingNodeId(), componentInstanceId);
   }
 
   @Test

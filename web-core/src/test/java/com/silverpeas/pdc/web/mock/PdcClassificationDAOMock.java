@@ -73,7 +73,7 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   public PdcClassification findPredefinedClassificationByNodeId(String nodeId, String instanceId) {
     PdcClassification foundClassification = null;
     for (PdcClassification pdcClassification : classifications.values()) {
-      if (pdcClassification.isOnlyPredefinedForANode() && pdcClassification.getComponentInstanceId().
+      if (pdcClassification.isPredefinedForANode() && pdcClassification.getComponentInstanceId().
               equals(instanceId) && pdcClassification.getNodeId().equals(nodeId)) {
         foundClassification = pdcClassification;
         break;

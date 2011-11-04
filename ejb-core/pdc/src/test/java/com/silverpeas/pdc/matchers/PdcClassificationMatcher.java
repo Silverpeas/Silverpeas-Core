@@ -144,12 +144,12 @@ public class PdcClassificationMatcher extends TypeSafeMatcher<PdcClassification>
                     + ", expected position " + position + " value " + value + " axis: "
                     + expectedValue.getAxisId()
                     + ")";
-          } else if (!actualValue.getTerm().equals(expectedValue.getTerm())) {
+          } else if (!actualValue.getId().equals(expectedValue.getId())) {
             matches = false;
-            description += "(actual position " + position + " value " + value + " term: "
-                    + actualValue.getTerm()
-                    + ", expected position " + position + " value " + value + " term: "
-                    + expectedValue.getTerm()
+            description += "(actual position " + position + " value " + value + " id: "
+                    + actualValue.getId()
+                    + ", expected position " + position + " value " + value + " id: "
+                    + expectedValue.getId()
                     + ")";
           }
         }

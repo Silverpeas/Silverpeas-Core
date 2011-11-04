@@ -33,6 +33,20 @@ public class PdcAxisValuePk implements Serializable {
   
   private Long valueId;
   private Long axisId;
+  
+  public static PdcAxisValuePk aPdcAxisValuePk(String valueId, String axisId) {
+    PdcAxisValuePk pk = new PdcAxisValuePk();
+    pk.setValueId(Long.valueOf(valueId));
+    pk.setAxisId(Long.valueOf(axisId));
+    return pk;
+  }
+  
+  public static PdcAxisValuePk aPdcAxisValuePk(long valueId, long axisId) {
+    PdcAxisValuePk pk = new PdcAxisValuePk();
+    pk.setValueId(valueId);
+    pk.setAxisId(axisId);
+    return pk;
+  }
 
   public Long getAxisId() {
     return axisId;
@@ -76,5 +90,9 @@ public class PdcAxisValuePk implements Serializable {
     hash = 13 * hash + (this.axisId != null ? this.axisId.hashCode() : 0);
     return hash;
   }
-  
+
+  @Override
+  public String toString() {
+    return "PdcAxisValuePk{" + "valueId=" + valueId + ", axisId=" + axisId + '}';
+  }
 }

@@ -23,6 +23,10 @@
  */
 package com.silverpeas.pdc.model;
 
+import com.silverpeas.pdc.dao.PdcAxisValueDAO;
+import com.silverpeas.pdc.dao.PdcClassificationDAO;
+import javax.inject.Inject;
+import javax.persistence.Transient;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
@@ -43,8 +47,12 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.springframework.beans.factory.annotation.Configurable;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A classification of a content in Silverpeas on the classification plan (named PdC).
@@ -67,7 +75,7 @@ import javax.validation.constraints.Size;
   @NamedQuery(name = "PdcClassification.findPredefinedClassificationByNodeId",
   query = "from PdcClassification where instanceId=?2 and contentId is null and nodeId=?1)")
 })
-public class PdcClassification implements Serializable {
+public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Represents an empty classification (id est no classification on the PdC).
@@ -162,18 +170,25 @@ public class PdcClassification implements Serializable {
   }
 
   public PdcClassification ofContent(String contentId) {
-    this.contentId = contentId;
-    this.nodeId = null;
+    if (isDefined(contentId)) {
+      this.contentId = contentId;
+      this.nodeId = null;
+    }
     return this;
   }
 
   public PdcClassification forNode(String nodeId) {
-    this.nodeId = nodeId;
-    this.contentId = null;
+    if (isDefined(nodeId)) {
+      this.nodeId = nodeId;
+      this.contentId = null;
+    }
     return this;
   }
 
   public PdcClassification inComponentInstance(String instanceId) {
+    if (!isDefined(instanceId)) {
+      throw new NullPointerException("The component instance identifier cannot be null!");
+    }
     this.instanceId = instanceId;
     return this;
   }
@@ -220,18 +235,17 @@ public class PdcClassification implements Serializable {
   }
 
   /**
-   * Is this classification on the PdC is a only predefined for the contents published in a given
+   * Is this classification on the PdC is a predefined one for the contents published in a given
    * node?
    * 
-   * If this classification serves as a template for classifying the contents in a single node of
-   * the  the component instance, then true is returned.
+   * If this classification serves to classify the contents published in a single node of the
+   * component instance, then true is returned.
    * If this classification is the one of a given content, then false is returned.
    * If this classification is the predefined one for the whole component instance, then false
    * is returned.
-   * @return true if this classification is a predefined one for only a given node,
-   * false otherwise.
+   * @return true if this classification is a predefined one for a given node, false otherwise.
    */
-  public boolean isOnlyPredefinedForANode() {
+  public boolean isPredefinedForANode() {
     return isPredefined() && nodeId != null;
   }
 
@@ -289,6 +303,18 @@ public class PdcClassification implements Serializable {
     return "PdcClassification{" + "id=" + id + ", positions=" + positions + ", modifiable="
             + modifiable + ", instanceId=" + instanceId + ", contentId=" + contentId + ", nodeId="
             + nodeId + '}';
+  }
+
+  @Override
+  public PdcClassification clone() {
+    PdcClassification classification = new PdcClassification().ofContent(contentId).
+            forNode(nodeId).
+            inComponentInstance(instanceId);
+    classification.modifiable = modifiable;
+    for (PdcPosition pdcPosition : positions) {
+      classification.getPositions().add(pdcPosition.clone());
+    }
+    return classification;
   }
 
   /**

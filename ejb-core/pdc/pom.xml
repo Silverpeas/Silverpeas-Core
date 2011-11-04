@@ -79,7 +79,8 @@
     <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>
-<!--    <plugins>
+    <!--
+    <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>hibernate3-maven-plugin</artifactId>
@@ -109,7 +110,8 @@
           </componentProperties>
         </configuration>
       </plugin>
-    </plugins>-->
+    </plugins>
+          -->
   </build>
   <properties>
     <netbeans.hint.deploy.server>JBoss4</netbeans.hint.deploy.server>

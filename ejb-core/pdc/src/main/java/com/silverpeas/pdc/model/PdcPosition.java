@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -57,13 +56,14 @@ import static com.silverpeas.util.StringUtil.*;
  * of the axis valuation.
  */
 @Entity
-public class PdcPosition implements Serializable {
+public class PdcPosition implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 665144316569539208L;
+  
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @OneToMany(fetch = FetchType.EAGER)
   @NotNull
   @Size(min = 1)
   private Set<PdcAxisValue> axisValues = new HashSet<PdcAxisValue>();
@@ -78,7 +78,7 @@ public class PdcPosition implements Serializable {
       return null;
     }
   }
-  
+
   /**
    * Sets the specified identifier to this position. If the identifier is null or empty, no
    * identifier is set.
@@ -86,8 +86,8 @@ public class PdcPosition implements Serializable {
    * @return itself.
    */
   public PdcPosition withId(String id) {
-    if(isDefined(id)) {
-    this.id = Long.valueOf(id);
+    if (isDefined(id)) {
+      this.id = Long.valueOf(id);
     }
     return this;
   }
@@ -121,8 +121,46 @@ public class PdcPosition implements Serializable {
     return this;
   }
 
+  @Override
+  protected PdcPosition clone() {
+    PdcPosition position = new PdcPosition();
+    for (PdcAxisValue aValue : axisValues) {
+      position.getValues().add(aValue.clone());
+    }
+    return position;
+  }
+
   protected PdcPosition(long id) {
     this.id = id;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final PdcPosition other = (PdcPosition) obj;
+    if (this.id != null && other.id != null) {
+      return this.id.equals(other.id);
+    } else if (this.axisValues != other.axisValues && (this.axisValues == null || !this.axisValues.
+            equals(other.axisValues))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    if (this.id != null) {
+      hash = 61 * hash + this.id.hashCode();
+    } else {
+      hash = 61 * hash + (this.axisValues != null ? this.axisValues.hashCode() : 0);
+    }
+    return hash;
   }
 
   @Override

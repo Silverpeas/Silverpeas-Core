@@ -207,7 +207,7 @@ public final class TestResources {
     List<PdcClassification> allClassifications = allPdcClassifications();
     for (String nodeId : nodeIds) {
       for (PdcClassification aClassification : allClassifications) {
-        if (aClassification.isOnlyPredefinedForANode()
+        if (aClassification.isPredefinedForANode()
                 && nodeId.equals(aClassification.getNodeId())) {
           classifications.add(aClassification);
         }

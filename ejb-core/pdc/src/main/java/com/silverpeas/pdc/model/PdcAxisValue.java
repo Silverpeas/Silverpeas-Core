@@ -59,7 +59,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @IdClass(PdcAxisValuePk.class)
-public class PdcAxisValue implements Serializable {
+public class PdcAxisValue implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 2345886411781136417L;
   @Id
@@ -219,6 +219,15 @@ public class PdcAxisValue implements Serializable {
     return getTreeNode().getPath() + getId();
   }
 
+  @Override
+  protected PdcAxisValue clone() {
+    try {
+      return (PdcAxisValue) super.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
   protected PdcAxisValue() {
   }
 
@@ -275,6 +284,33 @@ public class PdcAxisValue implements Serializable {
   protected PdcAxisValue withAsTreeNodeParents(final List<? extends TreeNode> parents) {
     this.treeNodeParents = parents;
     return this;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final PdcAxisValue other = (PdcAxisValue) obj;
+    if (this.valueId != other.valueId &&
+            (this.valueId == null || !this.valueId.equals(other.valueId))) {
+      return false;
+    }
+    if (this.axisId != other.axisId && (this.axisId == null || !this.axisId.equals(other.axisId))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 89 * hash + (this.valueId != null ? this.valueId.hashCode() : 0);
+    hash = 89 * hash + (this.axisId != null ? this.axisId.hashCode() : 0);
+    return hash;
   }
 
   @Override
