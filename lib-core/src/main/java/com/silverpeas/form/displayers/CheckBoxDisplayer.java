@@ -52,7 +52,7 @@ import java.util.StringTokenizer;
  * @see Form
  * @see FieldDisplayer
  */
-public class CheckBoxDisplayer extends AbstractFieldDisplayer {
+public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
   /**
    * Constructeur
@@ -88,7 +88,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
 
-    if (!template.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "CheckBoxDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
               TextField.TYPE);
     }
@@ -126,7 +126,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
    * @throws FormException  
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, TextField field, FieldTemplate template,
           PagesContext PagesContext) throws FormException {
     String selectedValues = "";
     List<String> valuesFromDB = new ArrayList<String>();
@@ -140,7 +140,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
 
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "CheckBoxDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
               TextField.TYPE);
     }
@@ -242,7 +242,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, TextField field, FieldTemplate template,
           PagesContext pageContext) throws FormException {
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
             "parameterName = " + template.getFieldName());
@@ -268,9 +268,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String values, Field field, FieldTemplate template,
+  public List<String> update(String values, TextField field, FieldTemplate template,
           PagesContext PagesContext) throws FormException {
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
               TextField.TYPE);
     }

@@ -54,6 +54,7 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -1054,15 +1055,13 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     RecordTemplate template = form.toRecordTemplate(step.getUserRoleName(), "");
     String[] fieldNames = actionData.getFieldNames();
 
-    for (int i = 0; i < fieldNames.length; i++) {
-      // fieldIndex = i;
-      String fieldName = (String) fieldNames[i];
+    for (String fieldName : fieldNames) {
       Field updatedField = actionData.getField(fieldName);
       if (updatedField == null) {
         SilverTrace.error("workflowEngine", "ProcessInstanceImpl.checkWysiwygData",
             "root.MSG_GEN_ENTER_METHOD", "cannot retrieve field : " + fieldName);
       }
-      FieldTemplate tmpl = template.getFieldTemplate(fieldNames[i]);
+      FieldTemplate tmpl = template.getFieldTemplate(fieldName);
 
       if ("wysiwyg".equals(tmpl.getDisplayerName())) {
         if ((!updatedField.isNull()) && (!updatedField.getStringValue().startsWith(
@@ -1071,7 +1070,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
           PagesContext context = new PagesContext("dummy", "0", actionData.getLanguage(), false,
               getModelId(), "dummy");
           context.setObjectId(instanceId);
-          displayer.update(updatedField.getStringValue(), updatedField, tmpl,
+          displayer.update(updatedField.getStringValue(), (TextField)updatedField, tmpl,
               context);
         }
       }

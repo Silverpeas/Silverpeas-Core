@@ -52,7 +52,7 @@ import java.util.Collections;
  * @see Form
  * @see FieldDisplayer
  */
-public class TimeFieldDisplayer extends AbstractFieldDisplayer {
+public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   public TimeFieldDisplayer() {
   }
@@ -83,7 +83,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
       throws java.io.IOException {
     String language = PagesContext.getLanguage();
-    if (!template.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "TimeFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
@@ -121,7 +121,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
    * @throws FormException 
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template, PagesContext pageContext)
+  public void display(PrintWriter out, TextField field, FieldTemplate template, PagesContext pageContext)
       throws FormException {
     String value = "";
     String html = "";
@@ -188,9 +188,9 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
     out.println(html);
   }
 
-  public List<String> update(String newValue, Field field, FieldTemplate template,
+  public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("TimeFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }

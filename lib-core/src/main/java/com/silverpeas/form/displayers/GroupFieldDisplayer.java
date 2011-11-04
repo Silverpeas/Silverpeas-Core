@@ -53,7 +53,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see Form
  * @see FieldDisplayer
  */
-public class GroupFieldDisplayer extends AbstractFieldDisplayer {
+public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
 
   /**
    * Returns the name of the managed types.
@@ -102,7 +102,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
    * </ul>
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, GroupField field, FieldTemplate template,
           PagesContext PagesContext) throws FormException {
     SilverTrace.info("form", "GroupFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
             "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
@@ -124,7 +124,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
       SilverTrace.info("form", "GroupFieldDisplayer.display",
               "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
     } else {
-      groupId = ((GroupField) field).getGroupId();
+      groupId = field.getGroupId();
     }
     if (!field.isNull()) {
       groupName = field.getValue();
@@ -170,13 +170,13 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String newId, Field field, FieldTemplate template,
+  public List<String> update(String newId, GroupField field, FieldTemplate template,
           PagesContext pagesContext) throws FormException {
     if (field.getTypeName().equals(GroupField.TYPE)) {
       if (!StringUtil.isDefined(newId)) {
         field.setNull();
       } else {
-        ((GroupField) field).setGroupId(newId);
+        field.setGroupId(newId);
       }
     } else {
       throw new FormException("GroupFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
@@ -204,7 +204,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, GroupField field, FieldTemplate template,
           PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);

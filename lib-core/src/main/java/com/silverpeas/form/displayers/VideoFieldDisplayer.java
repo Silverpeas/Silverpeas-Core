@@ -60,7 +60,7 @@ import java.util.Map;
  * A displayer of a video.
  * The underlying video player is FlowPlayer (http://flowplayer.org/index.html).
  */
-public class VideoFieldDisplayer extends AbstractFieldDisplayer {
+public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   
   /**
    * The default width in pixels of the video display area.
@@ -137,7 +137,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, FileField field, FieldTemplate template,
           PagesContext pagesContext) throws FormException {
     checkFieldType(template.getTypeName(), "VideoFieldDisplayer.display");
     String attachmentId = field.getValue();
@@ -157,7 +157,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String attachmentId, Field field, FieldTemplate template,
+  public List<String> update(String attachmentId, FileField field, FieldTemplate template,
           PagesContext PagesContext) throws FormException {
     checkFieldType(field.getTypeName(), "VideoFieldDisplayer.update");
     List<String> attachmentIds = new ArrayList<String>();
@@ -165,14 +165,14 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     if (!StringUtil.isDefined(attachmentId)) {
       field.setNull();
     } else {
-      ((FileField) field).setAttachmentId(attachmentId);
+      field.setAttachmentId(attachmentId);
       attachmentIds.add(attachmentId);
     }
     return attachmentIds;
   }
 
   @Override
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
           PagesContext pageContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
     

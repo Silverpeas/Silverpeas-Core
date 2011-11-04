@@ -73,7 +73,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @author ahedin
  * @see PdcField
  */
-public class PdcFieldDisplayer extends AbstractFieldDisplayer {
+public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
 
   // Multilang resource path
   private static String MULTILANG_RESOURCE_PATH =
@@ -86,13 +86,13 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
   private PdcBm pdcBm = null;
 
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, PdcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
 
-    if (!field.getTypeName().equals(PdcField.TYPE)) {
+    if (!PdcField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "PdcFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           PdcField.TYPE);
     }
@@ -139,9 +139,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String value, Field field, FieldTemplate template,
+  public List<String> update(String value, PdcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
-    if (!field.getTypeName().equals(PdcField.TYPE)) {
+    if (!PdcField.TYPE.equals(field.getTypeName())) {
       throw new FormException(
           "PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", PdcField.TYPE);
     }
