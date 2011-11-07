@@ -138,7 +138,7 @@ public class ResourceLocator implements Serializable {
       return bundle.getString(sAttribut);
     } catch (MissingResourceException msrex) {
       SilverTrace.warn("util", "ResourceLocator.getString", "util.MSG_NO_ATTR_VALUE",
-              "File : " + propertyFile + " | Attribut : " + sAttribut, msrex);
+              "File : " + propertyFile + " | Attribut : " + sAttribut);
       return null;
     }
   }
