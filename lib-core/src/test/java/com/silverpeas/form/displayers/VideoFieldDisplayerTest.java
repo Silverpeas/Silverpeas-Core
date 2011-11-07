@@ -81,7 +81,7 @@ public class VideoFieldDisplayerTest {
   @Test
   public void testUpdateAttachment() throws Exception {
     String attachmentId = "toto.flv";
-    Field field = new FileField();
+    FileField field = new FileField();
     FieldTemplate template = new GenericFieldTemplate("video", FileField.class);
     PagesContext PagesContext = mock(PagesContext.class);
     VideoFieldDisplayer instance = new VideoFieldDisplayer();
@@ -96,7 +96,7 @@ public class VideoFieldDisplayerTest {
   @Test
   public void testUpdateEmptyAttachment() throws Exception {
     String attachmentId = "";
-    Field field = new FileField();
+    FileField field = new FileField();
     FieldTemplate template = new GenericFieldTemplate("video", FileField.class);
     PagesContext PagesContext = mock(PagesContext.class);
     VideoFieldDisplayer instance = new VideoFieldDisplayer();

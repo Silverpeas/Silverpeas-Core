@@ -59,7 +59,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see Form
  * @see FieldDisplayer
  */
-public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer {
+public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField> {
   
   private PdcBm pdcBm = null;
   private ContentManager contentManager = null;
@@ -112,7 +112,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer {
    * </UL>
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext context) throws FormException {
 
     String language = context.getLanguage();
@@ -168,14 +168,14 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     // nothing to do as this displayer is for readonly purpose.
     return new ArrayList<String>();
   }
   
   @Override
-  public List<String> update(String values, Field field, FieldTemplate template,
+  public List<String> update(String values, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
 
     // nothing to do as this displayer is for readonly purpose.

@@ -54,7 +54,7 @@ import java.util.List;
  * @see Form
  * @see FieldDisplayer
  */
-public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
+public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   public UniqueIdFieldDisplayer() {
   }
@@ -74,13 +74,13 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template, PagesContext pageContext)
+  public void display(PrintWriter out, TextField field, FieldTemplate template, PagesContext pageContext)
       throws FormException {
     if (field == null) {
       return;
     }
 
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "UniqueIdFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
@@ -112,10 +112,10 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String newValue, Field field, FieldTemplate template,
+  public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }

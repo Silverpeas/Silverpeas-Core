@@ -51,7 +51,7 @@ import com.stratelia.webactiv.util.DBUtil;
  * @see Form
  * @see FieldDisplayer
  */
-public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
+public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
   private final static String[] MANAGED_TYPES = new String[]{JdbcField.TYPE};
   private final static String mandatoryImg = Util.getIcon("mandatoryField");
@@ -119,8 +119,8 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
    * @throws FormException 
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
+  public void display(PrintWriter out, JdbcField field, FieldTemplate template, 
+          PagesContext pagesContext) throws FormException {
     String currentUserId = pagesContext.getUserId();
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
@@ -132,7 +132,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
           JdbcField.TYPE);
       jdbcField = new JdbcField();
     } else {
-      jdbcField = (JdbcField) field;
+      jdbcField = field;
     }
     String value = "";
     if (!field.isNull()) {
@@ -279,7 +279,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
    * @return
    * @throws FormException if the field type is not a managed type or if the field doesn't accept the new value.
    */
-  public List<String> update(String newValue, Field field, FieldTemplate template,
+  public List<String> update(String newValue, JdbcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (!JdbcField.TYPE.equals(field.getTypeName())) {
       throw new FormException("JdbcFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",

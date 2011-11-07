@@ -53,7 +53,7 @@ import java.util.Map;
  * @see Form
  * @see FieldDisplayer
  */
-public class TextFieldDisplayer extends AbstractFieldDisplayer {
+public class TextFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   private final static String[] MANAGED_TYPES = new String[]{TextField.TYPE};
 
@@ -142,7 +142,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void display(PrintWriter out, Field field, FieldTemplate template, PagesContext pageContext)
+  public void display(PrintWriter out, TextField field, FieldTemplate template, PagesContext pageContext)
       throws FormException {
     if (field == null) {
       return;
@@ -244,7 +244,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     }
   }
 
-  public List<String> update(String newValue, Field field, FieldTemplate template,
+  public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
     if (!TextField.TYPE.equals(field.getTypeName())) {

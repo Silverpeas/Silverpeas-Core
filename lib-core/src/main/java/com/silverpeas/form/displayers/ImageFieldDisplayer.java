@@ -64,7 +64,7 @@ import java.util.Map;
  * @see Form
  * @see FieldDisplayer
  */
-public class ImageFieldDisplayer extends AbstractFieldDisplayer {
+public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
 
@@ -116,7 +116,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
   }
@@ -134,7 +134,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
    * @param pagesContext
    * @throws FormException
    */
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue() + ", fieldType = "
@@ -143,7 +143,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
     String fieldName = template.getFieldName();
     String language = pagesContext.getLanguage();
 
-    if (!field.getTypeName().equals(Field.TYPE_FILE)) {
+    if (!Field.TYPE_FILE.equals(field.getTypeName())) {
       SilverTrace.info("form", "ImageFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           Field.TYPE_FILE);
     }
@@ -298,15 +298,14 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String attachmentId, Field field,
-      FieldTemplate template,
+  public List<String> update(String attachmentId, FileField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
-    if (field.getTypeName().equals(Field.TYPE_FILE)) {
+    if (Field.TYPE_FILE.equals(field.getTypeName())) {
       if (!StringUtil.isDefined(attachmentId)) {
         field.setNull();
       } else {
-        ((FileField) field).setAttachmentId(attachmentId);
+        field.setAttachmentId(attachmentId);
         attachmentIds.add(attachmentId);
       }
     } else {
@@ -317,7 +316,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
       PagesContext pageContext) throws
       FormException {
     List<String> attachmentIds = new ArrayList<String>();

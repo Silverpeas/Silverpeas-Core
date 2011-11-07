@@ -51,13 +51,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see Form
  * @see FieldDisplayer
  */
-public class SequenceFieldDisplayer extends AbstractFieldDisplayer {
+public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField> {
 
   /**
    * Prints the HTML value of the field. The displayed value must be readable for the end user. The
    * value format follows the field's setting. The field's name is used to name the html form input.
    */
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, SequenceField field, FieldTemplate template,
     PagesContext pagesContext)
   throws FormException {
     if (!template.getTypeName().equals(SequenceField.TYPE)) {
@@ -66,11 +66,11 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer {
     }
     
     SequenceField sequenceField = null;
-    if (!field.getTypeName().equals(SequenceField.TYPE)) {
+    if (!SequenceField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "SequenceFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
         SequenceField.TYPE);
     } else {
-      sequenceField = (SequenceField) field;
+      sequenceField = field;
     }
     
     String language = pagesContext.getLanguage();
@@ -138,10 +138,10 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer {
    * Updates the value of the field. The field's name is used to retrieve the HTTP parameter from
    * the request.
    */
-  public List<String> update(String value, Field field, FieldTemplate template,
+  public List<String> update(String value, SequenceField field, FieldTemplate template,
     PagesContext pagesContext)
   throws FormException {
-    if (!field.getTypeName().equals(SequenceField.TYPE)) {
+    if (!SequenceField.TYPE.equals(field.getTypeName())) {
       throw new FormException("SequenceFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
         SequenceField.TYPE);
     }

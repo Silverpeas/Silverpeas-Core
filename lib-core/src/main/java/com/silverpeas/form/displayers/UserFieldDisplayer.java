@@ -52,7 +52,7 @@ import org.apache.commons.fileupload.FileItem;
  * @see Form
  * @see FieldDisplayer
  */
-public class UserFieldDisplayer extends AbstractFieldDisplayer {
+public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   /**
    * Returns the name of the managed types.
@@ -112,7 +112,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
    * @throws FormException  
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, UserField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     SilverTrace.info("form", "UserFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
@@ -134,7 +134,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       SilverTrace.info("form", "UserFieldDisplayer.display",
           "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
     } else {
-      userId = ((UserField) field).getUserId();
+      userId = field.getUserId();
     }
     if (!field.isNull()) {
       userName = field.getValue();
@@ -186,14 +186,14 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String newId, Field field, FieldTemplate template,
+  public List<String> update(String newId, UserField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
 
     if (UserField.TYPE.equals(field.getTypeName())) {
       if (!StringUtil.isDefined(newId)) {
         field.setNull();
       } else {
-        ((UserField) field).setUserId(newId);
+        field.setUserId(newId);
       }
     } else {
       throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
@@ -217,7 +217,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, UserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);

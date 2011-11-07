@@ -50,7 +50,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see Form
  * @see FieldDisplayer
  */
-public class LdapFieldDisplayer extends AbstractFieldDisplayer {
+public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
 
   private final static String[] MANAGED_TYPES = new String[]{LdapField.TYPE};
   private final static String mandatoryImg = Util.getIcon("mandatoryField");
@@ -119,7 +119,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
    * @throws FormException  
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, LdapField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     String value = "";
 
@@ -330,10 +330,10 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(String newValue, Field field, FieldTemplate template,
+  public List<String> update(String newValue, LdapField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
 
-    if (!field.getTypeName().equals(LdapField.TYPE)) {
+    if (!LdapField.TYPE.equals(field.getTypeName())) {
       throw new FormException("LdapFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           LdapField.TYPE);
     }

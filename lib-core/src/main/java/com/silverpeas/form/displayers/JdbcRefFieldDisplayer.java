@@ -46,15 +46,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer {
+public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> {
 
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, JdbcRefField field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
 
-    if (!field.getTypeName().equals(JdbcRefField.TYPE)) {
+    if (!JdbcRefField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "JdbcRefFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           JdbcRefField.TYPE);
     }
@@ -160,10 +160,10 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String value, Field field, FieldTemplate template,
+  public List<String> update(String value, JdbcRefField field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
-    if (!field.getTypeName().equals(JdbcRefField.TYPE)) {
+    if (!JdbcRefField.TYPE.equals(field.getTypeName())) {
       throw new FormException("JdbcRefFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           JdbcRefField.TYPE);
     }

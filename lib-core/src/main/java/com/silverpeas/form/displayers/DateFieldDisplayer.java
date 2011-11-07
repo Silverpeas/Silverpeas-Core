@@ -57,7 +57,7 @@ import com.stratelia.webactiv.util.DateUtil;
  * @see Form
  * @see FieldDisplayer
  */
-public class DateFieldDisplayer extends AbstractFieldDisplayer {
+public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
 
   /**
    * Constructeur
@@ -87,7 +87,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
           throws IOException {
     String language = pagesContext.getLanguage();
 
-    if (!template.getTypeName().equals(DateField.TYPE)) {
+    if (!DateField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "DateFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
               DateField.TYPE);
     }
@@ -129,9 +129,9 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * </UL>
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, DateField field, FieldTemplate template,
           PagesContext pagesContext) throws FormException {
-    if (!field.getTypeName().equals(DateField.TYPE)) {
+    if (!DateField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "DateFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
               DateField.TYPE);
     }
@@ -215,7 +215,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field doesn't accept the new value.
    */
   @Override
-  public List<String> update(String newValue, Field field, FieldTemplate template,
+  public List<String> update(String newValue, DateField field, FieldTemplate template,
           PagesContext pagesContext) throws FormException {
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());

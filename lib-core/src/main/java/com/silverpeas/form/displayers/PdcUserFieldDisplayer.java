@@ -35,6 +35,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.PdcUserField;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
@@ -48,15 +49,13 @@ import java.util.List;
  * @see Form
  * @see FieldDisplayer
  */
-public class PdcUserFieldDisplayer extends AbstractFieldDisplayer {
+public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> {
 
   /**
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-
-    s[0] = PdcUserField.TYPE;
+    String[] s = new String[] {PdcUserField.TYPE};
     return s;
   }
 
@@ -104,7 +103,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, PdcUserField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
 
     String language = PagesContext.getLanguage();
@@ -127,7 +126,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer {
           field.getTypeName());
 
     } else {
-      userCardIds = ((PdcUserField) field).getUserCardIds();
+      userCardIds = field.getUserCardIds();
     }
 
     if (!field.isNull()) {
@@ -151,12 +150,6 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer {
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
           URLManager.getApplicationURL() + "/RpdcSearchUserWrapper/jsp/Open"
-                /*
-       * + "?ComponentName=whitePages" + "&ReturnURL="
-       */
-
-      // /RvsicMain/WA5_vsicMain47/SelectFromPDC
-
           + "?formName=" + PagesContext.getFormName()
           + "&elementId=" + fieldName + "$$id"
           + "&elementName=" + fieldName + "$$name"
@@ -182,27 +175,13 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  /*
-   * public void update(HttpServletRequest request, Field field, FieldTemplate template,
-   * PagesContext pagesContext) throws FormException { String newId =
-   * request.getParameter(template.getFieldName()+"_id"); if
-   * (field.getTypeName().equals(PdcUserField.TYPE)) { if (newId == null || newId.trim().equals(""))
-   * { field.setNull(); } else { ((PdcUserField) field).setUserCardIds(newId); } } else { throw new
-   * FormException("PdcUserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", PdcUserField.TYPE);
-   * } }
-   */
-
-  public List<String> update(String newId, Field field,
-      FieldTemplate template,
+  public List<String> update(String newId, PdcUserField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
-
-    // String newId = request.getParameter(template.getFieldName()+"_id");
-
-    if (field.getTypeName().equals(PdcUserField.TYPE)) {
-      if (newId == null || newId.trim().equals("")) {
+    if (PdcUserField.TYPE.equals(field.getTypeName())) {
+      if (!StringUtil.isDefined(newId)) {
         field.setNull();
       } else {
-        ((PdcUserField) field).setUserCardIds(newId);
+        field.setUserCardIds(newId);
       }
     } else {
       throw new FormException("PdcUserFieldDisplayer.update",
@@ -216,6 +195,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
@@ -224,6 +204,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 2;
   }

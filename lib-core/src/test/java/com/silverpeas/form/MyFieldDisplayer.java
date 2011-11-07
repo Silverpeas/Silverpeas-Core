@@ -34,7 +34,7 @@ import org.apache.commons.fileupload.FileItem;
 /**
  * A displayer of a MyField object dedicated to tests.
  */
-public class MyFieldDisplayer implements FieldDisplayer {
+public class MyFieldDisplayer implements FieldDisplayer<Field> {
 
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)

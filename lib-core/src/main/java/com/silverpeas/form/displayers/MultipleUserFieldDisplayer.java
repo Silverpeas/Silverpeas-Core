@@ -53,7 +53,7 @@ import java.util.Map;
  * @see Form
  * @see FieldDisplayer
  */
-public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
+public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleUserField> {
 
   static final private String ROWS_DEFAULT_VALUE = "5";
   static final private String COLS_DEFAULT_VALUE = "100";
@@ -115,7 +115,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, MultipleUserField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     SilverTrace.info("form", "UserFieldDisplayer.display",
         "root.MSG_GEN_ENTER_METHOD", "fieldName = "
@@ -194,13 +194,13 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(String newIds, Field field, FieldTemplate template,
+  public List<String> update(String newIds, MultipleUserField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
-    if (field.getTypeName().equals(MultipleUserField.TYPE)) {
-      if (newIds == null || newIds.trim().equals("")) {
+    if (MultipleUserField.TYPE.equals(field.getTypeName())) {
+      if (!StringUtil.isDefined(newIds)) {
         field.setNull();
       } else {
-        ((MultipleUserField) field).setStringValue(newIds);
+        field.setStringValue(newIds);
       }
     } else {
       throw new FormException("UserFieldDisplayer.update",
@@ -209,7 +209,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
     return new ArrayList<String>();
   }
 
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+  public List<String> update(List<FileItem> items, MultipleUserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
@@ -224,6 +224,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
@@ -232,6 +233,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template,
       PagesContext pagesContext) {
     return 2;

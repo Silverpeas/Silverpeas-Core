@@ -133,7 +133,7 @@ public class JdbcFieldDisplayerTest {
   @Test(expected=com.silverpeas.form.FormException.class)
   public void testUpdateIncorrectField() throws Exception {
     String newValue = "";
-    Field field = mock(Field.class);
+    JdbcField field = mock(JdbcField.class);
     when(field.getTypeName()).thenReturn(RandomGenerator.getRandomString());
     JdbcFieldDisplayer instance = new JdbcFieldDisplayer();
     instance.update(newValue, field, null, null);

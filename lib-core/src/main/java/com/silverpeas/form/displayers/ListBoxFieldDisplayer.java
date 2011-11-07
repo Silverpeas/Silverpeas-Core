@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
  * @see Form
  * @see FieldDisplayer
  */
-public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
+public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   /**
    * Constructeur
@@ -79,7 +79,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
 
     String language = PagesContext.getLanguage();
 
-    if (!template.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "TextAreaFieldDisplayer.displayScripts",
           "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
     }
@@ -103,7 +103,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void display(PrintWriter out, Field field, FieldTemplate template,
+  public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String value = "";
     String keys = "";
@@ -115,7 +115,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
 
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "ListBoxFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
@@ -183,10 +183,10 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     out.println(html);
   }
 
-  public List<String> update(String newValue, Field field, FieldTemplate template,
+  public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
 
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
