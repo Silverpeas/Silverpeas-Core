@@ -68,8 +68,8 @@
       <item name="Changelog" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
       <item name="Release Notes" href="releasenotes.html" collapse="false"/>
       <item name="Installation" href="installation.html" collapse="false"/>
-      <item name="Migration" href="migration.html" collapse="false"/>
-      <item name="Source Code" href="source-repository.html" collapse="false"/>
+      <item name="Migration" href="migration.html" collapse="true"/>
+      <item name="Source Code" href="source-repository.html" collapse="true"/>
     </menu>
     <menu name="Configuration" inherit="none">
       <item name="Security" href="securing.html"  collapse="true"/>
@@ -97,15 +97,14 @@
     </menu>
     <menu ref="reports" />   
     <menu name="How to contribute" inherit="none">
-      <item name="Contribution" href="collaboration.html" collapse="false"/>
-      <item name="Code Quality" href="quality.html" collapse="false"/>
-      <item name="Architecture" href="architecture.html" collapse="false"/>
+      <item name="Contribution" href="collaboration.html" collapse="true"/>
+      <item name="Code Quality" href="quality.html" collapse="true"/>
     </menu>
     <menu name="Licensing" inherit="none">
-      <item name="License" href="legal/licensing_gnu_affero.html" collapse="false"/>
-      <item name="Licensing FAQ" href="legal/licensing_faq.html" collapse="false"/>
-      <item name="FLOSS Exception" href="legal/floss_exception.html"/>
-      <item name="Silverpeas Trade Mark" href="legal/trademark.html" collapse="false"/>
+      <item name="License" href="legal/licensing_gnu_affero.html" collapse="true"/>
+      <item name="Licensing FAQ" href="legal/licensing_faq.html" collapse="true"/>
+      <item name="FLOSS Exception" href="legal/floss_exception.html" collapse="true"/>
+      <item name="Silverpeas Trade Mark" href="legal/trademark.html" collapse="true"/>
     </menu> 
   </body>
 </project>
