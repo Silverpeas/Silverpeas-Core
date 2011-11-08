@@ -245,7 +245,7 @@ public final class Admin {
   public String getGeneralSpaceId() {
     return SPACE_KEY_PREFIX + m_nEntrepriseClientSpaceId;
   }
-  
+
   public void createSpaceIndex(int spaceId) {
     try {
       SpaceInstLight space = getSpaceInstLight(String.valueOf(spaceId));
@@ -1063,18 +1063,19 @@ public final class Admin {
    */
   public String getComponentParameterValue(String sComponentId, String parameterName) {
     try {
-      Parameter parameter =
-          componentManager.getParameter(domainDriverManager, getDriverComponentId(sComponentId),
-          parameterName);
-      if (parameter != null) {
-        return parameter.getValue();
+      ComponentInst component = getComponentInst(sComponentId);
+      if (component == null) {
+        SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
+            "admin.EX_ERR_GET_COMPONENT_PARAMS", "Component not found - sComponentId: '" + sComponentId + "'");
+        return "";
       }
+
+      return component.getParameterValue(parameterName);
     } catch (Exception e) {
       SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
           "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + sComponentId + "'", e);
       return "";
     }
-    return "";
   }
 
   public void restoreComponentFromBasket(String sComponentId)
@@ -1107,7 +1108,7 @@ public final class Admin {
           + sComponentId);
     }
   }
-  
+
   public void createComponentIndex(String componentId) {
     try {
       ComponentInstLight component = getComponentInstLight(componentId);
@@ -1230,7 +1231,7 @@ public final class Admin {
       }
       connectionProd.commit();
       cache.opAddComponent(componentInst);
-      
+
       ComponentInstLight component = getComponentInstLight(componentId);
       TreeCache.addComponent(sDriverComponentId, component,
           getDriverSpaceId(spaceInstFather.getId()));
@@ -1281,7 +1282,7 @@ public final class Admin {
    * @param definitive
    * @param startNewTransaction
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String deleteComponentInst(String userId, String componentId, boolean definitive,
       boolean startNewTransaction) throws AdminException {
@@ -2721,7 +2722,7 @@ public final class Admin {
           "space profile Id: '" + groupProfileInstNew.getId() + "'", e);
     }
   }
-  
+
   /**
    * @throws AdminException
    */
@@ -2735,7 +2736,7 @@ public final class Admin {
             "domainId = " + domain.getId(), e);
       }
     }
-    
+
     //Mixt Domain (id -1)
     try {
       indexGroups("-1");
@@ -4178,7 +4179,7 @@ public final class Admin {
           + "'", e);
     }
   }
-  
+
   public boolean isComponentManageable(String componentId, String userId) throws AdminException {
     boolean manageable = getUserDetail(userId).isAccessAdmin();
     if (!manageable) {
