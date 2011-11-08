@@ -372,6 +372,28 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     if (!inUndoProcess) {
       this.addUndoHistoryStep("removeActiveState", state);
     }
+
+    // computes timeout status
+    computeTimeOutStatus();
+  }
+
+  /**
+   * Computes time out status : instance is in timeout if at least one active state is in timeout
+   */
+  private void computeTimeOutStatus() {
+    if (this.activeStates == null || this.activeStates.isEmpty()) {
+      this.timeoutStatus = false;
+    }
+    else {
+      boolean oneTimeOutExists = false;
+      for (ActiveState state : this.activeStates) {
+        if (state.getTimeoutStatus() > 0) {
+          oneTimeOutExists = true;
+          break;
+        }
+      }
+      this.timeoutStatus = oneTimeOutExists;
+    }
   }
 
   /**

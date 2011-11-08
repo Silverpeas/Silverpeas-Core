@@ -207,7 +207,7 @@ public class WorkflowEngineThread extends Thread {
    * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
    * access will be synchronized on this list. Futhermore this list is used to synchronize the
    * providers and the consumers of the list :
-   * 
+   *
    * <PRE>
    * // provider
    * synchronized(requestList)
@@ -215,7 +215,7 @@ public class WorkflowEngineThread extends Thread {
    * requestList.add(...);
    * requestList.notify();
    * }
-   * 
+   *
    * // consumer
    * synchronized(requestList)
    * {
@@ -398,8 +398,14 @@ class TaskDoneRequest implements Request {
     WorkflowHub.getProcessInstanceManager();
 
     UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
-    instance.updateHistoryStep(step); // only to set the current step of
-    // instance to that step
+
+    // only to set the current step of instance to that step
+    instance.updateHistoryStep(step);
+
+    // special case : user is resuming creation action - working user must be explicitly removed
+    if (event.getResolvedState() == null) {
+      instance.removeWorkingUser(event.getUser(), new StateImpl(""), event.getUserRoleName());
+    }
 
     // Remove user from locking users
     instance.unLock(event.getResolvedState(), event.getUser());
@@ -417,7 +423,7 @@ class TaskDoneRequest implements Request {
 }
 
 //--
-/**vient 
+/**vient
  * A TaskSaved indicates the workflow engine that a task has been saved
  */
 class TaskSavedRequest implements Request {
@@ -454,7 +460,7 @@ class TaskSavedRequest implements Request {
       instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
           instance.getInstanceId());
 
-      // first time saved : history step must be created 
+      // first time saved : history step must be created
       if (event.isFirstTimeSaved()) {
         try {
           step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
