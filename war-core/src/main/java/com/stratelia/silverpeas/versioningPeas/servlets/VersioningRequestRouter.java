@@ -654,8 +654,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     }
     DocumentVersion documentVersion =
         new DocumentVersion(null, docPK, majorNumber, minorNumber, Integer.parseInt(versioningSC.
-        getUserId()), new Date(), comments, versionType, 0, physicalName, logicalName, mimeType,
-        size, versioningSC.getComponentId());
+        getUserId()), new Date(), comments, versionType, DocumentVersion.STATUS_VALIDATION_NOT_REQ, 
+        physicalName, logicalName, mimeType, size, versioningSC.getComponentId());
 
     boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
     if (addXmlForm) {
@@ -670,9 +670,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     String description = FileUploadUtil.getParameter(items, "description", "", encoding);
 
     PublicationPK pubPK = new PublicationPK(publicationId, versioningSC.getComponentId());
-    Document document = new Document(docPK, pubPK, name, description, 0,
-        Integer.parseInt(versioningSC.getUserId()), new Date(), comments,
-        versioningSC.getComponentId(), null, null, 0, Integer.parseInt(
+    Document document = new Document(docPK, pubPK, name, description, Document.STATUS_CHECKINED,
+        -1, new Date(), comments, versioningSC.getComponentId(), null, null, 0, Integer.parseInt(
         VersioningSessionController.WRITERS_LIST_SIMPLE));
 
     String docId = versioningSC.createDocument(document, documentVersion).getId();
@@ -705,13 +704,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       PublicationTemplateException {
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName) && newVersionPK != null) {
-      String xmlFormShortName = xmlFormName.substring(
-          xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, 
+              xmlFormName.indexOf('.'));
       String objectId = newVersionPK.getId();
       String objectType = "Versioning";
-
-      String externalId = versioningSC.getComponentId() + ":" + objectType
-          + ":" + xmlFormShortName;
+      String externalId = versioningSC.getComponentId() + ":" + objectType + ":" + xmlFormShortName;
 
       // register xmlForm to object
       getPublicationTemplateManager().addDynamicPublicationTemplate(externalId,
@@ -743,17 +740,14 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     boolean isEmpty = true;
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName)) {
-      String xmlFormShortName = xmlFormName.substring(
-          xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, 
+              xmlFormName.indexOf('.'));
       String objectId = "unknown";
       String objectType = "Versioning";
 
-      String externalId = versioningSC.getComponentId() + ":" + objectType
-          + ":" + xmlFormShortName;
-
+      String externalId = versioningSC.getComponentId() + ":" + objectType + ":" + xmlFormShortName;
       // register xmlForm to object
-      getPublicationTemplateManager().addDynamicPublicationTemplate(externalId,
-          xmlFormName);
+      getPublicationTemplateManager().addDynamicPublicationTemplate(externalId, xmlFormName);
 
       PublicationTemplate pub = getPublicationTemplateManager().getPublicationTemplate(externalId);
 
@@ -793,8 +787,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     PublicationTemplateImpl pubTemplate =
         (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(componentId
-        + ":" + objectType + ":"
-        + xmlFormShortName, xmlFormName);
+        + ":" + objectType + ":" + xmlFormShortName, xmlFormName);
     Form formUpdate = pubTemplate.getUpdateForm();
     RecordSet recordSet = pubTemplate.getRecordSet();
 

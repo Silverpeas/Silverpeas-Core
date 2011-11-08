@@ -646,18 +646,6 @@ public class ComponentInstManager {
       ddManager.releaseOrganizationSchema();
     }
   }
-  
-  public Parameter getParameter(DomainDriverManager ddManager, String componentId, String param) throws AdminException {
-    List<Parameter> parameters = getParameters(ddManager, componentId);
-    if (parameters != null) {
-      for(Parameter parameter : parameters) {
-        if(parameter.getName().equalsIgnoreCase(param)){
-          return parameter;
-        }
-      }
-    }
-    return null;
-  }
 
   /**
    * Converts ComponentInst to ComponentInstanceRow
