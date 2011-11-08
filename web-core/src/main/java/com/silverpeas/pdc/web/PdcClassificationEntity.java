@@ -28,7 +28,6 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.rest.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -166,14 +165,28 @@ public class PdcClassificationEntity implements Exposable {
 
   /**
    * Gets all the positions on the PdC axis that defines this resource classification.
-   * @return an unmodifiable list of a Web representation of each classification positions in this
+   * @return the list of a Web representation of each classification positions in this
    * classification.
    */
   @XmlTransient
   public List<PdcPositionEntity> getClassificationPositions() {
-    return Collections.unmodifiableList(positions);
+    return positions;
   }
 
+  /**
+   * Gets all the positions on the PdC axis that defines this resource classification as PdcPosition
+   * instances.
+   * @return a list of PdcPosition instances representing each of them a position on the PdC.
+   */
+  @XmlTransient
+  public List<PdcPosition> getPdcPositions() {
+    List<PdcPosition> pdcPositions = new ArrayList<PdcPosition>(positions.size());
+    for (PdcPositionEntity position : positions) {
+      pdcPositions.add(position.toPdcPosition());
+    }
+    return pdcPositions;
+  }
+  
   /**
    * Is the PdC classification represented by this web entity can be changed?
    * @return true if the represented PdC classification is modifiable, false otherwise.

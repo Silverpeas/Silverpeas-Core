@@ -34,7 +34,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Named;
-import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import org.synyx.hades.domain.Page;
 import org.synyx.hades.domain.Pageable;
 import org.synyx.hades.domain.Sort;
@@ -85,6 +87,11 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   @Override
   public PdcClassification save(PdcClassification t) {
     PdcClassification classification;
+    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+    Set violations = validator.validate(t);
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
+    }
     if (isPersisted(t)) {
       classification = readByPrimaryKey(idOf(t));
       if (t != classification) {
@@ -121,7 +128,7 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
 
   @Override
   public boolean exists(Long pk) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return (pk == null? false:classifications.containsKey(pk));
   }
 
   @Override
@@ -163,8 +170,6 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   public void delete(PdcClassification t) {
     if (isPersisted(t)) {
       classifications.remove(idOf(t));
-    } else {
-      throw new EntityNotFoundException();
     }
   }
 

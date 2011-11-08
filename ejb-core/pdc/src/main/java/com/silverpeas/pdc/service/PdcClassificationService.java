@@ -48,6 +48,7 @@ import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import static com.silverpeas.pdc.model.PdcClassification.*;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The service aiming at classifying the contents in Silverpeas on the classification plan (named
@@ -88,7 +89,8 @@ public class PdcClassificationService {
 
   /**
    * Finds a predefined classification on the PdC that was set for any new contents in the specified
-   * node of the specified component instance.
+   * node of the specified component instance. If the specified node isn't defined, then the
+   * predefined classification associated with the whole component instance is seeked.
    * 
    * If no predefined classification is found for the specified node, then it is seeked back upto
    * the root node (that is the component instance ifself). In the case no predefined classification
@@ -104,14 +106,18 @@ public class PdcClassificationService {
   public PdcClassification findAPreDefinedClassification(String nodeId, String instanceId) {
     try {
       PdcClassification classification = null;
-      NodePK nodeToSeek = new NodePK(nodeId, instanceId);
-      while (classification == null && !nodeToSeek.isUndefined()) {
-        classification = classificationDao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
-                nodeToSeek.getInstanceId());
-        NodeDetail node = getNodeBm().getDetail(nodeToSeek);
-        nodeToSeek = node.getFatherPK();
-      }
-      if (classification == null) {
+      if (isDefined(nodeId)) {
+        NodePK nodeToSeek = new NodePK(nodeId, instanceId);
+        while (classification == null && !nodeToSeek.isUndefined()) {
+          classification = classificationDao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
+                  nodeToSeek.getInstanceId());
+          NodeDetail node = getNodeBm().getDetail(nodeToSeek);
+          nodeToSeek = node.getFatherPK();
+        }
+        if (classification == null) {
+          classification = getPreDefinedClassification(instanceId);
+        }
+      } else {
         classification = getPreDefinedClassification(instanceId);
       }
       return classification;
@@ -126,7 +132,8 @@ public class PdcClassificationService {
 
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the specified
-   * node of the specified component instance.
+   * node of the specified component instance. If the specified node isn't defined, then the
+   * predefined classification associated with the whole component instance is seeked.
    * 
    * In the case no predefined classification is set for the specified node, a none classification
    * is then returned.
@@ -136,6 +143,9 @@ public class PdcClassificationService {
    * classification.
    */
   public PdcClassification getPreDefinedClassification(String nodeId, String instanceId) {
+    if (!isDefined(nodeId)) {
+      return getPreDefinedClassification(instanceId);
+    }
     NodePK nodeToSeek = new NodePK(nodeId, instanceId);
     PdcClassification classification =
             classificationDao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
@@ -171,18 +181,21 @@ public class PdcClassificationService {
    * Saves the specified predefined classification on the PdC. If a predefined classification
    * already exists for the node (if any) and the component instance to which this classification is
    * related, then it is replaced by the specified one.
+   * If the specified classification is empty (all positions were deleted), then it is deleted and
+   * the NONE_CLASSIFICATION is sent back.
    * 
    * The node (if any) and the component instance for which this classification has to be saved
    * are indicated by the specified classification itself. If no node is refered by it, then the
    * predefined classification will serv for the whole component instance.
-   * @param classification the predefined classification to register.
+   * @param classification either the saved predefined classification or NONE_CLASSIFICATION.
    */
   public PdcClassification savePreDefinedClassification(final PdcClassification classification) {
     if (!classification.isPredefined()) {
       throw new IllegalArgumentException("The classification isn't a predefined one");
     }
     PdcClassification savedClassification = NONE_CLASSIFICATION;
-    if (classification.isEmpty()) {
+    if (classification.getId() != null && classificationDao.exists(classification.getId()) &&
+            classification.isEmpty()) {
       classificationDao.delete(classification);
     } else {
       List<PdcAxisValue> allValues = new ArrayList<PdcAxisValue>();

@@ -192,11 +192,15 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
     String function = getPdcPluginFunction();
+    String positionAddingLabel = (getInvokedOperation().equals(PREDEFINE_CLASSIFICATION) ||
+            getInvokedOperation().equals(CREATE_CLASSIFICATION) ?
+            resources.getString("pdcPeas.saveThePosition"):resources.getString("GML.PDCNewPosition"));
     String script = "$('#classification').pdc('" + function + "', {resource: {context: '" + context
             + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
             + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString("pdcPeas.classifyPublication")
             + "', positionLabel: '" + resources.getString("pdcPeas.position")
-            + "', positionsLabel: '" + resources.getString("pdcPeas.positions") + "'";
+            + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
+            + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions") + "'";
     if (getInvokedOperation() != READ_CLASSIFICATION) {
       script += ", messages: {mandatoryMessage: \""
               + resources.getString("pdcPeas.MustBeClassified") + "\", contentMustHaveAPosition: \""
@@ -208,8 +212,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
               + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
               + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
               getString("pdcPeas.notVariants") + "', mandatoryAxisDefaultValue: \"" + resources.
-              getString("GML.selectAValue") + "\"}, addition: {title: '" + resources.getString(
-              "GML.PDCNewPosition") + "'}, update: {title: '" + resources.getString("GML.modify")
+              getString("GML.selectAValue") + "\"}, addition: {title: '" + positionAddingLabel
+              + "'}, update: {title: '" + resources.getString("GML.modify")
               + "'}, deletion: {confirmation: '" + resources.getString("pdcPeas.confirmDeleteAxis")
               + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
     } else {

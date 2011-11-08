@@ -49,6 +49,7 @@ import static org.mockito.Mockito.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Resources required by the unit tests on the PdC web resources.
@@ -121,6 +122,14 @@ public class PdcTestResources extends TestResources {
 
   public void savePredefined(final PdcClassification classification) {
     classificationDAO.saveAndFlush(classification);
+  }
+  
+  public PdcClassification getPredefinedClassification(String nodeId, String componentId) {
+    if (isDefined(nodeId)) {
+      return classificationDAO.findPredefinedClassificationByNodeId(nodeId, componentId);
+    } else {
+      return classificationDAO.findPredefinedClassificationByComponentInstanceId(componentId);
+    }
   }
 
   public void getPredefinedPdcClassificationForWholeComponent() {

@@ -23,10 +23,6 @@
  */
 package com.silverpeas.pdc.model;
 
-import com.silverpeas.pdc.dao.PdcAxisValueDAO;
-import com.silverpeas.pdc.dao.PdcClassificationDAO;
-import javax.inject.Inject;
-import javax.persistence.Transient;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
@@ -47,11 +43,9 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.springframework.beans.factory.annotation.Configurable;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
@@ -88,6 +82,7 @@ public class PdcClassification implements Serializable, Cloneable {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   @NotNull
   @Size(min = 1)
+  @Valid
   private Set<PdcPosition> positions = new HashSet<PdcPosition>();
   private boolean modifiable = true;
   @Column(nullable = false)
@@ -261,7 +256,7 @@ public class PdcClassification implements Serializable, Cloneable {
    * @param thePositions the position to set in this classification.
    * @return itself.
    */
-  public PdcClassification withPositions(final Set<PdcPosition> thePositions) {
+  public PdcClassification withPositions(final Collection<PdcPosition> thePositions) {
     this.positions.clear();
     this.positions.addAll(thePositions);
     return this;
@@ -290,7 +285,7 @@ public class PdcClassification implements Serializable, Cloneable {
    * context in Silverpeas).
    * @return the classification unique identifier.
    */
-  protected Long getId() {
+  public Long getId() {
     return this.id;
   }
 

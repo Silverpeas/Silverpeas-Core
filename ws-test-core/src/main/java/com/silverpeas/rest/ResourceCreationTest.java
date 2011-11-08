@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Unit tests on the creation of a new resource in Silverpeas through a REST web service.
@@ -40,6 +41,10 @@ import static org.hamcrest.Matchers.*;
  */
 public abstract class ResourceCreationTest<T extends TestResources> extends RESTWebServiceTest<T>
         implements WebResourceTesting {
+
+  private static String withAsSessionKey(String sessionKey) {
+    return sessionKey;
+  }
 
   /**
    * A convenient method to improve the readability of the method calls.
@@ -65,33 +70,12 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
    * @return the response of the post.
    */
   public <T> ClientResponse post(final T entity, String atURI) {
-    String thePath = atURI;
-    WebResource resource = resource();
-    if (thePath.contains("?")) {
-      String[] pathParts = thePath.split("\\?");
-      String query = pathParts[1];
-      thePath = pathParts[0];
-      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
-      resource = resource.queryParams(parameters);
-    }
-    return resource.path(thePath).
-            header(HTTP_SESSIONKEY, getSessionKey()).
-            accept(MediaType.APPLICATION_JSON).
-            type(MediaType.APPLICATION_JSON).
-            post(ClientResponse.class, entity);
-//    return resource().path(atURI).
-//            header(HTTP_SESSIONKEY, getSessionKey()).
-//            accept(MediaType.APPLICATION_JSON).
-//            type(MediaType.APPLICATION_JSON).
-//            post(ClientResponse.class, entity);
+    return post(entity, atURI, withAsSessionKey(getSessionKey()));
   }
 
   @Test
   public void creationOfANewResourceByANonAuthenticatedUser() {
-    ClientResponse response = resource().path(aResourceURI()).
-            accept(MediaType.APPLICATION_JSON).
-            type(MediaType.APPLICATION_JSON).
-            post(ClientResponse.class, aResource());
+    ClientResponse response = post(aResource(), at(aResourceURI()), withAsSessionKey(null));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -99,11 +83,8 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
 
   @Test
   public void creationOfANewResourceWithADeprecatedSession() {
-    ClientResponse response = resource().path(aResourceURI()).
-            header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-            accept(MediaType.APPLICATION_JSON).
-            type(MediaType.APPLICATION_JSON).
-            post(ClientResponse.class, aResource());
+    ClientResponse response = post(aResource(), at(aResourceURI()),
+            withAsSessionKey(UUID.randomUUID().toString()));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -116,5 +97,24 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
     int receivedStatus = response.getStatus();
     int forbidden = Status.FORBIDDEN.getStatusCode();
     assertThat(receivedStatus, is(forbidden));
+  }
+
+  private <T> ClientResponse post(final T entity, String atURI, String withSessionKey) {
+    String thePath = atURI;
+    WebResource resource = resource();
+    if (thePath.contains("?")) {
+      String[] pathParts = thePath.split("\\?");
+      String query = pathParts[1];
+      thePath = pathParts[0];
+      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
+      resource = resource.queryParams(parameters);
+    }
+    WebResource.Builder resourcePoster = resource.path(thePath).
+            accept(MediaType.APPLICATION_JSON).
+            type(MediaType.APPLICATION_JSON);
+    if (isDefined(withSessionKey)) {
+      resourcePoster = resourcePoster.header(HTTP_SESSIONKEY, withSessionKey);
+    }
+    return resourcePoster.post(ClientResponse.class, entity);
   }
 }

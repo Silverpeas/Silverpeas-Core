@@ -25,34 +25,29 @@ package com.silverpeas.pdc.web;
 
 import javax.ws.rs.core.Response.Status;
 import com.sun.jersey.api.client.ClientResponse;
-import java.util.ArrayList;
-import com.stratelia.silverpeas.pdc.model.Value;
-import java.util.List;
-import com.silverpeas.pdc.web.beans.ClassificationPlan;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.rest.ResourceCreationTest;
 import org.junit.Test;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.pdc.model.PdcClassification.*;
 import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
 import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
-import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 
 /**
  * Unit tests on the adding of positions with a predefined classification web resources.
  */
-public class PredefinedClassificationPositionAddingTest extends ResourceCreationTest<PdcTestResources> {
+public class PredefinedClassificationCreationTest extends ResourceCreationTest<PdcTestResources> {
 
   private String sessionKey;
   private UserDetail theUser;
   private PdcClassification theClassification;
 
-  public PredefinedClassificationPositionAddingTest() {
+  public PredefinedClassificationCreationTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
 
@@ -62,44 +57,52 @@ public class PredefinedClassificationPositionAddingTest extends ResourceCreation
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
     theClassification =
-            aPdcClassification().forNode(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).build().
-            unmodifiable();
+            aPdcClassification().inComponent(COMPONENT_INSTANCE_ID).build().unmodifiable();
     getTestResources().savePredefined(theClassification);
   }
-
+  
   @Test
-  public void createAPredefinedClassificationByAddingAPositionOnThePdC() throws Exception {
-    PdcPositionEntity newPdcPosition = aResource();
-    ClientResponse response = post(newPdcPosition, at(COMPONENT_DEFAULT_CLASSIFICATION_PATH));
+  public void createAPredefinedClassificationOnThePdC() throws Exception {
+    ClientResponse response = post(aResource(), at(aResourceURI()));
     int receivedStatus = response.getStatus();
     int created = Status.CREATED.getStatusCode();
     assertThat(receivedStatus, is(created));
 
-    String addedPositionId = IdGenerator.getGenerator().lastUsedPositionIdAsString();
-    PdcClassification newPredefinedClassification =
+    PdcClassification createdPredefinedClassification =
+            getTestResources().getPredefinedClassification(NODE_ID, COMPONENT_INSTANCE_ID);
+    assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(
+            createdPredefinedClassification)));
+  }
+
+  @Test
+  public void createAnAlreadyExistingPredefinedClassification() throws Exception {
+    PdcClassificationEntity alreadyExistingClassification = theWebEntityOf(theClassification);
+    ClientResponse response = post(alreadyExistingClassification, at(
+            COMPONENT_DEFAULT_CLASSIFICATION_PATH));
+    int receivedStatus = response.getStatus();
+    int alreadyExisting = Status.CONFLICT.getStatusCode();
+    assertThat(receivedStatus, is(alreadyExisting));
+  }
+
+  @Test
+  public void createAPredefinedClassificationWithoutAnyPositions() throws Exception {
+    PdcClassification classification = PdcClassification.
+            aPredefinedPdcClassificationForComponentInstance(COMPONENT_INSTANCE_ID).forNode("2000");
+    ClientResponse response = post(theWebEntityOf(classification),
+            at(COMPONENT_DEFAULT_CLASSIFICATION_PATH + "?nodeId=2000"));
+    int receivedStatus = response.getStatus();
+    int badRequest = Status.BAD_REQUEST.getStatusCode();
+    assertThat(receivedStatus, is(badRequest));
+  }
+  
+  @Test
+  public void createAPredefinedClassificationWithAPositionWithoutAnyValues() throws Exception {
+    PdcClassification classification = PdcClassification.
             aPredefinedPdcClassificationForComponentInstance(COMPONENT_INSTANCE_ID).
-            withPosition(newPdcPosition.toPdcPosition().withId(addedPositionId));
-    assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(
-            newPredefinedClassification)));
-  }
-
-  @Test
-  public void addAPositionOnThePdCInAnExistingPredefinedClassification() throws Exception {
-    PdcPositionEntity newPdcPosition = aResource();
-    ClientResponse response = post(newPdcPosition, at(aResourceURI()));
-    int receivedStatus = response.getStatus();
-    int created = Status.CREATED.getStatusCode();
-    assertThat(receivedStatus, is(created));
-
-    String addedPositionId = IdGenerator.getGenerator().lastUsedPositionIdAsString();
-    theClassification.getPositions().add(newPdcPosition.toPdcPosition().withId(addedPositionId));
-    assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(
-            theClassification)));
-  }
-
-  @Test
-  public void addingANewPdcPositionWithoutAnyValues() {
-    ClientResponse response = post(aPdcPositionWithoutAnyValues(), at(aResourceURI()));
+            forNode("2000").
+            withPosition(new PdcPosition());
+    ClientResponse response = post(theWebEntityOf(classification),
+            at(COMPONENT_DEFAULT_CLASSIFICATION_PATH + "?nodeId=2000"));
     int receivedStatus = response.getStatus();
     int badRequest = Status.BAD_REQUEST.getStatusCode();
     assertThat(receivedStatus, is(badRequest));
@@ -121,8 +124,13 @@ public class PredefinedClassificationPositionAddingTest extends ResourceCreation
   }
 
   @Override
-  public PdcPositionEntity aResource() {
-    return aNewPdcPosition();
+  public PdcClassificationEntity aResource() {
+    try {
+      return theWebEntityOf(aPdcClassification().forNode(NODE_ID).inComponent(COMPONENT_INSTANCE_ID).
+              build().unmodifiable());
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
   @Override
@@ -138,23 +146,5 @@ public class PredefinedClassificationPositionAddingTest extends ResourceCreation
   private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           Exception {
     return getTestResources().toWebEntity(classification, theUser);
-  }
-
-  private PdcPositionEntity aNewPdcPosition() {
-    ClassificationPlan pdc = aClassificationPlan();
-    ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
-    List<Value> values = pdc.getValuesOfAxisByName("Période");
-    Value value = values.get(values.size() - 1);
-    PdcPositionValueEntity positionValue =
-            PdcPositionValueEntity.aPositionValue(Integer.valueOf(value.getAxisId()),
-            value.getPath() + value.getPK().getId() + "/");
-    positionValue.setTreeId(value.getTreeId());
-    positionsValues.add(positionValue);
-    return PdcPositionEntity.createNewPositionWith(positionsValues);
-  }
-
-  private PdcPositionEntity aPdcPositionWithoutAnyValues() {
-    ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
-    return PdcPositionEntity.createNewPositionWith(positionsValues);
   }
 }

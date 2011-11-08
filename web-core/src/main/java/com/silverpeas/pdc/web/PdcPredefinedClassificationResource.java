@@ -24,19 +24,17 @@
 package com.silverpeas.pdc.web;
 
 import javax.ws.rs.PUT;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ws.rs.DELETE;
 import java.net.URI;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.rest.RESTWebService;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -123,8 +121,8 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
           @QueryParam("nodeId") String nodeId) {
     checkUserPriviledges();
     try {
-      PdcClassification theClassification = getAnExistingOrCreateANewClassificationFor(nodeId,
-              getComponentId());
+      PdcClassification theClassification = pdcServiceProvider().
+              findPredefinedClassificationForContentsIn(nodeId, getComponentId());
       return asWebEntity(theClassification, identifiedBy(theUriOf(theClassification)));
     } catch (PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -134,90 +132,45 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   }
 
   /**
-   * Adds a new predefined position on the PdC for the content that will be published at the specified
-   * URI (the URI identifies either a given node of a given component instance or a given component
-   * instance).
+   * Creates a new predefined classification
    * 
-   * If no predefined classification is associated with the specified node, it inherits of the 
-   * predefined classification of its closest parent node. So, as a new predefined position on the
-   * PdC is added for the contents of the specified node (and not for thoses of the parent node), 
-   * it is actually added to the new predefined classification that is created for the specified node
-   * from of the one of the parent node.
-   * 
-   * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
-   * returned.
+   * If the JSON representation of the classification isn't correct (no values), then a 400 HTTP
+   * code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the comment, a 403 is returned.
+   * If the user isn't authorized to access the classification, a 403 is returned.
+   * If the resource refered by the URI already exists, a 409 HTTP core is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param newPosition a web entity representing the PdC position to add. The entity is passed 
+   * @param nodeId the unique identifier of the node with which the classification to create is
+   * associated. Can be null, in that case, the classification is associated with the component
+   * instance.
+   * @param classification the predefined classification to create. The entity is passed 
    * within the request and it is serialized in JSON.
-   * @return the response with the status of the position adding and, in the case of a successful
-   * operation, the new PdC classification of the resource resulting of the position adding.
+   * @return the response with the status of the classification creation and, in the case of a
+   * successful operation, the new created PdC classification.
    */
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response addPdcPosition(@QueryParam("nodeId") String nodeId,
-          final PdcPositionEntity newPosition) {
+  public Response createPredefinedPdcClassification(@QueryParam("nodeId") String nodeId,
+          final PdcClassificationEntity classification) {
     checkUserPriviledges();
-    if (newPosition.getPositionValues().isEmpty()) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
+    PdcClassification alreadyExistingClassification =
+            pdcServiceProvider().getPredefinedClassification(nodeId, getComponentId());
+    if (alreadyExistingClassification != NONE_CLASSIFICATION) {
+      throw new WebApplicationException(Status.CONFLICT);
     }
     try {
-      PdcPosition positionToAdd = newPosition.toPdcPosition();
-      PdcClassification classification = getAnExistingOrCreateANewClassificationFor(nodeId,
-              getComponentId());
-      classification.getPositions().add(positionToAdd);
+      PdcClassification newClassification = aPredefinedPdcClassificationForComponentInstance(
+              getComponentId()).forNode(nodeId).withPositions(classification.getPdcPositions());
       PdcClassification savedClassification = pdcServiceProvider().
-              saveOrUpdatePredefinedClassification(classification);
-      PdcPosition addedPosition = getAddedPosition(savedClassification, classification);
-      URI positionURI = theUriOf(addedPosition, in(savedClassification));
-      return Response.created(positionURI).entity(asWebEntity(savedClassification, identifiedBy(
-              theUriOf(savedClassification)))).build();
+              saveOrUpdatePredefinedClassification(newClassification);
+      URI theClassificationURI = theUriOf(savedClassification);
+      return Response.created(theClassificationURI).entity(asWebEntity(savedClassification,
+              identifiedBy(theClassificationURI))).build();
+    } catch (ConstraintViolationException ex) {
+      throw new WebApplicationException(ex, Status.BAD_REQUEST);
     } catch (PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
-    } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
-  }
-
-  /**
-   * Deletes the specified existing position by its unique identifier.
-   * 
-   * If no predefined classification is associated with the specified node, it inherits of the 
-   * predefined classification of its closest parent node. So, as a position on the PdC is removed
-   * from the classification associated with the specified node (and not from the one associated with
-   * the parent node), it is actually removed from the new predefined classification that is created
-   * for the specified node from of the one of the parent node.
-   * 
-   * If the PdC position doesn't exist, nothing is done, so that the HTTP DELETE request remains
-   * indempotent as defined in the HTTP specification.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the resource PdC classification, a 403 is returned.
-   * If the position is the single one for the content on the PdC and the PdC contains at least one
-   * mandatory axis, a 409 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param positionId the unique identifier of the position to delete in the predefined
-   * classification refered by the URI.
-   */
-  @DELETE
-  @Path("{positionId}")
-  public void deletePdcPosition(@QueryParam("nodeId") String nodeId,
-          @PathParam("positionId") String positionId) {
-    checkUserPriviledges();
-    try {
-      PdcClassification classification = pdcServiceProvider().
-              findPredefinedClassificationForContentsIn(nodeId, getComponentId());
-      PdcPosition positionToDelete = getPdcPositionById(positionId, classification);
-      classification.getPositions().remove(positionToDelete);
-      classification = duplicateForNodeIfNecessary(classification, nodeId);
-      classification = pdcServiceProvider().saveOrUpdatePredefinedClassification(classification);
-    } catch (WebApplicationException ex) {
-      Logger.getLogger(getClass().getName()).log(Level.WARNING, "Unexisting position of id {0} in"
-              + " the predefined classification for node {1} and for component instance {2}",
-              new Object[]{positionId, nodeId, getComponentId()});
-    } catch (PdcException ex) {
-      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -246,61 +199,29 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  @Path("{positionId}")
-  public PdcClassificationEntity updatePdcPosition(@QueryParam("nodeId") String nodeId,
-          @PathParam("positionId") String positionId, final PdcPositionEntity modifiedPosition) {
+  public PdcClassificationEntity updatePredefinedPdcClassification(
+          @QueryParam("nodeId") String nodeId,
+          final PdcClassificationEntity classification) {
     checkUserPriviledges();
-    if (!positionId.equals(modifiedPosition.getId())
-            || modifiedPosition.getPositionValues().isEmpty()) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
     try {
-      PdcClassification theClassification = pdcServiceProvider().
+      PdcClassification classificationToUpdate = pdcServiceProvider().
               findPredefinedClassificationForContentsIn(nodeId, getComponentId());
-      PdcPosition positionToUpdate = getPdcPositionById(positionId, theClassification);
-      theClassification.getPositions().remove(positionToUpdate);
-      theClassification = duplicateForNodeIfNecessary(theClassification, nodeId);
-      theClassification.getPositions().add(modifiedPosition.toPdcPosition());
-      theClassification = pdcServiceProvider().saveOrUpdatePredefinedClassification(
-              theClassification);
-      return asWebEntity(theClassification, identifiedBy(theUriOf(theClassification)));
+      if (nodeId != null && !nodeId.equals(classificationToUpdate.getNodeId())) {
+        throw new PdcException(PdcPredefinedClassificationResource.class.getSimpleName(),
+                SilverpeasException.ERROR, "root.EX_NO_MESSAGE");
+      }
+      classificationToUpdate = (classification.isModifiable() ? classificationToUpdate.modifiable()
+              : classificationToUpdate.unmodifiable()).withPositions(classification.getPdcPositions());
+      PdcClassification updatedClassification = pdcServiceProvider().
+              saveOrUpdatePredefinedClassification(classificationToUpdate);
+      return asWebEntity(updatedClassification, identifiedBy(theUriOf(updatedClassification)));
+    } catch (ConstraintViolationException ex) {
+      throw new WebApplicationException(ex, Status.BAD_REQUEST);
     } catch (PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
-  }
-
-  private PdcClassification getAnExistingOrCreateANewClassificationFor(String nodeId,
-          String componentId) throws PdcException {
-    PdcClassification classification = pdcServiceProvider().
-            findPredefinedClassificationForContentsIn(nodeId, getComponentId());
-    return duplicateForNodeIfNecessary(classification, nodeId);
-  }
-  
-  private PdcClassification duplicateForNodeIfNecessary(final PdcClassification classification,
-          String nodeId) {
-    PdcClassification duplicate = classification;
-    if (classification == PdcClassification.NONE_CLASSIFICATION) {
-      duplicate = aPredefinedPdcClassificationForComponentInstance(getComponentId()).forNode(nodeId);
-    } else if (nodeId != null && !nodeId.equals(classification.getNodeId())) {
-      duplicate = classification.clone().forNode(nodeId);
-    }
-    return duplicate;
-  }
-
-  private PdcPosition getPdcPositionById(String positionId, final PdcClassification classification) {
-    PdcPosition positionToFind = null;
-    for (PdcPosition position : classification.getPositions()) {
-      if (positionId.equals(position.getId())) {
-        positionToFind = position;
-        break;
-      }
-    }
-    if (positionToFind == null) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-    return positionToFind;
   }
 
   private PdcClassificationEntity asWebEntity(final PdcClassification classification, URI uri)
@@ -331,10 +252,6 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
     return uri;
   }
 
-  private static PdcClassification in(final PdcClassification classification) {
-    return classification;
-  }
-
   private URI theUriOf(final PdcClassification classification) {
     URI uri = null;
     if (classification.isPredefinedForANode()) {
@@ -345,28 +262,5 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
               getComponentInstanceId());
     }
     return uri;
-  }
-
-  private URI theUriOf(final PdcPosition position, final PdcClassification inClassification) {
-    URI uri = null;
-    if (inClassification.isPredefinedForANode()) {
-      uri = getUriInfo().getAbsolutePathBuilder().path(position.getId()).queryParam("nodeId",
-              inClassification.getNodeId()).build();
-    } else {
-      uri = getUriInfo().getAbsolutePathBuilder().path(position.getId()).build();
-    }
-    return uri;
-  }
-
-  private PdcPosition getAddedPosition(PdcClassification inClassification,
-          PdcClassification fromClassification) {
-    PdcPosition addedPosition = null;
-    for (PdcPosition position : inClassification.getPositions()) {
-      if (!fromClassification.getPositions().contains(position)) {
-        addedPosition = position;
-        break;
-      }
-    }
-    return addedPosition;
   }
 }

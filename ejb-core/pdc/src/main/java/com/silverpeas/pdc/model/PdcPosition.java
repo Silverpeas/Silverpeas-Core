@@ -37,6 +37,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import static com.silverpeas.util.StringUtil.*;
@@ -66,6 +67,7 @@ public class PdcPosition implements Serializable, Cloneable {
   @OneToMany(fetch = FetchType.EAGER)
   @NotNull
   @Size(min = 1)
+  @Valid
   private Set<PdcAxisValue> axisValues = new HashSet<PdcAxisValue>();
 
   public PdcPosition() {
