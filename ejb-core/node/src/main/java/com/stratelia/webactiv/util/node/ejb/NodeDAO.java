@@ -493,18 +493,8 @@ public class NodeDAO {
       rs = stmt.executeQuery(nodeStatement.toString());
       while (rs.next()) {
         NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-
-        // Add default translation
-        Translation nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd.
-            getDescription());
-        nd.addTranslation(nodeI18NDetail);
-
-        List<Translation> translations = NodeI18NDAO.getTranslations(con, nd.getId());
-
-        for (int t = 0; translations != null && t < translations.size(); t++) {
-          nodeI18NDetail = translations.get(t);
-          nd.addTranslation(nodeI18NDetail);
-        }
+        
+        setTranslations(con, nd);
 
         headers.add(nd);
       }
@@ -648,21 +638,12 @@ public class NodeDAO {
       throws SQLException {
 
     String nodeId = nodePK.getId();
-    NodeDetail nd = null;
 
     StringBuffer nodeStatement = new StringBuffer();
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where nodeId = ").append(nodeId);
     nodeStatement.append(" and instanceId = '").append(
         nodePK.getComponentName()).append("'");
-    /*
-     * nodeStatement.append("select * from ").append(nodePK.getTableName()).append (" n1 ");
-     * nodeStatement.append("LEFT OUTER JOIN ").append(NodeI18NDAO.TABLE_NAME ).append(" n2");
-     * nodeStatement.append(" on (n1.nodeId = n2.nodeId)"); nodeStatement
-     * .append(" where instanceId ='").append(nodePK.getComponentName ()).append("'");
-     * nodeStatement.append(" and n1.nodeId = ").append(nodeId);
-     * nodeStatement.append(" order by nodePath, orderNumber, n2.id");
-     */
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -671,18 +652,8 @@ public class NodeDAO {
       stmt = con.createStatement();
       rs = stmt.executeQuery(nodeStatement.toString());
       if (rs.next()) {
-        nd = resultSet2NodeDetail(rs, nodePK);
-        // Add default translation
-        Translation nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd.
-            getDescription());
-        nd.addTranslation(nodeI18NDetail);
-
-        List<Translation> translations = NodeI18NDAO.getTranslations(con, nd.getId());
-
-        for (int t = 0; translations != null && t < translations.size(); t++) {
-          nodeI18NDetail = translations.get(t);
-          nd.addTranslation(nodeI18NDetail);
-        }
+        NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
+        setTranslations(con, nd);
         return nd;
       } else {
         throw new NoSuchEntityException("Row for id " + nodeId
