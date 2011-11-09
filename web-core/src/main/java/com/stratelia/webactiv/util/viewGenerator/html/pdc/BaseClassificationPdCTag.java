@@ -54,6 +54,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * The identifier of the XHTML tag within which the PdC classification will be displayed.
    */
   public static final String PDC_CLASSIFICATION_WIDGET_TAG_ID = "classification";
+  private static short tagCount = 0;
   private static final String USE_PDC_COMPONENT_PARAMETER = "usePdc";
   private static final String BROWSING_CONTEXT = "browseContext";
   private String componentId;
@@ -62,7 +63,6 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   private PdcTagOperation operation;
 
   public BaseClassificationPdCTag() {
-    System.out.println("BaseClassificationPdCTag");
   }
 
   /**
@@ -169,7 +169,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     } else {
       classification = new fieldset();
     }
-    classification.setID(PDC_CLASSIFICATION_WIDGET_TAG_ID);
+    String id = PDC_CLASSIFICATION_WIDGET_TAG_ID;
+//    if (1 <= ++tagCount) {
+//      id += tagCount;
+//    }
+    classification.setID(id);
     if (getInvokedOperation() == READ_CLASSIFICATION) {
       classification.setClass("preview bgDegradeGris");
     } else {
@@ -203,7 +207,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
             + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions") + "'";
     if (getInvokedOperation() != READ_CLASSIFICATION) {
       script += ", messages: {mandatoryMessage: \""
-              + resources.getString("pdcPeas.MustBeClassified") + "\", contentMustHaveAPosition: \""
+              + resources.getString("pdcPeas.MustBeClassified") + ", \", inheritanceMessage: \""
+              + resources.getString("pdcPeas.CanDoAPredefineClassification") + "\", contentMustHaveAPosition: \""
               + resources.getString("pdcPeas.theContent") + " " + resources.getString(
               "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
               + resources.getString("pdcPeas.positionAlreadyExist") + "\", positionMustBeValued: \""

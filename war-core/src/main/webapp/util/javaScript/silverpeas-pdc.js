@@ -36,7 +36,7 @@
  * {
  *   uri: the URI of the classification in the Web,
  *   modifiable: a property indicating if this classification can be edited, 
- *   positions: [ the positions onto the PdC ]
+ *   positions: [ the positions on the PdC ]
  * }
  * Each position of a classification is represented in JSON as:
  * {
@@ -122,6 +122,10 @@
      * The label to use for the HTML section into which the positions of the resource will be rendered.
      */
     positionsLabel: 'Positions',
+    /**
+     * The label to use for the HTML section into which the positions of a predefined classification
+     * coming from a parent node will be rendered.
+     */
     inheritedPositionsLabel: "Positions du thème parent",
     /**
      * The messages to print when the validation of a classification fails. The messages depend on
@@ -131,7 +135,8 @@
       mandatoryMessage: "Le classement est obligatoire pour la création d'une publication. <br />Veuillez sélectionner une position et la valider.",
       contentMustHaveAPosition: "Le contenu doit disposer au moins d'une position avec les axes obligatoires",
       positionAlreayInClassification: "La position existe déjà",
-      positionMustBeValued: "Veuillez sélectionner au moins une valeur à la position"
+      positionMustBeValued: "Veuillez sélectionner au moins une valeur à la position",
+      inheritanceMessage: "Vous avez la possibilité de définir un classement par défaut pour les publications de ce thème. <br />Sinon ce thème utilisera le classement défini pour le thème parent."
     },
     /**
      * The different label to use when rendering the HTML section for updating or adding a position
@@ -195,14 +200,6 @@
                 position.id = null;
               });
             }
-            //            if (escape(classification.uri).search(escape(settings.defaultClassificationURI)) == -1) {
-            //              renderInheritedPositions($this, classification.positions);
-            //              classification = {
-            //                uri: settings.defaultClassificationURI, 
-            //                positions: new Array()
-            //              };
-            //              $this.data('classification', classification);
-            //            }
             renderClassificationEditionFrame($this, []);
             if (classification.positions.length > 0) {
               renderPositions($this);
@@ -347,30 +344,9 @@
   /**
    * Renders the area into which the classification on the PdC of the resource will be displayed.
    */
-  function renderInheritedPositions ( $this, positions ) {
-    $('<fieldset>').append($('<legend>').addClass('header').html('Inherited Classsification')).append($('<div>', {
-      id: 'list_inherited_pdc_position'
-    }).append($('<div>', {
-      id: 'allinheritedpositions'
-    }))).appendTo($this);
-    var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($('#allinheritedpositions'));
-    $.each(positions, function(posindex, position) {
-      var posId = posindex + 1, values =  [];
-      var currentPositionSection = $('<li>').appendTo(positionsSection).append($('<span>').addClass('pdc_position').
-        html(settings.positionLabel + ' ' + posId));
-
-      $.each(position.values, function(valindex, value) {
-        values.push(textFrom(value));
-      });
- 
-      currentPositionSection.append($('<ul>').html(values.join('')));
-    });
-  }
-  
-  /**
-   * Renders the area into which the classification on the PdC of the resource will be displayed.
-   */
   function renderClassificationFrame ( $this ) {
+    if (settings.mode == 'predefinition')
+      $('<div>').addClass('inlineMessage').html(settings.messages.inheritanceMessage).appendTo($this);
     var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.title));
     if ($this.is('fieldset')) {
       titleTag = $('<legend>').html(settings.title);
@@ -609,7 +585,8 @@
   }
   
   function isInherited(classification) {
-    return escape(classification.uri).search(escape(settings.defaultClassificationURI)) == -1;
+    return settings.mode == 'predefinition' &&
+    escape(classification.uri).search(escape(settings.defaultClassificationURI)) == -1;
   }
   
   /**
@@ -777,24 +754,28 @@
                 uri = settings.defaultClassificationURI;
               }
               updatePosition($this, uri, position);
-            }))).append($('<a>', {
-            href: '#', 
-            title: settings.deletion.title + ' ' + posId
-          }).addClass('delete').
-            append($('<img>', {
-              src: settings.deletion.icon,  
-              alt: settings.deletion.title
-            }).click(function () {
-              if (settings.mode == 'edition') {
-                deletePosition($this, classification.uri, position.id);
-              } else if (settings.mode == 'predefinition') {
-                if(window.confirm( settings.deletion.confirmation )) {
-                  removePosition(position.id, classification);
-                  submitClassification($this, settings.defaultClassificationURI);
-                }
-              } else
-                removePositionFromClassification($this, classification, position.id);
             })));
+         
+          if (!(isInherited(classification) && classification.positions.length == 1)) {
+            positionLabel.append($('<a>', {
+              href: '#', 
+              title: settings.deletion.title + ' ' + posId
+            }).addClass('delete').
+              append($('<img>', {
+                src: settings.deletion.icon,  
+                alt: settings.deletion.title
+              }).click(function () {
+                if (settings.mode == 'edition') {
+                  deletePosition($this, classification.uri, position.id);
+                } else if (settings.mode == 'predefinition') {
+                  if(window.confirm( settings.deletion.confirmation )) {
+                    removePosition(position.id, classification);
+                    submitClassification($this, settings.defaultClassificationURI);
+                  }
+                } else
+                  removePositionFromClassification($this, classification, position.id);
+              })));
+          }
         }
           
         currentPositionSection.append($('<ul>').html(values.join('')));
@@ -937,28 +918,27 @@
     
     axisSection.append($('<br>').attr('clear', 'all'));
     if ((settings.mode == 'creation' || settings.mode == 'predefinition') && axisSection.attr('id') == 'pdc-addition-box') {
-      axisSection.
-      append($('<a>', {
-        'id': 'valid_position', 
-        'href': '#'
-      }).addClass('add_position').html(settings.addition.title).click(function() {
-        var classification = $this.data('classification');
-        var position = aPositionWith(selectedValues);
-        if (checkPositionIsValid($this, position)) {
-          if (settings.mode == 'creation') {
-            position.id = classification.positions.length;
-            classification.positions.push(position);
-            refreshClassification($this);
-          } else if (settings.mode == 'predefinition') {
-            if (checkPositionIsValid($this, position)) {
+      axisSection.append($('<a>').attr('href', '#').
+        addClass('valid_position').
+        addClass('milieuBoutonV5').
+        html(settings.addition.title).click(function() {
+          var classification = $this.data('classification');
+          var position = aPositionWith(selectedValues);
+          if (checkPositionIsValid($this, position)) {
+            if (settings.mode == 'creation') {
+              position.id = classification.positions.length;
               classification.positions.push(position);
-              submitClassification($this, settings.defaultClassificationURI);
+              refreshClassification($this);
+            } else if (settings.mode == 'predefinition') {
+              if (checkPositionIsValid($this, position)) {
+                classification.positions.push(position);
+                submitClassification($this, settings.defaultClassificationURI);
+              }
+            } else {
+              submitPosition($this, classification.uri, position);
             }
-          } else {
-            submitPosition($this, classification.uri, position);
           }
-        }
-      }));
+        }));
     }
     if (theAxis.length > 0) {
       var legende = $('<p>').addClass('legende');
