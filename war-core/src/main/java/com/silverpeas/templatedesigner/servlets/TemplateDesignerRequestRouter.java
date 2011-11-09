@@ -128,11 +128,11 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
         PublicationTemplate template = request2Template(request);
         templateDesignerSC.createTemplate(template);
         destination = getDestination("ViewFields", componentSC, request);
-      } else if (function.equals("UpdateTemplate")) {
+      } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
         templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
         destination = getDestination("Main", componentSC, request);
-      } else if (function.equals("ViewFields")) {
+      } else if ("ViewFields".equals(function)) {
         request.setAttribute("Fields", templateDesignerSC.getFields());
         request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
 

@@ -359,25 +359,20 @@ public class XmlForm extends AbstractForm {
         }
         pc.setLastFieldIndex(lastFieldIndex);
 
-        String fieldLabel;
         boolean isMandatory;
-        boolean isDisabled;
-        boolean isReadOnly;
-        boolean isHidden;
-        String fieldClass = null;
         itFields = listField.iterator();
         while (itFields.hasNext()) {
           fieldTemplate = itFields.next();
           Map<String, String> parameters = fieldTemplate.getParameters(language);
           fieldName = fieldTemplate.getFieldName();
-          fieldLabel = fieldTemplate.getLabel(language);
+          String fieldLabel = fieldTemplate.getLabel(language);
           fieldType = fieldTemplate.getTypeName();
           fieldDisplayerName = fieldTemplate.getDisplayerName();
           isMandatory = fieldTemplate.isMandatory();
-          isDisabled = fieldTemplate.isDisabled();
-          isReadOnly = fieldTemplate.isReadOnly();
-          isHidden = fieldTemplate.isHidden();
-          fieldClass = "";
+          boolean isDisabled = fieldTemplate.isDisabled();
+          boolean isReadOnly = fieldTemplate.isReadOnly();
+          boolean isHidden = fieldTemplate.isHidden();
+          String fieldClass = "";
           if (parameters.containsKey("classLabel")) {
             fieldClass = parameters.get("classLabel");
           }
@@ -432,7 +427,7 @@ public class XmlForm extends AbstractForm {
               }
               if (isMandatory && !isDisabled && !isHidden
                   && fieldDisplayer.isDisplayedMandatory()
-                  && (!isReadOnly || fieldType.equals(JdbcRefField.TYPE))) {
+                  && (!isReadOnly || JdbcRefField.TYPE.equals(fieldType))) {
                 mandatory = true;
               }
               out.println("</td>");
