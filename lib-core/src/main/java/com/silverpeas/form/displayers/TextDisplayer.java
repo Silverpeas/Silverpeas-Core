@@ -51,7 +51,7 @@ import java.util.StringTokenizer;
  * @see Form
  * @see FieldDisplayer
  */
-public class TextDisplayer extends AbstractFieldDisplayer<TextField> {
+public class TextDisplayer extends AbstractFieldDisplayer<Field> {
 
   /**
    * Constructeur
@@ -103,7 +103,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<TextField> {
    * @throws FormException  
    */
   @Override
-  public void display(PrintWriter out, TextField field, FieldTemplate template,
+  public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     StringBuilder html = new StringBuilder(10000);
     String language = pagesContext.getLanguage();
@@ -218,7 +218,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<TextField> {
    * @throw FormException if the field type is not a managed type or if the field doesn't accept the new value.
    */
   @Override
-  public List<String> update(String newValue, TextField field, FieldTemplate template,
+  public List<String> update(String newValue, Field field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     return new ArrayList<String>();
   }

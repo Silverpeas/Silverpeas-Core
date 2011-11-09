@@ -100,18 +100,14 @@ public class PublicationTemplateImpl implements PublicationTemplate {
    * loaded and <code>loadIfNull</code> is <code>false</code>.
    * @throws PublicationTemplateException
    */
-  public RecordTemplate getRecordTemplate(boolean loadIfNull)
-      throws PublicationTemplateException {
-
+  public RecordTemplate getRecordTemplate(boolean loadIfNull) throws PublicationTemplateException {
     if ((template != null) || !loadIfNull) {
       return template;
     }
-
     RecordTemplate tmpl = loadRecordTemplate(dataFileName);
     if ((tmpl != null) && !(tmpl instanceof DummyRecordTemplate)) {
       template = tmpl;
     }
-
     return tmpl;
   }
 
@@ -127,23 +123,21 @@ public class PublicationTemplateImpl implements PublicationTemplate {
    */
   @Override
   public RecordSet getRecordSet() throws PublicationTemplateException {
-
     try {
       if (recordSet != null) {
         return recordSet;
       }
-
       RecordSet rs = getGenericRecordSetManager().getRecordSet(this.externalId);
       if ((rs != null) && !(rs instanceof DummyRecordSet)) {
         recordSet = rs;
       }
-
+      if(template != null && rs instanceof DummyRecordSet) {
+        rs = new DummyRecordSet(template);
+      }
       return rs;
-
     } catch (FormException e) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.getUpdateForm", "form.EX_CANT_GET_RECORDSET",
-          null, e);
+      throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm", 
+              "form.EX_CANT_GET_RECORDSET", null, e);
     }
   }
 
@@ -301,13 +295,9 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         SilverTrace.info("form", "PublicationTemplateImpl.mergeTemplates",
             "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName);
         try {
-          formFieldTemplate = (GenericFieldTemplate) formTemplate
-              .getFieldTemplate(fieldName);
-          dataFieldTemplate = (GenericFieldTemplate) dataTemplate
-              .getFieldTemplate(fieldName);
-
+          formFieldTemplate = (GenericFieldTemplate) formTemplate.getFieldTemplate(fieldName);
+          dataFieldTemplate = (GenericFieldTemplate) dataTemplate.getFieldTemplate(fieldName);
           formFieldTemplate.setTypeName(dataFieldTemplate.getTypeName());
-          // formFieldTemplate.setLabelsObj(formFieldTemplate.getLabelsObj());
           formFieldTemplate.setParametersObj(dataFieldTemplate
               .getParametersObj());
         } catch (FormException e) {
@@ -438,23 +428,19 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       recordTemplate.setTemplateName(fileName.substring(0, fileName.lastIndexOf('.')));
       return recordTemplate;
     } catch (MappingException me) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING",
-          "Publication Template FileName : " + xmlFileName, me);
+      throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
+          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : " 
+              + xmlFileName, me);
     } catch (MarshalException me) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.loadPublicationTemplate",
+      throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE",
           "Publication Template FileName : " + xmlFileName, me);
     } catch (ValidationException ve) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.loadPublicationTemplate",
+      throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
           "Publication Template FileName : " + xmlFileName, ve);
     } catch (IOException ioe) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.loadPublicationTemplate",
+      throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE",
           "Publication Template FileName : " + xmlFileName, ioe);
     }

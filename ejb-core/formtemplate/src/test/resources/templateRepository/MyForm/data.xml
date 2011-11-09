@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+    <fieldTemplate>
+        <fieldName>category</fieldName>
+        <typeName>text</typeName>
+        <displayerName>listbox</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Catégorie</labelName>
+            <language>fr</language>
+        </label>
+        <label>
+            <labelName>Category</labelName>
+            <language>en</language>
+        </label>
+        <parameter>
+            <name>keys</name>
+            <value lang="fr">1##2##3##4</value>
+        </parameter>
+        <parameter>
+            <name>values</name>
+            <value lang="fr">Immobilier##Voiture##Services##Divers</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>type</fieldName>
+        <typeName>text</typeName>
+        <displayerName>listbox</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Type d'annonce</labelName>
+            <language>fr</language>
+        </label>
+        <label>
+            <labelName>Classified type</labelName>
+            <language>en</language>
+        </label>
+        <parameter>
+            <name>keys</name>
+            <value lang="fr">1##2##3</value>
+        </parameter>
+        <parameter>
+            <name>values</name>
+            <value lang="fr">achat##vente##location</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>photo</fieldName>
+        <typeName>file</typeName>
+        <displayerName>image</displayerName>
+        <isMandatory>false</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Image</labelName>
+            <language>en</language>
+        </label>
+        <label>
+            <labelName>Photo</labelName>
+            <language>fr</language>
+        </label>
+        <parameter>
+            <name>width</name>
+            <value lang="fr">250</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>description</fieldName>
+        <typeName>text</typeName>
+        <displayerName>textarea</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Description</labelName>
+            <language>fr</language>
+        </label>
+        <label>
+            <labelName>Description</labelName>
+            <language>en</language>
+        </label>
+        <parameter>
+            <name>rows</name>
+            <value lang="fr">5</value>
+        </parameter>
+        <parameter>
+            <name>cols</name>
+            <value lang="fr">100</value>
+        </parameter>
+    </fieldTemplate>
+</recordTemplate>
