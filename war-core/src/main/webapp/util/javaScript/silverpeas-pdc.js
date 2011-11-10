@@ -201,9 +201,7 @@
               });
             }
             renderClassificationEditionFrame($this, []);
-            if (classification.positions.length > 0) {
-              renderPositions($this);
-            }
+            renderPositions($this);
           });
         });
       })
@@ -225,12 +223,10 @@
             var classification = $this.data('classification');
             renderClassificationFrame($this);
             renderClassificationEditionFrame($this, []);
-            if (classification.positions.length > 0) {
-              if (classification.modifiable) {
-                renderPositions($this)
-              } else {
-                $this.attr('style', 'display: none;')
-              }
+            if (classification.modifiable) {
+              renderPositions($this)
+            } else {
+              $this.attr('style', 'display: none;')
             }
           });
         })
@@ -373,8 +369,8 @@
         positionsLabel = settings.inheritedPositionsLabel;
       }
       listOfPositions.addClass('field').
-      append($('<label for="Positions">').html(positionsLabel).hide()).
-      append($('<div>', {
+      append($('<label>', {'for': 'allpositions'}).html(positionsLabel));
+      listOfPositions.append($('<div>', {
         id: 'allpositions'
       }).addClass('champs')).appendTo($('<div>').addClass('fields').appendTo($this));
     } else {
@@ -508,9 +504,9 @@
         $("#pdc-update-box").dialog( "destroy" );
         $this.data('classification', classification);
         if (isInherited(classification))
-          $('label[for="Positions"]').html(settings.inheritedPositionsLabel);
+          $('label[for="allpositions"]').html(settings.inheritedPositionsLabel);
         else
-          $('label[for="Positions"]').html(settings.positionsLabel);
+          $('label[for="allpositions"]').html(settings.positionsLabel);
         refreshClassification( $this );
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -727,7 +723,7 @@
   function renderPositions( $this ) {
     var classification = $this.data('classification');
     if (classification.positions.length > 0) {
-      $('label[for="Positions"]').show();
+      $('label[for="allpositions"]').show();
       var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($('#allpositions'));
       $.each($this.data('classification').positions, function(posindex, position) {
         var posId = posindex + 1, values =  [];
@@ -781,7 +777,7 @@
         currentPositionSection.append($('<ul>').html(values.join('')));
       });
     } else {
-      $('label[for="Positions"]').hide();
+      $('label[for="allpositions"]').hide();
     }
     if (settings.mode == 'edition') {
       $('<a>', {
@@ -850,7 +846,7 @@
         'name': anAxis.name
       }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
         var theValue = $(this).children(':selected').attr('value');
-        if (theValue == '-') {
+        if (theValue == 0) {
           selectedValues[anAxis.id] = null;
         } else {
           selectedValues[anAxis.id] = anAxis.values[theValue];
@@ -881,17 +877,17 @@
             option.attr('disabled', 'disabled');
           }
           if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id)) {
-            option.attr('selected', 'selected');
+            option.attr('selected', true);
           }
         }
       });
       
-      var option = $('<option>').attr('value', '-').prependTo(axisValuesSelection);
+      var option = $('<option>').attr('value', '0').html('&nbsp;').prependTo(axisValuesSelection);
       if (anAxis.mandatory) {
         option.attr('disabled', 'disabled').addClass('emphasis').html(settings.edition.mandatoryAxisDefaultValue);
       }
       if (selectedValues[anAxis.id] == null) {
-        option.attr('selected', 'selected');
+        option.attr('selected', true);
       }
       if (selectedValues[anAxis.id] != null) {
         $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);

@@ -23,10 +23,22 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
+import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -106,7 +118,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   public String getContentId() {
     return contentId;
   }
-  
+
   /**
    * Gets the identifier of the node to which the content belongs.
    * A node is an hierarchic way to organize the contents. A node can represents a category, a topic,
@@ -196,19 +208,37 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
     String function = getPdcPluginFunction();
-    String positionAddingLabel = (getInvokedOperation().equals(PREDEFINE_CLASSIFICATION) ||
-            getInvokedOperation().equals(CREATE_CLASSIFICATION) ?
-            resources.getString("pdcPeas.saveThePosition"):resources.getString("GML.PDCNewPosition"));
+    String positionAddingLabel = (getInvokedOperation().equals(PREDEFINE_CLASSIFICATION)
+            || getInvokedOperation().equals(CREATE_CLASSIFICATION) ? resources.getString(
+            "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
     String script = "$('#classification').pdc('" + function + "', {resource: {context: '" + context
             + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
-            + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString("pdcPeas.classifyPublication")
+            + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(
+            "pdcPeas.classifyPublication")
             + "', positionLabel: '" + resources.getString("pdcPeas.position")
             + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
-            + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions") + "'";
+            + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")
+            + "'";
     if (getInvokedOperation() != READ_CLASSIFICATION) {
+      String nodeName = "";
+      if (getInvokedOperation() == PREDEFINE_CLASSIFICATION) {
+        if (!isDefined(nodeId)) {
+          nodeId = "0";
+        }
+        try {
+          NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
+          String inLanguage = getSessionAttribute(LANGUAGE_KEY);
+          nodeName = node.getName(inLanguage);
+        } catch (RemoteException ex) {
+          Logger.getLogger(BaseClassificationPdCTag.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      String inheritanceMessage = MessageFormat.format(resources.getString(
+              "pdcPeas.CanDoAPredefineClassification"), nodeName);
       script += ", messages: {mandatoryMessage: \""
               + resources.getString("pdcPeas.MustBeClassified") + ", \", inheritanceMessage: \""
-              + resources.getString("pdcPeas.CanDoAPredefineClassification") + "\", contentMustHaveAPosition: \""
+              + inheritanceMessage
+              + "\", contentMustHaveAPosition: \""
               + resources.getString("pdcPeas.theContent") + " " + resources.getString(
               "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
               + resources.getString("pdcPeas.positionAlreadyExist") + "\", positionMustBeValued: \""
@@ -278,8 +308,20 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   protected <T> T getSessionAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.SESSION_SCOPE);
   }
-  
+
   protected JspWriter getOut() {
     return getJspContext().getOut();
+  }
+
+  protected NodeBm getNodeBm() {
+    try {
+      NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+              JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      return home.create();
+    } catch (Exception ex) {
+      throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+              ex);
+    }
   }
 }
