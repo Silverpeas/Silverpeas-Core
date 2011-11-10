@@ -23,10 +23,27 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp.inc" %>
-<script language="javascript">
+<%
+	String roles = "";
+	String groupsOfInstanceOnlyChecked = "";
+	
+	if (field != null) {
+	  	roles = (String) parameters.get("roles");
+		if (!StringUtil.isDefined(roles)) {
+			roles = "";
+		}
+		
+	  	String groupsOfInstanceOnly = (String) parameters.get("groupsOfInstanceOnly");
+	  	if (StringUtil.getBooleanValue(groupsOfInstanceOnly)) {
+	  	  groupsOfInstanceOnlyChecked = "checked";
+	  	}
+	}
+%>
+<script type="text/javascript">
 	function isCorrectForm() 
 	{
      	checkFieldName();
@@ -36,4 +53,10 @@
 </head>
 <body>
 <%@ include file="includeTopField.jsp.inc" %>
+<tr>
+<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.usedInstanceOnly")%> :</td><td><input type="checkbox" name="Param_groupsOfInstanceOnly" value="true" <%=groupsOfInstanceOnlyChecked%>/></td>
+</tr>
+<tr>
+<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.roles")%> :</td><td><input type="text" name="Param_roles" value="<%=roles%>" /></td>
+</tr>
 <%@ include file="includeBottomField.jsp.inc" %>

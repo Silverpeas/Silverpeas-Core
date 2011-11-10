@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas.control;
 
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.silverpeas.util.StringUtil;
@@ -139,7 +140,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
 
   public void setSelectedUserIds(String selectedUserIds) {
     selectedUsers = null;
-    if ((selectedUserIds != null) && (selectedUserIds.length() > 0)) {
+    if (StringUtil.isDefined(selectedUserIds)) {
       StringTokenizer tokenizer = new StringTokenizer(selectedUserIds, ",");
       this.selectedUserIds = new String[tokenizer.countTokens()];
       int i = 0;
@@ -154,7 +155,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   /**
    * Init the user panel.
    */
-  public String initSelectionPeas(boolean multiple, String instanceId) {
+  public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles) {
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
     String hostUrl = m_context + "/RselectionPeasWrapper/jsp/close";
@@ -175,9 +176,12 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     sel.setElementSelectable(isUserSelectable());
     sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
-    if (instanceId != null) {
+    if (StringUtil.isDefined(instanceId)) {
       SelectionUsersGroups sug = new SelectionUsersGroups();
       sug.setComponentId(instanceId);
+      if (roles != null && !roles.isEmpty()) {
+        sug.setProfileNames(roles);
+      }
       sel.setExtraParams(sug);
     }
 
@@ -210,7 +214,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
         selectedUsers = organizationController.getUserDetails(ids);
       } else {
         String id = sel.getFirstSelectedElement();
-        if ((id != null) && (id.length() > 0)) {
+        if (StringUtil.isDefined(id)) {
           selectedUser = organizationController.getUserDetail(id);
         }
       }
@@ -244,7 +248,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
 
   public void setSelectedGroupIds(String selectedIds) {
     selectedGroups = null;
-    if ((selectedIds != null) && (selectedIds.length() > 0)) {
+    if (StringUtil.isDefined(selectedIds)) {
       StringTokenizer tokenizer = new StringTokenizer(selectedIds, ",");
       this.selectedGroupIds = new String[tokenizer.countTokens()];
       int i = 0;

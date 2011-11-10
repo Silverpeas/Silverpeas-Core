@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.fileupload.FileItem;
 
 /**
@@ -113,12 +115,12 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    */
   @Override
   public void display(PrintWriter out, UserField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "UserFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
         + ", fieldType = " + field.getTypeName());
 
-    String language = PagesContext.getLanguage();
+    String language = pageContext.getLanguage();
     String selectUserImg = Util.getIcon("userPanel");
     String selectUserLab = Util.getString("userPanel", language);
     String deleteUserImg = Util.getIcon("delete");
@@ -150,16 +152,29 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
           + EncodeHelper.javaStringToHtmlString(userName) + "\"/>";
     }
 
-    if (!template.isHidden() && !template.isDisabled()
-        && !template.isReadOnly()) {
+    if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
+      
+      Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+      String roles = parameters.get("roles");
+      boolean usersOfInstanceOnly = StringUtil.getBooleanValue(parameters.get("usersOfInstanceOnly"));
+      if (StringUtil.isDefined(roles)) {
+        usersOfInstanceOnly = true;
+      }
+          
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"
           + URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
-          + "?formName=" + PagesContext.getFormName()
+          + "?formName=" + pageContext.getFormName()
           + "&elementId=" + fieldName
           + "&elementName=" + fieldName + "_name"
-          + "&selectedUser=" + ((userId == null) ? "" : userId)
-          + "','selectUser',800,600,'');\" >";
+          + "&selectedUser=" + ((userId == null) ? "" : userId);
+      if (usersOfInstanceOnly) {
+        html += "&instanceId=" + pageContext.getComponentId();
+      }
+      if (StringUtil.isDefined(roles)) {
+        html += "&roles=" + roles;
+      }
+      html += "','selectUser',800,600,'');\" >";
       html += "<img src=\""
           + selectUserImg
           + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
@@ -167,8 +182,8 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
           + selectUserLab + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document." + PagesContext.getFormName() + "." + fieldName + ".value='';"
-          + "document." + PagesContext.getFormName() + "." + fieldName + "$$name"
+          + "document." + pageContext.getFormName() + "." + fieldName + ".value='';"
+          + "document." + pageContext.getFormName() + "." + fieldName + "$$name"
           + ".value='';"
           + "\">";
       html += "<img src=\""
@@ -177,7 +192,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
           + deleteUserLab + "\" align=\"top\" title=\""
           + deleteUserLab + "\"/></a>";
 
-      if (template.isMandatory() && PagesContext.useMandatory()) {
+      if (template.isMandatory() && pageContext.useMandatory()) {
         html += Util.getMandatorySnippet();
       }
     }
@@ -187,7 +202,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   @Override
   public List<String> update(String newId, UserField field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
+      PagesContext pageContext) throws FormException {
 
     if (UserField.TYPE.equals(field.getTypeName())) {
       if (!StringUtil.isDefined(newId)) {
@@ -212,7 +227,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
   }
 
   @Override
-  public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
+  public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pageContext) {
     return 2;
   }
 

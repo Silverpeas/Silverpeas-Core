@@ -24,8 +24,13 @@
 
 package com.stratelia.silverpeas.selectionPeas.servlets;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -68,28 +73,26 @@ public class SelectionPeasWrapper extends ComponentRequestRouter {
         session.setFormName(request.getParameter("formName"));
         session.setElementId(request.getParameter("elementId"));
         session.setElementName(request.getParameter("elementName"));
-        String selectionMultiple = request.getParameter("selectionMultiple");
+        boolean selectionMultiple = StringUtil.getBooleanValue(request.getParameter("selectionMultiple"));
         String instanceId = request.getParameter("instanceId");
+        List<String> roles = getRoles(request.getParameter("roles"));
 
         session.setSelectable(request.getParameter("selectable"));
 
         if (session.isGroupSelectable()) {
-          if ("true".equals(selectionMultiple)) {
+          if (selectionMultiple) {
             session.setSelectedGroupIds(request.getParameter("selectedGroups"));
-            return session.initSelectionPeas(true, instanceId);
           } else {
             session.setSelectedGroupId(request.getParameter("selectedGroup"));
-            return session.initSelectionPeas(false, null);
           }
         } else {
-          if ("true".equals(selectionMultiple)) {
+          if (selectionMultiple) {
             session.setSelectedUserIds(request.getParameter("selectedUsers"));
-            return session.initSelectionPeas(true, instanceId);
           } else {
             session.setSelectedUserId(request.getParameter("selectedUser"));
-            return session.initSelectionPeas(false, null);
           }
         }
+        return session.initSelectionPeas(selectionMultiple, instanceId, roles);
       } else if (function.equals("close")) {
         session.getSelectionPeasSelection();
         request.setAttribute("formName", session.getFormName());
@@ -121,6 +124,13 @@ public class SelectionPeasWrapper extends ComponentRequestRouter {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
+  }
+  
+  private List<String> getRoles(String param) {
+    if (StringUtil.isDefined(param)) {
+      return Arrays.asList(StringUtil.split(param, ","));
+    }
+    return new ArrayList<String>();
   }
 
 }

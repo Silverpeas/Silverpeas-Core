@@ -79,8 +79,6 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
       PagesContext PagesContext) throws java.io.IOException {
     String language = PagesContext.getLanguage();
 
-    String fieldName = template.getFieldName();
-
     if (!template.getTypeName().equals(MultipleUserField.TYPE)) {
       SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
           "form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
@@ -88,12 +86,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     }
     if (template.isMandatory()) {
       StringBuilder html = new StringBuilder();
-      html.append("   if (isWhitespace(stripInitialWhitespace(document.forms['")
-          .append(PagesContext.getFormName())
-          .append("'].elements['")
-          .append(fieldName)
-          .append("'].value))) {");
-
+      html.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       html.append("      errorMsg+=\"  - '")
           .append(EncodeHelper.javaStringToJsString(template.getLabel(language)))
           .append("' ").append(Util.getString("GML.MustBeFilled", language))
@@ -116,25 +109,27 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
    * </UL>
    */
   public void display(PrintWriter out, MultipleUserField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "UserFieldDisplayer.display",
         "root.MSG_GEN_ENTER_METHOD", "fieldName = "
         + template.getFieldName() + ", value = "
         + field.getValue() + ", fieldType = "
         + field.getTypeName());
 
-    String language = PagesContext.getLanguage();
+    String language = pageContext.getLanguage();
     String selectUserImg = Util.getIcon("userPanel");
     String selectUserLab = Util.getString("userPanel", language);
 
-    Map<String, String> parameters = template.getParameters(PagesContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
     String rows =
         (parameters.containsKey("rows")) ? parameters.get("rows") : ROWS_DEFAULT_VALUE;
     String cols =
         (parameters.containsKey("cols")) ? parameters.get("cols") : COLS_DEFAULT_VALUE;
-    boolean usersOfInstanceOnly =
-        (parameters.containsKey("usersOfInstanceOnly") && "Yes".equals(parameters
-        .get("usersOfInstanceOnly")));
+    boolean usersOfInstanceOnly = StringUtil.getBooleanValue(parameters.get("usersOfInstanceOnly"));
+    String roles = parameters.get("roles");
+    if (StringUtil.isDefined(roles)) {
+      usersOfInstanceOnly = true;
+    }
 
     String userNames = "";
     String userIds = "";
@@ -151,12 +146,12 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     if (!field.isNull()) {
       userNames = field.getValue();
     }
-    html.append("<input type=\"hidden\" name=\"").append(fieldName)
-        .append("\" value=\"")
-        .append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" />");
+    html.append("<input type=\"hidden\" id=\"").append(fieldName).append("\" name=\"")
+        .append(fieldName)
+        .append("\" value=\"").append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" />");
 
     if (!template.isHidden()) {
-      html.append("<textarea name=\"").append(fieldName)
+      html.append("<textarea id=\"").append(fieldName).append("_name\" name=\"").append(fieldName)
           .append("$$name\" disabled=\"disabled\" rows=\"").append(rows).append("\" cols=\"")
           .append(cols)
           .append("\">")
@@ -167,11 +162,12 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
         && !template.isReadOnly()) {
       html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
           .append(URLManager.getApplicationURL())
-          .append("/RselectionPeasWrapper/jsp/open?formName=").append(PagesContext.getFormName())
+          .append("/RselectionPeasWrapper/jsp/open?formName=").append(pageContext.getFormName())
           .append("&elementId=").append(fieldName)
           .append("&elementName=").append(fieldName).append("$$name")
-          .append("&selectedUsers=").append(((userIds == null) ? "" : userIds))
-          .append((usersOfInstanceOnly) ? "&instanceId=" + PagesContext.getComponentId() : "")
+          .append("&selectedUsers=").append(userIds == null ? "" : userIds)
+          .append(usersOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
+          .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")
           .append("&selectionMultiple=true")
           .append("','selectUser',800,600,'');\" >");
 
