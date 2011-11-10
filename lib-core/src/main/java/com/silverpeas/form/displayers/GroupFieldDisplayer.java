@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.form.displayers;
 
@@ -46,9 +43,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can
- * retrieve via HTTP any updated value. <p/> <p/>
+ * retrieve via HTTP any updated value.
  * <p/>
- * @see Field
+ * <
+ * p/> < p/> @see Field
  * @see FieldTemplate
  * @see Form
  * @see FieldDisplayer
@@ -66,15 +64,12 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.</li>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
+   * log a silvertrace and writes an empty string when : <ul> <li>the fieldName is unknown by the
+   * template.</li> <li>the field type is not a managed type.</li> </ul>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template,
-          PagesContext PagesContext) throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+          throws java.io.IOException {
     String language = PagesContext.getLanguage();
 
     if (!GroupField.TYPE.equals(template.getTypeName())) {
@@ -97,9 +92,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
+   * <ul> <li>the field type is not a managed type.</li> </ul>
    */
   @Override
   public void display(PrintWriter out, GroupField field, FieldTemplate template,
@@ -121,8 +114,8 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     String fieldName = template.getFieldName();
 
     if (!GroupField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "GroupFieldDisplayer.display",
-              "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
+      SilverTrace.info("form", "GroupFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+              GroupField.TYPE);
     } else {
       groupId = field.getGroupId();
     }
@@ -187,6 +180,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
@@ -196,6 +190,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
