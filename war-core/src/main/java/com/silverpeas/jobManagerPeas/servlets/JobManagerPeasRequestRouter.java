@@ -97,8 +97,8 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
         destination = this.setAttributes(request, jobManagerSC);
       } else if (function.startsWith("ChangeOperation")) {
         String idOperation = request.getParameter("Id");
-        if (idOperation.equals("15")) {
-          Boolean mode = new Boolean(componentSC.isAppInMaintenance());
+        if ("15".equals(idOperation)) {
+          Boolean mode = componentSC.isAppInMaintenance();
           SilverTrace.debug("jobManagerPeas", "ChangeOperation",
               "root.MSG_GEN_PARAM_VALUE", "mode=" + mode.toString());
           request.setAttribute("mode", mode.toString());
@@ -110,12 +110,11 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
       }
 
       else if (function.startsWith("SetMaintenanceMode")) {
-        componentSC.setAppModeMaintenance(new Boolean(request
-            .getParameter("mode")).booleanValue());
+        componentSC.setAppModeMaintenance(Boolean.parseBoolean(request.getParameter("mode")));
         destination = getDestination("ManageMaintenanceMode", jobManagerSC,
             request);
       } else if (function.startsWith("ManageMaintenanceMode")) {
-        Boolean mode = new Boolean(componentSC.isAppInMaintenance());
+        Boolean mode = componentSC.isAppInMaintenance();
         SilverTrace.debug("jobManagerPeas", "getDestination",
             "root.MSG_GEN_PARAM_VALUE", "mode=" + mode.toString());
         request.setAttribute("mode", mode.toString());
