@@ -27,6 +27,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.record.GenericDataRecord;
 import com.silverpeas.util.ArrayUtil;
 
 /**
@@ -43,6 +44,11 @@ public class DummyRecordTemplate implements RecordTemplate {
   public DummyRecordTemplate() {
     fieldTemplate = new DummyFieldTemplate();
     dataRecord = new DummyDataRecord();
+  }
+  
+  public DummyRecordTemplate(RecordTemplate template) throws FormException {
+    fieldTemplate = new DummyFieldTemplate();
+    dataRecord = new GenericDataRecord(template);
   }
 
   /**

@@ -143,14 +143,17 @@ public class GenericDataRecord implements DataRecord, Serializable {
     this.id = id;
   }
 
+  @Override
   public String[] getFieldNames() {
     return template.getFieldNames();
   }
 
+  @Override
   public String getLanguage() {
     return language;
   }
 
+  @Override
   public void setLanguage(String language) {
     this.language = language;
   }

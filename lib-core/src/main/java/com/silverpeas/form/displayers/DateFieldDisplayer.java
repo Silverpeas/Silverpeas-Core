@@ -86,12 +86,6 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
           throws IOException {
     String language = pagesContext.getLanguage();
-
-    if (!DateField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "DateFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-              DateField.TYPE);
-    }
-
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("			errorMsg+=\"  - '"
@@ -131,11 +125,6 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
   @Override
   public void display(PrintWriter out, DateField field, FieldTemplate template,
           PagesContext pagesContext) throws FormException {
-    if (!DateField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "DateFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-              DateField.TYPE);
-    }
-
     String language = pagesContext.getLanguage();
     Map<String, String> parameters = template.getParameters(language);
     String fieldName = template.getFieldName();

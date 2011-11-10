@@ -90,10 +90,6 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws java.io.IOException {
     String language = pagesContext.getLanguage();
-    if (!JdbcField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "JdbcFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          JdbcField.TYPE);
-    }
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
@@ -125,15 +121,6 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
-    JdbcField jdbcField = null;
-
-    if (!field.getTypeName().equals(JdbcField.TYPE)) {
-      SilverTrace.info("form", "JdbcFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          JdbcField.TYPE);
-      jdbcField = new JdbcField();
-    } else {
-      jdbcField = field;
-    }
     String value = "";
     if (!field.isNull()) {
       value = field.getValue(language);
@@ -144,12 +131,12 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
       valueFieldType = parameters.get("valueFieldType");
     }
     Collection<String> listRes = null;
-    if (jdbcField != null) {
+    if (field != null) {
       Connection jdbcConnection = null;
       try {
-        jdbcConnection = jdbcField.connectJdbc(parameters.get("driverName"), parameters.get("url"), parameters.
+        jdbcConnection = field.connectJdbc(parameters.get("driverName"), parameters.get("url"), parameters.
             get("login"), parameters.get("password"));
-        listRes = jdbcField.selectSql(jdbcConnection, parameters.get("query"), currentUserId);
+        listRes = field.selectSql(jdbcConnection, parameters.get("query"), currentUserId);
       } finally {
         DBUtil.close(jdbcConnection);
       }
@@ -208,12 +195,10 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
       html.append("<script type=\"text/javascript\">\n");
       html.append(" this.oACDS").append(fieldName).
-          append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(
-          ");\n");
+          append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
       html.append("	this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('").
           append(fieldName).append("','container").append(fieldName).append("', this.oACDS").
-          append(fieldName).append(
-          ");\n");
+          append(fieldName).append(");\n");
       html.append("	this.oAutoComp").append(fieldName).append(
           ".prehighlightClassName = \"yui-ac-prehighlight\";\n");
       html.append("	this.oAutoComp").append(fieldName).append(".typeAhead = true;\n");

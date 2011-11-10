@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+    <fieldTemplate>
+        <fieldName>category</fieldName>
+        <typeName>text</typeName>
+        <displayerName>listbox</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Catégorie</labelName>
+            <language>fr</language>
+        </label>
+        <label>
+            <labelName>Category</labelName>
+            <language>en</language>
+        </label>
+        <parameter>
+            <name>keys</name>
+            <value lang="fr">1##2##3##4</value>
+        </parameter>
+        <parameter>
+            <name>values</name>
+            <value lang="fr">Immobilier##Voiture##Services##Divers</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>type</fieldName>
+        <typeName>text</typeName>
+        <displayerName>listbox</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Type d'annonce</labelName>
+            <language>fr</language>
+        </label>
+        <label>
+            <labelName>Classified type</labelName>
+            <language>en</language>
+        </label>
+        <parameter>
+            <name>keys</name>
+            <value lang="fr">1##2##3</value>
+        </parameter>
+        <parameter>
+            <name>values</name>
+            <value lang="fr">achat##vente##location</value>
+        </parameter>
+    </fieldTemplate>
+</recordTemplate>

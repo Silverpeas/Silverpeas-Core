@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publicationTemplate>
+    <name>MyForm</name>
+    <description>Données complémentaires pour les petites annonces</description>
+	<image>/weblib/xmlForms/model1.gif</image>
+    <visible>true</visible>
+    <viewFileName>MyForm/view.xml</viewFileName>
+    <viewTypeFile></viewTypeFile>
+    <updateFileName>MyForm/update.xml</updateFileName>
+    <updateTypeFile></updateTypeFile>
+    <searchFileName>MyForm/search.xml</searchFileName>
+    <dataFileName>MyForm/data.xml</dataFileName>
+</publicationTemplate>

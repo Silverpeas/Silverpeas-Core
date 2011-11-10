@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<publicationTemplate>
+    <name>template</name>
+    <description></description>
+    <visible>true</visible>
+    <viewFileName>template/view.xml</viewFileName>
+    <viewTypeFile></viewTypeFile>
+    <updateFileName>template/update.xml</updateFileName>
+    <updateTypeFile></updateTypeFile>
+    <dataFileName>template/data.xml</dataFileName>
+</publicationTemplate>

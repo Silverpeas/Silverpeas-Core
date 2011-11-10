@@ -42,6 +42,10 @@ public class DummyRecordSet implements RecordSet {
   public DummyRecordSet() {
     this.recordTemplate = new DummyRecordTemplate();
   }
+  
+   public DummyRecordSet(RecordTemplate template) throws FormException {
+    this.recordTemplate = new DummyRecordTemplate(template);
+  }
 
   /**
    * Returns the RecordTemplate shared by all the DataRecord of this RecordSet.

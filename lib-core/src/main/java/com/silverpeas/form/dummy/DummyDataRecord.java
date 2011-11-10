@@ -41,6 +41,10 @@ public class DummyDataRecord implements DataRecord {
   public DummyDataRecord() {
     field = new TextFieldImpl();
   }
+  
+  public DummyDataRecord(Field field) {
+    field = field;
+  }
 
   /**
    * Returns the data record id.

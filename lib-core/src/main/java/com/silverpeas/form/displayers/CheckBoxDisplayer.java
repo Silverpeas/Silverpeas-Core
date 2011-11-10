@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.form.displayers;
 
@@ -72,27 +69,19 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the fieldName is unknown by the template.
-   * <li>the field type is not a managed type.
-   * </ul>
-   * @param out 
+   * log a silvertrace and writes an empty string when : <ul> <li>the fieldName is unknown by the
+   * template. <li>the field type is not a managed type. </ul>
+   *
+   * @param out
    * @param template
-   * @param pagesContext 
-   * @throws IOException  
+   * @param pagesContext
+   * @throws IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
           throws IOException {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
-
-    if (!TextField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "CheckBoxDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-              TextField.TYPE);
-    }
-
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println(" var checked = false;\n");
       out.println(" for (var i = 0; i < " + getNbHtmlObjectsDisplayed(template, pagesContext)
@@ -108,7 +97,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       out.println("   errorNb++;");
       out.println(" }");
     }
-
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
@@ -116,14 +104,13 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul>
-   * <li>the field type is not a managed type.</li>
-   * </ul>
+   * <ul> <li>the field type is not a managed type.</li> </ul>
+   *
    * @param out
-   * @param field 
+   * @param field
    * @param template
    * @param PagesContext
-   * @throws FormException  
+   * @throws FormException
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
@@ -139,29 +126,19 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
-
-    if (!TextField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "CheckBoxDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-              TextField.TYPE);
-    }
-
     if (!field.isNull()) {
       selectedValues = field.getValue(language);
     }
-
     StringTokenizer st = new StringTokenizer(selectedValues, "##");
     while (st.hasMoreTokens()) {
       valuesFromDB.add(st.nextToken());
     }
-
     if (parameters.containsKey("keys")) {
       keys = parameters.get("keys");
     }
-
     if (parameters.containsKey("values")) {
       values = parameters.get("values");
     }
-
     if (parameters.containsKey("class")) {
       cssClass = parameters.get("class");
       if (StringUtil.isDefined(cssClass)) {
@@ -210,7 +187,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
         optKey = stKeys.nextToken();
         optValue = stValues.nextToken();
         html.append("<input type=\"checkbox\" id=\"").append(fieldName).append("_").append(i);
-        html.append("\" name=\"").append(fieldName).append("\" value=\"").append(optKey).append("\" ");
+        html.append("\" name=\"").append(fieldName).append("\" value=\"").append(optKey).append(
+                "\" ");
         if (template.isDisabled() || template.isReadOnly()) {
           html.append(" disabled=\"disabled\" ");
         }
