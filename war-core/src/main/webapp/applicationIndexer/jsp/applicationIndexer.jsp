@@ -23,6 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -35,8 +39,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 
@@ -45,10 +47,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="java.util.ArrayList"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%!
 private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationController m_OrganizationController, String m_sContext) {
-    ComponentInst 	compoInst 	= null;
     String 			compoName 	= null;
     String 			compoDesc 	= null;
     String 			compoId 	= null;
@@ -67,14 +69,14 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationCon
 
         String[] asAvailCompoForCurUser = m_OrganizationController.getAllComponentIds(spaceInst.getShortId());
         for(int nI = 0; nI <asAvailCompoForCurUser.length; nI++) {
-
-            compoInst = m_OrganizationController.getComponentInst(asAvailCompoForCurUser[nI]);
+          	ComponentInstLight compoInst = m_OrganizationController.getComponentInstLight(asAvailCompoForCurUser[nI]);
             compoName = compoInst.getName();
             compoDesc = compoInst.getDescription();
             compoId = compoInst.getId();
             label = compoInst.getLabel();
-            if ((label == null) || (label.length() == 0))
+            if ((label == null) || (label.length() == 0)) {
                 label = compoName;
+            }
 
             result.append("&nbsp;<img src=").append(m_sContext).append("/util/icons/component/").append(compoName).append("Small.gif border=0 width=15 align=absmiddle>&nbsp;<A HREF=\"javaScript:index('Index','"+compoId+"','"+spaceId+"');\">").append(label).append("</A>\n");
         }
@@ -145,154 +147,92 @@ if (action != null) {
     } else if (action.equals("IndexUsers")) {
     	ai.indexUsers();
     }
-    indexMessage = "Indexation lancée en tâche de fond !";
+    indexMessage = message.getString("admin.reindex.inprogress");
 }
+
+Window window = gef.getWindow();
+BrowseBar browseBar = window.getBrowseBar();
+browseBar.setDomainName(message.getString("admin.reindex"));
+
+OperationPane operations = window.getOperationPane();
+operations.addOperation("useless", message.getString("admin.reindex.op.all"), "javaScript:index('IndexAll','','');");
+operations.addLine();
+operations.addOperation("useless", message.getString("admin.reindex.op.spaces"), "javaScript:index('IndexAllSpaces','','');");
+operations.addOperation("useless", message.getString("admin.reindex.op.users"), "javaScript:index('IndexUsers','','');");
+operations.addOperation("useless", message.getString("admin.reindex.op.groups"), "javaScript:index('IndexGroups','','');");
+operations.addOperation("useless", message.getString("admin.reindex.op.pdc"), "javaScript:index('IndexPdc','','');");
+operations.addOperation("useless", message.getString("admin.reindex.op.todos"), "javaScript:index('IndexPerso','Todo','');");
+operations.addOperation("useless", message.getString("admin.reindex.op.agendas"), "javaScript:index('IndexPerso','Agenda','');");
 
 %>
 
 <html>
 <head>
 <title>Navigation</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<!--link rel="stylesheet" href="styleSheets/admin.css"-->
 <% out.println(gef.getLookStyleSheet()); %>
-<script language="JavaScript">
-function index(action, compo, space)
-{
-	var message = "Vous êtes sur le point de réindexer ";
-	if (action == "Index")
-	{
+<script type="text/javascript">
+function index(action, compo, space) {
+	var message = "<%=message.getString("admin.reindex.js.warn")%> ";
+	if (action == "Index") {
 		if (compo.length > 1) {
-			message += "un composant";
+			message += "<%=message.getString("admin.reindex.js.warn.compo")%>";
 		} else {
-			message += "un espace";
+			message += "<%=message.getString("admin.reindex.js.warn.space")%>";
 		}
 	} else if (action == "IndexPerso")  {
-		message += "un composant de l'espace personnel";
+		message += "<%=message.getString("admin.reindex.js.warn.perso")%>";
 	} else if (action == "IndexAllSpaces") {
-		message += "tous les espaces collaboratifs";
+		message += "<%=message.getString("admin.reindex.js.warn.spaces")%>";
 	} else if (action == "IndexAll") {
-		message += "tout le portail";
+		message += "<%=message.getString("admin.reindex.js.warn.all")%>";
 	} else if (action == "IndexPdc") {
-		message += "le plan de classement";
+		message += "<%=message.getString("admin.reindex.js.warn.pdc")%>";
 	} else if (action == "IndexGroups") {
-		message += "les groupes d'utilisateurs";
+		message += "<%=message.getString("admin.reindex.js.warn.groups")%>";
 	} else if (action == "IndexUsers") {
-		message += "les utilisateurs";
+		message += "<%=message.getString("admin.reindex.js.warn.users")%>";
 	}
-	message += ". \nEtes-vous sûr(e) de vouloir effectuer cette opération ?";
+	message += ". \n<%=message.getString("admin.reindex.js.warn.confirm")%>";
 	if (confirm(message)) {
+		$.progressMessage();
 		location.href="applicationIndexer.jsp?Action="+action+"&PersonalCompo="+compo+"&SpaceId="+space+"&ComponentId="+compo;
 	}
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<TABLE WIDTH="95%"><TR><TD>
+<body>
 <%
+	out.println(window.printBefore());
+
     Frame frame=gef.getFrame();
-    frame.addTitle("<a href=\"javaScript:index('IndexAll','','');\">INDEXER TOUT (espaces collaboratifs, espaces personnels, plan de classement, groupes, utilisateurs)</a>");
     out.println(frame.printBefore());
 %>
-<BR>&nbsp;
-<CENTER>
+<center>
+	<div class="inlineMessage"><%=message.getString("admin.reindex.help")%></div>
+	<br/>
 	<% if (indexMessage.length() > 0) { %>
-		<table><tr><td><span class="txtnav"><font color="red"><%=indexMessage%></font></span></td></tr></table>
-		<br>
+		<div class="inlineMessage-ok"><%=indexMessage%></div>
+		<br/>
 	<% } %>
-        <table border="0" cellspacing="0" cellpadding="0" width="90%" class=intfdcolor51>
-          <tr>
-            <td colspan="2" rowspan="2"><img src="../../admin/jsp/icons/accueil/angle_hg.gif" width="10" height="10"></td>
-            <td bgcolor=2776A3><img src="../../admin/jsp/icons/1px.gif" width="1" height="1"></td>
-            <td bgcolor=2776A3 rowspan="5"><img src="../../admin/jsp/icons/1px.gif"></td>
-            <td bgcolor=2776A3><img src="../../admin/jsp/icons/1px.gif"></td>
-            <td colspan="2" rowspan="2"><img src="../../admin/jsp/icons/accueil/angle_hd.gif" width="10" height="10"></td>
-          </tr>
-          <tr>
-            <td><img src="../../admin/jsp/icons/1px.gif" height="9"></td>
-            <td><img src="../../admin/jsp/icons/1px.gif"></td>
-          </tr>
-          <tr>
-            <td bgcolor=2776A3 width="1"><img src="../../admin/jsp/icons/1px.gif"></td>
-            <td width="9"><img src="../../admin/jsp/icons/1px.gif"></td>
-            <td valign="top">
-              <table border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td><img src="../../admin/jsp/icons/accueil/esp_perso.gif">&nbsp;</td>
-                  <td width=250 nowrap><span class="txtnav" nowrap><%=message.getString("SpacePersonal")%></span></td>
-                </tr>
-                <tr>
-                  <td class="txtnote" valign="top" align="right">&nbsp;<img src="<%=m_sContext%>/util/icons/component/agendaSmall.gif" border=0 width=15 align=absmiddle></td>
-                  <td class="txtnote" nowrap><a href="javaScript:index('IndexPerso','Agenda','');">&nbsp;<%=message.getString("Diary")%></a></td>
-                </tr>
-                <tr>
-                  <td class="txtnote" valign="top" align="right">&nbsp;<img src="<%=m_sContext%>/util/icons/component/todoSmall.gif" border=0 width=15 align=absmiddle></td>
-                  <td class="txtnote" nowrap><a href="javaScript:index('IndexPerso','Todo','');">&nbsp;<%=message.getString("ToDo")%></a><br>
-                    &nbsp;</td>
-                </tr>
-                <tr>
-                  <td colspan="2" bgcolor=2776A3><img src="../../admin/jsp/icons/1px.gif"></td>
-                </tr>
-                <tr>
-                <td colspan="2">
-                	<span class="txtnav" nowrap>Plan de classement</span><br><br>
-                	<a href="javaScript:index('IndexPdc','','');">INDEXER TOUT LE PDC</a>
-                </td>
-                </tr>
-                <tr>
-                  <td colspan="2" bgcolor=2776A3><img src="../../admin/jsp/icons/1px.gif"></td>
-                </tr>
-                <tr>
-                <td colspan="2">
-                	<br/>
-                	<span class="txtnav" nowrap="nowrap">Groupes</span><br/><br/>
-                	<a href="javaScript:index('IndexGroups','','');">INDEXER TOUS LES GROUPES D'UTILISATEURS</a>
-                </td>
-                </tr>
-                <tr>
-                <td colspan="2">
-                	<br/>
-                	<span class="txtnav" nowrap="nowrap">Utilisateurs</span><br/><br/>
-                	<a href="javaScript:index('IndexUsers','','');">INDEXER TOUS LES UTILISATEURS</a>
-                </td>
-                </tr>
-              </table>
-            </td>
-            <td valign="top">
-              <table border="0" cellspacing="0" cellpadding="3">
-                <tr>
-                  <td nowrap ><img src="../../admin/jsp/icons/accueil/esp_collabo.gif" align=absmiddle>&nbsp;&nbsp;<span class="txtnav"><%=message.getString("SpaceCollaboration")%></span> - <a href="javaScript:index('IndexAllSpaces','','');">INDEXER TOUS LES ESPACES COLLABORATIFS</a></td>
-                </tr>
-                <tr><td>
+		<table border="0" cellspacing="0" cellpadding="3" width="100%">
+        	<tr>
+            	<td nowrap><img src="../../admin/jsp/icons/accueil/esp_collabo.gif">&nbsp;&nbsp;<span class="txtnav"><%=message.getString("SpaceCollaboration")%></span></td>
+            </tr>
+            <tr>
+            	<td>
                 <%
                     for(int nK = 0; nK < rootSpaceIds.length; nK++) {
                     	out.println(printSpaceAndSubSpaces(rootSpaceIds[nK], 0, m_OrganizationController, m_sContext));
                     }
                 %>
-          </td>
-            </tr>
-              </table>
-            </td>
-            <td width="9"><img src="../../admin/jsp/icons/1px.gif"></td>
-            <td bgcolor=2776A3 width="1"><img src="../../admin/jsp/icons/1px.gif"></td>
-          </tr>
-          <tr>
-            <td colspan="2" rowspan="2"><img src="../../admin/jsp/icons/accueil/angle_bg.gif" width="10" height="10"></td>
-            <td><img src="../../admin/jsp/icons/1px.gif" height="9"></td>
-            <td><img src="../../admin/jsp/icons/1px.gif"></td>
-            <td colspan="2" rowspan="2"><img src="../../admin/jsp/icons/accueil/angle_bd.gif" width="10" height="10"></td>
-          </tr>
-          <tr>
-            <td bgcolor=2776A3><img src="../../admin/jsp/icons/1px.gif" width="1" height="1"></td>
-            <td bgcolor=2776A3><img src="../../admin/jsp/icons/1px.gif"></td>
-          </tr>
-        </table>
-</CENTER>
+          		</td>
+          	</tr>
+		</table>
+</center>
 <%
-out.println(frame.printMiddle());
-out.println(frame.printAfter());
+	out.println(frame.printAfter());
+	out.println(window.printAfter());
 %>
-</TD></TR></TABLE>
-<p>&nbsp;</p>
+<view:progressMessage/>
 </body>
 </html>
