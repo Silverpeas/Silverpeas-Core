@@ -22,12 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 /*
  * IconWA.java
- * 
+ *
  * @author  neysseri
  * Created on 12 decembre 2000, 11:37
  */
@@ -97,7 +97,13 @@ public class IconWA extends AbstractIcon {
     StringBuilder str = new StringBuilder();
 
     if (!action.equals("")) {
-      str.append("<a href=\"").append(action).append("\">");
+      str.append("<a href=\"").append(action).append("\"");
+      if (altText != null && altText.length() > 0) {
+        str.append(" title=\"").append(altText).append("\"");
+      } else {
+        str.append(" title=\"\"");
+      }
+      str.append(">");
     }
 
     str.append("<img src=\"").append(path).append(iconName).append(
