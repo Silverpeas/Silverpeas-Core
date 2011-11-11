@@ -34,6 +34,8 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
+import com.silverpeas.util.StringUtil;
+
 /**
  * Class declaration
  * @author
@@ -98,7 +100,7 @@ public class IconWA extends AbstractIcon {
 
     if (!action.equals("")) {
       str.append("<a href=\"").append(action).append("\"");
-      if (altText != null && altText.length() > 0) {
+      if (StringUtil.isDefined(altText)) {
         str.append(" title=\"").append(altText).append("\"");
       } else {
         str.append(" title=\"\"");
@@ -109,7 +111,7 @@ public class IconWA extends AbstractIcon {
     str.append("<img src=\"").append(path).append(iconName).append(
         "\" border=\"0\"");
 
-    if (altText != null && altText.length() > 0) {
+    if (StringUtil.isDefined(altText)) {
       str.append(" alt=\"").append(altText).append("\"");
     } else {
       str.append(" alt=\"\"");
