@@ -33,14 +33,17 @@ public class JobManagerService {
   private String[] idSubServices = null;
   private boolean isActif = false;
 
-  public static int LEVEL_SERVICE = 0;
-  public static int LEVEL_OPERATION = 1;
-
-  // public static int LEVEL_ACTION = 2;
-  // public static int LEVEL_ACTEUR = 3;
+  public static final int LEVEL_SERVICE = 0;
+  public static final int LEVEL_OPERATION = 1;
 
   /**
-   * constructors
+   * 
+   * @param id
+   * @param label
+   * @param level
+   * @param url
+   * @param idSubServices
+   * @param isActif 
    */
   public JobManagerService(String id, String label, int level, String url,
       String[] idSubServices, boolean isActif) {
