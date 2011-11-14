@@ -23,6 +23,7 @@
  */
 package com.silverpeas.form.displayers;
 
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -36,7 +37,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
