@@ -23,10 +23,10 @@ package com.silverpeas.form.displayers;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 
-import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
@@ -96,12 +96,12 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
    */
   @Override
   public void display(PrintWriter out, GroupField field, FieldTemplate template,
-          PagesContext PagesContext) throws FormException {
+          PagesContext pageContext) throws FormException {
     SilverTrace.info("form", "GroupFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
             "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
             + ", fieldType = " + field.getTypeName());
 
-    String language = PagesContext.getLanguage();
+    String language = pageContext.getLanguage();
     String selectGroupImg = Util.getIcon("groupPanel");
     String selectGroupLab = Util.getString("groupPanel", language);
     String deleteImg = Util.getIcon("delete");
@@ -134,27 +134,35 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('").
-              append(URLManager.getApplicationURL()).
-              append("/RselectionPeasWrapper/jsp/open" + "?formName=").
-              append(PagesContext.getFormName()).append("&elementId=").append(fieldName).
-              append("&elementName=").append(fieldName).append("_name" + "&selectable=").
-              append(SelectionUsersGroups.GROUP).append("&selectedGroup=").
-              append((groupId == null) ? "" : groupId).append("','selectGroup',800,600,'');\" >");
+      Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+      boolean groupsOfInstanceOnly = StringUtil.getBooleanValue(parameters.get("groupsOfInstanceOnly"));
+      String roles = parameters.get("roles");
+      if (StringUtil.isDefined(roles)) {
+        groupsOfInstanceOnly = true;
+      }
+      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
+          .append(URLManager.getApplicationURL())
+          .append("/RselectionPeasWrapper/jsp/open" + "?formName=")
+          .append(pageContext.getFormName())
+          .append("&elementId=").append(fieldName)
+          .append("&elementName=").append(fieldName).append("_name")
+          .append("&selectable=").append(SelectionUsersGroups.GROUP)
+          .append("&selectedGroup=").append((groupId == null) ? "" : groupId)
+          .append(groupsOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
+          .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")
+          .append("','selectGroup',800,600,'');\" >");
       html.append("<img src=\"").append(selectGroupImg).
               append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(selectGroupLab).
               append("\" align=\"top\" title=\"").append(selectGroupLab).append("\"/></a>");
       html.append("&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.").
-              append(PagesContext.getFormName()).append(".").append(fieldName).
-              append(".value='';" + "document.").append(PagesContext.getFormName()).append(".").
-              append(fieldName).append("$$name"
-              + ".value='';"
-              + "\">");
+              append(pageContext.getFormName()).append(".").append(fieldName).
+              append(".value='';" + "document.").append(pageContext.getFormName()).append(".").
+              append(fieldName).append("$$name" + ".value='';" + "\">");
       html.append("<img src=\"").append(deleteImg).append(
               "\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).append(
               "\" align=\"top\" title=\"").append(deleteLab).append("\"/></a>");
 
-      if (template.isMandatory() && PagesContext.useMandatory()) {
+      if (template.isMandatory() && pageContext.useMandatory()) {
         html.append(Util.getMandatorySnippet());
       }
     }

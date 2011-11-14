@@ -45,7 +45,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   String domainId = null;
   String componentId = null;
   List<String> profileIds = null;
-  ArrayList<String> profileNames = null;
+  List<String> profileNames = null;
 
   public String[] getProfileIds() {
     if (profileIds != null) {
@@ -58,10 +58,9 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     return profileNames;
   }
 
-  public void setProfileNames(ArrayList<String> profileNames) {
+  public void setProfileNames(List<String> profileNames) {
     this.profileNames = profileNames;
     ComponentInst componentInst = organizationController.getComponentInst(componentId);
-    int nbProfiles = componentInst.getNumProfileInst();
     profileIds = new ArrayList<String>();
     for (ProfileInst profileInst : componentInst.getAllProfilesInst()) {
       if (profileNames.contains(profileInst.getName())) {
@@ -110,7 +109,6 @@ public class SelectionUsersGroups implements SelectionExtraParams {
 
   static public String[] getDistinctUserIds(String[] selectedUsers,
       String[] selectedGroups) {
-    int g, u;
     HashSet<String> usersSet = new HashSet<String>();
     if (selectedUsers != null && selectedUsers.length > 0) {
       Collections.addAll(usersSet, selectedUsers);
