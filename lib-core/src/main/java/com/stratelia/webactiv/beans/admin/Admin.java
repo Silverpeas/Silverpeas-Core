@@ -527,9 +527,9 @@ public final class Admin {
       spaceInst.setId(spaceId);
 
       // Put the client component Id back
-      ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
+      List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
       for (ComponentInst anAlCompoInst : alCompoInst) {
-        String sClientComponentId = getClientComponentId(anAlCompoInst.getId());
+        String sClientComponentId = getClientComponentId(anAlCompoInst);
         anAlCompoInst.setId(sClientComponentId);
       }
 
@@ -930,7 +930,7 @@ public final class Admin {
   public ComponentInst getComponentInst(String sClientComponentId) throws AdminException {
     try {
       ComponentInst componentInst = getComponentInst(sClientComponentId, false, null);
-      componentInst.setId(sClientComponentId);
+      componentInst.setId(getClientComponentId(componentInst));
       componentInst.setDomainFatherId(getClientSpaceId(componentInst.getDomainFatherId()));
       return componentInst;
     } catch (Exception e) {
@@ -995,17 +995,6 @@ public final class Admin {
       throw new AdminException("Admin.getComponentInst", SilverpeasException.ERROR,
               "admin.EX_ERR_GET_COMPONENT", "component Id: '" + componentId + "'", e);
     }
-  }
-
-  /**
-   * Return the component Inst name (ex.: kmelia) corresponding to the given ID
-   *
-   * @param componentId
-   * @return the component Inst name (ex.: kmelia) corresponding to the given ID
-   * @throws AdminException
-   */
-  public String getComponentInstName(String componentId) throws AdminException {
-    return componentManager.getComponentInstName(domainDriverManager, componentId);
   }
 
   /**
@@ -1418,7 +1407,7 @@ public final class Admin {
   public String updateComponentInst(ComponentInst componentInstNew) throws AdminException {
     try {
       ComponentInst oldComponentInst = getComponentInst(componentInstNew.getId());
-      String componentClientId = componentInstNew.getId();
+      String componentClientId = getClientComponentId(oldComponentInst);
       // Open the connections with auto-commit to false
       domainDriverManager.startTransaction(false);
 
@@ -3197,14 +3186,18 @@ public final class Admin {
   /**
    * Return kmelia23 for parameter 23
    */
-  private String getClientComponentId(String sDriverComponentId)
-          throws Exception {
-    SilverTrace.debug("admin", "Admin.getClientComponentId",
-            "root.MSG_GEN_ENTER_METHOD", "component id: " + sDriverComponentId);
-
-    return getComponentInstName(sDriverComponentId) + sDriverComponentId;
+  private String getClientComponentId(ComponentInst component) {
+    return getClientComponentId(component.getName(), component.getId());
   }
-
+  
+  private String getClientComponentId(String componentName, String sDriverComponentId) {
+    if (StringUtil.isInteger(sDriverComponentId)) {
+      return componentName + sDriverComponentId;
+    }
+    // id is already in client format
+    return sDriverComponentId;
+  }
+  
   // -------------------------------------------------------------------------
   // DOMAIN QUERY
   // -------------------------------------------------------------------------
