@@ -99,6 +99,11 @@
         It wraps and provides an access to the actual converter implementations -->
   <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterFactory"
         factory-method="getFactory"/>
+        
+  <!-- the factory of the content management services.
+        It wraps and provides an access to the actual content manager managed by the IoC container -->
+  <bean id="contentManagerFactory" class="com.stratelia.silverpeas.contentManager.ContentManagerFactory"
+        factory-method="getFactory"/>     
 
 </beans>
 

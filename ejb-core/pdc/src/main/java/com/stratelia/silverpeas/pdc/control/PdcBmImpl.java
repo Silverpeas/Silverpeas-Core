@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.silverpeas.pdc.DAO.PdcRightsDAO;
+import com.silverpeas.pdc.dao.PdcRightsDAO;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
@@ -510,7 +510,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     return axis;
   }
 
-  private String getTreeId(String axisId) throws PdcException {
+  @Override
+  public String getTreeId(String axisId) throws PdcException {
     // get the header of the axis to obtain the rootId.
     AxisHeaderPersistence axisHeader = getAxisHeaderPersistence(axisId);
     int treeId = -1;

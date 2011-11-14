@@ -26,20 +26,31 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.rest.TestResources;
 
 /**
- * All the constants that are be used in unit tests.
+ * All the constants dedicated to be used in unit tests.
  */
 public interface TestConstants {
-  
+
+  static final String WEB_CONTEXT = "http://localhost:9998/silverpeas/";
   static final String USER_ID = TestResources.USER_ID_IN_TEST;
-  static final String COMPONENT_INSTANCE_ID = "kmelia2";
-  static final String CONTENT_ID = "1";
-  static final String CONTENT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
+  static final String COMPONENT_INSTANCE_ID = "kmelia1";
+  static final String CONTENT_ID = "8";
+  static final String NODE_ID = "5";
+  static final String CONTENT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/"
+          + CONTENT_ID;
   static final String CONTENT_PDC_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "?contentId=" + CONTENT_ID;
   static final String PDC_PATH_WITH_NO_CONTENT = "pdc/" + COMPONENT_INSTANCE_ID;
+  static final String NODE_DEFAULT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID
+          + "/classification?nodeId=" + NODE_ID;
+  static final String COMPONENT_DEFAULT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID
+          + "/classification";
+  static final String UNKNOWN_DEFAULT_CLASSIFICATION_PATH = "pdc/kmelia3/classification";
   static final String UNKNOWN_CONTENT_PDC_PATH = "pdc/kmelia3?contentId=2";
   static final String UNKNOWN_CONTENT_CLASSIFICATION_PATH = "pdc/kmelia3/2";
   static final String FRENCH = "fr";
-  static final String CLASSIFICATION_URI = "http://localhost:9998/silverpeas/" + CONTENT_CLASSIFICATION_PATH;
-  static final String PDC_URI = "http://localhost:9998/silverpeas/" + PDC_PATH_WITH_NO_CONTENT;
-  
+  static final String CLASSIFICATION_URI = WEB_CONTEXT + CONTENT_CLASSIFICATION_PATH;
+  static final String PDC_URI = WEB_CONTEXT + PDC_PATH_WITH_NO_CONTENT;
+  static final String NODE_DEFAULT_CLASSIFICATION_URI = WEB_CONTEXT
+          + NODE_DEFAULT_CLASSIFICATION_PATH;
+  static final String COMPONENT_DEFAULT_CLASSIFICATION_URI = WEB_CONTEXT
+          + COMPONENT_DEFAULT_CLASSIFICATION_PATH;
 }

@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.web;
 
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.sun.jersey.api.json.JSONConfiguration;
@@ -31,6 +32,7 @@ import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONUnmarshaller;
 import com.sun.jersey.json.impl.JSONUnmarshallerImpl;
 import java.io.StringReader;
+import java.util.List;
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 
@@ -53,8 +55,9 @@ public class PdcWebServiceProvider {
   }
 
   /**
-   * Classify the specified Silverpeas resource content onto the PdC with the specified positions.
+   * Classify the specified Silverpeas resource content on the PdC with the specified positions.
    * The PdC is the one configured for the Silverpeas component instance that owns the resource.
+   * Any existing classification of the content on the PdC is replaced by the new specified one.
    * @param content the key identifying uniquely the resource content.
    * @param positions the JSON representation of an array of PdC positions.
    * @throws JAXBException if an error occurs while deserializing the positions to Java objects.
@@ -65,6 +68,15 @@ public class PdcWebServiceProvider {
   public void classifyContent(final WAPrimaryKey content, String positions) throws JAXBException,
           ContentManagerException, PdcException {
     PdcClassificationEntity classification = fromJSON(positions);
+    List<ClassifyPosition> existingPositions =
+            getPdcServiceProvider().getAllPositions(content.getId(), content.getInstanceId());
+    if (!existingPositions.isEmpty()) {
+      // in this case, we will replace the existing classification with the new ones
+      for (ClassifyPosition anExistingPosition : existingPositions) {
+        getPdcServiceProvider().deletePosition(anExistingPosition.getPositionId(), content.getId(),
+                content.getInstanceId());
+      }
+    }
     for (PdcPositionEntity position : classification.getClassificationPositions()) {
       getPdcServiceProvider().addPosition(position.toClassifyPosition(), content.getId(), content.
               getInstanceId());
@@ -80,11 +92,11 @@ public class PdcWebServiceProvider {
 
   private PdcClassificationEntity fromJSON(String classification) throws JAXBException {
     JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
-            PdcPositionEntity.class, PdcPositionValue.class);
+            PdcPositionEntity.class, PdcPositionValueEntity.class);
     JSONUnmarshaller unmarshaller = new JSONUnmarshallerImpl(context, JSONConfiguration.DEFAULT);
     try {
-    return unmarshaller.unmarshalFromJSON(new StringReader(classification),
-            PdcClassificationEntity.class);
+      return unmarshaller.unmarshalFromJSON(new StringReader(classification),
+              PdcClassificationEntity.class);
     } catch (Error ex) {
       throw new JAXBException(ex.getMessage(), ex);
     }

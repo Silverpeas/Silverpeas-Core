@@ -49,6 +49,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  *
@@ -62,6 +64,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   @Override
   public void setUp() throws Exception {
     super.setUp();
+    ApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-publication.xml");
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jndi.properties"));

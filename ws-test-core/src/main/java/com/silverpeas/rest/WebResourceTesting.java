@@ -42,7 +42,9 @@ public interface WebResourceTesting {
   String aResourceURI();
   
   /**
-   * Gets the URI of an invalid or an unexisting web resource.
+   * Gets the URI of an invalid or an unexisting web resource. It should be an invalid URI (for
+   * example a resource refered in an unexisting component instance), and not necessary an invalid
+   * resource in a correct URI.
    * @return the URI of an invalid or unexisting web resource.
    */
   String anUnexistingResourceURI();

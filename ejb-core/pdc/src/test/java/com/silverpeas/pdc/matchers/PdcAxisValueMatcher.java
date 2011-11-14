@@ -21,53 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.web;
+package com.silverpeas.pdc.matchers;
 
+import com.silverpeas.pdc.model.PdcAxisValue;
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
-import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 /**
- * A matcher of PdcEntity objects to be used in unit tests.
+ * A matcher of the PdC axis values.
  */
-public class PdcEntityMatcher extends TypeSafeMatcher<PdcEntity> {
+public class PdcAxisValueMatcher extends TypeSafeMatcher<PdcAxisValue> {
 
-  private PdcEntity expected;
-  private String whatIsExpected = "";
+  private PdcAxisValue expected;
 
-  @Factory
-  public static Matcher<PdcEntity> equalTo(final PdcEntity expected) {
-    return new PdcEntityMatcher().withExpectedPdcEntity(expected);
+  public static TypeSafeMatcher<PdcAxisValue> equalTo(final PdcAxisValue expected) {
+    return new PdcAxisValueMatcher(expected);
   }
 
   @Override
-  protected boolean matchesSafely(PdcEntity actual) {
+  protected boolean matchesSafely(PdcAxisValue actual) {
     boolean matches = true;
-    if (!actual.getURI().equals(expected.getURI())) {
+    if (!actual.getId().equals(expected.getId())) {
       matches = false;
-    } else if (actual.getAxis().size() != expected.getAxis().size()) {
+    } else if ((!actual.getAxisId().equals(expected.getAxisId()))) {
       matches = false;
-    } else if (!actual.getAxis().containsAll(expected.getAxis())) {
-      matches = false;
-    }
-    if (!matches) {
-      whatIsExpected = expected.toString();
     }
     return matches;
   }
 
   @Override
   public void describeTo(Description description) {
-    description.appendText(whatIsExpected);
   }
-
-  private PdcEntityMatcher() {
-  }
-
-  protected PdcEntityMatcher withExpectedPdcEntity(
-          final PdcEntity pdcEntity) {
-    this.expected = pdcEntity;
-    return this;
+  
+  protected PdcAxisValueMatcher(final PdcAxisValue expected) {
+    this.expected = expected;
   }
 }

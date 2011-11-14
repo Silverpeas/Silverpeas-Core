@@ -23,10 +23,22 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
+import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -47,21 +59,22 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   private static final long serialVersionUID = -486056418553072731L;
   /**
-   * The key with which is associated the resource locator carried in the request.
+   * The key with which is associated the language of the user carried in his session.
    */
-  private static final String RESOURCES_KEY = "resources";
+  private static final String LANGUAGE_KEY = "resources";
   /**
    * The identifier of the XHTML tag within which the PdC classification will be displayed.
    */
   public static final String PDC_CLASSIFICATION_WIDGET_TAG_ID = "classification";
+  private static short tagCount = 0;
   private static final String USE_PDC_COMPONENT_PARAMETER = "usePdc";
   private static final String BROWSING_CONTEXT = "browseContext";
   private String componentId;
   private String contentId;
+  private String nodeId;
   private PdcTagOperation operation;
 
   public BaseClassificationPdCTag() {
-    System.out.println("BaseClassificationPdCTag");
   }
 
   /**
@@ -107,6 +120,26 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
+   * Gets the identifier of the node to which the content belongs.
+   * A node is an hierarchic way to organize the contents. A node can represents a category, a topic,
+   * or a folder and its semantic depends on the Silverpeas component that handle the content.
+   * @return the identifier of the node or an empty string.
+   */
+  public String getNodeId() {
+    return nodeId;
+  }
+
+  /**
+   * Sets the identifier of the node to which the content belongs (if any).
+   * A node is an hierarchic way to organize the contents. A node can represents a category, a topic,
+   * or a folder and its semantic depends on the Silverpeas component that handle the content.
+   * @param nodeId the identifier of the node.
+   */
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
+  }
+
+  /**
    * Gets the invoked operation.
    * @return the operation that is executed or null if no operation is invoked.
    */
@@ -141,7 +174,6 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
   private ElementContainer initWidget() throws JspException {
-    String context = URLManager.getApplicationURL();
     ElementContainer xhtmlcontainer = new ElementContainer();
     MultiPartElement classification;
     if (getInvokedOperation() == READ_CLASSIFICATION) {
@@ -149,7 +181,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     } else {
       classification = new fieldset();
     }
-    classification.setID(PDC_CLASSIFICATION_WIDGET_TAG_ID);
+    String id = PDC_CLASSIFICATION_WIDGET_TAG_ID;
+//    if (1 <= ++tagCount) {
+//      id += tagCount;
+//    }
+    classification.setID(id);
     if (getInvokedOperation() == READ_CLASSIFICATION) {
       classification.setClass("preview bgDegradeGris");
     } else {
@@ -172,14 +208,37 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
     String function = getPdcPluginFunction();
+    String positionAddingLabel = (getInvokedOperation().equals(PREDEFINE_CLASSIFICATION)
+            || getInvokedOperation().equals(CREATE_CLASSIFICATION) ? resources.getString(
+            "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
     String script = "$('#classification').pdc('" + function + "', {resource: {context: '" + context
             + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
-            + "'}, title: '" + resources.getString("pdcPeas.classifyPublication")
+            + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(
+            "pdcPeas.classifyPublication")
             + "', positionLabel: '" + resources.getString("pdcPeas.position")
-            + "', positionsLabel: '" + resources.getString("pdcPeas.positions") + "'";
+            + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
+            + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")
+            + "'";
     if (getInvokedOperation() != READ_CLASSIFICATION) {
+      String nodeName = "";
+      if (getInvokedOperation() == PREDEFINE_CLASSIFICATION) {
+        if (!isDefined(nodeId)) {
+          nodeId = "0";
+        }
+        try {
+          NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
+          String inLanguage = getSessionAttribute(LANGUAGE_KEY);
+          nodeName = node.getName(inLanguage);
+        } catch (RemoteException ex) {
+          Logger.getLogger(BaseClassificationPdCTag.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      String inheritanceMessage = MessageFormat.format(resources.getString(
+              "pdcPeas.CanDoAPredefineClassification"), nodeName);
       script += ", messages: {mandatoryMessage: \""
-              + resources.getString("pdcPeas.MustBeClassified") + "\", contentMustHaveAPosition: \""
+              + resources.getString("pdcPeas.MustBeClassified") + ", \", inheritanceMessage: \""
+              + inheritanceMessage
+              + "\", contentMustHaveAPosition: \""
               + resources.getString("pdcPeas.theContent") + " " + resources.getString(
               "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
               + resources.getString("pdcPeas.positionAlreadyExist") + "\", positionMustBeValued: \""
@@ -188,8 +247,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
               + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
               + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
               getString("pdcPeas.notVariants") + "', mandatoryAxisDefaultValue: \"" + resources.
-              getString("GML.selectAValue") + "\"}, addition: {title: '" + resources.getString(
-              "GML.PDCNewPosition") + "'}, update: {title: '" + resources.getString("GML.modify")
+              getString("GML.selectAValue") + "\"}, addition: {title: '" + positionAddingLabel
+              + "'}, update: {title: '" + resources.getString("GML.modify")
               + "'}, deletion: {confirmation: '" + resources.getString("pdcPeas.confirmDeleteAxis")
               + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
     } else {
@@ -204,9 +263,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @throws JspTagException  if an error occurs while fetching the resources.
    */
   protected ResourcesWrapper getResources() throws JspTagException {
-    ResourcesWrapper resources = getRequestAttribute(RESOURCES_KEY);
-    String language = resources.getLanguage();
-    resources = new ResourcesWrapper(new ResourceLocator(
+    String language = getSessionAttribute(LANGUAGE_KEY);
+    ResourcesWrapper resources = new ResourcesWrapper(new ResourceLocator(
             "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
     return resources;
 
@@ -221,6 +279,9 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
         break;
       case CREATE_CLASSIFICATION:
         function = "create";
+        break;
+      case PREDEFINE_CLASSIFICATION:
+        function = "predefine";
         break;
       default:
         throw new JspTagException("The operation to invoke is null!");
@@ -247,8 +308,20 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   protected <T> T getSessionAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.SESSION_SCOPE);
   }
-  
+
   protected JspWriter getOut() {
     return getJspContext().getOut();
+  }
+
+  protected NodeBm getNodeBm() {
+    try {
+      NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+              JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      return home.create();
+    } catch (Exception ex) {
+      throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+              ex);
+    }
   }
 }

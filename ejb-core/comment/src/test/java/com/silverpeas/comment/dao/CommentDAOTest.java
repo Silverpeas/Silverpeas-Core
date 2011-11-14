@@ -75,7 +75,7 @@ public class CommentDAOTest {
    */
   @Test
   public void testCreateComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK(null, null, "kmelia18");
@@ -105,7 +105,7 @@ public class CommentDAOTest {
    */
   @Test
   public void testGetComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
@@ -125,7 +125,7 @@ public class CommentDAOTest {
    */
   @Test
   public void testDeleteComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
@@ -148,7 +148,7 @@ public class CommentDAOTest {
    */
   @Test
   public void testUpdateComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
@@ -186,7 +186,7 @@ public class CommentDAOTest {
    */
   @Test
   public void testMoveComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");

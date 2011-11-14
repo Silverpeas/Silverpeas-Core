@@ -38,7 +38,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * It is the base class of the different representations of a value in the PdC according to its use
  * (a value in a position of a resource on the PdC, a value of a PdC axis, ...).
  */
-public abstract class PdcValue implements Serializable {
+public abstract class PdcValueEntity implements Serializable {
   private static final long serialVersionUID = 7830451202912691112L;
   
   @XmlElement(required = true)
@@ -112,10 +112,10 @@ public abstract class PdcValue implements Serializable {
     if (obj == null) {
       return false;
     }
-    if (! (obj instanceof PdcValue)) {
+    if (! (obj instanceof PdcValueEntity)) {
       return false;
     }
-    final PdcValue other = (PdcValue) obj;
+    final PdcValueEntity other = (PdcValueEntity) obj;
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
@@ -139,10 +139,10 @@ public abstract class PdcValue implements Serializable {
     return hash;
   }
   
-  protected PdcValue() {
+  protected PdcValueEntity() {
   }
   
-  protected PdcValue(String id, int axisId) {
+  protected PdcValueEntity(String id, int axisId) {
     this.id = id;
     this.axisId = axisId;
   }

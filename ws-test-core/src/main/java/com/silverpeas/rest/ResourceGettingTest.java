@@ -125,14 +125,4 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
       assertThat(receivedStatus, is(notFound));
     }
   }
-
-  private MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
-    MultivaluedMap<String, String> parameters = new MultivaluedMapImpl();
-    String[] queryParameters = query.split("&");
-    for (String aQueryParameter : queryParameters) {
-      String[] parameterParts = aQueryParameter.split("=");
-      parameters.add(parameterParts[0], parameterParts[1]);
-    }
-    return parameters;
-  }
 }

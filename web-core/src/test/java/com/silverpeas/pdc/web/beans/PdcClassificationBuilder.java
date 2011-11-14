@@ -23,45 +23,48 @@
  */
 package com.silverpeas.pdc.web.beans;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.ArrayList;
 import java.util.List;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
+import static com.silverpeas.pdc.web.beans.TestPdcClassification.*;
 
 /**
  * A classification of a resource on the PdC. This is a representation of a classification for
  * testing purpose.
  */
-public class PdcClassification {
+public class PdcClassificationBuilder {
 
-  private String resourceId;
+  private String contentId;
   private String componentId;
-  private List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
+  private String nodeId;
 
-  public static PdcClassification aPdcClassification() {
-    PdcClassification classification = new PdcClassification();
-    classification.fill();
-    return classification;
+  public static PdcClassificationBuilder aPdcClassification() {
+    return new PdcClassificationBuilder();
   }
 
-  public static PdcClassification aPdcClassificationWithoutAnySynonyms() {
-    PdcClassification classification = new PdcClassification();
-    classification.fillWithNoSynonyms();
-    return classification;
+  public static PdcClassificationBuilder aPdcClassificationWithoutAnySynonyms() {
+    return new PdcClassificationBuilder();
   }
 
-  public static PdcClassification anEmptyPdcClassification() {
-    return new PdcClassification();
+  public static PdcClassificationBuilder anEmptyPdcClassification() {
+    return new PdcClassificationBuilder();
   }
 
-  public PdcClassification onResource(String resourceId) {
-    this.resourceId = resourceId;
+  public PdcClassificationBuilder onContent(String contentId) {
+    this.contentId = contentId;
+    return this;
+  }
+  
+  public PdcClassificationBuilder forNode(String nodeId) {
+    this.nodeId = nodeId;
     return this;
   }
 
-  public PdcClassification inComponent(String componentId) {
+  public PdcClassificationBuilder inComponent(String componentId) {
     this.componentId = componentId;
     return this;
   }
@@ -70,25 +73,21 @@ public class PdcClassification {
     return componentId;
   }
 
-  public List<ClassifyPosition> getPositions() {
-    return positions;
+  public String getContentId() {
+    return contentId;
+  }
+  
+  public String getNodeId() {
+    return nodeId;
   }
 
-  public void setPositions(final List<ClassifyPosition> positions) {
-    this.positions.clear();
-    this.positions.addAll(positions);
-  }
-
-  public String getResourceId() {
-    return resourceId;
-  }
-
-  private PdcClassification() {
+  private PdcClassificationBuilder() {
 
   }
 
-  private void fill() {
+  public PdcClassification build() {
     ClassificationPlan pdc = aClassificationPlan();
+    List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
     
     List<ClassifyValue> positionValues = new ArrayList<ClassifyValue>();
     List<Value> values = pdc.getValuesOfAxisByName("Pays");
@@ -113,10 +112,21 @@ public class PdcClassification {
     classifyValue.setFullPath(pdc.getPathInTreeOfValue(value));
     positionValues.add(classifyValue);  
     positions.add(new ClassifyPosition(positionValues));
+    
+    PdcClassification classification = aClassificationFromPositions(positions).inComponentInstance(
+            getComponentId());
+    if (getContentId() != null) {
+      classification = classification.ofContent(getContentId());
+    } else if (getNodeId() != null) {
+      classification = classification.forNode(getNodeId());
+    }
+    return classification;
   }
 
-  private void fillWithNoSynonyms() {
+  public PdcClassification buildWithNoSynonyms() {
     ClassificationPlan pdc = aClassificationPlan();
+    List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
+    
     List<ClassifyValue> positionValues = new ArrayList<ClassifyValue>();
     List<Value> values = pdc.getValuesOfAxisByName("Technologie");
     Value value = values.get(0);
@@ -125,6 +135,9 @@ public class PdcClassification {
     classifyValue.setFullPath(pdc.getPathInTreeOfValue(value));
     positionValues.add(classifyValue);
     positions.add(new ClassifyPosition(positionValues));
+    
+    return aClassificationFromPositions(positions).ofContent(contentId).inComponentInstance(
+            componentId);
   }
   
   private Value findTerm(String term, final List<Value> inValues) {

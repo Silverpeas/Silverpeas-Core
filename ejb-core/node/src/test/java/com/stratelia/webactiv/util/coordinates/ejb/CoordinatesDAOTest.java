@@ -73,7 +73,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testSelectByFatherIds() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     List<Integer> fatherIds = new ArrayList<Integer>();
     fatherIds.add(Integer.valueOf(1060));
@@ -94,7 +94,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testSelectByFatherPaths() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     List<String> fatherPaths = new ArrayList<String>();
     fatherPaths.add("/0/1/1060");
@@ -116,7 +116,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testAddCoordinate() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -191,7 +191,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
   @Test()
   @SuppressWarnings("unchecked")
   public void testRemoveCoordinates() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -274,7 +274,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testRemoveCoordinatesByPoints() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -352,7 +352,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testSelectCoordinatesByCoordinateIds() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     List<String> coordinateIds = new ArrayList<String>(2);
@@ -388,7 +388,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testAddPointToAllCoordinates() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -457,7 +457,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetCoordinateIdsByNodeId() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -477,7 +477,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetCoordinateIds() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);

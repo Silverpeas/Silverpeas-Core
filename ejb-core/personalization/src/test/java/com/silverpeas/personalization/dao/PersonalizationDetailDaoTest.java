@@ -66,6 +66,7 @@ public class PersonalizationDetailDaoTest {
         PersonalizationDetailDaoTest.class.getClassLoader().getResourceAsStream(
         "com/silverpeas/personalization/dao/personalization-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
+    
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
   }
