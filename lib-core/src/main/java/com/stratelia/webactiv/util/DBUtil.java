@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util;
 
@@ -41,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DBUtil {
-  
+
   private static DBUtil instance;
 
   /**
@@ -72,11 +69,11 @@ public class DBUtil {
     return getInstance().textFieldLength;
   }
   private Connection connectionForTest;
-  
+
   private DBUtil(Connection connectionForTest) {
     this.connectionForTest = connectionForTest;
   }
-  
+
   public static DBUtil getInstance() {
     synchronized (DBUtil.class) {
       if (instance == null) {
@@ -85,7 +82,7 @@ public class DBUtil {
     }
     return instance;
   }
-  
+
   public static DBUtil getInstanceForTest(Connection connectionForTest) {
     synchronized (DBUtil.class) {
       if (connectionForTest != null) {
@@ -93,6 +90,12 @@ public class DBUtil {
       }
     }
     return instance;
+  }
+
+  public static void clearTestInstance() {
+    synchronized (DBUtil.class) {
+      instance = new DBUtil(null);
+    }
   }
   /**
    * TextFieldLength is the maximum length to store an html textfield input in db.
@@ -118,14 +121,15 @@ public class DBUtil {
 
   /**
    * fabrique une nouvelle connection
+   *
    * @param dbName le nom de la base de donnée
    * @return a new connection to the database.
-   * @throws UtilException  
+   * @throws UtilException
    */
   public static Connection makeConnection(String dbName) {
     return getInstance().openConnection(dbName);
   }
-  
+
   private synchronized Connection openConnection(String dbName) {
     SilverTrace.debug("util", "DBUtil makeConnection", "DBUtil : makeConnection : entree");
     DataSource ds = null;
@@ -146,7 +150,7 @@ public class DBUtil {
       throw new UtilException("DBUtil.makeConnection", new MultilangMessage(
               "util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
     }
-    
+
     try {
       return ds.getConnection();
     } catch (SQLException e) {
@@ -157,6 +161,7 @@ public class DBUtil {
 
   /**
    * Return a new unique Id for a table.
+   *
    * @param tableName the name of the table.
    * @param idName the name of the column.
    * @return a unique id.
@@ -202,6 +207,7 @@ public class DBUtil {
 
   /**
    * Return a new unique Id for a table.
+   *
    * @param connection the JDBC connection.
    * @param tableName the name of the table.
    * @param idName the name of the column.
@@ -212,7 +218,7 @@ public class DBUtil {
           SQLException {
     return getMaxId(connection, tableName, idName);
   }
-  
+
   protected static int getMaxId(Connection privateConnection, String tableName, String idName)
           throws SQLException {
     int max = 0;
@@ -250,7 +256,7 @@ public class DBUtil {
     privateConnection.commit();
     return max;
   }
-  
+
   private static int updateMaxFromTable(Connection con, String tableName) throws SQLException {
     int max = 0;
     PreparedStatement prepStmt = null;
@@ -262,7 +268,7 @@ public class DBUtil {
     } finally {
       prepStmt.close();
     }
-    
+
     if (count == 1) {
       PreparedStatement selectStmt = null;
       ResultSet rs = null;
@@ -285,7 +291,7 @@ public class DBUtil {
       throw new SQLException("Update impossible : Ligne non existante");
     }
   }
-  
+
   public static int getMaxFromTable(Connection con, String tableName, String idName)
           throws SQLException {
     PreparedStatement prepStmt = null;
@@ -303,7 +309,7 @@ public class DBUtil {
       close(rs, prepStmt);
     }
   }
-  
+
   public static String convertToBD(String date) {
     String jour = "";
     String mois = "";
@@ -317,7 +323,7 @@ public class DBUtil {
     }
     return (annee + '/' + mois + '/' + jour);
   }
-  
+
   public static String convertToClient(String date) {
     String jour = "";
     String mois = "";
@@ -359,7 +365,7 @@ public class DBUtil {
   public static void close(ResultSet rs) {
     close(rs, null);
   }
-  
+
   public static void close(Connection connection) {
     if (connection != null) {
       try {
@@ -369,7 +375,7 @@ public class DBUtil {
       }
     }
   }
-  
+
   public static void rollback(Connection connection) {
     if (connection != null) {
       try {

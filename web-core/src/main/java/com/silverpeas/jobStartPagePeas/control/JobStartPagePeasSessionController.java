@@ -1178,7 +1178,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     selection.setSelectedSets(groups.toArray(new String[groups.size()]));
   }
 
-  public String createInstanceProfile() {
+  public void createInstanceProfile() {
     // Create the profile
     ProfileInst profileInst = new ProfileInst();
     SilverTrace.info("jobStartPagePeas",
@@ -1196,9 +1196,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         "JobStartPagePeasSC.createInstanceProfile", "unknown", profileInst.getComponentFatherId(),
         profileInst.getName(), getUserId(),
         SilverTrace.SPY_ACTION_CREATE);
-
+    
     // Add the profile
-    return adminController.addProfileInst(profileInst, getUserId());
+    adminController.addProfileInst(profileInst, getUserId());
+    
+    // mise à jour
+    setManagedProfile(profileInst);
   }
 
   public String updateInstanceProfile() {

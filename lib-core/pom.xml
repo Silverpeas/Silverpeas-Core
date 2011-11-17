@@ -358,6 +358,7 @@
           <exclude>**/*.doc</exclude>
           <exclude>**/*.docx</exclude>
           <exclude>**/*.zip</exclude>
+          <exclude>**/*.sql</exclude>
         </excludes>
       </testResource>
       <testResource>
@@ -370,6 +371,7 @@
           <include>**/*.doc</include>
           <include>**/*.docx</include>
           <include>**/*.zip</include>
+          <include>**/*.sql</include>
         </includes>
       </testResource>
     </testResources>
