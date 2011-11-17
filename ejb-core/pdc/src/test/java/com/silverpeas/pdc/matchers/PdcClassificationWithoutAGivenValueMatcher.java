@@ -21,22 +21,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.dao;
+package com.silverpeas.pdc.matchers;
 
 import com.silverpeas.pdc.model.PdcAxisValue;
-import com.silverpeas.pdc.model.PdcAxisValuePk;
-import java.util.List;
-import org.synyx.hades.dao.GenericDao;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 
 /**
- * DAO that handles the persistence of PdcAxisValue beans.
+ * An Harmcrest matcher to check a classification on the PdC doesn't contain a given value.
  */
-public interface PdcAxisValueDAO extends GenericDao<PdcAxisValue, PdcAxisValuePk> {
+public class PdcClassificationWithoutAGivenValueMatcher extends TypeSafeMatcher<PdcClassification> {
   
-  /**
-   * Finds all the values of the specified PdC's axis.
-   * @param axisId the unique identifier of the axis.
-   * @return a list of the values of the specified axis.
-   */
-  List<PdcAxisValue> findByAxisId(Long axisId);
+  public static TypeSafeMatcher<PdcClassification> hasNo(final PdcAxisValue aValue) {
+    return new PdcClassificationWithoutAGivenValueMatcher(aValue);
+  }
+  private final PdcAxisValue value;
+
+  private PdcClassificationWithoutAGivenValueMatcher(PdcAxisValue aValue) {
+    this.value = aValue;
+  }
+
+  @Override
+  protected boolean matchesSafely(PdcClassification classification) {
+    boolean matches = true;
+    for (PdcPosition position : classification.getPositions()) {
+      if (position.getValues().contains(value)) {
+        matches = false;
+        break;
+      }
+    }
+    
+    return matches;
+  }
+
+  @Override
+  public void describeTo(Description description) {
+    
+  }
+  
 }

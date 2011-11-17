@@ -47,7 +47,6 @@ import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -579,8 +578,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   
   @Override
   public UserDetail getCreator() {
-    OrganizationController controller = new OrganizationController();
-    return controller.getUserDetail(getCreatorId());
+    return UserDetail.getById(getCreatorId());
   }
 
   public int getImportance() {

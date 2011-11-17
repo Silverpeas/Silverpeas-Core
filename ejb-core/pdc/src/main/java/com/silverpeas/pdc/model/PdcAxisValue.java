@@ -42,6 +42,8 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 
 /**
@@ -59,6 +61,10 @@ import javax.persistence.Transient;
  */
 @Entity
 @IdClass(PdcAxisValuePk.class)
+@NamedQueries({
+  @NamedQuery(name = "PdcAxisValue.findByAxisId",
+  query = "from PdcAxisValue where axisId = ?1")
+})
 public class PdcAxisValue implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 2345886411781136417L;
@@ -130,7 +136,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
       Set<PdcAxisValue> children = new HashSet<PdcAxisValue>();
       List<String> childNodeIds = getPdcBm().getDaughterValues(getAxisId(), getId());
       for (String aNodeId : childNodeIds) {
-        children.add(new PdcAxisValue().withId(aNodeId).inAxisId(getAxisId()));
+        children.add(aPdcAxisValue(aNodeId, getAxisId()));
       }
       return Collections.unmodifiableSet(children);
     } catch (PdcException ex) {
@@ -179,7 +185,9 @@ public class PdcAxisValue implements Serializable, Cloneable {
    * @return true if this value is an axis base value.
    */
   public boolean isBaseValue() {
-    return getParentValue() == null;
+    // as the root in the tree represents the axis itself, a base value is a direct children of the
+    // root.
+    return getTreeNodeParents().size() <= 1;
   }
 
   /**

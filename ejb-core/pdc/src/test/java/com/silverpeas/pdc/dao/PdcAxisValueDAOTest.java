@@ -23,7 +23,7 @@
  */
 package com.silverpeas.pdc.dao;
 
-import com.silverpeas.pdc.TestResources;
+import java.util.List;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
 import javax.inject.Inject;
@@ -58,8 +58,6 @@ public class PdcAxisValueDAOTest {
   private PdcAxisValueDAO dao;
   @Inject
   private DataSource dataSource;
-  @Inject
-  private TestResources resources;
 
   public PdcAxisValueDAOTest() {
   }
@@ -96,6 +94,21 @@ public class PdcAxisValueDAOTest {
     PdcAxisValue theExistingValue = findPdcAxisValue("3", "1");
     PdcAxisValue theSavedValue = savePdcAxisValue(theExistingValue);
     assertThat(theSavedValue, is(equalTo(theExistingValue)));
+  }
+  
+  @Test
+  public void findAllValuesOfAGivenAxis() {
+    List<PdcAxisValue> values = dao.findByAxisId(2l);
+    assertThat(values.size(), is(3));
+    assertThat(values.get(0), is(aPdcAxisValue("4", "2")));
+    assertThat(values.get(1), is(aPdcAxisValue("5", "2")));
+    assertThat(values.get(2), is(aPdcAxisValue("6", "2")));
+  }
+  
+  @Test
+  public void findNoValuesOfAnUnknownAxis() {
+    List<PdcAxisValue> values = dao.findByAxisId(1000l);
+    assertThat(values.isEmpty(), is(true));
   }
   
   @Transactional

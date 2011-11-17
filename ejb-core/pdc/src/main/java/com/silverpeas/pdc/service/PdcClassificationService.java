@@ -68,12 +68,12 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * 
  * A predefined classification on the PdC can be created for a given node in a Silverpeas component
  * instance or for the whole component instance. The predefined classification is a way to facilitate
- * or to impose the classification of the contents on the PdC. A node in Silverpeas is a way to
- * hierarchically categorize a content. A node can represents for example a topic. A node is part of
- * a hierarchic tree and can then contain both some contents and some nodes. So, a predefined
- * classification on the PdC that is associated with a node, is set for all the contents in its
- * children nodes. Therefore, if a predefined classification is not found for a given node, then
- * it is seeked back upto the root node (that is the component instance ifself).
+ * or to impose the classification on the PdC of the contents when they are published. A node in
+ * Silverpeas is a way to hierarchically categorize a content. A node can represent for example a
+ * topic. A node is part of a hierarchic tree and it can then contain both some contents and some
+ * nodes. So, a predefined classification on the PdC associated with a node is set for all the
+ * contents in its children nodes. Therefore, if a predefined classification is not found for a
+ * given node, then it is seeked back upto the root node (that is the component instance ifself).
  */
 @Named
 @Transactional
@@ -96,8 +96,7 @@ public class PdcClassificationService {
    * the root node (that is the component instance ifself). In the case no predefined classification
    * is set for the whole component instance, an empty classification is then returned. To get the
    * predefined classification that is set exactly for the specified node (if any), then use the
-   * @see PdcClassificationService#getPreDefinedClassification(java.lang.String, java.lang.String) 
-   * method.
+   * <code>getPreDefinedClassification(java.lang.String, java.lang.String</code> method.
    * @param nodeId the unique identifier of the node.
    * @param instanceId the unique identifier of the Silverpeas component instance.
    * @return a predefined classification on the PdC ready to be used to classify a content published
@@ -135,12 +134,12 @@ public class PdcClassificationService {
    * node of the specified component instance. If the specified node isn't defined, then the
    * predefined classification associated with the whole component instance is seeked.
    * 
-   * In the case no predefined classification is set for the specified node, a none classification
-   * is then returned.
+   * In the case no predefined classification is set for the specified node or for the component
+   * instance, then a none classification is then returned.
    * @param nodeId the unique node identifier.
    * @param instanceId the unique component instance identifier.
-   * @return a predefined classification on the PdC associated with the specified node or an empty
-   * classification.
+   * @return a predefined classification on the PdC associated with the specified node or with
+   * the specified component instance or an empty classification.
    */
   public PdcClassification getPreDefinedClassification(String nodeId, String instanceId) {
     if (!isDefined(nodeId)) {
@@ -194,8 +193,8 @@ public class PdcClassificationService {
       throw new IllegalArgumentException("The classification isn't a predefined one");
     }
     PdcClassification savedClassification = NONE_CLASSIFICATION;
-    if (classification.getId() != null && classificationDao.exists(classification.getId()) &&
-            classification.isEmpty()) {
+    if (classification.getId() != null && classificationDao.exists(classification.getId())
+            && classification.isEmpty()) {
       classificationDao.delete(classification);
     } else {
       List<PdcAxisValue> allValues = new ArrayList<PdcAxisValue>();
@@ -209,7 +208,8 @@ public class PdcClassificationService {
   }
 
   /**
-   * Classifies the specified content on the PdC with the specified classification.
+   * Classifies the specified content on the PdC with the specified classification. If the
+   * content is already classified, then the given classification replaces the existing one.
    * The content must exist in Silverpeas before being classified.
    * If an error occurs while classifying the content, a runtime exception PdcRuntimeException is
    * thrown.
@@ -218,11 +218,23 @@ public class PdcClassificationService {
    */
   public void classifyContent(final SilverpeasContent content,
           final PdcClassification withClassification) throws PdcRuntimeException {
-    List<ClassifyPosition> positions = withClassification.getClassifyPositions();
+    List<ClassifyPosition> classifyPositions = withClassification.getClassifyPositions();
     try {
-      for (ClassifyPosition classifyPosition : positions) {
-        int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
-        pdcBm.addPosition(silverObjectId, classifyPosition, content.getComponentInstanceId());
+      int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
+      List<ClassifyPosition> existingPositions = pdcBm.getPositions(silverObjectId, content.
+              getComponentInstanceId());
+      for (ClassifyPosition aClassifyPosition : classifyPositions) {
+        int positionId = pdcBm.addPosition(silverObjectId, aClassifyPosition, content.
+                getComponentInstanceId());
+        aClassifyPosition.setPositionId(positionId);
+      }
+      if (!existingPositions.isEmpty()) {
+        for (ClassifyPosition anExistingPosition : existingPositions) {
+          if (!isFound(anExistingPosition, classifyPositions)) {
+            pdcBm.deletePosition(anExistingPosition.getPositionId(),
+                    content.getComponentInstanceId());
+          }
+        }
       }
     } catch (PdcException ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".classifyContent()", ex.
@@ -230,6 +242,57 @@ public class PdcClassificationService {
     }
   }
 
+  /**
+   * Some values come to be removed from the PdC. Triggers the update of all concerned
+   * classifications taken in charge by this service (for instance, only the predefined
+   * classifications).
+   * 
+   * For each value, according to its level in the hierarchical tree representing the PdC's axis,
+   * the correct update behaviour is selected for a given classification:
+   * <ul>
+   * <li>The value is a root one of the axis: the value is removed from any positions of the
+   * classification. If the position is empty (it has no values) it is then removed. If the
+   * classification is then empty, it is removed.</li>
+   * <li>The value is a leaf in a branch: the value is replaced by its mother value in any positions
+   * of the classification.</li>
+   * </ul>
+   * @param deletedValue the value that is removed from a PdC's axis.
+   */
+  public void axisValuesDeleted(final List<PdcAxisValue> deletedValues) {
+    List<PdcClassification> concernedClassifications = classificationDao.
+            findClassificationsByPdcAxisValues(deletedValues);
+    for (PdcClassification aClassification : concernedClassifications) {
+      aClassification.updateForPdcAxisValuesDeletion(deletedValues);
+      savePreDefinedClassification(aClassification);
+    }
+    classificationDao.flush(); // apply now all the modifications
+
+    // for instance, the PdcAxisValue objects are taken in charge by this service as they are only
+    // used in the predefined classification. Nevertheless, it is planned they will be used when
+    // refactoring the PdC old code on the classification of contents and in the PdC definition.
+    valueDao.delete(deletedValues);
+  }
+
+  /**
+   * An axis comes to be removed from the PdC. Triggers the update of all concerned
+   * classifications taken in charge by this service (for instance, only the predefined
+   * classifications).
+   * 
+   * The classifications are updated as following:
+   * <ul>
+   * <li>For each position the values related to the axis are removed.</li>
+   * <li>If a position is empty, it is removed.<li>
+   * <li>If a classification is empty, it is removed.<li>
+   * </ul>
+   * @param axisId the unique identifier of the axis.
+   */
+  public void axisDeleted(String axisId) {
+    List<PdcAxisValue> valuesToDelete = valueDao.findByAxisId(Long.valueOf(axisId));
+    if (!valuesToDelete.isEmpty()) {
+      axisValuesDeleted(valuesToDelete);
+    }
+  }
+  
   /**
    * A convenient method to enhance the readability of method calls.
    * @param classification a classification on the PdC.
@@ -256,5 +319,15 @@ public class PdcClassificationService {
 
   protected void setNodeBm(final NodeBm nodeBm) {
     this.nodeBm = nodeBm;
+  }
+
+  private boolean isFound(ClassifyPosition aPosition,
+          List<ClassifyPosition> newPositions) {
+    for (ClassifyPosition aNewPosition : newPositions) {
+      if (aNewPosition.getPositionId() == aPosition.getPositionId()) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -23,6 +23,8 @@
  */
 package com.silverpeas.pdc.web;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
@@ -38,6 +40,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * It is the base class of the different representations of a value in the PdC according to its use
  * (a value in a position of a resource on the PdC, a value of a PdC axis, ...).
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class PdcValueEntity implements Serializable {
   private static final long serialVersionUID = 7830451202912691112L;
   

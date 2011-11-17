@@ -23,6 +23,8 @@
  */
 package com.silverpeas.pdc.web;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import java.util.Collections;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -53,6 +55,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * geographic axis).
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PdcPositionEntity implements Exposable {
 
   private static final long serialVersionUID = 6314816355055147378L;

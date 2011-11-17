@@ -128,19 +128,27 @@ class SQLStatement {
     sSQLStatement.append("SELECT ").append(POSITION_ID_COLUMN).append(" FROM ").append(
             CLASSIFICATION_TABLE);
 
-    // Put the values
+    // Put the values for the concerning axis, put null for the other non-valued axis
     sSQLStatement.append(" WHERE (");
-    Value value = null;
-    for (int nI = 0; nI < alValues.size(); nI++) {
-      value = alValues.get(nI);
-      sSQLStatement.append(AXIS_COLUMN).append(value.getPhysicalAxisId());
-      sSQLStatement.append(" = '").append(value.getValue()).append("'");
-      if (nI < alValues.size() - 1) {
+    for(int axis = 0; axis <= axisMaxNumber; axis ++) {
+      Value foundValue = null;
+      for (Value aValue : alValues) {
+        if (aValue.getPhysicalAxisId() == axis) {
+          foundValue = aValue;
+          break;
+        }
+      }
+      String axisValue = null;
+      if (foundValue != null) {
+        axisValue = "'" + foundValue.getValue() + "'";
+      }
+      sSQLStatement.append(AXIS_COLUMN).append(axis).append(" = ").append(axisValue);
+      if (axis < axisMaxNumber) {
         sSQLStatement.append(" AND ");
       }
+      
     }
     sSQLStatement.append(")");
-
     sSQLStatement.append(" AND ").append(SILVEROBJECT_ID_COLUMN).append(" = ").append(
             nSilverObjectId);
 

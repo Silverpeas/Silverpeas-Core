@@ -271,7 +271,10 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       newValues.add(newValue);
     }
     try {
-      classifyEngine.replaceValuesOnAxis(con, oldValues, newValues);
+      Position<Value> position = new Position<Value>(newValues);
+      if (classifyEngine.isPositionAlreadyExists(id, position) == -1) {
+        classifyEngine.replaceValuesOnAxis(con, oldValues, newValues);
+      }
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.createValuesAndReplace",
               SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITIONS", e);

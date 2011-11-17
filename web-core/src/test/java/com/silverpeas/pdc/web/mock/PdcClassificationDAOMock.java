@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.web.mock;
 
 import com.silverpeas.pdc.dao.PdcClassificationDAO;
+import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.IdGenerator;
@@ -194,5 +195,10 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
         pdcPosition.withId(IdGenerator.getGenerator().nextPositionIdAsString());
       }
     }
+  }
+
+  @Override
+  public List<PdcClassification> findClassificationsByPdcAxisValues(List<PdcAxisValue> values) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

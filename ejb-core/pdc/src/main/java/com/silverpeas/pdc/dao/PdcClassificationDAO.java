@@ -23,7 +23,9 @@
  */
 package com.silverpeas.pdc.dao;
 
+import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
+import java.util.List;
 import org.synyx.hades.dao.GenericDao;
 
 /**
@@ -49,5 +51,13 @@ public interface PdcClassificationDAO extends GenericDao<PdcClassification, Long
    * classification exists for that node.
    */
   PdcClassification findPredefinedClassificationByNodeId(String nodeId, String instanceId);
+  
+  /**
+   * Finds all classifications on the PdC that have at least one position with the one or more of
+   * the specified axis values. If no such values exist, then an empty list is returned.
+   * @param values a list of PdC's axis values.
+   * @return a list of classifications having at least one of the specified values or an empty list.
+   */
+  List<PdcClassification> findClassificationsByPdcAxisValues(final List<PdcAxisValue> values);
   
 }

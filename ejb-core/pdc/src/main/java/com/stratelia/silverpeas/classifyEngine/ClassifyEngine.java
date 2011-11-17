@@ -32,7 +32,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import com.stratelia.webactiv.util.node.model.NodePK;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -326,53 +325,6 @@ public class ClassifyEngine implements Cloneable {
       DBUtil.close(rs, prepStmt);
       DBUtil.close(connection);
     }
-  }
-
-  /**
-   * Sets to the specified node a default classification onto the PdC for the future contents in that
-   * node. The default classification is defined by the specified positions onto the axis of the
-   * PdC.
-   * 
-   * By setting a default classification to a node, the contents that will then added within that node
-   * will be classified automatically with this classification. The flag canBeModified indicates
-   * whether the commiter of a content can modify the default classification when pushing its content
-   * in Silverpeas.
-   * 
-   * Once persisted, an unique identifier will be provided to each of the classification's position.
-   * @param connection the connection to the underlying data source in which will be stored the
-   * default classification.
-   * @param node the unique identifier of the node to which the classification will be mapped.
-   * @param canBeModified a flag indicating whether the classification can be modified by a content
-   * commiter.
-   * @param positions the position(s) onto the PdC of the default classification
-   */
-  public void setDefaultClassificationToNode(Connection connection, NodePK node,
-          boolean canBeModified, Position... positions) {
-    throw new UnsupportedOperationException("Not yet implemented!");
-  }
-
-  /**
-   * Sets to the specified Silverpeas component instance a default classification onto the PdC for
-   * the future contents in that component instance. The default classification is defined by the
-   * specified positions onto the axis of the PdC.
-   * 
-   * By setting a default classification to a component instance, the contents that will then added
-   * within that instance will be automatically classified with this classification. The flag
-   * canBeModified indicates whether the commiter of a content can modify the default classification
-   * when pushing its content in Silverpeas.
-   * 
-   * Once persisted, an unique identifier will be provided to each of the classification's position.
-   * @param connection the connection to the underlying data source in which will be stored the
-   * default classification.
-   * @param instanceId the unique identifier of the component instance to which will be mapped the
-   * default classification.
-   * @param canBeModified a flag indicating whether the classification can be modified by a content
-   * commiter.
-   * @param positions the position(s) onto the PdC of the default classification
-   */
-  public void setDefaultClassificationToComponent(Connection connection, String instanceId,
-          boolean canBeModified, Position... positions) {
-    throw new UnsupportedOperationException("Not yet implemented!");
   }
 
   /*
@@ -970,6 +922,15 @@ public class ClassifyEngine implements Cloneable {
 
         nIndex++;
       }
+
+      // Remove empty positions coming from the above change
+      String sSQLStatement = SQLStatement.buildRemoveEmptyPositionsStatement(nbMaxAxis);
+      // Execute the deletion of empty positions
+      SilverTrace.info("classifyEngine",
+              "ClassifyEngine.replaceValuesOnAxis", "root.MSG_GEN_PARAM_VALUE",
+              "sSQLStatement= " + sSQLStatement);
+      prepStmt = connection.prepareStatement(sSQLStatement);
+      prepStmt.executeUpdate();
 
       // Clear cache
       m_hSinglePertinentAxis.clear();

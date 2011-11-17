@@ -120,5 +120,10 @@ public class PdcAxisValueDAOMock implements PdcAxisValueDAO {
   public void flush() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public List<PdcAxisValue> findByAxisId(Long axisId) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
   
 }

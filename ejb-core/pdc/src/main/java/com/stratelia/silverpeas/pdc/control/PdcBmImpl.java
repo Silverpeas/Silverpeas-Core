@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.pdc.control;
 
+import com.silverpeas.pdc.PdcServiceFactory;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.pdc.dao.PdcRightsDAO;
+import com.silverpeas.pdc.model.PdcAxisValue;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
@@ -73,6 +76,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Named;
 
 @Named("pdcBm")
@@ -464,6 +468,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       // the rootId.
 
       PdcRightsDAO.deleteAxisRights(con, axisId);
+      
+      PdcClassificationService classificationService = PdcServiceFactory.getFactory().
+              getPdcClassificationService();
+      classificationService.axisDeleted(axisId);
 
       // delete data in the tree table
       tree.deleteTree(con, Integer.toString(axisHeader.getRootId()));
@@ -798,7 +806,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         // call the ClassifyBm to create oldValue and newValue
         // and to replace the oldValue by the newValue
         pdcClassifyBm.createValuesAndReplace(con,
-            Integer.toString(axis.getAxisHeader().getRootId()), oldPath, newPath);
+                Integer.toString(axis.getAxisHeader().getRootId()), oldPath, newPath);
       }
       commitTransaction(con);
     } catch (Exception e) {
@@ -1194,6 +1202,15 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
             "root.MSG_GEN_PARAM_VALUE", "axisId = " + axisId);
 
     try {
+      // first update any predefined classifications
+      PdcClassificationService classificationService = PdcServiceFactory.getFactory().
+              getPdcClassificationService();
+      List<PdcAxisValue> valuesToDelete = new ArrayList<PdcAxisValue>();
+      PdcAxisValue aValueToDelete = PdcAxisValue.aPdcAxisValue(valueId, axisId);
+      valuesToDelete.add(aValueToDelete);
+      valuesToDelete.addAll(findRecursivelyAllChildrenOf(aValueToDelete));
+      classificationService.axisValuesDeleted(valuesToDelete);
+
       List<Value> pathInfo = getFullPath(valueId, treeId);
 
       // Mise à jour de la partie utilisation
@@ -1267,6 +1284,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           String treeId) throws PdcException {
     String possibleDaughterName = null;
     try {
+      // first update any predefined classifications
+      List<PdcAxisValue> valuesToDelete = new ArrayList<PdcAxisValue>();
+      valuesToDelete.add(PdcAxisValue.aPdcAxisValue(valueId, axisId));
+      PdcClassificationService classificationService = PdcServiceFactory.getFactory().
+              getPdcClassificationService();
+      classificationService.axisValuesDeleted(valuesToDelete);
+
+      // then run the old legacy code about content classification on the PdC
       Value valueToDelete = getAxisValue(valueId, treeId);
       // filles de la mère = soeurs des filles de la valeur à supprimer
       List<Value> daughtersOfMother = getDaughters(con, valueToDelete.getMotherId(),
@@ -1306,6 +1331,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
             pattern_idx = path.indexOf(pattern); // ne peux etre à -1
             path = path.substring(0, pattern_idx)
                     + path.substring(pattern_idx + lenOfPattern); // retire le motif
+            if (path.split("/").length <= 2) { // the split of /NODE_ID/ results to { "", NODE_IDE }
+              path = null;
+            }
             newPath.add(path);
           }
 
@@ -1429,8 +1457,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     if (axisHeader == null) {
       try {
         AxisHeaderPersistence axisHeaderPersistence =
-            dao.findByPrimaryKey(new AxisPK(
-            axisId));
+                dao.findByPrimaryKey(new AxisPK(
+                axisId));
         axisHeader = new AxisHeader(axisHeaderPersistence);
 
         axisHeaders.put(axisHeader.getPK().getId(), axisHeader);
@@ -1764,7 +1792,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     if (usedAxis.isEmpty()) {
       List<AxisHeader> headers = getAxis();
       for (AxisHeader axisHeader : headers) {
-        UsedAxis axis = new UsedAxis(axisHeader.getPK().getId(), instanceId, axisHeader.getRootId(), 0,
+        UsedAxis axis = new UsedAxis(axisHeader.getPK().getId(), instanceId, axisHeader.getRootId(),
+                0,
                 0, 1);
         axis._setAxisHeader(axisHeader);
         axis._setAxisName(axisHeader.getName());
@@ -2576,5 +2605,15 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           throws ContainerManagerException {
     return findSilverContentIdByPosition(containerPosition, alComponentId,
             null, null, null, recursiveSearch, visibilitySensitive);
+  }
+
+  private List<PdcAxisValue> findRecursivelyAllChildrenOf(final PdcAxisValue axisValue) {
+    List<PdcAxisValue> allChildren = new ArrayList<PdcAxisValue>();
+    Set<PdcAxisValue> directChildrenOfValue = axisValue.getChildValues();
+    allChildren.addAll(directChildrenOfValue);
+    for (PdcAxisValue aChild : directChildrenOfValue) {
+      allChildren.addAll(findRecursivelyAllChildrenOf(aChild));
+    }
+    return allChildren;
   }
 }

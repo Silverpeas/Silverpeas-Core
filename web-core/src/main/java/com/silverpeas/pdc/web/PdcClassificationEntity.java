@@ -23,6 +23,12 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.api.json.JSONJAXBContext;
+import com.sun.jersey.api.json.JSONUnmarshaller;
+import com.sun.jersey.json.impl.JSONUnmarshallerImpl;
+import java.io.StringReader;
+import javax.xml.bind.JAXBException;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.rest.Exposable;
@@ -40,6 +46,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
@@ -54,6 +62,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * A position can be a semantic value of an axis as well a set of values on different axis.
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PdcClassificationEntity implements Exposable {
 
   private static final long serialVersionUID = -2217575091640675000L;
@@ -93,6 +102,18 @@ public class PdcClassificationEntity implements Exposable {
             fromPdcPositions(classification.getPositions(), inLanguage, atURI));
     entity.setModifiable(classification.isModifiable());
     return entity;
+  }
+  
+  public static PdcClassificationEntity fromJSON(String classification) throws JAXBException {
+    JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
+            PdcPositionEntity.class, PdcPositionValueEntity.class);
+    JSONUnmarshaller unmarshaller = new JSONUnmarshallerImpl(context, JSONConfiguration.DEFAULT);
+    try {
+      return unmarshaller.unmarshalFromJSON(new StringReader(classification),
+              PdcClassificationEntity.class);
+    } catch (Error ex) {
+      throw new JAXBException(ex.getMessage(), ex);
+    }
   }
 
   /**
@@ -138,7 +159,7 @@ public class PdcClassificationEntity implements Exposable {
    */
   @XmlTransient
   public boolean isUndefined() {
-    return uri == null;
+    return getClassificationPositions().isEmpty();
   }
 
   @Override

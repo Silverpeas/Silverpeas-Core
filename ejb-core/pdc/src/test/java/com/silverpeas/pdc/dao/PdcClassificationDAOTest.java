@@ -23,15 +23,16 @@
  */
 package com.silverpeas.pdc.dao;
 
+import java.util.List;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import com.silverpeas.pdc.TestResources;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.persistence.EntityNotFoundException;
 import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -47,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static com.silverpeas.pdc.matchers.PdcClassificationMatcher.*;
+import static com.silverpeas.pdc.matchers.PdcClassificationListMatcher.*;
 import static com.silverpeas.pdc.model.PdcModelHelper.*;
 
 /**
@@ -139,7 +141,7 @@ public class PdcClassificationDAOTest {
     assertThat(thePredefinedClassification, nullValue());
   }
 
-  @Test(expected=RuntimeException.class)
+  @Test(expected = RuntimeException.class)
   public void saveANewPredefinedClassificationWithUnknownAxisValue() {
     PdcClassification newClassification = PdcClassification.
             aPredefinedPdcClassificationForComponentInstance("kmelia200").
@@ -188,9 +190,53 @@ public class PdcClassificationDAOTest {
             aPredefinedPdcClassificationForComponentInstance("kmelia100").
             withPositions(theExistingPositions);
     theNewClassification = saveClassification(theNewClassification);
-    
+
     PdcClassification savedClassification = findClassificationById(idOf(theNewClassification));
     assertThat(savedClassification, is(equalTo(theNewClassification)));
+  }
+
+  @Test
+  @Transactional
+  public void findClassificationsHavingAGivenAxisValue() {
+    PdcAxisValue[] aValue = {PdcAxisValue.aPdcAxisValue("5", "2")};
+    List<PdcClassification> expectedClassifications =
+            resources.classificationsHavingAsValue(aValue[0]);
+
+    List<PdcClassification> actualClassifications =
+            dao.findClassificationsByPdcAxisValues(Arrays.asList(aValue));
+    assertThat(actualClassifications.size(), is(expectedClassifications.size()));
+    assertThat(actualClassifications, containsAll(expectedClassifications));
+  }
+
+  @Test
+  @Transactional
+  public void findClassificationsHavingSeveralGivenAxisValues() {
+    PdcAxisValue[] someValues = {PdcAxisValue.aPdcAxisValue("5", "2"), PdcAxisValue.aPdcAxisValue(
+      "6", "2")};
+    List<PdcClassification> expectedClassifications =
+            resources.classificationsHavingAsValue(someValues[0]);
+    expectedClassifications.addAll(resources.classificationsHavingAsValue(someValues[1]));
+
+    List<PdcClassification> actualClassifications =
+            dao.findClassificationsByPdcAxisValues(Arrays.asList(someValues));
+    assertThat(actualClassifications.size(), is(expectedClassifications.size()));
+    assertThat(actualClassifications, containsAll(expectedClassifications));
+  }
+
+  @Test
+  @Transactional
+  public void findNoClassificationsHavingAGivenValue() {
+    PdcAxisValue[] aValue = {PdcAxisValue.aPdcAxisValue("100", "100")};
+    List<PdcClassification> classifications = dao.findClassificationsByPdcAxisValues(Arrays.
+            asList(aValue));
+    assertThat(classifications.isEmpty(), is(true));
+  }
+
+  @Test(expected = NumberFormatException.class)
+  @Transactional
+  public void findSomeClassificationsHavingAnInvalidGivenValueThrowsAnException() {
+    PdcAxisValue[] aValue = {PdcAxisValue.aPdcAxisValue("", "")};
+    dao.findClassificationsByPdcAxisValues(Arrays.asList(aValue));
   }
 
   private void removeAValueFromAPosition(final PdcClassification classification) {
@@ -217,12 +263,12 @@ public class PdcClassificationDAOTest {
     }
     return positionCopies;
   }
-  
+
   @Transactional
   private PdcClassification saveClassification(final PdcClassification classification) {
     return dao.saveAndFlush(classification);
   }
-  
+
   @Transactional
   private PdcClassification findClassificationById(Long id) {
     return dao.readByPrimaryKey(id);
