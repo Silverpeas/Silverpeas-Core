@@ -88,17 +88,10 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
-      out.println(" var checked = false;\n");
-      out.println(" for (var i = 0; i < " + getNbHtmlObjectsDisplayed(template, pagesContext) +
-          "; i++) {\n");
-      out.println("   if (document.getElementsByName('" + fieldName + "')[i].checked) {\n");
-      out.println("     checked = true;\n");
-      out.println("   }\n");
-      out.println(" }\n");
-      out.println(" if(checked == false) {\n");
+      out.println(" var checked = $('input[type=radio][name="+fieldName+"]:checked').length == 1;\n");
+      out.println(" if(checked == false) {");
       out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled",
-          language) + "\\n \";");
+          Util.getString("GML.MustBeFilled", language) + "\";");
       out.println("   errorNb++;");
       out.println(" }");
     }

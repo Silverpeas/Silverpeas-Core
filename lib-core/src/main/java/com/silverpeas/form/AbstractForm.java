@@ -145,12 +145,15 @@ public abstract class AbstractForm implements Form {
               fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
 
               if (fieldDisplayer != null) {
-                out.append("	field = document.getElementById(\"")
-                      .append(fieldTemplate.getFieldName())
-                      .append("\");\n")
-                      .append("	if (field != null) {\n");
-                fieldDisplayer.displayScripts(out, fieldTemplate, pc);
-                out.println("}\n");
+                out.append("	field = document.getElementById(\"").append(fieldTemplate.getFieldName()).append("\");\n");
+                out.append("	if (field == null) {\n");
+                //try to find field by name
+                  //out.append("  field = document.getElementByName(\"").append(fieldTemplate.getFieldName()).append("\");\n");
+                  out.append("  field = $(\"input[name=").append(fieldTemplate.getFieldName()).append("]\");\n");
+                out.println("}");
+                out.append(" if (field != null) {\n");
+                  fieldDisplayer.displayScripts(out, fieldTemplate, pc);
+                out.println("}");
                 pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate,
                         pc));
               }
