@@ -44,6 +44,13 @@
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
+      <description>The identifier to set for the HTML element within the classificiation will be rendered</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
       <description>The identifier of the component instance for which the PdC is configured.
       </description>
       <name>componentId</name>

@@ -95,7 +95,7 @@
   /**
    * The parameter settings of the plugin with, for some, the default value.
    */
-  var settings = {
+  var pluginSettings = {
     /**
      * The resource for which the classification on the PdC has to be rendered or edited. It is
      * defined by the web application context under which the resource is published, the component
@@ -115,6 +115,11 @@
      */
     title: 'Classement',
     /**
+     * The title of the HTML section within which will be rendered the fields to set or unset the
+     * modification attribute of a classification on the PdC
+     */
+    modificationTitle: 'Validation',
+    /**
      * The prefix to use when labelling a given position.
      */
     positionLabel: 'Position',
@@ -122,6 +127,14 @@
      * The label to use for the HTML section into which the positions of the resource will be rendered.
      */
     positionsLabel: 'Positions',
+    /**
+     * The label to use with a radio button to indicate the classification can be modified.
+     */
+    canBeModified: "Le contributeur ne doit pas valider le classement par défaut",
+    /**
+     * The label to use with a radio button to indicate the classification cannot be modified.
+     */
+    cannotBeModified:"Le contributeur doit valider et peut modifier le classement par défaut ",
     /**
      * The label to use for the HTML section into which the positions of a predefined classification
      * coming from a parent node will be rendered.
@@ -180,69 +193,95 @@
     mode: 'view'
   };
   
+  /**
+   * The methods published by the plugin.
+   */
   var methods = {
     /**
      * Renders an area within which the different axis of the PdC configured for the specified
      * Silverpeas component are presented in order to create a prefefined classification on the PdC
      * for the contents that are published in a given topic of the specified Silverpeas component.
+     * The predefined classification is dynamically created and modified by requesting a REST-based
+     * web service.
      */
     predefine: function( options ) {
       return this.each(function() {
         var $this = $(this);
-        init( options );
+        init( $this, options );
+        var settings = $this.data('settings');
         settings.mode = 'predefinition';
-        loadPdC($this, function ($this) {
-          loadClassification($this, settings.defaultClassificationURI, function($this, uri) {
+        loadPdC( $this, function ( $this ) {
+          loadClassification( $this, settings.defaultClassificationURI, function( $this, uri ) {
             var classification = $this.data('classification');
-            renderClassificationFrame($this);
-            if (isInherited(classification)) {
-              $.each(classification.positions, function(index, position) {
+            var modification = $('<fieldset id="classification-mo">').
+              data('settings', $this.data('settings')).
+              data('classification', $this.data('classification')).
+              appendTo($this);
+            $('<br>', {
+              'clear': 'all'
+            }).appendTo($this);
+            var predefinition = $('<fieldset id="classification-predefinition">').
+              data('settings', $this.data('settings')).
+              data('pdc', $this.data('pdc')).
+              data('classification', $this.data('classification')).
+              appendTo($this);
+            
+            renderModificationAttributeFrame( modification );
+            renderClassificationFrame( predefinition );
+            if (isInherited( $this, classification )) {
+              $.each(classification.positions, function( index, position ) {
                 position.id = null;
               });
             }
-            renderClassificationEditionFrame($this, []);
-            renderPositions($this);
+            renderClassificationEditionFrame( predefinition, [] );
+            renderPositions( predefinition );
+          } );
+        } );
+      })
+    },
+    
+    /**
+     * Renders an area within which the different axis of the PdC configured for the specified
+     * Silverpeas component are presented in order to create a new classification on the PdC for a
+     * not yet published resource content. The positions then can be retreived with the plugin's
+     * function 'positions' and they can be validated by calling the plugin's function
+     * 'isClassificationValid' before processing them. As the resource content isn't yet created,
+     * it is the responsability of the client to take into account of the creation of the positions
+     * on the PdC added through the plugin.
+     */
+    create: function( options ) {
+      return this.each(function() {
+        var $this = $(this), classification = new Object();
+        init( $this, options );
+        var settings = $this.data('settings');
+        settings.mode = 'creation';
+        loadPdC($this, function($this) {
+          loadClassification( $this, settings.defaultClassificationURI, function($this, uri) {
+            var classification = $this.data('classification');
+            classification.uri = settings.classificationURI;
+            if (classification.positions.length == 0 || classification.modifiable) {
+              renderClassificationFrame($this);
+              renderClassificationEditionFrame($this, []);
+              renderPositions($this);
+            } else {
+              $this.attr('style', 'display: none;')
+            }
           });
         });
       })
     },
     
     /**
-     * Renders an area within which the different axis of the PdC configured for the specified
-     * Silverpeas component are presented in order to create a new classification of the specified
-     * resource content on the PdC. The positions then can be retreived with the function positions
-     * of this plugin.
-     */
-    create: function( options ) {
-      return this.each(function() {
-        var $this = $(this), classification = new Object();
-        init( options );
-        settings.mode = 'creation';
-        loadPdC($this, function($this) {
-          loadClassification( $this, settings.defaultClassificationURI, function($this, uri) {
-            var classification = $this.data('classification');
-            classification.uri = settings.classificationURI;
-            renderClassificationFrame($this);
-            renderClassificationEditionFrame($this, []);
-            if (classification.modifiable) {
-              renderPositions($this)
-            } else {
-              $this.attr('style', 'display: none;')
-            }
-          });
-        })
-      })
-    },
-    
-    /**
-     * Renders an area within which the classification of the specified resource on the PdC is
-     * displayed either in a view or an editable mode. In the editable mode, a position can be added,
-     * removed or updated.
+     * Renders an area within which the classification on the PdC of the specified resource is
+     * displayed either in a view or an editable mode. If the resource content isn't yet classified 
+     * on the PdC, an empty classification is opened. In the editable mode, a position can be added,
+     * removed or updated dynamically (by requesting a REST-based web service).
      */
     open: function( options ) {
       return this.each(function() {
         var $this = $(this);
-        init( options );
+        init( $this, options );
+        var settings = $this.data('settings');
         if (settings.mode != 'edition') {
           settings.mode = 'view';
         }
@@ -261,20 +300,23 @@
     },
     
     /**
-     * Gets the positions of the resource on the PdC. If no positions were set during the use of
+     * Gets the positions on the PdC of the resource. If no positions were set during the use of
      * this plugin, then fetch them from the remote web service. The positions are sent back as
      * the attribute of an object (a classification): {positions: [...]}. If the resource isn't
      * classified onto the PdC, then null is returned.
+     * This function is mainly to be used in conjonction with the plugin's function 'create' in
+     * order to get the positions that were created with the later.
      */
     positions: function( options ) {
-      var $this = $(this);
-      if ($this.data('classification') == null) {
-        init( options );
-        loadClassification($this, settings.classificationURI, function($this, uri) {});
-      }
-      var classification = $this.data('classification');
-      if (classification.positions.length == 0) {
-        classification = null;
+      var $this = $(this), classification = $this.data('classification');
+      if (classification == null) {
+        init( $this, options );
+        var settings = $this.data('settings');
+        loadClassification($this, settings.classificationURI, function($this, uri) {
+          classification = $this.data('classification');
+        });
+      } else {
+        if (classification.positions.length == 0) classification = null;
       }
       return classification;
     },
@@ -321,10 +363,14 @@
   /**
    * Initializes the plugin with some settings passed as arguments.
    */
-  function init ( options ) {
+  function init ( $this, options ) {
+    var settings = $.extend( true, {}, pluginSettings );
     if ( options ) {
       $.extend( true, settings, options );
     }
+    $this.data('settings', settings);
+    settings.idPrefix = $this.attr('id') + '_';
+    if (!settings.idPrefix) settings.idPrefix = '';
     settings.defaultClassificationURI = settings.resource.context + '/services/pdc/' + settings.resource.component + '/classification';
     if (settings.resource.node != null && settings.resource.node.length > 0) {
       settings.defaultClassificationURI += '?nodeId=' + settings.resource.node;
@@ -341,10 +387,40 @@
     }
   }
   
+  function renderModificationAttributeFrame( $this ) {
+    var settings = $this.data('settings'), classification = $this.data('classification');
+    var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.modificationTitle));
+    if ($this.is('fieldset')) {
+      titleTag = $('<legend>').html(settings.modificationTitle);
+    }
+    titleTag.addClass('header').appendTo($this);
+    $('<div>', {id: 'modification'}).addClass('field').append($('<input>', {
+      type: 'radio', 
+      name: 'modification', 
+      value:'false', 
+      checked: !classification.modifiable
+    })).
+    append($('<span>').html(settings.cannotBeModified)).
+    append($('<br>')).
+    append($('<input>', {
+      type: 'radio', 
+      name: 'modification', 
+      value:'true',
+      checked: classification.modifiable
+    })).
+    append($('<span>').html(settings.canBeModified)).appendTo($this);
+    
+    $('.field input:radio').change(function() {
+      classification.modifiable = $('.field input:radio:checked').val();
+      submitClassification($this, settings.defaultClassificationURI);
+    });
+  }
+  
   /**
    * Renders the area into which the classification on the PdC of the resource will be displayed.
    */
   function renderClassificationFrame ( $this ) {
+    var settings = $this.data('settings');
     if (settings.mode == 'predefinition' && settings.resource.node != null && settings.resource.node > 0)
       $('<div>').addClass('inlineMessage').html(settings.messages.inheritanceMessage).appendTo($this);
     var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.title));
@@ -354,34 +430,34 @@
     titleTag.addClass('header').appendTo($this);
     if (settings.mode != 'view') {
       var editionBox = $('<div>', {
-        id: 'pdc-addition-box'
-      }).addClass('fields').appendTo($this);
+        id: settings.idPrefix + 'pdc-addition-box'
+      }).addClass('pdc-edition-box').addClass('fields').appendTo($this);
       if (settings.mode == 'edition') {
         editionBox.attr("style","display: none;");
       }
       $('<div>', {
-        id: 'pdc-update-box',
+        id: settings.idPrefix + 'pdc-update-box',
         'style': 'display-none'
-      }).addClass('fields').appendTo($this);
+      }).addClass('pdc-edition-box').addClass('fields').appendTo($this);
     }
     var listOfPositions = $('<div>', {
-      id: 'list_pdc_position'
+      id: settings.idPrefix + 'list_pdc_position'
     });
     if (settings.mode != 'view') {
       var classification = $this.data('classification'), positionsLabel = settings.positionsLabel;
-      if (isInherited(classification)) {
+      if (isInherited( $this, classification )) {
         positionsLabel = settings.inheritedPositionsLabel;
       }
       listOfPositions.addClass('field').
       append($('<label>', {
-        'for': 'allpositions'
+        'for': settings.idPrefix + 'allpositions'
       }).html(positionsLabel));
       listOfPositions.append($('<div>', {
-        id: 'allpositions'
+        id: settings.idPrefix + 'allpositions'
       }).addClass('champs')).appendTo($('<div>').addClass('fields').appendTo($this));
     } else {
       listOfPositions.append($('<div>', {
-        id: 'allpositions'
+        id: settings.idPrefix + 'allpositions'
       })).appendTo($this);
     }
   }
@@ -391,9 +467,9 @@
    * the settings.
    */
   function addNewPosition( $this, uri ) {
-    var selection = [];
+    var selection = [], settings = $this.data('settings');
     renderClassificationEditionFrame($this, selection);
-    $("#pdc-addition-box").dialog({
+    $("#" + settings.idPrefix + "pdc-addition-box").dialog({
       width: 640,
       modal: true,
       title: settings.addition.title,
@@ -423,12 +499,12 @@
    * url.
    */
   function updatePosition( $this, uri, position ) {
-    var selection = [];
+    var selection = [], settings = $this.data('settings');
     $.each(position.values, function(valindex, value) {
       selection[value.axisId] = value;
     });
     renderClassificationUpdateFrame($this, selection);
-    $("#pdc-update-box").dialog({
+    $("#" + settings.idPrefix + "pdc-update-box").dialog({
       width: 640,
       modal: true,
       title: settings.update.title,
@@ -466,6 +542,7 @@
    * the settings.
    */
   function deletePosition( $this, uri, positionId ) {
+    var settings = $this.data('settings');
     if (window.confirm( settings.deletion.confirmation )) {
       var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
       var uri_position = uri_parts[0] + '/' + positionId + '?' + uri_parts[1];
@@ -486,9 +563,9 @@
   }
   
   function submitClassification( $this, uri ) {
-    var method = 'POST', classification = $this.data('classification');
+    var method = 'POST', classification = $this.data('classification'), settings = $this.data('settings');
     if (settings.mode == 'predefinition') {
-      if (!isInherited(classification)) {
+      if (!isInherited( $this, classification )) {
         method = 'PUT';
       } else {
         if (classification.positions.length == 0) {
@@ -507,12 +584,12 @@
       dataType: "json",
       cache: false,
       success: function(classification) {
-        $("#pdc-update-box").dialog( "destroy" );
+        $("#"+ settings.idPrefix + "pdc-update-box").dialog( "destroy" );
         $this.data('classification', classification);
-        if (isInherited(classification))
-          $('label[for="allpositions"]').html(settings.inheritedPositionsLabel);
+        if (isInherited($this, classification))
+          $('label[for="' + settings.idPrefix + 'allpositions"]').html(settings.inheritedPositionsLabel);
         else
-          $('label[for="allpositions"]').html(settings.positionsLabel);
+          $('label[for="' + settings.idPrefix + 'allpositions"]').html(settings.positionsLabel);
         refreshClassification( $this );
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -526,6 +603,7 @@
      * identified by the specified URI.
      */
   function submitPosition( $this, uri, position ) {
+    var settings = $this.data('settings');
     if (checkPositionIsValid($this, position)) {
       if (settings.mode == 'edition' || settings.mode == 'predefinition') {
         var method = "POST", uri_position = uri;
@@ -543,9 +621,9 @@
           cache: false,
           success: function(classification) {
             if (settings.mode == 'edition') {
-              $("#pdc-addition-box").dialog( "destroy" );
+              $("#" + settings.idPrefix + "pdc-addition-box").dialog( "destroy" );
             }
-            $("#pdc-update-box").dialog( "destroy" );
+            $("#" + settings.idPrefix + "pdc-update-box").dialog( "destroy" );
             $this.data('classification', classification);
             refreshClassification( $this );
           },
@@ -560,7 +638,7 @@
             positions[ipos] = position;
           }
         }
-        $("#pdc-update-box").dialog( "destroy" );
+        $("#" + settings.idPrefix + "pdc-update-box").dialog( "destroy" );
         refreshClassification( $this );
       }
     }
@@ -586,7 +664,8 @@
     return position;
   }
   
-  function isInherited(classification) {
+  function isInherited( $this, classification ) {
+    var settings = $this.data('settings');
     return settings.mode == 'predefinition' &&
     escape(classification.uri).search(escape(settings.defaultClassificationURI)) == -1;
   }
@@ -635,7 +714,8 @@
   }
   
   function checkPositionIsValid( $this, thePosition) {
-    var theAxis = $this.data('pdc').axis, classification = $this.data('classification'), isValid = true;
+    var theAxis = $this.data('pdc').axis, classification = $this.data('classification'),
+    isValid = true, settings = $this.data('settings');
     if (!areMandatoryAxisValued(theAxis, thePosition)) {
       isValid = false;
       alert(settings.messages.contentMustHaveAPosition);
@@ -673,7 +753,12 @@
      * the settings.
      */
   function refreshClassification( $this ) {
-    $('#allpositions').children().remove();
+    var settings = $this.data('settings');
+    $("#" + settings.idPrefix + "allpositions").children().remove();
+    if (settings.mode == 'predefinition') {
+      $('#classification-mo').children().remove();
+      renderModificationAttributeFrame($('#classification-mo'));
+    }
     renderPositions( $this );
   }
   
@@ -683,6 +768,7 @@
      * It is expected the function waits for as parameter $this.
      */
   function loadPdC( $this, onSuccess) {
+    var settings = $this.data('settings');
     $.ajax({
       url: settings.pdcURI,
       dataType: 'json',
@@ -727,10 +813,10 @@
      * Renders the positions of the classification on the PdC of the resource.
      */
   function renderPositions( $this ) {
-    var classification = $this.data('classification');
+    var classification = $this.data('classification'), settings = $this.data('settings');
     if (classification.positions.length > 0) {
-      $('label[for="allpositions"]').show();
-      var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($('#allpositions'));
+      $('label[for="' + settings.idPrefix + 'allpositions"]').show();
+      var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($("#" + settings.idPrefix + "allpositions"));
       $.each($this.data('classification').positions, function(posindex, position) {
         var posId = posindex + 1, values =  [];
         var currentPositionSection = $('<li>').appendTo(positionsSection);
@@ -738,7 +824,7 @@
         html(settings.positionLabel + ' ' + posId).appendTo(currentPositionSection);
 
         $.each(position.values, function(valindex, value) {
-          values.push(textFrom(value));
+          values.push(textFrom($this, value));
         });
 
         if (settings.mode != 'view') {
@@ -758,7 +844,7 @@
               updatePosition($this, uri, position);
             })));
          
-          if (!(isInherited(classification) && classification.positions.length == 1)) {
+          if (!(isInherited($this, classification) && classification.positions.length == 1)) {
             positionLabel.append($('<a>', {
               href: '#', 
               title: settings.deletion.title + ' ' + posId
@@ -783,19 +869,19 @@
         currentPositionSection.append($('<ul>').html(values.join('')));
       });
     } else {
-      $('label[for="allpositions"]').hide();
+      $('label[for="' + settings.idPrefix + 'allpositions"]').hide();
     }
     if (settings.mode == 'edition') {
       $('<a>', {
         href: '#'
       }).addClass('add_position').html(settings.addition.title).click(function() {
         addNewPosition($this, classification.uri);
-      }).appendTo($('#allpositions'))
+      }).appendTo($("#" + settings.idPrefix + "allpositions"))
     }
   }
   
-  function textFrom( value ) {
-    var text;
+  function textFrom( $this, value ) {
+    var text, settings = $this.data('settings');
     if (settings.mode == 'view') {
       text = '<li title="' + value.meaning + '">'
       var path = value.meaning.split('/');
@@ -812,19 +898,22 @@
      * in the classification.
      */
   function renderClassificationEditionFrame( $this, selectedValues ) {
-    $('#pdc-addition-box').children().remove();
+    var settings = $this.data('settings');
+    $("#" + settings.idPrefix + "pdc-addition-box").children().remove();
     if (hasPdCMandoryAxis($this.data('pdc').axis) && (settings.mode == 'creation')) {
-      $('<div>').addClass('inlineMessage').html(settings.messages.mandatoryMessage).appendTo($('#pdc-addition-box'));
+      $('<div>').addClass('inlineMessage').html(settings.messages.mandatoryMessage).
+      appendTo($("#" + settings.idPrefix + "pdc-addition-box"));
     }
-    renderPdCAxisFields($this, $this.data('pdc').axis, $('#pdc-addition-box'), selectedValues);
+    renderPdCAxisFields($this, $this.data('pdc').axis, $("#" + settings.idPrefix + "pdc-addition-box"), selectedValues);
   }
   
   /**
      * Renders a frame for updating an existing position. It is only used in creation mode.
      */
   function renderClassificationUpdateFrame( $this, selectedValues ) {
-    $('#pdc-update-box').children().remove();
-    renderPdCAxisFields($this, $this.data('pdc').axis, $('#pdc-update-box'), selectedValues);
+    var settings = $this.data('settings');
+    $("#" + settings.idPrefix + "pdc-update-box").children().remove();
+    renderPdCAxisFields($this, $this.data('pdc').axis, $("#" + settings.idPrefix + "pdc-update-box"), selectedValues);
   }
   
   /**
@@ -835,12 +924,12 @@
      * case of a position modification) and that will receive the new values for the position.
      */
   function renderPdCAxisFields( $this, theAxis, axisSection, selectedValues ) {
-    var hasMandatoryAxis = false, hasInvariantAxis = false;
+    var hasMandatoryAxis = false, hasInvariantAxis = false, settings = $this.data('settings');
     // browse the axis of the PdC and for each of them print out a select HTML element
     $.each(theAxis, function(axisIndex, anAxis) {
       var currentAxisDiv = $('<div>').addClass('champs').appendTo($('<div>').addClass('field').
         append($('<label >', {
-          'for': anAxis.id
+          'for': settings.idPrefix + anAxis.id
         }).addClass('txtlibform').html(anAxis.name)).
         appendTo(axisSection));
       var mandatoryField = '';
@@ -848,7 +937,7 @@
         mandatoryField = 'mandatoryField'
       }
       var axisValuesSelection = $('<select>', {
-        'id': anAxis.id,  
+        'id': settings.idPrefix + anAxis.id,  
         'name': anAxis.name
       }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
         var theValue = $(this).children(':selected').attr('value');
@@ -919,7 +1008,8 @@
     });
     
     axisSection.append($('<br>').attr('clear', 'all'));
-    if ((settings.mode == 'creation' || settings.mode == 'predefinition') && axisSection.attr('id') == 'pdc-addition-box') {
+    if ((settings.mode == 'creation' || settings.mode == 'predefinition') &&
+      axisSection.attr('id') == settings.idPrefix + "pdc-addition-box") {
       axisSection.append($('<a>').attr('href', '#').
         addClass('valid_position').
         addClass('milieuBoutonV5').
@@ -936,7 +1026,8 @@
                 classification.positions.push(position);
                 submitClassification($this, settings.defaultClassificationURI);
               }
-            } else {
+            }
+            else {
               submitPosition($this, classification.uri, position);
             }
           }
@@ -967,5 +1058,6 @@
       }
     }
   }
+  
 })( jQuery );
 

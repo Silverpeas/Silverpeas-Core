@@ -66,15 +66,31 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * The identifier of the XHTML tag within which the PdC classification will be displayed.
    */
   public static final String PDC_CLASSIFICATION_WIDGET_TAG_ID = "classification";
-  private static short tagCount = 0;
   private static final String USE_PDC_COMPONENT_PARAMETER = "usePdc";
   private static final String BROWSING_CONTEXT = "browseContext";
   private String componentId;
   private String contentId;
   private String nodeId;
   private PdcTagOperation operation;
+  private String pdcWidgetId = PDC_CLASSIFICATION_WIDGET_TAG_ID;
 
   public BaseClassificationPdCTag() {
+  }
+  
+  /**
+   * Sets the identifier of the HTML element  in which the classification is rendered.
+   * @param id the widget identifier to set.
+   */
+  public void setId(String id) {
+    this.pdcWidgetId = id;
+  }
+  
+  /**
+   * Gets the identifier used to identify the HTML element in which is rendered the classification.
+   * @return the id of the widget.
+   */
+  public String getId() {
+    return this.pdcWidgetId;
   }
 
   /**
@@ -169,7 +185,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Sets up the widget with all required information. It initializes the PdC classification JQuery
-   * plugin and it calls it to render the classification of the refered content onto the PdC.
+   * plugin and it calls it to render the classification of the refered content on the PdC.
    * @return a container of rendering elements.
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
@@ -181,15 +197,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     } else {
       classification = new fieldset();
     }
-    String id = PDC_CLASSIFICATION_WIDGET_TAG_ID;
-//    if (1 <= ++tagCount) {
-//      id += tagCount;
-//    }
-    classification.setID(id);
+    classification.setID(pdcWidgetId);
     if (getInvokedOperation() == READ_CLASSIFICATION) {
-      classification.setClass("preview bgDegradeGris");
+      classification.setClass(PDC_CLASSIFICATION_WIDGET_TAG_ID + " preview bgDegradeGris");
     } else {
-      classification.setClass("skinFieldset");
+      classification.setClass(PDC_CLASSIFICATION_WIDGET_TAG_ID + " skinFieldset");
     }
     script pluginExecution = new script().setType("text/javascript").
             addElement(executePlugin());
@@ -211,10 +223,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     String positionAddingLabel = (getInvokedOperation().equals(PREDEFINE_CLASSIFICATION)
             || getInvokedOperation().equals(CREATE_CLASSIFICATION) ? resources.getString(
             "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
-    String script = "$('#classification').pdc('" + function + "', {resource: {context: '" + context
+    String script = "$('#" + pdcWidgetId + "').pdc('" + function + "', {resource: {context: '" + context
             + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
             + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(
             "pdcPeas.classifyPublication")
+            + "', modificationTitle: '" + resources.getString("GML.Validation")
             + "', positionLabel: '" + resources.getString("pdcPeas.position")
             + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
             + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")

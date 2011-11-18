@@ -38,7 +38,8 @@
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang"/>
-<fmt:message key='GML.close' var="close"/>
+<fmt:message key="GML.close" var="close"/>
+<fmt:message key="GML.PDCPositionsPredefinition" var="childNode"/>
 <c:set var="componentId" value="${param.componentId}"/>
 <c:set var="nodeId" value="${param.nodeId}"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -50,7 +51,8 @@
     <view:looknfeel />
   </head>
   <body>
-    <view:window browseBarVisible="false">
+    <view:browseBar clickable="false" path="${childNode}"/>
+    <view:window browseBarVisible="true">
       <view:frame>
         <div id="header">
           <view:pdcPredefinedClassification componentId="${componentId}" nodeId="${nodeId}"/>

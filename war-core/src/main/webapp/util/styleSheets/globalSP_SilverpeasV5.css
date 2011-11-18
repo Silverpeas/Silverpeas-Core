@@ -4079,55 +4079,55 @@ html:not([lang*=""]) .add_position:hover {
   background-color: #EAEAEA;
 }
 
-#classification legend {
+.classification legend {
 	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
-#pdc-addition-box .field, #pdc-update-box .field {
+.classification .pdc-edition-box .field {
 	width:70%;
 }
 
-#pdc-addition-box .inlineMessage {
+.pdc-edition-box .inlineMessage {
 	position:absolute;
 	top:-5px;
 	right:-5px;
 	width:28%;
 }
 
-* html #pdc-addition-box .inlineMessage {
+* html .pdc-edition-box .inlineMessage {
 	top:-35px;
 	right:5px;
 }
 
-#pdc-addition-box .valid_position {
+.pdc-edition-box .valid_position {
 	margin:10px 10px 10px  180px;
     line-height: 20px;
 	float:left;
 }
-#classification .legende { 
+.classification .legende { 
 	margin:10px 0 0;
 	float:left;
 	line-height:18px
 }
 
-#classification .list_pdc_position {
+.classification .list_pdc_position {
 	border:1px solid #C6CDBF;
 	width:94%;
 }
 
-#classification #list_pdc_position.field {
+.classification .field {
 	width: 98%;
 	clear:both;
 	display:block;
 	float:none;
 }
 
-#classification.preview .list_pdc_position {
+.classification.preview .list_pdc_position {
 	border:0;
 	width:100%;
 }
 
-#classification.preview .header h4 {
+.classification.preview .header h4 {
     background: url("/silverpeas/util/icons/component/pdcPeasSmall.gif") no-repeat scroll right top transparent;
     height: 16px;
 }
