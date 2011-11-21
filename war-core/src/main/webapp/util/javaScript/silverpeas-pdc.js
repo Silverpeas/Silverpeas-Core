@@ -26,11 +26,12 @@
  * A JQuery plugin providing some functionalities on the classification of the Silverpeas
  * resources (publication, comments, ...) on the classification plan (named PdC).
  * The supported functionalities are:
+ * - preview the classification positions on the PdC of a given content.
  * - render the classification on the PdC of a given content in two modes: edition or view mode. In
  * edition mode, a position on the PdC can be added, deleted or modified in the classification.
- * - render an area to create a classification of a resource on the PdC.
+ * - render an area to create a classification for a new resource content.
  * - get the positions that were added through the previous function,
- * - validate the classification of a resource is valid.
+ * - validate the classification of a resource content is valid.
  * 
  * The classification is expected to be formatted in JSON as:
  * {
@@ -214,17 +215,17 @@
           loadClassification( $this, settings.defaultClassificationURI, function( $this, uri ) {
             var classification = $this.data('classification');
             var modification = $('<fieldset id="classification-mo">').
-              data('settings', $this.data('settings')).
-              data('classification', $this.data('classification')).
-              appendTo($this);
+            data('settings', $this.data('settings')).
+            data('classification', $this.data('classification')).
+            appendTo($this);
             $('<br>', {
               'clear': 'all'
             }).appendTo($this);
             var predefinition = $('<fieldset id="classification-predefinition">').
-              data('settings', $this.data('settings')).
-              data('pdc', $this.data('pdc')).
-              data('classification', $this.data('classification')).
-              appendTo($this);
+            data('settings', $this.data('settings')).
+            data('pdc', $this.data('pdc')).
+            data('classification', $this.data('classification')).
+            appendTo($this);
             
             renderModificationAttributeFrame( modification );
             renderClassificationFrame( predefinition );
@@ -289,6 +290,26 @@
           loadClassification( $this, settings.classificationURI, function($this, uri) {
             var classification = $this.data('classification');
             if (classification.positions.length == 0 && settings.mode == 'view') {
+              $this.hide();
+            } else {
+              renderClassificationFrame($this);
+              renderPositions( $this );
+            }
+          });
+        })
+      })
+    },
+    
+    preview: function( options ) {
+      return this.each(function() {
+        var $this = $(this);
+        init( $this, options );
+        var settings = $this.data('settings');
+        settings.mode = 'preview'
+        loadPdC($this, function($this) {
+          loadClassification( $this, settings.classificationURI, function($this, uri) {
+            var classification = $this.data('classification');
+            if (classification.positions.length == 0) {
               $this.hide();
             } else {
               renderClassificationFrame($this);
@@ -394,7 +415,9 @@
       titleTag = $('<legend>').html(settings.modificationTitle);
     }
     titleTag.addClass('header').appendTo($this);
-    $('<div>', {id: 'modification'}).addClass('field').append($('<input>', {
+    $('<div>', {
+      id: 'modification'
+    }).addClass('field').append($('<input>', {
       type: 'radio', 
       name: 'modification', 
       value:'false', 
@@ -428,7 +451,7 @@
       titleTag = $('<legend>').html(settings.title);
     }
     titleTag.addClass('header').appendTo($this);
-    if (settings.mode != 'view') {
+    if (settings.mode != 'preview') {
       var editionBox = $('<div>', {
         id: settings.idPrefix + 'pdc-addition-box'
       }).addClass('pdc-edition-box').addClass('fields').appendTo($this);
@@ -443,7 +466,7 @@
     var listOfPositions = $('<div>', {
       id: settings.idPrefix + 'list_pdc_position'
     });
-    if (settings.mode != 'view') {
+    if (settings.mode != 'preview') {
       var classification = $this.data('classification'), positionsLabel = settings.positionsLabel;
       if (isInherited( $this, classification )) {
         positionsLabel = settings.inheritedPositionsLabel;
@@ -827,7 +850,7 @@
           values.push(textFrom($this, value));
         });
 
-        if (settings.mode != 'view') {
+        if (settings.mode != 'preview') {
           positionLabel.append(
             $('<a>',{
               href: '#', 
@@ -882,7 +905,7 @@
   
   function textFrom( $this, value ) {
     var text, settings = $this.data('settings');
-    if (settings.mode == 'view') {
+    if (settings.mode == 'preview') {
       text = '<li title="' + value.meaning + '">'
       var path = value.meaning.split('/');
       if (path.length > 2) text += path[0] + '/ ... /' + path[path.length -1]; else text += value.meaning;

@@ -71,12 +71,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   private String componentId;
   private String contentId;
   private String nodeId;
-  private PdcTagOperation operation;
   private String pdcWidgetId = PDC_CLASSIFICATION_WIDGET_TAG_ID;
 
   public BaseClassificationPdCTag() {
   }
-  
+
   /**
    * Sets the identifier of the HTML element  in which the classification is rendered.
    * @param id the widget identifier to set.
@@ -84,7 +83,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   public void setId(String id) {
     this.pdcWidgetId = id;
   }
-  
+
   /**
    * Gets the identifier used to identify the HTML element in which is rendered the classification.
    * @return the id of the widget.
@@ -156,14 +155,6 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
-   * Gets the invoked operation.
-   * @return the operation that is executed or null if no operation is invoked.
-   */
-  protected PdcTagOperation getInvokedOperation() {
-    return operation;
-  }
-
-  /**
    * Invokes the underlying JQuery PdC plugin with the appropriate function according to the
    * specified operation.
    * The operation is actually invoked only if the PdC is used by the underlying Silverpeas
@@ -175,8 +166,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   public ElementContainer invoke(final PdcTagOperation operation) throws JspException {
     ElementContainer container;
     if (isPdcUsed()) {
-      this.operation = operation;
-      container = initWidget();
+      container = initWidget(operation);
     } else {
       container = new ElementContainer();
     }
@@ -186,25 +176,26 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * Sets up the widget with all required information. It initializes the PdC classification JQuery
    * plugin and it calls it to render the classification of the refered content on the PdC.
+   * @param operation the operation with which the widget is initialized.
    * @return a container of rendering elements.
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
-  private ElementContainer initWidget() throws JspException {
+  private ElementContainer initWidget(PdcTagOperation operation) throws JspException {
     ElementContainer xhtmlcontainer = new ElementContainer();
     MultiPartElement classification;
-    if (getInvokedOperation() == READ_CLASSIFICATION) {
+    if (operation == PREVIEW_CLASSIFICATION) {
       classification = new div();
     } else {
       classification = new fieldset();
     }
     classification.setID(pdcWidgetId);
-    if (getInvokedOperation() == READ_CLASSIFICATION) {
+    if (operation == PREVIEW_CLASSIFICATION) {
       classification.setClass(PDC_CLASSIFICATION_WIDGET_TAG_ID + " preview bgDegradeGris");
     } else {
       classification.setClass(PDC_CLASSIFICATION_WIDGET_TAG_ID + " skinFieldset");
     }
     script pluginExecution = new script().setType("text/javascript").
-            addElement(executePlugin());
+            addElement(executePlugin(operation));
     xhtmlcontainer.addElement(classification).
             addElement(pluginExecution);
     return xhtmlcontainer;
@@ -213,17 +204,19 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * This method calls the JQuery PdC plugin with the appropriate function according to the
    * operation to invoke.
+   * @param operation the operation to execute.
    * @return the javascript code to handle the classification onto the PdC.
    * @throws if an error occurs during the processing of the plugin.
    */
-  private String executePlugin() throws JspTagException {
+  private String executePlugin(PdcTagOperation operation) throws JspTagException {
     String context = URLManager.getApplicationURL();
     ResourcesWrapper resources = getResources();
-    String function = getPdcPluginFunction();
-    String positionAddingLabel = (getInvokedOperation().equals(PREDEFINE_CLASSIFICATION)
-            || getInvokedOperation().equals(CREATE_CLASSIFICATION) ? resources.getString(
+    String function = operation.getPluginFunction();
+    String positionAddingLabel = (operation.equals(PREDEFINE_CLASSIFICATION)
+            || operation.equals(CREATE_CLASSIFICATION) ? resources.getString(
             "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
-    String script = "$('#" + pdcWidgetId + "').pdc('" + function + "', {resource: {context: '" + context
+    String script = "$('#" + pdcWidgetId + "').pdc('" + function + "', {resource: {context: '"
+            + context
             + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
             + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(
             "pdcPeas.classifyPublication")
@@ -232,40 +225,46 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
             + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
             + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")
             + "'";
-    if (getInvokedOperation() != READ_CLASSIFICATION) {
-      String nodeName = "";
-      if (getInvokedOperation() == PREDEFINE_CLASSIFICATION) {
-        if (!isDefined(nodeId)) {
-          nodeId = "0";
+    if (operation != PREVIEW_CLASSIFICATION) {
+      if (operation != READ_CLASSIFICATION) {
+        String nodeName = "";
+        if (operation == PREDEFINE_CLASSIFICATION) {
+          if (!isDefined(nodeId)) {
+            nodeId = "0";
+          }
+          try {
+            NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
+            String inLanguage = getSessionAttribute(LANGUAGE_KEY);
+            nodeName = node.getName(inLanguage);
+          } catch (RemoteException ex) {
+            Logger.getLogger(BaseClassificationPdCTag.class.getName()).log(Level.SEVERE, null, ex);
+          }
         }
-        try {
-          NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
-          String inLanguage = getSessionAttribute(LANGUAGE_KEY);
-          nodeName = node.getName(inLanguage);
-        } catch (RemoteException ex) {
-          Logger.getLogger(BaseClassificationPdCTag.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String inheritanceMessage = MessageFormat.format(resources.getString(
+                "pdcPeas.CanDoAPredefineClassification"), nodeName);
+        script += ", messages: {mandatoryMessage: \""
+                + resources.getString("pdcPeas.MustBeClassified") + ", \", inheritanceMessage: \""
+                + inheritanceMessage
+                + "\", contentMustHaveAPosition: \""
+                + resources.getString("pdcPeas.theContent") + " " + resources.getString(
+                "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
+                + resources.getString("pdcPeas.positionAlreadyExist")
+                + "\", positionMustBeValued: \""
+                + resources.getString("GML.selectAValue") + "\" }"
+                + ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "',"
+                + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
+                + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
+                getString("pdcPeas.notVariants") + "', mandatoryAxisDefaultValue: \"" + resources.
+                getString("GML.selectAValue") + "\"}, addition: {title: '" + positionAddingLabel
+                + "'}, update: {title: '" + resources.getString("GML.modify")
+                + "'}, deletion: {confirmation: '"
+                + resources.getString("pdcPeas.confirmDeleteAxis")
+                + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
+      } else {
+        script += ", mode: 'view'});";
       }
-      String inheritanceMessage = MessageFormat.format(resources.getString(
-              "pdcPeas.CanDoAPredefineClassification"), nodeName);
-      script += ", messages: {mandatoryMessage: \""
-              + resources.getString("pdcPeas.MustBeClassified") + ", \", inheritanceMessage: \""
-              + inheritanceMessage
-              + "\", contentMustHaveAPosition: \""
-              + resources.getString("pdcPeas.theContent") + " " + resources.getString(
-              "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
-              + resources.getString("pdcPeas.positionAlreadyExist") + "\", positionMustBeValued: \""
-              + resources.getString("GML.selectAValue") + "\" }"
-              + ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "',"
-              + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
-              + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
-              getString("pdcPeas.notVariants") + "', mandatoryAxisDefaultValue: \"" + resources.
-              getString("GML.selectAValue") + "\"}, addition: {title: '" + positionAddingLabel
-              + "'}, update: {title: '" + resources.getString("GML.modify")
-              + "'}, deletion: {confirmation: '" + resources.getString("pdcPeas.confirmDeleteAxis")
-              + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
     } else {
-      script += ", mode: 'view'});";
+      script += "});";
     }
     return script;
   }
@@ -281,25 +280,6 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
             "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
     return resources;
 
-  }
-
-  private String getPdcPluginFunction() throws JspTagException {
-    String function = null;
-    switch (getInvokedOperation()) {
-      case READ_CLASSIFICATION:
-      case OPEN_CLASSIFICATION:
-        function = "open";
-        break;
-      case CREATE_CLASSIFICATION:
-        function = "create";
-        break;
-      case PREDEFINE_CLASSIFICATION:
-        function = "predefine";
-        break;
-      default:
-        throw new JspTagException("The operation to invoke is null!");
-    }
-    return function;
   }
 
   /**

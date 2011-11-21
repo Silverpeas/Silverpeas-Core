@@ -292,7 +292,7 @@ public class PdcClassificationService {
       axisValuesDeleted(valuesToDelete);
     }
   }
-  
+
   /**
    * A convenient method to enhance the readability of method calls.
    * @param classification a classification on the PdC.

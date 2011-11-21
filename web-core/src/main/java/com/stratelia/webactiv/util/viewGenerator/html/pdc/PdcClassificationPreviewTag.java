@@ -23,41 +23,22 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
+import javax.servlet.jsp.JspException;
+import org.apache.ecs.ElementContainer;
+import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
+
 /**
- * The operations the tags on the PdC classification supports.
+ * A tag that renders a preview of the classification on the PdC of a content in a given component
+ * instance.
  */
-public enum PdcTagOperation {
+public class PdcClassificationPreviewTag extends BaseClassificationPdCTag {
 
-  /**
-   * Previews the classification on the PdC of a given content.
-   */
-  PREVIEW_CLASSIFICATION("preview"),
-  /**
-   * Reads the classification on the PdC of a given content.
-   */
-  READ_CLASSIFICATION("open"),
-  /**
-   * Opens the classification on the PdC of a given content. By opening this classification, the
-   * user can change it.
-   */
-  OPEN_CLASSIFICATION("open"),
-  /**
-   * Creates a new classification on the PdC for a new or an existing content.
-   */
-  CREATE_CLASSIFICATION("create"),
-  /**
-   * Predefines the classification on the PdC of contents that will published in a given node
-   * of a given component instance.
-   */
-  PREDEFINE_CLASSIFICATION("predefine");
-  
-  private String pluginFunction;
+  private static final long serialVersionUID = 3377113335947703561L;
 
-  private PdcTagOperation(String pluginFunction) {
-    this.pluginFunction = pluginFunction;
-  }
-  
-  public String getPluginFunction() {
-    return this.pluginFunction;
+  @Override
+  public void doTag() throws JspException {
+    ElementContainer container;
+    container = invoke(PREVIEW_CLASSIFICATION);
+    container.output(getOut());
   }
 }
