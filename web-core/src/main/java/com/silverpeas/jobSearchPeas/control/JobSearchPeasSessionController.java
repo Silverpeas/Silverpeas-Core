@@ -97,7 +97,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   public AdminController getAdminController() {
-    if (myAdminController == null) {
+    if (null == myAdminController) {
       myAdminController = new AdminController(getUserId());
     }
     return myAdminController;
@@ -107,7 +107,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private PublicationBm getPublicationBm() {
-    if (publicationBm == null) {
+    if (null == publicationBm) {
       try {
         PublicationBmHome publicationBmHome =
             EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
@@ -124,7 +124,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private NodeBm getNodeBm() {
-    if (nodeBm == null) {
+    if (null == nodeBm) {
       try {
         NodeBmHome nodeBmHome =
             EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
@@ -142,7 +142,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @throws PdcException
    */
   private SearchEngineBm getSearchEngineBm() throws PdcException {
-    if (searchBm == null) {
+    if (null == searchBm) {
       try {
         SearchEngineBmHome searchBmHome =
             EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
@@ -207,23 +207,23 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private String getPathSpace(String spaceId) {
-    String emplacement = "";
+    StringBuilder emplacement = new StringBuilder("");
     try {
       //Espace > Sous-espace
       List<SpaceInstLight> spaceList = getAdminController().getPathToSpace(spaceId, false);
       boolean first = true;
       for (SpaceInstLight space : spaceList) {
         if(!first) {
-          emplacement += " > ";
+          emplacement.append(" > ");
         }
-        emplacement += space.getName(getLanguage());
+        emplacement.append(space.getName(getLanguage()));
         first = false;
       }
     } catch (Exception e) {
       SilverTrace.warn("admin", "JobSearchPeasSessionController.getPathSpace()",
           "admin.CANT_GET_SPACE_PATH", "spaceId = " + spaceId, e);
     }
-    return emplacement;
+    return emplacement.toString();
   }
   
   /**
@@ -233,7 +233,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchResultSpaceId(String searchField) {
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
     SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(searchField);
-    if(spaceInstLight != null) {
+    if(null != spaceInstLight) {
       String nom = spaceInstLight.getName(getLanguage());
       String desc = spaceInstLight.getDescription();
       Date dateCrea = spaceInstLight.getCreateDate();
@@ -242,7 +242,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String emplacement = getPathSpace(searchField);
       listEmplacement.add(emplacement);
       
-      String url = "";
+      String url;
       if(spaceInstLight.isRoot()) {
         url = "openSpace('"+spaceInstLight.getFullId()+"')";
       } else {
@@ -274,25 +274,21 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @throws ParseException 
    */
   private List<SearchResult> searchEngineResultSpace(String searchField) throws PdcException {
-    List<SearchResult> listSearchResult = new ArrayList<SearchResult>(); 
-    MatchingIndexEntry[] plainSearchResults = null;
-    QueryDescription query = null;
+    List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
     try {
       QueryParameters queryParameters = new QueryParameters(getLanguage());
       queryParameters.setKeywords(searchField);
-      
-      query = queryParameters.getQueryDescription(getUserId(), "*");
+
+      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
       query.addSpaceComponentPair(null, "Spaces");
 
       getSearchEngineBm().search(query);
-      plainSearchResults = getSearchEngineBm().getRange(0,
+      MatchingIndexEntry[] plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
-      
       for (MatchingIndexEntry result : plainSearchResults) {
-
         String nomCrea = "";
         UserDetail user = getAdminController().getUserDetail(result.getCreationUser());
-        if (user != null) {
+        if (null != user) {
           nomCrea = user.getDisplayedName();
         }
         
@@ -300,29 +296,26 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         String spaceId = objectId.substring(2);
         
         SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
-        if(spaceInstLight != null) {
+        if(null != spaceInstLight) {
           List<String> listEmplacement = new ArrayList<String>();
           String emplacement = getPathSpace(spaceId);
           listEmplacement.add(emplacement);
-          String url = null;
-          if(spaceInstLight.isRoot()) {
-            url = "openSpace('"+spaceInstLight.getFullId()+"')";
-          } else {
-            SpaceInstLight rootSpaceInstLight = spaceInstLight;
-            while(rootSpaceInstLight != null && !rootSpaceInstLight.isRoot()) {
-              String fatherId = rootSpaceInstLight.getFatherId();
-              rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
-            }
-            url = "openSubSpace('"+rootSpaceInstLight.getFullId()+"', '"+spaceInstLight.getFullId()+"')";
-          }
-          
           SearchResult searchResult = new SearchResult();
           searchResult.setName(result.getTitle(getLanguage()));
           searchResult.setDesc(result.getPreview(getLanguage()));
           searchResult.setCreaDate(DateUtil.parse(result.getCreationDate(), "yyyy/MM/dd"));
           searchResult.setCreaName(nomCrea);
           searchResult.setPath(listEmplacement);
-          searchResult.setUrl(url);
+          if(spaceInstLight.isRoot()) {
+            searchResult.setUrl("openSpace('"+spaceInstLight.getFullId()+"')");
+          } else {
+            SpaceInstLight rootSpaceInstLight = spaceInstLight;
+            while(null != rootSpaceInstLight && !rootSpaceInstLight.isRoot()) {
+              String fatherId = rootSpaceInstLight.getFatherId();
+              rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
+            }
+            searchResult.setUrl("openSubSpace('"+rootSpaceInstLight.getFullId()+"', '"+spaceInstLight.getFullId()+"')");
+          }
           listSearchResult.add(searchResult);
         }
       }
@@ -333,8 +326,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       searchBm = null;
       listSearchResult = searchEngineResultSpace(searchField);
     } catch (Exception e) {
-      throw new PdcException(
-          "JobSearchPeasSessionController.searchEngineResultSpace",
+      throw new PdcException("JobSearchPeasSessionController.searchEngineResultSpace",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
     }
     return listSearchResult;
@@ -367,18 +359,18 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private String getPathComponent(String componentId) {
-    String emplacement = "";
+    StringBuilder emplacement = new StringBuilder("");
     //Espace > Sous-espace
     List<SpaceInstLight> spaceList = getAdminController().getPathToComponent(componentId);
     boolean first = true;
     for (SpaceInstLight space : spaceList) {
       if (!first) {
-        emplacement += " > ";
+        emplacement.append(" > ");
       }
-      emplacement += space.getName(getLanguage());
+      emplacement.append(space.getName(getLanguage()));
       first = false;
     }
-    return emplacement;
+    return emplacement.toString();
   }
   
   /**
@@ -388,7 +380,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchResultComponentId(String searchField) {
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
     ComponentInstLight componentInstLight = getAdminController().getComponentInstLight(searchField);
-    if(componentInstLight != null) {
+    if(null != componentInstLight) {
       String nom = componentInstLight.getLabel(getLanguage());
       String desc = componentInstLight.getDescription(getLanguage());
       Date dateCrea = componentInstLight.getCreateDate();
@@ -420,17 +412,16 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    */
   private List<SearchResult> searchEngineResultComponent(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>(); 
-    MatchingIndexEntry[] plainSearchResults = null;
-    QueryDescription query = null;
+
     try {
       QueryParameters queryParameters = new QueryParameters(getLanguage());
       queryParameters.setKeywords(searchField);
      
-      query = queryParameters.getQueryDescription(getUserId(), "*");
+      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
       query.addSpaceComponentPair(null, "Components");
 
       getSearchEngineBm().search(query);
-      plainSearchResults = getSearchEngineBm().getRange(0,
+       MatchingIndexEntry[] plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
       
       for (MatchingIndexEntry result : plainSearchResults) {
@@ -438,7 +429,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         
         String nomCrea = "";
         UserDetail user = getAdminController().getUserDetail(result.getCreationUser());
-        if (user != null) {
+        if (null != user) {
           nomCrea = user.getDisplayedName();
         }
         
@@ -446,16 +437,13 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         List<String> listEmplacement = new ArrayList<String>();
         String emplacement = getPathComponent(componentId);
         listEmplacement.add(emplacement);
-        
-        String url = "openComponent('"+componentId+"')";
-        
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
         searchResult.setDesc(result.getPreview(getLanguage()));
         searchResult.setCreaDate(DateUtil.parse(creationDate, "yyyy/MM/dd"));
         searchResult.setCreaName(nomCrea);
         searchResult.setPath(listEmplacement);
-        searchResult.setUrl(url);
+        searchResult.setUrl("openComponent('"+componentId+"')");
         listSearchResult.add(searchResult);
       }
     } catch (NoSuchObjectException nsoe) {
@@ -481,10 +469,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchResultService(String searchField) throws PdcException {
     //id service
     List<SearchResult> listResult = searchResultComponentId(searchField);
-     
     //nom service
     List<SearchResult> listSearchResult = searchEngineResultComponent(searchField);
-   
     //fusion des 2 listes
     for(SearchResult searchResult : listSearchResult) {
       listResult.add(searchResult);
@@ -513,7 +499,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       publication = null;
     }
     
-    if(publication != null) {
+    if(null != publication) {
       String nom = publication.getName(getLanguage());
       String desc = publication.getDescription(getLanguage());
       Date dateCrea = publication.getCreationDate();
@@ -522,44 +508,40 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       pubPK = publication.getPK();
       String instanceId = pubPK.getInstanceId();
       List<String> listEmplacement = new ArrayList<String>();
-      String emplacementEspaceComposant = "";
+      StringBuilder emplacementEspaceComposant = new StringBuilder("");
       //Espace > Sous-espace
       List<SpaceInstLight> spaceList = getAdminController().getPathToComponent(instanceId);
       for (SpaceInstLight space : spaceList) {
-        emplacementEspaceComposant += space.getName(getLanguage()) + " > ";
+        emplacementEspaceComposant.append(space.getName(getLanguage())).append(" > ");
       }
       
       //Composant
       ComponentInstLight component = getAdminController().getComponentInstLight(instanceId);
-      if (component != null) {
-        emplacementEspaceComposant += component.getLabel(getLanguage()) + " > ";
+      if (null != component) {
+        emplacementEspaceComposant.append(component.getLabel(getLanguage())).append(" > ");
       }
       
       //Theme / Sous-theme
       Collection<NodePK> fatherPKs = getPublicationBm().getAllFatherPK(pubPK);
-      if (fatherPKs != null) {
+      if (null != fatherPKs) {
         for (NodePK pk : fatherPKs) {
-          String emplacement = emplacementEspaceComposant;
+          StringBuilder emplacement = new StringBuilder(emplacementEspaceComposant);
           Collection<NodeDetail> path = getNodeBm().getAnotherPath(pk);
           ArrayList<NodeDetail> pathTab = new ArrayList<NodeDetail>(path);
           Collections.reverse(pathTab);
           for (NodeDetail nodeDetail : pathTab) {
-            emplacement += nodeDetail.getName(getLanguage()) + " > ";
+            emplacement.append(nodeDetail.getName(getLanguage())).append(" > ");
           }
-          emplacement = emplacement.substring(0, emplacement.length() - 3);
-          listEmplacement.add(emplacement);
+          listEmplacement.add(emplacement.toString().substring(0, emplacement.length() - 3));
         }
       }
-      
-      String url = "openPublication('"+URLManager.getSimpleURL(URLManager.URL_PUBLI, pubPK.getId())+"')";
-      
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
       searchResult.setDesc(desc);
       searchResult.setCreaDate(dateCrea);
       searchResult.setCreaName(nomCrea);
       searchResult.setPath(listEmplacement);
-      searchResult.setUrl(url);
+      searchResult.setUrl("openPublication('"+URLManager.getSimpleURL(URLManager.URL_PUBLI, pubPK.getId())+"')");
       listResult.add(searchResult);
     }
     return listResult;
@@ -570,25 +552,25 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private String getPathGroup(Group group) {
-    String emplacement = "";
+    StringBuilder emplacement = new StringBuilder("");
     String groupId = group.getId();
     String domainId = group.getDomainId();
-    if(domainId == null) {
+    if(null == domainId) {
       domainId = "-1";
     }
     Domain domain = getAdminController().getDomain(domainId);
     //nom du domaine
     if("-1".equals(domainId)) {//domaine mixte
-      emplacement += getString("JSP.domainMixt");  
+      emplacement.append(getString("JSP.domainMixt"));
     } else {
-      emplacement += domain.getName();
+      emplacement.append(domain.getName());
     }
     //nom du(des) groupe(s) pères
     List<String> groupList = getAdminController().getPathToGroup(groupId);
     for (String elementGroupId : groupList) {
-      emplacement += " > "+ getAdminController().getGroupName(elementGroupId);
+      emplacement.append(" > ").append(getAdminController().getGroupName(elementGroupId));
     }
-    return emplacement;
+    return emplacement.toString();
   }
   
   /**
@@ -598,7 +580,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchResultGroupId(String searchField) {
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
     Group group = getAdminController().getGroupById(searchField);
-    if(group != null && group.getId() != null) {
+    if(null != group && null != group.getId()) {
       String nom = group.getName();
       String desc = group.getDescription();
       Date dateCrea = null;
@@ -700,65 +682,65 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    */
   private List<String> getListPathUser(UserDetail user) {
     List<String> listEmplacement = new ArrayList<String>();
-    String emplacement = "";
     String userId = user.getId();
     
     //groupe(s) d'appartenance
     String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(userId);
-    if (groupIds != null && groupIds.length > 0) {
+    if (null != groupIds && 0 < groupIds.length) {
       for (String groupId : groupIds) {
         Group group = getOrganizationController().getGroup(groupId);
 
         String domainId = group.getDomainId();
-        if (domainId == null) {
+        if (null == domainId) {
           domainId = "-1";
         }
         Domain domain = getAdminController().getDomain(domainId);
-        emplacement = "";
+        StringBuilder emplacement = new StringBuilder("");
         //nom du domaine
         if ("-1".equals(domainId)) {//domaine mixte
-          emplacement += getString("JSP.domainMixt");
+          emplacement.append(getString("JSP.domainMixt"));
         } else {
-          emplacement += domain.getName();
+          emplacement.append(domain.getName());
         }
 
         //nom du(des) groupe(s) pères
         List<String> groupList = getAdminController().getPathToGroup(groupId);
         for (String elementGroupId : groupList) {
-          emplacement += " > " + getAdminController().getGroupName(elementGroupId);
+          emplacement.append(" > ").append(getAdminController().getGroupName(elementGroupId));
         }
         //nom du groupe
-        emplacement += " > " + group.getName();
-        listEmplacement.add(emplacement);
+        emplacement.append(" > ").append(group.getName());
+        listEmplacement.add(emplacement.toString());
       }
     } else {
-      
+      StringBuilder emplacement = new StringBuilder("");
       String domainId = user.getDomainId();
-      if(domainId == null) {
+      if(null == domainId) {
         domainId = "-1";
       }
       Domain domain = getAdminController().getDomain(domainId);
       
       //nom du domaine
       if("-1".equals(domainId)) {//domaine mixte
-        emplacement += getString("JSP.domainMixt");  
+        emplacement.append(getString("JSP.domainMixt"));
       } else {
-        emplacement += domain.getName();
+        emplacement.append(domain.getName());
       }
       
-      listEmplacement.add(emplacement);
+      listEmplacement.add(emplacement.toString());
     }
     return listEmplacement;
   }
-  
+
   /**
+   *
    * @param searchField
-   * @param listResult
+   * @return
    */
   private List<SearchResult> searchResultUserId(String searchField) {
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
     UserDetail user = getAdminController().getUserDetail(searchField);
-    if(user != null) {
+    if(null != user) {
       String nom = user.getDisplayedName();
       String desc = user.geteMail();
       Date dateCrea = null;
