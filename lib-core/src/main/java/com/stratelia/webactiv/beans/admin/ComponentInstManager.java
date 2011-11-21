@@ -212,33 +212,6 @@ public class ComponentInstManager {
   }
 
   /**
-   * Get component instance name with the given id
-   * @param ddManager
-   * @param sComponentId
-   * @return
-   * @throws AdminException 
-   */
-  public String getComponentInstName(DomainDriverManager ddManager, String sComponentId) throws
-      AdminException {
-    String compoName = null;
-    try {
-      ddManager.getOrganizationSchema();
-      ComponentInstanceRow compo = ddManager.organization.instance.getComponentInstance(idAsInt(
-          sComponentId));
-      if (compo != null) {
-        compoName = compo.componentName;
-      }
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getComponentInstName",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_COMPONENT_NAME",
-          "component id: '" + sComponentId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-    return compoName;
-  }
-
-  /**
    * Get component instance light with the given id
    * @param ddManager
    * @param sComponentId

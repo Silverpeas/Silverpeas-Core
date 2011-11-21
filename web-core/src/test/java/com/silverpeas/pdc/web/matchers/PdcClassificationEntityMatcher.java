@@ -51,11 +51,16 @@ public class PdcClassificationEntityMatcher extends TypeSafeMatcher<PdcClassific
   @Override
   protected boolean matchesSafely(PdcClassificationEntity actual) {
     boolean matches = true;
-    if ((!expected.isUndefined() && !actual.isUndefined()) && !actual.getURI().equals(expected.getURI())) {
+    if (expected.isUndefined() != actual.isUndefined()) {
       matches = false;
-    } else if (actual.getClassificationPositions().size() != expected.getClassificationPositions().size()) {
+    } else if (actual.getURI() != null && expected.getURI() != null && !actual.getURI().equals(expected.
+            getURI())) {
       matches = false;
-    } else if (!actual.getClassificationPositions().containsAll(expected.getClassificationPositions())) {
+    } else if (actual.getClassificationPositions().size() != expected.getClassificationPositions().
+            size()) {
+      matches = false;
+    } else if (!actual.getClassificationPositions().containsAll(
+            expected.getClassificationPositions())) {
       matches = false;
     }
     if (!matches) {

@@ -315,8 +315,7 @@ public class SimpleAttachmentDao implements AttachmentDao {
   }
 
   @Override
-  public AttachmentDetail findByPrimaryKey(Connection con,
-          AttachmentPK pk) throws SQLException {
+  public AttachmentDetail findByPrimaryKey(Connection con, AttachmentPK pk) throws SQLException {
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
     AttachmentDetail attachDetail = null;

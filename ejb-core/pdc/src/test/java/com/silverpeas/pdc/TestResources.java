@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.silverpeas.treeManager.model.TreeNodePK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -41,6 +42,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import static com.silverpeas.pdc.model.PdcAxisValue.*;
 import static com.silverpeas.pdc.model.PdcModelHelper.*;
 import java.util.logging.Level;
@@ -214,6 +216,33 @@ public final class TestResources {
       }
     }
     return classifications;
+  }
+  
+  public PdcAxisValue aRandomlyPdcAxisValue() {
+    List<PdcAxisValue> allValues = allPdcAxisValues();
+    int idx = new Random().nextInt(allValues.size());
+    return allValues.get(idx);
+  }
+  
+  public List<PdcClassification> classificationsHavingAsValue(final PdcAxisValue value) {
+    List<PdcClassification> concernedClassifications = new ArrayList<PdcClassification>();
+    List<PdcClassification> allClassifications = allPdcClassifications();
+    for (PdcClassification pdcClassification : allClassifications) {
+      boolean isAdded = false;
+      for (PdcPosition pdcPosition : pdcClassification.getPositions()) {
+        for (PdcAxisValue pdcAxisValue : pdcPosition.getValues()) {
+          if (pdcAxisValue.equals(value)) {
+            concernedClassifications.add(pdcClassification);
+            isAdded = true;
+            break;
+          }
+        }
+        if (isAdded) {
+          break;
+        }
+      }
+    }
+    return concernedClassifications;
   }
 
   private static List<PdcAxisValue> allPdcAxisValues() {

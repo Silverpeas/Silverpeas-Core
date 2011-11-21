@@ -74,7 +74,7 @@ public class PdcBmMock extends PdcBmImpl {
     }
     String contentId = getContentIdOf(silverObjectId);
     assertContentExists(contentId, in(sComponentId));
-    return aListOfPositions();
+    return new ArrayList<ClassifyPosition>(aListOfPositions());
   }
 
   @Override

@@ -373,8 +373,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       }
       destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
     } else if (function.equals("EffectiveCreateInstanceProfile")) {
-      String profileId = jobStartPageSC.createInstanceProfile();
-      request.setAttribute("urlToReload", "RoleInstance?IdProfile=" + profileId);
+      jobStartPageSC.createInstanceProfile();
+      request.setAttribute("urlToReload", "CurrentRoleInstance");
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.equals("EffectiveUpdateInstanceProfile")) {
       jobStartPageSC.updateInstanceProfile();

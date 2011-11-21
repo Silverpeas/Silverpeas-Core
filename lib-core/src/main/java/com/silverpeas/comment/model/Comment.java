@@ -156,8 +156,7 @@ public class Comment implements SilverpeasContent {
   @Override
   public UserDetail getCreator() {
     if (ownerDetail == null) {
-      OrganizationController organizationController = getOrganizationController();
-      ownerDetail = organizationController.getUserDetail(String.valueOf(owner_id));
+      ownerDetail = UserDetail.getById(String.valueOf(owner_id));
     }
     return ownerDetail;
   }

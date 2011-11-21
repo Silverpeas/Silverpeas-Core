@@ -67,7 +67,10 @@ import static com.silverpeas.util.StringUtil.isDefined;
   @NamedQuery(name = "PdcClassification.findPredefinedClassificationByComponentInstanceId",
   query = "from PdcClassification where instanceId=?1 and contentId is null and nodeId is null"),
   @NamedQuery(name = "PdcClassification.findPredefinedClassificationByNodeId",
-  query = "from PdcClassification where instanceId=?2 and contentId is null and nodeId=?1)")
+  query = "from PdcClassification where instanceId=?2 and contentId is null and nodeId=?1)"),
+  @NamedQuery(name = "PdcClassification.findClassificationsByPdcAxisValues",
+  query =
+  "select distinct c from PdcClassification c join c.positions p join p.axisValues v where v in ?1")
 })
 public class PdcClassification implements Serializable, Cloneable {
 
@@ -245,6 +248,45 @@ public class PdcClassification implements Serializable, Cloneable {
   }
 
   /**
+   * Updates this classification by removing from its positions the specified values because they
+   * will be deleted from the PdC's axis.
+   * 
+   * This method is invoked at axis value deletion. Accordingly, it performs an update of this
+   * classification by applying the following algorithm for each deleted value:
+   * <ul>
+   * <li>The value is a base one of the axis: the value is removed from any positions of the
+   * classification. If a position is empty (it has no values) it is then deleted (the classification
+   * can be then found empty).</li>
+   * <li>The value is a leaf in its value hierarchical tree: the value is replaced by its mother
+   * value in any positions of this classification.</li>
+   * </ul>
+   * @param deletedValues the values that are removed from a PdC's axis.
+   */
+  public void updateForPdcAxisValuesDeletion(final List<PdcAxisValue> deletedValues) {
+    List<PdcPosition> positionsToDelete = new ArrayList<PdcPosition>();
+    for (PdcPosition pdcPosition : getPositions()) {
+      for (PdcAxisValue aDeletedValue : deletedValues) {
+        if (pdcPosition.getValues().contains(aDeletedValue)) {
+          pdcPosition.getValues().remove(aDeletedValue);
+          if (!aDeletedValue.isBaseValue()) {
+            PdcAxisValue parentValue = aDeletedValue.getParentValue();
+            while (deletedValues.contains(parentValue) && !parentValue.isBaseValue()) {
+              parentValue = parentValue.getParentValue();
+            }
+            if (!deletedValues.contains(parentValue)) {
+              pdcPosition.getValues().add(parentValue);
+            }
+          }
+          if (pdcPosition.isEmpty() || alreadyExists(pdcPosition)) {
+            positionsToDelete.add(pdcPosition);
+          }
+        }
+      }
+    }
+    getPositions().removeAll(positionsToDelete);
+  }
+
+  /**
    * Creates an empty classification on the PdC, ready to be completed for a given content published
    * in a given component instance. By default, a classification of a content is modifiable.
    */
@@ -331,11 +373,15 @@ public class PdcClassification implements Serializable, Cloneable {
     return classifyPositions;
   }
 
-  public static PdcClassification aPdcClassificationFromClassifyPositions(
-          final Collection<ClassifyPosition> positions) {
-    PdcClassification classification = new PdcClassification();
-    for (ClassifyPosition aPosition : positions) {
+  private boolean alreadyExists(final PdcPosition pdcPosition) {
+    boolean alreadyExist = false;
+    for (PdcPosition aPosition : getPositions()) {
+      if (!aPosition.getId().equals(pdcPosition.getId()) && aPosition.getValues().equals(pdcPosition.
+              getValues())) {
+        alreadyExist = true;
+        break;
+      }
     }
-    return classification;
+    return alreadyExist;
   }
 }

@@ -221,6 +221,7 @@
         loadPdC($this, function($this) {
           loadClassification( $this, settings.defaultClassificationURI, function($this, uri) {
             var classification = $this.data('classification');
+            classification.uri = settings.classificationURI;
             renderClassificationFrame($this);
             renderClassificationEditionFrame($this, []);
             if (classification.modifiable) {
@@ -324,13 +325,16 @@
     if ( options ) {
       $.extend( true, settings, options );
     }
-    settings.defaultClassificationURI = settings.resource.context + '/services/pdc/' +
-    settings.resource.component + '/classification';
+    settings.defaultClassificationURI = settings.resource.context + '/services/pdc/' + settings.resource.component + '/classification';
     if (settings.resource.node != null && settings.resource.node.length > 0) {
       settings.defaultClassificationURI += '?nodeId=' + settings.resource.node;
     }
-    settings.classificationURI = settings.resource.context + '/services/pdc/' +
-    settings.resource.component + '/' + settings.resource.content;
+    settings.classificationURI = settings.resource.context + '/services/pdc/' + settings.resource.component + '/';
+    if (settings.resource.content != null && settings.resource.node.length > 0) {
+      settings.classificationURI += settings.resource.content;
+    } else {
+      settings.classificationURI += 'new';
+    }
     settings.pdcURI = settings.resource.context + '/services/pdc/' + settings.resource.component;
     if (settings.resource.content != null && settings.resource.content.length > 0) {
       settings.pdcURI = settings.pdcURI + '?contentId=' + settings.resource.content;
@@ -341,7 +345,7 @@
    * Renders the area into which the classification on the PdC of the resource will be displayed.
    */
   function renderClassificationFrame ( $this ) {
-    if (settings.mode == 'predefinition')
+    if (settings.mode == 'predefinition' && settings.resource.node != null && settings.resource.node > 0)
       $('<div>').addClass('inlineMessage').html(settings.messages.inheritanceMessage).appendTo($this);
     var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.title));
     if ($this.is('fieldset')) {
@@ -369,7 +373,9 @@
         positionsLabel = settings.inheritedPositionsLabel;
       }
       listOfPositions.addClass('field').
-      append($('<label>', {'for': 'allpositions'}).html(positionsLabel));
+      append($('<label>', {
+        'for': 'allpositions'
+      }).html(positionsLabel));
       listOfPositions.append($('<div>', {
         id: 'allpositions'
       }).addClass('champs')).appendTo($('<div>').addClass('fields').appendTo($this));

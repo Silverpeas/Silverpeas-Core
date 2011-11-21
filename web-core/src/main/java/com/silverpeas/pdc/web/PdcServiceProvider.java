@@ -166,7 +166,7 @@ public class PdcServiceProvider {
   PdcClassification findPredefinedClassificationForContentsIn(String nodeId, String componentId) {
     return classificationService.findAPreDefinedClassification(nodeId, componentId);
   }
-  
+
   /**
    * Gets the predefined PdC classification that is associated with the specified node of the
    * specified component instance. If the node isn't set, then the predefined PdC

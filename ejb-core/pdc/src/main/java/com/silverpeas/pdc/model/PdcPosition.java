@@ -93,6 +93,14 @@ public class PdcPosition implements Serializable, Cloneable {
     }
     return this;
   }
+  
+  /**
+   * Is this position on the PdC empty?
+   * @return true if this positions has no valuation in at least one of the PdC'axis, false otherwise.
+   */
+  public boolean isEmpty() {
+    return getValues().isEmpty();
+  }
 
   /**
    * Gets the values of this position on the axis of the PdC.
@@ -145,8 +153,8 @@ public class PdcPosition implements Serializable, Cloneable {
       return false;
     }
     final PdcPosition other = (PdcPosition) obj;
-    if (this.id != null && other.id != null) {
-      return this.id.equals(other.id);
+    if (this.id != null && other.id != null && !this.id.equals(other.id)) {
+      return false;
     } else if (this.axisValues != other.axisValues && (this.axisValues == null || !this.axisValues.
             equals(other.axisValues))) {
       return false;
@@ -185,5 +193,20 @@ public class PdcPosition implements Serializable, Cloneable {
       position.getValues().add(pdcAxisValue.toClassifyValue());
     }
     return position;
+  }
+  
+  /**
+   * Gets the values of the specified axis that are present in this position.
+   * @param axisId the unique identifier of the axis.
+   * @return a set of values of the specified axis in this position.
+   */
+  public Set<PdcAxisValue> getValuesOfAxis(String axisId) {
+    Set<PdcAxisValue> valuesOfTheAxis = new HashSet<PdcAxisValue>();
+    for (PdcAxisValue pdcAxisValue : getValues()) {
+      if (pdcAxisValue.getAxisId().equals(axisId)) {
+        valuesOfTheAxis.add(pdcAxisValue);
+      }
+    }
+    return valuesOfTheAxis;
   }
 }

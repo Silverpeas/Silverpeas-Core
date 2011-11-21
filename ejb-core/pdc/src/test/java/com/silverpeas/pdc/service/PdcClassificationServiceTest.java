@@ -23,10 +23,19 @@
  */
 package com.silverpeas.pdc.service;
 
+import org.junit.Before;
+import javax.sql.DataSource;
+import com.silverpeas.pdc.dao.PdcClassificationDAOTest;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
 import java.util.Set;
 import java.util.List;
 import com.silverpeas.pdc.TestResources;
 import com.silverpeas.pdc.dao.PdcClassificationDAO;
+import com.silverpeas.pdc.model.PdcAxisValue;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -34,14 +43,14 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
+import java.util.Arrays;
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.matchers.PdcClassificationMatcher.*;
+import static com.silverpeas.pdc.matchers.PdcClassificationWithoutAGivenValueMatcher.*;
 import static com.silverpeas.pdc.model.PdcClassification.*;
 import static com.silverpeas.pdc.model.PdcAxisValue.*;
 
@@ -58,17 +67,21 @@ public class PdcClassificationServiceTest {
   @Inject
   private TestResources resources;
   @Inject
+  private DataSource dataSource;
+  @Inject
   PdcClassificationDAO dao;
 
   public PdcClassificationServiceTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  @Before
+  public void generalSetUp() throws Exception {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
+            PdcClassificationDAOTest.class.getClassLoader().getResourceAsStream(
+            "com/silverpeas/pdc/dao/pdc-dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
   }
 
   @Test
@@ -138,7 +151,8 @@ public class PdcClassificationServiceTest {
     String componentInstanceId = "kmelia1000";
     String nodeId = "1000";
     TreeNode treeNode = resources.addTreeNode("7", "2", "-1", "Renaissance");
-    PdcClassification classification = aPredefinedPdcClassificationForComponentInstance(componentInstanceId).forNode(
+    PdcClassification classification = aPredefinedPdcClassificationForComponentInstance(
+            componentInstanceId).forNode(
             nodeId).withPosition(new PdcPosition().withValue(aPdcAxisValueFromTreeNode(treeNode)));
     service.savePreDefinedClassification(classification);
 
@@ -146,21 +160,75 @@ public class PdcClassificationServiceTest {
     assertThat(saved, notNullValue());
     assertThat(saved, is(equalTo(classification)));
   }
-  
+
   @Test
   public void updateAPredefinedClassification() {
     String componentInstanceId = resources.componentInstanceWithAPredefinedClassification();
-    PdcClassification classification = resources.
-            predefinedClassificationForComponentInstance(componentInstanceId);
+    PdcClassification classification = resources.predefinedClassificationForComponentInstance(
+            componentInstanceId);
     Set<PdcPosition> positions = classification.getPositions();
     PdcPosition aPosition = positions.iterator().next();
     positions.remove(aPosition);
-    
-   service.savePreDefinedClassification(classification);
-   
-   PdcClassification updated = dao.findPredefinedClassificationByComponentInstanceId(
-           componentInstanceId);
+
+    service.savePreDefinedClassification(classification);
+
+    PdcClassification updated = dao.findPredefinedClassificationByComponentInstanceId(
+            componentInstanceId);
     assertThat(updated, notNullValue());
     assertThat(updated, is(equalTo(classification)));
+  }
+
+  @Test
+  public void updateAllClassificationsForAxisValueDeletion() {
+    PdcAxisValue[] aValue = {PdcAxisValue.aPdcAxisValue("5", "2")};
+    List<PdcClassification> concernedClassifications =
+            resources.classificationsHavingAsValue(aValue[0]);
+
+    service.axisValuesDeleted(Arrays.asList(aValue[0]));
+    List<PdcClassification> updatedClassifications = dao.findClassificationsByPdcAxisValues(
+            Arrays.asList(aValue));
+    assertThat(updatedClassifications.size(), lessThanOrEqualTo(concernedClassifications.size()));
+    for (PdcClassification anUpdatedClassification : updatedClassifications) {
+      assertThat(anUpdatedClassification, hasNo(aValue[0]));
+    }
+  }
+
+  @Test
+  public void updateAllClassificationsForSeveralAxisValuesDeletion() {
+    PdcAxisValue[] someValues = {PdcAxisValue.aPdcAxisValue("5", "2"), PdcAxisValue.aPdcAxisValue(
+      "6", "2")};
+    List<PdcClassification> concernedClassifications =
+            resources.classificationsHavingAsValue(someValues[0]);
+    concernedClassifications.addAll(resources.classificationsHavingAsValue(someValues[1]));
+
+    service.axisValuesDeleted(Arrays.asList(someValues));
+    List<PdcClassification> updatedClassifications = dao.findClassificationsByPdcAxisValues(
+            Arrays.asList(someValues));
+    assertThat(updatedClassifications.size(), lessThanOrEqualTo(concernedClassifications.size()));
+    for (PdcClassification anUpdatedClassification : updatedClassifications) {
+      for (PdcAxisValue aValue : someValues) {
+        assertThat(anUpdatedClassification, hasNo(aValue));
+      }
+    }
+  }
+
+  @Test
+  public void updateAllClassificationsForAnAxisDeletion() {
+    PdcAxisValue[] someValues = {PdcAxisValue.aPdcAxisValue("4", "2"), PdcAxisValue.aPdcAxisValue(
+      "5", "2"), PdcAxisValue.aPdcAxisValue("6", "2")};
+    List<PdcClassification> concernedClassifications =
+            resources.classificationsHavingAsValue(someValues[0]);
+    concernedClassifications.addAll(resources.classificationsHavingAsValue(someValues[1]));
+    concernedClassifications.addAll(resources.classificationsHavingAsValue(someValues[2]));
+    
+    service.axisDeleted("2");
+    List<PdcClassification> updatedClassifications = dao.findClassificationsByPdcAxisValues(
+            Arrays.asList(someValues));
+    assertThat(updatedClassifications.size(), lessThanOrEqualTo(concernedClassifications.size()));
+    for (PdcClassification anUpdatedClassification : updatedClassifications) {
+      for (PdcAxisValue aValue : someValues) {
+        assertThat(anUpdatedClassification, hasNo(aValue));
+      }
+    }
   }
 }

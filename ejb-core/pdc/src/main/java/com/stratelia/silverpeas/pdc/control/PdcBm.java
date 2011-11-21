@@ -355,7 +355,7 @@ public interface PdcBm {
    */
   public List<UsedAxis> getUsedAxisToClassify(String instanceId, int silverObjectId)
       throws PdcException;
-
+  
   public int addPosition(int silverObjectId, ClassifyPosition position,
       String sComponentId) throws PdcException;
 
