@@ -21,6 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+String.prototype.startsWith = function (str) {
+  return this.indexOf(str) == 0;
+};
 <!--
 // PopUp Window
 // ******* Deprecated ***********
@@ -48,10 +51,6 @@ function SP_openWindow(page,nom,largeur,hauteur,options) {
 	var popup=window.open(page,nom,"top="+top+",left="+left+",width="+largeur+",height="+hauteur+","+options);
 	return popup;
 }
-
-
-//PopUp Portlet (author : Eric Burgel - 05/06/2001)
-//modified (author : Jean-Claude Groccia - 24/05/2002)
 
 function openDialog(url, nom, largeur,hauteur, parm) {
     SP_openWindow(url, nom, largeur, hauteur, parm);
