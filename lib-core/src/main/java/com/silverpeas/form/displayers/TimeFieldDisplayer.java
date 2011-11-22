@@ -87,21 +87,24 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       SilverTrace.info("form", "TimeFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
+    
+    out.println("var "+template.getFieldName()+"Empty = isWhitespace(stripInitialWhitespace(field.value));");
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
-      out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
+      out.println("	if ("+template.getFieldName()+"Empty) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
     }
 
+    out.println(" if (!"+template.getFieldName()+"Empty) {");
     out.println("var reg=new RegExp(\"^([01][0-9]|2[0-3]):([0-5][0-9])$\",\"g\");");
-    out.println("if (!reg.test(field.value))");
-    out.println("{");
+    out.println("if (!reg.test(field.value)) {");
     out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
         "GML.MustContainsCorrectHour", language) + "\\n \";");
     out.println("		errorNb++;");
+    out.println("}");
     out.println("}");
 
     Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);

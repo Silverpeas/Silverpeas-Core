@@ -22,63 +22,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 var navVisible = true;
-function resizeFrame()
-{		
-	 if (navVisible)
-	 {
-		 if (displayPDCFrame()) {
-			 parent.setframevalue("rows", "10,100%,*,*,*,*");
-		 } else {
-			 parent.setframevalue("rows", "10,100%,*,*,*");
-		 }
-		 
-		 document.body.scroll = "no"; 
-		 document.getElementById('space2Expand').height='10';
-		 document.images['expandReduce'].src="icons/silverpeasV5/extendTopBar.gif";
-	 }
-	 else
-	 {
-		 document.body.scroll = "no";
-		 document.getElementById('space2Expand').height='0';
-		 document.images['expandReduce'].src="icons/silverpeasV5/reductTopBar.gif";
-		 
-		 if (displayPDCFrame()) {
-			 parent.setframevalue("rows", "115,100%,26,*,*,*");
-		 } else {
-			 parent.setframevalue("rows", "115,100%,26,*,*");
-		 }
-	 }
-	 document.images['expandReduce'].blur();
-	 navVisible = !navVisible;
+function resizeFrame() {
+  if (navVisible) {
+    if (displayPDCFrame()) {
+      parent.setframevalue("rows", "10,100%,*,*,*,*");
+    } else {
+      parent.setframevalue("rows", "10,100%,*,*,*");
+    }
+
+    document.body.scroll = "no";
+    document.getElementById('space2Expand').height = '10';
+    document.images['expandReduce'].src = "icons/silverpeasV5/extendTopBar.gif";
+  }
+  else {
+    document.body.scroll = "no";
+    document.getElementById('space2Expand').height = '0';
+    document.images['expandReduce'].src = "icons/silverpeasV5/reductTopBar.gif";
+
+    if (displayPDCFrame()) {
+      parent.setframevalue("rows", "115,100%,26,*,*,*");
+    } else {
+      parent.setframevalue("rows", "115,100%,26,*,*");
+    }
+  }
+  document.images['expandReduce'].blur();
+  navVisible = !navVisible;
 }
 
-function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage)
-{
-	top.bottomFrame.SpacesBar.location = getDomainsBarPage()+"?privateDomain="+spaceId+"&privateSubDomain="+subSpaceId+"&component_id="+componentId+"&FromTopBar=1";
-    top.bottomFrame.MyMain.location = url;
-    
-    if (reloadPage)
-    {
-    	location.href = getTopBarPage()+"?ComponentId="+componentId+"&SpaceId="+spaceId;
+function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
+      var domainsBarPage = getDomainsBarPage();
+      if (!domainsBarPage.startsWith('/')) {
+        domainsBarPage = '/admin/jsp/' + domainsBarPage;
+      }
+
+  top.bottomFrame.SpacesBar.location = domainsBarPage + "?privateDomain=" + spaceId + "&privateSubDomain=" + subSpaceId + "&component_id=" + componentId + "&FromTopBar=1";
+  top.bottomFrame.MyMain.location = url;
+
+  if (reloadPage) {
+    var topBarFrame = getTopBarPage();
+    if (!topBarFrame.startsWith('/')) {
+      topBarFrame = '/admin/jsp/' + topBarFrame;
     }
-    else
-    {
-		//unactivate all items    
-	    var tr = document.getElementById('item'+itemId).parentNode;
-	    if (tr.hasChildNodes())
-	    {
-	    	var children = tr.childNodes;
-	  		for (var i = 0; i < children.length; i++) 
-	  		{
-	   			var child = children[i];
-	   			if (child.id != null && (child.id.substring(0,4) == "item"))
-	   			{
-	   				child.className = "";
-	   			}
-	  		}
-	    }
-	    
-	    //activate item
-	    document.getElementById('item'+itemId).className = "activeShortcut";
+    location.href = topBarFrame + "?ComponentId=" + componentId + "&SpaceId=" + spaceId;
+  }
+  else {
+    //unactivate all items
+    var tr = document.getElementById('item' + itemId).parentNode;
+    if (tr.hasChildNodes()) {
+      var children = tr.childNodes;
+      for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        if (child.id != null && (child.id.substring(0, 4) == "item")) {
+          child.className = "";
+        }
+      }
     }
+
+    //activate item
+    document.getElementById('item' + itemId).className = "activeShortcut";
+  }
 }

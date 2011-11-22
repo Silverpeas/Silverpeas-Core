@@ -38,12 +38,12 @@ if (field != null)
 %>
 <html>
 <head>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 	
 	var errorMsg = "";
     var errorNb = 0;
@@ -57,12 +57,10 @@ if (field != null)
 		}
 	}
 	
-	function checkFieldName()
-	{
+	function checkFieldName() {
 		<% if (!nameDisabled) { %>
 			var fieldName = stripInitialWhitespace(document.fieldForm.FieldName.value);
-	     	if (isWhitespace(fieldName))
-	     	{
+	     	if (isWhitespace(fieldName)) {
 	           	errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
 	           	errorNb++;
 	     	} else {
@@ -70,15 +68,18 @@ if (field != null)
 	      		if(!regexp.test(fieldName)) {
 		        	errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustContainsLettersAndDigitsOnly")%>\n";
 	           		errorNb++;
+		      	} else {
+		      		if (fieldName.toLowerCase() == "name") {
+		      			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("templateDesigner.js.incorrectName")%>\n";
+	           			errorNb++;
+		      		}
 		      	}
 	     	}
      	<% } %>
 	}
 	
-	function checkErrors()
-	{
-		switch(errorNb) 
-     	{
+	function checkErrors() {
+		switch(errorNb) {
         	case 0 :
             	result = true;
             	break;
