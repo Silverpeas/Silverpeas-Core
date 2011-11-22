@@ -1072,4 +1072,35 @@
       <type>java.lang.Boolean</type>
     </attribute>
   </tag>
+  <tag>
+    <description>Generate HTML for the site Map.</description>
+    <name>map</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.map.MapTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Space Identifier</description>
+      <name>spaceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag that checks the validity of the current session and forwards to the error page.</description>
+    <name>timeout</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.security.SessionTimeoutTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Tag that checks the user is currently authenticated and that he is not an anonymous user.</description>
+    <name>authenticatedUser</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.security.AuthenticatedUserTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
 </taglib>
