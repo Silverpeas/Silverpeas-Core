@@ -43,6 +43,9 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
@@ -208,6 +211,45 @@ public class PdcClassificationService {
   }
 
   /**
+   * Deletes all the predefined classification set for the specified node and its children nodes
+   * in the specified component instance. If the specified node is null, then all the predefined
+   * classifications set for all nodes in the component instance (plus the one for the component
+   * instance itself) are deleted.
+   * 
+   * This method is mainly dedicated when a given node or a given component instance is removed
+   * from Silverpeas.
+   * @param nodeId the unique identifier of the node.
+   * @param instanceId the unique identifier of the component instance.
+   */
+  public void deleteAllPreDefinedClassifications(String nodeId, String instanceId) {
+    Collection<NodeDetail> nodes;
+    if (isDefined(nodeId)) {
+      nodes = new ArrayList<NodeDetail>();
+      NodeDetail currentNode = new NodeDetail();
+      currentNode.setNodePK(new NodePK(nodeId, instanceId));
+      nodes.add(currentNode);
+    } else {
+      try {
+        nodes = getNodeBm().getAllNodes(new NodePK(null, instanceId));
+        NodeDetail forComponentInstance = new NodeDetail();
+        forComponentInstance.setNodePK(new NodePK(null, instanceId));
+        nodes.add(forComponentInstance);
+      } catch (RemoteException ex) {
+        throw new PdcRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
+                ex.getMessage(), ex);
+      }
+    }
+
+    for (NodeDetail nodeDetail : nodes) {
+      PdcClassification classification = getPreDefinedClassification(
+              nodeDetail.getNodePK().getId(), instanceId);
+      if (classification != NONE_CLASSIFICATION) {
+        classificationDao.delete(classification);
+      }
+    }
+  }
+
+  /**
    * Classifies the specified content on the PdC with the specified classification. If the
    * content is already classified, then the given classification replaces the existing one.
    * The content must exist in Silverpeas before being classified.
@@ -329,5 +371,26 @@ public class PdcClassificationService {
       }
     }
     return false;
+  }
+
+  /**
+   * This method is called to find all the children of a given node. It is used in order to find all
+   * the children of a node that is going to be deleted.
+   * Nevertheless, as this wor
+   * @param node
+   * @return 
+   */
+  private Collection<NodeDetail> getRecursivelyAllChildren(final NodePK node) {
+    try {
+      Collection<NodeDetail> children = getNodeBm().getChildrenDetails(node);
+      Collection<NodeDetail> allChildren = new ArrayList<NodeDetail>(children);
+      for (NodeDetail aChildNode : children) {
+        allChildren.addAll(getRecursivelyAllChildren(aChildNode.getNodePK()));
+      }
+      return allChildren;
+    } catch (RemoteException ex) {
+      throw new PdcRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
+              ex.getMessage(), ex);
+    }
   }
 }

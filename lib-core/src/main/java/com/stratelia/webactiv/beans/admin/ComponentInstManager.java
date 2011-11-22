@@ -101,7 +101,7 @@ public class ComponentInstManager {
    * @throws AdminException 
    */
   public String createComponentInst(ComponentInst componentInst, DomainDriverManager ddManager,
-      String sFatherId) throws AdminException {
+          String sFatherId) throws AdminException {
     try {
       // Create the component node
       ComponentInstanceRow newInstance = makeComponentInstanceRow(componentInst);
@@ -113,11 +113,11 @@ public class ComponentInstManager {
       List<Parameter> parameters = componentInst.getParameters();
 
       SilverTrace.info("admin", "ComponentInstManager.createComponentInst",
-          "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
+              "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
 
       for (Parameter parameter : parameters) {
         ddManager.organization.instanceData.createInstanceData(
-            idAsInt(sComponentNodeId), parameter);
+                idAsInt(sComponentNodeId), parameter);
       }
 
       // Create the profile nodes
@@ -128,32 +128,32 @@ public class ComponentInstManager {
       return sComponentNodeId;
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.createComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_COMPONENT",
-          "component name: '" + componentInst.getName() + "'", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_ADD_COMPONENT",
+              "component name: '" + componentInst.getName() + "'", e);
     }
   }
 
   public void sendComponentToBasket(DomainDriverManager ddManager, String componentId,
-      String tempLabel, String userId) throws AdminException {
+          String tempLabel, String userId) throws AdminException {
     try {
       ddManager.organization.instance.sendComponentToBasket(idAsInt(componentId), tempLabel, userId);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.sendComponentToBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_SEND_COMPONENT_TO_BASKET",
-          "componentId = " + componentId, e);
+              SilverpeasException.ERROR, "admin.EX_ERR_SEND_COMPONENT_TO_BASKET",
+              "componentId = " + componentId, e);
     }
   }
 
   public void restoreComponentFromBasket(DomainDriverManager ddManager, String componentId) throws
-      AdminException {
+          AdminException {
     try {
       ddManager.organization.instance.restoreComponentFromBasket(idAsInt(componentId));
     } catch (Exception e) {
       throw new AdminException(
-          "ComponentInstManager.restoreComponentFromBasket",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_RESTORE_COMPONENT_FROM_BASKET", "componentId = "
-          + componentId, e);
+              "ComponentInstManager.restoreComponentFromBasket",
+              SilverpeasException.ERROR,
+              "admin.EX_ERR_RESTORE_COMPONENT_FROM_BASKET", "componentId = "
+              + componentId, e);
     }
   }
 
@@ -166,7 +166,7 @@ public class ComponentInstManager {
    * @throws AdminException 
    */
   public ComponentInst getComponentInst(DomainDriverManager ddManager, String sComponentId,
-      String spaceId) throws AdminException {
+          String spaceId) throws AdminException {
     String sFatherId = spaceId;
     if (sFatherId == null) {
       try {
@@ -178,8 +178,8 @@ public class ComponentInstManager {
         sFatherId = idAsString(space.id);
       } catch (Exception e) {
         throw new AdminException("ComponentInstManager.getComponentInst",
-            SilverpeasException.ERROR, "admin.EX_ERR_GET_COMPONENT",
-            "component id: '" + sComponentId + "'", e);
+                SilverpeasException.ERROR, "admin.EX_ERR_GET_COMPONENT",
+                "component id: '" + sComponentId + "'", e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -199,7 +199,7 @@ public class ComponentInstManager {
    * @throws AdminException 
    */
   public List<ComponentInstLight> getRemovedComponents(DomainDriverManager ddManager)
-      throws AdminException {
+          throws AdminException {
     try {
       ddManager.getOrganizationSchema();
       ComponentInstanceRow[] componentRows = ddManager.organization.instance.getRemovedComponents();
@@ -207,7 +207,7 @@ public class ComponentInstManager {
       return componentInstanceRows2ComponentInstLights(componentRows);
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getRemovedSpaces",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_REMOVED_SPACES", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_GET_REMOVED_SPACES", e);
     }
   }
 
@@ -219,12 +219,12 @@ public class ComponentInstManager {
    * @throws AdminException 
    */
   public ComponentInstLight getComponentInstLight(DomainDriverManager ddManager, String sComponentId)
-      throws AdminException {
+          throws AdminException {
     ComponentInstLight compoLight = null;
     try {
       ddManager.getOrganizationSchema();
       ComponentInstanceRow compo = ddManager.organization.instance.getComponentInstance(idAsInt(
-          sComponentId));
+              sComponentId));
       if (compo != null) {
         compoLight = new ComponentInstLight(compo);
         compoLight.setId(compoLight.getName() + sComponentId);
@@ -232,11 +232,11 @@ public class ComponentInstManager {
 
         // Add default translation
         ComponentI18N translation = new ComponentI18N(compo.lang, compo.name,
-            compo.description);
+                compo.description);
         compoLight.addTranslation(translation);
 
         List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N.
-            getTranslations(compo.id);
+                getTranslations(compo.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
           compoLight.addTranslation(new ComponentI18N(row));
@@ -244,8 +244,8 @@ public class ComponentInstManager {
       }
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.getComponentInstName",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_COMPONENT_NAME",
-          "component id: '" + sComponentId + "'", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_GET_COMPONENT_NAME",
+              "component id: '" + sComponentId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -256,14 +256,14 @@ public class ComponentInstManager {
    * Get component instance information with given component id
    */
   public void setComponentInst(ComponentInst componentInst,
-      DomainDriverManager ddManager, String sComponentId, String sFatherId)
-      throws AdminException {
+          DomainDriverManager ddManager, String sComponentId, String sFatherId)
+          throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 
       // Load the component detail
       ComponentInstanceRow instance = ddManager.organization.instance.getComponentInstance(idAsInt(
-          sComponentId));
+              sComponentId));
 
       if (instance != null) {
         // Set the attributes of the component Inst
@@ -291,18 +291,20 @@ public class ComponentInstManager {
         componentInst.setStatus(instance.status);
 
         // Get the parameters if any
-        List<Parameter> parameters = ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
-            sComponentId));
+        List<Parameter> parameters =
+                ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
+                sComponentId));
         componentInst.setParameters(parameters);
 
         // Get the profiles
-        String[] asProfileIds = ddManager.organization.userRole.getAllUserRoleIdsOfInstance(idAsInt(componentInst.
-            getId()));
+        String[] asProfileIds =
+                ddManager.organization.userRole.getAllUserRoleIdsOfInstance(idAsInt(componentInst.
+                getId()));
 
         // Insert the profileInst in the componentInst
         for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
           ProfileInst profileInst = m_ProfileInstManager.getProfileInst(
-              ddManager, asProfileIds[nI], sComponentId);
+                  ddManager, asProfileIds[nI], sComponentId);
           componentInst.addProfileInst(profileInst);
         }
 
@@ -310,11 +312,11 @@ public class ComponentInstManager {
 
         // Add default translation
         ComponentI18N translation = new ComponentI18N(instance.lang,
-            instance.name, instance.description);
+                instance.name, instance.description);
         componentInst.addTranslation(translation);
 
         List<ComponentInstanceI18NRow> translations =
-            ddManager.organization.instanceI18N.getTranslations(instance.id);
+                ddManager.organization.instanceI18N.getTranslations(instance.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
           componentInst.addTranslation(new ComponentI18N(row));
@@ -325,12 +327,12 @@ public class ComponentInstManager {
         componentInst.setInheritanceBlocked((instance.inheritanceBlocked == 1));
       } else {
         SilverTrace.error("admin", "ComponentInstManager.setComponentInst",
-            "root.EX_RECORD_NOT_FOUND", "instanceId = " + sComponentId);
+                "root.EX_RECORD_NOT_FOUND", "instanceId = " + sComponentId);
       }
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.setComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_SET_COMPONENT",
-          "component id: '" + sComponentId + "'", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_SET_COMPONENT",
+              "component id: '" + sComponentId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -343,7 +345,7 @@ public class ComponentInstManager {
    * @throws AdminException 
    */
   public void deleteComponentInst(ComponentInst componentInst, DomainDriverManager ddManager) throws
-      AdminException {
+          AdminException {
     try {
       // delete translations
       ddManager.organization.instanceI18N.removeTranslations(idAsInt(componentInst.getId()));
@@ -352,8 +354,8 @@ public class ComponentInstManager {
       ddManager.organization.instance.removeComponentInstance(idAsInt(componentInst.getId()));
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.deleteComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_COMPONENT",
-          "component id: '" + componentInst.getId() + "'", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_DELETE_COMPONENT",
+              "component id: '" + componentInst.getId() + "'", e);
     }
   }
 
@@ -361,15 +363,15 @@ public class ComponentInstManager {
    * Updates component in Silverpeas
    */
   public void updateComponentOrder(DomainDriverManager ddManager,
-      String sComponentId, int orderNum) throws AdminException {
+          String sComponentId, int orderNum) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
       ddManager.organization.instance.updateComponentOrder(
-          idAsInt(sComponentId), orderNum);
+              idAsInt(sComponentId), orderNum);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.updateComponentOrder",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
-          "Component Id : '" + sComponentId + "'", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
+              "Component Id : '" + sComponentId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -379,16 +381,16 @@ public class ComponentInstManager {
    * Updates component in Silverpeas
    */
   public void updateComponentInheritance(DomainDriverManager ddManager,
-      String sComponentId, boolean inheritanceBlocked) throws AdminException {
+          String sComponentId, boolean inheritanceBlocked) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
       ddManager.organization.instance.updateComponentInheritance(
-          idAsInt(sComponentId), inheritanceBlocked);
+              idAsInt(sComponentId), inheritanceBlocked);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.updateComponentOrder",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_COMPONENT_INHERITANCE", "Component Id : '"
-          + sComponentId + "'", e);
+              SilverpeasException.ERROR,
+              "admin.EX_ERR_UPDATE_COMPONENT_INHERITANCE", "Component Id : '"
+              + sComponentId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -398,12 +400,12 @@ public class ComponentInstManager {
    * Updates component instance in Silverpeas
    */
   public String updateComponentInst(DomainDriverManager ddManager,
-      ComponentInst compoInstNew) throws AdminException {
+          ComponentInst compoInstNew) throws AdminException {
     try {
       List<Parameter> parameters = compoInstNew.getParameters();
       for (Parameter parameter : parameters) {
         ddManager.organization.instanceData.updateInstanceData(idAsInt(compoInstNew.getId()),
-            parameter);
+                parameter);
       }
 
       // Create the component node
@@ -411,19 +413,19 @@ public class ComponentInstManager {
       changedInstance.id = idAsInt(compoInstNew.getId());
 
       ComponentInstanceRow old = ddManager.organization.instance.getComponentInstance(
-          changedInstance.id);
+              changedInstance.id);
 
       SilverTrace.debug("admin", this.getClass().getName()
-          + ".updateComponentInst", "root.MSG_GEN_PARAM_VALUE", "remove = "
-          + compoInstNew.isRemoveTranslation() + ", translationId = "
-          + compoInstNew.getTranslationId());
+              + ".updateComponentInst", "root.MSG_GEN_PARAM_VALUE", "remove = "
+              + compoInstNew.isRemoveTranslation() + ", translationId = "
+              + compoInstNew.getTranslationId());
 
       if (compoInstNew.isRemoveTranslation()) {
         // Remove of a translation is required
         if (old.lang.equalsIgnoreCase(compoInstNew.getLanguage())) {
           // Default language = translation
           List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N.
-              getTranslations(changedInstance.id);
+                  getTranslations(changedInstance.id);
 
           if (translations != null && translations.size() > 0) {
             ComponentInstanceI18NRow translation = translations.get(0);
@@ -438,7 +440,7 @@ public class ComponentInstManager {
           }
         } else {
           ddManager.organization.instanceI18N.removeTranslation(Integer.parseInt(compoInstNew.
-              getTranslationId()));
+                  getTranslationId()));
         }
       } else {
         // Add or update a translation
@@ -450,7 +452,7 @@ public class ComponentInstManager {
 
           if (!old.lang.equalsIgnoreCase(changedInstance.lang)) {
             ComponentInstanceI18NRow row = new ComponentInstanceI18NRow(
-                changedInstance);
+                    changedInstance);
             String translationId = compoInstNew.getTranslationId();
             if (translationId != null && !translationId.equals("-1")) {
               // update translation
@@ -473,8 +475,8 @@ public class ComponentInstManager {
       return idAsString(changedInstance.id);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.updateComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
-          "component id: '" + compoInstNew.getId() + "'", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
+              "component id: '" + compoInstNew.getId() + "'", e);
     }
   }
 
@@ -482,15 +484,15 @@ public class ComponentInstManager {
    * Move component instance in Silverpeas
    */
   public void moveComponentInst(DomainDriverManager ddManager, String spaceId,
-      String componentId) throws AdminException {
+          String componentId) throws AdminException {
     try {
       // Create the component node
       ddManager.organization.instance.moveComponentInstance(idAsInt(spaceId),
-          idAsInt(componentId));
+              idAsInt(componentId));
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.moveComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
-          "spaceId= " + spaceId + " componentId=" + componentId, e);
+              SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
+              "spaceId= " + spaceId + " componentId=" + componentId, e);
     }
   }
 
@@ -502,7 +504,7 @@ public class ComponentInstManager {
    * @throws AdminException 
    */
   public String[] getAllCompoIdsByComponentName(DomainDriverManager ddManager, String sComponentName)
-      throws AdminException {
+          throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 
@@ -514,8 +516,9 @@ public class ComponentInstManager {
       cir.componentName = sComponentName;
 
       // Search for components instance with given component name
-      ComponentInstanceRow[] cirs = ddManager.organization.instance.getAllMatchingComponentInstances(
-          cir);
+      ComponentInstanceRow[] cirs =
+              ddManager.organization.instance.getAllMatchingComponentInstances(
+              cir);
       if (cirs == null) {
         return ArrayUtil.EMPTY_STRING_ARRAY;
       }
@@ -527,10 +530,10 @@ public class ComponentInstManager {
       return compoIds;
     } catch (Exception e) {
       throw new AdminException(
-          "ComponentInstManager.getAllCompoIdsByComponentName",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
-          "component name: '" + sComponentName + "'", e);
+              "ComponentInstManager.getAllCompoIdsByComponentName",
+              SilverpeasException.ERROR,
+              "admin.EX_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
+              "component name: '" + sComponentName + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -547,7 +550,7 @@ public class ComponentInstManager {
 
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
     } finally {
       DBUtil.close(con);
     }
@@ -563,24 +566,24 @@ public class ComponentInstManager {
 
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
     } finally {
       DBUtil.close(con);
     }
   }
 
   public List<String> getAllowedComponentIds(int userId, List<String> groupIds)
-      throws AdminException {
+          throws AdminException {
     return getAllowedComponentIds(userId, groupIds, null);
   }
 
   public List<String> getAllowedComponentIds(int userId, List<String> groupIds, String spaceId)
-      throws AdminException {
+          throws AdminException {
     return getAllowedComponentIds(userId, groupIds, spaceId, null);
   }
 
   public List<String> getAllowedComponentIds(int userId, List<String> groupIds, String spaceId,
-      String componentName) throws AdminException {
+          String componentName) throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
@@ -588,7 +591,7 @@ public class ComponentInstManager {
       if (StringUtil.isDefined(spaceId)) {
         // getting componentIds available for user in given space (not subspaces)
         return ComponentDAO.getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId,
-            componentName);
+                componentName);
       } else {
         // getting all componentIds available for user
         return ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId, componentName);
@@ -596,25 +599,25 @@ public class ComponentInstManager {
 
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllowedRootSpaceIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALLOWED_SPACEIDS", e);
+              SilverpeasException.ERROR, "admin.EX_ERR_GET_ALLOWED_SPACEIDS", e);
     } finally {
       DBUtil.close(con);
     }
   }
-  
+
   public List<Parameter> getParameters(DomainDriverManager ddManager, String componentId)
-      throws AdminException {
+          throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 
       // Get the parameters if any
       List<Parameter> parameters =
-          ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
+              ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
               componentId));
       return (parameters);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.getParameters", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_COMPONENT_PARAMETERS", "componentId = " + componentId, e);
+              "admin.EX_ERR_GET_COMPONENT_PARAMETERS", "componentId = " + componentId, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -624,7 +627,7 @@ public class ComponentInstManager {
    * Converts ComponentInst to ComponentInstanceRow
    */
   private ComponentInstanceRow makeComponentInstanceRow(
-      ComponentInst componentInst) {
+          ComponentInst componentInst) {
     ComponentInstanceRow instance = new ComponentInstanceRow();
 
     instance.id = idAsInt(componentInst.getId());
@@ -658,14 +661,14 @@ public class ComponentInstManager {
   }
 
   private List<ComponentInstLight> componentInstanceRows2ComponentInstLights(
-      ComponentInstanceRow[] rows) {
+          ComponentInstanceRow[] rows) {
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     ComponentInstLight componentLight = null;
     for (int s = 0; rows != null && s < rows.length; s++) {
       componentLight = new ComponentInstLight(rows[s]);
       componentLight.setId(componentLight.getName() + componentLight.getId());
       componentLight.setDomainFatherId("WA"
-          + componentLight.getDomainFatherId());
+              + componentLight.getDomainFatherId());
       components.add(componentLight);
     }
     return components;
