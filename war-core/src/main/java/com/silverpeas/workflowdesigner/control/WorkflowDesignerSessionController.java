@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.Instanciateur;
@@ -101,7 +102,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public static final String FORM_TYPE_PRESENTATION = "presentationForm";
   public static final String FORM_TYPE_PRINT = "printForm";
   public static final String FORM_TYPE_ACTION = "action";
-  public static final String NEW_ELEMENT_NAME = "New"; // an initial name for new model elements 
+  public static final String NEW_ELEMENT_NAME = "New"; // an initial name for new model elements
   public static final String TITLES = "titles";
   public static final String ACTIVITIES = "activities";
   public static final String DESCRIPTIONS = "descriptions";
@@ -976,7 +977,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   /**
    * Update or insert a new action element of the cached process model
    * @param source the reference object
-   * @param strNameOriginal 
+   * @param strNameOriginal
    * @throws WorkflowDesignerException when something goes wrong
    * @throws WorkflowException when something goes wrong
    */
@@ -2331,7 +2332,13 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
               strElement = strtok.nextToken(); // notified users
 
               if (NOTIFIED_USERS.equals(strElement)) {
-                qualifiedUsers = consequence.getNotifiedUsersEx();
+                Vector qualifiedUsersList = consequence.getNotifiedUsers();
+                if ( (qualifiedUsersList!=null) && (qualifiedUsersList.size() > 0) ) {
+                  qualifiedUsers = (QualifiedUsers) qualifiedUsersList.get(0);
+                }
+                else {
+                  qualifiedUsers = null;
+                }
               }
             }
           }
@@ -2400,7 +2407,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
               strElement = strtok.nextToken(); // consequence no.
 
               if (NOTIFIED_USERS.equals(strElement)) {
-                consequence.setNotifiedUsers(qualifiedUsers);
+                consequence.addNotifiedUsers(qualifiedUsers);
               }
             }
           }
@@ -2468,8 +2475,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
           while (iterConsequence.hasNext()) {
             consequence = (Consequence) iterConsequence.next();
 
-            if (consequence.getNotifiedUsersEx() != null) {
-              map.put(consequence.getNotifiedUsersEx(), "action: '"
+            Vector qualifiedUsersList = consequence.getNotifiedUsers();
+            if ( (qualifiedUsersList!=null) && (qualifiedUsersList.size() > 0) ) {
+              map.put(qualifiedUsersList.get(0), "action: '"
                   + action.getName()
                   + "' : consequence: ["
                   + (consequence.getItem() == null ? "Default" : (" item: '"
