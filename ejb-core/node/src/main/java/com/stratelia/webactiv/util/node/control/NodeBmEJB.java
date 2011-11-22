@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.node.control;
 
+import com.silverpeas.node.notification.NodeNotificationService;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -51,9 +52,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -166,10 +168,12 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
+  @Override
   public NodeDetail getDetail(NodePK pk) throws RemoteException {
     return getDetail(pk, null);
   }
 
+  @Override
   public NodeDetail getDetail(NodePK pk, String sorting) throws RemoteException {
     Node node = findNode(pk);
 
@@ -197,6 +201,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   }
 
+  @Override
   public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name,
       int nodeFatherId) throws RemoteException {
     Node node = findNodeByNameAndFatherId(pk, name, nodeFatherId);
@@ -250,6 +255,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     }
   }
 
+  @Override
   public ArrayList<NodeDetail> getTree(NodePK pk) throws RemoteException {
     Connection con = getConnection();
 
@@ -263,23 +269,27 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     }
   }
 
+  @Override
   public ArrayList<NodeDetail> getSubTree(NodePK pk) throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTree()", "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
     return getSubTree(pk, null, 0, null);
   }
 
+  @Override
   public ArrayList<NodeDetail> getSubTree(NodePK pk, String sorting) throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTree()", "root.MSG_GEN_ENTER_METHOD",
         "pk = " + pk + " sorting=" + sorting);
     return getSubTree(pk, null, 0, sorting);
   }
 
+  @Override
   public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status) throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
         "pk = " + pk + ", status = " + status);
     return getSubTree(pk, status, 0, null);
   }
 
+  @Override
   public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting)
       throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
@@ -287,12 +297,14 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     return getSubTree(pk, status, 0, sorting);
   }
 
+  @Override
   public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level) throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
         "pk = " + pk + ", level = " + level);
     return getSubTree(pk, null, level, null);
   }
 
+  @Override
   public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting)
       throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
@@ -300,6 +312,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     return getSubTree(pk, null, level, sorting);
   }
 
+  @Override
   public ArrayList<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting)
       throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
@@ -313,7 +326,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       NodeDetail root = NodeDAO.loadRow(con, pk);
       root.setChildrenDetails(new ArrayList<NodeDetail>());
 
-      Hashtable<String, NodeDetail> tree = new Hashtable<String, NodeDetail>();
+      Map<String, NodeDetail> tree = new HashMap<String, NodeDetail> ();
       tree.put(root.getNodePK().getId(), root);
 
       Iterator<NodeDetail> it = headers.iterator();
@@ -370,6 +383,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     return result;
   }
 
+  @Override
   public void moveNode(NodePK nodePK, NodePK toNode) throws RemoteException {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + "/";
@@ -445,6 +459,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @throws RemoteException
    * @see
    */
+  @Override
   public NodeDetail getFrequentlyAskedDetail(NodePK pk) throws RemoteException {
     return getDetail(pk);
   }
@@ -456,6 +471,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @throws RemoteException
    * @see
    */
+  @Override
   public NodeDetail getTwoLevelDetails(NodePK pk) throws RemoteException {
     NodeDetail nd = getDetail(pk);
     Connection con = getConnection();
@@ -490,6 +506,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     }
   }
 
+  @Override
   public NodeDetail getHeader(NodePK pk, boolean getTranslations)
       throws RemoteException {
     Connection con = getConnection();
@@ -511,6 +528,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
+  @Override
   public NodeDetail getHeader(NodePK pk) throws RemoteException {
     Connection con = getConnection();
     try {
@@ -530,6 +548,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
+  @Override
   public void setDetail(NodeDetail nd) throws RemoteException {
     Node node = findNode(nd.getNodePK());
     NodeDetail oldNodeDetail = getHeader(nd.getNodePK());
@@ -609,9 +628,12 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
    */
+  @Override
   public void removeNode(NodePK pk) throws RemoteException {
+    NodeNotificationService notificationService = NodeNotificationService.getService();
+    notificationService.notifyOnDeletionOf(pk);
+    
     Collection<NodeDetail> children = getChildrenDetails(pk);
-
     if (children != null) {
       for (Iterator<NodeDetail> i = children.iterator(); i.hasNext();) {
         NodeDetail detail = i.next();
@@ -644,6 +666,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see java.util.Collection
    * @since 1.0
    */
+  @Override
   public Collection<NodeDetail> getPath(NodePK pk) throws RemoteException {
     return getAnotherPath(pk);
   }
@@ -654,6 +677,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
+  @Override
   public Collection<NodeDetail> getChildrenDetails(NodePK pk) throws RemoteException {
     Connection con = getConnection();
     try {
@@ -674,6 +698,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
+  @Override
   public Collection<NodeDetail> getFrequentlyAskedChildrenDetails(NodePK pk)
       throws RemoteException {
     return getChildrenDetails(pk);
@@ -687,6 +712,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @throws RemoteException
    * @see
    */
+  @Override
   public List<NodeDetail> getHeadersByLevel(NodePK pk, int level) throws RemoteException {
     Connection con = getConnection();
 
@@ -709,6 +735,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @throws RemoteException
    * @see
    */
+  @Override
   public Collection<NodeDetail> getAllNodes(NodePK nodePK) throws RemoteException {
     Connection con = getConnection();
 
@@ -727,6 +754,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @return a int
    * @since 1.0
    */
+  @Override
   public int getChildrenNumber(NodePK pk) throws RemoteException {
     Connection con = getConnection();
     try {
@@ -740,6 +768,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     }
   }
   
+  @Override
   public NodePK createNode(NodeDetail node) throws RemoteException {
     NodePK parentPK = node.getFatherPK();
     NodeDetail parent = getHeader(parentPK);
@@ -769,6 +798,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
    * @since 1.0
    */
+  @Override
   public NodePK createNode(NodeDetail nd, NodeDetail fatherDetail) throws RemoteException {
     Node newNode = null;
     NodeHome home = getNodeHome();
@@ -801,6 +831,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
+  @Override
   public boolean isSameNameSameLevelOnCreation(NodeDetail nd) throws RemoteException {
     Connection con = getConnection();
     try {
@@ -867,6 +898,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
    */
+  @Override
   public Collection<NodePK> getDescendantPKs(NodePK nodePK) throws RemoteException {
     Connection con = getConnection();
 
@@ -891,6 +923,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
    */
+  @Override
   public List<NodeDetail> getDescendantDetails(NodePK nodePK) throws RemoteException {
     Connection con = getConnection();
 
@@ -913,6 +946,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @param node A NodeDetail
    * @since 4.07
    */
+  @Override
   public List<NodeDetail> getDescendantDetails(NodeDetail node) throws RemoteException {
     Connection con = getConnection();
 
@@ -937,6 +971,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
+  @Override
   public Collection<NodeDetail> getAnotherPath(NodePK nodePK) throws RemoteException {
     // TODO : methode a supprimer ! il faut utiliser getPath()
 
@@ -1083,6 +1118,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
   /**
    * Called on : - removeNode()
    */
+  @Override
   public void deleteIndex(NodePK pk) {
     SilverTrace.info("node", "NodeBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
     IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "Node", pk.getId());
@@ -1108,6 +1144,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbRemove() {
   }
 
@@ -1115,6 +1152,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbActivate() {
   }
 
@@ -1122,6 +1160,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbPassivate() {
   }
 
@@ -1130,6 +1169,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @param sc
    * @see
    */
+  @Override
   public void setSessionContext(SessionContext sc) {
   }
 }

@@ -51,17 +51,15 @@
   </head>
   <body>
     <view:window browseBarVisible="false">
-      <view:frame>
-        <div id="header">
-          <view:pdcPredefinedClassification componentId="${componentId}" nodeId="${nodeId}"/>
-          &nbsp;
-          <center>
-            <view:buttonPane>
-              <view:button label="${close}" action="javascript: window.close();"/>
-            </view:buttonPane>
-          </center>
-        </div>
-      </view:frame>
+      <div id="header">
+        <view:pdcPredefinedClassification componentId="${componentId}" nodeId="${nodeId}"/>
+        &nbsp;
+        <center>
+          <view:buttonPane>
+            <view:button label="${close}" action="javascript: window.close();"/>
+          </view:buttonPane>
+        </center>
+      </div>
     </view:window>
   </body>
 </html>
