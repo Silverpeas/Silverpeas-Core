@@ -25,7 +25,7 @@
 package com.silverpeas.workflow.api.model;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Interface describing a representation of the &lt;consequence&gt; element of a Process Model.
@@ -152,13 +152,13 @@ public interface Consequence {
    * @return QualifiedUsers object containing notified users or an empty QualifiedUsers object but
    * never a <code>null</code>
    */
-  public Vector getNotifiedUsers();
+  public List<QualifiedUsers> getNotifiedUsers();
 
   /**
    * Set all the users that have to be notified
    * @param QualifiedUsers object containing notified users
    */
-  public void setNotifiedUsers(Vector notifiedUsersList);
+  public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList);
 
   public Triggers createTriggers();
 

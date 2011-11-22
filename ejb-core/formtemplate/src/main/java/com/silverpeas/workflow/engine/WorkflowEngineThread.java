@@ -1178,10 +1178,8 @@ class WorkflowTools {
       }
 
       // notify user
-      Vector notifiedUsersList = consequence.getNotifiedUsers();
-      for (Iterator it=notifiedUsersList.iterator(); it.hasNext();) {
-        QualifiedUsers notifiedUsers = (QualifiedUsers) it.next();
-
+      List<QualifiedUsers> notifiedUsersList = consequence.getNotifiedUsers();
+      for (QualifiedUsers notifiedUsers : notifiedUsersList) {
         Actor[] actors = instance.getActors(notifiedUsers, null);
         Task[] tasks = taskManager.createTasks(actors, instance);
         String message = "";

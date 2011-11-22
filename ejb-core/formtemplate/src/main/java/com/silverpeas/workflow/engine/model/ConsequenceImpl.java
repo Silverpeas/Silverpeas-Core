@@ -22,7 +22,9 @@ package com.silverpeas.workflow.engine.model;
 
 import com.silverpeas.util.StringUtil;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
@@ -46,7 +48,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   private boolean kill;
   private Vector targetStateList;
   private Vector unsetStateList;
-  private Vector notifiedUsersList;
+  private List<QualifiedUsers> notifiedUsersList;
   private int step;
   private Triggers triggers;
   // ~ Instance fields related to AbstractDescriptor
@@ -61,7 +63,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   public ConsequenceImpl() {
     targetStateList = new Vector();
     unsetStateList = new Vector();
-    notifiedUsersList = new Vector();
+    notifiedUsersList = new ArrayList<QualifiedUsers>();
     triggers = new TriggersImpl();
     kill = false;
   }
@@ -201,7 +203,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    *
    * @return QualifiedUsers object containing notified users
    */
-  public Vector getNotifiedUsers() {
+  public List<QualifiedUsers> getNotifiedUsers() {
      return this.notifiedUsersList;
   }
 
@@ -210,7 +212,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    *
    * @param QualifiedUsers object containing notified users
    */
-  public void setNotifiedUsers(Vector notifiedUsersList) {
+  public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList) {
     this.notifiedUsersList = notifiedUsersList;
   }
 
