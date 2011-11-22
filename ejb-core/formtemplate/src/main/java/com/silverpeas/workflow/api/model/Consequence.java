@@ -25,6 +25,7 @@
 package com.silverpeas.workflow.api.model;
 
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Interface describing a representation of the &lt;consequence&gt; element of a Process Model.
@@ -129,6 +130,12 @@ public interface Consequence {
   public void addUnsetState(StateSetter stateSetter);
 
   /**
+   * Add a new notifiedUser to the collection
+   * @param stateSetter object to be added
+   */
+  public void addNotifiedUsers(QualifiedUsers notifyUsers);
+
+  /**
    * Get the flag that specifies if instance has to be removed
    * @return true if instance has to be removed
    */
@@ -145,19 +152,13 @@ public interface Consequence {
    * @return QualifiedUsers object containing notified users or an empty QualifiedUsers object but
    * never a <code>null</code>
    */
-  public QualifiedUsers getNotifiedUsers();
-
-  /**
-   * Get all the users that have to be notified
-   * @return QualifiedUsers object containing notified users or a <code>null</code> if none defined
-   */
-  public QualifiedUsers getNotifiedUsersEx();
+  public Vector getNotifiedUsers();
 
   /**
    * Set all the users that have to be notified
    * @param QualifiedUsers object containing notified users
    */
-  public void setNotifiedUsers(QualifiedUsers notifiedUsers);
+  public void setNotifiedUsers(Vector notifiedUsersList);
 
   public Triggers createTriggers();
 
