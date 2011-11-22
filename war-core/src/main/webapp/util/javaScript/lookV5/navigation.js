@@ -182,9 +182,6 @@ function displayPDCFrame(spaceId, componentId) {
   if (displayContextualPDC) {
     try {
       var footerPage = getFooterPage();
-      if (!footerPage.startsWith(getContext() + '/')) {
-        footerPage = getContext() + '/admin/jsp/' + footerPage;
-      }
       top.pdcFrame.location.href =  footerPage + "spaces=" + spaceId + "&componentSearch=" + componentId + "&FromPDCFrame=true";
     }
     catch (e) {
