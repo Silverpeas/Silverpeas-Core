@@ -35,6 +35,9 @@ import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+
 import java.util.Arrays;
 
 /**
@@ -45,6 +48,7 @@ public abstract class AbstractForm implements Form {
 
   private List<FieldTemplate> fieldTemplates;
   private String title = "";
+  private String name = "";
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
 
@@ -105,13 +109,22 @@ public abstract class AbstractForm implements Form {
       PagesContext pc = null;
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
-      //Iterator<FieldTemplate> itFields = null;
 
       if (!fieldTemplates.isEmpty()) {
         FieldTemplate fieldTemplate = fieldTemplates.get(0);
-        out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
-                .append(fieldTemplate.getTemplateName())
+        if (StringUtil.isDefined(fieldTemplate.getTemplateName())) {
+          out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
+              .append(fieldTemplate.getTemplateName()).append(".js\"></script>\n");
+        } else if (StringUtil.isDefined(pagesContext.getComponentId()) &&
+            StringUtil.isDefined(getName())) {
+          ComponentInstLight component =
+              new OrganizationController().getComponentInstLight(pagesContext.getComponentId());
+          if (component != null) {
+            out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")
+                .append(component.getName()).append("/").append(getName())
                 .append(".js\"></script>\n");
+          }
+        }
         pc = new PagesContext(pagesContext);
         pc.incCurrentFieldIndex(1);
       }
@@ -148,7 +161,6 @@ public abstract class AbstractForm implements Form {
                 out.append("	field = document.getElementById(\"").append(fieldTemplate.getFieldName()).append("\");\n");
                 out.append("	if (field == null) {\n");
                 //try to find field by name
-                  //out.append("  field = document.getElementByName(\"").append(fieldTemplate.getFieldName()).append("\");\n");
                   out.append("  field = $(\"input[name=").append(fieldTemplate.getFieldName()).append("]\");\n");
                 out.println("}");
                 out.append(" if (field != null) {\n");
@@ -402,5 +414,13 @@ public abstract class AbstractForm implements Form {
   
   private TypeManager getTypeManager() {
     return TypeManager.getInstance();
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return name;
   }
 }
