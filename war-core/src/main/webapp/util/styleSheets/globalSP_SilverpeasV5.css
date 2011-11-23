@@ -3865,7 +3865,7 @@ html>/**/body .commentaires .oneComment{
 .commentaires .oneComment .text {      
 	color: #888888;
     font-family: Arial;
-    font-size: 16px;
+    font-size: 13px;
     line-height: 120%;
     margin: 0;
     padding: 0;
@@ -3873,7 +3873,7 @@ html>/**/body .commentaires .oneComment{
     text-indent: 41px;
     white-space: normal;
 }
-.commentaires .oneComment .text a { font-size: 16px;}
+.commentaires .oneComment .text a { font-size: 13px;}
 
 .commentaires #list-box {
 }
@@ -3889,10 +3889,10 @@ html>/**/body .commentaires .oneComment{
 #comments-update-box .text,
 .commentaires #edition-box .text {
 	width: 95%;
-	height: 6em;
+	height: 3em;
 	color: #888888;
     font-family: Arial;
-    font-size: 16px;
+    font-size: 13px;
     line-height: 120%;
 }
 
