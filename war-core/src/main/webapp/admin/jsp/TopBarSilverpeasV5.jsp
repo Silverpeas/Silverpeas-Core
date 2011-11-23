@@ -115,12 +115,14 @@ function getContext() {
   return "<%=m_sContext%>";
 }
 
-function getDomainsBarPage() {
-  return "DomainsBarSilverpeasV5.jsp";
+function getDomainsBarPage()
+{
+	return "DomainsBarSilverpeasV5.jsp";
 }
 
-function getTopBarPage() {
-  return "TopBarSilverpeasV5.jsp";
+function getTopBarPage()
+{
+	return "TopBarSilverpeasV5.jsp";
 }
 
 function loadThisPage() {

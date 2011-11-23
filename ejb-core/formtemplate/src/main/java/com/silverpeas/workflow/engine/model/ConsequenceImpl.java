@@ -22,7 +22,9 @@ package com.silverpeas.workflow.engine.model;
 
 import com.silverpeas.util.StringUtil;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
@@ -46,7 +48,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   private boolean kill;
   private Vector targetStateList;
   private Vector unsetStateList;
-  private QualifiedUsers notifiedUsers;
+  private List<QualifiedUsers> notifiedUsersList;
   private int step;
   private Triggers triggers;
   // ~ Instance fields related to AbstractDescriptor
@@ -61,6 +63,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   public ConsequenceImpl() {
     targetStateList = new Vector();
     unsetStateList = new Vector();
+    notifiedUsersList = new ArrayList<QualifiedUsers>();
     triggers = new TriggersImpl();
     kill = false;
   }
@@ -119,6 +122,13 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    */
   public Iterator iterateTargetState() {
     return targetStateList.iterator();
+  }
+
+  /*
+   * (non-Javadoc) @see com.silverpeas.workflow.api.model.Consequence#iterateTargetState()
+   */
+  public Iterator iterateNotifiedUsers() {
+    return notifiedUsersList.iterator();
   }
 
   /*
@@ -193,19 +203,8 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    *
    * @return QualifiedUsers object containing notified users
    */
-  public QualifiedUsers getNotifiedUsers() {
-    if (notifiedUsers == null) {
-      return new QualifiedUsersImpl();
-    } else {
-      return this.notifiedUsers;
-    }
-  }
-
-  /*
-   * (non-Javadoc) @see com.silverpeas.workflow.api.model.Consequence#getNotifiedUsersEx()
-   */
-  public QualifiedUsers getNotifiedUsersEx() {
-    return notifiedUsers;
+  public List<QualifiedUsers> getNotifiedUsers() {
+     return this.notifiedUsersList;
   }
 
   /**
@@ -213,8 +212,8 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    *
    * @param QualifiedUsers object containing notified users
    */
-  public void setNotifiedUsers(QualifiedUsers notifiedUsers) {
-    this.notifiedUsers = notifiedUsers;
+  public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList) {
+    this.notifiedUsersList = notifiedUsersList;
   }
 
   /**
@@ -444,5 +443,10 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
       sb.append(value);
     }
     return sb.toString();
+  }
+
+  @Override
+  public void addNotifiedUsers(QualifiedUsers notifyUsers) {
+    notifiedUsersList.add(notifyUsers);
   }
 }
