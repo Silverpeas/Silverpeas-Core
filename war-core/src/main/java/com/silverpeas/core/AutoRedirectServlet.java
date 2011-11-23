@@ -45,6 +45,7 @@ import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFacto
  * @author ehugonnet
  */
 public class AutoRedirectServlet extends HttpServlet {
+  private static final long serialVersionUID = -8962464286320797737L;
 
   /**
    * Processes requests for both HTTP
@@ -141,8 +142,14 @@ public class AutoRedirectServlet extends HttpServlet {
           out.println("</script>");
         } else {
           out.println("<script>");
-          out.print("top.location=\"admin/jsp/");
-          out.print(gef.getLookFrame());
+          String mainFrame = gef.getLookFrame();
+          if(!mainFrame.startsWith("/")) {
+            mainFrame = "admin/jsp/"  + mainFrame;
+          } else if (! mainFrame.startsWith(URLManager.getApplicationURL())) {
+            mainFrame = URLManager.getApplicationURL() + mainFrame;
+          }
+          out.print("top.location=\"");
+          out.print(mainFrame);
           out.print(mainFrameParams);
           out.println("\";");
           out.println("</script>");

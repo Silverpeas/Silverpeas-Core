@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.look;
 
@@ -203,7 +200,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.orga = mainSessionController.getOrganizationController();
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
-    this.defaultMessages = new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+    this.defaultMessages = new ResourceLocator(
+        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
       this.messages = new ResourceLocator(resources.getString("MessageBundle"),
@@ -225,7 +223,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     } else {
       displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
           PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
-      if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
+      if (isMenuPersonalisationEnabled() &&
+          mainSC.getPersonalization().getDisplay().isNotDefault()) {
         this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
       }
       enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
@@ -371,7 +370,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
     int nbConnectedUsers = 0;
     if (shouldDisplayConnectedUsers) {
       // Remove the current user
-      nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().getCurrentUserDetail()) - 1;
+      nbConnectedUsers =
+          SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().
+              getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
   }
@@ -442,7 +443,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (topItems == null) {
       topItems = new ArrayList<TopItem>();
       topSpaceIds = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
+      StringTokenizer tokenizer =
+          new StringTokenizer(resources.getString("componentsTop", ""), ",");
       while (tokenizer.hasMoreTokens()) {
         String itemId = tokenizer.nextToken();
 
@@ -499,14 +501,15 @@ public class LookSilverpeasV5Helper implements LookHelper {
    * @see com.silverpeas.look.LookHelper#setMainFrame(java.lang.String)
    */
   @Override
-  public void setMainFrame(String mainFrame) {
-    this.mainFrame = mainFrame;
+  public void setMainFrame(String newMainFrame) {
+    if (StringUtil.isDefined(newMainFrame)) {
+      this.mainFrame = newMainFrame;
+    }
   }
 
   /*
-   * (non-Javadoc)
-   * @see com.silverpeas.look.LookHelper#getSpaceWallPaper()
-   */
+     * (non-Javadoc) @see com.silverpeas.look.LookHelper#getSpaceWallPaper()
+     */
   @Override
   public String getSpaceWallPaper() {
     String wallpaperURL = null;
@@ -553,7 +556,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return defaultSpaceId;
   }
 
-  private PublicationHelper getPublicationHelper() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+  private PublicationHelper getPublicationHelper() throws ClassNotFoundException,
+      InstantiationException, IllegalAccessException {
     if (kmeliaTransversal == null) {
       String helperClassName = resources.getString("publicationHelper",
           "com.stratelia.webactiv.kmelia.KmeliaTransversal");
@@ -635,7 +639,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
       destination = getParsedDestination(destination, "%ST_USER_LOGIN%",
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
-          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(), "UTF-8"));
+          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
+              "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",

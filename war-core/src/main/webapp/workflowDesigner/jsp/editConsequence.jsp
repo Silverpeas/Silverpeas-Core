@@ -206,53 +206,54 @@
     //
     if ( fExistingConsequence )
     {
-        // Check if notified users have been already defined
-        //
-        row = usersPane.addArrayLine();
-        if ( consequence.getNotifiedUsersEx() == null )
-        {
-            Icon addIcon;
-    
-            row.addArrayCellLink( resource.getString("workflowDesigner.notifiedUsers"),
-                                  "AddQualifiedUsers?context=" + strNotifiedContext );
-    
-            iconPane = gef.getIconPane();
-            addIcon = iconPane.addIcon();
-            addIcon.setProperties(resource.getIcon("workflowDesigner.add"),
-                                  resource.getString("GML.add"),
-                                  "AddQualifiedUsers?context=" + strNotifiedContext );
-            
-            iconPane.setSpacing("30px");
-            row.addArrayCellIconPane(iconPane);
-        }
-        else  // Notified users have been defined...
-        {
-            iconPane = gef.getIconPane();
-            iconPane.setSpacing("30px");
-            updateIcon = iconPane.addIcon();
-            delIcon = iconPane.addIcon();
-    
-            // Create the remove link
-            //
-            sb.setLength(0);
-            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers?context=" ); 
-            sb.append( strNotifiedContext );
-            sb.append( "', '" );
-            sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
-            sb.append( " " );
-            sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.notifiedUsers") ) );
-            sb.append( " ?');" );
+       	row = usersPane.addArrayLine();
+        row.addArrayCellLink( resource.getString("workflowDesigner.notifiedUsers"),
+                              "AddQualifiedUsers?context=" + strNotifiedContext );
 
-            row.addArrayCellLink( resource.getString("workflowDesigner.notifiedUsers"),
-                                                     "ModifyQualifiedUsers?context=" + strNotifiedContext ); 
-            updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
-                                     resource.getString("GML.modify"),
-                                     "ModifyQualifiedUsers?context=" + strNotifiedContext );
-            delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
-                                  resource.getString("GML.delete"),
-                                  sb.toString() );
-            row.addArrayCellIconPane(iconPane);
-        }
+        iconPane = gef.getIconPane();
+        iconPane.setSpacing("30px");
+        
+        Icon addIcon = iconPane.addIcon();
+        addIcon.setProperties(resource.getIcon("workflowDesigner.add"),
+                              resource.getString("GML.add"),
+                              "AddQualifiedUsers?context=" + strNotifiedContext );
+        
+        row.addArrayCellIconPane(iconPane);
+    
+      	if (consequence.getNotifiedUsers() != null) {
+      		// Notified users already defined...
+          	int i = 0;
+          	for (QualifiedUsers notified : consequence.getNotifiedUsers()) {
+          	  	row = usersPane.addArrayLine();
+          	    String indexedStrNotifiedContext = strNotifiedContext + "/" + i;
+	            iconPane = gef.getIconPane();
+	            iconPane.setSpacing("30px");
+	            updateIcon = iconPane.addIcon();
+	            delIcon = iconPane.addIcon();
+	    
+	            // Create the remove link
+	            //
+	            sb.setLength(0);
+	            sb.append( "javascript:confirmRemove('RemoveQualifiedUsers?context=" ); 
+	            sb.append( indexedStrNotifiedContext );
+	            sb.append( "', '" );
+	            sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
+	            sb.append( " " );
+	            sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.notifiedUsers") ) );
+	            sb.append( " ?');" );
+	
+	            row.addArrayCellLink( resource.getString("workflowDesigner.notifiedUsers"),
+	                                                     "ModifyQualifiedUsers?context=" + indexedStrNotifiedContext ); 
+	            updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
+	                                     resource.getString("GML.modify"),
+	                                     "ModifyQualifiedUsers?context=" + indexedStrNotifiedContext );
+	            delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
+	                                  resource.getString("GML.delete"),
+	                                  sb.toString() );
+	            row.addArrayCellIconPane(iconPane);
+	            i++;
+          	}
+    	}
     }
     
     out.println(window.printBefore());
