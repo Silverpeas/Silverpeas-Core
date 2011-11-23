@@ -38,8 +38,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class represents the ClassifyEngine API It gives access to functions for classifying,
@@ -55,22 +56,22 @@ public class ClassifyEngine implements Cloneable {
   // Registered axis cache
   static private int[] registeredAxis = null;
   // GetSinglePertinentAxis Cache
-  static private Hashtable<String, PertinentAxis> m_hSinglePertinentAxis =
-      new Hashtable<String, PertinentAxis>(0);
+  static private Map<String, PertinentAxis> m_hSinglePertinentAxis =
+          new ConcurrentHashMap<String, PertinentAxis>(0);
 
   // Init Function
   static {
     // Get the maximum number of axis that the classifyEngine can handle
     ResourceLocator res = new ResourceLocator(
-        "com.stratelia.silverpeas.classifyEngine.ClassifyEngine", "");
+            "com.stratelia.silverpeas.classifyEngine.ClassifyEngine", "");
     String sMaxAxis = res.getString("MaxAxis");
     nbMaxAxis = Integer.parseInt(sMaxAxis);
     try {
       registeredAxis = loadRegisteredAxis();
     } catch (ClassifyEngineException e) {
       SilverTrace.error("classifyEngine", "ClassifyEngine.initStatic",
-          "root.EX_CLASS_NOT_INITIALIZED",
-          "registeredAxis initialization failed !", e);
+              "root.EX_CLASS_NOT_INITIALIZED",
+              "registeredAxis initialization failed !", e);
     }
   }
 
@@ -93,15 +94,15 @@ public class ClassifyEngine implements Cloneable {
    * Register an axis
    */
   public void registerAxis(Connection connection, int nLogicalAxisId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     PreparedStatement prepStmt = null;
 
     // check that thie given axis is not already registered
     if (this.AxisAlreadyRegistered(nLogicalAxisId)) {
       throw new ClassifyEngineException("ClassifyEngine.registerAxis",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_AXIS_ALREADY_REGISTERED", "nLogicalAxisId: "
-          + nLogicalAxisId);
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_AXIS_ALREADY_REGISTERED", "nLogicalAxisId: "
+              + nLogicalAxisId);
     }
 
     try {
@@ -110,18 +111,18 @@ public class ClassifyEngine implements Cloneable {
         int nNextAvailableAxis = this.getNextUnregisteredAxis();
         if (nNextAvailableAxis == -1) {
           throw new ClassifyEngineException("ClassifyEngine.registerAxis",
-              SilverpeasException.ERROR,
-              "classifyEngine.EX_NOMORE_AVAILABLE_AXIS", "nLogicalAxisId: "
-              + nLogicalAxisId);
+                  SilverpeasException.ERROR,
+                  "classifyEngine.EX_NOMORE_AVAILABLE_AXIS", "nLogicalAxisId: "
+                  + nLogicalAxisId);
         }
 
         // build the statement to classify
         String sSQLStatement = SQLStatement.buildRegisterAxisStatement(
-            nNextAvailableAxis, nLogicalAxisId);
+                nNextAvailableAxis, nLogicalAxisId);
 
         // Execute the insertion
         SilverTrace.info("classifyEngine", "ClassifyEngine.registerAxis",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+                "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
@@ -133,8 +134,8 @@ public class ClassifyEngine implements Cloneable {
       m_hSinglePertinentAxis.clear();
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.registerAxis",
-          SilverpeasException.ERROR, "classifyEngine.EX_CANT_REGISTER_AXIS",
-          "nLogicalAxisId= " + nLogicalAxisId, e);
+              SilverpeasException.ERROR, "classifyEngine.EX_CANT_REGISTER_AXIS",
+              "nLogicalAxisId= " + nLogicalAxisId, e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -144,7 +145,7 @@ public class ClassifyEngine implements Cloneable {
    * Unregister an axis Return the list of the deleted positionsIds
    */
   public List<Integer> unregisterAxis(Connection connection, int nLogicalAxisId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     PreparedStatement prepStmt = null;
     List<Integer> alDeletedPositionIds = null;
 
@@ -159,7 +160,7 @@ public class ClassifyEngine implements Cloneable {
       synchronized (registeredAxis) {
         // Execute the removal
         SilverTrace.info("classifyEngine", "ClassifyEngine.unregisterAxis",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+                "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
@@ -179,8 +180,8 @@ public class ClassifyEngine implements Cloneable {
       return alDeletedPositionIds;
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.unregisterAxis",
-          SilverpeasException.ERROR, "classifyEngine.EX_CANT_UNREGISTER_AXIS",
-          "nLogicalAxisId= " + nLogicalAxisId, e);
+              SilverpeasException.ERROR, "classifyEngine.EX_CANT_UNREGISTER_AXIS",
+              "nLogicalAxisId= " + nLogicalAxisId, e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -201,7 +202,7 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the insertion
       SilverTrace.info("classifyEngine", "ClassifyEngine.loadRegisteredAxis",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       while (resSet.next()) {
@@ -212,8 +213,8 @@ public class ClassifyEngine implements Cloneable {
 
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.loadRegisteredAxis",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_LOAD_REGISTERED_AXIS", e);
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_LOAD_REGISTERED_AXIS", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);
@@ -236,7 +237,7 @@ public class ClassifyEngine implements Cloneable {
 
   // Return the physicalAxisId given the LogicalAxisId
   private int getPhysicalAxisId(int nLogicalAxisId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     for (int nI = 0; nI < nbMaxAxis; nI++) {
       if (registeredAxis[nI] == nLogicalAxisId) {
         return nI;
@@ -244,12 +245,12 @@ public class ClassifyEngine implements Cloneable {
     }
 
     SilverTrace.error("classifyEngine", "ClassifyEngine.getPhysicalAxisId",
-        "root.MSG_GEN_PARAM_VALUE",
-        "Can't get physical axis Id, nLogicalAxisId: " + nLogicalAxisId
+            "root.MSG_GEN_PARAM_VALUE",
+            "Can't get physical axis Id, nLogicalAxisId: " + nLogicalAxisId
             + ", registeredAxis : " + printRegisteredAxis());
     throw new ClassifyEngineException("ClassifyEngine.getPhysicalAxisId",
-        SilverpeasException.ERROR, "classifyEngine.EX_CANT_GET_PHYSICAL_AXIS",
-        "nLogicalAxisId: " + nLogicalAxisId);
+            SilverpeasException.ERROR, "classifyEngine.EX_CANT_GET_PHYSICAL_AXIS",
+            "nLogicalAxisId: " + nLogicalAxisId);
   }
 
   private String printRegisteredAxis() {
@@ -264,11 +265,11 @@ public class ClassifyEngine implements Cloneable {
 
   // Return the LogicalAxisId given the physicalAxisId
   private int getLogicalAxisId(int nPhysicalAxisId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     if (nPhysicalAxisId < 0 || nPhysicalAxisId > registeredAxis.length) {
       throw new ClassifyEngineException("ClassifyEngine.getLogicalAxisId",
-          SilverpeasException.ERROR, "classifyEngine.EX_CANT_GET_LOGICAL_AXIS",
-          "nPhysicalAxisId: " + nPhysicalAxisId);
+              SilverpeasException.ERROR, "classifyEngine.EX_CANT_GET_LOGICAL_AXIS",
+              "nPhysicalAxisId: " + nPhysicalAxisId);
     }
 
     return registeredAxis[nPhysicalAxisId];
@@ -276,7 +277,7 @@ public class ClassifyEngine implements Cloneable {
 
   // Return if the LogicalAxisId given is already registered
   private boolean AxisAlreadyRegistered(int nLogicalAxisId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     for (int nI = 0; nI < nbMaxAxis; nI++) {
       if (registeredAxis[nI] == nLogicalAxisId) {
         return true;
@@ -287,7 +288,7 @@ public class ClassifyEngine implements Cloneable {
   }
 
   public int isPositionAlreadyExists(int nSilverObjectId, Position position)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     // Convert the Axis Ids
     List<Value> alValues = position.getValues();
     for (Value value : alValues) {
@@ -307,7 +308,7 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the verification
       SilverTrace.info("classifyEngine", "ClassifyEngine.classifySilverObject",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       rs = prepStmt.executeQuery();
       int newPositionId = -1;
@@ -318,8 +319,8 @@ public class ClassifyEngine implements Cloneable {
       return newPositionId;
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.isPositionAlreadyExists",
-          SilverpeasException.ERROR, "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID",
-          "sSQLStatement= " + sSQLStatement, e);
+              SilverpeasException.ERROR, "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID",
+              "sSQLStatement= " + sSQLStatement, e);
     } finally {
       DBUtil.close(rs, prepStmt);
       DBUtil.close(connection);
@@ -331,7 +332,7 @@ public class ClassifyEngine implements Cloneable {
    * then we have to open a connection and close it Return the PositionId
    */
   public int classifySilverObject(Connection connection, int silverObjectId,
-      Position position) throws ClassifyEngineException {
+          Position position) throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     // Check the minimum required
@@ -354,11 +355,11 @@ public class ClassifyEngine implements Cloneable {
       // build the statement to classify
       int newPositionId = DBUtil.getNextId("SB_ClassifyEngine_Classify", "PositionId");
       String sSQLStatement = SQLStatement.buildClassifyStatement(silverObjectId, position,
-          newPositionId);
+              newPositionId);
 
       // Execute the insertion
       SilverTrace.info("classifyEngine", "ClassifyEngine.classifySilverObject",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -368,8 +369,8 @@ public class ClassifyEngine implements Cloneable {
       return newPositionId;
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.classifySilverObject",
-          SilverpeasException.ERROR, "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID",
-          "silverObjectId= " + silverObjectId, e);
+              SilverpeasException.ERROR, "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID",
+              "silverObjectId= " + silverObjectId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -383,7 +384,7 @@ public class ClassifyEngine implements Cloneable {
    * connection is null, then we have to open a connection and close it
    */
   public void unclassifySilverObjectByPosition(Connection connection,
-      int nSilverObjectId, Position<Value> position) throws ClassifyEngineException {
+          int nSilverObjectId, Position<Value> position) throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     // Check the minimum required
@@ -404,12 +405,12 @@ public class ClassifyEngine implements Cloneable {
 
       // build the statement to remove the position
       String sSQLStatement = SQLStatement.buildRemoveByPositionStatement(
-          nSilverObjectId, position);
+              nSilverObjectId, position);
 
       // Execute the removal
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.unclassifySilverObjectByPosition",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.unclassifySilverObjectByPosition",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -417,10 +418,10 @@ public class ClassifyEngine implements Cloneable {
       m_hSinglePertinentAxis.clear();
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.unclassifySilverObjectByPosition",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
-          "silverObjectId= " + nSilverObjectId, e);
+              "ClassifyEngine.unclassifySilverObjectByPosition",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
+              "silverObjectId= " + nSilverObjectId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -433,7 +434,7 @@ public class ClassifyEngine implements Cloneable {
    * Remove the given SilverObjectId at all positions within the classifyEngine
    */
   public void unclassifySilverObject(Connection connection, int nSilverObjectId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     // Check the minimum required
     this.checkSilverObjectId(nSilverObjectId);
     PreparedStatement prepStmt = null;
@@ -443,8 +444,8 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the removal
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.unclassifySilverObject", "root.MSG_GEN_PARAM_VALUE",
-          "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.unclassifySilverObject", "root.MSG_GEN_PARAM_VALUE",
+              "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -452,9 +453,9 @@ public class ClassifyEngine implements Cloneable {
       m_hSinglePertinentAxis.clear();
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.unclassifySilverObject", SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
-          "silverObjectId= " + nSilverObjectId, e);
+              "ClassifyEngine.unclassifySilverObject", SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
+              "silverObjectId= " + nSilverObjectId, e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -465,7 +466,7 @@ public class ClassifyEngine implements Cloneable {
    * given connection is null, then we have to open a connection and close it
    */
   public void unclassifySilverObjectByPositionId(Connection connection,
-      int nPositionId) throws ClassifyEngineException {
+          int nPositionId) throws ClassifyEngineException {
     boolean bCloseConnection = false;
     PreparedStatement prepStmt = null;
     try {
@@ -480,8 +481,8 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the removal
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.unclassifySilverObjectByPositionId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.unclassifySilverObjectByPositionId",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -489,10 +490,10 @@ public class ClassifyEngine implements Cloneable {
       m_hSinglePertinentAxis.clear();
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.unclassifySilverObjectByPositionId",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
-          "nPositionId= " + nPositionId, e);
+              "ClassifyEngine.unclassifySilverObjectByPositionId",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_REMOVE_SILVEROBJECTID_POSITION",
+              "nPositionId= " + nPositionId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -506,7 +507,7 @@ public class ClassifyEngine implements Cloneable {
    * we have to open a connection and close it
    */
   public void updateSilverObjectPosition(Connection connection, Position newPosition)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     // Check the minimum required
@@ -531,8 +532,8 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the update
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.updateSilverObjectPosition",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.updateSilverObjectPosition",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -540,10 +541,10 @@ public class ClassifyEngine implements Cloneable {
       m_hSinglePertinentAxis.clear();
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.updateSilverObjectPosition",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_UPDATE_SILVEROBJECTID_POSITION",
-          "nPositionId= " + newPosition.getPositionId(), e);
+              "ClassifyEngine.updateSilverObjectPosition",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_UPDATE_SILVEROBJECTID_POSITION",
+              "nPositionId= " + newPosition.getPositionId(), e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -557,7 +558,7 @@ public class ClassifyEngine implements Cloneable {
    * connection is null, then we have to open a connection and close it add by SAN
    */
   public void updateSilverObjectPositions(Connection connection,
-      List<Value> classifyValues, int nSilverObjectId) throws ClassifyEngineException {
+          List<Value> classifyValues, int nSilverObjectId) throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     Value value = null;
@@ -577,12 +578,12 @@ public class ClassifyEngine implements Cloneable {
 
         // build the statement to update the position
         String sSQLStatement = SQLStatement.buildUpdateByObjectIdStatement(
-            value, nSilverObjectId);
+                value, nSilverObjectId);
 
         // Execute the update
         SilverTrace.info("classifyEngine",
-            "ClassifyEngine.updateSilverObjectPositions__SEA",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+                "ClassifyEngine.updateSilverObjectPositions__SEA",
+                "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
@@ -591,10 +592,10 @@ public class ClassifyEngine implements Cloneable {
       }
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.updateSilverObjectPositions",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_UPDATE_SILVEROBJECTID_POSITION", "axisId= "
-          + value.getAxisId(), e);
+              "ClassifyEngine.updateSilverObjectPositions",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_UPDATE_SILVEROBJECTID_POSITION", "axisId= "
+              + value.getAxisId(), e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -604,19 +605,19 @@ public class ClassifyEngine implements Cloneable {
   }
 
   public List<Integer> findSilverOjectByCriterias(List<Criteria> alGivenCriterias,
-      JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
-      String afterDate, String beforeDate) throws ClassifyEngineException {
+          JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
+          String afterDate, String beforeDate) throws ClassifyEngineException {
     return findSilverOjectByCriterias(alGivenCriterias, joinStatementContainer,
-        joinStatementContent, afterDate, beforeDate, true, true);
+            joinStatementContent, afterDate, beforeDate, true, true);
   }
 
   /*
    * Find all the SilverObjectId corresponding to the given criterias and the given Join Statement
    */
   public List<Integer> findSilverOjectByCriterias(List<Criteria> alGivenCriterias,
-      JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
-      String afterDate, String beforeDate, boolean recursiveSearch,
-      boolean visibilitySensitive) throws ClassifyEngineException {
+          JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
+          String afterDate, String beforeDate, boolean recursiveSearch,
+          boolean visibilitySensitive) throws ClassifyEngineException {
     Connection connection = null;
     List<Integer> alObjectIds = new ArrayList<Integer>();
 
@@ -627,7 +628,7 @@ public class ClassifyEngine implements Cloneable {
     List<Criteria> alCriterias = new ArrayList<Criteria>();
     for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
-          this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
+              this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
@@ -639,18 +640,18 @@ public class ClassifyEngine implements Cloneable {
 
       // build the statement to get the SilverObjectIds
       String sSQLStatement = SQLStatement.buildFindByCriteriasStatementByJoin(
-          alCriterias, joinStatementContainer, joinStatementContent, today,
-          recursiveSearch, visibilitySensitive);
+              alCriterias, joinStatementContainer, joinStatementContent, today,
+              recursiveSearch, visibilitySensitive);
 
       // Execute the finding
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.findSilverOjectByCriterias",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.findSilverOjectByCriterias",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
 
       // works on dates
       if ((beforeDate != null && beforeDate.length() > 0)
-          && (afterDate != null && afterDate.length() > 0)) {
+              && (afterDate != null && afterDate.length() > 0)) {
         prepStmt.setDate(1, new Date(DateUtil.parseDate(beforeDate).getTime()));
         prepStmt.setDate(2, new Date(DateUtil.parseDate(afterDate).getTime()));
       } else if (beforeDate != null && beforeDate.length() > 0) {
@@ -659,12 +660,12 @@ public class ClassifyEngine implements Cloneable {
         prepStmt.setDate(1, new Date(DateUtil.parseDate(afterDate).getTime()));
       }
       SilverTrace.debug("classifyEngine",
-          "ClassifyEngine.findSilverOjectByCriterias",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.findSilverOjectByCriterias",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       resSet = prepStmt.executeQuery();
       SilverTrace.debug("classifyEngine",
-          "ClassifyEngine.findSilverOjectByCriterias",
-          "root.MSG_GEN_PARAM_VALUE", "query executed !");
+              "ClassifyEngine.findSilverOjectByCriterias",
+              "root.MSG_GEN_PARAM_VALUE", "query executed !");
 
       // Fetch the results
       while (resSet.next()) {
@@ -674,9 +675,9 @@ public class ClassifyEngine implements Cloneable {
       return alObjectIds;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.findSilverOjectByCriterias",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_FIND_SILVEROBJECTID", e);
+              "ClassifyEngine.findSilverOjectByCriterias",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_FIND_SILVEROBJECTID", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);
@@ -687,8 +688,8 @@ public class ClassifyEngine implements Cloneable {
    * get the SilverContentIds corresponding to the given PositionIds
    */
   public List<Integer> getSilverContentIdsByPositionIds(List<Integer> alPositionids)
-      throws ClassifyEngineException {
-    if (alPositionids == null || alPositionids.size() == 0) {
+          throws ClassifyEngineException {
+    if (alPositionids == null || alPositionids.isEmpty()) {
       return new ArrayList<Integer>();
     }
 
@@ -701,12 +702,12 @@ public class ClassifyEngine implements Cloneable {
 
       // build the statement to get the SilverObjectIds
       String sSQLStatement = SQLStatement.buildSilverContentIdsByPositionIdsStatement(
-          alPositionids);
+              alPositionids);
 
       // Execute the finding
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getSilverContentIdsByPositionIds",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.getSilverContentIdsByPositionIds",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       // Fetch the results and convert them in Positions
@@ -718,9 +719,9 @@ public class ClassifyEngine implements Cloneable {
       return alSilverContentIds;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.getSilverContentIdsByPositionIds",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_SILVERCONTENTIDS_BYSILVEROBJECTIDS", e);
+              "ClassifyEngine.getSilverContentIdsByPositionIds",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_SILVERCONTENTIDS_BYSILVEROBJECTIDS", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);
@@ -731,7 +732,7 @@ public class ClassifyEngine implements Cloneable {
    * Find all the Positions corresponding to the given SilverObjectId
    */
   public List<Position> findPositionsBySilverOjectId(int nSilverObjectId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     Connection connection = null;
 
     // Check the minimum required
@@ -747,7 +748,7 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the finding
       SilverTrace.info("classifyEngine", "ClassifyEngine.findPositionsBySilverOjectId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -773,9 +774,9 @@ public class ClassifyEngine implements Cloneable {
       return alResults;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.findPositionsBySilverOjectId",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_FIND_SILVEROBJECTID", e);
+              "ClassifyEngine.findPositionsBySilverOjectId",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_FIND_SILVEROBJECTID", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);
@@ -784,7 +785,7 @@ public class ClassifyEngine implements Cloneable {
 
   // Remove all the Position values on the given axis
   private void removeAllPositionValuesOnAxis(Connection connection, int nAxisId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     PreparedStatement prepStmt = null;
     try {
       // build the statement to get the SilverObjectIds
@@ -792,8 +793,8 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the removal
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.removeAllPositionValuesOnAxis",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.removeAllPositionValuesOnAxis",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -801,9 +802,9 @@ public class ClassifyEngine implements Cloneable {
       m_hSinglePertinentAxis.clear();
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.removeAllPositionValuesOnAxis",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_REMOVE_ALLPOSITIONVALUES", e);
+              "ClassifyEngine.removeAllPositionValuesOnAxis",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_REMOVE_ALLPOSITIONVALUES", e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -812,7 +813,7 @@ public class ClassifyEngine implements Cloneable {
   // Remove all the positions with all the values at null
   // Return the deleted positionIds
   private List<Integer> removeEmptyPositions(Connection connection)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     // -----------------------------
     // Get the removed positionIds
     // -----------------------------
@@ -822,7 +823,7 @@ public class ClassifyEngine implements Cloneable {
     ArrayList<Integer> alDeletedPositionIds = new ArrayList<Integer>();
     // Execute the query
     SilverTrace.info("classifyEngine", "ClassifyEngine.removeEmptyPositions",
-        "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
     try {
@@ -835,8 +836,8 @@ public class ClassifyEngine implements Cloneable {
       }
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.removeEmptyPositions",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_REMOVE_EMPTYPOSITIONS", e);
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_REMOVE_EMPTYPOSITIONS", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
     }
@@ -851,7 +852,7 @@ public class ClassifyEngine implements Cloneable {
 
       // Execute the removal
       SilverTrace.info("classifyEngine", "ClassifyEngine.removeEmptyPositions",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -861,8 +862,8 @@ public class ClassifyEngine implements Cloneable {
       return alDeletedPositionIds;
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.removeEmptyPositions",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_REMOVE_EMPTYPOSITIONS", e);
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_REMOVE_EMPTYPOSITIONS", e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -872,7 +873,7 @@ public class ClassifyEngine implements Cloneable {
    * Replace the old value with the new value for all positions
    */
   public void replaceValuesOnAxis(Connection connection, List<Value> oldValue,
-      List<Value> newValue) throws ClassifyEngineException {
+          List<Value> newValue) throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     // For all the given values
@@ -888,12 +889,12 @@ public class ClassifyEngine implements Cloneable {
       this.checkAxisId(oldV.getAxisId());
       if (oldV.getAxisId() != newV.getAxisId()) {
         throw new ClassifyEngineException("ClassifyEngine.replaceValuesOnAxis",
-            SilverpeasException.ERROR,
-            "classifyEngine.EX_AXISVALUES_NOT_IDENTICAL");
+                SilverpeasException.ERROR,
+                "classifyEngine.EX_AXISVALUES_NOT_IDENTICAL");
       }
       if (oldV.getValue().equals(newV.getValue())) {
         throw new ClassifyEngineException("ClassifyEngine.replaceValuesOnAxis",
-            SilverpeasException.ERROR, "classifyEngine.EX_VALUES_IDENTICAL");
+                SilverpeasException.ERROR, "classifyEngine.EX_VALUES_IDENTICAL");
       }
     }
 
@@ -910,23 +911,32 @@ public class ClassifyEngine implements Cloneable {
       while (nIndex < oldValue.size()) {
         // build the statement to get the SilverObjectIds
         String sSQLStatement = SQLStatement.buildReplaceValuesStatement(
-            oldValue.get(nIndex), newValue.get(nIndex));
+                oldValue.get(nIndex), newValue.get(nIndex));
 
         // Execute the change
         SilverTrace.info("classifyEngine",
-            "ClassifyEngine.replaceValuesOnAxis", "root.MSG_GEN_PARAM_VALUE",
-            "sSQLStatement= " + sSQLStatement);
+                "ClassifyEngine.replaceValuesOnAxis", "root.MSG_GEN_PARAM_VALUE",
+                "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
         nIndex++;
       }
 
+      // Remove empty positions coming from the above change
+      String sSQLStatement = SQLStatement.buildRemoveEmptyPositionsStatement(nbMaxAxis);
+      // Execute the deletion of empty positions
+      SilverTrace.info("classifyEngine",
+              "ClassifyEngine.replaceValuesOnAxis", "root.MSG_GEN_PARAM_VALUE",
+              "sSQLStatement= " + sSQLStatement);
+      prepStmt = connection.prepareStatement(sSQLStatement);
+      prepStmt.executeUpdate();
+
       // Clear cache
       m_hSinglePertinentAxis.clear();
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.replaceValuesOnAxis",
-          SilverpeasException.ERROR, "classifyEngine.EX_CANT_REPLACE_VALUES", e);
+              SilverpeasException.ERROR, "classifyEngine.EX_CANT_REPLACE_VALUES", e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -936,11 +946,11 @@ public class ClassifyEngine implements Cloneable {
   }
 
   private void checkSilverObjectId(int nSilverObjectId)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     if (nSilverObjectId < 0) {
       throw new ClassifyEngineException("ClassifyEngine.checkParameters",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_INCORRECT_SILVEROBJECTID");
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_INCORRECT_SILVEROBJECTID");
     }
   }
 
@@ -949,12 +959,12 @@ public class ClassifyEngine implements Cloneable {
       position.checkPosition();
     } else {
       throw new ClassifyEngineException("ClassifyEngine.checkParameters",
-          SilverpeasException.ERROR, "classifyEngine.EX_POSITION_NULL");
+              SilverpeasException.ERROR, "classifyEngine.EX_POSITION_NULL");
     }
   }
 
   private void checkParameters(int nSilverObjectId, Position<Value> position)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     this.checkSilverObjectId(nSilverObjectId);
     this.checkPosition(position);
   }
@@ -963,7 +973,7 @@ public class ClassifyEngine implements Cloneable {
     // Check if the given array of criterias is valid
     if (alCriterias == null) {
       throw new ClassifyEngineException("ClassifyEngine.checkCriterias",
-          SilverpeasException.ERROR, "classifyEngine.EX_CRITERIAS_ARRAY_NULL");
+              SilverpeasException.ERROR, "classifyEngine.EX_CRITERIAS_ARRAY_NULL");
     }
 
     // Check that each criteria is valid
@@ -975,8 +985,8 @@ public class ClassifyEngine implements Cloneable {
   private void checkAxisId(int nAxisId) throws ClassifyEngineException {
     if (nAxisId < 0) {
       throw new ClassifyEngineException("ClassifyEngine.checkAxisId",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_INCORRECT_AXISID_VALUE", "nAxisId: " + nAxisId);
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_INCORRECT_AXISID_VALUE", "nAxisId: " + nAxisId);
     }
   }
 
@@ -985,8 +995,8 @@ public class ClassifyEngine implements Cloneable {
    * return list is ordered like the given one considering the AxisId
    */
   public List<PertinentAxis> getPertinentAxis(List<? extends Criteria> alGivenCriterias,
-      List<Integer> alAxisIds)
-      throws ClassifyEngineException {
+          List<Integer> alAxisIds)
+          throws ClassifyEngineException {
     Connection connection = null;
 
     // Check the minimum required
@@ -996,7 +1006,7 @@ public class ClassifyEngine implements Cloneable {
     List<Criteria> alCriterias = new ArrayList<Criteria>();
     for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
-          this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
+              this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
 
     try {
@@ -1015,23 +1025,23 @@ public class ClassifyEngine implements Cloneable {
       return alPertinentAxis;
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.getPertinentAxis",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
       DBUtil.close(connection);
     }
   }
 
   private PertinentAxis getSinglePertinentAxis(Connection connection,
-      List<Criteria> alCriterias, int nAxisId, String todayFormatted)
-      throws SQLException, ClassifyEngineException {
+          List<Criteria> alCriterias, int nAxisId, String todayFormatted)
+          throws SQLException, ClassifyEngineException {
     // build the statements
     String sSQLStatement = SQLStatement.buildGetPertinentAxisStatement(
-        alCriterias, nAxisId, todayFormatted);
+            alCriterias, nAxisId, todayFormatted);
 
     // Execute the finding
     SilverTrace.info("classifyEngine", "ClassifyEngine.getSinglePertinentAxis",
-        "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
     PertinentAxis pAxis = null;
@@ -1039,8 +1049,8 @@ public class ClassifyEngine implements Cloneable {
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getSinglePertinentAxis", "root.MSG_GEN_PARAM_VALUE",
-          "Query executed !");
+              "ClassifyEngine.getSinglePertinentAxis", "root.MSG_GEN_PARAM_VALUE",
+              "Query executed !");
       // Fetch the results
       pAxis = new PertinentAxis();
       pAxis.setAxisId(this.getLogicalAxisId(nAxisId));
@@ -1061,8 +1071,8 @@ public class ClassifyEngine implements Cloneable {
    * given Join Statement The return list is ordered like the given one considering the AxisId
    */
   public List<PertinentAxis> getPertinentAxisByJoin(List<? extends Criteria> alGivenCriterias,
-      List<Integer> alAxisIds,
-      JoinStatement joinStatementAllPositions) throws ClassifyEngineException {
+          List<Integer> alAxisIds,
+          JoinStatement joinStatementAllPositions) throws ClassifyEngineException {
     Connection connection = null;
 
     // Check the minimum required
@@ -1072,7 +1082,7 @@ public class ClassifyEngine implements Cloneable {
     List<Criteria> alCriterias = new ArrayList<Criteria>();
     for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
-          this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
+              this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
 
     try {
@@ -1086,38 +1096,38 @@ public class ClassifyEngine implements Cloneable {
       for (Integer alAxisId : alAxisIds) {
         int nAxisId = this.getPhysicalAxisId(alAxisId);
         alPertinentAxis.add(this.getSinglePertinentAxisByJoin(connection,
-            alCriterias, nAxisId, "", joinStatementAllPositions, today));
+                alCriterias, nAxisId, "", joinStatementAllPositions, today));
       }
 
       return alPertinentAxis;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.getPertinentAxisByJoin", SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
+              "ClassifyEngine.getPertinentAxisByJoin", SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
       DBUtil.close(connection);
     }
   }
 
   public PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
-      List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
-      JoinStatement joinStatementAllPositions) throws SQLException,
-      ClassifyEngineException {
+          List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
+          JoinStatement joinStatementAllPositions) throws SQLException,
+          ClassifyEngineException {
     String today = DateUtil.today2SQLDate();
     return getSinglePertinentAxisByJoin(connection, alCriterias, nAxisId,
-        sRootValue, joinStatementAllPositions, today);
+            sRootValue, joinStatementAllPositions, today);
   }
 
   /*
    * Return a PertinentAxis object corresponding to the given AxisId, rootValue and search Criterias
    */
   public PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
-      List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
-      JoinStatement joinStatementAllPositions, String todayFormatted)
-      throws SQLException, ClassifyEngineException {
+          List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
+          JoinStatement joinStatementAllPositions, String todayFormatted)
+          throws SQLException, ClassifyEngineException {
     SilverTrace.info("classifyEngine",
-        "ClassifyEngine.getSinglePertinentAxisByJoin",
-        "root.MSG_GEN_ENTER_METHOD", "axisId = " + nAxisId);
+            "ClassifyEngine.getSinglePertinentAxisByJoin",
+            "root.MSG_GEN_ENTER_METHOD", "axisId = " + nAxisId);
     boolean bCloseConnection = false;
 
     PreparedStatement prepStmt = null;
@@ -1131,8 +1141,7 @@ public class ClassifyEngine implements Cloneable {
         List<Criteria> alComputedCriterias = new ArrayList<Criteria>();
         for (Criteria criteria : alCriterias) {
           alComputedCriterias.add(
-              new Criteria(this.getPhysicalAxisId(criteria.getAxisId()), criteria.
-                  getValue()));
+                  new Criteria(this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
         }
         alCriterias = alComputedCriterias;
 
@@ -1146,20 +1155,20 @@ public class ClassifyEngine implements Cloneable {
 
       // build the statements
       String sSQLStatement = SQLStatement.buildGetPertinentAxisStatementByJoin(
-          alCriterias, nAxisId, sRootValue, joinStatementAllPositions,
-          todayFormatted);
+              alCriterias, nAxisId, sRootValue, joinStatementAllPositions,
+              todayFormatted);
 
       PertinentAxis pertinentAxis = m_hSinglePertinentAxis.get(sSQLStatement);
       if (pertinentAxis == null) {
         // Execute the finding
         SilverTrace.info("classifyEngine",
-            "ClassifyEngine.getSinglePertinentAxisByJoin",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+                "ClassifyEngine.getSinglePertinentAxisByJoin",
+                "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         resSet = prepStmt.executeQuery();
         SilverTrace.info("classifyEngine",
-            "ClassifyEngine.getSinglePertinentAxisByJoin",
-            "root.MSG_GEN_PARAM_VALUE", "Query executed !");
+                "ClassifyEngine.getSinglePertinentAxisByJoin",
+                "root.MSG_GEN_PARAM_VALUE", "Query executed !");
 
         // Fetch the results
         pertinentAxis = new PertinentAxis();
@@ -1178,17 +1187,17 @@ public class ClassifyEngine implements Cloneable {
       return pertinentAxis;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.getSinglePertinentAxisByJoin",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
+              "ClassifyEngine.getSinglePertinentAxisByJoin",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       if (bCloseConnection) {
         DBUtil.close(connection);
       }
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getSinglePertinentAxisByJoin",
-          "root.MSG_GEN_EXIT_METHOD");
+              "ClassifyEngine.getSinglePertinentAxisByJoin",
+              "root.MSG_GEN_EXIT_METHOD");
     }
   }
 
@@ -1197,10 +1206,10 @@ public class ClassifyEngine implements Cloneable {
    * like the given one considering the AxisId
    */
   public List<PertinentValue> getPertinentValues(List<? extends Criteria> alGivenCriterias,
-      int nLogicalAxisId)
-      throws ClassifyEngineException {
+          int nLogicalAxisId)
+          throws ClassifyEngineException {
     SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentValues",
-        "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
+            "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
 
     Connection connection = null;
 
@@ -1211,7 +1220,7 @@ public class ClassifyEngine implements Cloneable {
     ArrayList<Criteria> alCriterias = new ArrayList<Criteria>();
     for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
-          this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
+              this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
 
     PreparedStatement prepStmt = null;
@@ -1224,11 +1233,11 @@ public class ClassifyEngine implements Cloneable {
 
       // Build the statement
       String sSQLStatement = SQLStatement.buildGetPertinentValueStatement(
-          alCriterias, this.getPhysicalAxisId(nLogicalAxisId), today);
+              alCriterias, this.getPhysicalAxisId(nLogicalAxisId), today);
 
       // Execute the finding
       SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentValues",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -1246,8 +1255,8 @@ public class ClassifyEngine implements Cloneable {
       return alPertinentValues;
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.getPertinentValues",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);
@@ -1259,11 +1268,11 @@ public class ClassifyEngine implements Cloneable {
    * like the given one considering the AxisId
    */
   public List<PertinentValue> getPertinentValuesByJoin(List<? extends Criteria> alGivenCriterias,
-      int nLogicalAxisId, JoinStatement joinStatementAllPositions)
-      throws ClassifyEngineException {
+          int nLogicalAxisId, JoinStatement joinStatementAllPositions)
+          throws ClassifyEngineException {
     SilverTrace.info("classifyEngine",
-        "ClassifyEngine.getPertinentValuesByJoin", "root.MSG_GEN_ENTER_METHOD",
-        "nLogicalAxisId = " + nLogicalAxisId);
+            "ClassifyEngine.getPertinentValuesByJoin", "root.MSG_GEN_ENTER_METHOD",
+            "nLogicalAxisId = " + nLogicalAxisId);
     Connection connection = null;
 
     // Check the minimum required
@@ -1273,7 +1282,7 @@ public class ClassifyEngine implements Cloneable {
     List<Criteria> alCriterias = new ArrayList<Criteria>();
     for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
-          this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
+              this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
 
     PreparedStatement prepStmt = null;
@@ -1286,18 +1295,18 @@ public class ClassifyEngine implements Cloneable {
 
       // Build the statement
       String sSQLStatement = SQLStatement.buildGetPertinentValueByJoinStatement(alCriterias, this.
-          getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
-          today);
+              getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
+              today);
 
       // Execute the finding
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getPertinentValuesByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.getPertinentValuesByJoin",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getPertinentValuesByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "Query executed !");
+              "ClassifyEngine.getPertinentValuesByJoin",
+              "root.MSG_GEN_PARAM_VALUE", "Query executed !");
 
       // Fetch the results
       ArrayList<PertinentValue> alPertinentValues = new ArrayList<PertinentValue>();
@@ -1313,8 +1322,8 @@ public class ClassifyEngine implements Cloneable {
       return alPertinentValues;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.getPertinentValuesByJoin", SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
+              "ClassifyEngine.getPertinentValuesByJoin", SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);
@@ -1326,11 +1335,11 @@ public class ClassifyEngine implements Cloneable {
    * like the given one considering the AxisId
    */
   public List<ObjectValuePair> getObjectValuePairsByJoin(List<? extends Criteria> alGivenCriterias,
-      int nLogicalAxisId, JoinStatement joinStatementAllPositions)
-      throws ClassifyEngineException {
+          int nLogicalAxisId, JoinStatement joinStatementAllPositions)
+          throws ClassifyEngineException {
     SilverTrace.info("classifyEngine",
-        "ClassifyEngine.getObjectValuePairsByJoin",
-        "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
+            "ClassifyEngine.getObjectValuePairsByJoin",
+            "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
     Connection connection = null;
 
     // Check the minimum required
@@ -1340,7 +1349,7 @@ public class ClassifyEngine implements Cloneable {
     List<Criteria> alCriterias = new ArrayList<Criteria>();
     for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
-          this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
+              this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
 
     PreparedStatement prepStmt = null;
@@ -1353,24 +1362,24 @@ public class ClassifyEngine implements Cloneable {
 
       // Build the statement
       String sSQLStatement = SQLStatement.buildGetObjectValuePairsByJoinStatement(alCriterias, this.
-          getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
-          today, true);
+              getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
+              today, true);
 
       // Execute the finding
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getObjectValuePairsByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+              "ClassifyEngine.getObjectValuePairsByJoin",
+              "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getObjectValuePairsByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "Query executed !");
+              "ClassifyEngine.getObjectValuePairsByJoin",
+              "root.MSG_GEN_PARAM_VALUE", "Query executed !");
 
       // Fetch the results
       List<ObjectValuePair> objectValuePairs = new ArrayList<ObjectValuePair>();
       while (resSet.next()) {
         ObjectValuePair ovp = new ObjectValuePair(resSet.getInt(1), resSet.getString(2), resSet.
-            getString(3));
+                getString(3));
 
         objectValuePairs.add(ovp);
       }
@@ -1378,9 +1387,9 @@ public class ClassifyEngine implements Cloneable {
       return objectValuePairs;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.getObjectValuePairsByJoin",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
+              "ClassifyEngine.getObjectValuePairsByJoin",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);
@@ -1395,9 +1404,9 @@ public class ClassifyEngine implements Cloneable {
    * @throws ClassifyEngineException
    */
   public List<Integer> getPertinentAxisByInstanceIds(List<String> instanceIds)
-      throws ClassifyEngineException {
+          throws ClassifyEngineException {
     SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentAxisByInstanceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
 
     if (instanceIds == null || instanceIds.isEmpty()) {
       return new ArrayList<Integer>();
@@ -1424,10 +1433,10 @@ public class ClassifyEngine implements Cloneable {
       sSQLStatement.append("select * from sb_classifyengine_classify ");
       sSQLStatement.append("where objectid in ");
       sSQLStatement.append(
-          "(select silvercontentid from sb_contentmanager_content, sb_contentmanager_instance where contentinstanceid in ");
+              "(select silvercontentid from sb_contentmanager_content, sb_contentmanager_instance where contentinstanceid in ");
       sSQLStatement.append(
-          "(select instanceid from sb_contentmanager_instance where componentid IN (").append(
-          inClause.toString()).append(")))");
+              "(select instanceid from sb_contentmanager_instance where componentid IN (").append(
+              inClause.toString()).append(")))");
 
       // Execute the finding
       prepStmt = connection.prepareStatement(sSQLStatement.toString());
@@ -1444,7 +1453,7 @@ public class ClassifyEngine implements Cloneable {
           }
         }
       }
-      
+
       List<Integer> axisIds = new ArrayList<Integer>();
       for (int id : ids) {
         axisIds.add(getLogicalAxisId(id));
@@ -1453,9 +1462,9 @@ public class ClassifyEngine implements Cloneable {
       return axisIds;
     } catch (Exception e) {
       throw new ClassifyEngineException(
-          "ClassifyEngine.getPertinentAxisByInstanceIds",
-          SilverpeasException.ERROR,
-          "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
+              "ClassifyEngine.getPertinentAxisByInstanceIds",
+              SilverpeasException.ERROR,
+              "classifyEngine.EX_CANT_GET_PERTINENT_VALUES", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       DBUtil.close(connection);

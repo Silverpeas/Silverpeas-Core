@@ -29,16 +29,21 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 public enum PdcTagOperation {
   
   /**
-   * Reads the classification onto the PdC of a given content.
+   * Reads the classification on the PdC of a given content.
    */
   READ_CLASSIFICATION,
   /**
-   * Opens the classification onto the PdC of a given content. By opening this classification, the
+   * Opens the classification on the PdC of a given content. By opening this classification, the
    * user can change it.
    */
   OPEN_CLASSIFICATION,
   /**
-   * Creates a new classification onto the PdC for a new or an existing content.
+   * Creates a new classification on the PdC for a new or an existing content.
    */
-  CREATE_CLASSIFICATION;
+  CREATE_CLASSIFICATION,
+  /**
+   * Predefines the classification on the PdC of contents that will published in a given node
+   * of a given component instance.
+   */
+  PREDEFINE_CLASSIFICATION;
 }

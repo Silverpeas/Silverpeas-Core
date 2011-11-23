@@ -56,7 +56,9 @@ import static com.silverpeas.pdc.web.PdcServiceProvider.*;
  * 
  * A classification on the PdC is defined by the different positions of the classified resource 
  * on the axis of the PdC. A position is then a set of one or more values in the different axis of
- * the PdC.
+ * the PdC. A classification on the PdC can be or not modifiable; by default a predefined
+ * classification used to classify new published contents isn't modifiable whereas the classification
+ * of a content can be modified.
  * 
  * The positions of a given classification can be accessed with this Web resource by the URI of the
  * position; classifications and positions are exposed in the Web by Silverpeas and are thus

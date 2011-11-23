@@ -23,16 +23,16 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.web.beans.PdcClassification;
+import com.silverpeas.pdc.model.PdcClassification;
 import org.junit.Before;
 import com.silverpeas.rest.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
+import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.PdcClassification.*;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
 
 /**
@@ -70,7 +70,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
   @Test
   public void nominalClassificationWithSynonymsGetting() throws Exception {
     PdcClassification theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
@@ -80,9 +80,9 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
 
   @Test
   public void nominalClassificationWithoutAnySynonymsGetting() throws Exception {
-    PdcClassification theClassification = aPdcClassificationWithoutAnySynonyms().
-            onResource(CONTENT_ID).
-            inComponent(COMPONENT_INSTANCE_ID);
+    PdcClassification theClassification = aPdcClassification().
+            onContent(CONTENT_ID).
+            inComponent(COMPONENT_INSTANCE_ID).buildWithNoSynonyms();
     getTestResources().save(theClassification);
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
@@ -104,7 +104,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest<PdcTe
   @Override
   public PdcClassificationEntity aResource() {
     PdcClassification theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
     PdcClassificationEntity entity = null;
     try {

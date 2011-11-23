@@ -102,6 +102,12 @@ public abstract class ResourceDeletionTest<T extends TestResources> extends REST
 
   @Test
   public void deletionOfAnUnexistingResource() throws Exception {
-    deleteAt(anUnexistingResourceURI());
+    try {
+      deleteAt(anUnexistingResourceURI());
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int notFound = Status.NOT_FOUND.getStatusCode();
+      assertThat(receivedStatus, is(notFound));
+    }
   }
 }

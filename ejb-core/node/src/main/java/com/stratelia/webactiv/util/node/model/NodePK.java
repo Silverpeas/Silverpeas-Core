@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.model;
 
 import java.io.Serializable;
@@ -36,11 +35,10 @@ public class NodePK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = 444396186497175804L;
 
+  public static final String UNDEFINED_NODE_ID = "-1";
   public static final String ROOT_NODE_ID = "0";
-  public static final String BIN_NODE_ID = "1";  
-    public static final String UNCLASSED_NODE_ID = "2";
-
-
+  public static final String BIN_NODE_ID = "1";
+  public static final String UNCLASSED_NODE_ID = "2";
   /** To apply the fat key pattern. */
   transient public NodeDetail nodeDetail = null;
 
@@ -77,18 +75,21 @@ public class NodePK extends WAPrimaryKey implements Serializable {
   public NodePK(String id, WAPrimaryKey pk) {
     super(id, pk);
   }
-  
+
   public boolean isTrash() {
     return BIN_NODE_ID.equals(id);
   }
-  
-  
+
   public boolean isRoot() {
     return ROOT_NODE_ID.equals(id);
   }
-  
+
   public boolean isUnclassed() {
     return UNCLASSED_NODE_ID.equals(id);
+  }
+  
+  public boolean isUndefined() {
+    return UNDEFINED_NODE_ID.equals(id);
   }
 
   /**

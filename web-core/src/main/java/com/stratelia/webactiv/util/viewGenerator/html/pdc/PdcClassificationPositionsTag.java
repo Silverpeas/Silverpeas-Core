@@ -35,7 +35,6 @@ public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
   private String setIn;
   
   public PdcClassificationPositionsTag() {
-    System.out.println("PdcClassificationPositionsTag");
   }
 
   public String getSetIn() {

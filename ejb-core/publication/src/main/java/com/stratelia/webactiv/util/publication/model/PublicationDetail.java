@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.publication.model;
 
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,10 +42,11 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -556,6 +558,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.author = author;
   }
 
+  @Override
   public Date getCreationDate() {
     return creationDate;
   }
@@ -573,9 +576,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return creatorId;
   }
   
+  @Override
   public UserDetail getCreator() {
-    OrganizationController controller = new OrganizationController();
-    return controller.getUserDetail(getCreatorId());
+    return UserDetail.getById(getCreatorId());
   }
 
   public int getImportance() {
@@ -725,6 +728,17 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getSilverObjectId() {
+    if (this.silverObjectId == null) {
+      ContentManager contentManager = ContentManagerFactory.getFactory().getContentManager();
+      try {
+        int objectId = contentManager.getSilverContentId(getId(), getInstanceId());
+        if (objectId >= 0) {
+          this.silverObjectId = String.valueOf(objectId);
+        }
+      } catch (ContentManagerException ex) {
+        this.silverObjectId = null;
+      }
+    }
     return this.silverObjectId;
   }
 
@@ -756,6 +770,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return DateUtil.date2SQLDate(getCreationDate());
   }
 
+  @Override
   public String getTitle() {
     return getName();
   }
@@ -1217,5 +1232,10 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return getSilverObjectId();
   }
 }

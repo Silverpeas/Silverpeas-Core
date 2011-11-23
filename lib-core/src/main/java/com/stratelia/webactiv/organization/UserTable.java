@@ -54,17 +54,17 @@ public class UserTable extends Table<UserRow> {
    */
   protected UserRow fetchUser(ResultSet rs) throws SQLException {
     UserRow u = new UserRow();
-    u.id = rs.getInt(1);
-    u.specificId = rs.getString(2);
-    u.domainId = rs.getInt(3);
-    u.login = rs.getString(4);
-    u.firstName = rs.getString(5);
-    u.lastName = rs.getString(6);
-    u.loginMail = rs.getString(7);
-    u.eMail = rs.getString(8);
-    u.accessLevel = rs.getString(9);
-    u.loginQuestion = rs.getString(10);
-    u.loginAnswer = rs.getString(11);
+    u.id = rs.getInt("id");
+    u.specificId = rs.getString("specificId");
+    u.domainId = rs.getInt("domainId");
+    u.login = rs.getString("login");
+    u.firstName = rs.getString("firstName");
+    u.lastName = rs.getString("lastName");
+    u.loginMail = rs.getString("loginMail");
+    u.eMail = rs.getString("email");
+    u.accessLevel = rs.getString("accessLevel");
+    u.loginQuestion = rs.getString("loginQuestion");
+    u.loginAnswer = rs.getString("loginAnswer");
     return u;
   }
 
