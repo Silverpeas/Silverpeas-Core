@@ -79,7 +79,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -237,28 +237,18 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // process extra properties
-      Set<String> keys = properties.keySet();
-      Iterator<String> iKeys = keys.iterator();
-      String key = null;
-      String value = null;
-      while (iKeys.hasNext()) {
-        key = iKeys.next();
-        value = properties.get(key);
-
-        uf.setValue(key, value);
+      for(Map.Entry<String, String> entry : properties.entrySet()) {
+        uf.setValue(entry.getKey(), entry.getValue());
       }
 
       idRet = m_AdminCtrl.updateUserFull(uf);
-      if ((idRet == null) || (idRet.length() <= 0)) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createUser()",
+      if (!StringUtil.isDefined(idRet)) {
+        throw new JobDomainPeasException("JobDomainPeasSessionController.createUser()",
             SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER");
       }
     }
-
     // regroupement de l'utilisateur dans un groupe
     regroupInGroup(properties, null);
-
     // If group is provided, add newly created user to it
     if (StringUtil.isDefined(groupId)) {
       m_AdminCtrl.addUserInGroup(idRet, groupId);
@@ -303,16 +293,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           }
 
           // Recherche du nom du regroupement (nom du groupe)
-          Set<String> keys = properties.keySet();
-          Iterator<String> iKeys = keys.iterator();
-          String key = null;
           String value = null;
           boolean trouve = false;
-          while (iKeys.hasNext()) {
-            key = iKeys.next();
-            value = properties.get(key);
-
-            if (key.equals(nomPropertyRegroupement)) {
+          for(Map.Entry<String, String> entry : properties.entrySet()) {
+            value = entry.getValue();
+            if (entry.getKey().equals(nomPropertyRegroupement)) {
               trouve = true;
               break;
             }
@@ -326,9 +311,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       if (nomRegroup != null && nomRegroup.length() > 0) {
         // Recherche le groupe dans le domaine
-        Group group = m_AdminCtrl.getGroupByNameInDomain(nomRegroup,
-            targetDomainId);
-
+        Group group = m_AdminCtrl.getGroupByNameInDomain(nomRegroup, targetDomainId);
         if (group == null) {
           // le groupe n'existe pas, on le crée
           group = new Group();
@@ -784,18 +767,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     // process extra properties
-    Set<String> keys = properties.keySet();
-    for (String key : keys) {
-      String value = properties.get(key);
-      theModifiedUser.setValue(key, value);
+    for(Map.Entry<String, String> entry : properties.entrySet()) {
+      theModifiedUser.setValue(entry.getKey(), entry.getValue());
     }
 
     String idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
     if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser);
+      throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUser()",
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId=" + idUser);
     }
     refresh();
     setTargetUser(idRet);
@@ -845,10 +824,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theModifiedUser.setAccessLevel(userAccessLevel);
 
     // process extra properties
-    Set<String> keys = properties.keySet();
-    for (String key : keys) {
-      String value = properties.get(key);
-      theModifiedUser.setValue(key, value);
+    for(Map.Entry<String, String> entry : properties.entrySet()) {
+      theModifiedUser.setValue(entry.getKey(), entry.getValue());
     }
 
     String idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
