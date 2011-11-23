@@ -358,7 +358,7 @@ public interface ProcessModel {
    * Returns the action of kind create Throws a WorkflowException if there is no action of type
    * create
    */
-  public Action getCreateAction() throws WorkflowException;
+  public Action getCreateAction(String role) throws WorkflowException;
 
   /**
    * Returns the com.silverpeas.form.Form which be used to publish the named form. We can give an
