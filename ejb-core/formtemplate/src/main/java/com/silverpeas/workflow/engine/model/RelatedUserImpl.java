@@ -35,6 +35,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
  **/
 public class RelatedUserImpl extends AbstractReferrableObject implements RelatedUser, Serializable {
+  private static final long serialVersionUID = -7371460894690406952L;
   private Participant participant;
   private Item folderItem;
   private String relation;

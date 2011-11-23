@@ -27,7 +27,6 @@ package com.silverpeas.workflow.engine.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
@@ -67,6 +66,7 @@ import com.silverpeas.workflow.api.model.UserInRole;
  * Model.
  */
 public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Serializable {
+  private static final long serialVersionUID = -4087273551836127990L;
   private String modelId;
   private String name;
   private ContextualDesignations labels;
@@ -473,7 +473,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.ProcessModel#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 
@@ -515,7 +515,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.ProcessModel#iterateDescription()
    */
-  public Iterator iterateDescription() {
+  public Iterator<ContextualDesignation> iterateDescription() {
     return descriptions.iterateContextualDesignation();
   }
 
@@ -805,7 +805,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     return template;
   }
 
-  private HashMap instanceDataTemplates = new HashMap();
+  private HashMap<String, RecordTemplate> instanceDataTemplates = new HashMap<String, RecordTemplate>();
 
   /**
    * Returns the recordTemplate which describes the data record used to show process instance as a
@@ -823,7 +823,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     return template;
   }
 
-  private HashMap rowTemplates = new HashMap();
+  private HashMap<String, RecordTemplate> rowTemplates = new HashMap<String, RecordTemplate>();
 
   /************* Implemented methods *****************************************/
   // ~ Methods ////////////////////////////////////////////////////////////////

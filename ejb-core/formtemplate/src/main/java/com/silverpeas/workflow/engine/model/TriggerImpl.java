@@ -36,9 +36,10 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;trigger&gt; element of a Process Model.
  **/
 public class TriggerImpl extends AbstractReferrableObject implements Trigger, Serializable {
+  private static final long serialVersionUID = -5923330362725539310L;
   private String name;
   private String className;
-  private Vector parameters;
+  private Vector<Parameter> parameters;
 
   /**
    * Constructor
@@ -54,7 +55,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
   private void reset() {
     name = "";
     className = "";
-    parameters = new Vector();
+    parameters = new Vector<Parameter>();
   }
 
   /**
@@ -134,7 +135,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Item#iterateParameters()
    */
-  public Iterator iterateParameter() {
+  public Iterator<Parameter> iterateParameter() {
     return parameters.iterator();
   }
 }

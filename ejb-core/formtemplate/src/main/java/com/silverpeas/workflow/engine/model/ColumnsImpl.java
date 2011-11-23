@@ -25,14 +25,13 @@
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import com.silverpeas.workflow.api.model.Column;
 import com.silverpeas.workflow.api.model.Columns;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
-import java.util.ArrayList;
 
 /**
  * Class implementing the representation of the &lt;columns&gt; element of a Process Model.

@@ -63,7 +63,7 @@ public interface State {
    * Iterate through the Labels
    * @return an iterator
    */
-  public Iterator iterateLabel();
+  public Iterator<ContextualDesignation> iterateLabel();
 
   /**
    * Add a label Method needed primarily by Castor
@@ -96,7 +96,7 @@ public interface State {
    * Iterate through the activities
    * @return an iterator
    */
-  public Iterator iterateActivity();
+  public Iterator<ContextualDesignation> iterateActivity();
 
   /**
    * Add an activity Method needed primarily by Castor
@@ -124,7 +124,7 @@ public interface State {
    * Iterate through the descriptions
    * @return an iterator
    */
-  public Iterator iterateDescription();
+  public Iterator<ContextualDesignation> iterateDescription();
 
   /**
    * Add a description Method needed primarily by Castor

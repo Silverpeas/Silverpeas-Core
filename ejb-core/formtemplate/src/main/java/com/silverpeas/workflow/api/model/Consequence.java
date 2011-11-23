@@ -89,7 +89,7 @@ public interface Consequence {
    * Iterate through Target States.
    * @return an Iterator
    */
-  public Iterator iterateTargetState();
+  public Iterator<StateSetter> iterateTargetState();
 
   /**
    * Create a new state Setter object
@@ -120,7 +120,7 @@ public interface Consequence {
    * Iterate through Unset States.
    * @return an Iterator
    */
-  public Iterator iterateUnsetState();
+  public Iterator<StateSetter> iterateUnsetState();
 
   /**
    * Add a new Unset State to the collection

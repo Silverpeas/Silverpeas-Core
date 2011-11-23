@@ -53,7 +53,7 @@ public interface Presentation {
    * Iterate through the titles
    * @return an iterator
    */
-  public Iterator iterateTitle();
+  public Iterator<ContextualDesignation> iterateTitle();
 
   /**
    * Add a title Method needed primarily by Castor
@@ -84,7 +84,7 @@ public interface Presentation {
    * Iterate through the Column objects
    * @return an iterator
    */
-  public Iterator iterateColumns();
+  public Iterator<Columns> iterateColumns();
 
   /**
    * Add an column to the collection

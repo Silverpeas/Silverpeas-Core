@@ -36,6 +36,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;participant&gt; element of a Process Model.
  **/
 public class ParticipantImpl extends AbstractReferrableObject implements Participant, Serializable {
+  private static final long serialVersionUID = -6272061474366848845L;
   private String name;
   private String resolvedState;
   private ContextualDesignations labels;
@@ -99,7 +100,7 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Participant#iterateDescription()
    */
-  public Iterator iterateDescription() {
+  public Iterator<ContextualDesignation> iterateDescription() {
     return descriptions.iterateContextualDesignation();
   }
 
@@ -145,7 +146,7 @@ public class ParticipantImpl extends AbstractReferrableObject implements Partici
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Participant#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 

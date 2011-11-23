@@ -36,19 +36,19 @@ import com.silverpeas.workflow.api.model.ContextualDesignations;
  * Class managing a collection of ContextualDesigantion objects.
  */
 public class SpecificLabelListHelper implements ContextualDesignations {
-  List labels = null; // a reference to the list we are going to manage
+  List<ContextualDesignation> labels = null; // a reference to the list we are going to manage
 
   /**
    * Constructor
    */
   public SpecificLabelListHelper() {
-    this.labels = new ArrayList();
+    this.labels = new ArrayList<ContextualDesignation>();
   }
 
   /**
    * Constructor
    */
-  public SpecificLabelListHelper(List labels) {
+  public SpecificLabelListHelper(List<ContextualDesignation> labels) {
     this.labels = labels;
   }
 
@@ -116,7 +116,7 @@ public class SpecificLabelListHelper implements ContextualDesignations {
    * (non-Javadoc)
    * @seecom.silverpeas.workflow.api.model.ContextualDesignations# iterateContextualDesignation()
    */
-  public Iterator iterateContextualDesignation() {
+  public Iterator<ContextualDesignation> iterateContextualDesignation() {
     if (labels == null)
       return null;
     else

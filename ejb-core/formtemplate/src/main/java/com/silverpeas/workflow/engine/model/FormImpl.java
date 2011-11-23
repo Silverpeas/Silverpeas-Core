@@ -50,11 +50,12 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  */
 public class FormImpl extends AbstractReferrableObject implements Form, AbstractDescriptor,
     Serializable {
+  private static final long serialVersionUID = 1721380617586523435L;
   private String name;
   private String role;
   private String HTMLFileName;
   private ContextualDesignations titles; // object storing the titles
-  private Vector inputList;
+  private Vector<Input> inputList;
 
   // ~ Instance fields related to AbstractDescriptor
   // ////////////////////////////////////////////////////////
@@ -83,7 +84,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    */
   private void reset() {
     titles = new SpecificLabelListHelper();
-    inputList = new Vector();
+    inputList = new Vector<Input>();
   }
 
   /**
@@ -164,7 +165,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Form#iterateInput()
    */
-  public Iterator iterateInput() {
+  public Iterator<Input> iterateInput() {
     return inputList.iterator();
   }
 
@@ -217,7 +218,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Form#iterateTitle()
    */
-  public Iterator iterateTitle() {
+  public Iterator<ContextualDesignation> iterateTitle() {
     return titles.iterateContextualDesignation();
   }
 
@@ -354,10 +355,10 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
         }
 
         // add parameters
-        Iterator parameters = item.iterateParameter();
+        Iterator<Parameter> parameters = item.iterateParameter();
         Parameter param = null;
         while (parameters.hasNext()) {
-          param = (Parameter) parameters.next();
+          param = parameters.next();
           if (param != null)
             ft.addParameter(param.getName(), param.getValue());
         }

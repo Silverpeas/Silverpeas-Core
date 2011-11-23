@@ -1829,7 +1829,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // Forms
     //
     if (processModel.getForms() != null) {
-      Iterator<Form> iterForm = processModel.getForms().iterateForm(), iterInput;
+      Iterator<Form> iterForm = processModel.getForms().iterateForm();
+      Iterator<Input> iterInput = null;
       while (iterForm.hasNext()) {
         Form form = iterForm.next();
         String strFormId;

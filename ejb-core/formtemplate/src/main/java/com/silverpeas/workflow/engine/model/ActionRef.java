@@ -34,6 +34,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;allow&gt; element of a Process Model.
  **/
 public class ActionRef extends AbstractReferrableObject implements Serializable, AllowedAction {
+  private static final long serialVersionUID = -8866828437819862983L;
   private Action action; // The reference to the allowed action
 
   /**
