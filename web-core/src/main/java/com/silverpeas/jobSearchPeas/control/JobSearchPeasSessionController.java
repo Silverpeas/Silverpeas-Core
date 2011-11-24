@@ -23,6 +23,15 @@
  */
 package com.silverpeas.jobSearchPeas.control;
 
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import com.silverpeas.jobSearchPeas.SearchResult;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
@@ -55,15 +64,6 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import edu.emory.mathcs.backport.java.util.Collections;
-
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Class declaration
@@ -230,16 +230,17 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @param searchField
    * @return
    */
-  private List<SearchResult> searchResultSpaceId(String searchField) {
+  private List<SearchResult> searchResultSpaceId(String spaceId) {
+    SilverTrace.info("admin", "JobSearchPeasSessionController.searchResultSpaceId", "root.MSG_GEN_ENTER_METHOD", "spaceId = "+spaceId);
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
-    SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(searchField);
+    SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
     if(null != spaceInstLight) {
       String nom = spaceInstLight.getName(getLanguage());
       String desc = spaceInstLight.getDescription();
       Date dateCrea = spaceInstLight.getCreateDate();
-      String nomCrea = getAdminController().getUserDetail(Integer.toString(spaceInstLight.getCreatedBy())).getDisplayedName();
+      String nomCrea = getUserName(spaceInstLight.getCreatedBy());
       List<String> listEmplacement = new ArrayList<String>();
-      String emplacement = getPathSpace(searchField);
+      String emplacement = getPathSpace(spaceId);
       listEmplacement.add(emplacement);
       
       String url;
@@ -286,11 +287,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       MatchingIndexEntry[] plainSearchResults = getSearchEngineBm().getRange(0,
           getSearchEngineBm().getResultLength());
       for (MatchingIndexEntry result : plainSearchResults) {
-        String nomCrea = "";
-        UserDetail user = getAdminController().getUserDetail(result.getCreationUser());
-        if (null != user) {
-          nomCrea = user.getDisplayedName();
-        }
+        String nomCrea = getUserName(Integer.parseInt(result.getCreationUser()));
         
         String objectId = result.getObjectId(); // WA3
         String spaceId = objectId.substring(2);
@@ -377,16 +374,17 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @param searchField
    * @return
    */
-  private List<SearchResult> searchResultComponentId(String searchField) {
+  private List<SearchResult> searchResultComponentId(String componentId) {
+    SilverTrace.info("admin", "JobSearchPeasSessionController.searchResultComponentId", "root.MSG_GEN_ENTER_METHOD", "componentId = "+componentId);
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
-    ComponentInstLight componentInstLight = getAdminController().getComponentInstLight(searchField);
+    ComponentInstLight componentInstLight = getAdminController().getComponentInstLight(componentId);
     if(null != componentInstLight) {
       String nom = componentInstLight.getLabel(getLanguage());
       String desc = componentInstLight.getDescription(getLanguage());
       Date dateCrea = componentInstLight.getCreateDate();
-      String nomCrea = getAdminController().getUserDetail(Integer.toString(componentInstLight.getCreatedBy())).getDisplayedName();
+      String nomCrea = getUserName(componentInstLight.getCreatedBy());
       List<String> listEmplacement = new ArrayList<String>();
-      String emplacement = getPathComponent(searchField);
+      String emplacement = getPathComponent(componentId);
       listEmplacement.add(emplacement);
       
       String url = "openComponent('"+componentInstLight.getId()+"')";
@@ -401,6 +399,16 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       listResult.add(searchResult);
     }
     return listResult;
+  }
+  
+  private String getUserName(int userId) {
+    if (userId != -1) {
+      UserDetail user = getAdminController().getUserDetail(Integer.toString(userId));
+      if (user != null) {
+        return user.getDisplayedName();
+      }
+    }
+    return "";
   }
   
   /**
@@ -425,14 +433,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           getSearchEngineBm().getResultLength());
       
       for (MatchingIndexEntry result : plainSearchResults) {
-        String creationDate = result.getCreationDate();
-        
-        String nomCrea = "";
-        UserDetail user = getAdminController().getUserDetail(result.getCreationUser());
-        if (null != user) {
-          nomCrea = user.getDisplayedName();
-        }
-        
+        String creationDate = result.getCreationDate();        
+        String nomCrea = getUserName(Integer.parseInt(result.getCreationUser()));
         String componentId = result.getObjectId();
         List<String> listEmplacement = new ArrayList<String>();
         String emplacement = getPathComponent(componentId);
@@ -504,7 +506,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String desc = publication.getDescription(getLanguage());
       Date dateCrea = publication.getCreationDate();
       String creaId = publication.getCreatorId();
-      String nomCrea = getAdminController().getUserDetail(creaId).getDisplayedName();
+      String nomCrea = getUserName(Integer.parseInt(creaId));
       pubPK = publication.getPK();
       String instanceId = pubPK.getInstanceId();
       List<String> listEmplacement = new ArrayList<String>();
@@ -527,7 +529,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         for (NodePK pk : fatherPKs) {
           StringBuilder emplacement = new StringBuilder(emplacementEspaceComposant);
           Collection<NodeDetail> path = getNodeBm().getAnotherPath(pk);
-          ArrayList<NodeDetail> pathTab = new ArrayList<NodeDetail>(path);
+          List<NodeDetail> pathTab = new ArrayList<NodeDetail>(path);
           Collections.reverse(pathTab);
           for (NodeDetail nodeDetail : pathTab) {
             emplacement.append(nodeDetail.getName(getLanguage())).append(" > ");
@@ -583,8 +585,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     if(null != group && null != group.getId()) {
       String nom = group.getName();
       String desc = group.getDescription();
-      Date dateCrea = null;
-      String nomCrea = "";
       List<String> listEmplacement = new ArrayList<String>();
       String emplacement = getPathGroup(group);
       listEmplacement.add(emplacement);  
@@ -594,8 +594,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
       searchResult.setDesc(desc);
-      searchResult.setCreaDate(dateCrea);
-      searchResult.setCreaName(nomCrea);
+      searchResult.setCreaName("");
       searchResult.setPath(listEmplacement);
       searchResult.setUrl(url);
       listResult.add(searchResult);
@@ -743,8 +742,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     if(null != user) {
       String nom = user.getDisplayedName();
       String desc = user.geteMail();
-      Date dateCrea = null;
-      String nomCrea = "";
       List<String> listEmplacement = getListPathUser(user);
       
       String url = "openUser('"+user.getId()+"')";
@@ -752,8 +749,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
       searchResult.setDesc(desc);
-      searchResult.setCreaDate(dateCrea);
-      searchResult.setCreaName(nomCrea);
+      searchResult.setCreaName("");
       searchResult.setPath(listEmplacement);
       searchResult.setUrl(url);
       listResult.add(searchResult);
@@ -793,7 +789,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
         searchResult.setDesc(result.getPreview(getLanguage()));
-        searchResult.setCreaDate(null);
         searchResult.setCreaName("");
         searchResult.setPath(listEmplacement);
         searchResult.setUrl(url);
