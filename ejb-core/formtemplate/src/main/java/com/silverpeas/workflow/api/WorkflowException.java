@@ -30,6 +30,8 @@ import com.stratelia.webactiv.util.exception.*;
  * Thrown by the workflow engine components.
  */
 public class WorkflowException extends SilverpeasException {
+  private static final long serialVersionUID = -1912189634294138350L;
+
   /**
    * Returns the module name (as known by SilverTrace).
    */

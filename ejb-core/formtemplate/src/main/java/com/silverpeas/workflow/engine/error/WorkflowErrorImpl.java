@@ -62,17 +62,17 @@ public class WorkflowErrorImpl implements WorkflowError {
     this.userRole = event.getUserRoleName();
 
     this.step = step;
-    if (step != null)
+    if (step != null) {
       this.stepId = step.getId();
-
+    }
     this.user = event.getUser();
-    if (user != null)
+    if (user != null) {
       this.userId = event.getUser().getUserId();
-
+    }
     this.state = event.getResolvedState();
-    if (state != null)
+    if (state != null) {
       this.stateName = event.getResolvedState().getName();
-
+    }
     // Convert stack trace to String
     ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
     PrintStream printStream = new PrintStream((OutputStream) baoStream);
@@ -209,10 +209,9 @@ public class WorkflowErrorImpl implements WorkflowError {
    * @return action
    */
   public Action getAction() throws WorkflowException {
-    if (action == null) {
-      if (actionName != null) {
-        if (getProcessInstance() != null)
-          action = getProcessInstance().getProcessModel().getAction(actionName);
+    if (action == null && actionName != null) {
+      if (getProcessInstance() != null) {
+        action = getProcessInstance().getProcessModel().getAction(actionName);
       }
     }
 
@@ -265,10 +264,9 @@ public class WorkflowErrorImpl implements WorkflowError {
    * @return resolved state
    */
   public State getResolvedState() throws WorkflowException {
-    if (state == null) {
-      if (stateName != null) {
-        if (getProcessInstance() != null)
-          state = getProcessInstance().getProcessModel().getState(stateName);
+    if (state == null && stateName != null) {
+      if (getProcessInstance() != null) {
+        state = getProcessInstance().getProcessModel().getState(stateName);
       }
     }
 

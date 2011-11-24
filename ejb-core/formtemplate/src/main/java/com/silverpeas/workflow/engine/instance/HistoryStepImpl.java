@@ -45,7 +45,7 @@ import com.silverpeas.workflow.engine.WorkflowHub;
  * @depends com.silverpeas.workflow.engine.instance.ProcessInstanceImpl
  * @key-generator MAX
  */
-public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
+public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<HistoryStep> {
   /**
    * Used for persistence
    * @primary-key
@@ -294,13 +294,13 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     ProcessModel model = processInstance.getProcessModel();
 
     Action actionObj = model.getAction(action);
-    if (actionObj == null)
+    if (actionObj == null) {
       return null;
-
+    }
     Form form = actionObj.getForm();
-    if (form == null)
+    if (form == null) {
       return null;
-
+    }
     String formId = id;
     try {
       RecordSet formSet = model.getFormRecordSet(form.getName());
@@ -319,13 +319,13 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     ProcessModel model = processInstance.getProcessModel();
 
     Action actionObj = model.getAction(action);
-    if (actionObj == null)
+    if (actionObj == null) {
       return;
-
+    }
     Form form = actionObj.getForm();
-    if (form == null)
+    if (form == null) {
       return;
-
+    }
     String formId = id;
     try {
       RecordSet formSet = model.getFormRecordSet(form.getName());
@@ -352,13 +352,13 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     ProcessModel model = processInstance.getProcessModel();
 
     Action actionObj = model.getAction(action);
-    if (actionObj == null)
+    if (actionObj == null) {
       return;
-
+    }
     Form form = actionObj.getForm();
-    if (form == null)
+    if (form == null) {
       return;
-
+    }
     String formId = id;
     try {
       RecordSet formSet = model.getFormRecordSet(form.getName());
@@ -370,9 +370,10 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     }
   }
 
-  public int compareTo(Object arg0) {
-    if (arg0 == null)
+  public int compareTo(HistoryStep arg0) {
+    if (arg0 == null) {
       return 0;
+    }
     HistoryStep anotherStep = (HistoryStep) arg0;
     int stepId = Integer.parseInt(this.id);
     int anotherStepId = Integer.parseInt(anotherStep.getId());

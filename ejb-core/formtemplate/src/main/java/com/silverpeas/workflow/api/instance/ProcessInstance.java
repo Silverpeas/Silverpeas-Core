@@ -97,7 +97,7 @@ public interface ProcessInstance {
   /**
    * @return Vector
    */
-  public Vector getParticipants() throws WorkflowException;
+  public Vector<Participant> getParticipants() throws WorkflowException;
 
   /**
    * Get the last user who resolved the given state

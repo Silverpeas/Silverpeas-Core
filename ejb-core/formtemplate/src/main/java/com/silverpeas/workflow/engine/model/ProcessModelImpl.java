@@ -147,10 +147,11 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public Presentation getPresentationForCastor() {
     if (presentation.iterateColumns().hasNext()
-        || presentation.getTitles().iterateContextualDesignation().hasNext())
+        || presentation.getTitles().iterateContextualDesignation().hasNext()) {
       return presentation;
-    else
+    } else {
       return null;
+    }
   }
 
   /**
@@ -174,9 +175,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return participants definition
    */
   public Participant[] getParticipants() {
-    if (participants == null)
+    if (participants == null) {
       return null;
-
+    }
     return participants.getParticipants();
   }
 
@@ -209,9 +210,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return roles definition
    */
   public Role[] getRoles() {
-    if (roles == null)
+    if (roles == null) {
       return null;
-
+    }
     return roles.getRoles();
   }
 
@@ -221,9 +222,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return wanted role definition
    */
   public Role getRole(String name) {
-    if (roles == null)
+    if (roles == null) {
       return null;
-
+    }
     return roles.getRole(name);
   }
 
@@ -256,9 +257,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return states defined for this process model
    */
   public State[] getStates() {
-    if (states == null)
+    if (states == null) {
       return null;
-
+    }
     return states.getStates();
   }
 
@@ -276,9 +277,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return wanted state
    */
   public State getState(String name) {
-    if (states == null)
+    if (states == null) {
       return null;
-
+    }
     return states.getState(name);
   }
 
@@ -303,9 +304,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return actions defined for this process model
    */
   public Action[] getActions() {
-    if (actions == null)
+    if (actions == null) {
       return null;
-
+    }
     return actions.getActions();
   }
 
@@ -323,9 +324,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return the wanted action
    */
   public Action getAction(String name) throws WorkflowException {
-    if (actions == null)
+    if (actions == null) {
       return null;
-
+    }
     return actions.getAction(name);
   }
 
@@ -410,9 +411,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @see com.silverpeas.workflow.api.model.ProcessModel#getForm(java.lang.String, java.lang.String)
    */
   public Form getForm(String name, String role) {
-    if (forms == null)
+    if (forms == null) {
       return null;
-
+    }
     return forms.getForm(name, role);
   }
 
@@ -724,14 +725,16 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     }
 
     if (action != null) {
-      if (action.getForm() == null)
+      if (action.getForm() == null) {
         return null;
-      else
+      } else {
         form = action.getForm();
+      }
     } else {
       form = getForm(name, roleName);
-      if (form == null)
+      if (form == null) {
         return null;
+      }
     }
 
     try {
@@ -752,9 +755,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   public DataRecord getNewActionRecord(String actionName, String roleName,
       String lang, DataRecord data) throws WorkflowException {
     Action action = getAction(actionName);
-    if (action == null || action.getForm() == null)
+    if (action == null || action.getForm() == null) {
       return null;
-
+    }
     try {
       return action.getForm().getDefaultRecord(roleName, lang, data);
     } catch (FormException e) {
@@ -830,8 +833,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * row in list.
    */
   public RecordTemplate getRowTemplate(String role, String lang) {
-    RecordTemplate template = rowTemplates.get(role + "\n"
-        + lang);
+    RecordTemplate template = rowTemplates.get(role + "\n" + lang);
 
     if (template == null) {
       template = new com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowTemplate(

@@ -116,23 +116,27 @@ public class RelatedUserImpl extends AbstractReferrableObject implements Related
   public String getKey() {
     StringBuffer sb = new StringBuffer();
 
-    if (participant instanceof AbstractReferrableObject)
+    if (participant instanceof AbstractReferrableObject) {
       sb.append(((AbstractReferrableObject) participant).getKey());
+    }
 
     sb.append("|");
 
-    if (folderItem instanceof AbstractReferrableObject)
+    if (folderItem instanceof AbstractReferrableObject) {
       sb.append(((AbstractReferrableObject) folderItem).getKey());
+    }
 
     sb.append("|");
 
-    if (relation != null)
+    if (relation != null) {
       sb.append(relation);
+    }
 
     sb.append("|");
 
-    if (role != null)
+    if (role != null) {
       sb.append(role);
+    }
 
     return sb.toString();
   }

@@ -192,15 +192,15 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         this.manageLocks((GenericEvent) event, instance);
 
         // Tests if user is declared as a working user
-        if (!creationEvent)
+        if (!creationEvent) {
           this.manageRights((GenericEvent) event, instance);
-        else
+        } else {
           instance.lock(new StateImpl(""), event.getUser());
-
+        }
         // Tests if user is declared as the working user for this state
-        if (!creationEvent)
+        if (!creationEvent) {
           this.checkUserLock((GenericEvent) event, instance);
-
+        }
         // Checks the datas associated to the event
         /* xoxox a faire en concordance avec les specs du form manager */
 
@@ -439,9 +439,10 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       throws WorkflowException {
     if (instance != null) {
       instance.lock();
-    } else
+    } else {
       throw new WorkflowException("WorkflowEngineImpl.manageLocks",
           "EX_ERR_EVENT_WITHOUT_INSTANCE");
+    }
   }
 
   /**
@@ -463,14 +464,16 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         .getUserRoleName());
     if (wkUsers != null) {
       for (int i = 0; i < wkUsers.length; i++) {
-        if (wkUsers[i].getUser().equals(actor))
+        if (wkUsers[i].getUser().equals(actor)) {
           validUser = true;
+        }
       }
     }
 
-    if (!validUser)
+    if (!validUser) {
       throw new WorkflowException("WorkflowEngineImpl.manageRights",
           "EX_ERR_FORBIDDEN_ACTION");
+    }
   }
 
   /**
@@ -489,13 +492,14 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     lockingUser = instance.getLockingUser(resolvedState.getName());
     actor = event.getUser();
 
-    if (lockingUser == null)
+    if (lockingUser == null) {
       throw new WorkflowException("WorkflowEngineImpl.process(TaskDoneEvent)",
           "EX_ERR_NO_LOCK_BEFORE_ACTION");
-
+    }
     User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
-    if (!user.equals(actor))
+    if (!user.equals(actor)) {
       throw new WorkflowException("WorkflowEngineImpl.process(TaskDoneEvent)",
           "EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_USER");
+    }
   }
 }
