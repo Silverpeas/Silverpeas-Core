@@ -44,5 +44,4 @@ public class PdcNewClassificationTag extends BaseClassificationPdCTag {
     container.output(getOut());
   }
 
-  
 }

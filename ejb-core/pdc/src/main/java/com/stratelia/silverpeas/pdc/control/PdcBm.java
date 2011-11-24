@@ -286,6 +286,8 @@ public interface PdcBm {
    */
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException;
 
+  public String getTreeId(String axisId) throws PdcException;
+  
   /**
    * ****************************************************************
    */
@@ -353,7 +355,7 @@ public interface PdcBm {
    */
   public List<UsedAxis> getUsedAxisToClassify(String instanceId, int silverObjectId)
       throws PdcException;
-
+  
   public int addPosition(int silverObjectId, ClassifyPosition position,
       String sComponentId) throws PdcException;
 

@@ -23,21 +23,31 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.api.json.JSONJAXBContext;
+import com.sun.jersey.api.json.JSONUnmarshaller;
+import com.sun.jersey.json.impl.JSONUnmarshallerImpl;
+import java.io.StringReader;
+import javax.xml.bind.JAXBException;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.rest.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
@@ -52,6 +62,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * A position can be a semantic value of an axis as well a set of values on different axis.
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PdcClassificationEntity implements Exposable {
 
   private static final long serialVersionUID = -2217575091640675000L;
@@ -59,6 +70,8 @@ public class PdcClassificationEntity implements Exposable {
   private URI uri;
   @XmlElement
   private List<PdcPositionEntity> positions = new ArrayList<PdcPositionEntity>();
+  @XmlElement
+  private boolean modifiable = true;
 
   /**
    * Creates a non-defined PdC classification.
@@ -74,10 +87,33 @@ public class PdcClassificationEntity implements Exposable {
           final List<ClassifyPosition> fromPositions,
           String inLanguage,
           final URI atURI) {
-    PdcClassificationEntity classification = new PdcClassificationEntity(atURI);
-    classification.setClassificationPositions(
+    PdcClassificationEntity entity = new PdcClassificationEntity(atURI);
+    entity.setClassificationPositions(
             fromClassifyPositions(fromPositions, inLanguage, atURI));
-    return classification;
+    return entity;
+  }
+
+  public static PdcClassificationEntity aPdcClassificationEntity(
+          final PdcClassification classification,
+          String inLanguage,
+          final URI atURI) {
+    PdcClassificationEntity entity = new PdcClassificationEntity(atURI);
+    entity.setClassificationPositions(
+            fromPdcPositions(classification.getPositions(), inLanguage, atURI));
+    entity.setModifiable(classification.isModifiable());
+    return entity;
+  }
+  
+  public static PdcClassificationEntity fromJSON(String classification) throws JAXBException {
+    JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
+            PdcPositionEntity.class, PdcPositionValueEntity.class);
+    JSONUnmarshaller unmarshaller = new JSONUnmarshallerImpl(context, JSONConfiguration.DEFAULT);
+    try {
+      return unmarshaller.unmarshalFromJSON(new StringReader(classification),
+              PdcClassificationEntity.class);
+    } catch (Error ex) {
+      throw new JAXBException(ex.getMessage(), ex);
+    }
   }
 
   /**
@@ -106,7 +142,16 @@ public class PdcClassificationEntity implements Exposable {
   public static List<ClassifyPosition> fromPositions(final List<ClassifyPosition> positions) {
     return positions;
   }
-  
+
+  /**
+   * A convenient method to enhance the readability of creators.
+   * @param a PdC classification.
+   * @return the PdC classification.
+   */
+  public static PdcClassification fromPdcClassification(final PdcClassification classification) {
+    return classification;
+  }
+
   /**
    * This web entity represents the undefined classification of a resource on the PdC.
    * @return true if this web entity is the representation of the undefined classification, false
@@ -114,7 +159,7 @@ public class PdcClassificationEntity implements Exposable {
    */
   @XmlTransient
   public boolean isUndefined() {
-    return uri == null;
+    return getClassificationPositions().isEmpty();
   }
 
   @Override
@@ -141,11 +186,34 @@ public class PdcClassificationEntity implements Exposable {
 
   /**
    * Gets all the positions on the PdC axis that defines this resource classification.
-   * @return an unmodifiable list of a Web representation of each classification positions in this
+   * @return the list of a Web representation of each classification positions in this
    * classification.
    */
+  @XmlTransient
   public List<PdcPositionEntity> getClassificationPositions() {
-    return Collections.unmodifiableList(positions);
+    return positions;
+  }
+
+  /**
+   * Gets all the positions on the PdC axis that defines this resource classification as PdcPosition
+   * instances.
+   * @return a list of PdcPosition instances representing each of them a position on the PdC.
+   */
+  @XmlTransient
+  public List<PdcPosition> getPdcPositions() {
+    List<PdcPosition> pdcPositions = new ArrayList<PdcPosition>(positions.size());
+    for (PdcPositionEntity position : positions) {
+      pdcPositions.add(position.toPdcPosition());
+    }
+    return pdcPositions;
+  }
+  
+  /**
+   * Is the PdC classification represented by this web entity can be changed?
+   * @return true if the represented PdC classification is modifiable, false otherwise.
+   */
+  public boolean isModifiable() {
+    return modifiable;
   }
 
   @Override
@@ -161,7 +229,7 @@ public class PdcClassificationEntity implements Exposable {
       return false;
     }
     return !(this.positions != other.positions && (this.positions == null
-        || !this.positions.equals(other.positions)));
+            || !this.positions.equals(other.positions)));
   }
 
   @Override
@@ -191,9 +259,20 @@ public class PdcClassificationEntity implements Exposable {
           final List<ClassifyPosition> positions,
           String inLanguage,
           final URI atBaseURI) {
-    SortedSet<PdcPositionEntity> positionEntities = new TreeSet<PdcPositionEntity>(new PositionComparator());
+    SortedSet<PdcPositionEntity> positionEntities =
+            new TreeSet<PdcPositionEntity>(new PositionComparator());
     for (ClassifyPosition position : positions) {
       positionEntities.add(PdcPositionEntity.fromClassifyPosition(position, inLanguage, atBaseURI));
+    }
+    return new ArrayList<PdcPositionEntity>(positionEntities);
+  }
+
+  private static List<PdcPositionEntity> fromPdcPositions(final Collection<PdcPosition> positions,
+          String inLanguage, final URI atBaseURI) {
+    SortedSet<PdcPositionEntity> positionEntities =
+            new TreeSet<PdcPositionEntity>(new PositionComparator());
+    for (PdcPosition position : positions) {
+      positionEntities.add(PdcPositionEntity.fromPdcPosition(position, inLanguage, atBaseURI));
     }
     return new ArrayList<PdcPositionEntity>(positionEntities);
   }
@@ -209,7 +288,11 @@ public class PdcClassificationEntity implements Exposable {
     this.positions.clear();
     this.positions.addAll(positions);
   }
-  
+
+  protected void setModifiable(boolean modifiable) {
+    this.modifiable = modifiable;
+  }
+
   private static class PositionComparator implements Comparator<PdcPositionEntity> {
 
     @Override
@@ -217,11 +300,11 @@ public class PdcClassificationEntity implements Exposable {
       if (isIdDefined(t) && isIdDefined(t1)) {
         return t.getId().compareTo(t1.getId());
       } else {
-       return t.hashCode() - t1.hashCode();
+        return t.hashCode() - t1.hashCode();
       }
     }
   }
-  
+
   private static boolean isIdDefined(final PdcPositionEntity position) {
     return isDefined(position.getId()) && !position.getId().equals("-1");
   }

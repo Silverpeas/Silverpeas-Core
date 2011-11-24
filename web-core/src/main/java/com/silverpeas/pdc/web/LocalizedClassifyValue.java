@@ -33,13 +33,9 @@ import java.util.List;
  * information to render in a view. Theses information are localized according to the language
  * passed in the constructor.
  */
-public class LocalizedClassifyValue extends ClassifyValue {
+public class LocalizedClassifyValue extends ClassifyValue implements LocalizedValue {
 
   private static final long serialVersionUID = -8345717889242896633L;
-  private static final int MAX_NUMBER_OF_RENDERED_PATH_NODE = 5;
-  private static final int NUMBER_OF_RENDERED_PATH_NODE_IN_TRUNCATION = 2;
-  private static final String TRUNCATION_SEPARATOR = " ... ";
-  private static final String SEPARATOR_PATH = " / ";
   private final String language;
   private final ClassifyValue decoratedValue;
 
@@ -52,6 +48,7 @@ public class LocalizedClassifyValue extends ClassifyValue {
    * to the language.
    * @return the localized path of this value on the PdC's axis.
    */
+  @Override
   public String getLocalizedPath() {
     String path;
     if (getFullPath().size() > MAX_NUMBER_OF_RENDERED_PATH_NODE) {
@@ -70,6 +67,7 @@ public class LocalizedClassifyValue extends ClassifyValue {
    * Gets the language used in the localization.
    * @return the language used in the localization.
    */
+  @Override
   public String getLanguage() {
     return language;
   }

@@ -71,7 +71,7 @@ private static SubscriptionDao subscriptionDao = new SubscriptionDao();
    */
   //@Test
   public void testGetActorPKsByNodePKs() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       long startTime = System.currentTimeMillis();
@@ -103,7 +103,7 @@ private static SubscriptionDao subscriptionDao = new SubscriptionDao();
 
   @Test
   public void testGetActorPKsByNodePKsInLoop() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       long startTime = System.currentTimeMillis();

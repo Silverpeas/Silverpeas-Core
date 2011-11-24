@@ -16,7 +16,6 @@ import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.JndiBasedDBTestCase;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
@@ -154,11 +153,6 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
         currentContext.rebind(name, ref);
       }
     }
-  }
-
-  @Override
-  public IDatabaseConnection getConnection() throws Exception {
-    return super.getConnection();
   }
 
   @Override

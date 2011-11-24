@@ -27,6 +27,7 @@
 
 package com.stratelia.silverpeas.treeManager.model;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
@@ -255,6 +256,10 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
    */
   public String getFatherId() {
     return (this.fatherId);
+  }
+  
+  public boolean hasFather() {
+    return StringUtil.isDefined(getFatherId()) && !getFatherId().equals("-1");
   }
 
   public void setName(String name) {

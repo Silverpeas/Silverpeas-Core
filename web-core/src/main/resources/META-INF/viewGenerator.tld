@@ -10,6 +10,33 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
+    <description>Tag to print out the predefined classification on the PdC for contents in a given
+    node of a given component instance. If the node identifier isn't specified, then the predefined
+    classification is for the whole component instance.
+    </description>
+    <name>pdcPredefinedClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the node for which the predefined classification on the PdC
+      has to be rendered. If not specified, the predefined classification on the PdC for the whole
+      component instance is taken into account.
+      </description>
+      <name>nodeId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Tag to print out the classification of a given resource content on the PdC configured
     for a given component instance. The classification on the PdC can be or not editable.
     </description>
@@ -34,7 +61,7 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Is this classification on the PdC should be editable?.By default, if not set, the
+      <description>Is this classification on the PdC should be editable? By default, if not set, the
       classification isn't editable
       </description>
       <name>editable</name>
@@ -53,10 +80,22 @@
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewClassificationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
-      <description>The identifier of the component instance for which the PdC is configured.
+      <description>The identifier of the component instance for which the PdC is configured. If a
+      default classification exists for the specified component instance, then it will be taken into
+      account for classifying the content.
       </description>
       <name>componentId</name>
       <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the node (if any) to which the new content will belong. If this
+      attribute is set and a predefined classification exists for this node, then it will be taken into
+      account instead of the component's one for classifying the content.
+      </description>
+      <name>nodeId</name>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

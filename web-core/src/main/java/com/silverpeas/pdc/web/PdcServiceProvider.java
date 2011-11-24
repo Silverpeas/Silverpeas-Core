@@ -23,6 +23,8 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -36,6 +38,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
  * A provider of services on the classification plan (named PdC). This class implements the adaptor
@@ -53,6 +56,8 @@ public class PdcServiceProvider {
   private ThesaurusManager thesaurusManager;
   @Inject
   private ContentManager contentManager;
+  @Inject
+  private PdcClassificationService classificationService;
 
   /**
    * A convenient method to enhance the readability of method calls when a component identifier is
@@ -124,7 +129,8 @@ public class PdcServiceProvider {
     if (positions.size() == 1) {
       for (UsedAxis anAxis : axis) {
         if (anAxis.getMandatory() == 1) {
-          throw new PdcPositionDeletionException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR,
+          throw new PdcPositionDeletionException(getClass().getSimpleName(),
+                  SilverTrace.TRACE_LEVEL_ERROR,
                   "Pdc.CANNOT_DELETE_VALUE");
         }
       }
@@ -146,6 +152,56 @@ public class PdcServiceProvider {
           ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
     return getPdcBm().getPositions(silverObjectId, componentId);
+  }
+
+  /**
+   * Finds the predefined PdC classification to use for classifying new contents in the specified
+   * node of the specified component instance. If the node isn't set, then the predefined PdC
+   * classification of the component instance is looked for.
+   * @param nodeId the unique identifier of the node. A node is a generic way in Silverpeas to
+   * categorize contents in a Silverpeas component.
+   * @param componentId the unique identifier of the component.
+   * @return a default PdC classification to use to classify contents.
+   */
+  PdcClassification findPredefinedClassificationForContentsIn(String nodeId, String componentId) {
+    return classificationService.findAPreDefinedClassification(nodeId, componentId);
+  }
+
+  /**
+   * Gets the predefined PdC classification that is associated with the specified node of the
+   * specified component instance. If the node isn't set, then the predefined PdC
+   * classification associated with the component instance is looked for.
+   * @param nodeId the unique identifier of the node. A node is a generic way in Silverpeas to
+   * categorize contents in a Silverpeas component.
+   * @param componentId the unique identifier of the component.
+   * @return a default PdC classification to use to classify contents.
+   */
+  PdcClassification getPredefinedClassification(String nodeId, String componentId) {
+    return classificationService.getPreDefinedClassification(nodeId, componentId);
+  }
+
+  /**
+   * Saves or updates the specified predefined classification. The node and the component instance 
+   * related by the specified classification is indicated by its respective properties.
+   * 
+   * If the classification is empty (that is to say all of its positions are deleted), then it is
+   * removed from the persistence context. In this case, the predefined classification associated
+   * with the closest parent node is taken as the one for the related node (if any). If there is no
+   * predefined classification associated with a parent node or with the component instance, then
+   * NONE_CLASSIFICATION is returned.
+   * @param predefinedClassification the predefined classification to save or to update.
+   * @return the classification used for the related node or component instance or NONE_CLASSICATION
+   * if there is no predefined classification with the component instance.
+   */
+  PdcClassification saveOrUpdatePredefinedClassification(
+          final PdcClassification predefinedClassification) {
+    PdcClassification savedClassification = classificationService.savePreDefinedClassification(
+            predefinedClassification);
+    if (savedClassification == NONE_CLASSIFICATION) {
+      savedClassification = findPredefinedClassificationForContentsIn(predefinedClassification.
+              getNodeId(), predefinedClassification.getComponentInstanceId());
+    }
+    return savedClassification;
   }
 
   /**

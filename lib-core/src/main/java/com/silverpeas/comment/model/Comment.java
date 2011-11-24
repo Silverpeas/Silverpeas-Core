@@ -39,6 +39,7 @@ import java.util.Date;
 public class Comment implements SilverpeasContent {
 
   private static final long serialVersionUID = 3738544756345055840L;
+  public static final String TYPE = "Comment";
   private CommentPK pk;
   private WAPrimaryKey foreign_key;
   private int owner_id;
@@ -155,8 +156,7 @@ public class Comment implements SilverpeasContent {
   @Override
   public UserDetail getCreator() {
     if (ownerDetail == null) {
-      OrganizationController organizationController = getOrganizationController();
-      ownerDetail = organizationController.getUserDetail(String.valueOf(owner_id));
+      ownerDetail = UserDetail.getById(String.valueOf(owner_id));
     }
     return ownerDetail;
   }
@@ -183,6 +183,11 @@ public class Comment implements SilverpeasContent {
 
   @Override
   public String getContributionType() {
-    return "Comment";
+    return TYPE;
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return "";
   }
 }

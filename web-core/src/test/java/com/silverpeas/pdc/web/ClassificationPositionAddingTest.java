@@ -23,8 +23,8 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import com.silverpeas.pdc.web.beans.PdcClassification;
 import com.silverpeas.rest.ResourceCreationTest;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -38,7 +38,7 @@ import java.util.List;
 
 import static com.silverpeas.pdc.web.PdcTestResources.JAVA_PACKAGE;
 import static com.silverpeas.pdc.web.PdcTestResources.SPRING_CONTEXT;
-import static com.silverpeas.pdc.web.beans.PdcClassification.aPdcClassification;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.aPdcClassification;
 import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static org.hamcrest.Matchers.equalTo;
@@ -64,7 +64,7 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest<PdcTe
     sessionKey = authenticate(theUser);
     getTestResources().enableThesaurus();
     theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
+            aPdcClassification().onContent(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).build();
     getTestResources().save(theClassification);
   }
   
@@ -99,16 +99,16 @@ public class ClassificationPositionAddingTest extends ResourceCreationTest<PdcTe
   }
 
   private PdcPositionEntity aPdcPositionWithoutAnyValues() {
-    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
+    ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
     return PdcPositionEntity.createNewPositionWith(positionsValues);
   }
   
   private PdcPositionEntity aNewPdcPosition() {
     ClassificationPlan pdc = aClassificationPlan();
-    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
+    ArrayList<PdcPositionValueEntity> positionsValues = new ArrayList<PdcPositionValueEntity>();
     List<Value> values = pdc.getValuesOfAxisByName("Période");
     Value value = values.get(values.size() - 1);
-    PdcPositionValue positionValue = PdcPositionValue.aPositionValue(Integer.valueOf(value.getAxisId()),
+    PdcPositionValueEntity positionValue = PdcPositionValueEntity.aPositionValue(Integer.valueOf(value.getAxisId()),
               value.getPath() + value.getPK().getId() + "/");
     positionValue.setTreeId(value.getTreeId());
     positionsValues.add(positionValue);

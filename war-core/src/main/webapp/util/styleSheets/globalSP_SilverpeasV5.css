@@ -1496,7 +1496,7 @@ td.browsebar a:hover {
 	height: 20px;
 }
 
-.milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
+a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 	color: #FFFFFF;
 }
 
@@ -4099,8 +4099,9 @@ html:not([lang*=""]) .add_position:hover {
 	right:5px;
 }
 
-#pdc-addition-box #valid_position {
+#pdc-addition-box .valid_position {
 	margin:10px 10px 10px  180px;
+    line-height: 20px;
 	float:left;
 }
 #classification .legende { 
