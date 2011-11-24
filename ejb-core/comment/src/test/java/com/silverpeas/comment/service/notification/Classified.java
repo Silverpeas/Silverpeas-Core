@@ -82,5 +82,10 @@ public class Classified implements SilverpeasContent {
   public String getContributionType() {
     return "Classified";
   }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return "";
+  }
   
 }

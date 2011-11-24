@@ -217,7 +217,7 @@ public class CommentEntity implements Exposable {
     this.author = CommentAuthorEntity.fromUser(comment.getCreator());
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
     this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.
-        getLanguage());
+            getLanguage());
   }
 
   @Override
@@ -233,9 +233,9 @@ public class CommentEntity implements Exposable {
       return id.equals(other.getId());
     } else {
       return componentId.equals(other.getComponentId()) && resourceId.equals(other.getResourceId())
-          && text.equals(other.getText()) && creationDate.equals(other.getCreationDate())
-          && modificationDate.equals(other.getModificationDate())
-          && author.equals(other.getAuthor());
+              && text.equals(other.getText()) && creationDate.equals(other.getCreationDate())
+              && modificationDate.equals(other.getModificationDate())
+              && author.equals(other.getAuthor());
     }
   }
 

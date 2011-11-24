@@ -60,6 +60,10 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private String m_sAccessLevel = "";
   private String m_sLoginQuestion = "";
   private String m_sLoginAnswer = "";
+  
+  public static UserDetail getById(String userId) {
+    return getOrganizationController().getUserDetail(userId);
+  }
 
   /**
    * Constructor
@@ -414,5 +418,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   protected static String getAnonymousUserId() {
     return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
+  }
+  
+  private static OrganizationController getOrganizationController() {
+    return OrganizationControllerFactory.getFactory().getOrganizationController();
   }
 }

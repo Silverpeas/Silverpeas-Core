@@ -23,6 +23,8 @@
  */
 package com.silverpeas.rest;
 
+import javax.ws.rs.core.MultivaluedMap;
+import com.sun.jersey.api.client.WebResource;
 import java.util.UUID;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import javax.ws.rs.core.MediaType;
@@ -30,6 +32,7 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Unit tests on the update of a resource in Silverpeas through a REST web service.
@@ -47,6 +50,19 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   }
 
   public abstract <T> T anInvalidResource();
+  
+  /**
+   * A convenient method to improve the readability of the method calls.
+   * @param uri a resource URI.
+   * @return the specified resource URI.
+   */
+  private static String at(String uri) {
+    return uri;
+  }
+  
+  private static String withAsSessionKey(String sessionKey) {
+    return sessionKey;
+  }
 
   /**
    * Puts at the specified URI the specified new state of the resource.
@@ -56,21 +72,13 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
    * @return 
    */
   public <T> T putAt(String uri, T newResourceState) {
-    Class<T> c = (Class<T>) newResourceState.getClass();
-    return resource().path(uri).
-            header(HTTP_SESSIONKEY, getSessionKey()).
-            accept(MediaType.APPLICATION_JSON).
-            type(MediaType.APPLICATION_JSON).
-            put(c, newResourceState);
+    return put(newResourceState, at(uri), withAsSessionKey(getSessionKey()));
   }
 
   @Test
   public void updateOfAResourceByANonAuthenticatedUser() {
     try {
-      resource().path(aResourceURI()).
-              accept(MediaType.APPLICATION_JSON).
-              type(MediaType.APPLICATION_JSON).
-              put(getWebEntityClass(), aResource());
+      put(aResource(), at(aResourceURI()), withAsSessionKey(null));
       fail("A non authenticated user shouldn't update the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -82,11 +90,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   @Test
   public void updateOfAResourceWithinADeprecatedSession() {
     try {
-      resource().path(aResourceURI()).
-              header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-              accept(MediaType.APPLICATION_JSON).
-              type(MediaType.APPLICATION_JSON).
-              put(getWebEntityClass(), aResource());
+      put(aResource(), at(aResourceURI()), withAsSessionKey(UUID.randomUUID().toString()));
       fail("A user shouldn't update the resource through an expired session");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -112,7 +116,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   public void updateOfAResourceFromAnInvalidOne() {
     try {
       putAt(aResourceURI(), anInvalidResource());
-      fail("A user shouldn't update a resource with another one");
+      fail("A user shouldn't update a resource with an invalid another one");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int badRequest = Status.BAD_REQUEST.getStatusCode();
@@ -130,5 +134,25 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
       int notFound = Status.NOT_FOUND.getStatusCode();
       assertThat(receivedStatus, is(notFound));
     }
+  }
+  
+  private <T> T put(final T entity, String atURI, String withSessionKey) {
+    String thePath = atURI;
+    WebResource resource = resource();
+    if (thePath.contains("?")) {
+      String[] pathParts = thePath.split("\\?");
+      String query = pathParts[1];
+      thePath = pathParts[0];
+      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
+      resource = resource.queryParams(parameters);
+    }
+    Class<T> c = (Class<T>) entity.getClass();
+    WebResource.Builder resourcePutter = resource.path(thePath).
+            accept(MediaType.APPLICATION_JSON).
+            type(MediaType.APPLICATION_JSON);
+    if (isDefined(withSessionKey)) {
+      resourcePutter = resourcePutter.header(HTTP_SESSIONKEY, withSessionKey);
+    }
+    return resourcePutter.put(c, entity);
   }
 }

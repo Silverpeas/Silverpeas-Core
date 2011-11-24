@@ -379,7 +379,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	}
 
-#domainsBar .milieuBoutonV5 a , .milieuBoutonV5 a {
+#domainsBar .milieuBoutonV5 a, .milieuBoutonV5 a, a.milieuBoutonV5 {
 	color: #444444;
 }
 

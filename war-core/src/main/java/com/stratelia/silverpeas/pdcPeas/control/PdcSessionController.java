@@ -322,9 +322,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
       if (daughterValueName == null) {
         long treeId = getCurrentAxis().getAxisHeader().getRootId();
 
-        List<String> values = new ArrayList<String>();
-        values.add(valueId);
-        getThBm().deleteSynonymsTerms(con, treeId, values);
+        List<String> theValues = new ArrayList<String>();
+        theValues.add(valueId);
+        getThBm().deleteSynonymsTerms(con, treeId, theValues);
 
         commitConnection(con);
 

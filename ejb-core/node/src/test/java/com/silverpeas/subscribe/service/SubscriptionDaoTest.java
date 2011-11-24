@@ -69,7 +69,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testAdd() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "100";
@@ -92,7 +92,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testRemove() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "2";
@@ -118,7 +118,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testRemoveByUser() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
@@ -138,7 +138,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testRemoveByNodePath() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       String path = "/0/";
@@ -168,7 +168,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testGetNodePKsByActor() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
@@ -190,7 +190,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testGetNodePKsByActorComponent() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
@@ -211,7 +211,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testGetActorPKsByNodePK() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       NodePK node = new NodePK("0", "100", INSTANCE_ID);
@@ -233,7 +233,7 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
    */
   @Test
   public void testGetActorPKsByNodePKs() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       List<NodePK> nodePks = Lists.asList(new NodePK("0", "100", INSTANCE_ID),

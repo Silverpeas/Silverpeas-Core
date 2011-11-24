@@ -23,6 +23,8 @@
  */
 package com.silverpeas.rest;
 
+import com.sun.jersey.core.util.MultivaluedMapImpl;
+import javax.ws.rs.core.MultivaluedMap;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.silverpeas.personalization.UserPreferences;
@@ -158,5 +160,15 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 
   protected MockablePersonalizationService getMockedPersonalizationService() {
     return (MockablePersonalizationService) getTestResources().getMockedPersonalizationService();
+  }
+  
+  protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
+    MultivaluedMap<String, String> parameters = new MultivaluedMapImpl();
+    String[] queryParameters = query.split("&");
+    for (String aQueryParameter : queryParameters) {
+      String[] parameterParts = aQueryParameter.split("=");
+      parameters.add(parameterParts[0], parameterParts[1]);
+    }
+    return parameters;
   }
 }

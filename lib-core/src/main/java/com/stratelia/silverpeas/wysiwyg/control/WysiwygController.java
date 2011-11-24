@@ -214,7 +214,7 @@ public class WysiwygController {
    * Method declaration Get the node of the path of the root Website. 
    * For example c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11\\ should return
    * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3
-   * @param path the full path.
+   * @param currentPath the full path.
    * @param componentId the component id.
    * @return a String with the path of the node.
    * @throws WysiwygException
@@ -252,16 +252,12 @@ public class WysiwygController {
   static String supprAntiSlashFin(String path) {
     /* ex : ....\\id\\rep1\\rep2\\rep3\\ */
     /* res : ....\\id\\rep1\\rep2\\rep3 */
-
     int longueur = path.length();
-    /*
-     * if (path.substring(longueur - 2).equals("\\\\")) return path.substring(0, longueur - 2); else
-     */
-    if (path.substring(longueur - 1).equals("/")) {
+
+    if ("/".equals(path.substring(longueur - 1))) {
       return path.substring(0, longueur - 1);
-    } else {
-      return path;
     }
+    return path;
   }
 
   static String ignoreSlash(String chemin) {
@@ -282,19 +278,19 @@ public class WysiwygController {
 
  
   static String supprDoubleAntiSlash(String chemin) {
-    String res = "";
+    StringBuilder res = new StringBuilder("");
     int i = 0;
     while (i < chemin.length()) {
       char car = chemin.charAt(i);
       if (car == '\\' && chemin.charAt(i + 1) == '\\') {
-        res = res + car;
+        res.append(car);
         i++;
       } else {
-        res = res + car;
+        res.append(car);
       }
       i++;
     }
-    return res;
+    return res.toString();
   }
 
 
@@ -528,10 +524,8 @@ public class WysiwygController {
 
   /**
    * Method declaration remove the file attached
-   * @param fileName String : name of the file
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
-   * @param context String : for example wysiwyg.
    * @param objectId String : for example the id of the publication.
    * @throws FinderException
    * @throws NamingException
@@ -540,7 +534,7 @@ public class WysiwygController {
    * @see AttachmentController
    */
   public static void deleteWysiwygAttachments(String spaceId, String componentId, String objectId)
-          throws WysiwygException /* , FinderException, NamingException, SQLException */ {
+          throws WysiwygException {
     try {
       // delete all the attachments
       AttachmentPK foreignKey = new AttachmentPK(objectId, spaceId, componentId);

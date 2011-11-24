@@ -23,9 +23,11 @@
  */
 package com.silverpeas.pdc;
 
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * The factory of PdC service instances.
@@ -38,10 +40,14 @@ public class PdcServiceFactory {
   private static PdcServiceFactory instance = new PdcServiceFactory();
   
   @Inject
+  @Named("pdcBm")
   private PdcBm pdcBm;
   
   @Inject
   private ThesaurusManager thesaurusManager;
+  
+  @Inject
+  private PdcClassificationService pdcClassificationService;
   
   /**
    * Gets an instance of this factory.
@@ -65,6 +71,14 @@ public class PdcServiceFactory {
    */
   public ThesaurusManager getThesaurusManager() {
     return thesaurusManager;
+  }
+  
+  /**
+   * Gets an instance of the service dedicated to the classification of contents on the PdC.
+   * @return a PdcClassificationService object.
+   */
+  public PdcClassificationService getPdcClassificationService() {
+    return pdcClassificationService;
   }
   
   private PdcServiceFactory() {

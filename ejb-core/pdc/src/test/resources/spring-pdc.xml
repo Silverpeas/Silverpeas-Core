@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:hades="http://schemas.synyx.org/hades"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
+
+  <context:annotation-config/>
+
+  <context:component-scan base-package="com.silverpeas.pdc"/>
+  <context:component-scan base-package="com.silverpeas.thesaurus"/>
+
+  <hades:dao-config base-package="com.silverpeas.pdc" transaction-manager-ref="jpaTransactionManager"/>
+
+  <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
+  
+  <bean id="pdcServiceFactory" class="com.silverpeas.pdc.PdcServiceFactory"
+        factory-method="getFactory"/>
+
+  <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
+        p:entityManagerFactory-ref="entityManagerFactory"/>
+
+  <bean id="entityManagerFactory"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+        p:dataSource-ref="dataSource"
+        p:persistenceXmlLocation="classpath*:META-INF/persistence-pdc.xml"
+        p:persistenceUnitName="silverpeas-pu">
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
+            p:showSql="false"
+            p:generateDdl="false"/>
+    </property>
+  </bean>
+  
+</beans>
