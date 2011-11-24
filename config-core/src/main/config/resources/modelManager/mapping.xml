@@ -336,7 +336,7 @@
             <bind-xml name="unset" node="element" />
         </field>
         <field name="notifiedUsers" type="com.silverpeas.workflow.api.model.QualifiedUsers"
-               get-method="getNotifiedUsersEx" set-method="setNotifiedUsers"
+               collection="arraylist" get-method="iterateNotifiedUsers" set-method="addNotifiedUsers"
                create-method="createQualifiedUsers">
             <bind-xml name="notify" node="element" />
         </field>

@@ -46,7 +46,7 @@ public class CreationTaskImpl extends AbstractTaskImpl {
   public CreationTaskImpl(User user, String roleName, ProcessModel processModel)
       throws WorkflowException {
     super(user, roleName, processModel);
-    Action creation = processModel.getCreateAction();
+    Action creation = processModel.getCreateAction(roleName);
     actionNames = new String[] { creation.getName() };
   }
 
