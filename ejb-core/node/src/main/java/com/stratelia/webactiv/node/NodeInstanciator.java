@@ -31,7 +31,13 @@ import java.sql.Statement;
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 
 public class NodeInstanciator extends SQLRequest {
 
@@ -104,6 +110,18 @@ public class NodeInstanciator extends SQLRequest {
         SilverTrace.error("node", "NodeInstanciator.deleteDataOfInstance()",
                 "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
       }
+    }
+  }
+
+  protected NodeBm getNodeBm() {
+    try {
+      NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+              JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      return home.create();
+    } catch (Exception ex) {
+      throw new NodeRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+              ex);
     }
   }
 }

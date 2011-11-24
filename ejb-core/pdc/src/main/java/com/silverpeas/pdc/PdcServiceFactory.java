@@ -27,6 +27,7 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * The factory of PdC service instances.
@@ -39,6 +40,7 @@ public class PdcServiceFactory {
   private static PdcServiceFactory instance = new PdcServiceFactory();
   
   @Inject
+  @Named("pdcBm")
   private PdcBm pdcBm;
   
   @Inject

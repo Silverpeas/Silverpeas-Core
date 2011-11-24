@@ -86,6 +86,7 @@ operationPane.addOperation(resource.getIcon("templateDesigner.newFieldRadio"), r
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldCheckbox"), resource.getString("templateDesigner.newFieldCheckbox"), "javascript:openWindow('checkbox')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldList"), "javascript:openWindow('listbox')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldDate"), resource.getString("templateDesigner.newFieldDate"), "javascript:openWindow('date')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldTime"), resource.getString("templateDesigner.newFieldTime"), "javascript:openWindow('time')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldFile"), resource.getString("templateDesigner.newFieldFile"), "javascript:openWindow('file')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldImage"), resource.getString("templateDesigner.newFieldImage"), "javascript:openWindow('image')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldVideo"), resource.getString("templateDesigner.newFieldVideo"), "javascript:openWindow('video')");

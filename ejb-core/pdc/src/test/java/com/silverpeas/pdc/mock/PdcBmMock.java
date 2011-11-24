@@ -46,7 +46,7 @@ import javax.inject.Named;
 /**
  * A mock of the PdcBm service.
  */
-@Named("PdcBm")
+@Named("pdcBm")
 public class PdcBmMock implements PdcBm {
 
   private List<TreeNode> treeNodes = new ArrayList<TreeNode>();

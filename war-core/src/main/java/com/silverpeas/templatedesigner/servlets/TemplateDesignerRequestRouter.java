@@ -40,6 +40,7 @@ import com.silverpeas.form.record.ParameterValue;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -248,6 +249,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       return "fieldGroup.jsp";
     } if (displayer.equals("sequence")) {
       return "fieldSequence.jsp";
+    } if (displayer.equals("time")) {
+      return "fieldTime.jsp";
     } else {
       return "fieldText.jsp";
     }
@@ -256,9 +259,9 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
   private PublicationTemplate request2Template(HttpServletRequest request) {
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
-    boolean visible = "true".equalsIgnoreCase(request.getParameter("Visible"));
+    boolean visible = StringUtil.getBooleanValue(request.getParameter("Visible"));
     String thumbnail = request.getParameter("Thumbnail");
-    boolean searchable = "true".equalsIgnoreCase(request.getParameter("Searchable"));
+    boolean searchable = StringUtil.getBooleanValue(request.getParameter("Searchable"));
 
     PublicationTemplateImpl template = new PublicationTemplateImpl();
     template.setName(name);
@@ -279,11 +282,11 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       throws FormException {
     String displayer = request.getParameter("Displayer");
     String fieldName = request.getParameter("FieldName");
-    boolean mandatory = "true".equalsIgnoreCase(request.getParameter("Mandatory"));
-    boolean readOnly = "true".equalsIgnoreCase(request.getParameter("ReadOnly"));
-    boolean hidden = "true".equalsIgnoreCase(request.getParameter("Hidden"));
-    boolean disabled = "true".equalsIgnoreCase(request.getParameter("Disabled"));
-    boolean searchable = "true".equalsIgnoreCase(request.getParameter("Searchable"));
+    boolean mandatory = StringUtil.getBooleanValue(request.getParameter("Mandatory"));
+    boolean readOnly = StringUtil.getBooleanValue(request.getParameter("ReadOnly"));
+    boolean hidden = StringUtil.getBooleanValue(request.getParameter("Hidden"));
+    boolean disabled = StringUtil.getBooleanValue(request.getParameter("Disabled"));
+    boolean searchable = StringUtil.getBooleanValue(request.getParameter("Searchable"));
 
     String fieldType = "text";
     if (displayer.equals("user")) {

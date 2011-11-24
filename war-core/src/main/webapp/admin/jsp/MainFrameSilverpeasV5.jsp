@@ -47,8 +47,6 @@ String			topBarParams			= "";
 String			frameBottomParams		= "";
 boolean			login					= false;
 
-//System.out.println("attachmentId = "+attachmentId);
-
 if (m_MainSessionCtrl == null)
 {
 %>
@@ -73,28 +71,23 @@ else
 	if (StringUtil.isDefined(componentIdFromRedirect))
 		componentExists = (organizationCtrl.getComponentInstLight(componentIdFromRedirect) != null);
 
-	//System.out.println("componentExists = "+componentExists);
 
 	if (!componentExists)
 	{
 		String spaceId = m_MainSessionCtrl.getFavoriteSpace();
-		//System.out.println("favoriteSpace = "+spaceId);
-
 		boolean spaceExists = false;
 		if (StringUtil.isDefined(spaceIdFromRedirect)) {
 			spaceExists = (organizationCtrl.getSpaceInstById(spaceIdFromRedirect) != null);
 		}
 
-		//System.out.println("spaceExists = "+spaceExists+" for spaceId = "+spaceIdFromRedirect);
-
-		if (spaceExists) {
+		if (spaceExists)
+		{
 			spaceId = spaceIdFromRedirect;
 		} else {
 			if (helper != null && helper.getSpaceId() != null) {
 				spaceId = helper.getSpaceId();
 			}
 		}
-		//System.out.println("MainFrame : spaceId = "+spaceId);
 		helper.setSpaceIdAndSubSpaceId(spaceId);
 
 		String 	workSpace 	= "?SpaceId="+spaceId;
