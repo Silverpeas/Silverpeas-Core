@@ -38,6 +38,7 @@ import com.silverpeas.util.StringUtil;
  */
 public class HighlightTermTag extends BodyTagSupport {
 
+  private static final HighlightGlossaryTerms highlighter = new HighlightGlossaryTerms();
   private String className = null;
   private String axisId = null;
   private boolean onlyFirst = false;
@@ -48,17 +49,17 @@ public class HighlightTermTag extends BodyTagSupport {
    */
   private static final long serialVersionUID = -2139344290604645123L;
 
+  @Override
   public int doAfterBody() throws JspTagException {
     try {
       BodyContent bc = getBodyContent();
       String highlightedText = (StringUtil.isDefined(axisId) && !"0".equals(axisId)) ?
-          HighlightGlossaryTerms.searchReplace(bc.getString(), className, axisId, onlyFirst,
+          highlighter.searchReplace(bc.getString(), className, axisId, onlyFirst,
           language) : bc.getString();
       bc.clearBody();
       getPreviousOut().print(highlightedText);
     } catch (IOException e) {
-      throw new JspTagException("HighlightTermTag: " +
-          e.getMessage());
+      throw new JspTagException("HighlightTermTag: " + e.getMessage());
     }
 
     return SKIP_BODY;
@@ -86,7 +87,7 @@ public class HighlightTermTag extends BodyTagSupport {
   }
 
   /**
-   * @param glossary the glossary identifier to set
+   * @param axisId  the glossary identifier to set
    */
   public void setAxisId(String axisId) {
     this.axisId = axisId;
