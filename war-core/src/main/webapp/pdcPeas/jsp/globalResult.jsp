@@ -41,6 +41,7 @@
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle"/>
+<view:setBundle basename="com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons" var="icons" />
 
 <%!
 void displayItemsListHeader(String query, Pagination pagination, ResourcesWrapper resource, JspWriter out) throws IOException {
@@ -66,7 +67,6 @@ List<GlobalSilverResult> results 			= (List) request.getAttribute("Results");
 int nbTotalResults		= ((Integer) request.getAttribute("NbTotalResults")).intValue();
 
 int indexOfFirstResult	= ((Integer) request.getAttribute("IndexOfFirstResult")).intValue();
-Boolean exportEnabled	= (Boolean) request.getAttribute("ExportEnabled");
 Boolean refreshEnabled	= (Boolean) request.getAttribute("RefreshEnabled");
 boolean externalSearchEnabled = ((Boolean) request.getAttribute("ExternalSearchEnabled")).booleanValue();
 Boolean	xmlSearch		= (Boolean) request.getAttribute("XmlSearchVisible");
@@ -100,22 +100,8 @@ if (keywords == null) {
 	keywords = EncodeHelper.javaStringToHtmlString(keywords);
 }
 
-Boolean activeSelection = (Boolean) request.getAttribute("ActiveSelection");
-if (activeSelection == null) {
-	activeSelection = new Boolean(false);
-}
-
 // Contenu
-String sName		= null;
-String sDescription = null;
-String sURL			= null;
-String sDownloadURL = null;
-String sLocation	= "";
 String componentId	= "";
-String sCreatorName = "";
-String sCreationDate = "";
-String fileType		= "";
-String fileIcon		= "";
 
 //pour le thesaurus
 Map synonyms = (Map) request.getAttribute("synonyms");
@@ -124,10 +110,6 @@ String backButtonClick;
 if (urlToRedirect != null) {
     backButtonClick = "location.href='" + URLDecoder.decode(urlToRedirect, "UTF-8") + "';";
 }
-
-String fullStarSrc		= "<img src=\""+m_context+"/pdcPeas/jsp/icons/starGreen.gif\"/>";
-String emptyStarSrc		= "<img src=\""+m_context+"/pdcPeas/jsp/icons/pdcPeas_emptyStar.gif\"/>";
-String downloadSrc		= "<img src=\""+resource.getIcon("pdcPeas.download")+"\" class=\"fileDownload\" alt=\""+resource.getString("pdcPeas.DownloadInfo")+"\"/>";
 
 Board board = gef.getBoard();
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
@@ -429,19 +411,23 @@ function showExternalSearchError() {
 </head>
 <body class="searchEngine" id="<%=pageId %>">
 <form name="AdvancedSearch" action="javascript:sendQuery()" method="post">
-<%
-	browseBar.setComponentName(resource.getString("pdcPeas.ResultPage"));
-
-	if (activeSelection.booleanValue())
-		operationPane.addOperation(resource.getIcon("pdcPeas.folder_to_valid"), resource.getString("pdcPeas.tracker_to_select"), "javascript:getSelectedOjectsFromResultList()");
-
-	if (exportEnabled.booleanValue())
-	{
-		//To export elements
-		operationPane.addOperation(resource.getIcon("pdcPeas.toExport"), resource.getString("pdcPeas.ToExport"), "javascript:openExportPopup();");
-		operationPane.addOperation(resource.getIcon("pdcPeas.exportPDF"), resource.getString("pdcPeas.exportPDF"), "javascript:openExportPDFPopup();");
-	}
-%>
+<fmt:message var="resultLabel" key="pdcPeas.ResultPage" />
+<view:browseBar extraInformations="${resultLabel}" />
+<view:operationPane>
+  <c:if test="${activeSelection}">
+    <fmt:message var="iconSelection" key="pdcPeas.folder_to_valid" bundle="${icons}"/>
+    <fmt:message var="messageSelection" key="pdcPeas.tracker_to_select" />
+    <view:operation altText="${messageSelection}" icon="${iconSelection}" action="javascript:getSelectedOjectsFromResultList();"></view:operation>
+  </c:if>
+  <c:if test="${exportEnabled}">
+    <fmt:message var="iconExport" key="pdcPeas.ToExport" bundle="${icons}"/>
+    <fmt:message var="messageExport" key="pdcPeas.ToExport" />
+    <fmt:message var="iconPDF" key="pdcPeas.exportPDF" bundle="${icons}"/>
+    <fmt:message var="messagePDF" key="pdcPeas.exportPDF" />
+    <view:operation altText="${messageExport}" icon="${iconExport}" action="javascript:openExportPopup();"></view:operation>
+    <view:operation altText="${messagePDF}" icon="${iconPDF}" action="javascript:openExportPDFPopup();"></view:operation>
+  </c:if>
+</view:operationPane>
 <view:window>
 <%
 	tabs = gef.getTabbedPane();
@@ -456,9 +442,9 @@ function showExternalSearchError() {
 	}
 	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
 	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
-	if ( isXmlSearchVisible )
+	if ( isXmlSearchVisible ) {
 		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", false);
-
+    }
 
 %>
 <div id="globalResultTab"><%=tabs.print()%></div>
@@ -534,11 +520,11 @@ function showExternalSearchError() {
 		  <a href="javascript:setSortOrder('DESC')" class="<%=classCSS%>">DESC</a>
 		  </td>
         </tr>
-		<% if (activeSelection.booleanValue() || exportEnabled.booleanValue()) { %>
+        <c:if test="${activeSelection or exportEnabled}">
 			<tr id="globalResultSelectAllResult">
-				<td class="txtlibform"><%=resource.getString("pdcPeas.selectAll") %></td><td><input type="checkbox" name="selectAll" onClick="selectEveryResult(this);"></td></tr>
+				<td class="txtlibform"><fmt:message key="pdcPeas.selectAll" /></td><td><input type="checkbox" name="selectAll" onClick="selectEveryResult(this);"></td></tr>
 			</tr>
-		<% }  %>
+        </c:if>
 		</table>
 <%
 	}
@@ -614,29 +600,28 @@ function showExternalSearchError() {
     </div>
     <div id="globalResultHelp">
     <view:board>
-    
 		<table width="100%" border="0"><tr><td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol1Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol1Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content3")%><br>
+        <fmt:message key="pdcPeas.helpCol1Header" /><br><br>
+        <fmt:message key="pdcPeas.helpCol1Content1" /><br>
+        <fmt:message key="pdcPeas.helpCol1Content2" /><br>
+        <fmt:message key="pdcPeas.helpCol1Content3" /><br>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol2Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol2Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content4")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content5")%><br>
+        <fmt:message key="pdcPeas.helpCol2Header" /><br><br>
+        <fmt:message key="pdcPeas.helpCol2Content1" /><br>
+        <fmt:message key="pdcPeas.helpCol2Content2" /><br>
+        <fmt:message key="pdcPeas.helpCol2Content3" /><br>
+        <fmt:message key="pdcPeas.helpCol2Content4" /><br>
+        <fmt:message key="pdcPeas.helpCol2Content5" /><br>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol3Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol3Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content4")%><br>
+        <fmt:message key="pdcPeas.helpCol3Header" /><br><br>
+        <fmt:message key="pdcPeas.helpCol3Content1" /><br>
+        <fmt:message key="pdcPeas.helpCol3Content2" /><br>
+        <fmt:message key="pdcPeas.helpCol3Content3" /><br>
+        <fmt:message key="pdcPeas.helpCol3Content4" /><br>
 		</td>
 		</tr></table>
     </view:board>
