@@ -57,26 +57,6 @@ public class HighlightGlossaryTermsTest {
   }
 
   /**
-   * Test of searchReplace method, of class HighlightGlossaryTerms.
-   */
-  /*@Test
-  public void testSearchReplace() {
-    System.out.println("searchReplace");
-    String publicationContent = "";
-    String className = "";
-    String axisId = "";
-    boolean onlyFirst = false;
-    String language = "";
-    HighlightGlossaryTerms instance = new HighlightGlossaryTerms();
-    String expResult = "";
-    String result = instance.searchReplace(publicationContent, className, axisId, onlyFirst,
-            language);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-  }*/
-
-  /**
    * Test of highlight method, of class HighlightGlossaryTerms.
    */
   @Test
@@ -118,5 +98,31 @@ public class HighlightGlossaryTermsTest {
     String result = instance.highlight(term, publication, definition, className, onlyFirst);
     assertEquals(expResult, result);
   }
-   //TODO ajouter des cas avec des commentaires
+   
+   
+  @Test
+  public void testHighlightWithLinkInParagraph() {
+    String term = "Bart Simpson";
+    String publication = "<p>Bart Simpson is the cooleast sk8ter in the world. Miss Krabappel doesn't see le good part in <a href=\"www.simpson.com\" id=\"Bart Simpson\">Bart Simpson</a>.</p>";
+    String definition = "Skatter";
+    String className = "cool";
+    boolean onlyFirst = false;
+    HighlightGlossaryTerms instance = new HighlightGlossaryTerms();
+    String expResult = "<p><a href=\"#\" class=\"cool\" title=\"Skatter\">Bart Simpson</a> is the cooleast sk8ter in the world. Miss Krabappel doesn't see le good part in <a href=\"www.simpson.com\" id=\"Bart Simpson\">Bart Simpson</a>.</p>";
+    String result = instance.highlight(term, publication, definition, className, onlyFirst);
+    assertEquals(expResult, result);
+  }
+  
+  @Test
+  public void testHighlightWithComments() {
+    String term = "Bart Simpson";
+    String publication = "<p>Bart Simpson is the cooleast sk8ter in the world.<!-- I love Bart Simpson --> Miss Krabappel doesn't see le good part in Bart Simpson.</p>";
+    String definition = "Skatter";
+    String className = "cool";
+    boolean onlyFirst = false;
+    HighlightGlossaryTerms instance = new HighlightGlossaryTerms();
+    String expResult = "<p><a href=\"#\" class=\"cool\" title=\"Skatter\">Bart Simpson</a> is the cooleast sk8ter in the world.<!-- I love Bart Simpson --> Miss Krabappel doesn't see le good part in <a href=\"#\" class=\"cool\" title=\"Skatter\">Bart Simpson</a>.</p>";
+    String result = instance.highlight(term, publication, definition, className, onlyFirst);
+    assertEquals(expResult, result);
+  }
 }
