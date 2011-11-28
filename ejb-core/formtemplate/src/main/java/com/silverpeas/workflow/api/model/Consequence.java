@@ -25,6 +25,7 @@
 package com.silverpeas.workflow.api.model;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Interface describing a representation of the &lt;consequence&gt; element of a Process Model.
@@ -89,7 +90,7 @@ public interface Consequence {
    * Iterate through Target States.
    * @return an Iterator
    */
-  public Iterator iterateTargetState();
+  public Iterator<StateSetter> iterateTargetState();
 
   /**
    * Create a new state Setter object
@@ -120,13 +121,19 @@ public interface Consequence {
    * Iterate through Unset States.
    * @return an Iterator
    */
-  public Iterator iterateUnsetState();
+  public Iterator<StateSetter> iterateUnsetState();
 
   /**
    * Add a new Unset State to the collection
    * @param stateSetter object to be added
    */
   public void addUnsetState(StateSetter stateSetter);
+
+  /**
+   * Add a new notifiedUser to the collection
+   * @param stateSetter object to be added
+   */
+  public void addNotifiedUsers(QualifiedUsers notifyUsers);
 
   /**
    * Get the flag that specifies if instance has to be removed
@@ -145,19 +152,13 @@ public interface Consequence {
    * @return QualifiedUsers object containing notified users or an empty QualifiedUsers object but
    * never a <code>null</code>
    */
-  public QualifiedUsers getNotifiedUsers();
-
-  /**
-   * Get all the users that have to be notified
-   * @return QualifiedUsers object containing notified users or a <code>null</code> if none defined
-   */
-  public QualifiedUsers getNotifiedUsersEx();
+  public List<QualifiedUsers> getNotifiedUsers();
 
   /**
    * Set all the users that have to be notified
    * @param QualifiedUsers object containing notified users
    */
-  public void setNotifiedUsers(QualifiedUsers notifiedUsers);
+  public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList);
 
   public Triggers createTriggers();
 

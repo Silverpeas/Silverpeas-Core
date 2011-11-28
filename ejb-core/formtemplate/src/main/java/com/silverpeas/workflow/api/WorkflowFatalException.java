@@ -30,6 +30,8 @@ import com.stratelia.webactiv.util.exception.*;
  * Thrown when a fatal error occured in a workflow engine component.
  */
 public class WorkflowFatalException extends WorkflowException {
+  private static final long serialVersionUID = -7659688773965554801L;
+
   /**
    * Set the caller and the error message
    */

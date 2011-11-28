@@ -50,11 +50,12 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  */
 public class FormImpl extends AbstractReferrableObject implements Form, AbstractDescriptor,
     Serializable {
+  private static final long serialVersionUID = 1721380617586523435L;
   private String name;
   private String role;
   private String HTMLFileName;
   private ContextualDesignations titles; // object storing the titles
-  private Vector inputList;
+  private Vector<Input> inputList;
 
   // ~ Instance fields related to AbstractDescriptor
   // ////////////////////////////////////////////////////////
@@ -83,7 +84,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    */
   private void reset() {
     titles = new SpecificLabelListHelper();
-    inputList = new Vector();
+    inputList = new Vector<Input>();
   }
 
   /**
@@ -125,9 +126,9 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * @return the inputs as an array
    */
   public Input[] getInputs() {
-    if (inputList == null)
+    if (inputList == null) {
       return null;
-
+    }
     return (Input[]) inputList.toArray(new ItemRef[0]);
   }
 
@@ -146,10 +147,11 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
   public Input getInput(Input reference) {
     int idx = inputList.indexOf(reference);
 
-    if (idx >= 0)
+    if (idx >= 0) {
       return (Input) inputList.get(idx);
-    else
+    } else {
       return null;
+    }
   }
 
   /*
@@ -164,7 +166,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Form#iterateInput()
    */
-  public Iterator iterateInput() {
+  public Iterator<Input> iterateInput() {
     return inputList.iterator();
   }
 
@@ -217,7 +219,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Form#iterateTitle()
    */
-  public Iterator iterateTitle() {
+  public Iterator<ContextualDesignation> iterateTitle() {
     return titles.iterateContextualDesignation();
   }
 
@@ -273,8 +275,9 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
     DataRecord defaultRecord = this.toRecordTemplate(role, lang)
         .getEmptyRecord();
 
-    if (inputList == null)
+    if (inputList == null) {
       return defaultRecord;
+    }
 
     // Add all fields description in the RecordTemplate
     int count = 0;
@@ -287,9 +290,9 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
       if (item == null) {
         fieldName = "label#" + count;
         count++;
-      } else
+      } else {
         fieldName = item.getName();
-
+      }
       // Compute the default value
       value = input.getValue();
       if (data != null) {
@@ -336,30 +339,34 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
         // create a new FieldTemplate and set attributes
         GenericFieldTemplate ft = new GenericFieldTemplate(item.getName(), item
             .getType());
-        if (readOnly)
+        if (readOnly) {
           ft.setReadOnly(true);
-        else
+        } else {
           ft.setReadOnly(input.isReadonly());
+        }
         ft.setMandatory(input.isMandatory());
         if (input.getDisplayerName() != null
-            && input.getDisplayerName().length() > 0)
+            && input.getDisplayerName().length() > 0) {
           ft.setDisplayerName(input.getDisplayerName());
+        }
 
         if (role != null && lang != null) {
           label = input.getLabel(role, lang);
-          if (label == null || label.length() == 0)
+          if (label == null || label.length() == 0) {
             ft.addLabel(item.getLabel(role, lang), lang);
-          else
+          } else {
             ft.addLabel(label, lang);
+          }
         }
 
         // add parameters
-        Iterator parameters = item.iterateParameter();
+        Iterator<Parameter> parameters = item.iterateParameter();
         Parameter param = null;
         while (parameters.hasNext()) {
-          param = (Parameter) parameters.next();
-          if (param != null)
+          param = parameters.next();
+          if (param != null) {
             ft.addParameter(param.getName(), param.getValue());
+          }
         }
 
         // add the new FieldTemplate in RecordTemplate

@@ -42,8 +42,8 @@
                              inRolePane = gef.getArrayPane( "inRolePane", "", request, session );
 %>
 
-<HTML>
-<HEAD>
+<html>
+<head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
@@ -62,7 +62,7 @@
         var errorNb = 0;
         var result;
         var fExistingQualifiedUser = <%=fExistingQualifiedUser.toString()%>;
-        var fUserInRoleVisible = !<%=fNotifiedUser.toString()%>;
+        var fUserInRoleVisible = true;
         var fMessageVisible = <%=fNotifiedUser.toString()%>;
         var fRelatedUserDefined = <%=Boolean.toString( qualifiedUsers.iterateRelatedUser().hasNext() )%>;
         var fUserInRoleDefined = false;
@@ -124,8 +124,8 @@
         return result;
     }
 </script>
-</HEAD>
-<BODY leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+</head>
+<body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName( resource.getString(strEditorName) );
@@ -152,7 +152,6 @@
     //
     if ( fNotifiedUser.booleanValue() )
     {
-        headerPane.setTitle(resource.getString(strEditorName));
         row = headerPane.addArrayLine();
         cellText = row.addArrayCellText( resource.getString("workflowDesigner.message") );
         cellText.setStyleSheet( "txtlibform" );
@@ -164,21 +163,19 @@
     // User In Role - print a list of role names, based on the 'roles' element
     // Starting form i = 1 since the '0' element holds the 'none' choice
     //
-    if ( !fNotifiedUser.booleanValue() )
+    inRolePane.setTitle( resource.getString( "workflowDesigner.list.userInRole" ) );
+
+    for ( int i = 1; i < astrRoleValues.length; i ++ )
     {
-        inRolePane.setTitle( resource.getString( "workflowDesigner.list.userInRole" ) );
-    
-        for ( int i = 1; i < astrRoleValues.length; i ++ )
-        {
-            boolean         fChecked;
-    
-            row = inRolePane.addArrayLine();
-            fChecked = qualifiedUsers.getUserInRole( astrRoleValues[i] ) != null;
-            
-            row.addArrayCellCheckbox( "userInRole", astrRoleValues[i], fChecked );
-            row.addArrayCellText( astrRoleValues[i] );
-        }
+        boolean         fChecked;
+
+        row = inRolePane.addArrayLine();
+        fChecked = qualifiedUsers.getUserInRole( astrRoleValues[i] ) != null;
+        
+        row.addArrayCellCheckbox( "userInRole", astrRoleValues[i], fChecked );
+        row.addArrayCellText( astrRoleValues[i] );
     }
+    
     out.println(window.printBefore());
     out.println(frame.printBefore());
 
@@ -206,20 +203,18 @@
 
     out.println(board.printBefore());
 %>
-<FORM NAME="qualifiedUsersForm" METHOD="POST" ACTION="UpdateQualifiedUsers">
+<form name="qualifiedUsersForm" method="post" action="UpdateQualifiedUsers">
     <input type="hidden" name="role_original" value="<%=qualifiedUsers.getRole()%> "/>
     <input type="hidden" name="context" value="<%=strContext%>" />
 <%
-    if ( fDisplayRoleSelector.booleanValue() || fNotifiedUser.booleanValue() )
+    if ( fDisplayRoleSelector.booleanValue() || fNotifiedUser.booleanValue() ) {
         out.println( headerPane.print() );
+    }
 
     // List of users in role
-    //
-    if ( !fNotifiedUser.booleanValue() )
-        out.println( inRolePane.print() );
-    
+    out.println( inRolePane.print() );
 %>
-</FORM>
+</form>
 
 <!-- List of related users -->
 <designer:relatedUsersList iterRelatedUser="<%=qualifiedUsers.iterateRelatedUser()%>" 
@@ -233,5 +228,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter()); 
 %>
-</BODY>
-</HTML>
+</body>
+</html>

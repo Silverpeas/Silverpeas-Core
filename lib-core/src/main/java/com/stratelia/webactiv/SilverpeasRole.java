@@ -25,9 +25,13 @@
 package com.stratelia.webactiv;
 
 public enum SilverpeasRole {
-  admin, publisher, writer, user, reader, supervisor;
+  admin, publisher, writer, user, reader, supervisor, privilegedUser;
 
   public boolean isInRole(String role) {
-    return this == valueOf(role);
+    try {
+      return this == valueOf(role);
+    } catch(IllegalArgumentException ex) {
+      return false;
+    }
   }
 }

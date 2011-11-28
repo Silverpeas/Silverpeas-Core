@@ -98,7 +98,7 @@ public interface Input extends Column {
    * Iterate through the Labels
    * @return an iterator
    */
-  public Iterator iterateLabel();
+  public Iterator<ContextualDesignation> iterateLabel();
 
   /**
    * Add a label Method needed primarily by Castor

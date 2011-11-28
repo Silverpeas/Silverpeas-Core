@@ -25,7 +25,6 @@
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Vector;
 
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 

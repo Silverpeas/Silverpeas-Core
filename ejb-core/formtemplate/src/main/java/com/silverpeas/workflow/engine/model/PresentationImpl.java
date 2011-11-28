@@ -40,15 +40,16 @@ import com.silverpeas.workflow.api.model.Presentation;
  **/
 public class PresentationImpl implements Presentation, Serializable {
 
+  private static final long serialVersionUID = 8175832964614235239L;
   private ContextualDesignations titles; // object storing the titles
-  private Vector columnsList; // a vector of columns ( Columns objects )
+  private Vector<Columns> columnsList; // a vector of columns ( Columns objects )
 
   /**
    * Constructor
    */
   public PresentationImpl() {
     titles = new SpecificLabelListHelper();
-    columnsList = new Vector();
+    columnsList = new Vector<Columns>();
   }
 
   // //////////////////
@@ -85,7 +86,7 @@ public class PresentationImpl implements Presentation, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Presentation#iterateTitle()
    */
-  public Iterator iterateTitle() {
+  public Iterator<ContextualDesignation> iterateTitle() {
     return titles.iterateContextualDesignation();
   }
 
@@ -166,7 +167,7 @@ public class PresentationImpl implements Presentation, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Presentation#iterateColumns()
    */
-  public Iterator iterateColumns() {
+  public Iterator<Columns> iterateColumns() {
     return columnsList.iterator();
   }
 

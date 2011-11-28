@@ -101,7 +101,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public static final String FORM_TYPE_PRESENTATION = "presentationForm";
   public static final String FORM_TYPE_PRINT = "printForm";
   public static final String FORM_TYPE_ACTION = "action";
-  public static final String NEW_ELEMENT_NAME = "New"; // an initial name for new model elements 
+  public static final String NEW_ELEMENT_NAME = "New"; // an initial name for new model elements
   public static final String TITLES = "titles";
   public static final String ACTIVITIES = "activities";
   public static final String DESCRIPTIONS = "descriptions";
@@ -976,7 +976,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   /**
    * Update or insert a new action element of the cached process model
    * @param source the reference object
-   * @param strNameOriginal 
+   * @param strNameOriginal
    * @throws WorkflowDesignerException when something goes wrong
    * @throws WorkflowException when something goes wrong
    */
@@ -1829,7 +1829,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // Forms
     //
     if (processModel.getForms() != null) {
-      Iterator<Form> iterForm = processModel.getForms().iterateForm(), iterInput;
+      Iterator<Form> iterForm = processModel.getForms().iterateForm();
+      Iterator<Input> iterInput = null;
       while (iterForm.hasNext()) {
         Form form = iterForm.next();
         String strFormId;
@@ -2322,16 +2323,26 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
               qualifiedUsers = action.getAllowedUsers();
             } else if (CONSEQUENCES.equals(strElement)) {
               // notifiedUsers
-              //
-              Consequence consequence;
-
               strElement = strtok.nextToken(); // consequence no.
-              consequence = (Consequence) action.getConsequences().getConsequenceList().get(Integer.
+              Consequence consequence = (Consequence) action.getConsequences().getConsequenceList().get(Integer.
                   parseInt(strElement));
               strElement = strtok.nextToken(); // notified users
 
               if (NOTIFIED_USERS.equals(strElement)) {
-                qualifiedUsers = consequence.getNotifiedUsersEx();
+                int i = -1;
+                try {
+                  strElement = strtok.nextToken(); // id of notified users
+                  i = Integer.parseInt(strElement);
+                } catch (NoSuchElementException e) {
+                  //no id defined, it's a creation
+                }
+                
+                List<QualifiedUsers> qualifiedUsersList = consequence.getNotifiedUsers();
+                if (i != -1 && qualifiedUsersList != null && !qualifiedUsersList.isEmpty()) {
+                  qualifiedUsers = qualifiedUsersList.get(i);
+                } else {
+                  qualifiedUsers = null;
+                }
               }
             }
           }
@@ -2358,21 +2369,16 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    */
   public void setQualifiedUsers(QualifiedUsers qualifiedUsers, String strContext)
       throws WorkflowException, WorkflowDesignerException {
-    StringTokenizer strtok;
-    String strElement;
-
     if (strContext != null) {
-      strtok = new StringTokenizer(strContext, "/");
+      StringTokenizer strtok = new StringTokenizer(strContext, "/");
 
       try {
         if (strtok.hasMoreTokens()) {
-          strElement = strtok.nextToken();
+          String strElement = strtok.nextToken();
 
           if (STATES.equals(strElement)) {
-            State state;
-
             strElement = strtok.nextToken();
-            state = processModel.getStatesEx().getState(strElement);
+            State state = processModel.getStatesEx().getState(strElement);
             strElement = strtok.nextToken();
 
             if (WORKING_USERS.equals(strElement)) {
@@ -2381,10 +2387,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
               state.setInterestedUsers(qualifiedUsers);
             }
           } else if (ACTIONS.equals(strElement)) {
-            Action action;
-
             strElement = strtok.nextToken();
-            action = processModel.getActionsEx().getAction(strElement);
+            Action action = processModel.getActionsEx().getAction(strElement);
             strElement = strtok.nextToken();
 
             if (ALLOWED_USERS.equals(strElement)) {
@@ -2392,15 +2396,24 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
             } else if (CONSEQUENCES.equals(strElement)) {
               // notifiedUsers
               //
-              Consequence consequence;
-
               strElement = strtok.nextToken(); // consequence no.
-              consequence = (Consequence) action.getConsequences().getConsequenceList().get(Integer.
-                  parseInt(strElement));
-              strElement = strtok.nextToken(); // consequence no.
+              Consequence consequence =
+                  action.getConsequences().getConsequenceList().get(Integer.parseInt(strElement));
+              strElement = strtok.nextToken(); // notifiedUsers
 
               if (NOTIFIED_USERS.equals(strElement)) {
-                consequence.setNotifiedUsers(qualifiedUsers);
+                if (qualifiedUsers == null) {
+                  int i = -1;
+                  try {
+                    strElement = strtok.nextToken(); // id of notified users
+                    i = Integer.parseInt(strElement);
+                    consequence.getNotifiedUsers().remove(i);
+                  } catch (NoSuchElementException e) {
+                    //no id defined, it's a creation
+                  }
+                } else {
+                  consequence.addNotifiedUsers(qualifiedUsers);
+                }
               }
             }
           }
@@ -2461,15 +2474,14 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         }
 
         if (action.getConsequences() != null) {
-          Consequence consequence;
-
           iterConsequence = action.getConsequences().iterateConsequence();
 
           while (iterConsequence.hasNext()) {
-            consequence = (Consequence) iterConsequence.next();
+            Consequence consequence = (Consequence) iterConsequence.next();
 
-            if (consequence.getNotifiedUsersEx() != null) {
-              map.put(consequence.getNotifiedUsersEx(), "action: '"
+            List<QualifiedUsers> qualifiedUsersList = consequence.getNotifiedUsers();
+            if (qualifiedUsersList!=null && !qualifiedUsersList.isEmpty()) {
+              map.put(qualifiedUsersList.get(0), "action: '"
                   + action.getName()
                   + "' : consequence: ["
                   + (consequence.getItem() == null ? "Default" : (" item: '"

@@ -73,7 +73,7 @@ public class UserSettingsImpl implements UserSettings {
    * @set-method castor_setUserInfos
    * @get-method castor_getUserInfos
    */
-  private Vector userInfos = null;
+  private Vector<UserInfo> userInfos = null;
 
   /**
    * Default Constructor
@@ -150,7 +150,7 @@ public class UserSettingsImpl implements UserSettings {
    * Remove all user infos
    */
   public void reset() {
-    userInfos = new Vector();
+    userInfos = new Vector<UserInfo>();
   }
 
   /**
@@ -333,7 +333,7 @@ public class UserSettingsImpl implements UserSettings {
    * Set the settings user informations
    * @param userInfos user informations
    */
-  public void castor_setUserInfos(Vector userInfos) {
+  public void castor_setUserInfos(Vector<UserInfo> userInfos) {
     this.userInfos = userInfos;
   }
 
@@ -341,7 +341,7 @@ public class UserSettingsImpl implements UserSettings {
    * Get the settings user informations
    * @return user informations as a Vector
    */
-  public Vector castor_getUserInfos() {
+  public Vector<UserInfo> castor_getUserInfos() {
     return userInfos;
   }
 

@@ -35,6 +35,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
  **/
 public class RelatedUserImpl extends AbstractReferrableObject implements RelatedUser, Serializable {
+  private static final long serialVersionUID = -7371460894690406952L;
   private Participant participant;
   private Item folderItem;
   private String relation;
@@ -115,23 +116,27 @@ public class RelatedUserImpl extends AbstractReferrableObject implements Related
   public String getKey() {
     StringBuffer sb = new StringBuffer();
 
-    if (participant instanceof AbstractReferrableObject)
+    if (participant instanceof AbstractReferrableObject) {
       sb.append(((AbstractReferrableObject) participant).getKey());
+    }
 
     sb.append("|");
 
-    if (folderItem instanceof AbstractReferrableObject)
+    if (folderItem instanceof AbstractReferrableObject) {
       sb.append(((AbstractReferrableObject) folderItem).getKey());
+    }
 
     sb.append("|");
 
-    if (relation != null)
+    if (relation != null) {
       sb.append(relation);
+    }
 
     sb.append("|");
 
-    if (role != null)
+    if (role != null) {
       sb.append(role);
+    }
 
     return sb.toString();
   }

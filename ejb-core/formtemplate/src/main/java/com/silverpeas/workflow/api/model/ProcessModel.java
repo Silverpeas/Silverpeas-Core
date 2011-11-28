@@ -81,7 +81,7 @@ public interface ProcessModel {
    * Iterate through the Labels
    * @return an iterator
    */
-  public Iterator iterateLabel();
+  public Iterator<ContextualDesignation> iterateLabel();
 
   /**
    * Create an object implementing ContextualDesignation Method needed primarily by Castor
@@ -114,7 +114,7 @@ public interface ProcessModel {
    * Iterate through the descriptions
    * @return an iterator
    */
-  public Iterator iterateDescription();
+  public Iterator<ContextualDesignation> iterateDescription();
 
   /**
    * Add a description Method needed primarily by Castor
@@ -358,7 +358,7 @@ public interface ProcessModel {
    * Returns the action of kind create Throws a WorkflowException if there is no action of type
    * create
    */
-  public Action getCreateAction() throws WorkflowException;
+  public Action getCreateAction(String role) throws WorkflowException;
 
   /**
    * Returns the com.silverpeas.form.Form which be used to publish the named form. We can give an

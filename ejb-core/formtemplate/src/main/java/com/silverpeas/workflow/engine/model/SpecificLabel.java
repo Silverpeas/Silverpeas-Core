@@ -41,6 +41,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
 public class SpecificLabel extends AbstractReferrableObject implements Serializable,
     ContextualDesignation {
 
+  private static final long serialVersionUID = 3151220585995921545L;
   private String content = "";
   private String language = "default";
   private String role = "default";

@@ -36,9 +36,9 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  **/
 public class ColumnImpl extends AbstractReferrableObject implements Column, AbstractDescriptor,
     Serializable {
+  private static final long serialVersionUID = 3766121048611753846L;
 
   // ~ Instance fields ////////////////////////////////////////////////////////
-
   private AbstractDescriptor parent;
   private boolean hasId = false;
   private int id;

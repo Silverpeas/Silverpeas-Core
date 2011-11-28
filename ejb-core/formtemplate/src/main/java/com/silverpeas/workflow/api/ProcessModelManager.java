@@ -24,8 +24,9 @@
 
 package com.silverpeas.workflow.api;
 
-import com.silverpeas.workflow.api.model.*;
 import java.util.List;
+
+import com.silverpeas.workflow.api.model.ProcessModel;
 
 /**
  * The workflow engine services related to process model management.
@@ -37,7 +38,7 @@ public interface ProcessModelManager {
    * @return list of strings containing ProcesModel XML descriptor filenames with relative paths.
    * @throws WorkflowException when something goes wrong
    */
-  public List listProcessModels() throws WorkflowException;
+  public List<String> listProcessModels() throws WorkflowException;
 
   /**
    * Get a ProcessModel from its modelId. Retrieves the xml descriptor filename from the model Id

@@ -36,6 +36,7 @@ import com.silverpeas.workflow.api.model.TimeOutAction;
  */
 public class TimeOutActionImpl implements TimeOutAction, Serializable {
 
+  private static final long serialVersionUID = -7434214806057433378L;
   private Action action = null;
   private String delay = null;
   private int order= 0;

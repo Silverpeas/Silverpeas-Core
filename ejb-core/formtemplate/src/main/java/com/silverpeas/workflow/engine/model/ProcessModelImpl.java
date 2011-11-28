@@ -25,6 +25,7 @@
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,12 +36,14 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.dummy.DummyRecordSet;
+import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.GenericRecordTemplate;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
 import com.silverpeas.workflow.api.model.Action;
@@ -61,12 +64,14 @@ import com.silverpeas.workflow.api.model.Roles;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.States;
 import com.silverpeas.workflow.api.model.UserInRole;
+import com.silverpeas.workflow.engine.WorkflowHub;
 
 /**
  * Class implementing the representation of the main &lt;processModel&gt; element of a Process
  * Model.
  */
 public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Serializable {
+  private static final long serialVersionUID = -4576686557632464607L;
   private String modelId;
   private String name;
   private ContextualDesignations labels;
@@ -142,10 +147,11 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public Presentation getPresentationForCastor() {
     if (presentation.iterateColumns().hasNext()
-        || presentation.getTitles().iterateContextualDesignation().hasNext())
+        || presentation.getTitles().iterateContextualDesignation().hasNext()) {
       return presentation;
-    else
+    } else {
       return null;
+    }
   }
 
   /**
@@ -169,9 +175,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return participants definition
    */
   public Participant[] getParticipants() {
-    if (participants == null)
+    if (participants == null) {
       return null;
-
+    }
     return participants.getParticipants();
   }
 
@@ -204,9 +210,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return roles definition
    */
   public Role[] getRoles() {
-    if (roles == null)
+    if (roles == null) {
       return null;
-
+    }
     return roles.getRoles();
   }
 
@@ -216,9 +222,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return wanted role definition
    */
   public Role getRole(String name) {
-    if (roles == null)
+    if (roles == null) {
       return null;
-
+    }
     return roles.getRole(name);
   }
 
@@ -251,9 +257,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return states defined for this process model
    */
   public State[] getStates() {
-    if (states == null)
+    if (states == null) {
       return null;
-
+    }
     return states.getStates();
   }
 
@@ -271,9 +277,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return wanted state
    */
   public State getState(String name) {
-    if (states == null)
+    if (states == null) {
       return null;
-
+    }
     return states.getState(name);
   }
 
@@ -298,9 +304,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return actions defined for this process model
    */
   public Action[] getActions() {
-    if (actions == null)
+    if (actions == null) {
       return null;
-
+    }
     return actions.getActions();
   }
 
@@ -318,9 +324,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return the wanted action
    */
   public Action getAction(String name) throws WorkflowException {
-    if (actions == null)
+    if (actions == null) {
       return null;
-
+    }
     return actions.getAction(name);
   }
 
@@ -405,9 +411,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @see com.silverpeas.workflow.api.model.ProcessModel#getForm(java.lang.String, java.lang.String)
    */
   public Form getForm(String name, String role) {
-    if (forms == null)
+    if (forms == null) {
       return null;
-
+    }
     return forms.getForm(name, role);
   }
 
@@ -473,7 +479,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.ProcessModel#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 
@@ -515,7 +521,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.ProcessModel#iterateDescription()
    */
-  public Iterator iterateDescription() {
+  public Iterator<ContextualDesignation> iterateDescription() {
     return descriptions.iterateContextualDesignation();
   }
 
@@ -651,16 +657,24 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * Returns the action of kind create Throws a WorkflowException if there is no action of type
    * create
    */
-  public Action getCreateAction() throws WorkflowException {
+  public Action getCreateAction(String role) throws WorkflowException {
     Action[] actions = getActions();
 
-    for (int i = 0; i < actions.length; i++) {
-      if (actions[i].getKind().equals("create"))
-        return actions[i];
+    for (Action action : actions) {
+      if (action.getKind().equals("create")) {
+        // Retrieve roles allowed to do this action
+        QualifiedUsers creators = action.getAllowedUsers();
+        UserInRole[] usersInRoles = creators.getUserInRoles();
+        
+        for (UserInRole usersInRole : usersInRoles) {
+          if (role.equals(usersInRole.getRoleName())) {
+            return action;
+          }
+        }
+      }
     }
 
-    throw new WorkflowException("ProcessModel",
-        "workflowEngine.ERR_NO_CREATE_ACTION_DEFINED");
+    throw new WorkflowException("ProcessModel", "workflowEngine.ERR_NO_CREATE_ACTION_DEFINED");
   }
 
   /**
@@ -671,15 +685,25 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   public com.silverpeas.form.Form getPublicationForm(String actionName,
       String roleName, String lang) throws WorkflowException {
     Action action = getAction(actionName);
-    if (action == null || action.getForm() == null)
+    if (action == null || action.getForm() == null) {
       return null;
-
+    }
+    
     try {
-      XmlForm xmlForm = new XmlForm(action.getForm().toRecordTemplate(roleName,
-          lang));
-      xmlForm.setTitle(action.getForm().getTitle(roleName, lang));
-
-      return xmlForm;
+      if (StringUtil.isDefined(action.getForm().getHTMLFileName())) {
+        HtmlForm form = new HtmlForm(action.getForm().toRecordTemplate(roleName, lang));
+        form.setFileName(WorkflowHub.getProcessModelManager().getProcessModelDir() +
+            action.getForm().getHTMLFileName());
+        form.setName(action.getForm().getName());
+        form.setTitle(action.getForm().getTitle(roleName, lang));
+        return form;
+      } else {
+        XmlForm xmlForm = new XmlForm(action.getForm().toRecordTemplate(roleName,
+            lang));
+        xmlForm.setName(action.getForm().getName());
+        xmlForm.setTitle(action.getForm().getTitle(roleName, lang));
+        return xmlForm;
+      }
     } catch (FormException e) {
       throw new WorkflowException("ProcessModel",
           "workflowEngine.EXP_ILL_FORMED_FORM", action.getForm().getName(), e);
@@ -701,14 +725,16 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     }
 
     if (action != null) {
-      if (action.getForm() == null)
+      if (action.getForm() == null) {
         return null;
-      else
+      } else {
         form = action.getForm();
+      }
     } else {
       form = getForm(name, roleName);
-      if (form == null)
+      if (form == null) {
         return null;
+      }
     }
 
     try {
@@ -729,9 +755,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   public DataRecord getNewActionRecord(String actionName, String roleName,
       String lang, DataRecord data) throws WorkflowException {
     Action action = getAction(actionName);
-    if (action == null || action.getForm() == null)
+    if (action == null || action.getForm() == null) {
       return null;
-
+    }
     try {
       return action.getForm().getDefaultRecord(roleName, lang, data);
     } catch (FormException e) {
@@ -760,29 +786,25 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public String[] getCreationRoles() throws WorkflowException {
     try {
-      Action[] actions = null;
-      Action creation = null;
-      QualifiedUsers creators = null;
-      UserInRole[] usersInRoles = null;
-
-      // Search for action of kind create
-      actions = getActions();
-      for (int i = 0; i < actions.length; i++) {
-        if (actions[i].getKind().equals("create"))
-          creation = actions[i];
+      List<String> roles = new ArrayList<String>();
+      
+      // Search for actions of kind create
+      Action[] actions = getActions();
+      for (Action action : actions) {
+        if (action.getKind().equals("create")) {
+          // Retrieve roles allowed to do this action
+          QualifiedUsers creators = action.getAllowedUsers();
+          UserInRole[] usersInRoles = creators.getUserInRoles();
+          
+          for (UserInRole usersInRole : usersInRoles) {
+            if (!roles.contains(usersInRole.getRoleName())) {
+              roles.add(usersInRole.getRoleName());
+            }
+          }
+        }
       }
 
-      // Retrieve roles allowed to do this action
-      creators = creation.getAllowedUsers();
-      usersInRoles = creators.getUserInRoles();
-
-      String[] roles = new String[usersInRoles.length];
-
-      for (int i = 0; i < usersInRoles.length; i++) {
-        roles[i] = usersInRoles[i].getRoleName();
-      }
-
-      return roles;
+      return roles.toArray(new String[roles.size()]);
     } catch (Exception e) {
       throw new WorkflowException("ProcessModel",
           "workflowEngine.EXP_FAIL_GET_CREATION_ROLES", this.name, e);
@@ -794,8 +816,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * this model.
    */
   public RecordTemplate getAllDataTemplate(String role, String lang) {
-    RecordTemplate template = (RecordTemplate) instanceDataTemplates.get(role
-        + "\n" + lang);
+    RecordTemplate template = instanceDataTemplates.get(role + "\n" + lang);
 
     if (template == null) {
       template = new com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRecordTemplate(
@@ -805,15 +826,14 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     return template;
   }
 
-  private HashMap instanceDataTemplates = new HashMap();
+  private HashMap<String, RecordTemplate> instanceDataTemplates = new HashMap<String, RecordTemplate>();
 
   /**
    * Returns the recordTemplate which describes the data record used to show process instance as a
    * row in list.
    */
   public RecordTemplate getRowTemplate(String role, String lang) {
-    RecordTemplate template = (RecordTemplate) rowTemplates.get(role + "\n"
-        + lang);
+    RecordTemplate template = rowTemplates.get(role + "\n" + lang);
 
     if (template == null) {
       template = new com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowTemplate(
@@ -823,7 +843,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     return template;
   }
 
-  private HashMap rowTemplates = new HashMap();
+  private HashMap<String, RecordTemplate> rowTemplates = new HashMap<String, RecordTemplate>();
 
   /************* Implemented methods *****************************************/
   // ~ Methods ////////////////////////////////////////////////////////////////

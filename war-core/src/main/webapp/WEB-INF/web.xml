@@ -529,6 +529,10 @@
         <servlet-name>AutoRedirectServlet</servlet-name>
         <servlet-class>com.silverpeas.core.AutoRedirectServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>NodesJSONServlet</servlet-name>
+        <servlet-class>com.silverpeas.node.servlets.GetNodes</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>REST Container</servlet-name>
         <url-pattern>/services/*</url-pattern>
@@ -907,6 +911,10 @@
     <servlet-mapping>
         <servlet-name>AjaxServletRSS</servlet-name>
         <url-pattern>/RAjaxRSS/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NodesJSONServlet</servlet-name>
+        <url-pattern>/Explorer/*</url-pattern>
     </servlet-mapping>
     <jsp-config>
         <jsp-property-group>

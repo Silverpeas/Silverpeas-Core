@@ -63,7 +63,7 @@ public interface Participant {
    * Iterate through the descriptions
    * @return an iterator
    */
-  public Iterator iterateDescription();
+  public Iterator<ContextualDesignation> iterateDescription();
 
   /**
    * Add a description Method needed primarily by Castor
@@ -91,7 +91,7 @@ public interface Participant {
    * Iterate through the Labels
    * @return an iterator
    */
-  public Iterator iterateLabel();
+  public Iterator<ContextualDesignation> iterateLabel();
 
   /**
    * Add a label Method needed primarily by Castor

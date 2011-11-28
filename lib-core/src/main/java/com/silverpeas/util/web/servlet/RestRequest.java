@@ -61,9 +61,11 @@ public class RestRequest {
     String context = request.getContextPath();
     int startIndex = pathInfo.indexOf(context) + context.length();
     pathInfo = pathInfo.substring(startIndex);
-    int routingIndex = pathInfo.indexOf(componentId);
-    if (routingIndex >= 0) {
-      pathInfo = pathInfo.substring(routingIndex + componentId.length());
+    if (componentId != null) {
+      int routingIndex = pathInfo.indexOf(componentId);
+      if (routingIndex >= 0) {
+        pathInfo = pathInfo.substring(routingIndex + componentId.length());
+      }
     }
     // substring du context
     if (pathInfo.startsWith("/")) {

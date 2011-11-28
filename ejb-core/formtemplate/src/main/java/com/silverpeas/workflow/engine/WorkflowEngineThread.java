@@ -1175,34 +1175,36 @@ class WorkflowTools {
       }
 
       // notify user
-      QualifiedUsers notifiedUsers = consequence.getNotifiedUsers();
-      Actor[] actors = instance.getActors(notifiedUsers, null);
-      Task[] tasks = taskManager.createTasks(actors, instance);
-      String message = "";
+      List<QualifiedUsers> notifiedUsersList = consequence.getNotifiedUsers();
+      for (QualifiedUsers notifiedUsers : notifiedUsersList) {
+        Actor[] actors = instance.getActors(notifiedUsers, null);
+        Task[] tasks = taskManager.createTasks(actors, instance);
+        String message = "";
 
-      for (int i = 0; i < actors.length; i++) {
-        message = notifiedUsers.getMessage();
-        if (message == null || message.length() == 0) {
-          message = action.getDescription("", "");
-        }
-
-        // check if sender has been hardcoded in the model
-        String senderId = notifiedUsers.getSenderId();
-        User forcedUser = null;
-        if (senderId != null) {
-          try {
-            forcedUser = userManager.getUser(senderId);
-          } catch (WorkflowException we) {
-            SilverTrace.info("workflowEngine",
-                "WorkflowEngineThread.processAction(" + event.getActionName()
-                + ")", "root.EX_ERR_PROCESS_EVENT",
-                "Impossible de trouver l'expediteur avec le user id : "
-                + senderId);
+        for (int i = 0; i < actors.length; i++) {
+          message = notifiedUsers.getMessage();
+          if (message == null || message.length() == 0) {
+            message = action.getDescription("", "");
           }
-        }
 
-        User sender = (forcedUser == null) ? event.getUser() : forcedUser;
-        taskManager.notifyActor(tasks[i], sender, actors[i].getUser(), message);
+          // check if sender has been hardcoded in the model
+          String senderId = notifiedUsers.getSenderId();
+          User forcedUser = null;
+          if (senderId != null) {
+            try {
+              forcedUser = userManager.getUser(senderId);
+            } catch (WorkflowException we) {
+              SilverTrace.info("workflowEngine",
+                  "WorkflowEngineThread.processAction(" + event.getActionName()
+                  + ")", "root.EX_ERR_PROCESS_EVENT",
+                  "Impossible de trouver l'expediteur avec le user id : "
+                  + senderId);
+            }
+          }
+
+          User sender = (forcedUser == null) ? event.getUser() : forcedUser;
+          taskManager.notifyActor(tasks[i], sender, actors[i].getUser(), message);
+        }
       }
     } catch (Exception e) {
       // change the action status of the step

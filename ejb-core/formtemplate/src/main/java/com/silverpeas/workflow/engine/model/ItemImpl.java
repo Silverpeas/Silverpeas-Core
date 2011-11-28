@@ -208,7 +208,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Item#iterateDescription()
    */
-  public Iterator iterateDescription() {
+  public Iterator<ContextualDesignation> iterateDescription() {
     return descriptions.iterateContextualDesignation();
   }
 
@@ -246,7 +246,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Item#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 
@@ -270,7 +270,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
     idx = parameters.indexOf(reference);
 
     if (idx >= 0)
-      return (Parameter) parameters.get(idx);
+      return parameters.get(idx);
     else
       return null;
   }
@@ -296,7 +296,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Item#iterateParameters()
    */
-  public Iterator iterateParameter() {
+  public Iterator<Parameter> iterateParameter() {
     return parameters.iterator();
   }
 

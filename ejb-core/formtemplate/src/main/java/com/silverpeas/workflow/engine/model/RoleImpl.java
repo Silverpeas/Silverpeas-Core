@@ -38,6 +38,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  **/
 public class RoleImpl extends AbstractReferrableObject implements AbstractDescriptor, Role,
     Serializable {
+  private static final long serialVersionUID = 1005254939500303606L;
   private String name;
   private ContextualDesignations labels; // collection of labels
   private ContextualDesignations descriptions; // collection of descriptions
@@ -122,7 +123,7 @@ public class RoleImpl extends AbstractReferrableObject implements AbstractDescri
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Role#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 
@@ -159,7 +160,7 @@ public class RoleImpl extends AbstractReferrableObject implements AbstractDescri
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Role#iterateDescription()
    */
-  public Iterator iterateDescription() {
+  public Iterator<ContextualDesignation> iterateDescription() {
     return descriptions.iterateContextualDesignation();
   }
 

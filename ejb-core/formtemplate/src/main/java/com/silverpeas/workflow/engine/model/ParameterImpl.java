@@ -33,6 +33,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;parameter&gt; element of a Process Model.
  **/
 public class ParameterImpl extends AbstractReferrableObject implements Parameter, Serializable {
+  private static final long serialVersionUID = -4800175503456654951L;
   private String name;
   private String value;
 

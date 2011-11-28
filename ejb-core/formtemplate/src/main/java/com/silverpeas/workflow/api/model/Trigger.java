@@ -74,5 +74,5 @@ public interface Trigger {
   /**
    * Return an Iterator over the parameters collection
    */
-  public Iterator iterateParameter();
+  public Iterator<Parameter> iterateParameter();
 }
