@@ -87,7 +87,7 @@ public class ErrorManagerImpl implements ErrorManager {
     Database db = null;
     OQLQuery query = null;
     QueryResults results;
-    Vector errors = new Vector();
+    Vector<WorkflowError> errors = new Vector<WorkflowError>();
 
     try {
       // Constructs the query
@@ -101,7 +101,7 @@ public class ErrorManagerImpl implements ErrorManager {
 
       // Execute the query
       query.bind(instanceId);
-      results = query.execute(org.exolab.castor.jdo.Database.ReadOnly);
+      results = query.execute(org.exolab.castor.jdo.Database.READONLY);
 
       // get the instance if any
       while (results.hasMore()) {

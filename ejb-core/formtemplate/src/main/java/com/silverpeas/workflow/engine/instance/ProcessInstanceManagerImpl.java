@@ -384,7 +384,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
       // Execute the query
       try {
-        results = query.execute(org.exolab.castor.jdo.Database.ReadOnly);
+        results = query.execute(org.exolab.castor.jdo.Database.READONLY);
 
         // get the instance if any
         while (results.hasMore()) {
@@ -725,7 +725,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
       // Execute the query
       try {
-        results = query.execute(org.exolab.castor.jdo.Database.ReadOnly);
+        results = query.execute(org.exolab.castor.jdo.Database.READONLY);
 
         // get the instance if any
         while (results.hasMore()) {

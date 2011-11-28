@@ -25,12 +25,13 @@
 package com.silverpeas.workflow.engine.event;
 
 import java.util.Date;
+
+import com.silverpeas.form.DataRecord;
 import com.silverpeas.workflow.api.event.TimeoutEvent;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.Action;
+import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.user.User;
-import com.silverpeas.form.DataRecord;
 
 /**
  * A TimeoutEvent object is the description of an instance, that is in the same active state since

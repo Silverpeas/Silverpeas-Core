@@ -41,6 +41,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  **/
 public class ActionImpl extends AbstractReferrableObject implements Action, AbstractDescriptor,
     Serializable {
+  private static final long serialVersionUID = -6984785710903135661L;
   private String name;
   private String kind;
   private ContextualDesignations labels;
@@ -118,7 +119,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Action#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 
@@ -192,7 +193,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Action#iterateDescription()
    */
-  public Iterator iterateDescription() {
+  public Iterator<ContextualDesignation> iterateDescription() {
     return descriptions.iterateContextualDesignation();
   }
 

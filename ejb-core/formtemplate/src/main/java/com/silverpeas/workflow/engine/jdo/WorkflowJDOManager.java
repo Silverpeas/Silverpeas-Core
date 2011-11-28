@@ -24,8 +24,6 @@
 
 package com.silverpeas.workflow.engine.jdo;
 
-import java.io.PrintWriter;
-
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.DatabaseNotFoundException;
 import org.exolab.castor.jdo.JDOManager;
@@ -68,7 +66,6 @@ public class WorkflowJDOManager {
     String databaseFileURL;
     String castorLogFileURL;
     String processInstanceDBName;
-    PrintWriter writer = null;
 
     Database db = null;
 

@@ -20,19 +20,18 @@
  */
 package com.silverpeas.workflow.engine.model;
 
-import com.silverpeas.util.StringUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
 import com.silverpeas.workflow.api.model.Consequence;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.StateSetter;
-import com.silverpeas.workflow.api.model.Trigger;
 import com.silverpeas.workflow.api.model.Triggers;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
@@ -42,12 +41,13 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
 public class ConsequenceImpl extends AbstractReferrableObject implements Consequence,
         AbstractDescriptor, Serializable {
 
+  private static final long serialVersionUID = -905677587105320693L;
   private String item;
   private String operator;
   private String value;
   private boolean kill;
-  private Vector targetStateList;
-  private Vector unsetStateList;
+  private Vector<StateSetter> targetStateList;
+  private Vector<StateSetter> unsetStateList;
   private List<QualifiedUsers> notifiedUsersList;
   private int step;
   private Triggers triggers;
@@ -61,8 +61,8 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
    * Constructor
    */
   public ConsequenceImpl() {
-    targetStateList = new Vector();
-    unsetStateList = new Vector();
+    targetStateList = new Vector<StateSetter>();
+    unsetStateList = new Vector<StateSetter>();
     notifiedUsersList = new ArrayList<QualifiedUsers>();
     triggers = new TriggersImpl();
     kill = false;
@@ -120,14 +120,14 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   /*
    * (non-Javadoc) @see com.silverpeas.workflow.api.model.Consequence#iterateTargetState()
    */
-  public Iterator iterateTargetState() {
+  public Iterator<StateSetter> iterateTargetState() {
     return targetStateList.iterator();
   }
 
   /*
    * (non-Javadoc) @see com.silverpeas.workflow.api.model.Consequence#iterateTargetState()
    */
-  public Iterator iterateNotifiedUsers() {
+  public Iterator<QualifiedUsers> iterateNotifiedUsers() {
     return notifiedUsersList.iterator();
   }
 
@@ -176,7 +176,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   /*
    * (non-Javadoc) @see com.silverpeas.workflow.api.model.Consequence#iterateUnsetState()
    */
-  public Iterator iterateUnsetState() {
+  public Iterator<StateSetter> iterateUnsetState() {
     return unsetStateList.iterator();
   }
 

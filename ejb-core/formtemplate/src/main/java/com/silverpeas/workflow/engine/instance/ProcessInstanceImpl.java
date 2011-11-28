@@ -150,7 +150,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @set-method castor_setQuestions
    * @get-method castor_getQuestions
    */
-  private Vector questions = null;
+  private Vector<Question> questions = null;
   /**
    * The current history step used to add actomic operations in history
    */
@@ -168,7 +168,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @set-method castor_setInterestedUsers
    * @get-method castor_getInterestedUsers
    */
-  private Vector interestedUsers = null;
+  private Vector<InterestedUser> interestedUsers = null;
   /**
    * Vector of all users who can act on this process instance
    * @field-name workingUsers
@@ -176,7 +176,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @set-method castor_setWorkingUsers
    * @get-method castor_getWorkingUsers
    */
-  private Vector workingUsers = null;
+  private Vector<WorkingUser> workingUsers = null;
   /**
    * Vector of all users who can have locked a state of this process instance
    * @field-name lockingUsers
@@ -185,7 +185,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @set-method castor_setLockingUsers
    * @get-method castor_getLockingUsers
    */
-  private Vector lockingUsers = null;
+  private Vector<LockingUser> lockingUsers = null;
   /**
    * Vector of all states that are due to be resolved for this process instance
    * @field-name activeStates
@@ -202,18 +202,18 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   /**
    * A Map action -> DataRecord
    */
-  private transient Map actionData = null;
+  private transient Map<String, DataRecord> actionData = null;
 
   /**
    * Default constructor
    */
   public ProcessInstanceImpl() {
     historySteps = new Vector();
-    questions = new Vector();
-    interestedUsers = new Vector();
-    workingUsers = new Vector();
-    activeStates = new Vector();
-    lockingUsers = new Vector();
+    questions = new Vector<Question>();
+    interestedUsers = new Vector<InterestedUser>();
+    workingUsers = new Vector<WorkingUser>();
+    activeStates = new Vector<ActiveState>();
+    lockingUsers = new Vector<LockingUser>();
     valid = false;
     folder = null;
     actionData = null;
@@ -431,7 +431,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       return;
     }
     for (int i = 0; i < activeStates.size(); i++) {
-      ActiveState activeState = (ActiveState) activeStates.get(i);
+      ActiveState activeState = activeStates.get(i);
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.removeTimeout",
           "root.MSG_GEN_ENTER_METHOD", "activeState ="
           + activeState.getState());
@@ -768,8 +768,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   /**
    * @return Vector
    */
-  public Vector getParticipants() throws WorkflowException {
-    Vector participants = new Vector();
+  public Vector<Participant> getParticipants() throws WorkflowException {
+    Vector<Participant> participants = new Vector<Participant>();
     HistoryStepImpl step = null;
     User user = null;
     State state = null;
@@ -962,7 +962,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public DataRecord getActionRecord(String actionName) throws WorkflowException {
     if (actionData == null) {
-      actionData = new HashMap();
+      actionData = new HashMap<String, DataRecord>();
     }
 
     DataRecord data = (DataRecord) actionData.get(actionName);
@@ -1021,7 +1021,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
       // String[] fieldNames = formSet.getRecordTemplate().getFieldNames();
       Input[] inputs = form.getInputs();
-      List fNames = new ArrayList();
+      List<String> fNames = new ArrayList<String>();
       for (int i = 0; inputs != null && i < inputs.length; i++) {
         if (inputs[i] != null && inputs[i].getItem() != null) {
           fNames.add(inputs[i].getItem().getName());
@@ -1183,7 +1183,6 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @throws WorkflowException
    */
   public HistoryStep getSavedStep(String userId) throws WorkflowException {
-    Date actionDate = null;
     HistoryStep savedStep = null;
     HistoryStep step = null;
 
@@ -1331,7 +1330,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     } else {
       states = new String[activeStates.size()];
       for (int i = 0; i < activeStates.size(); i++) {
-        states[i] = ((ActiveState) activeStates.get(i)).getState();
+        states[i] = activeStates.get(i).getState();
       }
     }
 
@@ -1350,8 +1349,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     boolean result = false;
 
     for (int i = 0; i < activeStates.size(); i++) {
-      if ((((ActiveState) activeStates.get(i)).getState()).equals(stateName)
-          && ((ActiveState) activeStates.get(i)).getBackStatus() == true) {
+      if ((activeStates.get(i).getState()).equals(stateName)
+          && activeStates.get(i).getBackStatus() == true) {
         result = true;
       }
     }
@@ -1363,10 +1362,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return Actor[]
    */
   public Actor[] getWorkingUsers() throws WorkflowException {
-    Vector actors = new Vector();
+    Vector<Actor> actors = new Vector<Actor>();
 
     for (int i = 0; i < workingUsers.size(); i++) {
-      WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
+      WorkingUser wkUser = workingUsers.get(i);
       actors.addAll(wkUser.toActors());
     }
 
@@ -1378,10 +1377,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return Actor[]
    */
   public Actor[] getWorkingUsers(String state) throws WorkflowException {
-    Vector actors = new Vector();
+    Vector<Actor> actors = new Vector<Actor>();
 
     for (int i = 0; i < workingUsers.size(); i++) {
-      WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
+      WorkingUser wkUser = workingUsers.get(i);
       if (wkUser.getState().equals(state)) {
         actors.addAll(wkUser.toActors());
       }
@@ -1392,9 +1391,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   @Override
   public void removeWorkingUsers(State state) throws WorkflowException {
-    Iterator itWkUsers = workingUsers.iterator();
+    Iterator<WorkingUser> itWkUsers = workingUsers.iterator();
     while (itWkUsers.hasNext()) {
-      WorkingUser wkUser = (WorkingUser) itWkUsers.next();
+      WorkingUser wkUser = itWkUsers.next();
       if (wkUser.getState().equals(state.getName())) {
         // add this operation in undo history
         if (!inUndoProcess) {
@@ -1414,9 +1413,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   @Override
   public void removeInterestedUsers(State state) throws WorkflowException {
-    Iterator itIntUsers = interestedUsers.iterator();
+    Iterator<InterestedUser> itIntUsers = interestedUsers.iterator();
     while (itIntUsers.hasNext()) {
-      InterestedUser intUser = (InterestedUser) itIntUsers.next();
+      InterestedUser intUser = itIntUsers.next();
       if (intUser.getState().equals(state.getName())) {
         // add this operation in undo history
         if (!inUndoProcess) {
@@ -1441,10 +1440,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public Actor[] getWorkingUsers(String state, String role)
       throws WorkflowException {
-    Vector actors = new Vector();
+    Vector<Actor> actors = new Vector<Actor>();
 
     for (int i = 0; i < workingUsers.size(); i++) {
-      WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
+      WorkingUser wkUser = workingUsers.get(i);
       if (wkUser.getState().equals(state) && wkUser.getRoles().contains(role)) {
         actors.addAll(wkUser.toActors());
       }
@@ -1517,7 +1516,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     int indexUser = lockingUsers.indexOf(searchedUser);
     if (indexUser != -1) {
-      LockingUser foundUser = (LockingUser) lockingUsers.get(indexUser);
+      LockingUser foundUser = lockingUsers.get(indexUser);
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
           "root.MSG_GEN_ENTER_METHOD", "Locking user found for state : " + state + ", userId = " + foundUser.
           getUserId());
@@ -1553,7 +1552,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     int indexUser = lockingUsers.indexOf(searchedUser);
     if (indexUser != -1) {
-      foundUser = (LockingUser) lockingUsers.get(indexUser);
+      foundUser = lockingUsers.get(indexUser);
     }
 
     if (foundUser != null) {
@@ -1600,7 +1599,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     int indexUser = lockingUsers.indexOf(searchedUser);
     if (indexUser != -1) {
-      foundUser = (LockingUser) lockingUsers.get(indexUser);
+      foundUser = lockingUsers.get(indexUser);
     }
 
     if (foundUser == null) {
@@ -2013,8 +2012,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   public HistoryStep[] getBackSteps(User user, String roleName, String stateName)
       throws WorkflowException {
     String stepId = null;
-    Vector stepIds = new Vector();
-    Vector steps = new Vector();
+    List<String> stepIds = new ArrayList<String>();
+    List<HistoryStep> steps = new ArrayList<HistoryStep>();
     OQLQuery query = null;
     QueryResults results;
     HistoryStep[] allSteps = this.getHistorySteps();
@@ -2134,7 +2133,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     Question question = null;
     // search for the question with given id
     for (int i = 0; question == null && i < questions.size(); i++) {
-      if (((Question) questions.get(i)).getId().equals(questionId)) {
+      if (questions.get(i).getId().equals(questionId)) {
         question = (Question) questions.get(i);
       }
     }
@@ -2158,7 +2157,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   public Question[] getPendingQuestions(String stateName) {
     List<Question> questionsAsked = new ArrayList<Question>();
     for (int i = 0; i < questions.size(); i++) {
-      Question question = (Question) questions.get(i);
+      Question question = questions.get(i);
       if (question.getTargetState().getName().equals(stateName) && question.getResponseDate() == null) {
         questionsAsked.add(question);
       }
@@ -2172,11 +2171,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return all the questions (not yet answered) asked from the given state
    */
   public Question[] getSentQuestions(String stateName) {
-    Vector questionsAsked = new Vector();
+    Vector<Question> questionsAsked = new Vector<Question>();
     Question question = null;
 
     for (int i = 0; i < questions.size(); i++) {
-      question = (Question) questions.get(i);
+      question = questions.get(i);
       if (question.getFromState().getName().equals(stateName)
           && question.getResponseDate() == null) {
         questionsAsked.add(question);
@@ -2192,11 +2191,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return all the answered questions asked from the given state
    */
   public Question[] getRelevantQuestions(String stateName) {
-    Vector questionsAsked = new Vector();
+    Vector<Question> questionsAsked = new Vector<Question>();
     Question question = null;
 
     for (int i = 0; i < questions.size(); i++) {
-      question = (Question) questions.get(i);
+      question = questions.get(i);
       if (question.getFromState().getName().equals(stateName)
           && question.getResponseDate() != null && question.isRelevant()) {
         questionsAsked.add(question);
@@ -2258,7 +2257,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Set the instance questions
    * @param questions questions
    */
-  public void castor_setQuestions(Vector questions) {
+  public void castor_setQuestions(Vector<Question> questions) {
     this.questions = questions;
   }
 
@@ -2266,7 +2265,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Get the instance questions
    * @return questions as a Vector
    */
-  public Vector castor_getQuestions() {
+  public Vector<Question> castor_getQuestions() {
     return questions;
   }
 
@@ -2275,7 +2274,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param interestedUsers users as a Vector
    * @return
    */
-  public void castor_setInterestedUsers(Vector interestedUsers) {
+  public void castor_setInterestedUsers(Vector<InterestedUser> interestedUsers) {
     this.interestedUsers = interestedUsers;
   }
 
@@ -2283,7 +2282,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Get users who can see this process instance
    * @return users as a Vector
    */
-  public Vector castor_getInterestedUsers() {
+  public Vector<InterestedUser> castor_getInterestedUsers() {
     return interestedUsers;
   }
 
@@ -2292,7 +2291,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param workingUsers users as a Vector
    * @return
    */
-  public void castor_setWorkingUsers(Vector workingUsers) {
+  public void castor_setWorkingUsers(Vector<WorkingUser> workingUsers) {
     this.workingUsers = workingUsers;
   }
 
@@ -2300,7 +2299,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Get users who can act on this process instance
    * @return users as a Vector
    */
-  public Vector castor_getWorkingUsers() {
+  public Vector<WorkingUser> castor_getWorkingUsers() {
     return workingUsers;
   }
 
@@ -2308,7 +2307,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Set users who have locked a state of this process instance
    * @param lockingUsers users as a Vector
    */
-  public void castor_setLockingUsers(Vector lockingUsers) {
+  public void castor_setLockingUsers(Vector<LockingUser> lockingUsers) {
     this.lockingUsers = lockingUsers;
   }
 
@@ -2316,7 +2315,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Get users who have locked a state of this process instance
    * @return users as a Vector
    */
-  public Vector castor_getLockingUsers() {
+  public Vector<LockingUser> castor_getLockingUsers() {
     return lockingUsers;
   }
 
@@ -2324,7 +2323,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Set states that are due to be resolved for this process instance
    * @param activeStates states as a Vector
    */
-  public void castor_setActiveStates(Vector activeStates) {
+  public void castor_setActiveStates(Vector<ActiveState> activeStates) {
     this.activeStates = activeStates;
   }
 
@@ -2332,7 +2331,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Get states that are due to be resolved for this process instance
    * @return states as a Vector
    */
-  public Vector castor_getActiveStates() {
+  public Vector<ActiveState> castor_getActiveStates() {
     return activeStates;
   }
 

@@ -33,6 +33,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;userInRole&gt; element of a Process Model.
  **/
 public class UserInRoleImpl extends AbstractReferrableObject implements UserInRole, Serializable {
+  private static final long serialVersionUID = -6419166381111612814L;
   private String roleName;
 
   /**

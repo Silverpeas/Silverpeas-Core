@@ -34,6 +34,7 @@ import com.silverpeas.workflow.api.model.StateSetter;
  * Model.
  **/
 public class StateRef implements Serializable, StateSetter {
+  private static final long serialVersionUID = -168934988707118638L;
   private State state;
 
   /**

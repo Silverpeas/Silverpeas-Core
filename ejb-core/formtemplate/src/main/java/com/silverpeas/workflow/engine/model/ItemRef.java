@@ -176,7 +176,7 @@ public class ItemRef extends AbstractReferrableObject implements Input, Abstract
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Input#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 

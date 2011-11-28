@@ -34,6 +34,8 @@
 package com.silverpeas.workflow.engine.model;
 
 public class SpecificLabelList extends java.util.Hashtable {
+  private static final long serialVersionUID = 3458090091785243469L;
+
   /**
    * Constructor
    */
@@ -54,30 +56,30 @@ public class SpecificLabelList extends java.util.Hashtable {
     // 1st search
     SpecificLabel search = new SpecificLabel(role, lang);
     SpecificLabel result = (SpecificLabel) get(search);
-    if (result != null)
+    if (result != null) {
       return result.getContent();
-
+    }
     // 1st search failed ==> search with default language
     search.setLanguage("default");
     search.setRole(role);
     result = (SpecificLabel) get(search);
-    if (result != null)
+    if (result != null) {
       return result.getContent();
-
+    }
     // 2nd search failed ==> search for default label in given language
     search.setLanguage(lang);
     search.setRole("default");
     result = (SpecificLabel) get(search);
-    if (result != null)
+    if (result != null) {
       return result.getContent();
-
+    }
     // 3nd search failed --> search for default label in default language
     search.setLanguage("default");
     search.setRole("default");
     result = (SpecificLabel) get(search);
-    if (result != null)
+    if (result != null) {
       return result.getContent();
-
+    }
     // No default label found, return empty string
     return "";
   }

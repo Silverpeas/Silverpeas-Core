@@ -110,5 +110,5 @@ public final class Workflow {
     }
   }
 
-  static private HashMap localLabels = new HashMap();
+  static private HashMap<String, ResourceLocator> localLabels = new HashMap<String, ResourceLocator>();
 }

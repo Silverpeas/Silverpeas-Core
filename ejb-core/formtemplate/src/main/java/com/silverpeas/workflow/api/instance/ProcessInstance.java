@@ -24,14 +24,19 @@
 
 package com.silverpeas.workflow.api.instance;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
-import com.silverpeas.workflow.api.model.*;
-import com.silverpeas.workflow.api.user.*;
-import com.silverpeas.workflow.api.*;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.workflow.api.WorkflowException;
+import com.silverpeas.workflow.api.model.ProcessModel;
+import com.silverpeas.workflow.api.model.QualifiedUsers;
+import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
 import com.silverpeas.workflow.engine.instance.LockingUser;
-import com.silverpeas.form.*;
 
 public interface ProcessInstance {
 
@@ -92,7 +97,7 @@ public interface ProcessInstance {
   /**
    * @return Vector
    */
-  public Vector getParticipants() throws WorkflowException;
+  public Vector<Participant> getParticipants() throws WorkflowException;
 
   /**
    * Get the last user who resolved the given state
