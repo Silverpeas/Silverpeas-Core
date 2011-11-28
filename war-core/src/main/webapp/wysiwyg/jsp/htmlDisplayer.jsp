@@ -73,8 +73,8 @@
 		    content = replacement.replaceKeyByValue(content);
 		  }
 		  //highlight glossary term
-		  if(StringUtil.isDefined(axisId)){ 	  
-		  		content = HighlightGlossaryTerms.searchReplace(content,"highlight-silver",axisId,StringUtil.getBooleanValue(highlightFirst),language);
+		  if(StringUtil.isDefined(axisId)){
+		  		content = new HighlightGlossaryTerms().searchReplace(content,"highlight-silver",axisId,StringUtil.getBooleanValue(highlightFirst),language);
 		  }
 		  out.println(content);
 	  }
