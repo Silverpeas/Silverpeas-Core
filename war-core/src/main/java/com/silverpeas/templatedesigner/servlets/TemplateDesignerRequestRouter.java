@@ -251,6 +251,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       return "fieldSequence.jsp";
     } if (displayer.equals("time")) {
       return "fieldTime.jsp";
+    } if (displayer.equals("explorer")) {
+      return "fieldExplorer.jsp";
     } else {
       return "fieldText.jsp";
     }
@@ -309,6 +311,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       fieldType = "group";
     } else if (displayer.equals("sequence")) {
       fieldType = "sequence";
+    } else if (displayer.equals("explorer")) {
+      fieldType = "explorer";
     }
 
     GenericFieldTemplate field = new GenericFieldTemplate();

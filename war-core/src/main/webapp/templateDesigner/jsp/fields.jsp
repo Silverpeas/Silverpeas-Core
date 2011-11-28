@@ -93,8 +93,9 @@ operationPane.addOperation(resource.getIcon("templateDesigner.newFieldVideo"), r
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldUser"), resource.getString("templateDesigner.newFieldUser"), "javascript:openWindow('user')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldMultipleUsers"), resource.getString("templateDesigner.newFieldMultipleUsers"), "javascript:openWindow('multipleUser')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldGroup"), resource.getString("templateDesigner.newFieldGroup"), "javascript:openWindow('group')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldLdap"), "javascript:openWindow('ldap')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldAccessPath"), "javascript:openWindow('accessPath')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldExplorer"), "javascript:openWindow('explorer')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldLdap"), "javascript:openWindow('ldap')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldJdbc"), "javascript:openWindow('jdbc')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldPdc"), "javascript:openWindow('pdc')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldSequence"), "javascript:openWindow('sequence')");
