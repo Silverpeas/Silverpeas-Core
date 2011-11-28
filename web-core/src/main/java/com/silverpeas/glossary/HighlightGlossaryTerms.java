@@ -1,57 +1,57 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- * 
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.glossary;
-
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.lang.StringEscapeUtils;
 
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
+import org.apache.commons.lang.StringEscapeUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author David Derigent
  */
 public class HighlightGlossaryTerms {
 
-  /**
-   * 
-   */
-  private HighlightGlossaryTerms() {
+  private final PdcBmImpl pdc;
+
+  HighlightGlossaryTerms(PdcBmImpl pdc) {
+    this.pdc = pdc;
   }
 
   /**
-   * search all the term contain in the given glossary and highlight, one or all the occurrences
-   * found in the given text. The regular expression used to retrieve the occurrence works only in
-   * HTML code, not in plain text. This code is designed to parse HTML code.
+   *
+   */
+  public HighlightGlossaryTerms() {
+    pdc = new PdcBmImpl();
+  }
+
+  /**
+   * Search all the term contained in the given glossary and highlight, one or all of the
+   * occurrences found in the given text. The regular expression used to retrieve the occurrence
+   * works only in HTML code, not in plain text. This code is designed to parse HTML code.
+   *
    * @param publicationContent the publication text used to perform the highlight operation
    * @param className the css class name used to "mark" the highlighted term and format his
    * displaying
@@ -60,11 +60,11 @@ public class HighlightGlossaryTerms {
    * @param language indicates the language use to load information from glossary
    * @return a String which contain given publication with highlight term.
    */
-  public static String searchReplace(String publicationContent, String className, String axisId,
-      boolean onlyFirst,
-      String language) {
+  public String searchReplace(String publicationContent, String className, String axisId,
+          boolean onlyFirst, String language) {
+    String replacedContent = publicationContent;
 
-    PdcBmImpl pdc = new PdcBmImpl();
+
     List<Value> glossary = null;
     // get the glossary terms
     try {
@@ -78,39 +78,30 @@ public class HighlightGlossaryTerms {
     // highlight the term retrieved in the content
     if (glossary != null && !glossary.isEmpty()) {
       for (Value node : glossary) {
-        publicationContent =
-            highlight(node.getName(language), publicationContent, node.getDescription(language),
-            className, onlyFirst);
+        replacedContent = highlight(node.getName(language), replacedContent, node.getDescription(
+                language), className, onlyFirst);
       }
     }
-    return publicationContent;
+    return replacedContent;
 
   }
 
-  private static String highlight(String term, String
-      publication, String definition, String className, boolean onlyFirst) {
-    String highlightedAnswer = publication;
-
+  String highlight(String term, String content, String definition,  String className, boolean onlyFirst) {
     // escape HTML character
-    term = StringEscapeUtils.escapeHtml(term);
+    String escapedTerm = StringEscapeUtils.escapeHtml(term);
     // regular expression which allows to search all the term except the HTML tag
     // Searches the exact term
-    String regex = "((?i)\\b" + term + "\\b)(?=[^>]*<)";
+    String regex = "((?i)\\b" + escapedTerm + "\\b)(?=[^>]*<(?!/a))";
 
     // highlights the term
     String replacement =
-        "<a href=\"#\" class=\"" + className + "\" title =\"" + definition.replaceAll("\"", "&quot;") + "\"> " + term +
-        " </a>";
+            "<a href=\"#\" class=\"" + className + "\" title=\"" + definition.replaceAll("\"",
+            "&quot;") + "\">" + escapedTerm + "</a>";
 
     if (onlyFirst) {
       // highlights only the first occurrence
-      highlightedAnswer = highlightedAnswer.replaceFirst(regex, replacement);
-    } else {
-      // highlights all the retrieved occurrences of the word
-      highlightedAnswer = highlightedAnswer.replaceAll(regex, replacement);
+      return content.replaceFirst(regex, replacement);
     }
-
-    return highlightedAnswer;
+    return content.replaceAll(regex, replacement);
   }
-
 }
