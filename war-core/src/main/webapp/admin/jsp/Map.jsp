@@ -38,7 +38,7 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst" %>
+<%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
     <view:timeout />
@@ -179,9 +179,9 @@
             <%
               if (m_asPrivateDomainsIds != null) {
                 for (int nK = 0; nK < m_asPrivateDomainsIds.length; nK++) {
-                  SpaceInst spaceInst =
-                      m_OrganizationController.getSpaceInstById(m_asPrivateDomainsIds[nK]);
-                  if ("0".equals(spaceInst.getDomainFatherId())) {
+                  SpaceInstLight spaceInst =
+                      m_OrganizationController.getSpaceInstLightById(m_asPrivateDomainsIds[nK]);
+                  if (spaceInst.isRoot()) {
                     pageContext.setAttribute("currentSpaceId", m_asPrivateDomainsIds[nK]);
             %>
             <view:map spaceId="${pageScope.currentSpaceId}"/>
