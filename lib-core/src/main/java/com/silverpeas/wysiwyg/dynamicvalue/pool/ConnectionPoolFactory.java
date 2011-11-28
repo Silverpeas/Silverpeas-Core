@@ -23,15 +23,13 @@
  */
 package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import com.silverpeas.util.StringUtil;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * This class allow to initiate a connectionPool implementation and gets a connection from the pool

@@ -22,19 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
 package com.silverpeas.glossary;
 
-import java.util.Comparator;
-
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
+import java.util.Comparator;
 
 /**
  * @author ddr
  */
-public class TermComparator implements Comparator {
+public class TermComparator implements Comparator<TreeNode> {
 
   /**
    * 
@@ -43,16 +39,14 @@ public class TermComparator implements Comparator {
   }
 
   @Override
-  public int compare(Object o1, Object o2) {
-    String t1 = ((TreeNode) o1).getName();
-    String t2 = ((TreeNode) o2).getName();
+  public int compare(TreeNode firstTreeNode, TreeNode secondTreeNode) {
+    String t1 = firstTreeNode.getName();
+    String t2 = secondTreeNode.getName();
 
-    if (t1.length() == t2.length())
-      return 0;
-    else if (t1.length() > t2.length())
-      return -1;
-    else
-      return 1;
+    if (t1.length() == t2.length()) {
+      return t2.compareTo(t1);
+    }
+    return t2.length() - t1.length();
   }
 
 }

@@ -68,14 +68,12 @@ public class DynamicValueReplacement {
   public static String buildHTMLSelect(String language, String fieldName) {
     // local variable initialization
     String HTMLCodeFramgment = "";
-    List<DynamicValue> list = null;
     Connection conn = null;
-
     try {
       // get connection
       conn = ConnectionPoolFactory.getConnection();
       // get the list of valid DynamicValue object
-      list = DynamicValueDAO.getAllValidDynamicValue(conn);
+       List<DynamicValue> list = DynamicValueDAO.getAllValidDynamicValue(conn);
 
       // build the HTML select with the key list
       if (list != null) {
