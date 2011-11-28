@@ -66,7 +66,9 @@ String scope = request.getParameter("scope");
 <style type="text/css">
 .selection table, 
 .selection input {
-	display: inline;
+	display:inline-table;
+ 	display:inline\9;
+ 	vertical-align:middle
 }
 
 .selection table {
@@ -119,6 +121,11 @@ $(function () {
 						"max_children"	: -1,
 						"max_depth"		: -1,
 						"valid_children": "all",
+						
+						"icon" : {
+							"image" : "<%=URLManager.getFullApplicationURL(request)%>/util/javaScript/jquery/themes/default/d.png",
+							"position" : "-56px -37px"
+						},
 
 						// Bound functions - you can bind any other function here (using boolean or function)
 						"hover_node" 	: false,
@@ -185,7 +192,7 @@ function setPath() {
 </script>
 </head>
 <body>
-<div class="selection"><%=message.getString("GML.selection") %> : <input type="text" id="explicitPath" size="30"/> <%=btn.print() %></div>
+<div class="selection"><%=message.getString("GML.selection") %> : <input type="text" id="explicitPath" size="40"/> <%=btn.print() %></div>
 <div id="explorer" class="demo" style="height:100px;">
 </div>
 <input type="hidden" id="nodeId"/>

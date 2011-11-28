@@ -101,6 +101,7 @@ operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), re
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldSequence"), "javascript:openWindow('sequence')");
 
 ArrayPane arrayPane = gef.getArrayPane("fieldList", "ViewFields?Scope=0", request, session);
+arrayPane.setVisibleLineNumber(15);
 ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("GML.name"));
 arrayColumn1.setSortable(false);
 ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resource.getString("GML.type"));
