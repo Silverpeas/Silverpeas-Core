@@ -24,13 +24,11 @@
 
 package com.silverpeas.wysiwyg.dynamicvalue;
 
+import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import org.junit.Test;
-
-import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 
 /**
  * Test class for TestDynamicValueReplacement
@@ -42,7 +40,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    * {@link com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement#buildHTMLSelect()}.
    */
   @Test
-  public final void testBuildHTMLSelect() {
+  public void testBuildHTMLSelect() {
     String select = DynamicValueReplacement.buildHTMLSelect("fr", "default");
     assertTrue(select.contains("java_version") && select.contains("version"));
   }
@@ -54,7 +52,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    * @throws IOException
    */
   @Test
-  public final void testReplaceKeyByValueDefault() throws IOException {
+  public void testReplaceKeyByValueDefault() throws IOException {
     String text = getContentFromFile("test.html");
     DynamicValueReplacement replacement = new DynamicValueReplacement();
     text = replacement.replaceKeyByValue(text);
@@ -68,8 +66,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    * @throws IOException
    */
   @Test
-  public final void testReplaceKeyByValueWithoutKeyToReplace() throws IOException {
-
+  public void testReplaceKeyByValueWithoutKeyToReplace() throws IOException {
     String originalText = getContentFromFile("test-without_keys.html");
     DynamicValueReplacement replacement = new DynamicValueReplacement();
     String finalText = replacement.replaceKeyByValue(originalText);
@@ -83,14 +80,12 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    */
   private String getContentFromFile(String fileName) throws IOException {
     StringBuilder contents = new StringBuilder();
-    BufferedReader input =
-        new BufferedReader(new InputStreamReader(TestDynamicValueReplacement.class
+    BufferedReader input = new BufferedReader(new InputStreamReader(TestDynamicValueReplacement.class
         .getResourceAsStream(fileName)));
     try {
       String line = null;
       while ((line = input.readLine()) != null) {
         contents.append(line);
-        // contents.append(System.getProperty("line.separator"));
       }
     } finally {
       input.close();
@@ -103,7 +98,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    * {@link com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement#isActivate()}.
    */
   @Test
-  public final void testIsActivate() {
+  public void testIsActivate() {
     assertEquals(false, DynamicValueReplacement.isActivate());
 
   }
