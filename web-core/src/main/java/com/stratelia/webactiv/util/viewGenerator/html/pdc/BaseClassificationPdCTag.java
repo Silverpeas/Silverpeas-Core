@@ -258,7 +258,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
                 getString("GML.selectAValue") + "\"}, addition: {title: '" + positionAddingLabel
                 + "'}, update: {title: '" + resources.getString("GML.modify")
                 + "'}, deletion: {confirmation: '"
-                + resources.getString("pdcPeas.confirmDeleteAxis")
+                + resources.getString("pdcPeas.confirmDeletePosition")
                 + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
       } else {
         script += ", mode: 'view'});";

@@ -104,6 +104,7 @@ public class GraphicElementFactory {
   private String spaceId = null;
   public static final String defaultLookName = "Initial";
   private static final String JQUERY_JS = "jquery-1.5.min.js";
+  private static final String JQUERY_INCLUDE_JS = "jquery-include.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.8.10.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.10.custom.css";
   private static final String JQUERYJSON_JS = "jquery.json-2.2.min.js";
@@ -368,6 +369,8 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERYJSON_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERY_INCLUDE_JS).append("\"></script>\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");

@@ -131,11 +131,11 @@
     /**
      * The label to use with a radio button to indicate the classification can be modified.
      */
-    canBeModified: "Le contributeur ne doit pas valider le classement par défaut",
+    canBeModified: "Le contributeur doit valider et peut modifier le classement par défaut",
     /**
      * The label to use with a radio button to indicate the classification cannot be modified.
      */
-    cannotBeModified:"Le contributeur doit valider et peut modifier le classement par défaut ",
+    cannotBeModified:"Le contributeur ne doit pas valider le classement par défaut",
     /**
      * The label to use for the HTML section into which the positions of a predefined classification
      * coming from a parent node will be rendered.
@@ -300,6 +300,10 @@
       })
     },
     
+    /**
+     * Renders a preview of the classification on the PdC of a given resource content. If the
+     * resource content isn't yet classified, then nothing is displayed. 
+     */
     preview: function( options ) {
       return this.each(function() {
         var $this = $(this);
@@ -850,7 +854,7 @@
           values.push(textFrom($this, value));
         });
 
-        if (settings.mode != 'preview') {
+        if (settings.mode != 'preview' && settings.mode != 'view') {
           positionLabel.append(
             $('<a>',{
               href: '#', 
