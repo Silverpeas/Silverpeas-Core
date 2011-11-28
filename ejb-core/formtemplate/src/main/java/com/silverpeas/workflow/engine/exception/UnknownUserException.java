@@ -30,6 +30,8 @@ import com.silverpeas.workflow.api.*;
  * Thrown when a user is unknown
  */
 public class UnknownUserException extends WorkflowException {
+  private static final long serialVersionUID = -4606021053850573609L;
+
   /**
    * Set the caller
    */

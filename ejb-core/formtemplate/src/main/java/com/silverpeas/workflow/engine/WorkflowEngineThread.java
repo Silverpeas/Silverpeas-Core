@@ -24,12 +24,10 @@
 package com.silverpeas.workflow.engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
@@ -61,7 +59,6 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.Trigger;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
-import com.silverpeas.workflow.engine.instance.ActiveState;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;

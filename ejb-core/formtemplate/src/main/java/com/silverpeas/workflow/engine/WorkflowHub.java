@@ -36,8 +36,9 @@ public class WorkflowHub {
    */
   static public final TimeoutManager getTimeoutManager()
       throws WorkflowException {
-    if (instance == null)
+    if (instance == null) {
       instance = createInstance();
+    }
     return instance.timeoutManager;
   }
 
@@ -46,8 +47,9 @@ public class WorkflowHub {
    */
   static public final ProcessModelManager getProcessModelManager()
       throws WorkflowException {
-    if (instance == null)
+    if (instance == null) {
       instance = createInstance();
+    }
     return instance.processModelManager;
   }
 
@@ -56,8 +58,9 @@ public class WorkflowHub {
    */
   static public final ProcessInstanceManager getProcessInstanceManager()
       throws WorkflowException {
-    if (instance == null)
+    if (instance == null) {
       instance = createInstance();
+    }
     return instance.processInstanceManager;
   }
 
@@ -65,8 +68,9 @@ public class WorkflowHub {
    * @return the UserManager
    */
   static public final UserManager getUserManager() throws WorkflowException {
-    if (instance == null)
+    if (instance == null) {
       instance = createInstance();
+    }
     return instance.userManager;
   }
 
@@ -75,8 +79,9 @@ public class WorkflowHub {
    */
   static public final WorkflowEngine getWorkflowEngine()
       throws WorkflowException {
-    if (instance == null)
+    if (instance == null) {
       instance = createInstance();
+    }
     return instance.workflowEngine;
   }
 
@@ -84,8 +89,9 @@ public class WorkflowHub {
    * @return the TaskManager
    */
   static public final TaskManager getTaskManager() throws WorkflowException {
-    if (instance == null)
+    if (instance == null) {
       instance = createInstance();
+    }
     return instance.taskManager;
   }
 
@@ -93,8 +99,9 @@ public class WorkflowHub {
    * @return the ErrorManager
    */
   static public final ErrorManager getErrorManager() throws WorkflowException {
-    if (instance == null)
+    if (instance == null) {
       instance = createInstance();
+    }
     return instance.errorManager;
   }
 

@@ -102,7 +102,7 @@ public interface Form {
    * Iterate through the inputs
    * @return an iterator
    */
-  public Iterator iterateInput();
+  public Iterator<Input> iterateInput();
 
   /**
    * Add an input Method needed primarily by Castor
@@ -136,7 +136,7 @@ public interface Form {
    * Iterate through the titles
    * @return an iterator
    */
-  public Iterator iterateTitle();
+  public Iterator<ContextualDesignation> iterateTitle();
 
   /**
    * Add a title Method needed primarily by Castor

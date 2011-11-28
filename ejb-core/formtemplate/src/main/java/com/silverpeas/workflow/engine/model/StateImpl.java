@@ -43,6 +43,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  **/
 public class StateImpl extends AbstractReferrableObject implements State, AbstractDescriptor,
     Serializable {
+  private static final long serialVersionUID = -3019436287850255663L;
   private String name;
   private ContextualDesignations labels; // collection of labels
   private ContextualDesignations descriptions; // collection of descriptions
@@ -124,7 +125,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.State#iterateLabel()
    */
-  public Iterator iterateLabel() {
+  public Iterator<ContextualDesignation> iterateLabel() {
     return labels.iterateContextualDesignation();
   }
 
@@ -161,7 +162,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.State#iterateActivity()
    */
-  public Iterator iterateActivity() {
+  public Iterator<ContextualDesignation> iterateActivity() {
     return activities.iterateContextualDesignation();
   }
 
@@ -198,7 +199,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.State#iterateDescription()
    */
-  public Iterator iterateDescription() {
+  public Iterator<ContextualDesignation> iterateDescription() {
     return descriptions.iterateContextualDesignation();
   }
 

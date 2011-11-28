@@ -202,8 +202,7 @@ public interface Item {
   public void removeParameter(String strName) throws WorkflowException;
 
   /**
-   * 
    * @return
    */
-  public Hashtable getKeyValuePairs();
+  public Hashtable<String, String> getKeyValuePairs();
 }
