@@ -106,8 +106,13 @@ function uriOfPredefinedClassification( resource ) {
  * Loads the PdC parameterized for the resource located at the specified URI.
  * If the PdC is correctly get, the function onSuccess is then performed, otherwise the function
  * onError is invoked.
- * Both of the functions should accept as parameter the loaded PdC.
- * The error message is passed as second parameter to the function onError.
+ * Both of the functions should accept as parameter the loaded PdC. The onError callback function
+ * accepts as additional parameter the error coming from the server. The error is an object of type:
+ * {
+ *   status: the error status,
+ *   message: the error message
+ * }
+ *
  * The PdC is an object of type:
  * {
  *  uri: the URI of the PdC configured for the resource,
@@ -154,7 +159,7 @@ function loadPdC( uri, onSuccess, onError ) {
       onError({
         uri: uri, 
         axis: []
-      }, errorThrown);
+      }, { status: jqXHR.status, message: errorThrown });
     }
   })
 }
@@ -165,8 +170,13 @@ function loadPdC( uri, onSuccess, onError ) {
  * Loads the classification on the PdC of the resource located by the specified URL.
  * If the classification is correctly get, the function onSuccess is then performed, otherwise the
  * function onError is invoked.
- * Both of the functions should accept as parameter the loaded classification.
- * The error message is passed as second parameter to the function onError.
+ * Both of the functions should accept as parameter the loaded PdC. The onError callback function
+ * accepts as additional parameter the error coming from the server. The error is an object of type:
+ * {
+ *   status: the error status,
+ *   message: the error message
+ * }
+ * 
  * The classification is an object of type:
  * {
  *   uri: the URI of the classification in the Web,
@@ -204,7 +214,7 @@ function loadClassification( uri, onSuccess, onError ) {
       onError({
         uri: uri, 
         positions: []
-      }, errorThrown);
+      }, { status: jqXHR.status, message: errorThrown });
     }
   });
 }
@@ -215,13 +225,19 @@ function loadClassification( uri, onSuccess, onError ) {
  * Asks fo the deletion of the specified position to the classification on the PdC identified by the
  * specified URI.
  * If the position is successfully deleted, then the onSuccess callback function is invoked without
- * any parameters.
+ * any parameters. Otherwise, the optional onError callback function
+ * is invoked with as parameters the error coming from the server. If no onError callback
+ * is passed then an error message is displayed to the user. The rror is an object of type:
+ * {
+ *   status: the error status,
+ *   message: the error message
+ * }
  * If a confirmation message is passed as parameter, a confirmation asking box will be displayed to
  * the user and the position will be effectively deleted once the action confirmed.
  * If no confirmation message is passed as parameter (if null or empty), then the position will be
  * silently deleted.
  */
-function deletePosition( uri, position, confirmationMsg, onSuccess ) {
+function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
   var confirmed = true;
   if (confirmationMsg != null && confirmationMsg.length > 0)
     confirmed = window.confirm( confirmationMsg );
@@ -235,7 +251,10 @@ function deletePosition( uri, position, confirmationMsg, onSuccess ) {
         onSuccess();
       },
       error: function(jqXHR, textStatus, errorThrown) {
+        if (onError == null)
         alert(errorThrown);
+      else
+        onError({ status: jqXHR.status, message: errorThrown });
       }
     });
   }
@@ -246,9 +265,15 @@ function deletePosition( uri, position, confirmationMsg, onSuccess ) {
 /**
  * Posts the specified position in the classification on the PdC identified by the specified URI.
  * If the position is successfully posted, then the onSuccess callback function is invoked with as
- * parameter the updated classification on the PdC.
+ * parameter the updated classification on the PdC. Otherwise, the optional onError callback function
+ * is invoked with as parameter the error coming from the server. If no onError callback
+ * is passed then an error message is displayed to the user. The error is an object of type:
+ * {
+ *   status: the error status,
+ *   message: the error message
+ * }
  */
-function postPosition( uri, position, onSuccess ) {
+function postPosition( uri, position, onSuccess, onError ) {
   $.ajax({
     url: uri,
     type: 'POST',
@@ -260,7 +285,10 @@ function postPosition( uri, position, onSuccess ) {
       onSuccess(classification);
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      alert(errorThrown);
+      if (onError == null)
+        alert(errorThrown);
+      else
+        onError({ status: jqXHR.status, message: errorThrown });
     }
   });
 }
@@ -270,9 +298,15 @@ function postPosition( uri, position, onSuccess ) {
 /**
  * Asks for updating the specified position in the classification on the PdC identified by the specified URI.
  * If the position is successfully updated, then the onSuccess callback function is invoked with as
- * parameter the updated classification on the PdC.
+ * parameter the updated classification on the PdC.  Otherwise, the optional onError callback function
+ * is invoked with as parameter the error coming from the server. If no onError callback
+ * is passed then an error message is displayed to the user. The error is an object of type:
+ * {
+ *   status: the error status,
+ *   message: the error message
+ * }
  */
-function updatePosition( uri, position, onSuccess ) {
+function updatePosition( uri, position, onSuccess, onError ) {
   var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
   var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
   $.ajax({
@@ -286,7 +320,10 @@ function updatePosition( uri, position, onSuccess ) {
       onSuccess(classification);
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      alert(errorThrown);
+      if (onError == null)
+        alert(errorThrown);
+      else
+        onError({ status: jqXHR.status, message: errorThrown });
     }
   });
 }
@@ -307,7 +344,10 @@ function findPosition( withValues, inSomePositions ) {
   var position = null;
   for (var p = 0; p < inSomePositions.length; p++) {
     if (inSomePositions[p].values.length == withValues.length) {
-      position = {index: p, position: inSomePositions[p]};
+      position = {
+        index: p, 
+        position: inSomePositions[p]
+      };
       for (var v = 0; v < withValues.length; v++) {
         if (withValues[v].id != inSomePositions[p].values[v].id) {
           position = null;
@@ -598,12 +638,13 @@ function removePosition( position, positions ) {
   }
   
   function informOfANewPosition( $this, settings, values ) {
+    var selectedValues = getSelectedValues(values);
     if (values.length == 0)
       alert(settings.positionError)
-    else if (areMandatoryAxisValued(settings.axis, values)) {
+    else if (areMandatoryAxisValued(settings.axis, selectedValues)) {
       if (settings.dialogBox)
         $this.dialog("destroy");
-      settings.onValuesSelected($this, getSelectedValues(values));
+      settings.onValuesSelected($this, selectedValues);
     }
     else
       alert(settings.mandatoryAxisError);
