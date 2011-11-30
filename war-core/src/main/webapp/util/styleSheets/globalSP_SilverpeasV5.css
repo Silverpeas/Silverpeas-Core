@@ -4038,7 +4038,7 @@ button {
 }
 
 .add_position {
-	background:url(../icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
+	background:url(/silverpeas/util/icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
 	padding:1px 8px 0 22px;
 	margin:0;
 	cursor:pointer;
@@ -4081,6 +4081,14 @@ html:not([lang*=""]) .add_position:hover {
 
 .classification legend {
 	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
+}
+
+#classification-mo  legend {
+	background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
+}
+
+#classification-modification  legend {
+	background:transparent url('/silverpeas/util/icons/update.gif') 11px 0px no-repeat;
 }
 
 .classification .pdc-edition-box .field {
@@ -4128,6 +4136,38 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 .classification.preview .header h4 {
-    background: url("/silverpeas/util/icons/component/pdcPeasSmall.gif") no-repeat scroll right top transparent;
+    background:transparent url("/silverpeas/util/icons/component/pdcPeasSmall.gif") right top no-repeat;
     height: 16px;
 }
+
+#validation {
+	background-color:#E9F0E0;
+	border:1px solid #CDCDCD;
+	border-left:0;
+	border-right:0;
+	padding-left:180px;
+	width:auto;
+	line-height:200%;
+}
+#validation  input{
+	vertical-align:text-bottom;
+}
+
+#classification-modification span.header {
+	display:block;  
+	background:transparent url("/silverpeas/util/icons/mini_publi.gif") 2px 5px no-repeat ;
+	background-color:#F0F0F0;
+	border:1px solid #CDCDCD;
+	border-left:0;
+	border-right:0;	
+	line-height:100%;
+	padding:8px 0 6px 20px;
+	margin-top:10px;
+}
+
+
+
+
+
+
+

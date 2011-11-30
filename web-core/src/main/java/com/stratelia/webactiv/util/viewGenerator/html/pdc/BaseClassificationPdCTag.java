@@ -183,7 +183,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   private ElementContainer initWidget(PdcTagOperation operation) throws JspException {
     ElementContainer xhtmlcontainer = new ElementContainer();
     MultiPartElement classification;
-    if (operation == PREVIEW_CLASSIFICATION) {
+    if (operation == PREVIEW_CLASSIFICATION || operation == PREDEFINE_CLASSIFICATION) {
       classification = new div();
     } else {
       classification = new fieldset();

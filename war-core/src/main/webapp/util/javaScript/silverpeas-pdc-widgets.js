@@ -419,17 +419,17 @@ function removePosition( position, positions ) {
           icon     : '/silverpeas/util/icons/delete.gif', /* text to render with the deletion button */
           title    : 'Supprimer la position' /* the icon representing the position deletion */
         },
-        onAddition         : function($this) {}, /* the function to invoke when the adding of a new position is asked. 
+        onAddition         : function() {}, /* the function to invoke when the adding of a new position is asked. 
                                                     This function can the use the widget to select some values from the PdC's axis in order to create a new position */
-        onDeletion         : function($this, position) {}, /* the function to invoke when a position is deleted */
-        onUpdate           : function($this, position) {} /* the function to invoke when a position is updated */
+        onDeletion         : function(position) {}, /* the function to invoke when a position is deleted */
+        onUpdate           : function(position) {} /* the function to invoke when a position is updated */
       }, options);
       
       return this.each(function() {
-        var $this = $(this);
-        $this.data('settings', settings);
-        renderPositionsFrame($this, settings);
-        renderPositions($this, settings);
+        var $thisPdcPositions = $(this);
+        $thisPdcPositions.data('PdcPositionSettings', settings);
+        renderPositionsFrame($thisPdcPositions, settings);
+        renderPositions(settings);
       });
     },
     
@@ -438,10 +438,10 @@ function removePosition( position, positions ) {
      */
     refresh: function( positions ) {
       return this.each(function() {
-        var $this = $(this), settings = $this.data('settings');
+        var $thisPdcPositions = $(this), settings = $thisPdcPositions.data('PdcPositionSettings');
         settings.positions = positions;
         $('#' + settings.id + '_allpositions').children().remove();
-        renderPositions($this, settings);
+        renderPositions(settings);
       });
     }
   };
@@ -456,7 +456,7 @@ function removePosition( position, positions ) {
     }    
   }
   
-  function renderPositionsFrame( $this, settings ) {
+  function renderPositionsFrame( $thisPdcPositions, settings ) {
     $('<div>', {
       id: settings.id
     }).addClass('field').
@@ -466,10 +466,10 @@ function removePosition( position, positions ) {
     append($('<div>', {
       id: settings.id + '_allpositions'
     }).addClass('champs')).
-    appendTo($('<div>').addClass('fields').appendTo($this));
+    appendTo($('<div>').addClass('fields').appendTo($thisPdcPositions));
   }
   
-  function renderPositions( $this, settings ) {
+  function renderPositions( settings ) {
     if (settings.positions.length > 0) {
       $('label[for="' + settings.id + '_allpositions"]').show();
       var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($("#" + settings.id + '_allpositions'));
@@ -493,7 +493,7 @@ function removePosition( position, positions ) {
               src: settings.update.icon,  
               alt: settings.update.title
             }).click(function () {
-              settings.onUpdate($this, aPosition);
+              settings.onUpdate(aPosition);
             })));
         }
          
@@ -506,7 +506,7 @@ function removePosition( position, positions ) {
               src: settings.deletion.icon,  
               alt: settings.deletion.title
             }).click(function () {
-              settings.onDeletion($this, aPosition);
+              settings.onDeletion(aPosition);
             })));
         }
           
@@ -520,7 +520,7 @@ function removePosition( position, positions ) {
       $('<a>', {
         href: '#'
       }).addClass('add_position').html(settings.addition.title).click(function() {
-        settings.onAddition($this);
+        settings.onAddition();
       }).appendTo($("#" + settings.id + '_allpositions'))
     }
   }
@@ -539,27 +539,26 @@ function removePosition( position, positions ) {
   $.fn.pdcPositionsPreview = function( options ) {
     var settings = $.extend(true, {
       id                 : "list_pdc_position", /* the HTML element identifier to use for the top element of the widget */
-      title              : "Classement", /* the title to display with the widget */
+      label              : "Position", /* the title to display with the widget */
       positions          : [] /* the positions to render */
     }, options);
     
     return this.each(function() {
-      var $this = $(this);
-      $this.data('settings', settings);
-      renderPositionsFrame($this, settings);
-      renderPositions($this, settings);
+      var $thisPdcPositionsPreview = $(this);
+      renderPositionsFrame($thisPdcPositionsPreview, settings);
+      renderPositions(settings);
     });
   };
   
-  function renderPositionsFrame( $this, settings ) {
+  function renderPositionsFrame( $thisPdcPositionsPreview, settings ) {
     $('<div>', {
       id: settings.id
     }).append($('<div>', {
       id: settings.id + '_allpositions'
-    })).appendTo($this);
+    })).appendTo($thisPdcPositionsPreview);
   }
   
-  function renderPositions( $this, settings ) {
+  function renderPositions( settings ) {
     if (settings.positions.length > 0) {
       
       $('label[for="' + settings.id + '"]').show();
@@ -567,8 +566,8 @@ function removePosition( position, positions ) {
       $.each(settings.positions, function(posindex, aPosition) {
         var posId = posindex + 1, values =  [];
         var currentPositionSection = $('<li>').appendTo(positionsSection);
-        var positionLabel = $('<span>').addClass('pdc_position').
-        html(settings.lLabel + ' ' + posId).appendTo(currentPositionSection);
+        $('<span>').addClass('pdc_position').
+          html(settings.label + ' ' + posId).appendTo(currentPositionSection);
 
         $.each(aPosition.values, function(valindex, value) {
           var text = '<li title="' + value.meaning + '">', path = value.meaning.split('/');
@@ -637,14 +636,14 @@ function removePosition( position, positions ) {
     return true;
   }
   
-  function informOfANewPosition( $this, settings, values ) {
+  function informOfANewPosition( $thisPdcAxisValuesSelector, settings, values ) {
     var selectedValues = getSelectedValues(values);
-    if (values.length == 0)
+    if (selectedValues.length == 0)
       alert(settings.positionError)
     else if (areMandatoryAxisValued(settings.axis, selectedValues)) {
       if (settings.dialogBox)
-        $this.dialog("destroy");
-      settings.onValuesSelected($this, selectedValues);
+        $thisPdcAxisValuesSelector.dialog("destroy");
+      settings.onValuesSelected(selectedValues);
     }
     else
       alert(settings.mandatoryAxisError);
@@ -666,13 +665,13 @@ function removePosition( position, positions ) {
       dialogBox           : true, /* is the selector should be displayed as a modal dialog box? */
       axis                : [], /* the different axis of the PdC to render */
       values              : [], /* the values to pre-select in the widget */
-      onValuesSelected    : function($this, values) {} /* function invoked when a set of values have been selected through the widget */
+      onValuesSelected    : function(values) {} /* function invoked when a set of values have been selected through the widget */
     }, options);
     
     return this.each(function() {
-      var $this = $(this), selectedValues = preselectedValuesFrom(settings.values), hasMandatoryAxis = false,
-      hasInvariantAxis = false;
-      $this.children().remove();
+      var $thisPdcAxisValuesSelector = $(this), selectedValues = preselectedValuesFrom(settings.values),
+        hasMandatoryAxis = false, hasInvariantAxis = false;
+      $thisPdcAxisValuesSelector.children().remove();
       
       // browse the axis of the PdC and for each of them print out a select HTML element
       $.each(settings.axis, function(axisIndex, anAxis) {
@@ -680,7 +679,7 @@ function removePosition( position, positions ) {
           append($('<label >', {
             'for': settings.id + '_' + anAxis.id
           }).addClass('txtlibform').html(anAxis.name)).
-          appendTo($this));
+          appendTo($thisPdcAxisValuesSelector));
         var mandatoryField = '';
         if (anAxis.mandatory) {
           mandatoryField = 'mandatoryField'
@@ -689,7 +688,7 @@ function removePosition( position, positions ) {
           'id': settings.id + '_' + anAxis.id,  
           'name': anAxis.name
         }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
-          var theValue = $(this).children(':selected').attr('value');
+          var theValue = $('select[name="' + anAxis.name + '"] option:selected').attr('value');
           if (theValue == 0) {
             selectedValues[anAxis.id] = null;
           } else {
@@ -756,13 +755,13 @@ function removePosition( position, positions ) {
         }
       });
     
-      $this.append($('<br>').attr('clear', 'all'));
+      $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
       if (!settings.dialogBox) {
-        $this.append($('<a>').attr('href', '#').
+        $thisPdcAxisValuesSelector.append($('<a>').attr('href', '#').
           addClass('valid_position').
           addClass('milieuBoutonV5').
           html(settings.labelOk).click(function() {
-            informOfANewPosition($this, settings, selectedValues);
+            informOfANewPosition($thisPdcAxisValuesSelector, settings, selectedValues);
           }));
       }
       if (settings.axis.length > 0) {
@@ -786,29 +785,29 @@ function removePosition( position, positions ) {
           append($('<span>').html('&nbsp;:' + settings.invariantAxisLegend));
         }
         if (hasMandatoryAxis || hasInvariantAxis) {
-          legende.appendTo($this);
+          legende.appendTo($thisPdcAxisValuesSelector);
         }
       }
       
       if (settings.dialogBox) {
-        $this.dialog({
+        $thisPdcAxisValuesSelector.dialog({
           width: 640,
           modal: true,
           title: settings.title,
           buttons: [{
             text: settings.labelOk,
             click: function() {
-              informOfANewPosition($this, settings, selectedValues);
+              informOfANewPosition($thisPdcAxisValuesSelector, settings, selectedValues);
             }
           }, {
             text: settings.labelCancel,
             click: function() {
-              $this.dialog("destroy");
+              $thisPdcAxisValuesSelector.dialog("destroy");
             }
           }
           ],
           close: function() {
-            $this.dialog("destroy");
+            $thisPdcAxisValuesSelector.dialog("destroy");
           }
         })
       }
