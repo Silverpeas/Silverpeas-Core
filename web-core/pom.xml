@@ -111,7 +111,6 @@
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>silverstatistics</artifactId>
-      <classifier>client</classifier>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

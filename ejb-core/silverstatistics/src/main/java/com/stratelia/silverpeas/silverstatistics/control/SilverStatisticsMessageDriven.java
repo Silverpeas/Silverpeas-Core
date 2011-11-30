@@ -27,10 +27,8 @@ import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigExc
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 
-import javax.ejb.EJBException;
 import javax.ejb.MessageDrivenBean;
 import javax.ejb.MessageDrivenContext;
 import javax.jms.Message;
@@ -120,21 +118,7 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   private SilverStatistics getSilverStatistics() {
-    if (silverStatistics == null) {
-      try {
-        SilverStatisticsHome silverStatisticsHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.SILVERSTATISTICS_EJBHOME, SilverStatisticsHome.class);
-        silverStatistics = silverStatisticsHome.create();
-      } catch (Exception e) {
-        throw new EJBException(e.getMessage());
-      }
-    }
-    return silverStatistics;
+    return SilverStatisticsFactory.getFactory().getSilverStatistics();
   }
 }

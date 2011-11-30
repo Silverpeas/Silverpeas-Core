@@ -23,15 +23,6 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
@@ -40,13 +31,22 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+import javax.inject.Named;
+import org.springframework.stereotype.Service;
 
 /**
  * Class declaration
  * @author SLR
  */
-public class SilverStatisticsEJB implements SessionBean {
+@Service
+@Named("SilverStatistics")
+public class SilverStatisticsService implements SilverStatistics {
 
   private static final String dbName = JNDINames.SILVERSTATISTICS_DATASOURCE;
   private static final long serialVersionUID = -2084739513469943886L;
@@ -57,6 +57,7 @@ public class SilverStatisticsEJB implements SessionBean {
    * @param type
    * @param data 
    */
+  @Override
   public void putStats(StatType type, String data) {
     List<String> dataArray = new ArrayList<String>();
     Connection myCon = null;
@@ -92,10 +93,12 @@ public class SilverStatisticsEJB implements SessionBean {
     }
   }
 
+  @Override
   public void makeVolumeAlimentationForAllComponents() {
     SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents();
   }
 
+  @Override
   public void makeStatAllCumul() {
     SilverStatisticsManagerDAO.makeStatAllCumul(myStatsConfig);
   }
@@ -117,47 +120,7 @@ public class SilverStatisticsEJB implements SessionBean {
    * Constructor declaration
    * @see
    */
-  public SilverStatisticsEJB() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  public void ejbCreate() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  @Override
-  public void ejbRemove() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  @Override
-  public void ejbActivate() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  @Override
-  public void ejbPassivate() {
-  }
-
-  /**
-   * 
-   * @param sc 
-   */
-  @Override
-  public void setSessionContext(SessionContext sc) {
-    SessionContext ctx = sc;
+  public SilverStatisticsService() {
     myStatsConfig = new StatisticsConfig();
     try {
       myStatsConfig.init();
@@ -166,4 +129,7 @@ public class SilverStatisticsEJB implements SessionBean {
           "silverstatistics.MSG_CONFIG_FILE", e);
     }
   }
+
+
+
 }

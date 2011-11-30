@@ -20,7 +20,6 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import com.google.common.io.Closeables;
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
@@ -33,13 +32,9 @@ import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-
-import javax.ejb.EJBException;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -50,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import org.apache.commons.io.IOUtils;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
 import static com.stratelia.silverpeas.silverstatistics.util.StatType.*;
@@ -270,7 +266,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
           SilverTrace.error("silverstatistics", "SilverStatisticsManager.addStatVolume",
                   "SilverStatisticsSender ", e);
         } finally {
-          Closeables.closeQuietly(mySilverStatisticsSender);
+          IOUtils.closeQuietly(mySilverStatisticsSender);
         }
       } // synchrone = appel d'une methode direct de l'ejb SilverStatisticsEJB
       else {
@@ -335,7 +331,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
           SilverTrace.error("silverstatistics", "SilverStatisticsManager.addStatAccess",
                   "SilverStatisticsSender ", e);
         } finally {
-          Closeables.closeQuietly(mySilverStatisticsSender);
+          IOUtils.closeQuietly(mySilverStatisticsSender);
         }
       } // synchrone = appel d'une methode direct de l'ejb SilverStatisticsEJB
       else {
@@ -398,7 +394,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
           SilverTrace.error("silverstatistics", "SilverStatisticsManager.addStatConnection",
                   "SilverStatisticsSender ", e);
         } finally {
-          Closeables.closeQuietly(mySilverStatisticsSender);
+          IOUtils.closeQuietly(mySilverStatisticsSender);
 
         }
       } // synchrone = appel d'une methode direct de l'ejb SilverStatisticsEJB
@@ -452,7 +448,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
           SilverTrace.error("silverstatistics", "SilverStatisticsManager.addStatSize",
                   "SilverStatisticsSender ", e);
         } finally {
-          Closeables.closeQuietly(mySilverStatisticsSender);
+          IOUtils.closeQuietly(mySilverStatisticsSender);
         }
       } // synchrone = appel d'une methode direct de l'ejb SilverStatisticsEJB
       else {
@@ -488,16 +484,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   }
 
   private SilverStatistics getSilverStatistics() {
-    if (silverStatistics == null) {
-      try {
-        SilverStatisticsHome silverStatisticsHome = EJBUtilitaire.getEJBObjectRef(
-                JNDINames.SILVERSTATISTICS_EJBHOME, SilverStatisticsHome.class);
-        silverStatistics = silverStatisticsHome.create();
-      } catch (Exception e) {
-        throw new EJBException(e.getMessage());
-      }
-    }
-    return silverStatistics;
+    return SilverStatisticsFactory.getFactory().getSilverStatistics();
   }
 
   /**

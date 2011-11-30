@@ -23,9 +23,17 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
+
 /**
- * Interface declaration
- * @author
+ *
+ * @author ehugonnet
  */
-public interface SilverStatistics extends javax.ejb.EJBObject, SilverStatisticsBm  {
+public interface SilverStatistics {
+  
+  public void putStats(StatType typeOfStats, String data) throws java.rmi.RemoteException;
+
+  public void makeStatAllCumul() throws java.rmi.RemoteException;
+
+  public void makeVolumeAlimentationForAllComponents() throws java.rmi.RemoteException;
 }
