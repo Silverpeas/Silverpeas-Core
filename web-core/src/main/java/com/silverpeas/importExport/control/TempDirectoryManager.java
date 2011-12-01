@@ -27,13 +27,13 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.io.FileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AgeFileFilter;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 
 /**
  * @author sdevolder
@@ -43,6 +43,7 @@ public class TempDirectoryManager {
   /**
    * Méthode purgeant le dossier Temporaire de silverpeas pour une limite ramenée au standard de 2
    * jours
+   * @throws java.io.IOException
    */
   public static void purgeTempDir() throws IOException {
     purgeTempDir(2);
@@ -52,11 +53,12 @@ public class TempDirectoryManager {
    * Méthode récursive purgeant le dossier Temporaire de silverpeas de tous les fichiers datés de
    * plus de nbJours. Tous les répertoires vides à l'issue de cette purge sont également effacés
    * @param nbJour - nombre de jours limite pour la conservation d'un fichier
+   * @throws java.io.IOException
    */
   public static void purgeTempDir(int nbJour) throws IOException {
 
     // Transformation de temps de conservation de fichier en millisecondes
-    long age = System.currentTimeMillis() - (nbJour * 24 * 3600 * 1000);
+    long age = System.currentTimeMillis() - nbJour * 24L * 3600000L;
     // Récupération du dossier Temp
     String pathTempDir = FileRepositoryManager.getTemporaryPath();
     File dir = new File(pathTempDir);

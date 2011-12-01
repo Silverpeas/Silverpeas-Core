@@ -81,6 +81,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static java.io.File.separator;
+
 /**
  * Classe manager des importations unitaires du moteur d'importExport de silverPeas
  * @author sdevolder
@@ -144,7 +146,7 @@ public class PublicationsTypeManager {
         publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
         exportPublicationRelativePath = createPathDirectoryForKmaxPublicationExport(exportPath,
             componentId, componentInst.getLabel(), publicationDetail, useNameForFolders);
-        exportPublicationPath = exportPath + File.separator + exportPublicationRelativePath;
+        exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       } else {
         fillPublicationType(gedIE, publicationType);
         SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
@@ -156,7 +158,7 @@ public class PublicationsTypeManager {
         exportPublicationRelativePath = createPathDirectoryForPublicationExport(
             exportPath, nodePositionType.getId(), componentId, componentInst.getLabel(),
             publicationDetail, useNameForFolders);
-        exportPublicationPath = exportPath + File.separator + exportPublicationRelativePath;
+        exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       }
       //To avoid problems with Winzip
       if(exportPublicationPath != null && exportPublicationPath.length() > 250) {
@@ -220,7 +222,7 @@ public class PublicationsTypeManager {
           "importExport.EX_CANT_GET_WYSIWYG", e);
     }
 
-    wysiwygContent.setPath(exportPublicationRelativePath + File.separator
+    wysiwygContent.setPath(exportPublicationRelativePath + separator
         + wysiwygFileName);
     return wysiwygText;
   }
@@ -230,10 +232,10 @@ public class PublicationsTypeManager {
       String exportPublicationPath, ModelDetail modelDetail, int nbThemes) {
     String htmlNameIndex = "index.html";
     HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
-        modelDetail, wysiwygText, exportPublicationRelativePath + File.separator + htmlNameIndex,
+        modelDetail, wysiwygText, exportPublicationRelativePath + separator + htmlNameIndex,
         nbThemes);
     exportReport.addHtmlIndex(pubId, s);
-    File fileHTML = new File(exportPublicationPath + File.separator + htmlNameIndex);
+    File fileHTML = new File(exportPublicationPath + separator + htmlNameIndex);
     SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
         "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
     Writer fileWriter = null;
@@ -306,9 +308,9 @@ public class PublicationsTypeManager {
           String wysiwygFile = value.substring(value.indexOf('_') + 1);
           try {
             String fromPath = FileRepositoryManager.getAbsolutePath(componentId)
-                + "xmlWysiwyg" + File.separator + wysiwygFile;
+                + "xmlWysiwyg" + separator + wysiwygFile;
             FileRepositoryManager.copyFile(fromPath,
-                exportPublicationPath + File.separator + wysiwygFile);
+                exportPublicationPath + separator + wysiwygFile);
           } catch (Exception e) {
             SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
                 "root.EX_CANT_WRITE_FILE_XMLWYSIWYG", e);
@@ -331,13 +333,13 @@ public class PublicationsTypeManager {
                 + attachment.getPhysicalName();
 
             try {
-              FileRepositoryManager.copyFile(fromPath, exportPublicationPath + File.separator
+              FileRepositoryManager.copyFile(fromPath, exportPublicationPath + separator
                   + attachment.getLogicalName());
             } catch (Exception e) {
               SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
                   "root.EX_CANT_WRITE_FILE", e);
             }
-            xmlField.setValue(exportPublicationRelativePath + File.separator + attachment.
+            xmlField.setValue(exportPublicationRelativePath + separator + attachment.
                 getLogicalName());
           }
         } else if (value.startsWith("file")) {
@@ -352,7 +354,7 @@ public class PublicationsTypeManager {
                 "root.EX_CANT_WRITE_FILE", e1);
           }
           if (attachment != null) {
-            xmlField.setValue(exportPublicationRelativePath + File.separator + attachment.
+            xmlField.setValue(exportPublicationRelativePath + separator + attachment.
                 getLogicalName());
           }
         }
@@ -400,11 +402,11 @@ public class PublicationsTypeManager {
       } else {
         nodeNameForm = nodeDetail.getNodePK().getId();
       }
-      pathToCreate.append(File.separator).append(nodeNameForm);
-      relativeExportPath.append(File.separator).append(nodeNameForm);
+      pathToCreate.append(separator).append(nodeNameForm);
+      relativeExportPath.append(separator).append(nodeNameForm);
     }
-    relativeExportPath.append(File.separator).append(pubNameForm);
-    pathToCreate.append(File.separator).append(pubNameForm);
+    relativeExportPath.append(separator).append(pubNameForm);
+    pathToCreate.append(separator).append(pubNameForm);
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
@@ -505,8 +507,8 @@ public class PublicationsTypeManager {
     StringBuilder pathToCreate = new StringBuilder(exportPath).append(File.separatorChar).append(
         componentLabelForm);
 
-    relativeExportPath.append(File.separator).append(pubNameForm);
-    pathToCreate.append(File.separator).append(pubNameForm);
+    relativeExportPath.append(separator).append(pubNameForm);
+    pathToCreate.append(separator).append(pubNameForm);
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
@@ -828,6 +830,11 @@ public class PublicationsTypeManager {
     for (NodePK nodePK : listNodePK) {
       NodePositionType nodePos = new NodePositionType();
       nodePos.setId(Integer.parseInt(nodePK.getId()));
+      listNodePos.add(nodePos);
+    }
+    if(listNodePos.isEmpty()) {
+      NodePositionType nodePos = new NodePositionType();
+      nodePos.setId(Integer.parseInt(NodePK.UNCLASSED_NODE_ID));
       listNodePos.add(nodePos);
     }
     publicationType.getNodePositionsType().setListNodePositionType(listNodePos);

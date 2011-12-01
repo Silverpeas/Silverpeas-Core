@@ -23,13 +23,6 @@
  */
 package com.silverpeas.importExportPeas.servlets;
 
-import java.io.File;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.importExport.report.ExportPDFReport;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.importExport.report.ImportReport;
@@ -42,6 +35,11 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.List;
 
 public class ImportExportRequestRouter extends ComponentRequestRouter {
 
@@ -97,7 +95,7 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
             getAttribute("resources"));
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
-      } else if (function.equals("ExportItems")) {
+      } else if ("ExportItems".equals(function)) {
         @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs = (List<WAAttributeValuePair>) request.getAttribute(
             "selectedResultsWa");
@@ -116,8 +114,7 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         }
-      } else if (function.equals("ExportPDF")) {
-        @SuppressWarnings("unchecked")
+      } else if ("ExportPDF".equals(function)) {
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
