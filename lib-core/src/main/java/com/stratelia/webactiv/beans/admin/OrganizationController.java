@@ -297,7 +297,6 @@ public class OrganizationController extends AdminReference implements java.io.Se
       String parameterName) {
     return getAdminService().getComponentParameterValue(sComponentId, parameterName);
   }
-
   // -------------------------------------------------------------------
   // COMPONENTS QUERIES
   // -------------------------------------------------------------------

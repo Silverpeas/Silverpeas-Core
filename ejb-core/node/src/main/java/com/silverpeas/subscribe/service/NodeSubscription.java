@@ -24,6 +24,7 @@
  */
 package com.silverpeas.subscribe.service;
 
+import com.silverpeas.subscribe.Subscription;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.node.model.NodePK;
 

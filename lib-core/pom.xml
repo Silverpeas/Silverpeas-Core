@@ -339,6 +339,10 @@
       <artifactId>tika-parsers</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.drewnoakes</groupId>
+      <artifactId>metadata-extractor</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>xmlbeans</artifactId>
       <groupId>org.apache.xmlbeans</groupId>
       <type>jar</type>      
