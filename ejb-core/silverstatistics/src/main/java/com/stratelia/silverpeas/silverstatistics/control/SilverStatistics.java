@@ -31,9 +31,9 @@ import com.stratelia.silverpeas.silverstatistics.util.StatType;
  */
 public interface SilverStatistics {
   
-  public void putStats(StatType typeOfStats, String data) throws java.rmi.RemoteException;
+  public void putStats(StatType typeOfStats, String data);
 
-  public void makeStatAllCumul() throws java.rmi.RemoteException;
+  public void makeStatAllCumul();
 
-  public void makeVolumeAlimentationForAllComponents() throws java.rmi.RemoteException;
+  public void makeVolumeAlimentationForAllComponents();
 }

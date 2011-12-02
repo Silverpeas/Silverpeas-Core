@@ -29,16 +29,17 @@ import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeExceptio
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.apache.commons.lang3.text.StrTokenizer;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Named;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
-import javax.inject.Named;
-import org.springframework.stereotype.Service;
+
+import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
+import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_DATASOURCE;
 
 /**
  * Class declaration
@@ -47,8 +48,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Named("SilverStatistics")
 public class SilverStatisticsService implements SilverStatistics {
-
-  private static final String dbName = JNDINames.SILVERSTATISTICS_DATASOURCE;
   private static final long serialVersionUID = -2084739513469943886L;
   private StatisticsConfig myStatsConfig;
 
@@ -59,19 +58,15 @@ public class SilverStatisticsService implements SilverStatistics {
    */
   @Override
   public void putStats(StatType type, String data) {
-    List<String> dataArray = new ArrayList<String>();
-    Connection myCon = null;
-
-    StringTokenizer stData = new StringTokenizer(data, SilverStatisticsConstants.SEPARATOR);
-
-    while (stData.hasMoreTokens()) {
-      dataArray.add(stData.nextToken());
-    }
-
+    Connection myCon = DBUtil.makeConnection(SILVERSTATISTICS_DATASOURCE);
+    StrTokenizer stData = new StrTokenizer(data, SEPARATOR);
+    List<String> dataArray =  stData.getTokenList();
     if (myStatsConfig.isGoodDatas(type, dataArray)) {
       try {
-        myCon = getConnection();
         SilverStatisticsDAO.putDataStats(myCon, type, dataArray, myStatsConfig);
+        if(!myCon.getAutoCommit()) {
+          myCon.commit();
+        }
       } catch (SQLException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "silverstatistics.MSG_ALIMENTATION_BD",
@@ -101,19 +96,6 @@ public class SilverStatisticsService implements SilverStatistics {
   @Override
   public void makeStatAllCumul() {
     SilverStatisticsManagerDAO.makeStatAllCumul(myStatsConfig);
-  }
-
-  /**
-   * 
-   * @return 
-   */
-  private Connection getConnection() {
-    try {
-      return DBUtil.makeConnection(dbName);
-    } catch (Exception e) {
-      throw new StatisticsRuntimeException("StatisticsEJB.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
   }
 
   /**

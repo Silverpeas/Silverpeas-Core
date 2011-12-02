@@ -20,9 +20,9 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.JNDINames;
-import java.io.Closeable;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
@@ -34,6 +34,10 @@ import javax.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.io.Closeable;
+
+import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_JMS_FACTORY;
+import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_JMS_QUEUE;
 
 /**
  * Class declaration
@@ -42,6 +46,7 @@ import javax.naming.NamingException;
  */
 public final class SilverStatisticsSender implements Closeable {
 
+  private QueueConnectionFactory factory;
   private QueueConnection queueConnection = null;
   private QueueSender queueSender = null;
   private QueueSession queueSession = null;
@@ -51,8 +56,10 @@ public final class SilverStatisticsSender implements Closeable {
   public SilverStatisticsSender() {
     try {
       ctx = new InitialContext();
+      factory = (QueueConnectionFactory) ctx.lookup(SILVERSTATISTICS_JMS_FACTORY);
     } catch (NamingException ex) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsSender", "SilverStatisticsSender ", ex);
+      SilverTrace
+          .error("silverstatistics", "SilverStatisticsSender", "SilverStatisticsSender ", ex);
     }
   }
 
@@ -64,16 +71,14 @@ public final class SilverStatisticsSender implements Closeable {
    * @throws NamingException
    * @see
    */
-  public void send(String message) throws JMSException, NamingException {
-    QueueConnectionFactory factory = (QueueConnectionFactory) ctx.lookup(
-            JNDINames.SILVERSTATISTICS_JMS_FACTORY);
+  public void send(StatType typeOfStats, String message) throws JMSException, NamingException {
     queueConnection = factory.createQueueConnection();
     queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-    Queue queue = (Queue) ctx.lookup(JNDINames.SILVERSTATISTICS_JMS_QUEUE);
+    Queue queue = (Queue) ctx.lookup(SILVERSTATISTICS_JMS_QUEUE);
     queueSender = queueSession.createSender(queue);
     msg = queueSession.createTextMessage();
     queueConnection.start();
-    msg.setText(message);
+    msg.setText(typeOfStats.toString() + SilverStatisticsConstants.SEPARATOR + message);
     queueSender.send(msg);
   }
 
@@ -90,8 +95,8 @@ public final class SilverStatisticsSender implements Closeable {
         queueConnection.close();
       }
     } catch (JMSException ex) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsSender.close",
-              "SilverStatisticsSender ", ex);
+      SilverTrace
+          .error("silverstatistics", "SilverStatisticsSender.close", "SilverStatisticsSender ", ex);
     }
   }
 }
