@@ -228,15 +228,14 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   private List<String> getSpaceIdsPath(String spaceId, String componentId,
           OrganizationController orgaController) {
-    List<SpaceInst> spacePath = null;
+    List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
     if (StringUtil.isDefined(spaceId)) {
       spacePath = orgaController.getSpacePath(spaceId);
     } else if (StringUtil.isDefined(componentId)) {
       spacePath = orgaController.getSpacePathToComponent(componentId);
     }
-    List<String> spaceIdsPath = null;
-    for (int s = 0; s < spacePath.size(); s++) {
-      SpaceInst space = spacePath.get(s);
+    List<String> spaceIdsPath = new ArrayList<String>();
+    for (SpaceInst space : spacePath) {
       if (spaceIdsPath == null) {
         spaceIdsPath = new ArrayList<String>();
       }

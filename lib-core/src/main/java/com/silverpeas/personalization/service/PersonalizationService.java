@@ -34,6 +34,8 @@ public interface PersonalizationService {
   public final UserMenuDisplay DEFAULT_MENU_DISPLAY_MODE = UserMenuDisplay.DEFAULT;
 
   public void saveUserSettings(UserPreferences userPreferences);
+  
+  public void resetDefaultSpace(String spaceId);
 
   public UserPreferences getUserSettings(String userId);
 

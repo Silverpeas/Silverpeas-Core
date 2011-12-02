@@ -23,6 +23,8 @@
  */
 package com.silverpeas.personalization.service;
 
+import java.util.List;
+
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationDetailDao;
@@ -68,6 +70,15 @@ public class DefaultPersonalizationService implements PersonalizationService {
   @Override
   public void saveUserSettings(UserPreferences userPreferences) {
     dao.saveAndFlush(userPreferences);
+  }
+  
+  public void resetDefaultSpace(String spaceId) {
+    List<UserPreferences> prefs = dao.findByDefaultSpace(spaceId);
+    for (UserPreferences pref : prefs) {
+      pref.setPersonalWorkSpaceId(null);
+    }
+    dao.save(prefs);
+    dao.flush();
   }
 
   @Override
