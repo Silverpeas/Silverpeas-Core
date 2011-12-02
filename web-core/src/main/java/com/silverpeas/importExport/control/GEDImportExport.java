@@ -23,22 +23,6 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -84,6 +68,7 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
@@ -97,6 +82,21 @@ import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -109,7 +109,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   private static final OrganizationController organizationController = new OrganizationController();
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
-  private com.stratelia.webactiv.util.node.control.NodeBm nodeBm = null;
+  private NodeBm nodeBm = null;
   private AttachmentImportExport attachmentIE = new AttachmentImportExport();
 
   /**
@@ -126,7 +126,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   protected PublicationBm getPublicationBm() throws ImportExportException {
-
     if (publicationBm == null) {
       try {
         PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
@@ -141,7 +140,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   protected FormTemplateBm getFormTemplateBm() throws ImportExportException {
-
     if (formTemplateBm == null) {
       try {
         FormTemplateBmHome formTemplateBmHome = EJBUtilitaire.getEJBObjectRef(
@@ -159,8 +157,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return l'EJB NodeBM
    * @throws ImportExportException
    */
-  protected com.stratelia.webactiv.util.node.control.NodeBm getNodeBm() throws ImportExportException {
-
+  protected NodeBm getNodeBm() throws ImportExportException {
     if (nodeBm == null) {
       try {
         com.stratelia.webactiv.util.node.control.NodeBmHome kscEjbHome = EJBUtilitaire.
@@ -217,11 +214,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       // check if publication with same name exists into first topic
       boolean pubIdExists = false;
       if (pubDetailToCreate.getId() != null) {
-        try {
-          Integer.parseInt(pubDetailToCreate.getId());
-          pubIdExists = true;
-        } catch (NumberFormatException ex) {
-        }
+         pubIdExists = StringUtil.isInteger(pubDetailToCreate.getId());
       }
       if (!pubIdExists) {
         try {
@@ -305,7 +298,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
                 // check if existing publication is already in this topic
                 try {
                   getPublicationBm().getDetailByNameAndNodeId(pubDet_temp.getPK(),
-                          pubDet_temp.getName(), node_Type.getId());
+                      pubDet_temp.getName(), node_Type.getId());
                 } catch (Exception ex) {
                   // this publication is not in this topic. Adding it...
                   addPublicationToTopic(pubPK, topicPK);
@@ -355,11 +348,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
     WysiwygContentType wysiwygType = pubContent.getWysiwygContentType();
     XMLModelContentType xmlModel = pubContent.getXMLModelContentType();
     try {
-      if (dbModelType != null) {
-        // Contenu DBModel
+      if (dbModelType != null) { // Contenu DBModel
         createDBModelContent(unitReport, dbModelType, java.lang.Integer.toString(pubId));
-      } else if (wysiwygType != null) {
-        // Contenu Wysiwyg
+      } else if (wysiwygType != null) { // Contenu Wysiwyg
         createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext);
       } else if (xmlModel != null) {
         createXMLModelContent(unitReport, xmlModel, java.lang.Integer.toString(pubId), userId);
@@ -389,12 +380,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
       pubDetail.setIndexOperation(IndexManager.NONE);
       getPublicationBm().setDetail(pubDetail);
 
-      publicationTemplateManager.addDynamicPublicationTemplate(getCurrentComponentId() + ":"
+      publicationTemplateManager.addDynamicPublicationTemplate(getCurrentComponentId() + ':'
               + xmlFormShortName, xmlFormShortName + ".xml");
     }
 
     PublicationTemplate pub = publicationTemplateManager.getPublicationTemplate(
-            getCurrentComponentId() + ":" + xmlModel.getName());
+            getCurrentComponentId() + ':' + xmlModel.getName());
 
     RecordSet set = pub.getRecordSet();
     // Form form = pub.getUpdateForm();
@@ -430,7 +421,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
               String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
               String imageMimeType = AttachmentController.getMimeType(imagePath);
 
-              String physicalName = Long.toString(System.currentTimeMillis()) + "." + imageExtension;
+              String physicalName = Long.toString(System.currentTimeMillis()) + '.' + imageExtension;
 
               String path = AttachmentController.createPath(getCurrentComponentId(), context);
               FileRepositoryManager.copyFile(imagePath, path + physicalName);
@@ -643,7 +634,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode chargee de copier les fichiers images references par le contenu wysiwyg sur le serveur
    * et de mettre a  jour le contenu wysiwyg avec ces nouveaux liens
    * @param wysiwygText - contenu wysiwyg passe en parametre
-   * @param path - chemin cible des images wysiwyg
    * @return - le contenu wysiwyg mis a  jour
    */
   private String replaceWysiwygImagesPathForImport(UnitReport unitReport, int pubId,
@@ -727,13 +717,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param newCssClass - la nouvelle classe CSS a  utiliser
    * @return - le contenu wysiwyg mis a  jour
    */
-  private String replaceWysiwygStringForImport(String oldString, String newString,
+  private String replaceWysiwygStringForImport(String oldCssClass, String newCssClass,
           String wysiwygText) {
     if (!StringUtil.isDefined(wysiwygText)) {
       return "";
     }
 
-    return wysiwygText.replaceAll(oldString, newString);
+    return wysiwygText.replaceAll(oldCssClass, newCssClass);
   }
 
   private String removeWysiwygStringsForImport(String wysiwygText) {
@@ -1117,7 +1107,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         // Recuperation du model
         ModelDetail modelDetail = pubComplete.getModelDetail();
         dbModel.setId(Integer.parseInt(modelDetail.getId()));
-      } else if (!isInteger(publicationDetail.getInfoId())) {
+      } else if (!StringUtil.isInteger(publicationDetail.getInfoId())) {
         // la publication a un contenu de type XMLTemplate (formTemplate)
         pubContent = new PublicationContentType();
         List<XMLField> xmlFields = getFormTemplateBm().getXMLFieldsForExport(
@@ -1150,15 +1140,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
       throw new ImportExportException("importExport", "", "", ex);
     }
     return publicationType;
-  }
-
-  private static boolean isInteger(String id) {
-    try {
-      Integer.parseInt(id);
-      return true;
-    } catch (NumberFormatException e) {
-      return false;
-    }
   }
 
   /**

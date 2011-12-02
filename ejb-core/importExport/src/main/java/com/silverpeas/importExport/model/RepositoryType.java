@@ -65,12 +65,15 @@ public class RepositoryType {
    * @return
    */
   public int getMassiveTypeInt() {
-    if (massiveType.equals(NO_RECURSIVE_STRING))
+    if (NO_RECURSIVE_STRING.equals(massiveType)) {
       return NO_RECURSIVE;
-    if (massiveType.equals(RECURSIVE_NOREPLICATE_STRING))
+    }
+    if (RECURSIVE_NOREPLICATE_STRING.equals(massiveType)) {
       return RECURSIVE_NOREPLICATE;
-    if (massiveType.equals(RECURSIVE_REPLICATE_STRING))
+    }
+    if (RECURSIVE_REPLICATE_STRING.equals(massiveType)) {
       return RECURSIVE_REPLICATE;
+    }
     return -1;
   }
 
