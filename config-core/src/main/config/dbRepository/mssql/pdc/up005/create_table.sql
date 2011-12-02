@@ -1,6 +1,6 @@
 create table PdcAxisValue (
   valueId numeric(19,0) not null,
-  axisId numeric(19,0) null,
+  axisId numeric(19,0) not null,
   primary key (valueId, axisId)
 );
 
