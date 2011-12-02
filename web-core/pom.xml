@@ -44,26 +44,6 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jasig.cas</groupId>
-      <artifactId>cas-client-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jcharts</groupId>
-      <artifactId>jcharts</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.lowagie</groupId>
-      <artifactId>itext</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
     </dependency>
@@ -230,6 +210,26 @@
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jasig.cas</groupId>
+      <artifactId>cas-client-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jcharts</groupId>
+      <artifactId>jcharts</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
