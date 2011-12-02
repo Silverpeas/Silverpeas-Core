@@ -23,6 +23,7 @@
  */
 package com.silverpeas.subscribe.service;
 
+import com.silverpeas.subscribe.Subscription;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;

@@ -25,7 +25,8 @@
 package com.silverpeas.subscribe.web;
 
 import com.silverpeas.rest.Exposable;
-import com.silverpeas.subscribe.service.Subscription;
+import com.silverpeas.subscribe.Subscription;
+
 import java.net.URI;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
