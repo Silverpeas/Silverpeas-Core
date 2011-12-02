@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -116,12 +117,10 @@ public class PublicationImportExport {
    * @param pubPK , List of coordinateId
    * @return nothing
    */
-  public static void addNodesToPublication(PublicationPK pubPK, List nodes) {
+  public static void addNodesToPublication(PublicationPK pubPK, List<Integer> nodes) {
     try {
-      for (Object node : nodes) {
-        Integer coordinateId = (Integer) node;
-        getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(),
-            pubPK));
+      for (Integer coordinateId : nodes) {
+        getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(), pubPK));
       }
     } catch (Exception e) {
       throw new PublicationRuntimeException("CoordinateImportExport.addNodesToPublication()",
@@ -135,17 +134,14 @@ public class PublicationImportExport {
    * @throws CoordinateRuntimeException
    */
   private static PublicationBm getPublicationBm() {
-    PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
               PublicationBmHome.class);
-      publicationBm = publicationBmHome.create();
+      return publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return publicationBm;
   }
 
   /**
@@ -155,15 +151,13 @@ public class PublicationImportExport {
    * @return ArrayList of publicationDetail
    */
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
-    PublicationPK pk = new PublicationPK("useless", componentId);
-    List<PublicationDetail> publications = null;
     try {
-      publications = (List<PublicationDetail>) getPublicationBm().getOrphanPublications(pk);
+      return new ArrayList<PublicationDetail>(
+          getPublicationBm().getOrphanPublications(new PublicationPK("useless", componentId)));
     } catch (Exception e) {
       throw new PublicationRuntimeException("CoordinateImportExport.getUnbalancedPublications()",
           SilverpeasRuntimeException.ERROR,
           "importExport.EX_IMPOSSIBLE_DOBTENIR_LA_LISTE_DES_PUBLICATIONS_NON_CLASSEES", e);
     }
-    return publications;
   }
 }
