@@ -10,6 +10,7 @@ function init(scope) {
 function displayFeedContent(url) {
 	$('.inprogress').show();
     $('.linkMore').hide();
+    url += "&IEFix="+Math.round(new Date().getTime());
 	$.getJSON(url, function(data){
 		 var listEmpty=true;
 		 var html='';

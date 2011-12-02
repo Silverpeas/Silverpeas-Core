@@ -88,7 +88,7 @@ $(document).ready(function(){
 						$( "#myProfileFiche .statut").html(status.val());
 
 					    var url = "/silverpeas/RmyProfilJSON?Action=updateStatus";
-						url+='&status='+status.val();
+						url+='&status='+encodeURIComponent(status.val())+'&IEFix='+Math.round(new Date().getTime());
 				        $.getJSON(url);
 						$( this ).dialog( "close" );
 				},
