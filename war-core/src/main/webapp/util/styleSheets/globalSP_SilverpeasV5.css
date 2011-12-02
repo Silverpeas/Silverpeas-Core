@@ -4091,7 +4091,8 @@ html:not([lang*=""]) .add_position:hover {
 	background:transparent url('/silverpeas/util/icons/update.gif') 11px 0px no-repeat;
 }
 
-.classification .pdc-edition-box .field {
+.classification .pdc-edition-box .field,
+.pdc-edition-box.ui-dialog-content .field {
 	width:70%;
 }
 
@@ -4146,23 +4147,37 @@ html:not([lang*=""]) .add_position:hover {
 	border-left:0;
 	border-right:0;
 	padding-left:180px;
+	margin:0 12px;
 	width:auto;
-	line-height:200%;
+	line-height:220%;
 }
-#validation  input{
+#validation  input, #modification input{
 	vertical-align:text-bottom;
+	vertical-align:middle\9;
+	border:0;
+	background-color:transparent;
+	padding-top:0;
+	padding-bottom:0;
 }
 
 #classification-modification span.header {
 	display:block;  
-	background:transparent url("/silverpeas/util/icons/mini_publi.gif") 2px 5px no-repeat ;
+	background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
 	background-color:#F0F0F0;
 	border:1px solid #CDCDCD;
 	border-left:0;
 	border-right:0;	
 	line-height:100%;
-	padding:8px 0 6px 20px;
-	margin-top:10px;
+	padding:8px 0 6px 26px;
+	margin:10px 12px 0;
+}
+
+#okForAll, #modifyForAll, #modifyForEach {
+	background:transparent url("/silverpeas/util/icons/update.gif") right 0 no-repeat ;
+	padding:2px 20px 2px 0;
+}
+#okForAll {
+	background-image:url("/silverpeas/util/icons/ok.gif") ;
 }
 
 

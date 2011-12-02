@@ -434,12 +434,30 @@ function removePosition( position, positions ) {
     },
     
     /**
-     * This method is used to refresh the positions listed by this plugin.
+     * This method is used to refresh the positions listed by this plugin. Some additional parameters
+     * can be passed as an optional parameter in order to perform some refinements during the refresh.
+     * The optional parameter is an object of type:
+     * {
+     *   title: true|false, // the new title to display with the widget
+     *   update: true|false, // is the update of a position activated?
+     *   addition: true|false, is the addition of a position activated?
+     *   deletion: true|false is the deletion of a position activated?
+     * }
      */
-    refresh: function( positions ) {
+    refresh: function( positions, optionalParameter ) {
       return this.each(function() {
         var $thisPdcPositions = $(this), settings = $thisPdcPositions.data('PdcPositionSettings');
         settings.positions = positions;
+        if (optionalParameter != null) {
+          if (optionalParameter.title != null && optionalParameter.title.length > 0) 
+            $('label[for="' + settings.id + '_allpositions"]').html(optionalParameter.title);
+          if(optionalParameter.update == true || optionalParameter.update == false)
+            settings.update.activated = optionalParameter.update;
+          if(optionalParameter.addition == true || optionalParameter.addition == false)
+            settings.addition.activated = optionalParameter.addition;
+          if(optionalParameter.deletion == true || optionalParameter.deletion == false)
+            settings.deletion.activated = optionalParameter.deletion;
+        }
         $('#' + settings.id + '_allpositions').children().remove();
         renderPositions(settings);
       });
@@ -688,7 +706,7 @@ function removePosition( position, positions ) {
           'id': settings.id + '_' + anAxis.id,  
           'name': anAxis.name
         }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
-          var theValue = $('select[name="' + anAxis.name + '"] option:selected').attr('value');
+          var theValue = $('select[id=' + settings.id + '_' + anAxis.id + '] option:selected').val();
           if (theValue == 0) {
             selectedValues[anAxis.id] = null;
           } else {

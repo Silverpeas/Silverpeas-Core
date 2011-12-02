@@ -363,6 +363,9 @@ public class GraphicElementFactory {
     }
 
     // append javascript
+    code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append(
+        "';").append("</script>\n");
+    
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(

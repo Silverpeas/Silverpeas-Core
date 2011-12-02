@@ -22,6 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+$.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
+
 /**
  * A JQuery plugin providing some functionalities on the classification of the Silverpeas
  * resources (publication, comments, ...) on the classification plan (named PdC).
@@ -211,31 +213,66 @@
         var $this = $(this);
         init( $this, options );
         var settings = $this.data('settings');
-        loadPdC(settings.pdcURI, function(pdc) {
-          $this.data('pdc', pdc);
-          loadClassification(settings.defaultClassificationURI, function(classification) {
-            $this.data('classification', classification);
-            var modification = $('<fieldset id="classification-mo">').
+        loadPdC(settings.pdcURI, function(loadedPdC) {
+          loadClassification(settings.defaultClassificationURI, function(loadedClassification) {
+            var modification = $('<fieldset>', { id: 'classification-mo' }).
+              addClass('skinFieldset').appendTo($this);
+            var predefinition = $('<fieldset>', { id: 'classification-predefinition' }).
               addClass('skinFieldset').
-              data('settings', $this.data('settings')).
-              data('classification', $this.data('classification')).
-              appendTo($this);
-            var predefinition = $('<fieldset id="classification-predefinition">').
-              addClass('skinFieldset').
-              data('settings', $this.data('settings')).
-              data('pdc', $this.data('pdc')).
-              data('classification', $this.data('classification')).
+              data('settings', settings).
+              data('pdc', loadedPdC).
+              data('classification', loadedClassification).
               appendTo($this);
             
-            renderModificationAttributeFrame( modification );
-            renderClassificationFrame( predefinition );
-            if (isInherited( $this, classification )) {
-              $.each(classification.positions, function( index, position ) {
+            var inherited = isInherited(settings, loadedClassification);
+            var positionsLabel = settings.labelsPosition;
+            if (inherited) {
+              positionsLabel = settings.inheritedPositionsLabel;
+              $.each(loadedClassification.positions, function(index, position) {
                 position.id = null;
               });
             }
-            renderClassificationEditionFrame( predefinition, [] );
-            renderPositions( predefinition );
+            
+            renderModificationAttributeFrame(predefinition, modification);
+            prepareClassificationFrame(predefinition);
+            renderPositionEditionFrame(predefinition, '#' + settings.idPrefix + "pdc-addition-box",
+              settings.addition.title, [], false, function(values) {
+                var position = {values: values}, classification = predefinition.data('classification');
+                if (isAlreadyInClassification(position, classification))
+                  alert(settings.messages.positionAlreadyInClassification);
+                else {
+                  classification.positions.push(position);
+                  submitClassification(predefinition, settings.defaultClassificationURI);
+                }
+              });
+            predefinition.pdcPositions({
+              id        : settings.idPrefix + 'list_pdc_position',
+              title     : positionsLabel,
+              label     : settings.labelPosition,
+              positions : loadedClassification.positions,
+              update    : {
+                title: settings.update.title,
+                icon: settings.update.icon
+              },
+              addition  : {
+                activated: false
+              },
+              deletion  : {
+                activated: !inherited,
+                title: settings.deletion.title,
+                icon: settings.deletion.icon
+              },
+              onUpdate: function(position) {
+                openEditionBox(predefinition, settings.defaultClassificationURI, position);
+              },
+              onDeletion: function(position) {
+                if (window.confirm( settings.deletion.confirmation )) {
+                  var classification = predefinition.data('classification');
+                  removePosition(position, classification.positions);
+                  submitClassification(predefinition, settings.defaultClassificationURI);
+                }
+              }
+            });
           }, function(classification, error) {
             $this.data('classification', classification);
             alert(error.message);
@@ -262,15 +299,50 @@
         var $this = $(this), classification = new Object();
         init( $this, options );
         var settings = $this.data('settings');
-        loadPdC(settings.pdcURI, function(pdc) {
-          $this.data('pdc', pdc);
-          loadClassification(settings.defaultClassificationURI, function(classification) {
-            $this.data('classification', classification);
-            classification.uri = settings.classificationURI;
-            if (classification.positions.length == 0 || classification.modifiable) {
-              renderClassificationFrame($this);
-              renderClassificationEditionFrame($this, []);
-              renderPositions($this);
+        loadPdC(settings.pdcURI, function(loadedPdC) {
+          $this.data('pdc', loadedPdC);
+          loadClassification(settings.defaultClassificationURI, function(loadedClassification) {
+            $this.data('classification', loadedClassification);
+            loadedClassification.uri = settings.classificationURI;
+            if (loadedClassification.positions.length == 0 || loadedClassification.modifiable) {
+              prepareClassificationFrame($this);
+              renderPositionEditionFrame($this, '#' + settings.idPrefix + "pdc-addition-box",
+                settings.addition.title, [], false, function(values) {
+                  var position = {values: values}, classification = $this.data('classification');
+                  if (isAlreadyInClassification(position, classification))
+                    alert(settings.messages.positionAlreadyInClassification);
+                  else {
+                    classification.positions.push(position);
+                    $this.pdcPositions('refresh', classification.positions);
+                  }
+                });
+              $this.pdcPositions({
+                id        : settings.idPrefix + 'list_pdc_position',
+                title     : settings.labelsPosition,
+                label     : settings.labelPosition,
+                positions : loadedClassification.positions,
+                update    : {
+                  title: settings.update.title,
+                  icon: settings.update.icon
+                },
+                addition  : {
+                  activated: false
+                },
+                deletion  : {
+                  title: settings.deletion.title,
+                  icon: settings.deletion.icon
+                },
+                onUpdate: function(position) {
+                  openEditionBox($this, settings.defaultClassificationURI, position);
+                },
+                onDeletion: function(position) {
+                  if (window.confirm( settings.deletion.confirmation )) {
+                    var classification = $this.data('classification');
+                    removePosition(position, classification.positions);
+                    $this.pdcPositions('refresh', classification.positions);
+                  }
+                }
+              });
             } else {
               $this.attr('style', 'display: none;')
             }
@@ -297,11 +369,11 @@
         var $this = $(this);
         init( $this, options );
         var settings = $this.data('settings');
-        loadPdC(settings.pdcURI, function(pdc) {
-          $this.data('pdc', pdc);
-          loadClassification(settings.classificationURI, function(classification) {
-            $this.data('classification', classification);
-            if (classification.positions.length == 0 && settings.mode == 'view') {
+        loadPdC(settings.pdcURI, function(loadedPdC) {
+          $this.data('pdc', loadedPdC);
+          loadClassification(settings.classificationURI, function(loadedClassification) {
+            $this.data('classification', loadedClassification);
+            if (loadedClassification.positions.length == 0 && settings.mode == 'view') {
               $this.hide();
             } else {
               prepareClassificationFrame($this);
@@ -309,7 +381,7 @@
                 id        : settings.idPrefix + 'list_pdc_position',
                 title     : settings.labelsPosition,
                 label     : settings.labelPosition,
-                positions: classification.positions,
+                positions: loadedClassification.positions,
                 update    : {
                   title: settings.update.title,
                   icon: settings.update.icon
@@ -323,13 +395,16 @@
                   icon: settings.deletion.icon
                 },
                 onAddition: function() {
+                  var classification = $this.data('classification');
                   openEditionBox($this, classification.uri, null);
                 },
                 onUpdate: function(position) {
+                  var classification = $this.data('classification');
                   openEditionBox($this, classification.uri, position);
                 },
                 onDeletion: function(position) {
-                  deletePosition(classification.uri, position, "",
+                  var classification = $this.data('classification');
+                  deletePosition(classification.uri, position, settings.deletion.confirmation,
                     function() {
                       removePosition(position, classification.positions);
                       $this.pdcPositions('refresh', classification.positions);
@@ -362,18 +437,18 @@
         var $this = $(this);
         init( $this, options );
         var settings = $this.data('settings');
-        loadPdC(settings.pdcURI, function(pdc) {
-          $this.data('pdc', pdc);
-          loadClassification(settings.classificationURI, function(classification) {
-            $this.data('classification', classification);
-            if (classification.positions.length == 0) {
+        loadPdC(settings.pdcURI, function(loadedPdC) {
+          $this.data('pdc', loadedPdC);
+          loadClassification(settings.classificationURI, function(loadedClassification) {
+            $this.data('classification', loadedClassification);
+            if (loadedClassification.positions.length == 0) {
               $this.hide();
             } else {
               prepareClassificationFrame($this);
               $this.pdcPositionsPreview({
                 id: settings.idPrefix + 'list_pdc_position',
                 label: settings.positionsLabel,
-                positions: classification.positions
+                positions: loadedClassification.positions
               });
             }
           }, function(classification, error) {
@@ -400,8 +475,9 @@
       if (classification == null) {
         init( $this, options );
         var settings = $this.data('settings');
-        loadClassification(settings.classificationURI, function(classification) {
-          $this.data('classification', classification);
+        loadClassification(settings.classificationURI, function(loadedClassification) {
+          classification = loadedClassification;
+          $this.data('classification', loadedClassification);
         });
         while($this.data('classification') == null) {}
       } else {
@@ -465,13 +541,13 @@
     settings.pdcURI = uriOfPdC(settings.resource);
   }
   
-  function renderModificationAttributeFrame( $this ) {
-    var settings = $this.data('settings'), classification = $this.data('classification');
-    var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.modificationTitle));
-    if ($this.is('fieldset')) {
+  function renderModificationAttributeFrame( $this, frame ) {
+    var settings = $this.data('settings'), classification = $this.data('classification'),
+      titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.modificationTitle));
+    if (frame.is('fieldset')) {
       titleTag = $('<legend>').html(settings.modificationTitle);
     }
-    titleTag.addClass('header').appendTo($this);
+    titleTag.addClass('header').appendTo(frame);
     $('<div>', {
       id: 'modification'
     }).addClass('field').append($('<input>', {
@@ -488,9 +564,10 @@
       value:'true',
       checked: classification.modifiable
     })).
-    append($('<span>').html(settings.canBeModified)).appendTo($this);
+    append($('<span>').html(settings.canBeModified)).appendTo(frame);
     
     $('.field input:radio').change(function() {
+      var classification = $this.data('classification');
       classification.modifiable = $('.field input:radio:checked').val();
       submitClassification($this, settings.defaultClassificationURI);
     });
@@ -522,65 +599,43 @@
     }
   }
   
-  /**
-   * Renders the area into which the classification on the PdC of the resource will be displayed.
-   */
-  function renderClassificationFrame ( $this ) {
-    var settings = $this.data('settings');
-    if (settings.mode == 'predefinition' && settings.resource.node != null && settings.resource.node > 0)
-      $('<div>').addClass('inlineMessage').html(settings.messages.inheritanceMessage).appendTo($this);
-    var titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.title));
-    if ($this.is('fieldset')) {
-      titleTag = $('<legend>').html(settings.title);
-    }
-    titleTag.addClass('header').appendTo($this);
-    if (settings.mode != 'preview') {
-      var editionBox = $('<div>', {
-        id: settings.idPrefix + 'pdc-addition-box'
-      }).addClass('pdc-edition-box').addClass('fields').appendTo($this);
-      if (settings.mode == 'edition') {
-        editionBox.attr("style","display: none;");
-      }
-      $('<div>', {
-        id: settings.idPrefix + 'pdc-update-box',
-        'style': 'display-none'
-      }).addClass('pdc-edition-box').addClass('fields').appendTo($this);
-    }
-    var listOfPositions = $('<div>', {
-      id: settings.idPrefix + 'list_pdc_position'
-    });
-    if (settings.mode != 'preview') {
-      var classification = $this.data('classification'), positionsLabel = settings.positionsLabel;
-      if (isInherited( $this, classification )) {
-        positionsLabel = settings.inheritedPositionsLabel;
-      }
-      listOfPositions.addClass('field').
-      append($('<label>', {
-        'for': settings.idPrefix + 'allpositions'
-      }).html(positionsLabel));
-      listOfPositions.append($('<div>', {
-        id: settings.idPrefix + 'allpositions'
-      }).addClass('champs')).appendTo($('<div>').addClass('fields').appendTo($this));
-    } else {
-      listOfPositions.append($('<div>', {
-        id: settings.idPrefix + 'allpositions'
-      })).appendTo($this);
-    }
-  }
-  
   function openEditionBox($this, uri, position) {
     var settings = $this.data('settings'), classification = $this.data('classification');
     var boxId = '#' + settings.idPrefix + "pdc-addition-box";
     var title = settings.addition.title;
     var preselectedValues = [];
     if (position != null && position.values.length > 0) {
-      boxId = "#" + settings.idPrefix + "pdc-addition-box";
+      boxId = "#" + settings.idPrefix + "pdc-update-box";
       title = settings.update.title;
       preselectedValues = position.values;
     }
-    
-    $(boxId).pdcAxisValuesSelector({
-      id                  :  boxId,
+    renderPositionEditionFrame($this, boxId, title, preselectedValues, true, function(values) {
+      var selection = {};
+      if (position != null && position.values.length > 0)
+        selection = $.extend(true, {}, position);
+      selection.values = values;
+      if (isAlreadyInClassification(selection, classification))
+        alert(settings.messages.positionAlreadyInClassification);
+      else {
+        if (settings.mode == 'predefinition') {
+          removePosition(position, classification.positions);
+          classification.positions.push(selection);
+          submitClassification($this, uri);
+        } else if (settings.mode == 'creation') {
+          removePosition(position, classification.positions);
+          classification.positions.push(selection);
+          $this.pdcPositions('refresh', classification.positions);
+        } else {
+          submitPosition($this, uri, selection);
+        }
+      }
+    });
+  }
+  
+  function renderPositionEditionFrame($this, frameId, title, preselectedValues, asDialogBox, onEdition) {
+    var settings = $this.data('settings'), classification = $this.data('classification');
+    $(frameId).pdcAxisValuesSelector({
+      id                  : frameId,
       title               : title,
       positionError       : settings.messages.positionMustBeValued,
       mandatoryAxisText   : settings.edition.mandatoryAxisDefaultValue,
@@ -593,132 +648,24 @@
       labelCancel         : settings.edition.cancel,
       axis                : $this.data('pdc').axis,
       values              : preselectedValues,
+      dialogBox           : asDialogBox,
       onValuesSelected    : function(values) {
-        var selection = {};
-        if (position != null && position.values.length > 0)
-          selection = position;
-        selection.values = values;
-        if (isAlreadyInClassification(selection, classification))
-          alert(settings.messages.positionAlreadyInClassification);
-        else
-          submitPosition($this, uri, selection);
+        onEdition(values);
       }
     });
-  }
-
-  /**
-   * Adds a new position on the PdC in the classification of the resource identified by the url in
-   * the settings.
-   */
-  function addNewPosition( $this, uri ) {
-    var selection = [], settings = $this.data('settings');
-    renderClassificationEditionFrame($this, selection);
-    $("#" + settings.idPrefix + "pdc-addition-box").dialog({
-      width: 640,
-      modal: true,
-      title: settings.addition.title,
-      buttons: [{
-        text: settings.edition.ok,
-        click: function() {
-          var position = aPositionWith(selection);
-          if(checkPositionIsValid($this, position)) {
-            submitPosition( $this, uri, position );
-          }
-        }
-      }, {
-        text: settings.edition.cancel,
-        click: function() {
-          $( this ).dialog( "destroy" );
-        }
-      }
-      ],
-      close: function() {
-        $( this ).dialog( "destroy" );
-      }
-    })
-  }
-  
-  /**
-   * Upates the specified position in the classification of the resource identified by the specified
-   * url.
-   */
-  function updateThePosition( $this, uri, position ) {
-    var selection = [], settings = $this.data('settings');
-    $.each(position.values, function(valindex, value) {
-      selection[value.axisId] = value;
-    });
-    renderClassificationUpdateFrame($this, selection);
-    $("#" + settings.idPrefix + "pdc-update-box").dialog({
-      width: 640,
-      modal: true,
-      title: settings.update.title,
-      buttons: [{
-        text: settings.edition.ok,
-        click: function() {
-          var updatedPosition = aPositionWith(selection);
-          updatedPosition.id = position.id;
-          if(checkPositionIsValid($this, updatedPosition)) {
-            if (settings.mode == 'predefinition') {
-              var classification = $this.data('classification');
-              removePosition(position.id, classification.positions);
-              classification.positions.push(updatedPosition);
-              submitClassification($this, uri);
-            } else {
-              submitPosition($this, uri, updatedPosition);
-            }
-          }
-        }
-      }, {
-        text: settings.edition.cancel,
-        click: function() {
-          $( this ).dialog( "destroy" );
-        }
-      }
-      ],
-      close: function() {
-        $( this ).dialog( "destroy" );
-      }
-    })
-  }
-  
-  /**
-   * Deletes the specified position in the classification of the resource identified by the url in
-   * the settings.
-   */
-  function deleteThePosition( $this, uri, positionId ) {
-    var settings = $this.data('settings');
-    if (window.confirm( settings.deletion.confirmation )) {
-      var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
-      var uri_position = uri_parts[0] + '/' + positionId + '?' + uri_parts[1];
-      $.ajax({
-        url: uri_position,
-        type: "DELETE",
-        success: function() {
-          var classification = $this.data('classification');
-          removePositionFromClassification($this, classification, positionId);
-        },
-        error: function(request) {
-          if (request.status == 409) {
-            alert( settings.messages.contentMustHaveAPosition );
-          }
-        }
-      });
-    }
   }
   
   function submitClassification( $this, uri ) {
     var method = 'POST', classification = $this.data('classification'), settings = $this.data('settings');
-    if (settings.mode == 'predefinition') {
-      if (!isInherited( $this, classification )) {
-        method = 'PUT';
-      } else {
-        if (classification.positions.length == 0) {
-          return;
-        }
-        $.each(classification.positions, function(index, position) {
-          position.id = null;
-        });
+    if (!isInherited(settings, classification)) {
+      method = 'PUT';
+    } else {
+      if (classification.positions.length == 0) {
+        return;
       }
+      $.each(classification.positions, function(index, position) {
+        position.id = null;
+      });
     }
     $.ajax({
       url: uri,
@@ -727,14 +674,16 @@
       contentType: "application/json",
       dataType: "json",
       cache: false,
-      success: function(classification) {
-        $("#"+ settings.idPrefix + "pdc-update-box").dialog( "destroy" );
-        $this.data('classification', classification);
-        if (isInherited($this, classification))
-          $('label[for="' + settings.idPrefix + 'allpositions"]').html(settings.inheritedPositionsLabel);
-        else
-          $('label[for="' + settings.idPrefix + 'allpositions"]').html(settings.positionsLabel);
-        refreshClassification( $this );
+      success: function(newClassification) {
+        $this.data('classification', newClassification);
+        var newParameters = null;
+        if (isInherited(settings, newClassification)) {
+          newParameters = { title: settings.inheritedPositionsLabel, deletion: false }
+          $('.field input[value="' + newClassification.modifiable + '"]:radio').attr('checked', true);
+        } else {
+          newParameters = { title: settings.positionsLabel, deletion: true }
+        }
+        $this.pdcPositions('refresh', newClassification.positions, newParameters);
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert(errorThrown);
@@ -749,375 +698,20 @@
   function submitPosition( $this, uri, position ) {
     if (position.id != null) {
       updatePosition(uri, position, function(classification) {
+        $this.data('classification', classification);
         $this.pdcPositions('refresh', classification.positions);
       });
     } else {
       postPosition(uri, position, function(classification) {
+        $this.data('classification', classification);
         $this.pdcPositions('refresh', classification.positions);
       });
     }
   }
   
-  /**
-     * Creates a position with the specified axis values.
-     */
-  function aPositionWith( values ) {
-    var position = new Object();
-    position.values = [];
-    $.each(values, function(i, value) {
-      if(value != null) {
-        position.values.push({
-          id: value.id, 
-          axisId: value.axisId, 
-          treeId: value.treeId,
-          meaning: value.meaning,
-          synonyms: value.synonyms
-        });
-      }
-    });
-    return position;
-  }
-  
-  function isInherited( $this, classification ) {
-    var settings = $this.data('settings');
+  function isInherited( settings, classification ) {
     return settings.mode == 'predefinition' &&
     escape(classification.uri).search(escape(settings.defaultClassificationURI)) == -1;
-  }
-  
-  /**
-     * Checks if the specified position is already defined in the classification.
-     */
-  function isAlreadyInClassification( thePosition, inClassification) {
-    var isFound = false;
-    var positions = inClassification.positions;
-    for (var p = 0; p < positions.length; p++) {
-      if (positions[p].values.length == thePosition.values.length) {
-        for (var v = 0; v < thePosition.values.length; v++) {
-          if (thePosition.values[v].id == positions[p].values[v].id) {
-            isFound = true;
-          } else {
-            isFound = false;
-            break;
-          }
-        }
-        if (isFound) {
-          break;
-        }
-      }
-    }
-    return isFound;
-  }
-  
-  /**
-     * Checks the mandatory axis among the specified axis are valued by the specified position.
-     */
-  function areMandatoryAxisValued( theAxis, thePosition ) {
-    for (var iaxis = 0; iaxis < theAxis.length; iaxis++) {
-      if (theAxis[iaxis].mandatory) {
-        var isValued = false;
-        for (var ival = 0; ival < thePosition.values.length; ival++) {
-          if (thePosition.values[ival].axisId == theAxis[iaxis].id) {
-            isValued = true;
-            break;
-          }
-        }
-        if (!isValued) return false;
-      }
-    }
-    return true;
-  }
-  
-  function checkPositionIsValid( $this, thePosition) {
-    var theAxis = $this.data('pdc').axis, classification = $this.data('classification'),
-    isValid = true, settings = $this.data('settings');
-    if (!areMandatoryAxisValued(theAxis, thePosition)) {
-      isValid = false;
-      alert(settings.messages.contentMustHaveAPosition);
-    }
-    else if (thePosition.values.length == 0) {
-      isValid = false;
-      alert(settings.messages.positionMustBeValued);
-    } else if (isAlreadyInClassification(thePosition, classification)) {
-      isValid = false;
-      alert(settings.messages.positionAlreadyInClassification);
-    }
-    return isValid;
-  }
-   
-  /**
-     * Removes the specified position from the classification of the resource.
-     */
-  function removePositionFromClassification($this, classification, positionId ) {
-    removePosition(positionId, classification.positions);
-    refreshClassification($this);
-  }
-  
-  /**
-     * Refreshs the display of the classification of the resource identified by the url in
-     * the settings.
-     */
-  function refreshClassification( $this ) {
-    var settings = $this.data('settings');
-    if (settings.mode == 'edition') {
-      $this.pdcPositions('refresh', $this.data('classification'));
-    } else {
-      $("#" + settings.idPrefix + "allpositions").children().remove();
-      if (settings.mode == 'predefinition') {
-        $('#classification-mo').children().remove();
-        renderModificationAttributeFrame($('#classification-mo'));
-      }
-      renderPositions( $this );
-    }
-  }
-  
-  /**
-     * Renders the positions of the classification on the PdC of the resource.
-     */
-  function renderPositions( $this ) {
-    var classification = $this.data('classification'), settings = $this.data('settings');
-    if (classification.positions.length > 0) {
-      $('label[for="' + settings.idPrefix + 'allpositions"]').show();
-      var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($("#" + settings.idPrefix + "allpositions"));
-      $.each($this.data('classification').positions, function(posindex, position) {
-        var posId = posindex + 1, values =  [];
-        var currentPositionSection = $('<li>').appendTo(positionsSection);
-        var positionLabel = $('<span>').addClass('pdc_position').
-        html(settings.positionLabel + ' ' + posId).appendTo(currentPositionSection);
-
-        $.each(position.values, function(valindex, value) {
-          values.push(textFrom($this, value));
-        });
-
-        if (settings.mode != 'preview' && settings.mode != 'view') {
-          positionLabel.append(
-            $('<a>',{
-              href: '#', 
-              title: settings.update.title + ' ' + posId
-            }).addClass('edit').
-            append($('<img>', {
-              src: settings.update.icon,  
-              alt: settings.update.title
-            }).click(function () {
-              var uri = classification.uri;
-              if (settings.mode == 'predefinition') {
-                uri = settings.defaultClassificationURI;
-              }
-              updateThePosition($this, uri, position);
-            })));
-         
-          if (!(isInherited($this, classification) && classification.positions.length == 1)) {
-            positionLabel.append($('<a>', {
-              href: '#', 
-              title: settings.deletion.title + ' ' + posId
-            }).addClass('delete').
-              append($('<img>', {
-                src: settings.deletion.icon,  
-                alt: settings.deletion.title
-              }).click(function () {
-                if (settings.mode == 'edition') {
-                  deletePosition($this, classification.uri, position.id);
-                } else if (settings.mode == 'predefinition') {
-                  if(window.confirm( settings.deletion.confirmation )) {
-                    removePosition(position.id, classification.positions);
-                    submitClassification($this, settings.defaultClassificationURI);
-                  }
-                } else
-                  removePositionFromClassification($this, classification, position.id);
-              })));
-          }
-        }
-          
-        currentPositionSection.append($('<ul>').html(values.join('')));
-      });
-    } else {
-      $('label[for="' + settings.idPrefix + 'allpositions"]').hide();
-    }
-    if (settings.mode == 'edition') {
-      $('<a>', {
-        href: '#'
-      }).addClass('add_position').html(settings.addition.title).click(function() {
-        addNewPosition($this, classification.uri);
-      }).appendTo($("#" + settings.idPrefix + "allpositions"))
-    }
-  }
-  
-  function textFrom( $this, value ) {
-    var text, settings = $this.data('settings');
-    if (settings.mode == 'preview') {
-      text = '<li title="' + value.meaning + '">'
-      var path = value.meaning.split('/');
-      if (path.length > 2) text += path[0] + '/ ... /' + path[path.length -1]; else text += value.meaning;
-      text += '</li>';
-    } else {
-      text = '<li>' + value.meaning + '<i>' + value.synonyms.join(', ') + '</i></li>';
-    }
-    return text;
-  }
-  
-  /**
-     * Renders a frame for editing a classification on the PdC. The frame is for adding new position
-     * in the classification.
-     */
-  function renderClassificationEditionFrame( $this, selectedValues ) {
-    var settings = $this.data('settings');
-    $("#" + settings.idPrefix + "pdc-addition-box").children().remove();
-    if (hasPdCMandoryAxis($this.data('pdc').axis) && (settings.mode == 'creation')) {
-      $('<div>').addClass('inlineMessage').html(settings.messages.mandatoryMessage).
-      appendTo($("#" + settings.idPrefix + "pdc-addition-box"));
-    }
-    renderPdCAxisFields($this, $this.data('pdc').axis, $("#" + settings.idPrefix + "pdc-addition-box"), selectedValues);
-  }
-  
-  /**
-     * Renders a frame for updating an existing position. It is only used in creation mode.
-     */
-  function renderClassificationUpdateFrame( $this, selectedValues ) {
-    var settings = $this.data('settings');
-    $("#" + settings.idPrefix + "pdc-update-box").children().remove();
-    renderPdCAxisFields($this, $this.data('pdc').axis, $("#" + settings.idPrefix + "pdc-update-box"), selectedValues);
-  }
-  
-  /**
-     * Renders the fields corresponding to each PdC's axis from which a value for a position can be
-     * choosen.
-     * The fields will be children elements to the specified parent element.
-     * The third parameter is an array that can contain the previously values of a position (in the
-     * case of a position modification) and that will receive the new values for the position.
-     */
-  function renderPdCAxisFields( $this, theAxis, axisSection, selectedValues ) {
-    var hasMandatoryAxis = false, hasInvariantAxis = false, settings = $this.data('settings');
-    // browse the axis of the PdC and for each of them print out a select HTML element
-    $.each(theAxis, function(axisIndex, anAxis) {
-      var currentAxisDiv = $('<div>').addClass('champs').appendTo($('<div>').addClass('field').
-        append($('<label >', {
-          'for': settings.idPrefix + anAxis.id
-        }).addClass('txtlibform').html(anAxis.name)).
-        appendTo(axisSection));
-      var mandatoryField = '';
-      if (anAxis.mandatory) {
-        mandatoryField = 'mandatoryField'
-      }
-      var axisValuesSelection = $('<select>', {
-        'id': settings.idPrefix + anAxis.id,  
-        'name': anAxis.name
-      }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
-        var theValue = $(this).children(':selected').attr('value');
-        if (theValue == 0) {
-          selectedValues[anAxis.id] = null;
-        } else {
-          selectedValues[anAxis.id] = anAxis.values[theValue];
-        }
-      });
-      var path = [];
-      
-      // browse the values of the current axis and for each of them print out an option HTML element
-      // within the select (representing the current axis)
-      if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
-        selectedValues[anAxis.id] = anAxis.values[anAxis.values.length - 1];
-      $.each(anAxis.values, function(valueIndex, aValue) {
-        var level = '';
-        path.splice(aValue.level, path.length - aValue.level);
-        path[aValue.level] = aValue.term;
-        aValue.meaning = path.join(' / ');
-        if (aValue.id != '/0/') {
-          for (var i = 0; i < aValue.level; i++) {
-            level += '&nbsp;&nbsp;';
-          }
-          var option =
-          $('<option>').attr('value', valueIndex).html(level + aValue.term).appendTo(axisValuesSelection);
-          if (aValue.ascendant) {
-            option.attr('value', 'A').attr('disabled', 'disabled').addClass("intfdcolor51");
-          }
-          if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
-            selectedValues[anAxis.id] = aValue;
-            option.attr('disabled', 'disabled');
-          }
-          if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id)) {
-            option.attr('selected', true);
-          }
-        }
-      });
-      
-      var option = $('<option>').attr('value', '0').html('&nbsp;').prependTo(axisValuesSelection);
-      if (anAxis.mandatory) {
-        option.attr('disabled', 'disabled').addClass('emphasis').html(settings.edition.mandatoryAxisDefaultValue);
-      }
-      if (selectedValues[anAxis.id] == null) {
-        option.attr('selected', true);
-      }
-      if (selectedValues[anAxis.id] != null) {
-        $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);
-      }
-      if (anAxis.mandatory) {
-        hasMandatoryAxis = true;
-        $('<img>', {
-          src: settings.edition.mandatoryIcon,
-          alt: settings.edition.mandatoryLegend, 
-          width: '5px',
-          height: '5px'
-        }).appendTo(currentAxisDiv.append(' '));
-      }
-      if (anAxis.invariant) {
-        hasInvariantAxis = true;
-        $('<img>', {
-          src: settings.edition.invariantIcon, 
-          alt: settings.edition.invariantLegend,
-          width: '10px',
-          height: '10px'
-        }).appendTo(currentAxisDiv);
-      }
-    });
-    
-    axisSection.append($('<br>').attr('clear', 'all'));
-    if ((settings.mode == 'creation' || settings.mode == 'predefinition') &&
-      axisSection.attr('id') == settings.idPrefix + "pdc-addition-box") {
-      axisSection.append($('<a>').attr('href', '#').
-        addClass('valid_position').
-        addClass('milieuBoutonV5').
-        html(settings.addition.title).click(function() {
-          var classification = $this.data('classification');
-          var position = aPositionWith(selectedValues);
-          if (checkPositionIsValid($this, position)) {
-            if (settings.mode == 'creation') {
-              position.id = classification.positions.length;
-              classification.positions.push(position);
-              refreshClassification($this);
-            } else if (settings.mode == 'predefinition') {
-              if (checkPositionIsValid($this, position)) {
-                classification.positions.push(position);
-                submitClassification($this, settings.defaultClassificationURI);
-              }
-            }
-            else {
-              submitPosition($this, classification.uri, position);
-            }
-          }
-        }));
-    }
-    if (theAxis.length > 0) {
-      var legende = $('<p>').addClass('legende');
-      if (hasMandatoryAxis) {
-        legende.append($('<img>', {
-          src: settings.edition.mandatoryIcon, 
-          alt: settings.edition.mandatoryLegend,
-          width: '5px',
-          height: '5px'
-        })).append($('<span>').html('&nbsp;:' + settings.edition.mandatoryLegend + ' '));
-      }
-      if (hasInvariantAxis) {
-        legende.append(
-          $('<img>', {
-            src: settings.edition.invariantIcon, 
-            alt: settings.edition.invariantLegend,
-            width: '10px',
-            height: '10px'
-          })).
-        append($('<span>').html('&nbsp;:' + settings.edition.invariantLegend));
-      }
-      if (hasMandatoryAxis || hasInvariantAxis) {
-        legende.appendTo(axisSection);
-      }
-    }
   }
   
 })( jQuery );

@@ -53,7 +53,6 @@
   <body>
     <view:browseBar clickable="false" path="${childNode}"/>
     <view:window browseBarVisible="true">
-      <view:frame>
         <div id="header">
           <view:pdcPredefinedClassification componentId="${componentId}" nodeId="${nodeId}"/>
           &nbsp;
@@ -63,7 +62,6 @@
             </view:buttonPane>
           </center>
         </div>
-      </view:frame>
     </view:window>
   </body>
 </html>
