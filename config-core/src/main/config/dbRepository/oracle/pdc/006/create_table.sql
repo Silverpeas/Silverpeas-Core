@@ -57,10 +57,10 @@ create table PdcAxisValue (
 
 create table PdcClassification (
   id number(19,0) not null,
-  contentId varchar2(255 char),
-  instanceId varchar2(255 char) not null,
+  contentId varchar(255),
+  instanceId varchar(255) not null,
   modifiable number(1,0) not null,
-  nodeId varchar2(255 char),
+  nodeId varchar(255),
   primary key (id)
 );
 
