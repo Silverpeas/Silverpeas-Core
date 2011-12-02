@@ -23,7 +23,7 @@
  */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.subscribe.service.Subscription;
+import com.silverpeas.subscribe.Subscription;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 

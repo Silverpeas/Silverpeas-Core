@@ -22,7 +22,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.subscribe.service;
+package com.silverpeas.subscribe;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 

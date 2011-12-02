@@ -39,8 +39,19 @@ public class ExportReport {
   private String zipFileName;
   private String zipFilePath;
   private long zipFileSize;
-  private HashMap<String, HtmlExportPublicationGenerator> mapPublicationPath = 
-      new HashMap<String, HtmlExportPublicationGenerator>();
+  private Exception error;
+  private HashMap<String, HtmlExportPublicationGenerator> mapPublicationPath;
+
+  public ExportReport() {
+    dateDebut = new Date();
+    dateFin = dateDebut;
+    mapPublicationPath = new HashMap<String, HtmlExportPublicationGenerator>();
+  }
+
+  public ExportReport(Exception error) {
+    this();
+    this.error = error;
+  }
 
   public Date getDateDebut() {
     return dateDebut;
@@ -92,5 +103,9 @@ public class ExportReport {
 
   public void setZipFileName(String string) {
     zipFileName = string;
+  }
+
+  public Exception getError(){
+    return error;
   }
 }
