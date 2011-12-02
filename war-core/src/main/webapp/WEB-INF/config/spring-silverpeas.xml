@@ -49,6 +49,7 @@
   <ctx:component-scan base-package="com.stratelia.silverpeas.contentManager"/>
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
+  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" />
   
   
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
@@ -103,7 +104,12 @@
   <!-- the factory of the content management services.
         It wraps and provides an access to the actual content manager managed by the IoC container -->
   <bean id="contentManagerFactory" class="com.stratelia.silverpeas.contentManager.ContentManagerFactory"
-        factory-method="getFactory"/>     
+        factory-method="getFactory"/>  
+        
+        <!-- the factory of the statistics management services.
+        It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
+  <bean id="silverStatisticsFactory" class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
+        factory-method="getFactory"/>  
 
 </beans>
 

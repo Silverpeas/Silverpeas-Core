@@ -21,19 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.silverstatistics.control;
 
-import com.stratelia.silverpeas.silverstatistics.util.StatType;
+package com.silverpeas.silverstatistics;
 
-/**
- *
- * @author ehugonnet
- */
-public interface SilverStatisticsBm {
-  
-  public void putStats(StatType typeOfStats, String data) throws java.rmi.RemoteException;
+import java.util.Collection;
 
-  public void makeStatAllCumul() throws java.rmi.RemoteException;
-
-  public void makeVolumeAlimentationForAllComponents() throws java.rmi.RemoteException;
+public interface ComponentStatisticsInterface {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
+      Exception;
 }
