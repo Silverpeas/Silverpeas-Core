@@ -23,26 +23,28 @@
  */
 package com.silverpeas.personalization.dao;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
 import javax.inject.Inject;
+import javax.sql.DataSource;
+
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-import javax.sql.DataSource;
-import org.dbunit.operation.DatabaseOperation;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.junit.Test;
-
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.UserPreferences;
 
 /**
  * @author ehugonnet
@@ -59,10 +61,10 @@ public class PersonalizationDetailDaoTest {
   
   public PersonalizationDetailDaoTest() {
   }
-
+  
   @Before
-  public void generalSetUp() throws Exception {	
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+  public void generalSetUp() throws Exception {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         PersonalizationDetailDaoTest.class.getClassLoader().getResourceAsStream(
         "com/silverpeas/personalization/dao/personalization-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);

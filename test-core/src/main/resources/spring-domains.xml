@@ -39,4 +39,9 @@
   </bean>
   
   <import resource="spring-silverpeas.xml"/>
+  
+   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
+  <bean id="organizationController"
+        class="com.stratelia.webactiv.beans.admin.OrganizationController"
+        depends-on="schedulerFactory" />
 </beans>
