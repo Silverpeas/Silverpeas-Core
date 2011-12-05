@@ -334,9 +334,11 @@ public class OrganizationController extends AdminReference implements java.io.Se
   private List<SpaceInst> getSpacePath(List<SpaceInst> path, String spaceId) {
     try {
       SpaceInst spaceInst = getAdminService().getSpaceInstById(spaceId);
-      path.add(0, spaceInst);
-      if (!spaceInst.getDomainFatherId().equals("0")) {
-        path = getSpacePath(path, spaceInst.getDomainFatherId());
+      if (spaceInst != null) {
+        path.add(0, spaceInst);
+        if (!spaceInst.isRoot()) {
+          path = getSpacePath(path, spaceInst.getDomainFatherId());
+        }
       }
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getSpacePath",

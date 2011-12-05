@@ -29,13 +29,17 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
+import javax.inject.Inject;
 
+
+import org.junit.Before;
 import org.junit.Test;
 
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
@@ -46,11 +50,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jdbc-datasource.xml"})
 public class SpacesAndComponentsTest extends AbstractTestDao {
+  
+  @Inject
+  Admin admin;
+  
+  @Inject
+  OrganizationController organizationController;
+  
+  String userId = "1";
 
   private AdminController getAdminController() {
-    AdminController ac = new AdminController("1");
-    ac.reloadAdminCache();
+    AdminController ac = new AdminController(userId);
     return ac;
+  }
+  
+  @Before
+  public void clearCache() {
+    assertNotNull(admin);
+    admin.reloadCache();
   }
 
   @Test
@@ -59,7 +76,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
 
     // test space creation
     SpaceInst space = new SpaceInst();
-    space.setCreatorUserId("1");
+    space.setCreatorUserId(userId);
     space.setName("Space 3");
     String spaceId = ac.addSpaceInst(space);
     assertNotNull(spaceId);
@@ -67,7 +84,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
 
     // test subspace creation
     SpaceInst subspace = new SpaceInst();
-    subspace.setCreatorUserId("1");
+    subspace.setCreatorUserId(userId);
     subspace.setName("Space 3 - 1");
     subspace.setDomainFatherId("4");
     String subSpaceId = ac.addSpaceInst(subspace);
@@ -106,16 +123,14 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   }
 
   @Test
-  public void testDeleteSpace() {
-    AdminController ac = getAdminController();
+  public void testDeleteSpace() throws AdminException {
+    admin.deleteSpaceInstById(userId, "WA1", false);
 
-    ac.deleteSpaceInstById("WA1", false);
-
-    SpaceInst space = ac.getSpaceInstById("WA1");
+    SpaceInst space = organizationController.getSpaceInstById("WA1");
     assertEquals("R", space.getStatus());
 
-    ac.deleteSpaceInstById("WA1", true);
-    space = ac.getSpaceInstById("WA1");
+    admin.deleteSpaceInstById(userId, "WA1", true);
+    space = organizationController.getSpaceInstById("WA1");
     assertNull(space);
   }
 
@@ -124,7 +139,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
 
     // test space creation
     SpaceInst space = new SpaceInst();
-    space.setCreatorUserId("1");
+    space.setCreatorUserId(userId);
     space.setName("Space 1-3");
     space.setDomainFatherId("WA1");
     String spaceId = ac.addSpaceInst(space);
@@ -171,19 +186,19 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     SpaceProfileInst profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA1");
     profile.setName("admin");
-    profile.addUser("1");
-    String profileId = ac.addSpaceProfileInst(profile, "1");
+    profile.addUser(userId);
+    String profileId = ac.addSpaceProfileInst(profile, userId);
     assertEquals("1", profileId);
 
     // test inheritance
-    assertEquals(true, ac.isComponentAvailable("almanach2", "1"));
+    assertEquals(true, ac.isComponentAvailable("almanach2", userId));
     // remove user from space profile
     profile = ac.getSpaceProfileInst(profileId);
     profile.removeAllUsers();
-    ac.updateSpaceProfileInst(profile, "1");
+    ac.updateSpaceProfileInst(profile, userId);
 
     // test inheritance
-    assertEquals(false, ac.isComponentAvailable("almanach2", "1"));
+    assertEquals(false, ac.isComponentAvailable("almanach2", userId));
   }
 
   @Test
@@ -194,8 +209,8 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     SpaceProfileInst profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA2");
     profile.setName("Manager");
-    profile.addUser("1");
-    String profileId = ac.addSpaceProfileInst(profile, "1");
+    profile.addUser(userId);
+    String profileId = ac.addSpaceProfileInst(profile, userId);
     assertEquals("1", profileId);
 
     // set user2 as simple reader on space
@@ -224,7 +239,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
 
     String targetSpaceId = "WA3";
-    String componentId = ac.copyAndPasteComponent("almanach2", targetSpaceId, "1");
+    String componentId = ac.copyAndPasteComponent("almanach2", targetSpaceId, userId);
 
     String expectedComponentId = "almanach3";
     assertEquals(expectedComponentId, componentId);
@@ -252,7 +267,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     assertEquals(2, rootSpaceIds.length);
 
     String targetSpaceId = null;
-    String newSpaceId = ac.copyAndPasteSpace("WA1", targetSpaceId, "1");
+    String newSpaceId = ac.copyAndPasteSpace("WA1", targetSpaceId, userId);
 
     String expectedSpaceId = "WA4";
     assertEquals(expectedSpaceId, newSpaceId);
@@ -294,7 +309,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
 
     String copiedSpaceId = "WA2";
     String targetSpaceId = "WA3";
-    String newSpaceId = ac.copyAndPasteSpace(copiedSpaceId, targetSpaceId, "1");
+    String newSpaceId = ac.copyAndPasteSpace(copiedSpaceId, targetSpaceId, userId);
 
     String expectedSpaceId = "WA4";
     assertEquals(expectedSpaceId, newSpaceId);

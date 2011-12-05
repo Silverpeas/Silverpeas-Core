@@ -119,7 +119,7 @@ public class NodeImportExport {
   private synchronized NodeBm getNodeBm() throws NodeRuntimeException {
     if (nodeBm == null) {
       try {
-        NodeBmHome kscEjbHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+        NodeBmHome kscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
             NodeBmHome.class);
         nodeBm = kscEjbHome.create();
       } catch (Exception e) {

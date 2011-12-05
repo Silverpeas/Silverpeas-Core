@@ -23,41 +23,73 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ include file="check.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<%@ page import="com.silverpeas.importExport.report.ExportReport" %>
+<%@ page import="com.stratelia.webactiv.util.DateUtil" %>
+<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager" %>
+
 <%
-	ExportReport report = (ExportReport) request.getAttribute("ExportReport");
+  ExportReport report = (ExportReport) request.getAttribute("ExportReport");
 %>
 <html>
 <head>
-      <title>ZIP export</title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+  <title>ZIP export</title>
+  <view:looknfeel/>
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<%
-browseBar.setComponentName(resource.getString("importExportPeas.Export"));
-
-out.println(window.printBefore());
-out.println(frame.printBefore());
-out.println(board.printBefore());
-%>
-<table>
-<tr><td class="txtlibform"><%=resource.getString("importExportPeas.ExportDuration")%> :</td><td><%=DateUtil.formatDuration(report.getDuration())%></td></tr>
-<tr><td class="txtlibform"><%=resource.getString("importExportPeas.FileSize")%> :</td><td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td></tr>
-<tr><td class="txtlibform"><%=resource.getString("importExportPeas.File")%> :</td><td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a> <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="<%=report.getZipFileName()%>"/></a></td></tr>
-</table>
-<%
-out.println(board.printAfter());
-out.println(frame.printMiddle());
-ButtonPane buttonPane = gef.getButtonPane();
-Button button = gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
-buttonPane.addButton(button);
-out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<fmt:message var="browseBarExport" key="importExportPeas.Export"/>
+<fmt:message var="closeButton" key="GML.close"/>
+<view:browseBar>
+  <view:browseBarElt link="" label="${browseBarExport}"/>
+</view:browseBar>
+<view:window>
+  <view:frame>
+    <view:board>
+      <c:choose>
+        <c:when test="${ExportReport.error != null}">
+          <c:forEach var="element" items="${ExportReport.error.stackTrace}" >
+            <c:out value="${element}"  /> <br/>
+          </c:forEach>
+        </c:when>
+        <c:otherwise>
+          <table>
+            <tr>
+              <td class="txtlibform"><fmt:message key="importExportPeas.ExportDuration"/> :</td>
+              <td><%=DateUtil.formatDuration(report.getDuration())%>
+              </td>
+            </tr>
+            <tr>
+              <td class="txtlibform"><fmt:message key="importExportPeas.FileSize"/> :</td>
+              <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%>
+              </td>
+            </tr>
+            <tr>
+              <td class="txtlibform"><fmt:message key="importExportPeas.File"/> :</td>
+              <td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%>
+              </a> <a href="<%=report.getZipFilePath()%>"><img
+                  src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle"
+                  alt="<%=report.getZipFileName()%>"/></a></td>
+            </tr>
+          </table>
+        </c:otherwise>
+      </c:choose>
+    </view:board>
+    <br/>
+    <center>
+      <view:buttonPane>
+        <view:button label="${closeButton}" action="javaScript:window.close();"/>
+      </view:buttonPane>
+    </center>
+    <br/>
+  </view:frame>
+</view:window>
 </body>
 </html>

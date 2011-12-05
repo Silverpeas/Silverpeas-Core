@@ -20,6 +20,27 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import com.google.common.collect.Sets;
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.Instanciateur;
@@ -27,6 +48,7 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.notification.AdminNotificationService;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
@@ -50,24 +72,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
-import org.apache.commons.lang3.time.FastDateFormat;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
  * @author neysseri
@@ -122,6 +126,9 @@ public final class Admin {
   static private ResourceLocator roleMapping = null;
   static private boolean useProfileInheritance = false;
   private static transient boolean cacheLoaded = false;
+  
+  @Inject
+  AdminNotificationService adminNotificationService;
 
   /**
    * Admin Constructor
@@ -398,6 +405,9 @@ public final class Admin {
 
         // delete all profiles (space, components and subspaces)
         deleteSpaceProfiles(spaceInst);
+        
+        // notify logical deletion
+        notifyOnSpaceLogicalDeletion(spaceId, userId);
       } else {
         // Get all the sub-spaces
         String[] subSpaceIds = getAllSubSpaceIds(spaceId);
@@ -453,6 +463,17 @@ public final class Admin {
       throw new AdminException("Admin.deleteSpaceInstById", SilverpeasException.ERROR,
               "admin.EX_ERR_DELETE_SPACE",
               "user Id : '" + userId + "', space Id : '" + spaceId + "'", e);
+    }
+  }
+  
+  private void notifyOnSpaceLogicalDeletion(String spaceId, String userId) {
+    // notify of space logical deletion
+    adminNotificationService.notifyOnDeletionOf(getClientSpaceId(spaceId), userId);
+    
+    // notify of direct sub spaces logical deletion too
+    List<SpaceInstLight> spaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+    for (SpaceInstLight space : spaces) {
+      notifyOnSpaceLogicalDeletion(space.getFullId(), userId);
     }
   }
 
@@ -523,14 +544,19 @@ public final class Admin {
   public SpaceInst getSpaceInstById(String spaceId) throws AdminException {
     try {
       SpaceInst spaceInst = getSpaceInstById(spaceId, false);
+      
+      if (spaceInst == null) {
+        return null;
+      }
+      
       // Put the client space Id back
       spaceInst.setId(spaceId);
 
       // Put the client component Id back
       List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
-      for (ComponentInst anAlCompoInst : alCompoInst) {
-        String sClientComponentId = getClientComponentId(anAlCompoInst);
-        anAlCompoInst.setId(sClientComponentId);
+      for (ComponentInst component : alCompoInst) {
+        String sClientComponentId = getClientComponentId(component);
+        component.setId(sClientComponentId);
       }
 
       // Put the client sub spaces Id back
@@ -568,8 +594,10 @@ public final class Admin {
       if (spaceInst == null) {
         // Get space instance
         spaceInst = spaceManager.getSpaceInstById(domainDriverManager, driverSpaceId);
-        // Store the spaceInst in cache
-        cache.putSpaceInst(spaceInst);
+        if (spaceInst != null) {
+          // Store the spaceInst in cache
+          cache.putSpaceInst(spaceInst);
+        }
       }
       return spaceManager.copy(spaceInst);
     } catch (Exception e) {
@@ -1617,7 +1645,7 @@ public final class Admin {
       domainDriverManager.startTransaction(false);
       // Update the components in tables
       componentManager.moveComponentInst(domainDriverManager, sDriverSpaceId, sDriverComponentId);
-      componentInst.setDomainFatherId(getDriverSpaceId(spaceId));
+      componentInst.setDomainFatherId(sDriverSpaceId);
       // Set component in order
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
               "Avant setComponentPlace: componentId=" + componentId + " idComponentBefore="

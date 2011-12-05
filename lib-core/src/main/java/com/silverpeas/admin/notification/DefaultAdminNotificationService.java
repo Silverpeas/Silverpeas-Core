@@ -21,32 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification;
+package com.silverpeas.admin.notification;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.ADMIN_TOPIC;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import com.silverpeas.notification.NotificationPublisher;
 
 /**
- * This enumeration lists all the notification topics that are registered within the Silverpeas
- * Notification System and for which any beans in Silverpeas can subscribe.
+ * A service to notify about events on admin.
+ * It provides an easy access to the underlying messaging system used in the notification.
  */
-public enum RegisteredTopics {
-  
-  /**
-   * This topic is for notifications about an action performed on a node. A node in Silverpeas is
-   * a way to categorize in a hierarchical way information.
+@Named("adminNotificationService")
+public class DefaultAdminNotificationService implements AdminNotificationService {
+
+  @Inject
+  private NotificationPublisher publisher;
+
+  /* (non-Javadoc)
+   * @see com.silverpeas.admin.notification.AdminNotificationService#notifyOnDeletionOf(java.lang.String, java.lang.String)
    */
-  NODE_TOPIC("node"), ADMIN_TOPIC("admin");
-  
-  public String getTopicName() {
-    return topicName;
+  @Override
+  public void notifyOnDeletionOf(final String spaceId, String userId) {
+      SpaceLogicalDeletionNotification deletion = new SpaceLogicalDeletionNotification(spaceId, userId);
+      publisher.publish(deletion, onTopic(ADMIN_TOPIC.getTopicName()));
   }
 
-  @Override
-  public String toString() {
-    return topicName;
-  }
-  
-  private String topicName;
-  
-  private RegisteredTopics(String topicName) {
-    this.topicName = topicName;
-  }
 }
