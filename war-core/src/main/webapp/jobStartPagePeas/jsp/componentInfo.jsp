@@ -96,7 +96,9 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		}
 	}
 	else {
-		out.println(parameter.getValue());
+	  	if (StringUtil.isDefined(parameter.getValue())) {
+			out.println(parameter.getValue());
+	  	}
 	}
 	out.println("</td>");
 }

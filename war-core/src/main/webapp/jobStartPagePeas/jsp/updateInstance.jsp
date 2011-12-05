@@ -113,13 +113,20 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		boolean mandatory = parameter.isMandatory();;
 
 		String sSize = "60";
-		if (parameter.getSize() != null && parameter.getSize().intValue() > 0)
+		if (parameter.getSize() != null && parameter.getSize().intValue() > 0) {
 			sSize = parameter.getSize().toString();
+		}
+		
+		String value = parameter.getValue();
+		if (!StringUtil.isDefined(value)) {
+		  value = "";
+		}
 
-		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(parameter.getValue())+"\" "+disabled+">");
+		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(value)+"\" "+disabled+"/>");
 
-		if (mandatory) 
-			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\">");
+		if (mandatory) {
+			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\"/>");
+		}
 	}
 	out.println("</td>");
 }
