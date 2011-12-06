@@ -179,18 +179,7 @@
               comments: theComments
             } );
           }
-        }) 
-        $.getJSON(settings.uri, function( arrayOfComments ) {
-          comments.comments = arrayOfComments;
-          for (var x = 0; x < arrayOfComments.length; x++) {
-            comments.commentsById[arrayOfComments[x].id] = arrayOfComments[x];
-            __printComment( $this, arrayOfComments[x], 'bottom' );
-          }
-          settings.callback( {
-            type: 'listing', 
-            comments: arrayOfComments
-          } );
-        });
+        })
       })
     },
 
