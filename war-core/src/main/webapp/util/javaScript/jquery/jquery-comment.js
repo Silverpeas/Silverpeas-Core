@@ -164,13 +164,32 @@
         $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
 
         $("<div id='list-box'>").appendTo($this);
+        $.ajax({
+          url: settings.uri,
+          dataType: 'json',
+          cache: false,
+          success: function(theComments) {
+            comments.comments = theComments;
+            for (var x = 0; x < theComments.length; x++) {
+              comments.commentsById[theComments[x].id] = theComments[x];
+              __printComment( $this, theComments[x], 'bottom' );
+            }
+            settings.callback( {
+              type: 'listing', 
+              comments: theComments
+            } );
+          }
+        }) 
         $.getJSON(settings.uri, function( arrayOfComments ) {
           comments.comments = arrayOfComments;
-            for (var x = 0; x < arrayOfComments.length; x++) {
-              comments.commentsById[arrayOfComments[x].id] = arrayOfComments[x];
-              __printComment( $this, arrayOfComments[x], 'bottom' );
-            }
-            settings.callback( { type: 'listing', comments: arrayOfComments } );
+          for (var x = 0; x < arrayOfComments.length; x++) {
+            comments.commentsById[arrayOfComments[x].id] = arrayOfComments[x];
+            __printComment( $this, arrayOfComments[x], 'bottom' );
+          }
+          settings.callback( {
+            type: 'listing', 
+            comments: arrayOfComments
+          } );
         });
       })
     },
@@ -193,15 +212,15 @@
         if (settings.avatar != null && settings.avatar.length > 0)
           $("<img>").attr("src", settings.avatar).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
         $("<textarea>").addClass("text").appendTo(editionBox).autoResize();
-         $("<span>").html("&nbsp;").appendTo(editionBox);
+        $("<span>").html("&nbsp;").appendTo(editionBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
         legende.appendTo(editionBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
         $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
         $("<button>").addClass("button").text(edition['ok']).
-        click(function() {
-          __addComment( $this, commentCreation );
-        }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
+          click(function() {
+            __addComment( $this, commentCreation );
+          }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
       })
     }
   };
@@ -226,7 +245,7 @@
    */
   function __printComment( $this, comment, position ) {
     var update = settings.update, deletion = settings.deletion, comments = $this.data('comments'),
-      commentBox;
+    commentBox;
     if (position === 'top' && comments.comments.length > 0) {
       commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").insertBefore($('#comment' + comments.comments[0].id)));
     } else {
@@ -274,11 +293,15 @@
               data: $.toJSON(comment),
               contentType: "application/json",
               dataType: "json",
+              cache: false,
               success: function(data) {
                 comment.text = data.text;
                 $("#comment" + commentId).find('pre.text').text('').append(data.text.replace(/\n/g, '<br/>'));
                 comments.commentsById[commentId] = data;
-                settings.callback( { type: 'update', comments:  new Array( data ) } );
+                settings.callback( {
+                  type: 'update', 
+                  comments:  new Array( data )
+                } );
               }
             });
             $( this ).dialog( "destroy" );
@@ -289,8 +312,8 @@
         }
       },
       close: function() {
-		$( this ).dialog( "destroy" );
-	  }
+        $( this ).dialog( "destroy" );
+      }
     })
   }
 
@@ -304,6 +327,7 @@
       $.ajax({
         url: settings.uri + "/" + commentId,
         type: "DELETE",
+        cache: false,
         success: function(data) {
           var comment = $.extend(true, {}, comments.commentsById[commentId]);
           if (comments.comments[0].id === commentId) {
@@ -311,7 +335,10 @@
           }
           delete comments.commentsById[commentId];
           $("#comment" + commentId).hide('slow');
-          settings.callback( { type: 'deletion', comments:  new Array( comment ) } );
+          settings.callback( {
+            type: 'deletion', 
+            comments:  new Array( comment )
+          } );
         }
       });
     }
@@ -328,12 +355,16 @@
         data: $.toJSON(comment),
         contentType: "application/json",
         dataType: "json",
+        cache: false,
         success: function(data) {
           __printComment( $this, data, 'top' );
           comments.comments.unshift(data);
           comments.commentsById[data.id] = data;
           $("#edition-box").find("textarea").val("");
-          settings.callback( { type: 'addition', comments:  new Array( data ) } );
+          settings.callback( {
+            type: 'addition', 
+            comments:  new Array( data )
+          } );
         }
       });
     }
