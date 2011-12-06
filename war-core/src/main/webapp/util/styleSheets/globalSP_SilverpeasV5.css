@@ -3811,6 +3811,11 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 	position:relative;
 	margin:70px 2em 0;    
 }
+
+.commentaires #edition-box {
+    padding-top: 24px;
+}
+
  /* slt pour ie8 bug sous ie7*/
 html>/**/body .commentaires #edition-box ,
 html>/**/body .commentaires .oneComment{
