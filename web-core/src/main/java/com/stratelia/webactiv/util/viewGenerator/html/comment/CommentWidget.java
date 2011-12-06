@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
@@ -94,16 +95,20 @@ public abstract class CommentWidget extends TagSupport {
     comments.setID(COMMENT_WIDGET_DIV_ID);
     comments.setClass(COMMENT_WIDGET_DIV_CLASS);
     script checkForm = new script().setType("text/javascript").
-        setSrc(context + "/util/javaScript/checkForm.js");
+            setSrc(context + "/util/javaScript/checkForm.js");
     script initCommentPlugin = new script().setType("text/javascript").
-        addElement(setUpJQueryCommentPlugin());
+            addElement(setUpJQueryCommentPlugin());
+    script autoresizePlugin = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL()
+            + "/util/javaScript/jquery/autoresize.jquery.min.js");
     script commentJqueryScript = new script().setType("text/javascript").
-        setSrc(URLManager.getApplicationURL() + "/util/javaScript/jquery/jquery-comment.js");
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/jquery/jquery-comment.js");
 
     xhtmlcontainer.addElement(checkForm).
-        addElement(commentJqueryScript).
-        addElement(comments).
-        addElement(initCommentPlugin);
+            addElement(autoresizePlugin).
+            addElement(commentJqueryScript).
+            addElement(comments).
+            addElement(initCommentPlugin);
     return xhtmlcontainer;
   }
 
@@ -171,10 +176,10 @@ public abstract class CommentWidget extends TagSupport {
   private ResourcesWrapper getSettings() throws JspTagException {
     String language = getUserPreferences().getLanguage();
     ResourceLocator messages = new ResourceLocator(
-        "com.stratelia.webactiv.util.comment.multilang.comment", language);
+            "com.stratelia.webactiv.util.comment.multilang.comment", language);
     ResourcesWrapper resources = new ResourcesWrapper(messages,
-        new ResourceLocator("com.stratelia.webactiv.util.comment.icons", ""),
-        new ResourceLocator("com.stratelia.webactiv.util.comment.Comment", ""), language);
+            new ResourceLocator("com.stratelia.webactiv.util.comment.icons", ""),
+            new ResourceLocator("com.stratelia.webactiv.util.comment.Comment", ""), language);
 
     return resources;
 
@@ -204,6 +209,7 @@ public abstract class CommentWidget extends TagSupport {
 
     OrganizationController controller = new OrganizationController();
     ResourcesWrapper settings = getSettings();
+    UserDetail currentUser = controller.getUserDetail(getUserId());
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());
     boolean isAdmin = false;
     if (Arrays.asList(profiles).contains(SilverpeasRole.admin.name())) {
@@ -212,23 +218,27 @@ public abstract class CommentWidget extends TagSupport {
     boolean canBeUpdated = settings.getSetting("AdminAllowedToUpdate", true) && isAdmin;
 
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
-        + getComponentId() + "/" + getResourceId() + "', update: { activated: function( comment ) {"
-        + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
-        + "return true; else return false;},icon: '" + getUpdateIconURL() + "'," + "altText: '"
-        + settings.getString("GML.update") + "'},"
-        + "deletion: {activated: function( comment ) {if (" + canBeUpdated
-        + " || (comment.author.id === '" + getUserId() + "')) return true; else return false;},"
-        + "confirmation: '" + settings.getString("comment.suppressionConfirmation") + "',"
-        + "icon: '" + getDeletionIconURL() + "',altText: '" + settings.getString("GML.delete")
-        + "'}, updateBox: { title: '" + settings.getString("comment.comment")
-        + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
-        + settings.getString("GML.validate")
-        + "'}, validate: function(text) { if (text == null || $.trim(text).length == 0) { " + "alert('"
-        + settings.getString("comment.pleaseFill_single") + "');"
-        + "} else if (!isValidTextArea(text)) { alert('" + settings.getString(
-        "comment.champsTropLong") + "'); } else { return true; } return false; }," + "mandatory: '"
-        + getMandatoryFieldSymbolURL() + "', mandatoryText: '" + settings.getString(
-        "GML.requiredField") + "'";
+            + getComponentId() + "/" + getResourceId()
+            + "', avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
+            + "', update: { activated: function( comment ) {"
+            + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
+            + "return true; else return false;},icon: '" + getUpdateIconURL() + "'," + "altText: '"
+            + settings.getString("GML.update") + "'},"
+            + "deletion: {activated: function( comment ) {if (" + canBeUpdated
+            + " || (comment.author.id === '" + getUserId() + "')) return true; else return false;},"
+            + "confirmation: '" + settings.getString("comment.suppressionConfirmation") + "',"
+            + "icon: '" + getDeletionIconURL() + "',altText: '" + settings.getString("GML.delete")
+            + "'}, updateBox: { title: '" + settings.getString("comment.comment")
+            + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
+            + settings.getString("GML.validate")
+            + "'}, validate: function(text) { if (text == null || $.trim(text).length == 0) { "
+            + "alert('"
+            + settings.getString("comment.pleaseFill_single") + "');"
+            + "} else if (!isValidTextArea(text)) { alert('" + settings.getString(
+            "comment.champsTropLong") + "'); } else { return true; } return false; },"
+            + "mandatory: '"
+            + getMandatoryFieldSymbolURL() + "', mandatoryText: '" + settings.getString(
+            "GML.requiredField") + "'";
     if (isDefined(getCallback())) {
       script += ",callback: " + getCallback() + "});";
     } else {

@@ -24,6 +24,7 @@
 
 /**
  * This JQuery plugin is developed for the Silverpeas application.
+ * It requires the JQuery plugin autoresize.
  * It provides functions to:
  * - print an area for editing new comments,
  * - print a list of comments,
@@ -44,7 +45,8 @@
   /**
    * The parameter settings of the plugin with, for some, the default value.
    * - uri: the URI at which the comments are located in the web. To access or to update one
-   * comment,
+   * comment.
+   * - avatar: the avatar representing the current user.
    * - update: an object about the update information on a given comment having the following
    * attributes:
    *    - activated: a function that accepts as argument a comment and that should return a boolean
@@ -75,6 +77,7 @@
    */
   var settings = {
     url: 'http://localhost/comments',
+    avatar: '',
     update: {
       activated: function( comment ) {
         return false;
@@ -153,7 +156,7 @@
         var $this = $(this), comments = $this.data('comments');
         var updateBox = $("<div id='comments-update-box'>").attr("style","display: none;").appendTo($this);
         var textBox = $("<div>").addClass("mandatoryField").appendTo(updateBox);
-        $("<textarea>").addClass("text").appendTo(textBox);
+        $("<textarea>").addClass("text").appendTo(textBox).autoResize();
         $("<span>").html("&nbsp;").appendTo(textBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(textBox);
         var legende = $("<div>").addClass("legende").appendTo(textBox);
@@ -187,7 +190,9 @@
         var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
         var legende = $("<div>").addClass("legende");
         $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
-        $("<textarea>").addClass("text").appendTo(editionBox);
+        if (settings.avatar != null && settings.avatar.length > 0)
+          $("<img>").attr("src", settings.avatar).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
+        $("<textarea>").addClass("text").appendTo(editionBox).autoResize();
          $("<span>").html("&nbsp;").appendTo(editionBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
         legende.appendTo(editionBox);
