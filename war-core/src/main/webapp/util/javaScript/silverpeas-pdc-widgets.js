@@ -159,7 +159,10 @@ function loadPdC( uri, onSuccess, onError ) {
       onError({
         uri: uri, 
         axis: []
-      }, { status: jqXHR.status, message: errorThrown });
+      }, {
+        status: jqXHR.status, 
+        message: errorThrown
+      });
     }
   })
 }
@@ -214,7 +217,10 @@ function loadClassification( uri, onSuccess, onError ) {
       onError({
         uri: uri, 
         positions: []
-      }, { status: jqXHR.status, message: errorThrown });
+      }, {
+        status: jqXHR.status, 
+        message: errorThrown
+      });
     }
   });
 }
@@ -252,9 +258,12 @@ function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
       },
       error: function(jqXHR, textStatus, errorThrown) {
         if (onError == null)
-        alert(errorThrown);
-      else
-        onError({ status: jqXHR.status, message: errorThrown });
+          alert(errorThrown);
+        else
+          onError({
+            status: jqXHR.status, 
+            message: errorThrown
+          });
       }
     });
   }
@@ -288,7 +297,10 @@ function postPosition( uri, position, onSuccess, onError ) {
       if (onError == null)
         alert(errorThrown);
       else
-        onError({ status: jqXHR.status, message: errorThrown });
+        onError({
+          status: jqXHR.status, 
+          message: errorThrown
+        });
     }
   });
 }
@@ -323,7 +335,10 @@ function updatePosition( uri, position, onSuccess, onError ) {
       if (onError == null)
         alert(errorThrown);
       else
-        onError({ status: jqXHR.status, message: errorThrown });
+        onError({
+          status: jqXHR.status, 
+          message: errorThrown
+        });
     }
   });
 }
@@ -374,6 +389,24 @@ function isAlreadyInClassification( position, classification ) {
 /**************************************************************************************************/
 
 /**
+ * Are the specified positions already in the the specified classification?
+ * If all the specified positions are in the specified classification, true is returned. If at least
+ * one of the specified positions isn't in the specified classification, false is returned.
+ * A position is in a classification if it already exists a position with exactly the same values.
+ */
+function areAlreadyInClassification( somePositions, classification ) {
+  var exist = true;
+  for(var i = 0; i < somePositions.length; i++) {
+    exist = isAlreadyInClassification(somePositions[i], classification);
+    if (!exist)
+      break;
+  }
+  return exist;
+}
+
+/**************************************************************************************************/
+
+/**
  * Removes the specified position from the specified array of positions.
  */
 function removePosition( position, positions ) {
@@ -407,16 +440,16 @@ function removePosition( position, positions ) {
         update             : {
           activated: true, /* is the update of a position activated? */
           title    :     'Editer la position', /* text to render with the update button */
-          icon     :      '/silverpeas/util/icons/update.gif' /* icon representing the position update */
+          icon     :      webContext + '/util/icons/update.gif' /* icon representing the position update */
         },
         addition           : {
           activated: true, /* is the addition of a new position activated? */
           title    :     'Ajouter une nouvelle position', /* text to render with the addition button */
-          icon     :      '/silverpeas/pdcPeas/jsp/icons/add.gif' /* the icon representing the position addition */
+          icon     :      webContext + '/pdcPeas/jsp/icons/add.gif' /* the icon representing the position addition */
         },
         deletion: {
           activated: true, /* is the deletion of a position activated? */
-          icon     : '/silverpeas/util/icons/delete.gif', /* text to render with the deletion button */
+          icon     : webContext + '/util/icons/delete.gif', /* text to render with the deletion button */
           title    : 'Supprimer la position' /* the icon representing the position deletion */
         },
         onAddition         : function() {}, /* the function to invoke when the adding of a new position is asked. 
@@ -585,7 +618,7 @@ function removePosition( position, positions ) {
         var posId = posindex + 1, values =  [];
         var currentPositionSection = $('<li>').appendTo(positionsSection);
         $('<span>').addClass('pdc_position').
-          html(settings.label + ' ' + posId).appendTo(currentPositionSection);
+        html(settings.label + ' ' + posId).appendTo(currentPositionSection);
 
         $.each(aPosition.values, function(valindex, value) {
           var text = '<li title="' + value.meaning + '">', path = value.meaning.split('/');
@@ -614,26 +647,45 @@ function removePosition( position, positions ) {
  */
 (function( $ ){
   
-  function getSelectedValues( values ) {
-    var selectedValues = [];
-    $.each(values, function(i, value) {
-      if(value != null) {
-        selectedValues.push({
-          id: value.id, 
-          axisId: value.axisId, 
-          treeId: value.treeId,
-          meaning: value.meaning,
-          synonyms: value.synonyms
-        });
+  function positionsFromSelectedValues( values ) {
+    var positions = [{
+      values: []
+    }];
+    $.each(values, function(ival, value) {
+      if (value != null) {
+        if (value.length == 1) {
+          $.each(positions, function(ipos, position) {
+            position.values.push(aPositionValueFrom(value[0]));
+          })
+        } else if (value.length > 1) {
+          for(var i = 1; i < value.length; i++) {
+            var position = $.extend(true, {
+              values: []
+            }, positions[0]);
+            position.values.push(aPositionValueFrom(value[i]));
+            positions.push(position);
+          };
+          positions[0].values.push(aPositionValueFrom(value[0]));
+        }
       }
     });
-    return selectedValues;
+    return positions;
+  }
+  
+  function aPositionValueFrom( anAxisValue ) {
+    return {
+      id: anAxisValue.id, 
+      axisId: anAxisValue.axisId, 
+      treeId: anAxisValue.treeId,
+      meaning: anAxisValue.meaning,
+      synonyms: anAxisValue.synonyms
+    }
   }
   
   function preselectedValuesFrom( values ) {
     var preselectedValues = [];
     $.each(values, function(i, value) {
-      preselectedValues[value.axisId] = value;
+      preselectedValues[value.axisId] = [value];
     });
     return preselectedValues;
   }
@@ -655,16 +707,101 @@ function removePosition( position, positions ) {
   }
   
   function informOfANewPosition( $thisPdcAxisValuesSelector, settings, values ) {
-    var selectedValues = getSelectedValues(values);
-    if (selectedValues.length == 0)
+    var positions = positionsFromSelectedValues(values);
+    if (positions.length == 0 || positions[0].values.length == 0)
       alert(settings.positionError)
-    else if (areMandatoryAxisValued(settings.axis, selectedValues)) {
-      if (settings.dialogBox)
-        $thisPdcAxisValuesSelector.dialog("destroy");
-      settings.onValuesSelected(selectedValues);
+    else {
+      for(var i = 0; i < positions.length; i++) {
+        if (!areMandatoryAxisValued(settings.axis, positions[i].values)) {
+          alert(settings.mandatoryAxisError);
+          positions = [];
+          break;
+        }
+      }
+      if (positions.length > 0) {
+        if (settings.dialogBox)
+          $thisPdcAxisValuesSelector.dialog("destroy");
+        settings.onValuesSelected(positions);
+      }
     }
-    else
-      alert(settings.mandatoryAxisError);
+  }
+  
+  function renderAxis( $axisDiv, settings, selectedValues, anAxis ) {
+    var mandatoryField = '', i = 0;
+    if (anAxis.mandatory)
+      mandatoryField = 'mandatoryField'
+    
+    while($axisDiv.context != null && $axisDiv.contains($('#' + settings.id + '_' + anAxis.id + '_' + i))) {
+      i++;
+    }
+    var axisValuesSelection = $('<select>', {
+      'id': settings.id + '_' + anAxis.id + '_' + i,  
+      'name': anAxis.name
+    }).addClass(mandatoryField).appendTo($axisDiv).change( function() {
+      var theValue = $('select[id=' + settings.id + '_' + anAxis.id + '_' + i + '] option:selected').val();
+      if (theValue == 0) {
+        selectedValues[anAxis.id].splice(i, 1);
+      } else {
+        selectedValues[anAxis.id][i] = anAxis.values[theValue];
+      }
+    });
+    if (settings.multipleValue) {
+      $('<a>', {
+        href: '#',
+        title: settings.anotherValueLegend
+      }).addClass('another-value').click(function () {
+        duplicateAxis($axisDiv, settings, selectedValues, anAxis);
+      }).append($('<img>', {
+        src: settings.anotherValueIcon, 
+        alt: settings.anotherValueLegend,
+        width: '10px',
+        height: '10px'
+      })).appendTo($axisDiv);
+    }
+    var path = [];
+      
+    // browse the values of the current axis and for each of them print out an option HTML element
+    // within the select (representing the current axis)
+    if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
+      selectedValues[anAxis.id] = [anAxis.values[anAxis.values.length - 1]];
+    $.each(anAxis.values, function(valueIndex, aValue) {
+      var level = '';
+      path.splice(aValue.level, path.length - aValue.level);
+      path[aValue.level] = aValue.term;
+      aValue.meaning = path.join(' / ');
+      if (aValue.id != '/0/') {
+        for (var i = 0; i < aValue.level; i++) {
+          level += '&nbsp;&nbsp;';
+        }
+        var option =
+        $('<option>').attr('value', valueIndex).html(level + aValue.term).appendTo(axisValuesSelection);
+        if (aValue.ascendant) {
+          option.attr('value', 'A').attr('disabled', 'disabled').addClass("intfdcolor51");
+        }
+        if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
+          selectedValues[anAxis.id] = [aValue];
+          option.attr('disabled', 'disabled');
+        }
+        if ((selectedValues[anAxis.id].length == 1 && aValue.id == selectedValues[anAxis.id][0].id)) {
+          option.attr('selected', true);
+        }
+      }
+    });
+      
+    var option = $('<option>').attr('value', '0').html('&nbsp;').prependTo(axisValuesSelection);
+    if (anAxis.mandatory) {
+      option.attr('disabled', 'disabled').addClass('emphasis').html(settings.mandatoryAxisText);
+    }
+    if (selectedValues[anAxis.id].length <= i) {
+      option.attr('selected', true);
+    } else {
+      $('<span>').html('<i>' + selectedValues[anAxis.id][i].synonyms.join(', ') + '</i>&nbsp;').appendTo($axisDiv);
+    }
+  }
+  
+  function duplicateAxis( $axisDiv, settings, selectedValues, axis) {
+    $('.another-value').remove();
+    renderAxis($axisDiv, settings, selectedValues, axis);
   }
   
   $.fn.pdcAxisValuesSelector = function( options ) {
@@ -674,21 +811,24 @@ function removePosition( position, positions ) {
       positionError       : "Veuillez sélectionner au moins une valeur à la position",
       mandatoryAxisText   : "Veuillez selectionner une valeur",
       mandatoryAxisError  : "Le contenu doit disposer au moins d'une position avec les axes obligatoires",
-      mandatoryAxisIcon   : '/silverpeas/util/icons/mandatoryField.gif',
+      mandatoryAxisIcon   : webContext + '/util/icons/mandatoryField.gif',
       mandatoryAxisLegend : 'Obligatoire',
-      invariantAxisIcon   : '/silverpeas/util/icons/buletColoredGreen.gif',
+      invariantAxisIcon   : webContext + '/util/icons/buletColoredGreen.gif',
       invariantAxisLegend : 'invariantes',
+      anotherValueIcon    : webContext + '/util/icons/add.gif',
+      anotherValueLegend  : 'Autre valeur',
       labelOk             : 'Valider', /* the label of the validation button */
       labelCancel         : 'Annuler', /* the label of the canceling button in the dialog box */
+      multipeValue        : false, /* if multiple value can be selected from a single axis? */
       dialogBox           : true, /* is the selector should be displayed as a modal dialog box? */
       axis                : [], /* the different axis of the PdC to render */
       values              : [], /* the values to pre-select in the widget */
-      onValuesSelected    : function(values) {} /* function invoked when a set of values have been selected through the widget */
+      onValuesSelected    : function(positions) {} /* function invoked when a set of values have been selected through the widget */
     }, options);
     
     return this.each(function() {
       var $thisPdcAxisValuesSelector = $(this), selectedValues = preselectedValuesFrom(settings.values),
-        hasMandatoryAxis = false, hasInvariantAxis = false;
+      hasMandatoryAxis = false, hasInvariantAxis = false;
       $thisPdcAxisValuesSelector.children().remove();
       
       // browse the axis of the PdC and for each of them print out a select HTML element
@@ -698,61 +838,12 @@ function removePosition( position, positions ) {
             'for': settings.id + '_' + anAxis.id
           }).addClass('txtlibform').html(anAxis.name)).
           appendTo($thisPdcAxisValuesSelector));
-        var mandatoryField = '';
-        if (anAxis.mandatory) {
-          mandatoryField = 'mandatoryField'
-        }
-        var axisValuesSelection = $('<select>', {
-          'id': settings.id + '_' + anAxis.id,  
-          'name': anAxis.name
-        }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
-          var theValue = $('select[id=' + settings.id + '_' + anAxis.id + '] option:selected').val();
-          if (theValue == 0) {
-            selectedValues[anAxis.id] = null;
-          } else {
-            selectedValues[anAxis.id] = anAxis.values[theValue];
-          }
-        });
-        var path = [];
-      
-        // browse the values of the current axis and for each of them print out an option HTML element
-        // within the select (representing the current axis)
-        if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
-          selectedValues[anAxis.id] = anAxis.values[anAxis.values.length - 1];
-        $.each(anAxis.values, function(valueIndex, aValue) {
-          var level = '';
-          path.splice(aValue.level, path.length - aValue.level);
-          path[aValue.level] = aValue.term;
-          aValue.meaning = path.join(' / ');
-          if (aValue.id != '/0/') {
-            for (var i = 0; i < aValue.level; i++) {
-              level += '&nbsp;&nbsp;';
-            }
-            var option =
-            $('<option>').attr('value', valueIndex).html(level + aValue.term).appendTo(axisValuesSelection);
-            if (aValue.ascendant) {
-              option.attr('value', 'A').attr('disabled', 'disabled').addClass("intfdcolor51");
-            }
-            if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
-              selectedValues[anAxis.id] = aValue;
-              option.attr('disabled', 'disabled');
-            }
-            if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id)) {
-              option.attr('selected', true);
-            }
-          }
-        });
-      
-        var option = $('<option>').attr('value', '0').html('&nbsp;').prependTo(axisValuesSelection);
-        if (anAxis.mandatory) {
-          option.attr('disabled', 'disabled').addClass('emphasis').html(settings.mandatoryAxisText);
-        }
-        if (selectedValues[anAxis.id] == null) {
-          option.attr('selected', true);
-        }
-        if (selectedValues[anAxis.id] != null) {
-          $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);
-        }
+        
+        if (selectedValues[anAxis.id] == null)
+          selectedValues[anAxis.id] = [];
+        
+        renderAxis(currentAxisDiv, settings, selectedValues, anAxis);
+        
         if (anAxis.mandatory) {
           hasMandatoryAxis = true;
           $('<img>', {
