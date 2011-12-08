@@ -35,14 +35,13 @@
 
 <%!
 
-void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
-{
+void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException {
 	// Value
 
 	boolean isSelect =parameter.isSelect() ||parameter.isXmlTemplate();
 	String help = parameter.getHelp();
 	if (help != null) {
-		//help = Encode.javaStringToJsString(help);
+		help = EncodeHelper.javaStringToHtmlString(help);
 		out.println("<td valign=\"top\" align=\"left\">");
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 		out.println("</td>");
@@ -50,10 +49,10 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		out.println("<td align=left width=15>&nbsp;</td>");
 	}
 
-	out.println("<td class=\"intfdcolor4\" nowrap valign=\"top\" align=left>");
+	out.println("<td class=\"intfdcolor4\" nowrap valign=\"top\" align=\"left\">");
 	out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span>");
 	out.println("</td>");
-	out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
+	out.println("<td class=\"intfdcolor4\" align=\"left\" valign=\"top\">");
 
 	String disabled = "disabled";
 	if (parameter.isAlwaysUpdatable() || parameter.isUpdatableOnCreationOnly()) {
@@ -65,7 +64,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		if (StringUtil.getBooleanValue(parameter.getValue())) {
 			checked = "checked";
 		}
-		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+">");
+		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+"/>");
 	}
 	else if (isSelect)
 	{
@@ -102,9 +101,10 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 				String name = radio.getName();
 				String value =  radio.getValue();
 				String checked = "";
-				if (i==0)
+				if (i==0) {
 					checked = "checked";
-				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+">");
+				}
+				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+"/>");
 				out.println(name+"&nbsp;<br>");
 			}
 		}
@@ -114,14 +114,15 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		boolean mandatory = parameter.isMandatory();
 
 		String sSize = "60";
-		if (parameter.getSize() != null && parameter.getSize().intValue() > 0)
+		if (parameter.getSize() != null && parameter.getSize().intValue() > 0) {
 			sSize = parameter.getSize().toString();
+		}
 
-		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(parameter.getValue())+"\" "+disabled+">");
+		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(parameter.getValue())+"\" "+disabled+"/>");
 
 		if (mandatory)
 		{
-			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\">");
+			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\"/>");
 		}
 	}
 
