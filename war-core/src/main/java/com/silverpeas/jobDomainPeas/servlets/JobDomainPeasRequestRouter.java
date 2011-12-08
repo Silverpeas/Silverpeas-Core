@@ -410,31 +410,35 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           destination = "closeWindow.jsp";
         } else if (function.equals("groupOpen")) {
           String groupId = request.getParameter("groupId");
-
-          OrganizationController orgaController = jobDomainSC.getOrganizationController();
-          Group group = orgaController.getGroup(groupId);
-          String domainId = group.getDomainId();
-          if (domainId == null) {
-            domainId = "-1";
+          
+          if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(groupId)) {
+            OrganizationController orgaController = jobDomainSC.getOrganizationController();
+            Group group = orgaController.getGroup(groupId);
+            String domainId = group.getDomainId();
+            if (domainId == null) {
+              domainId = "-1";
+            }
+  
+            //not refresh the domain
+            jobDomainSC.setRefreshDomain(false);
+  
+            //domaine
+            jobDomainSC.setTargetDomain(domainId);
+            jobDomainSC.returnIntoGroup(null);
+  
+            //groupe(s) père(s)
+            List<String> groupList = orgaController.getPathToGroup(groupId);
+            for (String elementGroupId : groupList) {
+              jobDomainSC.goIntoGroup(elementGroupId);
+            }
+  
+            //groupe
+            jobDomainSC.goIntoGroup(groupId);
+  
+            destination = "groupContent.jsp";
+          } else {
+            destination = "/admin/jsp/accessForbidden.jsp";
           }
-
-          //not refresh the domain
-          jobDomainSC.setRefreshDomain(false);
-
-          //domaine
-          jobDomainSC.setTargetDomain(domainId);
-          jobDomainSC.returnIntoGroup(null);
-
-          //groupe(s) père(s)
-          List<String> groupList = orgaController.getPathToGroup(groupId);
-          for (String elementGroupId : groupList) {
-            jobDomainSC.goIntoGroup(elementGroupId);
-          }
-
-          //groupe
-          jobDomainSC.goIntoGroup(groupId);
-
-          destination = "groupContent.jsp";
         }
 
         if (destination.length() <= 0) {
