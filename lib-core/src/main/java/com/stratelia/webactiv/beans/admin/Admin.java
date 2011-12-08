@@ -61,6 +61,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.cache.AdminCache;
+import com.stratelia.webactiv.beans.admin.cache.DomainCache;
 import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.beans.admin.cache.Space;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
@@ -3245,12 +3246,13 @@ public final class Admin {
   /**
    * Update a domain
    */
-  public String updateDomain(Domain theDomain) throws AdminException {
+  public String updateDomain(Domain domain) throws AdminException {
     try {
-      return domainDriverManager.updateDomain(theDomain);
+      DomainCache.removeDomain(domain.getId());
+      return domainDriverManager.updateDomain(domain);
     } catch (Exception e) {
       throw new AdminException("Admin.updateDomain", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE_DOMAIN", "domain name : '" + theDomain.getName()
+              "admin.EX_ERR_UPDATE_DOMAIN", "domain name : '" + domain.getName()
               + "'", e);
     }
   }
@@ -3259,19 +3261,16 @@ public final class Admin {
    * Remove a domain
    */
   public String removeDomain(String domainId) throws AdminException {
-    int i;
     try {
       // Remove all users
       UserDetail[] toRemoveUDs = userManager.getUsersOfDomain(domainDriverManager,
               domainId);
       if (toRemoveUDs != null) {
-        for (i = 0;
-                i < toRemoveUDs.length;
-                i++) {
+        for (UserDetail user : toRemoveUDs) {
           try {
-            deleteUser(toRemoveUDs[i].getId(), false);
+            deleteUser(user.getId(), false);
           } catch (Exception e) {
-            deleteUser(toRemoveUDs[i].getId(), true);
+            deleteUser(user.getId(), true);
           }
         }
       }
@@ -3279,18 +3278,19 @@ public final class Admin {
       Group[] toRemoveGroups = groupManager.getGroupsOfDomain(domainDriverManager,
               domainId);
       if (toRemoveGroups != null) {
-        for (i = 0;
-                i < toRemoveGroups.length;
-                i++) {
+        for (Group group : toRemoveGroups) {
           try {
-            deleteGroupById(toRemoveGroups[i].getId(), false);
+            deleteGroupById(group.getId(), false);
           } catch (Exception e) {
-            deleteGroupById(toRemoveGroups[i].getId(), true);
+            deleteGroupById(group.getId(), true);
           }
         }
       }
       // Remove the domain
-      return domainDriverManager.removeDomain(domainId);
+      domainDriverManager.removeDomain(domainId);
+      DomainCache.removeDomain(domainId);
+      
+      return domainId;
     } catch (Exception e) {
       throw new AdminException("Admin.removeDomain", SilverpeasException.ERROR,
               "admin.MSG_ERR_DELETE_DOMAIN", "domain Id : '" + domainId + "'", e);
@@ -3302,7 +3302,12 @@ public final class Admin {
    */
   public Domain[] getAllDomains() throws AdminException {
     try {
-      return domainDriverManager.getAllDomains();
+      List<Domain> domains = DomainCache.getDomains();
+      if (domains.isEmpty()) {
+        domains = Arrays.asList(domainDriverManager.getAllDomains());
+        DomainCache.setDomains(domains);
+      }
+      return (Domain[]) domains.toArray(new Domain[0]);
     } catch (Exception e) {
       throw new AdminException("Admin.getAllDomains",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_DOMAINS", e);
@@ -3314,7 +3319,15 @@ public final class Admin {
    */
   public Domain getDomain(String domainId) throws AdminException {
     try {
-      return domainDriverManager.getDomain(domainId);
+      if (!StringUtil.isDefined(domainId) || !StringUtil.isInteger(domainId)) {
+        domainId = "-1";
+      }
+      Domain domain = DomainCache.getDomain(domainId);
+      if (domain == null) {
+        domain = domainDriverManager.getDomain(domainId);
+        DomainCache.addDomain(domain);
+      }
+      return domain;
     } catch (Exception e) {
       throw new AdminException("Admin.getDomain", SilverpeasException.ERROR,
               "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'", e);
@@ -5343,7 +5356,7 @@ public final class Admin {
             // All the synchro is finished -> set the new timestamp
             // ----------------------------------------------------
             theDomain.setTheTimeStamp(toTimeStamp);
-            domainDriverManager.updateDomain(theDomain);
+            updateDomain(theDomain);
 
             // traitement spécifique des users selon l'interface implémentée
             processSpecificSynchronization(domainId, null, listUsersUpdate, listUsersRemove);
@@ -5772,7 +5785,7 @@ public final class Admin {
         // All the synchro is finished -> set the new timestamp
         // ----------------------------------------------------
         theDomain.setTheTimeStamp(toTimeStamp);
-        domainDriverManager.updateDomain(theDomain);
+        updateDomain(theDomain);
 
         // Commit the transaction
         domainDriverManager.commit();
@@ -6549,8 +6562,7 @@ public final class Admin {
 
   public void indexAllUsers() throws AdminException {
     Domain[] domains = getAllDomains();
-    for (Domain domain :
-            domains) {
+    for (Domain domain : domains) {
       try {
         indexUsers(domain.getId());
       } catch (Exception e) {
