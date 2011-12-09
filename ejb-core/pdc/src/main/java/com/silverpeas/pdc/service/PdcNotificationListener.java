@@ -48,7 +48,7 @@ public class PdcNotificationListener extends DefaultNotificationSubscriber imple
   @Override
   public void subscribeOnTopics() {
     CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, this);
+    //callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, this);
     subscribeForNotifications(onTopic(NODE_TOPIC.getTopicName()));
   }
 
