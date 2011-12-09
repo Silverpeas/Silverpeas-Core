@@ -23,6 +23,24 @@
  */
 package com.stratelia.silverpeas.wysiwyg.control;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.ejb.FinderException;
+import javax.naming.NamingException;
+
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
@@ -40,23 +58,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author neysseri
@@ -455,6 +456,16 @@ public class WysiwygController {
 
     WysiwygController.createFileAndAttachment(textHtml, fileName, spaceId, componentId,
             WYSIWYG_CONTEXT, id, null);
+  }
+  
+  /**
+   * Index all elements attached to object identified by <id, componentId>
+   * @param componentId for example, the id of the application.
+   * @param id for example, the id of the publication.
+   */
+  public static void index(String componentId, String id) {
+    AttachmentPK foreignPK = new AttachmentPK(id, componentId);
+    AttachmentController.attachmentIndexer(foreignPK);
   }
 
   /**
@@ -900,7 +911,6 @@ public class WysiwygController {
       List<AttachmentDetail> vectAttachment =
               AttachmentController.searchAttachmentByPKAndContext(foreignKey,
               getImagesFileName(oldObjectId));
-      int nbImages = vectAttachment.size();
       Map<String, String> imageIds = new HashMap<String, String>();
 
       for (AttachmentDetail attD : vectAttachment) {
