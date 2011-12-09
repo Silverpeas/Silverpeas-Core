@@ -1594,9 +1594,7 @@ public final class Admin {
 
       List<String> spaceRoles = componentRole2SpaceRoles(componentRole.getName(),
               component.getName());
-      String spaceRole;
-      for (String spaceRole1 : spaceRoles) {
-        spaceRole = spaceRole1;
+      for (String spaceRole : spaceRoles) {
         SpaceProfileInst spaceProfile = space.getSpaceProfileInst(spaceRole);
         if (spaceProfile != null) {
           inheritedProfile.addGroups(spaceProfile.getAllGroups());
@@ -1610,11 +1608,10 @@ public final class Admin {
         }
       }
 
-      if (!inheritedProfile.getAllGroups().isEmpty()
-              || !inheritedProfile.getAllUsers().isEmpty()) {
-        if (StringUtil.isDefined(inheritedProfile.getId())) {
-          updateProfileInst(inheritedProfile, null, false);
-        } else {
+      if (StringUtil.isDefined(inheritedProfile.getId())) {
+        updateProfileInst(inheritedProfile, null, false);
+      } else {
+        if (!inheritedProfile.isEmpty()) {
           addProfileInst(inheritedProfile, null, false);
         }
       }
@@ -1647,6 +1644,12 @@ public final class Admin {
       // Update the components in tables
       componentManager.moveComponentInst(domainDriverManager, sDriverSpaceId, sDriverComponentId);
       componentInst.setDomainFatherId(sDriverSpaceId);
+      
+      // set space profiles to component if it not use its own rights
+      if (!componentInst.isInheritanceBlocked()) {
+        setSpaceProfilesToComponent(componentInst, null);
+      }
+      
       // Set component in order
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
               "Avant setComponentPlace: componentId=" + componentId + " idComponentBefore="
@@ -1654,18 +1657,14 @@ public final class Admin {
       setComponentPlace(componentId, idComponentBefore, componentInsts);
 
       // Update extraParamPage from Space if necessary
+      SpaceInst fromSpace = getSpaceInstById(getDriverSpaceId(oldSpaceId));
+      String spaceHomePage = fromSpace.getFirstPageExtraParam();
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
-              "FirstPageExtraParam=" + getSpaceInstById(oldSpaceId).getFirstPageExtraParam()
-              + " oldSpaceId=" + oldSpaceId);
-      SpaceInst oldSpaceInst = getSpaceInstById(getDriverSpaceId(oldSpaceId));
-      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
-              "oldSpaceInst=" + oldSpaceInst + " componentId=" + componentId);
-      if (oldSpaceInst.getFirstPageExtraParam() != null) {
-        if (oldSpaceInst.getFirstPageExtraParam().equals(componentId)) {
-          oldSpaceInst.setFirstPageExtraParam("");
-          oldSpaceInst.setFirstPageType(0);
-          updateSpaceInst(oldSpaceInst);
-        }
+              "FirstPageExtraParam=" + spaceHomePage + " oldSpaceId=" + oldSpaceId);
+      if (StringUtil.isDefined(spaceHomePage) && spaceHomePage.equals(componentId)) {
+        fromSpace.setFirstPageExtraParam("");
+        fromSpace.setFirstPageType(0);
+        updateSpaceInst(fromSpace);
       }
       // commit the transactions
       domainDriverManager.commit();
