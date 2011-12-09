@@ -239,10 +239,10 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
             
             renderModificationAttributeFrame(predefinition, modification);
             prepareClassificationFrame(predefinition);
-            renderPositionEditionFrame(predefinition, '#' + settings.idPrefix + "pdc-addition-box",
+            renderPositionEditionFrame(predefinition, settings.idPrefix + "pdc-addition-box",
               settings.addition.title, [], false, function(positions) {
                 var classification = predefinition.data('classification');
-                if (areAlreadyInClassification(positions, classification)) {
+                if (!areNotAlreadyInClassification(positions, classification)) {
                   alert(settings.messages.positionAlreadyInClassification);
                 } else {
                   for (var i = 0; i < positions.length; i++) {
@@ -312,10 +312,10 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
             loadedClassification.uri = settings.classificationURI;
             if (loadedClassification.positions.length == 0 || loadedClassification.modifiable) {
               prepareClassificationFrame($this);
-              renderPositionEditionFrame($this, '#' + settings.idPrefix + "pdc-addition-box",
+              renderPositionEditionFrame($this, settings.idPrefix + "pdc-addition-box",
                 settings.addition.title, [], false, function(positions) {
                   var classification = $this.data('classification');
-                  if (areAlreadyInClassification(positions, classification)) {
+                  if (!areNotAlreadyInClassification(positions, classification)) {
                     alert(settings.messages.positionAlreadyInClassification);
                   } else {
                      for(var i = 0; i < positions.length; i++) {
@@ -609,11 +609,11 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
   
   function openEditionBox($this, uri, position) {
     var settings = $this.data('settings');
-    var boxId = '#' + settings.idPrefix + "pdc-addition-box";
+    var boxId = settings.idPrefix + "pdc-addition-box";
     var title = settings.addition.title;
     var preselectedValues = [];
     if (position != null && position.values.length > 0) {
-      boxId = "#" + settings.idPrefix + "pdc-update-box";
+      boxId = settings.idPrefix + "pdc-update-box";
       title = settings.update.title;
       preselectedValues = position.values;
     }
@@ -656,8 +656,7 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
   
   function renderPositionEditionFrame($this, frameId, title, preselectedValues, asDialogBox, onEdition) {
     var settings = $this.data('settings');
-    $(frameId).pdcAxisValuesSelector({
-      id                  : frameId,
+    $('#' + frameId).pdcAxisValuesSelector({
       title               : title,
       positionError       : settings.messages.positionMustBeValued,
       mandatoryAxisText   : settings.edition.mandatoryAxisDefaultValue,
@@ -671,6 +670,7 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
       axis                : $this.data('pdc').axis,
       values              : preselectedValues,
       dialogBox           : asDialogBox,
+      multiValuation      : frameId.indexOf('pdc-addition-box') > -1,
       onValuesSelected    : function(positions) {
         onEdition(positions);
       }
