@@ -21,19 +21,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.silverstatistics.control;
 
-import com.stratelia.silverpeas.silverstatistics.util.StatType;
+package com.stratelia.webactiv.beans.admin.cache;
 
-/**
- *
- * @author ehugonnet
- */
-public interface SilverStatisticsBm {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import com.stratelia.webactiv.beans.admin.Domain;
+
+public class DomainCache {
+
+  private static ConcurrentMap<String, Domain> map =
+      new ConcurrentHashMap<String, Domain>();
+
+  public synchronized static void clearCache() {
+    map.clear();
+  }
+
+  public static List<Domain> getDomains() {
+    return new ArrayList<Domain>(map.values());
+  }
   
-  public void putStats(StatType typeOfStats, String data) throws java.rmi.RemoteException;
+  public static Domain getDomain(String id) {
+    return map.get(id);
+  }
+  
+  public static void setDomains(List<Domain> domains) {
+    clearCache();
+    for (Domain domain : domains) {
+      addDomain(domain);
+    }
+  }
 
-  public void makeStatAllCumul() throws java.rmi.RemoteException;
+  public static void addDomain(Domain domain) {
+    map.putIfAbsent(domain.getId(), domain);
+  }
 
-  public void makeVolumeAlimentationForAllComponents() throws java.rmi.RemoteException;
+  public static void removeDomain(String id) {
+    map.remove(id);
+  }
+
 }

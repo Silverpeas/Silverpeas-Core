@@ -34,4 +34,17 @@
       <classifier>jdk1.6-j2ee1.4</classifier>
     </dependency>
   </dependencies>
+  
+   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <configuration>
+          <ejbVersion>2.1</ejbVersion>
+          <generateClient>false</generateClient>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

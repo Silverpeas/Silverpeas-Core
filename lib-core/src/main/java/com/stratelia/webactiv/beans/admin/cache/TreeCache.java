@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class TreeCache {
 
-  private static ConcurrentMap<String, Space> map = new ConcurrentHashMap<String, Space>();
+  private static final ConcurrentMap<String, Space> map = new ConcurrentHashMap<String, Space>();
 
   public synchronized static void clearCache() {
     map.clear();
@@ -146,8 +146,8 @@ public class TreeCache {
     // add components in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
-      space.getComponents().clear();
-      space.getComponents().addAll(components);
+      space.clearComponents();
+      space.setComponents(components);
     }
   }
 

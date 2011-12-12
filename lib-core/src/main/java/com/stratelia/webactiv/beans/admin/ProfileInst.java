@@ -218,4 +218,8 @@ public class ProfileInst implements Serializable, Cloneable {
   public void setObjectType(String objectType) {
     this.objectType = objectType;
   }
+  
+  public boolean isEmpty() {
+    return getAllGroups().isEmpty() && getAllUsers().isEmpty();
+  }
 }
