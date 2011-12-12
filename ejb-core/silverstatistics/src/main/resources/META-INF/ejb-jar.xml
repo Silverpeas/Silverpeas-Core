@@ -33,18 +33,7 @@
   <display-name>SilverStatisticsJar</display-name>
   
   <enterprise-beans>
-
-    <session>
-      <description>no description</description>
-      <display-name>ejb/SilverStatistics</display-name>
-      <ejb-name>ejb/SilverStatistics</ejb-name>
-      <home>com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsHome</home>
-      <remote>com.stratelia.silverpeas.silverstatistics.control.SilverStatistics</remote>
-      <ejb-class>com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsEJB</ejb-class>
-      <session-type>Stateless</session-type>
-      <transaction-type>Container</transaction-type>
-    </session>
-    
+   
     <message-driven>
       <ejb-name>ejb/SilverStatisticsMessageDriven</ejb-name>
       <ejb-class>com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsMessageDriven</ejb-class>
@@ -56,21 +45,7 @@
         </destination-type>
       </message-driven-destination>
     </message-driven>
-
-  </enterprise-beans>
-
-  <assembly-descriptor>
-    <container-transaction>
-      <method>
-        <ejb-name>ejb/SilverStatistics</ejb-name> 
-        <method-intf>Remote</method-intf> 
-        <method-name>*</method-name> 
-      </method>
-      <trans-attribute>Supports</trans-attribute> 
-    </container-transaction>
-
-  </assembly-descriptor>
-        
+  </enterprise-beans>       
 </ejb-jar>
 
 
