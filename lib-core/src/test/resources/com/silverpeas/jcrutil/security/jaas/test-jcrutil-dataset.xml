@@ -26,7 +26,7 @@
 -->
 
 <dataset>
-  <st_domain id="0" name="domainSilverpeas" description="default domain for Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP"
+  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP"
     classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
     thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
 
