@@ -937,23 +937,6 @@ function removePosition( position, positions ) {
     } else {
       $('<span>').html('<i>' + selectedPositions.at(i, anAxis.id).synonyms.join(', ') + '</i>&nbsp;').appendTo($axisDiv);
     }
-    
-    if (anAxis.mandatory) {
-      $('<img>', {
-        src: settings.mandatoryAxisIcon,
-        alt: settings.mandatoryAxisLegend, 
-        width: '5px',
-        height: '5px'
-      }).appendTo($axisDiv.append(' '));
-    }
-    if (anAxis.invariant) {
-      $('<img>', {
-        src: settings.invariantAxisIcon, 
-        alt: settings.invariantAxisLegend,
-        width: '10px',
-        height: '10px'
-      }).appendTo($axisDiv);
-    }
   }
   
   function duplicateAxis( $axisDiv, settings, selectedValues, axis) {
@@ -1002,6 +985,23 @@ function removePosition( position, positions ) {
         hasInvariantAxis = anAxis.invariant || hasInvariantAxis;
         
         renderAxis(currentAxisDiv, settings, selectedPositions, anAxis);
+        
+        if (anAxis.mandatory) {
+          $('<img>', {
+            src: settings.mandatoryAxisIcon,
+            alt: settings.mandatoryAxisLegend, 
+            width: '5px',
+            height: '5px'
+          }).appendTo(currentAxisDiv.append(' '));
+        }
+        if (anAxis.invariant) {
+          $('<img>', {
+            src: settings.invariantAxisIcon, 
+            alt: settings.invariantAxisLegend,
+            width: '10px',
+            height: '10px'
+          }).appendTo(currentAxisDiv);
+        }
       });
     
       $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
