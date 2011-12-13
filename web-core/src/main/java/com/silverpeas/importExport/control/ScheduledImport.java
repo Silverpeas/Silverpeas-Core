@@ -42,7 +42,7 @@ import java.io.File;
 public class ScheduledImport implements SchedulerEventListener {
 
   public static final String IMPORTENGINE_JOB_NAME = "ImportEngineJob";
-  private ResourceLocator resources = new ResourceLocator(
+  private final ResourceLocator resources = new ResourceLocator(
       "com.silverpeas.importExport.settings.importSettings", "");
   private File dir = null; // Where the import XML descriptors are stored
   private String postPolicy = null;
@@ -94,15 +94,16 @@ public class ScheduledImport implements SchedulerEventListener {
           try {
             ImportReport importReport = importExport.processImport(user, file.getAbsolutePath());
             importExport.writeImportToLog(importReport, resource);
-          } catch (ImportExportException e) {
-            SilverTrace.error("importExport", "ScheduledImport.doScheduledImport()",
-                "importExport.EX_CANT_PROCESS_IMPORT", "file = " + file.getAbsolutePath(), e);
-          } finally {
+            
+            // Successfully import. Remove or rename import descriptor. 
             if ("remove".equalsIgnoreCase(postPolicy)) {
               file.delete();
             } else if ("rename".equalsIgnoreCase(postPolicy)) {
               file.renameTo(new File(file.getAbsolutePath() + ".old"));
             }
+          } catch (ImportExportException e) {
+            SilverTrace.error("importExport", "ScheduledImport.doScheduledImport()",
+                "importExport.EX_CANT_PROCESS_IMPORT", "file = " + file.getAbsolutePath(), e);
           }
         }
       }
@@ -112,7 +113,7 @@ public class ScheduledImport implements SchedulerEventListener {
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     SilverTrace.debug("importExport", "ScheduledImport.handleSchedulerEvent", "The job '"
         + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doScheduledImport();
