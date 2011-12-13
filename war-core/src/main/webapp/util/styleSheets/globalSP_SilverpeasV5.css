@@ -38,10 +38,6 @@ BODY {
 	margin: 0px;
 }
 
-IMG {
-	border: 0px;
-}
-
 TD,div {
 	font-family: "Verdana", "Arial", sans-serif;
 	font-size: 10px
@@ -1579,7 +1575,8 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 /* Objet frame */
 .tableFrame {
 	border-style: none;
-	background-color: #FFFFFF;
+	background-color: transparent;
+    position:relative;
 }
 
 .hautFrame {
@@ -3692,6 +3689,7 @@ ul#attachmentList li.attachmentListItem .lineSize,
 ul#attachmentList li.attachmentListItem .lineMain {
     display: block;
     padding: 1px 0 2px 0;
+	line-height:16px;
 }
 
 
