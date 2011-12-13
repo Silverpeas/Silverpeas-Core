@@ -62,6 +62,7 @@ boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", f
 LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
 
 // list of domains
+// Let domains variable for backward compatibility purpose. getAllDomains is now deprecated !!!
 Hashtable domains = lpAuth.getAllDomains();
 List<Domain> listDomains = lpAuth.getListDomains();
 List<String> domainIds = lpAuth.getDomainsIds();
