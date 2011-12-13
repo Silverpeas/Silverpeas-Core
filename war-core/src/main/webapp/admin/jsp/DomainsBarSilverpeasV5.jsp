@@ -31,6 +31,7 @@
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 
@@ -365,14 +366,14 @@ out.println(gef.getLookStyleSheet());
                     // domains are used by 'selectDomain.jsp.inc'
                     // Get a LoginPasswordAuthentication object
                     LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-                    Hashtable domains = lpAuth.getAllDomains();
+                    List<Domain> listDomains = lpAuth.getListDomains();
                     //------------------------------------------------------------------
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.login"), "javaScript:login();", false);
                 %>
                     <table border="0" cellpadding="0" cellspacing="2">
                         <tr><td><%=helper.getString("lookSilverpeasV5.login")%> : </td><td><%@ include file="../../inputLogin.jsp" %></td></tr>
                         <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><%@ include file="inputPasswordSilverpeasV5.jsp.inc" %></td></tr>
-                        <% if (domains.size() == 1) { %>
+                        <% if (listDomains.size() == 1) { %>
                             <tr><td colspan="2"><input type="hidden" name="DomainId" value="0"/></td></tr>
                         <% } else { %>
                             <tr><td><fmt:message key="lookSilverpeasV5.domain" /> : </td><td><%@ include file="../../selectDomain.jsp.inc" %></td></tr>

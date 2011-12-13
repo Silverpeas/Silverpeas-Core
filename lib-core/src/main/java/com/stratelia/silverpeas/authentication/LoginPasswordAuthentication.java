@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
@@ -45,6 +46,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -65,16 +69,18 @@ public class LoginPasswordAuthentication {
   static protected String m_KeyStoreKeyColumnName;
   static protected String m_KeyStoreLoginColumnName;
   static protected String m_KeyStoreDomainIdColumnName;
-  static protected Hashtable<String, String> m_Domains;
-  static protected ArrayList<String> m_DomainsIds;
-
+  static protected Hashtable<String, String> m_Domains = new Hashtable<String, String>();
+  static protected List<Domain> domains = new ArrayList<Domain>();
+  static protected List<String> m_DomainsIds;
   static protected String m_UserTableName;
   static protected String m_UserIdColumnName;
   static protected String m_UserLoginColumnName;
   static protected String m_UserDomainColumnName;
 
   static protected int m_AutoInc = 1;
-
+  
+  private final static Admin admin = new Admin();
+  
   static {
     ResourceLocator propFile = new ResourceLocator(
         "com.stratelia.silverpeas.authentication.domains", "");
@@ -161,62 +167,32 @@ public class LoginPasswordAuthentication {
   /**
    * Get list of domains
    * @return hashtable object (keys=domain ids, values=domain name)
+   * @deprecated use getListDomains method instead
    */
   public Hashtable<String, String> getAllDomains() {
     return m_Domains;
   }
+  
+  public List<Domain> getListDomains() {
+    return domains;
+  }
 
-  public ArrayList<String> getDomainsIds() {
+  public List<String> getDomainsIds() {
     return m_DomainsIds;
   }
 
   static public void initDomains() {
-    Statement stmt = null;
-    ResultSet rs = null;
-    String query = "SELECT " + m_DomainIdColumnName + ", "
-        + m_DomainNameColumnName + " FROM " + m_DomainTableName
-        + " where not id=-1 order by name";
-    Connection con = null;
-
-    SilverTrace.info("authentication",
-        "LoginPasswordAuthentication.initDomains()",
-        "root.MSG_GEN_PARAM_VALUE", "query=" + query);
+    m_DomainsIds = new ArrayList<String>();
     try {
-      m_Domains = new Hashtable<String, String>();
-      m_DomainsIds = new ArrayList<String>();
-
-      // Open connection
-      con = openConnection();
-
-      // Get domains in database
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(query);
-      while (rs.next()) {
-        String domainId = rs.getString(1);
-        String domainName = rs.getString(2);
-        if (domainId != null && domainName != null) {
-          m_Domains.put(domainId, domainName);
-          m_DomainsIds.add(domainId);
-        }
+      Domain[] allDomains = admin.getAllDomains();
+      for (Domain domain : allDomains) {
+        m_Domains.put(domain.getId(), domain.getName());
+        m_DomainsIds.add(domain.getId());
+        domains.add(domain);
       }
-    } catch (SQLException sqlEx) {
-      SilverTrace.error("authentication",
-          "LoginPasswordAuthentication.initDomains()",
-          "root.EX_SQL_QUERY_FAILED", "query=" + query, sqlEx);
-      m_Domains.clear();
-      m_DomainsIds.clear();
-    } catch (AuthenticationException authEx) {
-      SilverTrace.error("authentication",
-          "LoginPasswordAuthentication.initDomains()",
-          "root.EX_CONNECTION_OPEN_FAILED", "", authEx);
-      m_Domains.clear();
-      m_DomainsIds.clear();
-    } finally {
-      // Close resultset and statement
-      DBUtil.close(rs, stmt);
-      closeConnection(con);
+    } catch (AdminException e) {
+      SilverTrace.error("authentication", "LoginPasswordAuthentication", "Problem to retrieve all the domains", e);
     }
-
   }
 
   /**
