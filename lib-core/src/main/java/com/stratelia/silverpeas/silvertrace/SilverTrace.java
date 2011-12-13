@@ -178,10 +178,6 @@ public class SilverTrace {
    */
   public final static String MODULE_ROOT = "root";
   /**
-   * The old Debug class module's name
-   */
-  public final static String MODULE_OLD_DEBUG = "oldDebug";
-  /**
    * The special output for ERROR and FATAL module's name
    */
   public final static String MODULE_ERROR_AND_FATAL = "outErrorAndFatal";
@@ -192,15 +188,15 @@ public class SilverTrace {
   /**
    * Create action code
    */
-  public static String SPY_ACTION_CREATE = "1";
+  public static final String SPY_ACTION_CREATE = "1";
   /**
    * Delete action code
    */
-  public static String SPY_ACTION_DELETE = "2";
+  public static final String SPY_ACTION_DELETE = "2";
   /**
    * Update action code
    */
-  public static String SPY_ACTION_UPDATE = "3";
+  public static final String SPY_ACTION_UPDATE = "3";
   // Level 1
   /**
    * The Bus module's name
@@ -219,9 +215,9 @@ public class SilverTrace {
    */
   public static final String MODULE_LIBRARIES = "libraries";
   // Available modules
-  protected static Properties availableModules = new Properties();
+  protected static final Properties availableModules = new Properties();
   // Messages
-  protected static MsgTrace traceMessages = new MsgTrace();
+  protected static final MsgTrace traceMessages = new MsgTrace();
   // Directory to the error files
   protected static String errorDir = null;
   // Init finished

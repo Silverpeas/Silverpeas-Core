@@ -22,25 +22,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.silverstatistics.control;
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
-import java.rmi.RemoteException;
+package com.silverpeas.silverstatistics;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBHome;
+public class UserIdCountVolumeCouple {
+  private String userId;
+  private int countVolume;
 
-/**
- * Interface declaration
- * @author SLR
- */
-public interface SilverStatisticsHome extends EJBHome {
+  public String getUserId() {
+    return userId;
+  }
 
-  /**
-   * Method declaration
-   * @return
-   * @throws CreateException
-   * @throws RemoteException
-   * @see
-   */
-  SilverStatistics create() throws RemoteException, CreateException;
+  public void setUserId(String id) {
+    userId = id;
+  }
+
+  public int getCountVolume() {
+    return countVolume;
+  }
+
+  public void setCountVolume(int volume) {
+    countVolume = volume;
+  }
 }

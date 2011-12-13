@@ -40,6 +40,7 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
@@ -188,11 +189,11 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     profile.setName("admin");
     profile.addUser(userId);
     String profileId = ac.addSpaceProfileInst(profile, userId);
-    assertEquals("1", profileId);
+    assertEquals("4", profileId);
 
     // test inheritance
     assertEquals(true, ac.isComponentAvailable("almanach2", userId));
-    // remove user from space profile
+    // remove users from space profile
     profile = ac.getSpaceProfileInst(profileId);
     profile.removeAllUsers();
     ac.updateSpaceProfileInst(profile, userId);
@@ -211,7 +212,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     profile.setName("Manager");
     profile.addUser(userId);
     String profileId = ac.addSpaceProfileInst(profile, userId);
-    assertEquals("1", profileId);
+    assertEquals("4", profileId);
 
     // set user2 as simple reader on space
     profile = new SpaceProfileInst();
@@ -219,7 +220,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     profile.setName("reader");
     profile.addUser("2");
     profileId = ac.addSpaceProfileInst(profile, "1");
-    assertEquals("2", profileId);
+    assertEquals("5", profileId);
 
     // test if user1 is manager of at least one space
     Admin admin = new Admin();
@@ -337,6 +338,48 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     assertEquals(1, targetSubSpaceIds.length);
     assertEquals(expectedSpaceId, targetSubSpaceIds[targetSubSpaceIds.length - 1]);
 
+  }
+  
+  @Test
+  public void testApplicationMove() throws AdminException {
+    AdminController admin = getAdminController();
+    
+    String sourceId = "WA1";
+    String destId = "WA3";
+    String componentId = "kmelia1";
+    SpaceInst dest = admin.getSpaceInstById(destId);
+    
+    admin.moveComponentInst(destId, componentId, "", dest.getAllComponentsInst().toArray(new ComponentInst[0]));
+    
+    SpaceInst source = admin.getSpaceInstById(sourceId);
+    assertEquals(0, source.getAllComponentsInst().size());
+    
+    dest = admin.getSpaceInstById(destId);
+    assertEquals(1, dest.getAllComponentsInst().size());
+    
+    ComponentInst component = admin.getComponentInst(componentId);
+    ProfileInst profile = component.getInheritedProfileInst("publisher");
+    assertEquals(1, profile.getAllUsers().size());
+    
+    boolean accessAllowed = admin.isComponentAvailable(componentId, "1");
+    assertEquals(false, accessAllowed);
+    
+    assertEquals(true, profile.getAllUsers().contains("2"));
+    
+    // add rights to space
+    SpaceProfileInst newProfile = new SpaceProfileInst();
+    newProfile.setName("writer");
+    newProfile.setSpaceFatherId(destId);
+    newProfile.addUser("1");
+    String newProfileId = admin.addSpaceProfileInst(newProfile, userId);
+    assertEquals("4", newProfileId);
+    
+    // check propagation
+    component = admin.getComponentInst(componentId);
+    assertEquals(3, component.getAllProfilesInst().size());
+    
+    accessAllowed = admin.isComponentAvailable(componentId, "1");
+    assertEquals(true, accessAllowed);
   }
 
   @Override

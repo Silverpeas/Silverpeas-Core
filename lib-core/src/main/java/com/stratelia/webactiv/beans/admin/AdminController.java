@@ -468,18 +468,16 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  // NEWD DLE
   /** Move the component Instance in the given space with the given componentId */
   public void moveComponentInst(String spaceId, String componentId,
       String idComponentBefore, ComponentInst[] componentInsts)
       throws AdminException {
     SilverTrace.info("admin", "AdminController.moveComponentInst",
-        "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD", "moving "+componentId+" in space "+spaceId);
     getAdminService().moveComponentInst(spaceId, componentId, idComponentBefore,
         componentInsts);
   }
 
-  // NEWF DLE
   /**
    * Return the component ids available for the cuurent user Id in the given space id
    */

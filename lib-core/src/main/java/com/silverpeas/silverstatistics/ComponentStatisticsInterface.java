@@ -22,10 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.silverstatistics.control;
+package com.silverpeas.silverstatistics;
 
 import java.util.Collection;
 
 public interface ComponentStatisticsInterface {
-  public Collection getVolume(String spaceId, String componentId) throws Exception;
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
+      Exception;
 }

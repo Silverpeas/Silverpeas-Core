@@ -39,6 +39,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 {
 	String help = parameter.getHelp();
 	if (help != null) {
+	  	help = EncodeHelper.javaStringToHtmlString(help);
 		out.println("<td align=\"left\">");
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 		out.println("</td>");

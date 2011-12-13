@@ -43,8 +43,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-public class ScheduledReservedFile
-        implements SchedulerEventListener {
+public class ScheduledReservedFile implements SchedulerEventListener {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";
   private ResourceLocator resources = new ResourceLocator(

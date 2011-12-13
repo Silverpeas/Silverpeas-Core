@@ -50,6 +50,10 @@ public class Space {
     return new ArrayList<ComponentInstLight>(components.values());
   }
   
+  public void clearComponents() {
+    components.clear();
+  }
+  
   public List<String> getComponentIds() {
     List<String> ids = new ArrayList<String>(components.size());
     for (ComponentInstLight component : components.values()) {
