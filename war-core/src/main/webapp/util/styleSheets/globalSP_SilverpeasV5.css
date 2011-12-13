@@ -3791,9 +3791,6 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 }
 
 /*- [ comment BEGIN ] ------------------------- */
-.commentaires {
-	width:550px;
-}
 
 .commentaires hr{
 	clear:both;
@@ -3804,28 +3801,41 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 	color:#CECECE;
 
 }
-.commentaires .oneComment {
-	width:525px;
+.commentaires .oneComment, .commentaires #edition-box {
+	background-color:#F0F0F0;
+	border:1px solid #CECECE;
+	border-radius:10px;
+		moz-border-radius:10px;
+		webkit-border-radius:10px;
+	padding:10px;
 	position:relative;
-	clear:both;
-	background:transparent url(../icons/commentBottom.png) bottom left no-repeat;
-	margin-bottom:10px;
+	margin:70px 2em 0;    
 }
-.commentaires .oneComment div {
-	background:transparent url(../icons/commentTop.png) left top no-repeat;
-	}
-.commentaires .oneComment div div { background-image:none;}
 
-.commentaires .oneComment div.avatar {
+.commentaires #edition-box {
+    padding-top: 24px;
+}
+
+ /* slt pour ie8 bug sous ie7*/
+html>/**/body .commentaires #edition-box ,
+html>/**/body .commentaires .oneComment{
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+.commentaires div.avatar {
 	position:absolute;
 	top:0;
 	left:0;
 	border:1px solid #CECECE;
 	padding:1px;
 	background-color:#FFF;
+	top:-50px;
+	left:-1em;
 	}
-.commentaires .oneComment div.avatar img {
-	width:50px;}
+.commentaires div.avatar img {
+	width:50px;
+	height:auto;
+	}
 
 .commentaires .oneComment .action {
 	bottom: 10px;
@@ -3837,29 +3847,40 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 	height: 13px;
 }
 
+.commentaires #edition-box .title , .commentaires .oneComment p.author{
+  font-size: 8pt;
+  color: #111111;    
+  height: 20px;
+  margin:0;
+  position:absolute;
+  top:-40px;
+  left:0;
+  line-height:10px;
+  padding:0 0 20px 50px;
+  background:transparent url(../icons/commentStartBubble.gif) 50px bottom no-repeat;
+}
 .commentaires .oneComment p.author {
-	color: #333333;
-    font-size: 12px;
-    padding: 6px 64px;
-	margin:0;
+	color:#26334A;
 	}
 .commentaires .oneComment .date {
 	color:#999;
 	font-size:11px;
 }
 
-.commentaires .oneComment .text {
-	font-size: 11px;
-    line-height: 16px;
-    padding:27px 12px 23px 23px;
+.commentaires .oneComment .text {      
+	color: #888888;
+    font-family: Arial;
+    font-size: 13px;
+    line-height: 120%;
+    margin: 0;
+    padding: 0;
     text-align: justify;
     text-indent: 41px;
-	margin:0;
-	white-space: normal;
+    white-space: normal;
 }
+.commentaires .oneComment .text a { font-size: 13px;}
 
 .commentaires #list-box {
-  padding: 1em;
 }
 
 .commentaires #list-box .action {
@@ -3869,22 +3890,15 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 .commentaires #update-box {
 }
 
-.commentaires #edition-box {
-}
-
-.commentaires #edition-box .title {
-  font-size: 8pt;
-  font-weight: bold;
-  color: #111111;
-  padding-right: 50px;
-  vertical-align: top;
-  text-align: left;
-}
 
 #comments-update-box .text,
 .commentaires #edition-box .text {
-  width: 95%;
-  height: 6em;
+	width: 95%;
+	height: 3em;
+	color: #888888;
+    font-family: Arial;
+    font-size: 13px;
+    line-height: 120%;
 }
 
 .commentaires .buttons {

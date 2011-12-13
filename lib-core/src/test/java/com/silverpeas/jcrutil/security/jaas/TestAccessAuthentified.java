@@ -36,12 +36,12 @@ import javax.jcr.nodetype.NodeType;
 
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.JcrConstants;
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.util.MimeTypes;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -73,7 +73,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       BasicDaoFactory.logout(session);
     }
   }
-
+  
   @Test
   public void testAccessFileOwnable() throws Exception {
     Session session = null;
@@ -94,7 +94,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
       session.save();
     } catch (Exception ex) {
-      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -112,7 +111,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
           BART_PASSWORD);
       validateFile(session, true, true);
     } catch (Exception ex) {
-      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -162,7 +160,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
           BART_PASSWORD);
       validateFile(session, true, false);
     } catch (Exception ex) {
-      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -230,7 +227,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       session = BasicDaoFactory.getSystemSession();
       validateFolder(session, true);
     } catch (Exception ex) {
-      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -240,7 +236,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
           BART_PASSWORD);
       validateFolder(session, true);
     } catch (Exception ex) {
-      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -250,7 +245,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       session = BasicDaoFactory.getAuthentifiedSession("lsimpson", "lisa");
       validateFolder(session, true);
     } catch (Exception ex) {
-      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -283,7 +277,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
           BART_PASSWORD);
       validateFolder(session, false);
     } catch (Exception ex) {
-      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -301,7 +294,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
 
   @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this.getClass().getResourceAsStream(
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(this.getClass().getResourceAsStream(
         "test-jcrutil-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
