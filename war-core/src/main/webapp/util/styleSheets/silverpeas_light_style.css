@@ -45,7 +45,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	color:#666666;
 	left: 140px;
 }
-#outils {
+#outils{
 	bottom:inherit;
 	font-size:10px;
 	height:20px;
@@ -58,20 +58,38 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	background-color:#FFFFFF;
 	border:1px solid #BFBFBF ;
 	border-radius: 0px 0px 10px 10px;
-	-moz-border-radius: 0px 0px 10px 10px;
-	-webkit-border-radius: 0px 0px 10px 10px;
+		-moz-border-radius: 0px 0px 10px 10px;
+		-webkit-border-radius: 0px 0px 10px 10px;
 	box-shadow:0 10px 10px 2px #EAEAE8 inset;
-	-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset;
-	-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset;
+		-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset;
+		-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset;
+	border-top:0;
+}
+#outilsAdmin{
+	bottom:inherit;
+	font-size:10px;
+	height:20px;
+	position:absolute;
+	text-align:right;
+	width:auto;
+	top:0px;
+	padding:2px 8px;
+	background-color:#FFFFFF;
+	border:1px solid #BFBFBF ;
+		-moz-border-radius: 0px 0px 10px 10px;
+		-webkit-border-radius: 0px 0px 10px 10px;
+	border-radius: 0px 0px 10px 10px;
+	box-shadow:0 10px 10px 2px #EAEAE8 inset;
+		-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset;
+		-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset;
 	border-top:0;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
-
-#outils a {
+#outils a , #outilsAdmin  a{
 	color:#666;
 	line-height:20px
 	}
-#outils a:hover, #outils a:focus {
+#outils a:hover, #outils a:focus, #outilsAdmin  a:hover, #outilsAdmin  a:focus {
 	color:#000;}
 
 #administration{
@@ -252,9 +270,9 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 
 .contentSpace .contentSpace .browseSpace {
 	padding-right:0;
-	}
+}
 
-.spaceLevel1, .spaceLevel1On {
+.spaceLevel1, .spaceLevel1On, .treeview-label , .domains-label{
 	background-color:transparent;
 	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/puceSpace.png");
 	background-position:5px 3px;
@@ -264,15 +282,26 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	margin-right:0;
 	padding-left:13px;
 	height:100%;
-
 }
-.spaceLevel1 a.spaceURL{
+
+.treeview-label , .domains-label  {
+	font-size:14px; 
+	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/puceAdmin.png");
+	color:#333; 
+	font-weight:bold;    
+	line-height: 250%;
+    padding: 4px 38px 0;
+	display:block;
+	border:0;
+}	
+
+.spaceLevel1 a.spaceURL {
 	line-height:120%;
 	display:block;
 	padding:4px 0 8px;
 	position:relative;
 }
-#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL{
 	margin-left:19px;}
 
 .browseSpace {
