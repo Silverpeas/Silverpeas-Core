@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -45,6 +46,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -71,7 +73,7 @@ public class LoginPasswordAuthentication {
   static final protected String m_KeyStoreDomainIdColumnName;
   static protected Hashtable<String, String> m_Domains = new Hashtable<String, String>();
   static protected List<Domain> domains = new ArrayList<Domain>();
-  static protected List<String> m_DomainsIds;
+  static protected List<String> m_DomainsIds = new ArrayList<String>();
   static final protected String m_UserTableName;
   static final protected String m_UserIdColumnName;
   static final protected String m_UserLoginColumnName;
@@ -94,15 +96,13 @@ public class LoginPasswordAuthentication {
     m_DomainTableName = propFile.getString("SQLDomainTableName");
     m_DomainIdColumnName = propFile.getString("SQLDomainIdColumnName");
     m_DomainNameColumnName = propFile.getString("SQLDomainNameColumnName");
-    m_DomainAuthenticationServerColumnName = propFile
-        .getString("SQLDomainAuthenticationServerColumnName");
+    m_DomainAuthenticationServerColumnName =
+        propFile.getString("SQLDomainAuthenticationServerColumnName");
 
     m_KeyStoreTableName = propFile.getString("SQLKeyStoreTableName");
     m_KeyStoreKeyColumnName = propFile.getString("SQLKeyStoreKeyColumnName");
-    m_KeyStoreLoginColumnName = propFile
-        .getString("SQLKeyStoreLoginColumnName");
-    m_KeyStoreDomainIdColumnName = propFile
-        .getString("SQLKeyStoreDomainIdColumnName");
+    m_KeyStoreLoginColumnName = propFile.getString("SQLKeyStoreLoginColumnName");
+    m_KeyStoreDomainIdColumnName = propFile.getString("SQLKeyStoreDomainIdColumnName");
 
     m_UserTableName = propFile.getString("SQLUserTableName");
     m_UserIdColumnName = propFile.getString("SQLUserIdColumnName");
@@ -148,16 +148,7 @@ public class LoginPasswordAuthentication {
    * Close connection to Silverpeas database
    */
   static protected void closeConnection(Connection con) {
-    try {
-      if (con != null) {
-        con.close();
-      }
-    } catch (SQLException ex) {
-      // The exception that could occur in the emergency stop is not
-      // interresting, we must keep the first occured exception
-      SilverTrace.error("authentication", "LoginPasswordAuthentication.storeAuthenticationKey()",
-          "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", ex);
-    }
+    DBUtil.close(con);
   }
 
   /**
@@ -182,7 +173,9 @@ public class LoginPasswordAuthentication {
   }
 
   static public void initDomains() {
-    m_DomainsIds = new ArrayList<String>();
+    m_DomainsIds.clear();
+    m_Domains.clear();
+    domains.clear();
     try {
       Domain[] allDomains = admin.getAllDomains();
       for (Domain domain : allDomains) {
@@ -210,26 +203,18 @@ public class LoginPasswordAuthentication {
       return null;
     }
 
-    String key = null;
-
     Connection m_Connection = null;
     try {
       // Open connection
       m_Connection = openConnection();
 
-      // Get authentification server name
-      String authenticationServerName = getAuthenticationServerName(
-          m_Connection, domainId);
-
-      // Build a AuthenticationServer instance
-      AuthenticationServer authenticationServer = new AuthenticationServer(
-          authenticationServerName);
+      AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
 
       // Authentification test
       authenticationServer.authenticate(login, password, request);
 
       // Generate a random key and store it in database
-      key = getAuthenticationKey(login, domainId);
+      String key = getAuthenticationKey(login, domainId);
 
       if (request != null) {
         // Store information about password change capabilities in HTTP session
@@ -336,22 +321,18 @@ public class LoginPasswordAuthentication {
       String newPassword, String domainId) throws AuthenticationException {
     // Test data coming from calling page
     if (login == null || oldPassword == null || domainId == null
-        || newPassword == null)
+        || newPassword == null) {
       throw new AuthenticationBadCredentialException("LoginPasswordAuthentication.changePassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
+    }
 
     Connection m_Connection = null;
     try {
       // Open connection
       m_Connection = openConnection();
 
-      // Get authentification server name
-      String authenticationServerName = getAuthenticationServerName(
-          m_Connection, domainId);
-
-      // Build a AuthenticationServer instance
-      AuthenticationServer authenticationServer = new AuthenticationServer(
-          authenticationServerName);
+      AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
+      
       // Authentification test
       authenticationServer.changePassword(login, oldPassword, newPassword);
     } catch (AuthenticationException ex) {
@@ -383,7 +364,7 @@ public class LoginPasswordAuthentication {
       rs = stmt.executeQuery(query);
       if (rs.next()) {
         String serverName = rs.getString(m_DomainAuthenticationServerColumnName);
-        if (serverName == null || serverName.length() == 0) {
+        if (!StringUtil.isDefined(serverName)) {
           throw new AuthenticationException(
               "LoginPasswordAuthentication.getAuthenticationServerName()",
               SilverpeasException.ERROR, "authentication.EX_SERVER_NOT_FOUND",
@@ -415,15 +396,10 @@ public class LoginPasswordAuthentication {
    */
   public String getAuthenticationKey(String login, String domainId)
       throws AuthenticationException {
-    java.util.Date date = new java.util.Date();
-    long nStart = 0;
-    Random rand = null;
-    int key = 0;
-
     // Random key generation
-    nStart = login.hashCode() * date.getTime() * (m_AutoInc++);
-    rand = new Random(nStart);
-    key = rand.nextInt();
+    long nStart = login.hashCode() * new Date().getTime() * (m_AutoInc++);
+    Random rand = new Random(nStart);
+    int key = rand.nextInt();
 
     String sKey = String.valueOf(key);
 
@@ -473,12 +449,9 @@ public class LoginPasswordAuthentication {
       // Open connection
       connection = openConnection();
 
-      // Get authentification server name
-      String authenticationServerName = getAuthenticationServerName(connection, domainId);
-
       // Build a AuthenticationServer instance
-      AuthenticationServer authenticationServer = new AuthenticationServer(
-          authenticationServerName);
+      AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
+      
       // Authentification test
       authenticationServer.resetPassword(login, newPassword);
     } catch (AuthenticationException ex) {
@@ -491,20 +464,15 @@ public class LoginPasswordAuthentication {
   }
 
   public boolean isPasswordChangeAllowed(String domainId) {
-    boolean isPasswordChangeAllowed = false;
     Connection m_Connection = null;
     try {
       // Open connection
       m_Connection = openConnection();
 
-      // Get authentification server name
-      String authenticationServerName = getAuthenticationServerName(m_Connection, domainId);
-
       // Build a AuthenticationServer instance
-      AuthenticationServer authenticationServer =
-          new AuthenticationServer(authenticationServerName);
+      AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
 
-      isPasswordChangeAllowed = authenticationServer.isPasswordChangeAllowed();
+      return authenticationServer.isPasswordChangeAllowed();
     } catch (AuthenticationException ex) {
       SilverTrace.error("authentication", "LoginPasswordAuthentication.isPasswordChangeAllowed()",
           "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception=" +
@@ -512,7 +480,16 @@ public class LoginPasswordAuthentication {
     } finally {
       closeConnection(m_Connection);
     }
-    return isPasswordChangeAllowed;
+    return false;
+  }
+  
+  private AuthenticationServer getAuthenticationServer(Connection con, String domainId)
+      throws AuthenticationException {
+    // Get authentication server name
+    String authenticationServerName = getAuthenticationServerName(con, domainId);
+
+    // Build a AuthenticationServer instance
+    return new AuthenticationServer(authenticationServerName);
   }
 
 }
