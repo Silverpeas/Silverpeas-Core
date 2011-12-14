@@ -23,10 +23,10 @@
  */
 package com.stratelia.webactiv.node;
 
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -37,6 +37,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 
 public class NodeInstanciator extends SQLRequest {
@@ -59,8 +60,13 @@ public class NodeInstanciator extends SQLRequest {
           InstanciationException {
     SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "spaceId = " + spaceId + ", componentId = " + componentId);
-    setDeleteQueries();
-    deleteDataOfInstance(con, componentId, "Node");
+    NodeBm nodeBm = getNodeBm();
+    try {
+      nodeBm.removeNode(new NodePK("0", componentId));
+    } catch (RemoteException ex) {
+      SilverTrace.error("node", "NodeInstanciator.delete()",
+                "root.EX_NO_MESSAGES", ex.getMessage(), ex);
+    }
     deleteFavorites(con, componentId);
     SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD",
             "spaceId = " + spaceId + ", componentId = " + componentId);
@@ -82,32 +88,6 @@ public class NodeInstanciator extends SQLRequest {
         prepStmt.close();
       } catch (SQLException err_closeStatement) {
         SilverTrace.error("node", "NodeInstanciator.deleteFavorites()",
-                "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
-      }
-    }
-  }
-
-  /**
-   * Delete all data of one forum instance from the forum table.
-   * @param con (Connection) the connection to the data base
-   * @param componentId (String) the instance id of the Silverpeas component forum.
-   * @param suffixName (String) the suffixe of a Forum table
-   */
-  private void deleteDataOfInstance(Connection con, String componentId,
-          String suffixName) throws InstanciationException {
-    Statement stmt = null;
-    String deleteQuery = getDeleteQuery(componentId, suffixName);
-    try {
-      stmt = con.createStatement();
-      stmt.executeUpdate(deleteQuery);
-    } catch (SQLException se) {
-      throw new InstanciationException("NodeInstanciator.deleteDataOfInstance()",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
-    } finally {
-      try {
-        stmt.close();
-      } catch (SQLException err_closeStatement) {
-        SilverTrace.error("node", "NodeInstanciator.deleteDataOfInstance()",
                 "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
       }
     }
