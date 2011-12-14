@@ -173,29 +173,29 @@ function checkSubmit(ev)
                                 <p><label><span><fmt:message key="authentication.logon.login" /></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
                                 <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
 							  
-					 <% if (domains != null && domains.size() == 1) { %>
+					 <% if (listDomains != null && listDomains.size() == 1) { %>
                             <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
                      <%	} else { %>
                           <p><label><span><fmt:message key="authentication.logon.domain" /></span>
 								<select id="DomainId" name="DomainId" size="1">
-									<% if (domains==null ||domains.isEmpty()) { %>
+									<% if (listDomains==null ||listDomains.isEmpty()) { %>
 										<option> --- </option>
 									<%  } else {
 										String dId 		= null;
 										String dName 	= null;
 										String selected	= "";
-											
-										for (Enumeration e = domains.keys() ; e.hasMoreElements() ;)
-										{
-											dId 		= (String) e.nextElement();
-											dName 		= (String) domains.get(dId);
-											selected 	= "";
-											
-											if (dId.equals(request.getAttribute("Silverpeas_DomainId")))
-												selected = "selected=\"selected\"";
-									%>
-										<option value="<%=dId%>" <%=selected%>><%=dName%></option>
-									<%  }
+										for (Domain curDomain : listDomains) {
+                                          dId = curDomain.getId();
+                                          dName = curDomain.getName();
+                                          selected  = "";
+                                          
+                                          if (dId.equals(request.getAttribute("Silverpeas_DomainId"))) {
+                                            selected = "selected=\"selected\"";
+                                          }
+                                      %>
+                                        <option value="<%=dId%>" <%=selected%>><%=dName%></option>
+                                      <%  
+                                      }
 									}
 										%>
 								</select>
@@ -235,8 +235,8 @@ function checkSubmit(ev)
 			/* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
 			if(domainId == null && GetCookie("defaultDomain") != null)
 			{ 
-				<% for (int i = 0 ; i < domains.size() && domains.size() > 1; i++) { %>
-					if (GetCookie("defaultDomain").toString() == "<%=((String)domainIds.get(i))%>")
+				<% for (int i = 0 ; i < listDomains.size() && listDomains.size() > 1; i++) { %>
+					if (GetCookie("defaultDomain").toString() == "<%=(listDomains.get(i).getId())%>")
 					{
 						document.getElementById("DomainId").options[<%=i%>].selected = true;
 					}

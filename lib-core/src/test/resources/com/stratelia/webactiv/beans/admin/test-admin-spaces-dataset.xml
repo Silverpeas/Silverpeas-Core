@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<dataset>  
+<dataset>
+  <st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propFileName="-" className="-" authenticationServer="-" />
+  <st_domain id="0" name="domainSilverpeas" description="default domain for Silverpeas" propFileName="com.stratelia.silverpeas.domains.domainSP" className="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationServer="autDomainSP"  />
+  <st_domain id="1" name="SILVERPEAS" description="Zimbra Silverpeas" propFileName="com.stratelia.silverpeas.domains.domainSILVERPEAS" className="com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver" authenticationServer="autDomainSILVERPEAS"  />
+  <st_domain id="2" name="Customer" description="Domaine spécifique du client" propFileName="com.stratelia.silverpeas.domains.domainCustomer" className="com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver" authenticationServer="autDomainCustomer"  />
   <st_component id="1" componentname="connecteurJDBC"/>
   <st_component id="2" componentname="outlook"/>
   <st_component id="3" componentname="quickinfo"/>
