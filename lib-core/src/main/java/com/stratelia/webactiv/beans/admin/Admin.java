@@ -434,7 +434,7 @@ public final class Admin {
         // Delete the components
         ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
         for (ComponentInst anAlCompoInst : alCompoInst) {
-          deleteComponentInst(userId, anAlCompoInst.getId(), true, false);
+          deleteComponentInst(userId, getClientComponentId(anAlCompoInst), true, false);
         }
 
         // Delete the components already in bin
@@ -1284,14 +1284,16 @@ public final class Admin {
   }
 
   /**
-   * Delete the given component from Silverpeas
+   * Deletes the given component instance in Silverpeas
    *
-   * @param userId
-   * @param componentId
-   * @param definitive
-   * @param startNewTransaction
-   * @return
-   * @throws AdminException
+   * @param userId the unique identifier of the user requesting the deletion.
+   * @param componentId the client identifier of the component instance (for a kmelia instance of id
+   * 666, the client identifier of the instance is kmelia666)
+   * @param definitive is the component instance deletion is definitive? If not, 
+   * the component instance is moved into the bin.
+   * @param startNewTransaction is the deletion has to occur within a new transaction?
+   * @return the client component instance identifier.
+   * @throws AdminException if an error occurs while deleting the component instance.
    */
   public String deleteComponentInst(String userId, String componentId, boolean definitive,
           boolean startNewTransaction) throws AdminException {
