@@ -3301,12 +3301,7 @@ public final class Admin {
    */
   public Domain[] getAllDomains() throws AdminException {
     try {
-      List<Domain> domains = DomainCache.getDomains();
-      if (domains.isEmpty()) {
-        domains = Arrays.asList(domainDriverManager.getAllDomains());
-        DomainCache.setDomains(domains);
-      }
-      return (Domain[]) domains.toArray(new Domain[0]);
+      return domainDriverManager.getAllDomains();
     } catch (Exception e) {
       throw new AdminException("Admin.getAllDomains",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_DOMAINS", e);
