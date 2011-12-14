@@ -32,7 +32,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.springframework.beans.BeansException;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 

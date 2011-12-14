@@ -152,4 +152,19 @@ public class AdminTest extends AbstractTestDao {
       assertEquals(expectedResult[i], result[i]);
     }
   }
+  
+  /**
+   * Test of getAllDomains method of class Admin
+   * @see redmine #2540
+   */
+  @Test
+  public void testGetAllDomains() throws Exception {
+    Domain[] domains = instance.getAllDomains();
+    assertNotNull(domains);
+    assertEquals(3, domains.length);
+    // Check that domains are ordered by name.
+    assertEquals("Customer", domains[0].getName());
+    assertEquals("domainSilverpeas", domains[1].getName());
+    assertEquals("SILVERPEAS", domains[2].getName());
+  }
 }
