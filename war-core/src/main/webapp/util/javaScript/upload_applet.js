@@ -87,10 +87,10 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessag
   addParam(objectDND, "postURL", targetURL);
   addParam(objectDND, "message", message);
   addParam(objectDND, "uploadPolicy", "SilverpeasUploadPolicy");
+  addParam(objectDND, "stringUploadSuccess", "^(SUCCESS|pubid=(.*))$")
   addParam(objectDND, "showLogWindow", "false");
   addParam(objectDND, "showStatusBar", "true");
-  addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%message%')");
-  addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%message%')");
+  addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%body%')");
   addParam(objectDND, "ftpCreateDirectoryStructure", "true");
   addParam(objectDND, "maxFileSize", max_upload);
   addParam(objectDND, "bgcolor_r", "245");
