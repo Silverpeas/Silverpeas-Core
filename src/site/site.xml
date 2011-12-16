@@ -38,6 +38,20 @@
     <artifactId>silverpeas-site-skin</artifactId>
     <version>1.6-SNAPSHOT</version>
   </skin>
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>true</topBarEnabled>
+      <!--
+      <topBarIcon>
+        <name>Maven Fluido Skin</name>
+        <alt>Maven Fluido Skin</alt>
+        <src>/images/tlogo-silverpeas.png</src>
+        <href>/index.html</href>
+      </topBarIcon>
+      <searchEnabled>false</searchEnabled>
+      -->
+    </fluidoSkin>
+  </custom>
   <!-- Powered By -->
   <poweredBy>
     <logo name="Netbeans 7.0" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />

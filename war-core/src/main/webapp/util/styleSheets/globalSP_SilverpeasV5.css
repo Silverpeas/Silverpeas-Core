@@ -196,6 +196,7 @@ Definition des class de style Silverpeas
 
 .header h4{
 	font-size:110%;
+	min-width:300px;
 }
 
 * html 	.bgDegradeGris {
@@ -457,6 +458,10 @@ Definition des class de style Silverpeas
 	white-space: nowrap;
 	padding: 5px;
 	white-space: nowrap;
+}
+
+#agenda #rss img {
+	border:0;
 }
 
 #agenda #today a {
@@ -1333,6 +1338,10 @@ td.browsebar a:hover {
 	color: #FFF;
 }
 
+#spacePerso  a img {
+	border:0;
+}
+
 #spacePerso .contentSpace {
 	margin-top: 7px;
 	margin-left: 10px;
@@ -1660,6 +1669,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 	text-align: left;
 }
 
+.ArrayCell img {
+	border: 0;
+}
+
 .ArrayNavigation {
 	background-image:
 		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
@@ -1790,6 +1803,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /*- [ admin ] --------------------------- */
+#admin-treeview  img{ 
+	border:none;
+}
+
 #portletPages h2 {
 	font-size: 12px;
 }
@@ -3203,8 +3220,9 @@ caption {
 	background-color:#FFF;
 	text-align:center;
 }
-#myProfile #myProfileFiche  .profilPhotoContact img {
+#myProfile #myProfileFiche .profilPhotoContact img {
 	height:62px;
+	border: 0px;
 }
 /*- [ myProfile END ] --------------------------- */
 
@@ -3283,6 +3301,10 @@ caption {
 }
 #publicProfile .profilPhoto img {
 	height:140px;
+}
+
+.profilPhoto img {
+	border:0;
 }
 
 #publicProfileFiche {color:#909090; font-size:11px;}
@@ -4161,6 +4183,10 @@ html:not([lang*=""]) .add_position:hover {
 	clear:both;
 	display:block;
 	float:none;
+}
+
+.classification .field img {
+	border: 0px;
 }
 
 .classification.preview .list_pdc_position {
