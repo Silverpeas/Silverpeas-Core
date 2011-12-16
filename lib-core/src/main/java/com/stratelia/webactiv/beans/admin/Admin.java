@@ -407,8 +407,7 @@ public final class Admin {
 
         // notify logical deletion
         notifyOnSpaceLogicalDeletion(spaceId, userId);
-      }
-      else {
+      } else {
         // Get all the sub-spaces
         String[] subSpaceIds = getAllSubSpaceIds(spaceId);
 
@@ -592,8 +591,7 @@ public final class Admin {
       // Convert the client id in driver id
       if (useDriverSpaceId) {
         driverSpaceId = spaceId;
-      }
-      else {
+      } else {
         driverSpaceId = getDriverSpaceId(spaceId);
       }
 
@@ -1138,8 +1136,7 @@ public final class Admin {
       String componentId;
       if (componentInst.getId().startsWith(componentInst.getName())) {
         componentId = componentInst.getId();
-      }
-      else {
+      } else {
         componentId = componentInst.getName().concat(componentInst.getId());
       }
       FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
@@ -1338,8 +1335,7 @@ public final class Admin {
 
         componentManager.sendComponentToBasket(domainDriverManager, sDriverComponentId,
             componentInst.getLabel() + Admin.basketSuffix, userId);
-      }
-      else {
+      } else {
         connectionProd = openConnection(productionDbUrl, productionDbLogin, productionDbPassword,
             false);
 
@@ -1510,8 +1506,7 @@ public final class Admin {
         for (ProfileInst profile : inheritedProfiles) {
           deleteProfileInst(profile.getId(), false);
         }
-      }
-      else {
+      } else {
         // suppression des droits du composant
         List<ProfileInst> profiles = component.getProfiles();
         for (ProfileInst profile : profiles) {
@@ -1609,8 +1604,7 @@ public final class Admin {
       if (inheritedProfile != null) {
         inheritedProfile.removeAllGroups();
         inheritedProfile.removeAllUsers();
-      }
-      else {
+      } else {
         inheritedProfile = new ProfileInst();
         inheritedProfile.setComponentFatherId(component.getId());
         inheritedProfile.setInherited(true);
@@ -1635,8 +1629,7 @@ public final class Admin {
 
       if (StringUtil.isDefined(inheritedProfile.getId())) {
         updateProfileInst(inheritedProfile, null, false);
-      }
-      else {
+      } else {
         if (!inheritedProfile.isEmpty()) {
           addProfileInst(inheritedProfile, null, false);
         }
@@ -1760,8 +1753,7 @@ public final class Admin {
     if (wac != null) {
       List<Profile> profiles = wac.getProfiles();
       List<String> profileNames = new ArrayList<String>(profiles.size());
-      for (Profile profile :
-          profiles) {
+      for (Profile profile : profiles) {
         profileNames.add(profile.getName());
       }
       asProfiles = profileNames.toArray(new String[profileNames.size()]);
@@ -2250,8 +2242,7 @@ public final class Admin {
               }
             }
             updateProfileInst(inheritedProfile);
-          }
-          else {
+          } else {
             inheritedProfile = new ProfileInst();
             inheritedProfile.setComponentFatherId(component.getId());
             inheritedProfile.setName(componentRole);
@@ -2277,8 +2268,7 @@ public final class Admin {
           subSpaceProfile.setGroups(spaceProfile.getAllGroups());
           subSpaceProfile.setUsers(spaceProfile.getAllUsers());
           updateSpaceProfileInst(subSpaceProfile);
-        }
-        else {
+        } else {
           subSpaceProfile = new SpaceProfileInst();
           subSpaceProfile.setName(spaceProfile.getName());
           subSpaceProfile.setInherited(true);
@@ -2388,9 +2378,7 @@ public final class Admin {
       return ArrayUtil.EMPTY_GROUP_ARRAY;
     }
     Group[] aGroup = new Group[asGroupId.length];
-    for (int nI = 0;
-        nI < asGroupId.length;
-        nI++) {
+    for (int nI = 0; nI < asGroupId.length; nI++) {
       aGroup[nI] = getGroup(asGroupId[nI]);
     }
     return aGroup;
@@ -2598,8 +2586,7 @@ public final class Admin {
         // Roll back the transactions
         domainDriverManager.rollback();
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.removeUserFromGroup", "root.EX_ERR_ROLLBACK",
-            e1);
+        SilverTrace.error("admin", "Admin.removeUserFromGroup", "root.EX_ERR_ROLLBACK", e1);
       }
       throw new AdminException("Admin.removeUserFromGroup", SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE_GROUP", "groupId = " + sGroupId + ", userId = " + sUserId, e);
@@ -2626,8 +2613,7 @@ public final class Admin {
         // Roll back the transactions
         domainDriverManager.rollback();
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.addUserInGroup", "root.EX_ERR_ROLLBACK",
-            e1);
+        SilverTrace.error("admin", "Admin.addUserInGroup", "root.EX_ERR_ROLLBACK", e1);
       }
       throw new AdminException("Admin.addUserInGroup", SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE_GROUP", "groupId = " + sGroupId + ", userId = " + sUserId, e);
@@ -2679,8 +2665,7 @@ public final class Admin {
    * Get the group profile instance corresponding to the given ID
    */
   public GroupProfileInst getGroupProfileInst(String groupId) throws AdminException {
-    return groupProfileManager.getGroupProfileInst(domainDriverManager, null,
-        groupId);
+    return groupProfileManager.getGroupProfileInst(domainDriverManager, null, groupId);
   }
 
   public String addGroupProfileInst(GroupProfileInst spaceProfileInst)
@@ -2925,9 +2910,7 @@ public final class Admin {
         throw new AdminException("Admin.getUserIdByLoginAndDomain", SilverpeasException.ERROR,
             "admin.EX_ERR_USER_NOT_FOUND", "login: '" + sLogin + "', in all domains");
       }
-    }
-    else {
-
+    } else {
       valret = userManager.getUserIdByLoginAndDomain(domainDriverManager, sLogin,
           sDomainId);
     }
@@ -2999,8 +2982,7 @@ public final class Admin {
       }
 
       // add user
-      String sUserId = userManager.addUser(domainDriverManager, userDetail,
-          addOnlyInSilverpeas);
+      String sUserId = userManager.addUser(domainDriverManager, userDetail, addOnlyInSilverpeas);
 
       // Commit the transaction
       domainDriverManager.commit();
@@ -3230,7 +3212,7 @@ public final class Admin {
    * Converts client space id to driver space id
    */
   private String getDriverSpaceId(String sClientSpaceId) {
-    if ((sClientSpaceId != null) && (sClientSpaceId.startsWith(SPACE_KEY_PREFIX))) {
+    if (sClientSpaceId != null && sClientSpaceId.startsWith(SPACE_KEY_PREFIX)) {
       return sClientSpaceId.substring(SPACE_KEY_PREFIX.length());
     }
     return sClientSpaceId;
@@ -3241,7 +3223,7 @@ public final class Admin {
    * Converts driver space id to client space id
    */
   public String getClientSpaceId(String sDriverSpaceId) {
-    if ((sDriverSpaceId != null) && (!sDriverSpaceId.startsWith(SPACE_KEY_PREFIX))) {
+    if (sDriverSpaceId != null && !sDriverSpaceId.startsWith(SPACE_KEY_PREFIX)) {
       return SPACE_KEY_PREFIX + sDriverSpaceId;
     }
     return sDriverSpaceId;
@@ -3537,8 +3519,7 @@ public final class Admin {
               "', Domain: " + sDomainId, ex);
           sUserId = synchronizeImportUserByLogin(sDomainId, sLogin,
               synchroDomain.isSynchroOnLoginRecursToGroups());
-        }
-        else {
+        } else {
           throw ex;
         }
       }
@@ -3620,11 +3601,9 @@ public final class Admin {
 
     // getting all components availables
     List<String> componentIds = getAllowedComponentIds(sUserId);
-    for (String componentId :
-        componentIds) {
+    for (String componentId : componentIds) {
       List<SpaceInstLight> spaces = TreeCache.getComponentPath(componentId);
-      for (SpaceInstLight space :
-          spaces) {
+      for (SpaceInstLight space : spaces) {
         if (!spaceIds.contains(space.getFullId())) {
           spaceIds.add(space.getFullId());
         }
@@ -3705,8 +3684,7 @@ public final class Admin {
       List<String> componentIds = getAllowedComponentIds(sUserId);
       // getting all subspaces
       List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
-      for (SpaceInstLight subspace :
-          subspaces) {
+      for (SpaceInstLight subspace : subspaces) {
         if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
           result.add(subspace.getShortId());
         }
@@ -3743,9 +3721,7 @@ public final class Admin {
         new ArrayList<ComponentInstLight>(TreeCache.getComponents(spaceId));
 
     // Is there at least one component available ?
-    for (int c = 0;
-        !find && c < components.size();
-        c++) {
+    for (int c = 0; !find && c < components.size(); c++) {
       find = componentIds.contains(components.get(c).getId());
     }
     if (find) {
@@ -3756,9 +3732,7 @@ public final class Admin {
         // check in subspaces
         List<SpaceInstLight> subspaces =
             new ArrayList<SpaceInstLight>(TreeCache.getSubSpaces(spaceId));
-        for (int s = 0;
-            !find && s < subspaces.size();
-            s++) {
+        for (int s = 0; !find && s < subspaces.size(); s++) {
           find =
               isSpaceContainsOneComponent(componentIds, subspaces.get(s).getShortId(),
                   checkInSubspaces);
@@ -3791,8 +3765,7 @@ public final class Admin {
 
       // getting all subspaces
       List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
-      for (SpaceInstLight subspace :
-          subspaces) {
+      for (SpaceInstLight subspace : subspaces) {
         if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
           result.add(subspace);
         }
@@ -3840,8 +3813,7 @@ public final class Admin {
 
       List<ComponentInstLight> allComponents =
           TreeCache.getComponentsInSpaceAndSubspaces(getDriverSpaceId(spaceId));
-      for (ComponentInstLight component :
-          allComponents) {
+      for (ComponentInstLight component : allComponents) {
         if (allowedComponentIds.contains(component.getId())) {
           allowedComponents.add(component);
         }
@@ -4186,16 +4158,14 @@ public final class Admin {
       // retain only sub spaces
       boolean find;
       List<String> manageableRootSpaceIds = new ArrayList<String>();
-      for (String manageableSpaceId :
-          asManageableSpaceIds) {
+      for (String manageableSpaceId : asManageableSpaceIds) {
         find = false;
         SpaceInstLight space = TreeCache.getSpaceInstLight(manageableSpaceId);
         while (!space.isRoot() && !find) {
           if (parentSpaceId.equals(space.getFatherId())) {
             manageableRootSpaceIds.add(manageableSpaceId);
             find = true;
-          }
-          else {
+          } else {
             space = TreeCache.getSpaceInstLight(space.getFatherId());
           }
         }
@@ -4242,8 +4212,7 @@ public final class Admin {
         List<ComponentInstLight> components = getAvailCompoInSpace(sUserId, sClientSpaceId);
 
         List<String> componentIds = new ArrayList<String>();
-        for (ComponentInstLight component :
-            components) {
+        for (ComponentInstLight component : components) {
           componentIds.add(component.getId());
         }
 
@@ -4386,8 +4355,7 @@ public final class Admin {
       List<ComponentInstLight> components = getAvailCompoInSpace(sUserId, sClientSpaceId);
 
       List<String> componentIds = new ArrayList<String>();
-      for (ComponentInstLight component :
-          components) {
+      for (ComponentInstLight component : components) {
         componentIds.add(component.getId());
       }
 
@@ -4421,8 +4389,7 @@ public final class Admin {
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     List<String> allowedComponentIds = getAllowedComponentIds(userId, componentName);
 
-    for (String allowedComponentId :
-        allowedComponentIds) {
+    for (String allowedComponentId : allowedComponentIds) {
       ComponentInstLight componentInst = getComponentInstLight(allowedComponentId);
 
       if (componentInst.getName().equalsIgnoreCase(componentName)) {
@@ -4445,8 +4412,7 @@ public final class Admin {
       throws AdminException {
     List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
-    for (ComponentInstLight component :
-        components) {
+    for (ComponentInstLight component : components) {
       List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
       if (path != null && !path.isEmpty()) {
         SpaceInstLight root = path.get(0);
@@ -4474,11 +4440,9 @@ public final class Admin {
     spaceId = getDriverSpaceId(spaceId);
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
 
-    for (ComponentInstLight component :
-        components) {
+    for (ComponentInstLight component : components) {
       List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
-      for (SpaceInstLight space :
-          path) {
+      for (SpaceInstLight space : path) {
         if (space.getFatherId().equals(spaceId)) {
           if (!spaces.contains(space)) {
             spaces.add(space);
@@ -4505,8 +4469,7 @@ public final class Admin {
         // Set the component label
         if (StringUtil.isDefined(componentInst.getLabel())) {
           compoSpace.setComponentLabel(componentInst.getLabel());
-        }
-        else {
+        } else {
           compoSpace.setComponentLabel(componentInst.getName());
         }
 
@@ -4635,10 +4598,7 @@ public final class Admin {
           getDriverComponentId(sClientComponentId), true,
           getDriverSpaceId(sClientSpaceId));
 
-      for (int nI = 0;
-          nI < componentInst.getNumProfileInst();
-          nI++) {
-        ProfileInst profile = componentInst.getProfileInst(nI);
+      for (ProfileInst profile : componentInst.getAllProfilesInst()) {
         if (profile != null) {
           if (profile.getName().equals(sProfile) || bAllProfiles) {
             // add direct users
@@ -4665,9 +4625,7 @@ public final class Admin {
 
       // Get the users details
       UserDetail[] userDetails = new UserDetail[alUserIds.size()];
-      for (int nI = 0;
-          nI < userDetails.length;
-          nI++) {
+      for (int nI = 0; nI < userDetails.length; nI++) {
         userDetails[nI] = getUserDetail(alUserIds.get(nI));
       }
 
@@ -4695,30 +4653,22 @@ public final class Admin {
   public UserDetail[] getFiltredDirectUsers(String sGroupId,
       String sUserLastNameFilter) throws AdminException {
     Group theGroup = getGroup(sGroupId);
-    UserDetail currentUser;
-    ArrayList<UserDetail> matchedUsers;
-    int i;
-    String upperFilter;
-    String[] usersIds;
 
     if (theGroup == null) {
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
-    usersIds = theGroup.getUserIds();
+    String[] usersIds = theGroup.getUserIds();
     if (usersIds == null || usersIds.length <= 0) {
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
-    if ((sUserLastNameFilter == null) || (sUserLastNameFilter.length() <= 0)) {
+    if (sUserLastNameFilter == null || sUserLastNameFilter.length() <= 0) {
       return getUserDetails(usersIds);
     }
-    upperFilter = sUserLastNameFilter.toUpperCase();
-    matchedUsers = new ArrayList<UserDetail>();
-    for (i = 0;
-        i < usersIds.length;
-        i++) {
-      currentUser = getUserDetail(usersIds[i]);
-      if ((currentUser != null) &&
-          (currentUser.getLastName().toUpperCase().startsWith(upperFilter))) {
+    String upperFilter = sUserLastNameFilter.toUpperCase();
+    ArrayList<UserDetail> matchedUsers = new ArrayList<UserDetail>();
+    for (int i = 0; i < usersIds.length; i++) {
+      UserDetail currentUser = getUserDetail(usersIds[i]);
+      if (currentUser != null && currentUser.getLastName().toUpperCase().startsWith(upperFilter)) {
         matchedUsers.add(currentUser);
       }
     }
@@ -4731,8 +4681,7 @@ public final class Admin {
   public int getAllSubUsersNumber(String sGroupId) throws AdminException {
     if (!StringUtil.isDefined(sGroupId)) {
       return userManager.getUserNumber(domainDriverManager);
-    }
-    else {
+    } else {
 
       // add users directly in this group
       int nb = groupManager.getNBUsersDirectlyInGroup(sGroupId);
@@ -4757,8 +4706,7 @@ public final class Admin {
       }
       if (domainId.equals("-1")) {
         return 0;
-      }
-      else {
+      } else {
         return userManager.getUsersNumberOfDomain(domainDriverManager, domainId);
       }
     } catch (Exception e) {
@@ -4854,9 +4802,7 @@ public final class Admin {
     }
 
     String[] as = new String[al.size()];
-    for (int nI = 0;
-        nI < al.size();
-        nI++) {
+    for (int nI = 0; nI < al.size(); nI++) {
       as[nI] = al.get(nI);
     }
 
@@ -4868,9 +4814,7 @@ public final class Admin {
       return new ArrayList<String>();
     }
 
-    for (int nI = 0;
-        nI < al.size();
-        nI++) {
+    for (int nI = 0; nI < al.size(); nI++) {
       while (al.lastIndexOf(al.get(nI)) != al.indexOf(al.get(nI))) {
         al.remove(al.lastIndexOf(al.get(nI)));
       }
@@ -4929,8 +4873,7 @@ public final class Admin {
         TreeCache.getComponentsInSpaceAndSubspaces(getDriverSpaceId(sSpaceId));
 
     List<String> componentIds = new ArrayList<String>();
-    for (ComponentInstLight component :
-        components) {
+    for (ComponentInstLight component : components) {
       componentIds.add(component.getId());
     }
     return componentIds.toArray(new String[componentIds.size()]);
@@ -4961,8 +4904,7 @@ public final class Admin {
       for (CompoSpace c : cs) {
         alCompoIds.add(c.getComponentId());
       }
-    }
-    else {
+    } else {
       alCompoIds = getAllComponentIdsRecur(sSpaceId, sUserId,
           componentNameRoot, inCurrentSpace);
     }
@@ -5050,12 +4992,10 @@ public final class Admin {
         if (rule.toLowerCase().startsWith("ds_")) {
           if (rule.toLowerCase().startsWith("ds_accesslevel")) {
             userIds = synchronizeGroupByAccessRoleRule(rule, domainId);
-          }
-          else if (rule.toLowerCase().startsWith("ds_domain")) {
+          } else if (rule.toLowerCase().startsWith("ds_domain")) {
             userIds = synchronizeGroupByDomainRule(rule, domainId);
           }
-        }
-        else if (rule.toLowerCase().startsWith("dc_")) {
+        } else if (rule.toLowerCase().startsWith("dc_")) {
           // Extracting property name and searching property value
           String propertyName = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim();
           String propertyValue = rule.substring(rule.indexOf("=") + 1).trim();
@@ -5068,12 +5008,10 @@ public final class Admin {
               userIds.addAll(
                   getUserIdsBySpecificProperty(domain.getId(), propertyName, propertyValue));
             }
-          }
-          else {
+          } else {
             userIds.addAll(getUserIdsBySpecificProperty(domainId, propertyName, propertyValue));
           }
-        }
-        else {
+        } else {
           SilverTrace.error("admin", "Admin.synchronizeGroup", "admin.MSG_ERR_SYNCHRONIZE_GROUP",
               "rule '" + rule + "' for groupId '" + groupId + "' is not correct !");
         }
@@ -5168,18 +5106,15 @@ public final class Admin {
       // Else we get only users of group's domain
       if (domainId == null) {
         userIds = Arrays.asList(userManager.getAllUsersIds(domainDriverManager));
-      }
-      else {
+      } else {
         userIds = Arrays.asList(userManager.getUserIdsOfDomain(domainDriverManager, domainId));
       }
-    }
-    else {
+    } else {
       // All users by access level
       if (domainId == null) {
         userIds = Arrays.asList(domainDriverManager.organization.user.getUserIdsByAccessLevel(
             accessLevel));
-      }
-      else {
+      } else {
         userIds = Arrays.asList(userManager.getUserIdsOfDomainAndAccessLevel(domainDriverManager,
             domainId, accessLevel));
       }
@@ -5223,8 +5158,10 @@ public final class Admin {
     UserRow[] usersInDomain =
         domainDriverManager.organization.user.getUsersBySpecificIds(iDomainId, specificIds);
     List<String> userIds = new ArrayList<String>();
-    for (UserRow userInDomain : usersInDomain) {
-      userIds.add(Integer.toString(userInDomain.id));
+    if (usersInDomain != null) {
+      for (UserRow userInDomain : usersInDomain) {
+        userIds.add(Integer.toString(userInDomain.id));
+      }
     }
 
     return userIds;
@@ -5268,25 +5205,20 @@ public final class Admin {
             // changed since last full or update synchro
             distantUDs = synchroDomain.getAllChangedUsers(fromTimeStamp,
                 toTimeStamp);
-            for (nI = 0;
-                nI < distantUDs.length;
-                nI++) {
+            for (nI = 0; nI < distantUDs.length; nI++) {
               specificId = distantUDs[nI].getSpecificId();
               silverpeasId = "";
               try {
                 silverpeasId = userManager.getUserIdBySpecificIdAndDomainId(
                     domainDriverManager, specificId, domainId);
-              } catch (AdminException e) // The user doesn't exist ->
-              // Synchronize him
-              {
+              } catch (AdminException e) {
+                // The user doesn't exist -> Synchronize him
                 SilverTrace.warn("admin", "Admin.difSynchro",
                     "admin.EX_ERR_USER_NOT_FOUND", "SpecId=" + specificId, e);
-                // The user doesnt exist -> import him
                 try {
                   synchronizeImportUser(domainId, specificId, false);
-                } catch (AdminException ex) // The user's synchro failed ->
-                // Ignore him
-                {
+                } catch (AdminException ex) {
+                  // The user's synchro failed -> ignore him
                   SilverTrace.warn("admin", "Admin.difSynchro",
                       "admin.MSG_ERR_SYNCHRONIZE_USER", "SpecId=" + specificId,
                       ex);
@@ -5305,9 +5237,8 @@ public final class Admin {
                         userManager.getUserDetail(domainDriverManager, silverpeasId));
                     listUsersUpdate.add(distantUDs[nI]);
                   }
-                } catch (AdminException ex) // The user's synchro failed ->
-                // Ignore him
-                {
+                } catch (AdminException ex) {
+                  // The user's synchro failed -> ignore him
                   SilverTrace.warn("admin", "Admin.difSynchro",
                       "admin.MSG_ERR_SYNCHRONIZE_USER", "UserId=" +
                       silverpeasId + " SpecId=" + specificId, ex);
@@ -5321,9 +5252,7 @@ public final class Admin {
             distantGroups = synchroDomain.getAllChangedGroups(fromTimeStamp,
                 toTimeStamp);
             // Add new users or update existing ones from distant datasource
-            for (nI = 0;
-                nI < distantGroups.length;
-                nI++) {
+            for (nI = 0; nI < distantGroups.length; nI++) {
               specificId = distantGroups[nI].getSpecificId();
               silverpeasId = "";
               try {
@@ -5338,9 +5267,8 @@ public final class Admin {
                 try {
                   synchronizeImportGroup(domainId, specificId, null, false,
                       true);
-                } catch (AdminException ex) // The group's synchro failed ->
-                // Ignore him
-                {
+                } catch (AdminException ex) {
+                  // The group's synchro failed -> ignore him
                   SilverTrace.warn("admin", "Admin.difSynchro",
                       "admin.MSG_ERR_SYNCHRONIZE_GROUP",
                       "SpecId=" + specificId, ex);
@@ -5357,9 +5285,8 @@ public final class Admin {
                   distantGroups[nI].setUserIds(translateUserIds(domainId,
                       distantGroups[nI].getUserIds()));
                   updateGroup(distantGroups[nI], true);
-                } catch (AdminException ex) // The group's synchro failed ->
-                // Ignore him
-                {
+                } catch (AdminException ex) {
+                  // The group's synchro failed -> ignore him
                   SilverTrace.warn("admin", "Admin.difSynchro",
                       "admin.MSG_ERR_SYNCHRONIZE_GROUP", "GroupId=" +
                       silverpeasId + " SpecId=" + specificId, ex);
@@ -5378,16 +5305,12 @@ public final class Admin {
 
               boolean bFound;
               int nbDeletedUsers = 0;
-              for (nI = 0;
-                  nI < silverpeasUDs.length;
-                  nI++) {
+              for (nI = 0; nI < silverpeasUDs.length; nI++) {
                 bFound = false;
                 specificId = silverpeasUDs[nI].getSpecificId();
 
                 // search for user in distant datasource
-                for (int nJ = 0;
-                    nJ < distantUDs.length && !bFound;
-                    nJ++) {
+                for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
                   if (distantUDs[nJ].getSpecificId().equals(specificId)) {
                     bFound = true;
                   }
@@ -5449,8 +5372,8 @@ public final class Admin {
       try {
         groupId = groupManager.getGroupIdBySpecificIdAndDomainId(domainDriverManager,
             groupSpecificId, sDomainId);
-      } catch (AdminException e) // The group doesn't exist -> Synchronize him
-      {
+      } catch (AdminException e) {
+        // The group doesn't exist -> Synchronize him
         groupId = null;
         SilverTrace.warn("admin", "Admin.translateGroupIds",
             "admin.EX_ERR_GROUP_NOT_FOUND", "SpecId=" + groupSpecificId, e);
@@ -5458,9 +5381,8 @@ public final class Admin {
           try {
             groupId = synchronizeImportGroup(sDomainId, groupSpecificId,
                 null, true, true);
-          } catch (AdminException ex) // The group's synchro failed -> Ignore
-          // him
-          {
+          } catch (AdminException ex) {
+            // The group's synchro failed -> ignore him
             SilverTrace.warn("admin", "Admin.translateGroupIds",
                 "admin.MSG_ERR_SYNCHRONIZE_GROUP", "SpecId=" +
                 groupSpecificId, ex);
@@ -5485,14 +5407,14 @@ public final class Admin {
       try {
         userId = userManager.getUserIdBySpecificIdAndDomainId(domainDriverManager,
             userSpecificId, sDomainId);
-      } catch (AdminException e) // The user doesn't exist -> Synchronize him
-      {
+      } catch (AdminException e) {
+        // The user doesn't exist -> Synchronize him
         SilverTrace.warn("admin", "Admin.translateUserIds",
             "admin.EX_ERR_USER_NOT_FOUND", "SpecId=" + userSpecificId, e);
         try {
           userId = synchronizeImportUser(sDomainId, userSpecificId, false);
-        } catch (AdminException ex) // The user's synchro failed -> Ignore him
-        {
+        } catch (AdminException ex) {
+          // The user's synchro failed -> Ignore him
           SilverTrace.warn("admin", "Admin.translateUserIds",
               "admin.MSG_ERR_SYNCHRONIZE_USER", "SpecId=" + userSpecificId,
               ex);
@@ -5516,8 +5438,7 @@ public final class Admin {
 
     if (theGroup.isSynchronized()) {
       synchronizeGroupByRule(groupId, false);
-    }
-    else {
+    } else {
       DomainDriver synchroDomain =
           domainDriverManager.getDomainDriver(Integer.parseInt(theGroup.getDomainId()));
       Group gr = synchroDomain.synchroGroup(theGroup.getSpecificId());
@@ -5540,16 +5461,10 @@ public final class Admin {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
     Group gr;
-    String groupId;
-    String[] specificIds;
-    int i;
-    String[] parentSpecificIds;
-    String parentId;
 
     if (isIdKey) {
       gr = synchroDomain.synchroGroup(groupKey);
-    }
-    else {
+    } else {
       gr = synchroDomain.importGroup(groupKey);
     }
     gr.setDomainId(domainId);
@@ -5557,27 +5472,24 @@ public final class Admin {
     // We now search for the parent of this group
     // ------------------------------------------
     // First, we get the parents of the group
-    parentSpecificIds = synchroDomain.getGroupMemberGroupIds(gr.getSpecificId());
-    parentId = null;
-    for (i = 0;
-        (i < parentSpecificIds.length) && (parentId == null);
-        i++) {
+    String[] parentSpecificIds = synchroDomain.getGroupMemberGroupIds(gr.getSpecificId());
+    String parentId = null;
+    for (int i = 0; i < parentSpecificIds.length && parentId == null; i++) {
       try {
         parentId = groupManager.getGroupIdBySpecificIdAndDomainId(
             domainDriverManager, parentSpecificIds[i], domainId);
         if (askedParentId != null && !askedParentId.isEmpty() && !askedParentId.equals(
-            parentId)) { // It is not the
-          // matching parent
+            parentId)) { 
+          // It is not the matching parent
           parentId = null;
         }
-      } catch (AdminException e) // The user doesn't exist -> Synchronize him
-      {
+      } catch (AdminException e) {
+        // The user doesn't exist -> Synchronize him
         parentId = null;
       }
     }
-    if ((parentId == null) &&
-        ((parentSpecificIds.length > 0) ||
-            ((askedParentId != null) && (askedParentId.length() > 0)))) {// We
+    if (parentId == null && (parentSpecificIds.length > 0 ||
+            (askedParentId != null && askedParentId.length() > 0))) {// We
       // can't
       // add
       // the
@@ -5595,9 +5507,9 @@ public final class Admin {
 
     // We must first add the group with no child. Then, the childs will be added
     // during the internal synchronization function call
-    specificIds = gr.getUserIds();
+    String[] specificIds = gr.getUserIds();
     gr.setUserIds(ArrayUtil.EMPTY_STRING_ARRAY);
-    groupId = addGroup(gr, true);
+    String groupId = addGroup(gr, true);
     gr.setId(groupId);
     gr.setUserIds(specificIds);
     internalSynchronizeGroup(synchroDomain, gr, recurs);
@@ -5624,25 +5536,20 @@ public final class Admin {
     updateGroup(latestGroup, true);
     if (recurs) {
       Group[] childs = synchroDomain.getGroups(latestGroup.getSpecificId());
-      int i;
-      String existingGroupId;
-      Group existingGroup;
 
-      for (i = 0;
-          i < childs.length;
-          i++) {
-        existingGroupId = null;
+      for (int i = 0; i < childs.length; i++) {
+        String existingGroupId = null;
         try {
           existingGroupId =
               groupManager.getGroupIdBySpecificIdAndDomainId(domainDriverManager,
                   childs[i].getSpecificId(), latestGroup.getDomainId());
-          existingGroup = getGroup(existingGroupId);
+          Group existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) {
             // Only synchronize the group if latestGroup is his true parent
             synchronizeGroup(existingGroupId, recurs);
           }
-        } catch (AdminException e) // The group doesn't exist -> Import him
-        {
+        } catch (AdminException e) {
+          // The group doesn't exist -> Import him
           if (existingGroupId == null) { // Import the new group
             synchronizeImportGroup(latestGroup.getDomainId(), childs[i].getSpecificId(),
                 latestGroup.getId(), recurs, true);
@@ -5656,8 +5563,6 @@ public final class Admin {
    * Synchronize Users and groups between cache and domain's datastore
    */
   public String synchronizeUser(String userId, boolean recurs) throws Exception {
-    int i;
-
     Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
 
     SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD", "userId=" +
@@ -5691,8 +5596,7 @@ public final class Admin {
         if (incGroupsId.contains(oldGroupId)) { // No changes have to be
           // performed to the group -> Remove it
           incGroupsId.remove(oldGroupId);
-        }
-        else {
+        } else {
           Group grpToRemove = groupManager.getGroup(domainDriverManager, oldGroupId);
           if (theUserDetail.getDomainId().equals(grpToRemove.getDomainId())) {
             // Remove the user from this group
@@ -5735,9 +5639,8 @@ public final class Admin {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
     UserDetail ud = synchroDomain.importUser(userLogin);
-    String userId;
     ud.setDomainId(domainId);
-    userId = addUser(ud, true);
+    String userId = addUser(ud, true);
     // Synchronizes the user to add it to the groups and recursivaly add the groups
     synchronizeUser(userId, recurs);
     return userId;
@@ -5753,10 +5656,9 @@ public final class Admin {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
     UserDetail ud = synchroDomain.getUser(specificId);
-    String userId;
 
     ud.setDomainId(domainId);
-    userId = addUser(ud, true);
+    String userId = addUser(ud, true);
     // Synchronizes the user to add it to the groups and recursivaly add the groups
     synchronizeUser(userId, recurs);
     return userId;
@@ -5806,10 +5708,6 @@ public final class Admin {
   public String synchronizeSilverpeasWithDomain(String sDomainId) throws Exception {
     String sReport = "Starting synchronization...\n\n";
     Map<String, String> userIds = new HashMap<String, String>();
-    String sDomainSpecificErrors;
-    String fromTimeStamp, toTimeStamp;
-    Domain theDomain;
-    DomainDriver synchroDomain;
 
     synchronized (semaphore) {
       SilverTrace.info("admin", "admin.synchronizeSilverpeasWithDomain",
@@ -5825,10 +5723,10 @@ public final class Admin {
         // Start synchronization
         domainDriverManager.beginSynchronization(sDomainId);
 
-        synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(sDomainId));
-        theDomain = domainDriverManager.getDomain(sDomainId);
-        fromTimeStamp = theDomain.getTheTimeStamp();
-        toTimeStamp = synchroDomain.getTimeStamp(fromTimeStamp);
+        DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(sDomainId));
+        Domain theDomain = domainDriverManager.getDomain(sDomainId);
+        String fromTimeStamp = theDomain.getTheTimeStamp();
+        String toTimeStamp = synchroDomain.getTimeStamp(fromTimeStamp);
         SilverTrace.info("admin", "admin.synchronizeSilverpeasWithDomain",
             "root.MSG_GEN_ENTER_METHOD", "TimeStamps from " + fromTimeStamp +
             " to " + toTimeStamp);
@@ -5840,8 +5738,7 @@ public final class Admin {
         // Synchronize users
         if (synchroDomain.mustImportUsers()) {
           sReport += synchronizeUsers(sDomainId, userIds);
-        }
-        else {
+        } else {
           sReport += synchronizeOnlyExistingUsers(sDomainId, userIds);
         }
 
@@ -5858,7 +5755,7 @@ public final class Admin {
         domainDriverManager.commit(sDomainId);
 
         // End synchronization
-        sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
+        String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
             "----------------" + sDomainSpecificErrors, null);
         // return group id
@@ -5927,9 +5824,7 @@ public final class Admin {
             "%%%%FULLSYNCHRO%%%%>Deal with user : " + specificId);
 
         // search for user in Silverpeas database
-        for (int nJ = 0;
-            nJ < silverpeasUDs.length && !bFound;
-            nJ++) {
+        for (int nJ = 0; nJ < silverpeasUDs.length && !bFound; nJ++) {
           if (silverpeasUDs[nJ].getSpecificId().equals(specificId) ||
               (shouldFallbackUserLogins && silverpeasUDs[nJ].getLogin().equals(
                   distantUD.getLogin()))) {
@@ -5969,8 +5864,7 @@ public final class Admin {
         else// AJOUT
         {
           try {
-            silverpeasId = userManager.addUser(domainDriverManager, distantUD,
-                true);
+            silverpeasId = userManager.addUser(domainDriverManager, distantUD, true);
             if (silverpeasId.equals("")) {
               SilverTrace.info("admin", "admin.synchronizeUsers",
                   "root.MSG_GEN_PARAM_VALUE",
@@ -5979,8 +5873,7 @@ public final class Admin {
                   " " + distantUD.getLastName() + "(specificId:" +
                   specificId + ") - Login and LastName must be set !!!\n";
               sReport += "user has not been added\n";
-            }
-            else {
+            } else {
               iNbUsersAdded++;
               SilverTrace.info("admin", "admin.synchronizeUsers",
                   "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Add User : " +
@@ -6016,9 +5909,7 @@ public final class Admin {
         specificId = silverpeasUD.getSpecificId();
 
         // search for user in distant datasource
-        for (int nJ = 0;
-            nJ < distantUDs.length && !bFound;
-            nJ++) {
+        for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
           if (distantUDs[nJ].getSpecificId().equals(specificId) ||
               (shouldFallbackUserLogins && silverpeasUD.getLogin().equals(
                   distantUDs[nJ].getLogin()))) {
@@ -6153,8 +6044,7 @@ public final class Admin {
                 "\n";
             sReport += "user has not been updated\n";
           }
-        }
-        else {
+        } else {
           try {
             SilverTrace.info("admin", "admin.synchronizeOnlyExistingUsers",
                 "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Delete User : " + userSP);
@@ -6506,8 +6396,7 @@ public final class Admin {
         if (userIds.isEmpty()) {
           userIds = null;
         }
-      }
-      else if (profileIds != null && profileIds.length > 0) {
+      } else if (profileIds != null && profileIds.length > 0) {
         // search users in profiles
         for (String profileId : profileIds) {
           ProfileInst profile = profileManager.getProfileInst(domainDriverManager, profileId,
@@ -6528,15 +6417,13 @@ public final class Admin {
         if (userIds.isEmpty()) {
           userIds = null;
         }
-      }
-      else if (StringUtil.isDefined(componentId)) {
+      } else if (StringUtil.isDefined(componentId)) {
         // search users in component
         userIds.addAll(getUserIdsForComponent(componentId));
         if (userIds.isEmpty()) {
           userIds = null;
         }
-      }
-      else {
+      } else {
         // get all users
         userIds = new ArrayList<String>();
       }
@@ -6559,8 +6446,7 @@ public final class Admin {
       if (component.isPublic()) {
         // component is public, all users are allowed to access it
         return Arrays.asList(getAllUsersIds());
-      }
-      else {
+      } else {
         List<ProfileInst> profiles = component.getAllProfilesInst();
         for (ProfileInst profile : profiles) {
           userIds.addAll(getUserIdsForComponentProfile(profile));
@@ -6580,8 +6466,7 @@ public final class Admin {
     // add users indirectly attach to profile (groups attached to profile)
     List<String> groupIds = profile.getAllGroups();
     List<String> allGroupIds = new ArrayList<String>();
-    for (String groupId :
-        groupIds) {
+    for (String groupId : groupIds) {
       allGroupIds.add(groupId);
       allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
     }
@@ -6724,10 +6609,7 @@ public final class Admin {
    */
   private String renameComponentName(String label, ArrayList<ComponentInst> listComponents) {
     String newComponentLabel = label;
-    for (int i = 0;
-        i < listComponents.size();
-        i++) {
-      ComponentInst componentInst = listComponents.get(i);
+    for (ComponentInst componentInst : listComponents) {
       if (componentInst.getLabel().equals(newComponentLabel)) {
         newComponentLabel = "Copie de " + label;
         return renameComponentName(newComponentLabel, listComponents);
@@ -6743,9 +6625,7 @@ public final class Admin {
     if (StringUtil.isDefined(toSpaceId)) {
       // First, check if target space is not a sub space of paste space
       List<SpaceInstLight> path = TreeCache.getSpacePath(toSpaceId);
-      for (int i = 0;
-          i < path.size() && pasteAllowed;
-          i++) {
+      for (int i = 0; i < path.size() && pasteAllowed; i++) {
         pasteAllowed = !spaceId.equalsIgnoreCase(path.get(i).getFullId());
       }
     }
@@ -6758,8 +6638,7 @@ public final class Admin {
         SpaceInst destinationSpace = getSpaceInstById(toSpaceId);
         newSpace.setDomainFatherId(destinationSpace.getId());
         newBrotherIds = Arrays.asList(destinationSpace.getSubSpaceIds());
-      }
-      else {
+      } else {
         newSpace.setDomainFatherId("-1");
         newBrotherIds = Arrays.asList(getAllRootSpaceIds());
       }
@@ -6770,8 +6649,7 @@ public final class Admin {
 
       // Rename if spaceName already used in the destination space
       List<SpaceInstLight> subSpaces = new ArrayList<SpaceInstLight>();
-      for (String subSpaceId :
-          newBrotherIds) {
+      for (String subSpaceId : newBrotherIds) {
         subSpaces.add(getSpaceInstLight(getDriverSpaceId(subSpaceId)));
       }
       String name = renameSpace(newSpace.getName(I18NHelper.defaultLanguage), subSpaces);
@@ -6788,15 +6666,13 @@ public final class Admin {
       newSpaceId = addSpaceInst(userId, newSpace);
 
       // paste components of space
-      for (ComponentInst component :
-          components) {
+      for (ComponentInst component : components) {
         copyAndPasteComponent(component.getId(), newSpaceId, userId);
       }
 
       // paste subspaces
       String[] subSpaceIds = newSpace.getSubSpaceIds();
-      for (String subSpaceId :
-          subSpaceIds) {
+      for (String subSpaceId : subSpaceIds) {
         copyAndPasteSpace(subSpaceId, newSpaceId, userId);
       }
     }
@@ -6805,8 +6681,7 @@ public final class Admin {
 
   private String renameSpace(String label, List<SpaceInstLight> listSpaces) {
     String newSpaceLabel = label;
-    for (SpaceInstLight space :
-        listSpaces) {
+    for (SpaceInstLight space : listSpaces) {
       if (space.getName().equals(newSpaceLabel)) {
         newSpaceLabel = "Copie de " + label;
         return renameSpace(newSpaceLabel, listSpaces);
