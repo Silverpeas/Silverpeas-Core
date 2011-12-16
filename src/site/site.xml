@@ -38,9 +38,10 @@
     <artifactId>silverpeas-site-skin</artifactId>
     <version>1.6-SNAPSHOT</version>
   </skin>
-   <custom>
+  <custom>
     <fluidoSkin>
-        <topBarEnabled>true</topBarEnabled>
+      <topBarEnabled>true</topBarEnabled>
+      <!--
       <topBarIcon>
         <name>Maven Fluido Skin</name>
         <alt>Maven Fluido Skin</alt>
@@ -48,6 +49,7 @@
         <href>/index.html</href>
       </topBarIcon>
       <searchEnabled>false</searchEnabled>
+      -->
     </fluidoSkin>
   </custom>
   <!-- Powered By -->
