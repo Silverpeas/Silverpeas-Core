@@ -655,7 +655,9 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
   }
   
   function renderPositionEditionFrame($this, frameId, title, preselectedValues, asDialogBox, onEdition) {
-    var settings = $this.data('settings');
+    var settings = $this.data('settings'), positionSavingLabel = settings.edition.ok;
+    if (!asDialogBox && frameId.indexOf('pdc-addition-box'))
+      positionSavingLabel = settings.addition.title;
     $('#' + frameId).pdcAxisValuesSelector({
       title               : title,
       positionError       : settings.messages.positionMustBeValued,
@@ -665,7 +667,7 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
       mandatoryAxisLegend : settings.edition.mandatoryLegend,
       invariantAxisIcon   : settings.edition.invariantIcon,
       invariantAxisLegend : settings.edition.invariantLegend,
-      labelOk             : settings.edition.ok,
+      labelOk             : positionSavingLabel,
       labelCancel         : settings.edition.cancel,
       axis                : $this.data('pdc').axis,
       values              : preselectedValues,
