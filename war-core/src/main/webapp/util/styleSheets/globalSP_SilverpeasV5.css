@@ -1669,6 +1669,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 	text-align: left;
 }
 
+.ArrayCell img {
+	border: 0;
+}
+
 .ArrayNavigation {
 	background-image:
 		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
@@ -3216,8 +3220,9 @@ caption {
 	background-color:#FFF;
 	text-align:center;
 }
-#myProfile #myProfileFiche  .profilPhotoContact img {
+#myProfile #myProfileFiche .profilPhotoContact img {
 	height:62px;
+	border: 0px;
 }
 /*- [ myProfile END ] --------------------------- */
 
@@ -4178,6 +4183,10 @@ html:not([lang*=""]) .add_position:hover {
 	clear:both;
 	display:block;
 	float:none;
+}
+
+.classification .field img {
+	border: 0px;
 }
 
 .classification.preview .list_pdc_position {
