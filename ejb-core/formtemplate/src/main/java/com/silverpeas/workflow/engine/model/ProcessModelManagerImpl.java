@@ -45,6 +45,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
@@ -85,10 +86,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    */
   private static ResourceLocator settings = new ResourceLocator(
       "com.silverpeas.workflow.engine.castorSettings", "fr");
-  /**
-   * The ProcessModelManagerImpl shares a silverpeas Admin object
-   */
-  static private Admin admin = null;
+
   /**
    * The map (modelId -> cached process model).
    */
@@ -99,11 +97,6 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * Default constructor
    */
   public ProcessModelManagerImpl() {
-    synchronized (ProcessModelManagerImpl.class) {
-      if (admin == null) {
-        admin = new Admin();
-      }
-    }
   }
 
   /**
@@ -181,20 +174,17 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     }
 
     // The model is not cached, we must build it.
-    String fileName = null;
-    fileName = admin.getComponentParameterValue(modelId,
+    String fileName = AdminReference.getAdminService().getComponentParameterValue(modelId,
         ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
 
     // if file name not found, throw exception
     if (fileName == null) {
       throw new WorkflowException("ProcessModelManagerImpl.getProcessModel",
-          "workflowEngine.EX_NO_XML_FILENAME_FOUND", "model/peas id : "
-          + modelId);
+          "workflowEngine.EX_NO_XML_FILENAME_FOUND", "model/peas id : " + modelId);
     }
 
     // load the process model from its xml descriptor
-    ProcessModelImpl model = (ProcessModelImpl) this.loadProcessModel(fileName,
-        false);
+    ProcessModelImpl model = (ProcessModelImpl) this.loadProcessModel(fileName, false);
 
     // set the peas id
     model.setModelId(modelId);
@@ -269,7 +259,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
   /**
    * Delete a ProcessModel with given model id
-   * @param modelId model id
+   * @param instanceId  model id
    */
   @Override
   public void deleteProcessModel(String instanceId) throws WorkflowException {

@@ -25,7 +25,8 @@
 
 -->
 
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN'
+    'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
 
 <ejb-jar>
   <description>no description</description>
@@ -42,9 +43,9 @@
       <prim-key-class>com.stratelia.webactiv.util.publication.model.PublicationPK</prim-key-class>
       <reentrant>False</reentrant>
       <resource-ref>
-                                <res-ref-name>jdbc/Silverpeas</res-ref-name>
-                                <res-type>javax.sql.DataSource</res-type>
-                                <res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </entity>
     <session>
@@ -57,116 +58,117 @@
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
       <ejb-ref>
-                                <ejb-ref-name>ejb/Publication</ejb-ref-name>
-                                <ejb-ref-type>Entity</ejb-ref-type>
-                                <home>com.stratelia.webactiv.util.publication.ejb.PublicationHome</home>
-                                <remote>com.stratelia.webactiv.util.publication.ejb.Publication</remote>
-				<ejb-link>ejb/Publication</ejb-link>
+        <ejb-ref-name>ejb/Publication</ejb-ref-name>
+        <ejb-ref-type>Entity</ejb-ref-type>
+        <home>com.stratelia.webactiv.util.publication.ejb.PublicationHome</home>
+        <remote>com.stratelia.webactiv.util.publication.ejb.Publication</remote>
+        <ejb-link>ejb/Publication</ejb-link>
       </ejb-ref>
       <resource-ref>
-                                <res-ref-name>jdbc/Silverpeas</res-ref-name>
-                                <res-type>javax.sql.DataSource</res-type>
-                                <res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </session>
   </enterprise-beans>
   <assembly-descriptor>
     <container-transaction>
       <method>
-                                <ejb-name>ejb/Publication</ejb-name>
-                                <method-name>*</method-name>
+        <ejb-name>ejb/Publication</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-                                <ejb-name>ejb/Publication</ejb-name>
-                                <method-intf>Remote</method-intf>
-                                <method-name>createInfoModelDetail</method-name>
-                                <method-params>
-                                        <method-param>com.stratelia.webactiv.util.publication.info.model.ModelPK</method-param>
-                                        <method-param>com.stratelia.webactiv.util.publication.info.model.InfoDetail</method-param>
-                                </method-params>
+        <ejb-name>ejb/Publication</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createInfoModelDetail</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.publication.info.model.ModelPK</method-param>
+          <method-param>com.stratelia.webactiv.util.publication.info.model.InfoDetail</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-                                <ejb-name>ejb/Publication</ejb-name>
-                                <method-intf>Remote</method-intf>
-                                <method-name>updateInfoDetail</method-name>
-                                <method-params>
-                                        <method-param>com.stratelia.webactiv.util.publication.info.model.InfoDetail</method-param>
-                                </method-params>
+        <ejb-name>ejb/Publication</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>updateInfoDetail</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.publication.info.model.InfoDetail</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-                                <ejb-name>ejb/Publication</ejb-name>
-                                <method-intf>Remote</method-intf>
-                                <method-name>createInfoDetail</method-name>
-                                <method-params>
-                                        <method-param>com.stratelia.webactiv.util.publication.info.model.ModelPK</method-param>
-                                        <method-param>com.stratelia.webactiv.util.publication.info.model.InfoDetail</method-param>
-                                </method-params>
+        <ejb-name>ejb/Publication</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createInfoDetail</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.publication.info.model.ModelPK</method-param>
+          <method-param>com.stratelia.webactiv.util.publication.info.model.InfoDetail</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-                                <ejb-name>ejb/Publication</ejb-name>
-                                <method-intf>Remote</method-intf>
-                                <method-name>removeAllFather</method-name>
-                                <method-params />
+        <ejb-name>ejb/Publication</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>removeAllFather</method-name>
+        <method-params/>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-                                <ejb-name>ejb/Publication</ejb-name>
-                                <method-intf>Remote</method-intf>
-                                <method-name>removeFather</method-name>
-                                <method-params>
-                                        <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
-                                </method-params>
+        <ejb-name>ejb/Publication</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>removeFather</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
 
     <container-transaction>
       <method>
-                                <ejb-name>ejb/Publication</ejb-name>
-                                <method-intf>Remote</method-intf>
-                                <method-name>setDetail</method-name>
-                                <method-params>
-                                        <method-param>com.stratelia.webactiv.util.publication.model.PublicationDetail</method-param>
-                                </method-params>
+        <ejb-name>ejb/Publication</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>setDetail</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.publication.model.PublicationDetail
+          </method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
 
     <container-transaction>
       <method>
-                                <ejb-name>ejb/PublicationBm</ejb-name>
-                                <method-name>createPDCPublication</method-name>
+        <ejb-name>ejb/PublicationBm</ejb-name>
+        <method-name>createPDCPublication</method-name>
       </method>
       <method>
-                                <ejb-name>ejb/PublicationBm</ejb-name>
-                                <method-name>removePDCPublication</method-name>
+        <ejb-name>ejb/PublicationBm</ejb-name>
+        <method-name>removePDCPublication</method-name>
       </method>
       <method>
-                                <ejb-name>ejb/PublicationBm</ejb-name>
-                                <method-name>setPDCDetail</method-name>
+        <ejb-name>ejb/PublicationBm</ejb-name>
+        <method-name>setPDCDetail</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
 
 
-                <container-transaction>
+    <container-transaction>
       <method>
-                                <ejb-name>ejb/PublicationBm</ejb-name>
-                                <method-name>*</method-name>
+        <ejb-name>ejb/PublicationBm</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>

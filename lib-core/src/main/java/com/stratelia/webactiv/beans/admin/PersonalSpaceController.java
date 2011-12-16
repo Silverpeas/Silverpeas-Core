@@ -24,19 +24,20 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.admin.components.Instanciateur;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
-public class PersonalSpaceController extends AdminReference {
+public class PersonalSpaceController  {
 
   public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();

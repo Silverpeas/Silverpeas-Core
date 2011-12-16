@@ -23,12 +23,12 @@
  */
 package com.silverpeas.jndi;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * A factory of a naming context that uses the memory as dictionary of objects.
@@ -44,6 +44,7 @@ public class SimpleMemoryContextFactory implements InitialContextFactory {
    * Useful if some tests uses another JNDI intial context factory.
    */
   public static void setUpAsInitialContext() {
+    context.clear();
     savedSystemProperties.put(Context.INITIAL_CONTEXT_FACTORY, System.getProperty(
             Context.INITIAL_CONTEXT_FACTORY));
     savedSystemProperties.put(Context.URL_PKG_PREFIXES, System.getProperty(Context.URL_PKG_PREFIXES));

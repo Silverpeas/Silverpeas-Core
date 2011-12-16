@@ -22,8 +22,8 @@ package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -33,8 +33,7 @@ import javax.servlet.http.HttpSession;
 public class MandatoryQuestionChecker {
 
   private final static ResourceLocator general = new ResourceLocator(
-          "com.stratelia.silverpeas.lookAndFeel.generalLook","");
-  private static final Admin admin = new Admin();
+      "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
   private String destination;
 
   public String getDestination() {
@@ -46,20 +45,22 @@ public class MandatoryQuestionChecker {
 
   public boolean check(HttpServletRequest req, String authenticationKey) {
     boolean isUserLoginQuestionMandatory = "personalQuestion".equals(general.getString(
-            "forgottenPwdActive")) && general.getBoolean("userLoginQuestionMandatory", false);
+        "forgottenPwdActive")) && general.getBoolean("userLoginQuestionMandatory", false);
     if (isUserLoginQuestionMandatory) {
       HttpSession session = req.getSession();
       session.setAttribute("svplogin_Key", authenticationKey);
       try {
-        String userId = admin.authenticate(authenticationKey, session.getId(), false, false);
-        UserDetail userDetail = admin.getUserDetail(userId);
+        String userId = AdminReference.getAdminService().authenticate(authenticationKey,
+            session.getId(), false, false);
+        UserDetail userDetail = AdminReference.getAdminService().getUserDetail(userId);
         if (userDetail != null && !userDetail.isAnonymous() && !StringUtil.isDefined(userDetail.
-                getLoginQuestion())) {
+            getLoginQuestion())) {
           req.setAttribute("userDetail", userDetail);
           destination = "/CredentialsServlet/ChangeQuestion";
         }
       } catch (AdminException e) {
-        SilverTrace.error("util", "MandatoryQuestionChecker.check()", "root.MSG_GEN_EXIT_METHOD", e);
+        SilverTrace
+            .error("util", "MandatoryQuestionChecker.check()", "root.MSG_GEN_EXIT_METHOD", e);
       }
     }
     return StringUtil.isDefined(destination);

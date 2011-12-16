@@ -1,30 +1,53 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil.model.impl;
 
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.JcrConstants;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.ValueFormatException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,40 +59,13 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.SQLException;
-import java.util.Hashtable;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-import javax.sql.DataSource;
-
-import org.apache.jackrabbit.JcrConstants;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
-
-import com.stratelia.webactiv.util.JNDINames;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import javax.annotation.Resource;
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractJcrTestCase {
 
+  @Inject
   private DataSource datasource;
 
   public AbstractJcrTestCase() {
@@ -79,44 +75,27 @@ public abstract class AbstractJcrTestCase {
     return datasource;
   }
 
-  @Resource
-  public void setDataSource(DataSource datasource) {
-    this.datasource = datasource;
-    try {
-      prepareJndi();
-      Hashtable env = new Hashtable();
-      env.put(Context.INITIAL_CONTEXT_FACTORY,
-          "com.sun.jndi.fscontext.RefFSContextFactory");
-      InitialContext ic = new InitialContext(env);
-      Properties properties = new Properties();
-      properties.load(PathTestUtil.class.getClassLoader().
-          getResourceAsStream("jdbc.properties"));
-      // Construct BasicDataSource reference
-      Reference ref = new Reference("javax.sql.DataSource",
-          "org.apache.commons.dbcp.BasicDataSourceFactory", null);
-      ref.add(new StringRefAddr("driverClassName", properties.getProperty(
-          "driverClassName", "org.postgresql.Driver")));
-      ref.add(new StringRefAddr("url",
-          properties.getProperty(
-          "url", "jdbc:postgresql://localhost:5432/postgres")));
-      ref.add(new StringRefAddr("username", properties.getProperty(
-          "username", "postgres")));
-      ref.add(new StringRefAddr("password", properties.getProperty(
-          "password", "postgres")));
-      ref.add(new StringRefAddr("maxActive", "4"));
-      ref.add(new StringRefAddr("maxWait", "5000"));
-      ref.add(new StringRefAddr("removeAbandoned", "true"));
-      ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+  }
 
-      rebind(ic, JNDINames.DATABASE_DATASOURCE, ref);
-      ic.rebind(JNDINames.DATABASE_DATASOURCE, ref);
-      rebind(ic, JNDINames.ADMIN_DATASOURCE, ref);
-      ic.rebind(JNDINames.ADMIN_DATASOURCE, ref);
-    } catch (NamingException nex) {
-      nex.printStackTrace();
-    } catch (IOException nex) {
-      nex.printStackTrace();
-    }
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+  }
+
+  @Before
+  public void init() throws Exception {
+    InitialContext ic = new InitialContext();
+    Properties properties = new Properties();
+    properties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jdbc.properties"));
+    DataSource ds = BasicDataSourceFactory.createDataSource(properties);
+    rebind(ic, JNDINames.DATABASE_DATASOURCE, ds);
+    ic.rebind(JNDINames.DATABASE_DATASOURCE, ds);
+    rebind(ic, JNDINames.ADMIN_DATASOURCE, ds);
+    ic.rebind(JNDINames.ADMIN_DATASOURCE, ds);
+    setUpDatabase();
   }
 
   protected IDataSet getDataSet() throws Exception {
@@ -157,7 +136,7 @@ public abstract class AbstractJcrTestCase {
 
   protected void createTempFile(String path, String content) throws IOException {
     File attachmentFile = new File(path);
-    if(!attachmentFile.getParentFile().exists()) {
+    if (!attachmentFile.getParentFile().exists()) {
       attachmentFile.getParentFile().mkdirs();
     }
     FileOutputStream out = null;
@@ -175,9 +154,9 @@ public abstract class AbstractJcrTestCase {
       }
     }
   }
-  
+
   protected void deleteTempFile(String path) {
-     FileUtils.deleteQuietly(new File(path));
+    FileUtils.deleteQuietly(new File(path));
   }
 
   protected String readFileFromNode(Node fileNode) throws IOException,
@@ -211,10 +190,7 @@ public abstract class AbstractJcrTestCase {
     }
   }
 
-  @Before
   public void setUpDatabase() throws Exception {
-    System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY,
-        "com.sun.jndi.fscontext.RefFSContextFactory");
     IDatabaseConnection connection = null;
     try {
       connection = new DatabaseConnection(datasource.getConnection());
@@ -239,7 +215,6 @@ public abstract class AbstractJcrTestCase {
     try {
       connection = new DatabaseConnection(datasource.getConnection());
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      cleanJndi();
     } catch (Exception ex) {
       throw ex;
     } finally {
@@ -254,53 +229,23 @@ public abstract class AbstractJcrTestCase {
   }
 
   /**
-   * Creates the directory for JNDI files ystem provider
-   * @throws IOException
-   */
-  protected void prepareJndi() throws IOException {
-    Properties jndiProperties = new Properties();
-    jndiProperties.load(PathTestUtil.class.getClassLoader().
-        getResourceAsStream("jndi.properties"));
-    String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
-    File jndiDirectory = new File(jndiDirectoryPath);
-    if (!jndiDirectory.exists()) {
-      jndiDirectory.mkdirs();
-      jndiDirectory.mkdir();
-    }
-  }
-
-  /**
-   * Deletes the directory for JNDI file system provider
-   * @throws IOException
-   */
-  protected void cleanJndi() throws IOException {
-    Properties jndiProperties = new Properties();
-    jndiProperties.load(PathTestUtil.class.getClassLoader().
-        getResourceAsStream("jndi.properties"));
-    String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
-    File jndiDirectory = new File(jndiDirectoryPath);
-    if (jndiDirectory.exists()) {
-      jndiDirectory.delete();
-    }
-  }
-
-  /**
    * Workaround to be able to use Sun's JNDI file system provider on Unix
-   * @param ic : the JNDI initial context
+   *
+   * @param ic       : the JNDI initial context
    * @param jndiName : the binding name
-   * @param ref : the reference to be bound
+   * @param ref      : the reference to be bound
    * @throws NamingException
    */
-  protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
+  protected void rebind(InitialContext ic, String jndiName, Object ref) throws NamingException {
     Context currentContext = ic;
     StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
-    while(tokenizer.hasMoreTokens()) {
+    while (tokenizer.hasMoreTokens()) {
       String name = tokenizer.nextToken();
-      if(tokenizer.hasMoreTokens()) {
+      if (tokenizer.hasMoreTokens()) {
         try {
           currentContext = (Context) currentContext.lookup(name);
-        }catch(javax.naming.NameNotFoundException nnfex) {
-           currentContext = currentContext.createSubcontext(name);
+        } catch (javax.naming.NameNotFoundException nnfex) {
+          currentContext = currentContext.createSubcontext(name);
         }
       } else {
         currentContext.rebind(name, ref);

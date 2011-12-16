@@ -4,22 +4,28 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import com.google.common.collect.Lists;
-import java.sql.Connection;
-import java.util.List;
+import com.silverpeas.components.model.AbstractTestDao;
 import org.junit.Test;
 import org.junit.internal.matchers.IsCollectionContaining;
-import static org.junit.Assert.*;
-import static org.hamcrest.collection.IsIterableContainingInOrder.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+
+import java.sql.Connection;
+import java.util.List;
+
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.assertThat;
 /**
  *
  * @author ehugonnet
  */
+@RunWith(BlockJUnit4ClassRunner.class)
 public class ComponentDAOTest extends AbstractTestDao {
 
   public ComponentDAOTest() {
   }
+
 
   @Override
   protected String getDatasetFileName() {

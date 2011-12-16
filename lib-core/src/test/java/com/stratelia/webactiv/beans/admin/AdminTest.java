@@ -5,15 +5,22 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.components.model.AbstractTestDao;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
+@RunWith(BlockJUnit4ClassRunner.class)
 public class AdminTest extends AbstractTestDao {
 
   private Admin instance;
@@ -23,13 +30,15 @@ public class AdminTest extends AbstractTestDao {
   }
 
   @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     super.setUp();
     instance.reloadCache();
   }
 
   @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     super.tearDown();
     instance.reloadCache();
   }

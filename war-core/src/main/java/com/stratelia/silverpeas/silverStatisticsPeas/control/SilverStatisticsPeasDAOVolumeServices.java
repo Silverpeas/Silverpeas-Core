@@ -26,18 +26,18 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -75,8 +75,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
     List<String> dates = new ArrayList<String>();
     List<String> counts = new ArrayList<String>();
     long count = 0;
-    Admin admin = new Admin();
-    Map<String, WAComponent> components = admin.getAllComponents();
+    Map<String, WAComponent> components = AdminReference.getAdminService().getAllComponents();
     String label = null;
     while (rs.next()) {
       WAComponent compo = components.get(rs.getString(1));
