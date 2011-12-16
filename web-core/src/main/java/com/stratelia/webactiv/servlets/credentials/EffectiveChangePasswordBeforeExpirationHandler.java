@@ -27,8 +27,8 @@ import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -41,8 +41,6 @@ import javax.servlet.http.HttpSession;
  * @author ehugonnet
  */
 public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHandler {
-
-  private Admin admin = new Admin();
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -57,7 +55,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
 
     try {
       String userId = controller.getUserId();
-      UserDetail ud = admin.getUserDetail(userId);
+      UserDetail ud = AdminReference.getAdminService().getUserDetail(userId);
       String login = ud.getLogin();
       String domainId = ud.getDomainId();
       String oldPassword = request.getParameter("oldPassword");

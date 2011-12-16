@@ -142,10 +142,12 @@ public class Group implements Serializable, Comparable<Group> {
    * Set the group description
    */
   public void setDescription(String newDescription) {
-    if (newDescription != null)
+    if (newDescription != null) {
       this.description = newDescription;
-    else
+    }
+    else {
       this.description = "";
+    }
   }
 
   /**
@@ -205,8 +207,9 @@ public class Group implements Serializable, Comparable<Group> {
   }
 
   public int getNbUsers() {
-    if (nbUsers == -1)
+    if (nbUsers == -1) {
       return getUserIds().length;
+    }
     return nbUsers;
   }
 

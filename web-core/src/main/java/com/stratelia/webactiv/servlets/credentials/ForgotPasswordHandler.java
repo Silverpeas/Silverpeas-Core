@@ -42,8 +42,7 @@ import java.util.Map.Entry;
 public class ForgotPasswordHandler extends FunctionHandler {
 
   private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-  private ForgottenPasswordMailManager forgottenPasswordMailManager = new ForgottenPasswordMailManager(
-      getAdmin());
+  private ForgottenPasswordMailManager forgottenPasswordMailManager = new ForgottenPasswordMailManager();
 
   @Override
   public String doAction(HttpServletRequest request) {

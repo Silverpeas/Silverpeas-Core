@@ -23,14 +23,6 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.RemoveException;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
@@ -47,7 +39,6 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.AdminUserConnections;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -59,17 +50,25 @@ import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import javax.ejb.RemoveException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 /*
  This object is used by all the components jsp that have access to the session.
  It is initialized given a login and a password which is authenticated.
  It provides functions to get information about the logged user (which is unique).
  It is also used to update the current environnement of the user (current domain, current component).
  */
-public class MainSessionController extends AdminReference implements Clipboard {
+public class MainSessionController implements Clipboard {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
   ClipboardBm m_ClipboardBm = null;

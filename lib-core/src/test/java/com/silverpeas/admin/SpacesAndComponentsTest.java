@@ -27,14 +27,6 @@ package com.silverpeas.admin;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.components.model.AbstractTestDao;
-import java.util.List;
-
-import javax.inject.Inject;
-
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -44,9 +36,14 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jdbc-datasource.xml"})
@@ -223,7 +220,6 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     assertEquals("5", profileId);
 
     // test if user1 is manager of at least one space
-    Admin admin = new Admin();
     String[] managerIds = admin.getUserManageableSpaceIds("1");
     assertEquals(1, managerIds.length);
 

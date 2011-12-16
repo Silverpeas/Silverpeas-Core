@@ -24,25 +24,25 @@
 
 package com.silverpeas.components.model;
 
-import com.silverpeas.util.PathTestUtil;
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.dbunit.JndiBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.slf4j.LoggerFactory;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * @author ehugonnet
@@ -51,13 +51,25 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
 
   private static String jndiName = "";
 
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    configureJNDIDatasource();
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+  }
+
   /**
    * This is called directly when running under JUnit 3.
    * @throws Exception if an error occurs while tearing down the resources.
    */
   @Override
-  protected void tearDown() throws Exception {
-    cleanData();
+  public void tearDown() throws Exception {
+    cleanData();    
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
   /**
@@ -76,16 +88,19 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
    * @throws Exception if an error occurs while setting up the resources required by the tests.
    */
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
     configureJNDIDatasource();
     prepareData();
   }
+  
+  
 
   /**
    * Prepares the data for the tests in the database.
    * This is called directly by JUnit 4 or by the setUp() method when running in JUnit 3.
    * @throws Exception if an error occurs while preparing the data required by the tests.
-   */
+   */  
   @Before
   public void prepareData() throws Exception {
     super.setUp();
@@ -97,31 +112,18 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
    * invocation in JUnit 3.
    * @throws IOException if an error occurs while communicating with the JNDI context.
    * @throws NamingException if the data source cannot be found in the JNDI context.
+   * @throws Exception if the data source cannot be created.
    */
-  @BeforeClass
-  public static void configureJNDIDatasource() throws IOException, NamingException {
-    prepareJndi();
-    Properties env = new Properties();
-    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
-    InitialContext ic = new InitialContext(env);
+  public static void configureJNDIDatasource() throws Exception {
+    InitialContext ic = new InitialContext();
     Properties props = new Properties();
     props.load(AbstractTestDao.class.getClassLoader().getResourceAsStream("jdbc.properties"));
-    // Construct BasicDataSource reference
-    Reference ref = new Reference("javax.sql.DataSource",
-        "org.apache.commons.dbcp.BasicDataSourceFactory", null);
-    ref.add(new StringRefAddr("driverClassName", props.getProperty("driverClassName")));
-    ref.add(new StringRefAddr("url", props.getProperty("url")));
-    ref.add(new StringRefAddr("username", props.getProperty("username")));
-    ref.add(new StringRefAddr("password", props.getProperty("password")));
-    ref.add(new StringRefAddr("maxActive", "4"));
-    ref.add(new StringRefAddr("maxWait", "5000"));
-    ref.add(new StringRefAddr("removeAbandoned", "true"));
-    ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
+    DataSource ds = BasicDataSourceFactory.createDataSource(props);
     jndiName = props.getProperty("jndi.name");
-    rebind(ic, jndiName, ref);
-    ic.rebind(jndiName, ref);
+    rebind(ic, jndiName, ds);
+    ic.rebind(jndiName, ds);
   }
-
+  
   @Override
   protected DatabaseOperation getTearDownOperation() throws Exception {
     return DatabaseOperation.DELETE_ALL;
@@ -130,20 +132,6 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
   @Override
   protected String getLookupName() {
     return jndiName;
-  }
-
-  @Override
-  protected Properties getJNDIProperties() {
-    Properties env = new Properties();
-    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
-    try {
-      if (PathTestUtil.class.getClassLoader().getResource("jndi.properties") != null) {
-        env.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
-      }
-    } catch (IOException ex) {
-      LoggerFactory.getLogger(AbstractTestDao.class).error("", ex);
-    }
-    return env;
   }
 
   @Override
@@ -161,7 +149,7 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
    * @param ref : the reference to be bound
    * @throws NamingException
    */
-  protected static void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
+  protected static void rebind(InitialContext ic, String jndiName, Object ref) throws NamingException {
     Context currentContext = ic;
     StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
     while (tokenizer.hasMoreTokens()) {
@@ -175,21 +163,6 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
       } else {
         currentContext.rebind(name, ref);
       }
-    }
-  }
-
-  /**
-   * Creates the directory for JNDI files ystem provider
-   * @throws IOException
-   */
-  protected static void prepareJndi() throws IOException {
-    Properties jndiProperties = new Properties();
-    jndiProperties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
-    String jndiDirectoryPath = jndiProperties.getProperty(Context.PROVIDER_URL).substring(7);
-    File jndiDirectory = new File(jndiDirectoryPath);
-    if (!jndiDirectory.exists()) {
-      jndiDirectory.mkdirs();
-      jndiDirectory.mkdir();
     }
   }
 
