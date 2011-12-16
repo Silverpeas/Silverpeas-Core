@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.node.model;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -239,7 +240,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public NodePK getNodePK() {
-    return (this.nodePK);
+    return nodePK;
   }
 
   public void setNodePK(NodePK nodePK) {
@@ -252,11 +253,11 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public String getName() {
-    return (this.name);
+    return name;
   }
 
   public String getName(String language) {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18N || !StringUtil.isDefined(language)) {
       return getName();
     }
 
@@ -276,11 +277,11 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public String getDescription() {
-    return (this.description);
+    return description;
   }
 
   public String getDescription(String language) {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18N || !StringUtil.isDefined(language)) {
       return getDescription();
     }
 
@@ -305,7 +306,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public String getCreationDate() {
-    return (this.creationDate);
+    return creationDate;
   }
 
   /**
@@ -314,7 +315,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public String getCreatorId() {
-    return (this.creatorId);
+    return creatorId;
   }
 
   /**
@@ -323,7 +324,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public String getPath() {
-    return (this.path);
+    return path;
   }
 
   /**
@@ -332,7 +333,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public int getLevel() {
-    return (this.level);
+    return level;
   }
 
   /**
@@ -340,7 +341,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @return the modelId
    */
   public String getModelId() {
-    return (this.modelId);
+    return modelId;
   }
 
   /**
@@ -348,7 +349,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @return the status
    */
   public String getStatus() {
-    return (this.status);
+    return status;
   }
 
   /**
@@ -357,7 +358,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public NodePK getFatherPK() {
-    return (this.fatherPK);
+    return fatherPK;
   }
 
   /**
@@ -367,7 +368,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public Collection<NodeDetail> getChildrenDetails() {
-    return (this.childrenDetails);
+    return childrenDetails;
   }
 
   /**
@@ -427,7 +428,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @param id
    */
   public void setId(int id) {
-    getNodePK().setId(java.lang.Integer.toString(id));
+    getNodePK().setId(Integer.toString(id));
   }
 
   /**
@@ -459,7 +460,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   }
 
   public int getOrder() {
-    return this.order;
+    return order;
   }
 
   public void setOrder(int order) {

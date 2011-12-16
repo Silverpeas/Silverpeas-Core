@@ -38,10 +38,6 @@ BODY {
 	margin: 0px;
 }
 
-IMG {
-	border: 0px;
-}
-
 TD,div {
 	font-family: "Verdana", "Arial", sans-serif;
 	font-size: 10px
@@ -200,6 +196,7 @@ Definition des class de style Silverpeas
 
 .header h4{
 	font-size:110%;
+	min-width:300px;
 }
 
 * html 	.bgDegradeGris {
@@ -328,7 +325,7 @@ Definition des class de style Silverpeas
 	color: #666666
 }
 
-.txtpetitblanc {
+.txtPetitBlanc, .txtpetitblanc {
 	font-size: 11px;
 	font-weight: bold;
 	color: #FFFFFF
@@ -463,6 +460,10 @@ Definition des class de style Silverpeas
 	white-space: nowrap;
 }
 
+#agenda #rss img {
+	border:0;
+}
+
 #agenda #today a {
 	font-size: 10pt;
 	font-weight: bold;
@@ -544,12 +545,32 @@ Definition des class de style Silverpeas
 	white-space: nowrap;
 }
 
+#outilsAdmin {
+	position: absolute;
+	left: 200px;
+	height: 15px;
+	width: 100%;
+	top: 6px;
+	color: #999999;
+	background-color:#FFF;
+	border:1px solid #333;
+	width:auto;
+	padding: 2px 15px 7px
+}
+
+#outilsAdmin a {
+	color: #999999;
+}
+
 .ongletAdminOff {
-	background-color: #8494B2
+	background-color: #333
 }
 
 .ongletAdminOn {
 	background-color: #CCCCCC
+}
+.ongletAdminOn span.textePetitBold, .ongletAdminOff span.txtPetitBlanc {
+	font-size:12px;
 }
 
 .intfdcolor1 {
@@ -712,7 +733,7 @@ Style Utilise par le ViewGenerator
 }
 
 .componentNav {
-	font-size: 11px
+	font-size: 12px
 }
 
 .domainName {
@@ -1317,6 +1338,10 @@ td.browsebar a:hover {
 	color: #FFF;
 }
 
+#spacePerso  a img {
+	border:0;
+}
+
 #spacePerso .contentSpace {
 	margin-top: 7px;
 	margin-left: 10px;
@@ -1579,7 +1604,8 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 /* Objet frame */
 .tableFrame {
 	border-style: none;
-	background-color: #FFFFFF;
+	background-color: transparent;
+    position:relative;
 }
 
 .hautFrame {
@@ -1641,6 +1667,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .ArrayCell {
 	text-align: left;
+}
+
+.ArrayCell img {
+	border: 0;
 }
 
 .ArrayNavigation {
@@ -1773,6 +1803,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /*- [ admin ] --------------------------- */
+#admin-treeview  img{ 
+	border:none;
+}
+
 #portletPages h2 {
 	font-size: 12px;
 }
@@ -3186,8 +3220,9 @@ caption {
 	background-color:#FFF;
 	text-align:center;
 }
-#myProfile #myProfileFiche  .profilPhotoContact img {
+#myProfile #myProfileFiche .profilPhotoContact img {
 	height:62px;
+	border: 0px;
 }
 /*- [ myProfile END ] --------------------------- */
 
@@ -3266,6 +3301,10 @@ caption {
 }
 #publicProfile .profilPhoto img {
 	height:140px;
+}
+
+.profilPhoto img {
+	border:0;
 }
 
 #publicProfileFiche {color:#909090; font-size:11px;}
@@ -3692,6 +3731,7 @@ ul#attachmentList li.attachmentListItem .lineSize,
 ul#attachmentList li.attachmentListItem .lineMain {
     display: block;
     padding: 1px 0 2px 0;
+	line-height:16px;
 }
 
 
@@ -3791,9 +3831,6 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 }
 
 /*- [ comment BEGIN ] ------------------------- */
-.commentaires {
-	width:550px;
-}
 
 .commentaires hr{
 	clear:both;
@@ -3804,28 +3841,41 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 	color:#CECECE;
 
 }
-.commentaires .oneComment {
-	width:525px;
+.commentaires .oneComment, .commentaires #edition-box {
+	background-color:#F0F0F0;
+	border:1px solid #CECECE;
+	border-radius:10px;
+		moz-border-radius:10px;
+		webkit-border-radius:10px;
+	padding:10px;
 	position:relative;
-	clear:both;
-	background:transparent url(../icons/commentBottom.png) bottom left no-repeat;
-	margin-bottom:10px;
+	margin:70px 2em 0;    
 }
-.commentaires .oneComment div {
-	background:transparent url(../icons/commentTop.png) left top no-repeat;
-	}
-.commentaires .oneComment div div { background-image:none;}
 
-.commentaires .oneComment div.avatar {
+.commentaires #edition-box {
+    padding-top: 24px;
+}
+
+ /* slt pour ie8 bug sous ie7*/
+html>/**/body .commentaires #edition-box ,
+html>/**/body .commentaires .oneComment{
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+.commentaires div.avatar {
 	position:absolute;
 	top:0;
 	left:0;
 	border:1px solid #CECECE;
 	padding:1px;
 	background-color:#FFF;
+	top:-50px;
+	left:-1em;
 	}
-.commentaires .oneComment div.avatar img {
-	width:50px;}
+.commentaires div.avatar img {
+	width:50px;
+	height:auto;
+	}
 
 .commentaires .oneComment .action {
 	bottom: 10px;
@@ -3837,29 +3887,40 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 	height: 13px;
 }
 
+.commentaires #edition-box .title , .commentaires .oneComment p.author{
+  font-size: 8pt;
+  color: #111111;    
+  height: 20px;
+  margin:0;
+  position:absolute;
+  top:-40px;
+  left:0;
+  line-height:10px;
+  padding:0 0 20px 50px;
+  background:transparent url(../icons/commentStartBubble.gif) 50px bottom no-repeat;
+}
 .commentaires .oneComment p.author {
-	color: #333333;
-    font-size: 12px;
-    padding: 6px 64px;
-	margin:0;
+	color:#26334A;
 	}
 .commentaires .oneComment .date {
 	color:#999;
 	font-size:11px;
 }
 
-.commentaires .oneComment .text {
-	font-size: 11px;
-    line-height: 16px;
-    padding:27px 12px 23px 23px;
+.commentaires .oneComment .text {      
+	color: #888888;
+    font-family: Arial;
+    font-size: 13px;
+    line-height: 120%;
+    margin: 0;
+    padding: 0;
     text-align: justify;
     text-indent: 41px;
-	margin:0;
-	white-space: normal;
+    white-space: normal;
 }
+.commentaires .oneComment .text a { font-size: 13px;}
 
 .commentaires #list-box {
-  padding: 1em;
 }
 
 .commentaires #list-box .action {
@@ -3869,22 +3930,15 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 .commentaires #update-box {
 }
 
-.commentaires #edition-box {
-}
-
-.commentaires #edition-box .title {
-  font-size: 8pt;
-  font-weight: bold;
-  color: #111111;
-  padding-right: 50px;
-  vertical-align: top;
-  text-align: left;
-}
 
 #comments-update-box .text,
 .commentaires #edition-box .text {
-  width: 95%;
-  height: 6em;
+	width: 95%;
+	height: 3em;
+	color: #888888;
+    font-family: Arial;
+    font-size: 13px;
+    line-height: 120%;
 }
 
 .commentaires .buttons {
@@ -4129,6 +4183,10 @@ html:not([lang*=""]) .add_position:hover {
 	clear:both;
 	display:block;
 	float:none;
+}
+
+.classification .field img {
+	border: 0px;
 }
 
 .classification.preview .list_pdc_position {

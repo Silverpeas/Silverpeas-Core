@@ -42,7 +42,10 @@ import com.silverpeas.importExport.control.RepositoriesTypeManager;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
+import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.importExport.PdcImportExport;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
@@ -53,6 +56,8 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
  * Class declaration
@@ -88,6 +93,8 @@ public class ImportDragAndDrop extends HttpServlet {
       res.getOutputStream().println("SUCCESS");
       return;
     }
+    
+    StringBuilder result = new StringBuilder();
     try {
       String componentId = request.getParameter("ComponentId");
       String topicId = request.getParameter("TopicId");
@@ -174,11 +181,16 @@ public class ImportDragAndDrop extends HttpServlet {
       boolean isPOIUsed = true;
       try {
         // Traitement recursif specifique
-        rtm.processImportRecursiveReplicate(massiveReport, userDetail,
-                new File(savePath), gedIE, attachmentIE, versioningIE, pdcIE,
-                componentId, Integer.parseInt(topicId), isPOIUsed,
-                isVersioningUsed, isDraftUsed);
+        List<PublicationDetail> importedPublications = rtm.processImportRecursiveReplicate(
+                massiveReport, userDetail, new File(savePath), gedIE, attachmentIE, versioningIE,
+                pdcIE, componentId, Integer.parseInt(topicId), isPOIUsed, isVersioningUsed, isDraftUsed);
         ImportReportManager.setEndDate(new Date());
+        
+        if (isDefaultClassificationModifiable(topicId, componentId)) {
+          for (PublicationDetail publicationDetail : importedPublications) {
+            result.append("pubid=").append(publicationDetail.getId()).append("&");
+          }
+        }
       } catch (Exception ex) {
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
         res.getOutputStream().println("ERROR");
@@ -191,6 +203,30 @@ public class ImportDragAndDrop extends HttpServlet {
       res.getOutputStream().println("ERROR");
       return;
     }
-    res.getOutputStream().println("SUCCESS");
+    
+    if (result.length() > 0) {
+      res.getOutputStream().println(result.substring(0, result.length() - 1));
+    } else {
+      res.getOutputStream().println("SUCCESS");
+    }
+  }
+  
+  /**
+   * Is the default classification on the PdC used to classify the publications published in the
+   * specified topic of the specified component instance can be modified during the multi-publications
+   * import process?
+   * If no default classification is defined for the specified topic (and for any of its parent topics),
+   * then false is returned.
+   * @param topicId the unique identifier of the topic.
+   * @param componentId the unique identifier of the component instance.
+   * @return true if the default classification can be modified during the automatical
+   * classification of the imported publications. False otherwise.
+   */
+  protected boolean isDefaultClassificationModifiable(String topicId, String componentId) {
+    PdcClassificationService classificationService = PdcServiceFactory.getFactory().
+            getPdcClassificationService();
+    PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
+            topicId, componentId);
+    return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
   }
 }

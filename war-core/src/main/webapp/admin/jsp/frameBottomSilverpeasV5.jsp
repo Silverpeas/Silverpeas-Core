@@ -57,8 +57,10 @@ else
 //Allow to force a page only on login and when user clicks on logo
 boolean displayLoginHomepage = false;
 String loginHomepage = rsc.getString("loginHomepage");
-if (StringUtil.isDefined(loginHomepage) && (StringUtil.isDefined(login) || (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(subSpaceId) && !StringUtil.isDefined(componentId) && !StringUtil.isDefined(strGoToNew))))
+if (StringUtil.isDefined(loginHomepage) && StringUtil.isDefined(login) && 
+    (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(subSpaceId) && !StringUtil.isDefined(componentId) && !StringUtil.isDefined(strGoToNew))) {
 	displayLoginHomepage = true;
+}
 
 String frameURL = "";
 if (displayLoginHomepage)
@@ -86,7 +88,6 @@ else if (strGoToNew==null)
       frameURL = strGoToNew;
     }	
 } 
-
 
 session.removeAttribute("goto");
 session.removeAttribute("gotoNew");
