@@ -108,7 +108,7 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
      * can be requested.
      */
     resource: {
-      context: '/silverpeas',
+      context: webContext,
       component: '',
       content: '',
       node: ''
@@ -162,23 +162,23 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
       ok: 'Valider',
       cancel: 'Annuler',
       mandatoryLegend: 'Obligatoire',
-      mandatoryIcon: '/silverpeas/util/icons/mandatoryField.gif',
+      mandatoryIcon: webContext + '/util/icons/mandatoryField.gif',
       invariantLegend: 'invariantes',
-      invariantIcon: '/silverpeas/util/icons/buletColoredGreen.gif',
+      invariantIcon: webContext + '/util/icons/buletColoredGreen.gif',
       mandatoryAxisDefaultValue: 'Veuillez selectionner une valeur'
     },
     /**
      * The attributes of the position adding trigger.
      */ 
     addition: {
-      icon: '/silverpeas/pdcPeas/jsp/icons/add.gif',
+      icon: webContext + '/pdcPeas/jsp/icons/add.gif',
       title: 'Ajouter une nouvelle position'
     },
     /**
      * The attribute of the position update trigger.
      */
     update: {
-      icon: '/silverpeas/util/icons/update.gif',
+      icon: webContext + '/util/icons/update.gif',
       title: 'Editer la position'
     },
     /**
@@ -186,7 +186,7 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
      */
     deletion: {
       confirmation: 'Êtes-vous sûr de vouloir supprimer la position ?',
-      icon: '/silverpeas/util/icons/delete.gif',
+      icon: webContext + '/util/icons/delete.gif',
       title: 'Supprimer la position'
     },
     /**
@@ -215,14 +215,18 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
         var settings = $this.data('settings');
         loadPdC(settings.pdcURI, function(loadedPdC) {
           loadClassification(settings.defaultClassificationURI, function(loadedClassification) {
-            var modification = $('<fieldset>', { id: 'classification-mo' }).
-              addClass('skinFieldset').appendTo($this);
-            var predefinition = $('<fieldset>', { id: 'classification-predefinition' }).
-              addClass('skinFieldset').
-              data('settings', settings).
-              data('pdc', loadedPdC).
-              data('classification', loadedClassification).
-              appendTo($this);
+            var modification = $('<fieldset>', {
+              id: 'classification-mo'
+            }).
+             addClass('skinFieldset').appendTo($this);
+            var predefinition = $('<fieldset>', {
+              id: 'classification-predefinition'
+            }).
+             addClass('skinFieldset').
+             data('settings', settings).
+             data('pdc', loadedPdC).
+             data('classification', loadedClassification).
+             appendTo($this);
             
             var inherited = isInherited(settings, loadedClassification);
             var positionsLabel = settings.labelsPosition;
@@ -235,13 +239,15 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
             
             renderModificationAttributeFrame(predefinition, modification);
             prepareClassificationFrame(predefinition);
-            renderPositionEditionFrame(predefinition, '#' + settings.idPrefix + "pdc-addition-box",
-              settings.addition.title, [], false, function(values) {
-                var position = {values: values}, classification = predefinition.data('classification');
-                if (isAlreadyInClassification(position, classification))
+            renderPositionEditionFrame(predefinition, settings.idPrefix + "pdc-addition-box",
+              settings.addition.title, [], false, function(positions) {
+                var classification = predefinition.data('classification');
+                if (!areNotAlreadyInClassification(positions, classification)) {
                   alert(settings.messages.positionAlreadyInClassification);
-                else {
-                  classification.positions.push(position);
+                } else {
+                  for (var i = 0; i < positions.length; i++) {
+                    classification.positions.push(positions[i]);
+                  }
                   submitClassification(predefinition, settings.defaultClassificationURI);
                 }
               });
@@ -306,13 +312,15 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
             loadedClassification.uri = settings.classificationURI;
             if (loadedClassification.positions.length == 0 || loadedClassification.modifiable) {
               prepareClassificationFrame($this);
-              renderPositionEditionFrame($this, '#' + settings.idPrefix + "pdc-addition-box",
-                settings.addition.title, [], false, function(values) {
-                  var position = {values: values}, classification = $this.data('classification');
-                  if (isAlreadyInClassification(position, classification))
+              renderPositionEditionFrame($this, settings.idPrefix + "pdc-addition-box",
+                settings.addition.title, [], false, function(positions) {
+                  var classification = $this.data('classification');
+                  if (!areNotAlreadyInClassification(positions, classification)) {
                     alert(settings.messages.positionAlreadyInClassification);
-                  else {
-                    classification.positions.push(position);
+                  } else {
+                     for(var i = 0; i < positions.length; i++) {
+                      classification.positions.push(positions[i]);
+                    }
                     $this.pdcPositions('refresh', classification.positions);
                   }
                 });
@@ -543,7 +551,7 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
   
   function renderModificationAttributeFrame( $this, frame ) {
     var settings = $this.data('settings'), classification = $this.data('classification'),
-      titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.modificationTitle));
+    titleTag = $('<div>').append($('<h4>').addClass('clean').html(settings.modificationTitle));
     if (frame.is('fieldset')) {
       titleTag = $('<legend>').html(settings.modificationTitle);
     }
@@ -600,42 +608,57 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
   }
   
   function openEditionBox($this, uri, position) {
-    var settings = $this.data('settings'), classification = $this.data('classification');
-    var boxId = '#' + settings.idPrefix + "pdc-addition-box";
+    var settings = $this.data('settings');
+    var boxId = settings.idPrefix + "pdc-addition-box";
     var title = settings.addition.title;
     var preselectedValues = [];
     if (position != null && position.values.length > 0) {
-      boxId = "#" + settings.idPrefix + "pdc-update-box";
+      boxId = settings.idPrefix + "pdc-update-box";
       title = settings.update.title;
       preselectedValues = position.values;
     }
-    renderPositionEditionFrame($this, boxId, title, preselectedValues, true, function(values) {
-      var selection = {};
-      if (position != null && position.values.length > 0)
-        selection = $.extend(true, {}, position);
-      selection.values = values;
-      if (isAlreadyInClassification(selection, classification))
-        alert(settings.messages.positionAlreadyInClassification);
-      else {
-        if (settings.mode == 'predefinition') {
-          removePosition(position, classification.positions);
-          classification.positions.push(selection);
-          submitClassification($this, uri);
-        } else if (settings.mode == 'creation') {
-          removePosition(position, classification.positions);
-          classification.positions.push(selection);
-          $this.pdcPositions('refresh', classification.positions);
+    renderPositionEditionFrame($this, boxId, title, preselectedValues, true, function(positions) {
+      var selection = [], classification = $this.data('classification');
+      for(var i = 0; i < positions.length; i++) {
+        var selectedPosition = positions[i];
+        if (position != null && position.values.length > 0) {
+          selectedPosition = $.extend(true, {}, position);
+          selectedPosition.values = positions[i].values;
+        }
+        if (isAlreadyInClassification(selectedPosition, classification)) {
+          alert(settings.messages.positionAlreadyInClassification);
+          selection = [];
+          break;
         } else {
-          submitPosition($this, uri, selection);
+          if (settings.mode != 'edition') {
+            var location = findPosition(position.values, classification.positions);
+            if (location != null) {
+              classification.positions[location.index] = selectedPosition;
+            } else {
+              classification.positions.push(selectedPosition);
+            }
+          } else {
+            selection.push(selectedPosition);
+          }
+        }
+      }
+      if (settings.mode == 'predefinition') {
+        submitClassification($this, uri);
+      } else if (settings.mode == 'creation') {
+        $this.pdcPositions('refresh', classification.positions);
+      } else if (selection.length > 0) {
+        for(var s = 0; s < selection.length; s++) {
+          submitPosition($this, uri, selection[s]);
         }
       }
     });
   }
   
   function renderPositionEditionFrame($this, frameId, title, preselectedValues, asDialogBox, onEdition) {
-    var settings = $this.data('settings'), classification = $this.data('classification');
-    $(frameId).pdcAxisValuesSelector({
-      id                  : frameId,
+    var settings = $this.data('settings'), positionSavingLabel = settings.edition.ok;
+    if (!asDialogBox && frameId.indexOf('pdc-addition-box'))
+      positionSavingLabel = settings.addition.title;
+    $('#' + frameId).pdcAxisValuesSelector({
       title               : title,
       positionError       : settings.messages.positionMustBeValued,
       mandatoryAxisText   : settings.edition.mandatoryAxisDefaultValue,
@@ -644,13 +667,14 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
       mandatoryAxisLegend : settings.edition.mandatoryLegend,
       invariantAxisIcon   : settings.edition.invariantIcon,
       invariantAxisLegend : settings.edition.invariantLegend,
-      labelOk             : settings.edition.ok,
+      labelOk             : positionSavingLabel,
       labelCancel         : settings.edition.cancel,
       axis                : $this.data('pdc').axis,
       values              : preselectedValues,
       dialogBox           : asDialogBox,
-      onValuesSelected    : function(values) {
-        onEdition(values);
+      multiValuation      : frameId.indexOf('pdc-addition-box') > -1,
+      onValuesSelected    : function(positions) {
+        onEdition(positions);
       }
     });
   }
@@ -678,10 +702,16 @@ $.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
         $this.data('classification', newClassification);
         var newParameters = null;
         if (isInherited(settings, newClassification)) {
-          newParameters = { title: settings.inheritedPositionsLabel, deletion: false }
+          newParameters = {
+            title: settings.inheritedPositionsLabel, 
+            deletion: false
+          }
           $('.field input[value="' + newClassification.modifiable + '"]:radio').attr('checked', true);
         } else {
-          newParameters = { title: settings.positionsLabel, deletion: true }
+          newParameters = {
+            title: settings.positionsLabel, 
+            deletion: true
+          }
         }
         $this.pdcPositions('refresh', newClassification.positions, newParameters);
       },
