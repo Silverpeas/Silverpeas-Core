@@ -460,6 +460,10 @@ Definition des class de style Silverpeas
 	white-space: nowrap;
 }
 
+#agenda #rss img {
+	border:0;
+}
+
 #agenda #today a {
 	font-size: 10pt;
 	font-weight: bold;
@@ -1334,6 +1338,10 @@ td.browsebar a:hover {
 	color: #FFF;
 }
 
+#spacePerso  a img {
+	border:0;
+}
+
 #spacePerso .contentSpace {
 	margin-top: 7px;
 	margin-left: 10px;
@@ -1791,6 +1799,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /*- [ admin ] --------------------------- */
+#admin-treeview  img{ 
+	border:none;
+}
+
 #portletPages h2 {
 	font-size: 12px;
 }
@@ -3284,6 +3296,10 @@ caption {
 }
 #publicProfile .profilPhoto img {
 	height:140px;
+}
+
+.profilPhoto img {
+	border:0;
 }
 
 #publicProfileFiche {color:#909090; font-size:11px;}
