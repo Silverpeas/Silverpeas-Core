@@ -82,6 +82,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       if (organization != null && !inTransaction && nbConnected <= 0) {
         com.stratelia.webactiv.organization.OrganizationSchemaPool.releaseOrganizationSchema(
             organization);
+        organization.close();
         organization = null;
       }
     }

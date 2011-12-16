@@ -71,10 +71,14 @@ public abstract class Schema {
     try {
       Context ctx = new InitialContext();
       DataSource src = (DataSource) ctx.lookup(getJNDIName());
+      if (this.connection != null) {
+        DBUtil.close(this.connection);
+      }
       this.connection = src.getConnection();
       if (!this.connection.getAutoCommit()) {
         managed = true;
-      } else {
+      }
+      else {
         managed = false;
         this.connection.setAutoCommit(false);
       }
@@ -137,11 +141,7 @@ public abstract class Schema {
     }
     statementsMap.clear();
     try {
-      if (isLocalConnection) {
-        connection.close();
-      }
-    } catch (SQLException e) {
-      SilverTrace.error("util", "Schema.close", "util.CAN_T_CLOSE_CONNECTION", e);
+      DBUtil.close(this.connection);
     } finally {
       connection = null;
     }
@@ -207,9 +207,10 @@ public abstract class Schema {
       try {
         createConnection();
       } catch (UtilException e) {
-        SilverTrace.error("util", "Schema.getConnection",  "util.CAN_T_CLOSE_CONNECTION", e);
+        SilverTrace.error("util", "Schema.getConnection", "util.CAN_T_CLOSE_CONNECTION", e);
       }
-    } else {
+    }
+    else {
       SilverTrace.info("util", "Schema.getConnection",
           "root.MSG_GEN_ENTER_METHOD", "Connection Verified");
     }

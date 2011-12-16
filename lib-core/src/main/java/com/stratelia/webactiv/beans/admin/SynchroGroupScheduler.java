@@ -58,9 +58,8 @@ public class SynchroGroupScheduler
     SilverTrace.info("admin", "SynchroGroupScheduler.doSynchroGroup()", "root.MSG_GEN_ENTER_METHOD");
     SynchroGroupReport.startSynchro();
 
-    String groupId = null;
     for (int i = 0; synchronizedGroupIds != null && i < synchronizedGroupIds.size(); i++) {
-      groupId = synchronizedGroupIds.get(i);
+      String groupId = synchronizedGroupIds.get(i);
       try {
         AdminReference.getAdminService().synchronizeGroupByRule(groupId, true);
       } catch (AdminException e) {
