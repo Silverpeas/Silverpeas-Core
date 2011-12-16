@@ -160,10 +160,8 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
       throw new WebApplicationException(Status.CONFLICT);
     }
     try {
-      PdcClassification newClassification = aPredefinedPdcClassificationForComponentInstance(
-              getComponentId()).forNode(nodeId).withPositions(classification.getPdcPositions());
       PdcClassification savedClassification = pdcServiceProvider().
-              saveOrUpdatePredefinedClassification(newClassification);
+              saveOrUpdatePredefinedClassification(fromWebEntity(classification));
       URI theClassificationURI = theUriOf(savedClassification);
       return Response.created(theClassificationURI).entity(asWebEntity(savedClassification,
               identifiedBy(theClassificationURI))).build();
@@ -211,7 +209,8 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
                 SilverpeasException.ERROR, "root.EX_NO_MESSAGE");
       }
       classificationToUpdate = (classification.isModifiable() ? classificationToUpdate.modifiable()
-              : classificationToUpdate.unmodifiable()).withPositions(classification.getPdcPositions());
+              : classificationToUpdate.unmodifiable()).withPositions(
+              classification.getPdcPositions());
       PdcClassification updatedClassification = pdcServiceProvider().
               saveOrUpdatePredefinedClassification(classificationToUpdate);
       return asWebEntity(updatedClassification, identifiedBy(theUriOf(updatedClassification)));
@@ -225,23 +224,39 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   }
 
   private PdcClassificationEntity asWebEntity(final PdcClassification classification, URI uri)
-          throws
-          Exception {
+          throws Exception {
+    PdcClassificationEntity theClassificationEntity;
     if (classification == PdcClassification.NONE_CLASSIFICATION) {
-      return undefinedClassification();
+      theClassificationEntity = undefinedClassification();
+      theClassificationEntity.setModifiable(false);
     } else {
       UserPreferences userPreferences = getUserPreferences();
-      PdcClassificationEntity theClassificationEntity = aPdcClassificationEntity(
+      theClassificationEntity = aPdcClassificationEntity(
               fromPdcClassification(classification),
               inLanguage(userPreferences.getLanguage()),
               atURI(uri));
+      theClassificationEntity.setModifiable(classification.isModifiable());
       if (userPreferences.isThesaurusEnabled()) {
         UserThesaurusHolder theUserThesaurus =
                 pdcServiceProvider().getThesaurusOfUser(getUserDetail());
         theClassificationEntity.withSynonymsFrom(theUserThesaurus);
       }
-      return theClassificationEntity;
     }
+    return theClassificationEntity;
+  }
+
+  private PdcClassification fromWebEntity(final PdcClassificationEntity entity) {
+    String nodeId = getUriInfo().getQueryParameters().getFirst("nodeId");
+    PdcClassification classification =
+            aPredefinedPdcClassificationForComponentInstance(getComponentId()).
+            forNode(nodeId).
+            withPositions(entity.getPdcPositions());
+    if (entity.isModifiable()) {
+      classification.modifiable();
+    } else {
+      classification.unmodifiable();
+    }
+    return classification;
   }
 
   private PdcServiceProvider pdcServiceProvider() {

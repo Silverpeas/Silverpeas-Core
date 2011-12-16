@@ -25,43 +25,20 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
+import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation.*;
 
 /**
- * A tag that renders the use of the JQuery PdC plugin to get the possibly new classification for
- * a new content in Silverpeas.
+ * A tag that renders a preview of the classification on the PdC of a content in a given component
+ * instance.
  */
-public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
+public class PdcClassificationPreviewTag extends BaseClassificationPdCTag {
 
   private static final long serialVersionUID = 3377113335947703561L;
-  private String errorMessager;
-  private String errorCounter;
-
-  public String getErrorCounter() {
-    return errorCounter;
-  }
-
-  public void setErrorCounter(String errorCounter) {
-    this.errorCounter = errorCounter;
-  }
-
-  public String getErrorMessager() {
-    return errorMessager;
-  }
-
-  public void setErrorMessager(String errorMessage) {
-    this.errorMessager = errorMessage;
-  }
 
   @Override
   public void doTag() throws JspException {
-    if (isPdcUsed()) {
-      ElementContainer xhtmlcontainer = new ElementContainer();
-      String script = "if (!$('#" + getId() + "').pdc('isClassificationValid')) { "
-              + getErrorMessager() + " += \" - " + getResources().getString("pdcPeas.theContent")
-              + " " + getResources().getString("pdcPeas.MustContainsMandatoryAxis") + "\\n\"; "
-              + getErrorCounter() + "++; }";
-      xhtmlcontainer.addElement(script);
-      xhtmlcontainer.output(getOut());
-    }
+    ElementContainer container;
+    container = invoke(PREVIEW_CLASSIFICATION);
+    container.output(getOut());
   }
 }

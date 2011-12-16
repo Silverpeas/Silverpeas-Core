@@ -4070,7 +4070,7 @@ button {
 }
 
 .add_position {
-	background:url(../icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
+	background:url(/silverpeas/util/icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
 	padding:1px 8px 0 22px;
 	margin:0;
 	cursor:pointer;
@@ -4111,55 +4111,110 @@ html:not([lang*=""]) .add_position:hover {
   background-color: #EAEAEA;
 }
 
-#classification legend {
+.classification legend {
 	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
-#pdc-addition-box .field, #pdc-update-box .field {
+#classification-mo  legend {
+	background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
+}
+
+#classification-modification  legend {
+	background:transparent url('/silverpeas/util/icons/update.gif') 11px 0px no-repeat;
+}
+
+.classification .pdc-edition-box .field,
+.pdc-edition-box.ui-dialog-content .field {
 	width:70%;
 }
 
-#pdc-addition-box .inlineMessage {
+.pdc-edition-box .inlineMessage {
 	position:absolute;
 	top:-5px;
 	right:-5px;
 	width:28%;
 }
 
-* html #pdc-addition-box .inlineMessage {
+* html .pdc-edition-box .inlineMessage {
 	top:-35px;
 	right:5px;
 }
 
-#pdc-addition-box .valid_position {
+.pdc-edition-box .valid_position {
 	margin:10px 10px 10px  180px;
     line-height: 20px;
 	float:left;
 }
-#classification .legende { 
+.classification .legende { 
 	margin:10px 0 0;
 	float:left;
 	line-height:18px
 }
 
-#classification .list_pdc_position {
+.classification .list_pdc_position {
 	border:1px solid #C6CDBF;
 	width:94%;
 }
 
-#classification #list_pdc_position.field {
+.classification .field {
 	width: 98%;
 	clear:both;
 	display:block;
 	float:none;
 }
 
-#classification.preview .list_pdc_position {
+.classification.preview .list_pdc_position {
 	border:0;
 	width:100%;
 }
 
-#classification.preview .header h4 {
-    background: url("/silverpeas/util/icons/component/pdcPeasSmall.gif") no-repeat scroll right top transparent;
+.classification.preview .header h4 {
+    background:transparent url("/silverpeas/util/icons/component/pdcPeasSmall.gif") right top no-repeat;
     height: 16px;
 }
+
+#validation {
+	background-color:#E9F0E0;
+	border:1px solid #CDCDCD;
+	border-left:0;
+	border-right:0;
+	padding-left:180px;
+	margin:0 12px;
+	width:auto;
+	line-height:220%;
+}
+#validation  input, #modification input{
+	vertical-align:text-bottom;
+	vertical-align:middle\9;
+	border:0;
+	background-color:transparent;
+	padding-top:0;
+	padding-bottom:0;
+}
+
+#classification-modification span.header {
+	display:block;  
+	background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
+	background-color:#F0F0F0;
+	border:1px solid #CDCDCD;
+	border-left:0;
+	border-right:0;	
+	line-height:100%;
+	padding:8px 0 6px 26px;
+	margin:10px 12px 0;
+}
+
+#okForAll, #modifyForAll, #modifyForEach {
+	background:transparent url("/silverpeas/util/icons/update.gif") right 0 no-repeat ;
+	padding:2px 20px 2px 0;
+}
+#okForAll {
+	background-image:url("/silverpeas/util/icons/ok.gif") ;
+}
+
+
+
+
+
+
+

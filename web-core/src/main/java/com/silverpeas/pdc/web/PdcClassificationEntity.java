@@ -35,6 +35,9 @@ import com.silverpeas.rest.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 
+import com.sun.jersey.api.json.JSONMarshaller;
+import com.sun.jersey.json.impl.JSONMarshallerImpl;
+import java.io.StringWriter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -83,6 +86,14 @@ public class PdcClassificationEntity implements Exposable {
     return new PdcClassificationEntity();
   }
 
+  /**
+   * Creates a web entity from the specified positions on the PdC in the specified language and
+   * identified by the specified URI.
+   * @param classification the classification on the PdC for which the web entity should represent.
+   * @param inLanguage the language in which the entity should be translated.
+   * @param atURI the URI identified the classification in the web.
+   * @return a PdcClassificationEntity instance.
+   */
   public static PdcClassificationEntity aPdcClassificationEntity(
           final List<ClassifyPosition> fromPositions,
           String inLanguage,
@@ -93,6 +104,14 @@ public class PdcClassificationEntity implements Exposable {
     return entity;
   }
 
+  /**
+   * Creates a web entity of the specified classification on the PdC in the specified language and
+   * identified by the specified URI.
+   * @param classification the classification on the PdC for which the web entity should represent.
+   * @param inLanguage the language in which the entity should be translated.
+   * @param atURI the URI identified the classification in the web.
+   * @return a PdcClassificationEntity instance.
+   */
   public static PdcClassificationEntity aPdcClassificationEntity(
           final PdcClassification classification,
           String inLanguage,
@@ -103,7 +122,14 @@ public class PdcClassificationEntity implements Exposable {
     entity.setModifiable(classification.isModifiable());
     return entity;
   }
-  
+
+  /**
+   * Converts the specified JSON representation of a classification on the PdC into an instance of
+   * a classification entity.
+   * @param classification the JSON representation of a classification on the PdC.
+   * @return a PdcClassificationEntity instance.
+   * @throws JAXBException if an error occurs during the conversion.
+   */
   public static PdcClassificationEntity fromJSON(String classification) throws JAXBException {
     JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
             PdcPositionEntity.class, PdcPositionValueEntity.class);
@@ -111,6 +137,26 @@ public class PdcClassificationEntity implements Exposable {
     try {
       return unmarshaller.unmarshalFromJSON(new StringReader(classification),
               PdcClassificationEntity.class);
+    } catch (Error ex) {
+      throw new JAXBException(ex.getMessage(), ex);
+    }
+  }
+
+  /**
+   * Converts this entity into its JSON representation. Actually, the marshalling of the web entities
+   * are managed by the JAX-RS framework. This method is dedicated to be used in some particular
+   * circumstances in which there is an explicit need to have a JSON representation of this entity out
+   * of the JAX-RS context.
+   * @return a JSON representation of this classification entity (as string).
+   */
+  public String toJSON() throws JAXBException {
+    JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
+            PdcPositionEntity.class, PdcPositionValueEntity.class);
+    JSONMarshaller marshaller = new JSONMarshallerImpl(context, JSONConfiguration.DEFAULT);
+    try {
+      StringWriter writer = new StringWriter();
+      marshaller.marshallToJSON(this, writer);
+      return writer.toString();
     } catch (Error ex) {
       throw new JAXBException(ex.getMessage(), ex);
     }
@@ -207,7 +253,7 @@ public class PdcClassificationEntity implements Exposable {
     }
     return pdcPositions;
   }
-  
+
   /**
    * Is the PdC classification represented by this web entity can be changed?
    * @return true if the represented PdC classification is modifiable, false otherwise.

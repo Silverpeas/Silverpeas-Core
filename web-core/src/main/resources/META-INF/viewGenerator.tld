@@ -10,9 +10,9 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
-    <description>Tag to print out the predefined classification on the PdC for contents in a given
-    node of a given component instance. If the node identifier isn't specified, then the predefined
-    classification is for the whole component instance.
+    <description>Tag to print out an HTML/javascript widget with which the predefined classification
+    on the PdC of a component instance or of a node (a topic, a category, ...) can be defined or
+    modified.
     </description>
     <name>pdcPredefinedClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
@@ -27,8 +27,8 @@
     </attribute>
     <attribute>
       <description>The identifier of the node for which the predefined classification on the PdC
-      has to be rendered. If not specified, the predefined classification on the PdC for the whole
-      component instance is taken into account.
+      has to be rendered. If not specified, the predefined classification on the PdC for a parent
+      node or for the whole component instance is taken into account.
       </description>
       <name>nodeId</name>
       <required>false</required>
@@ -37,12 +37,20 @@
     </attribute>
   </tag>
   <tag>
-    <description>Tag to print out the classification of a given resource content on the PdC configured
-    for a given component instance. The classification on the PdC can be or not editable.
+    <description>Tag to print out the HTML/javascript widget with which the classification on the PdC
+    of a given resource content is opened and can be edited. If the PdC was parametrized for the
+    given component instance, only the axis used by this later will be loaded.
     </description>
     <name>pdcClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
     <body-content>empty</body-content>
+    <attribute>
+      <description>The identifier to set for the HTML element within the classificiation will be rendered</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured.
       </description>
@@ -71,13 +79,38 @@
     </attribute>
   </tag>
   <tag>
-    <description>Tag to print out an HTML section and javascript code dedicated to the creation of
-    a new classification of a given resource content on the PdC configured
-    for a given component instance. It is mainly to be used for new content. This tag is to be
-    used in conjonction with the pdcValidateClassification one.
+    <description>Tag to print out the HTML/javascript widget within which a preview of the
+    classification on the PdC of a given resource content is rendered.
     </description>
-    <name>pdcNewClassification</name>
-    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewClassificationTag</tag-class>
+    <name>pdcClassificationPreview</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationPreviewTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The identifier of the component instance for which the PdC is configured.
+      </description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource content for which the classification on the PdC
+      has to be rendered.
+      </description>
+      <name>contentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to print out an HTML/javascript widget to classify new content that will
+    published into a given component instance. The created classification can be retrieved with the
+    tag pdcPositions and it can be validated with the tag pdcValidateClassification. The widget has
+    no side effect with the Silverpeas collaborative portal.
+    </description>
+    <name>pdcNewContentClassification</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewContentClassificationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured. If a
@@ -101,8 +134,8 @@
     </attribute>
   </tag>
   <tag>
-    <description>Tag to print out javascript code to validate the classification onto the PdC that
-    was done through the tag pdcNewClassification for a new content. The tag generates javascript
+    <description>Tag to print out javascript code to validate the classification on the PdC that
+    was done through the tag pdcNewContentClassification for a new content. The tag generates javascript
     instruction that returns the error message if the classification isn't valid, otherwise an empty
     message.
     </description>
@@ -130,8 +163,8 @@
     </attribute>
   </tag>
   <tag>
-    <description>Tag to print out javascript code to get the positions of the content classification
-    onto the PdC that were selected through the tag pdcNewClassification.
+    <description>Tag to print out javascript code to get the positions of a classification on the PdC
+    of a content.
     </description>
     <name>pdcPositions</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
