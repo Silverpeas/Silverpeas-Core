@@ -24,13 +24,13 @@
 
 package com.silverpeas.workflow.engine.user;
 
-import java.util.List;
-
 import com.silverpeas.workflow.api.user.User;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+
+import java.util.List;
 
 /**
  * A User implementation built upon the silverpeas user management system.
@@ -46,20 +46,14 @@ public final class UserImpl implements User {
    */
   private UserFull userFull = null;
 
-  /**
-   * The UserImpl shares a silverpeas Admin object
-   */
-  static private Admin admin = null;
 
   private List<String> groupIds = null;
 
   /**
    * UserImpl is built from a UserDetail and admin .
    */
-  public UserImpl(UserDetail userDetail, Admin admin) {
+  public UserImpl(UserDetail userDetail) {
     this.userDetail = userDetail;
-    if (UserImpl.admin == null)
-      UserImpl.admin = admin;
   }
 
   /**
@@ -84,24 +78,23 @@ public final class UserImpl implements User {
     return infoNames;
   }
 
-  static private String[] infoNames = { "bossId" };
+  static private String[] infoNames = {"bossId"};
 
   /**
    * Returns the named info
    */
   public String getInfo(String infoName) {
     if (userFull == null) {
-      if (admin == null)
-        return "";
 
       try {
-        userFull = admin.getUserFull(getUserId());
+        userFull = AdminReference.getAdminService().getUserFull(getUserId());
       } catch (AdminException e) {
         return "";
       }
 
-      if (userFull == null)
+      if (userFull == null) {
         return "";
+      }
     }
 
     return userFull.getValue(infoName);
@@ -116,11 +109,12 @@ public final class UserImpl implements User {
 
   /**
    * compare this user with another
+   *
    * @return true if two users are the same
    */
   @Override
   public boolean equals(Object user) {
-    if(user == null || !(user instanceof UserImpl)) {
+    if (user == null || !(user instanceof UserImpl)) {
       return false;
     }
     return this.getUserId().equals(((UserImpl) user).getUserId());
@@ -130,7 +124,7 @@ public final class UserImpl implements User {
   public List<String> getGroupIds() {
     return groupIds;
   }
-  
+
   public void setGroupIds(List<String> groupIds) {
     this.groupIds = groupIds;
   }

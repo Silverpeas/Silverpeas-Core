@@ -40,12 +40,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 /*
 This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
 It provides access functions to query and modify the domains as well as the company organization
 It should be used only by a client that has the administrator rights
  */
-public class AdminController extends AdminReference implements java.io.Serializable {
+public class AdminController implements java.io.Serializable {
 
   private static final long serialVersionUID = -1605341557688427460L;
   String m_UserId = null;

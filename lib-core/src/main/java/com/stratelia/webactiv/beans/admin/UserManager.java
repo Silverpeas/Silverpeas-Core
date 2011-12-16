@@ -128,21 +128,17 @@ public class UserManager {
    * @return
    * @throws AdminException 
    */
-  public UserDetail[] getUsersOfDomain(DomainDriverManager ddManager,
-      String sDomainId) throws AdminException {
-    UserRow[] urs = null;
-    UserDetail[] aus = null;
-
+  public UserDetail[] getUsersOfDomain(DomainDriverManager ddManager, String sDomainId) throws AdminException {
     try {
       // Get users from Silverpeas
       ddManager.getOrganizationSchema();
       SynchroReport.info("UserManager.getUsersOfDomain()",
           "Recherche des utilisateurs du domaine LDAP dans la base...", null);
       // Get users of domain from Silverpeas database
-      urs = ddManager.organization.user.getAllUserOfDomain(idAsInt(sDomainId));
+      UserRow[] urs = ddManager.organization.user.getAllUserOfDomain(idAsInt(sDomainId));
 
       // Convert UserRow objects in UserDetail Object
-      aus = new UserDetail[urs.length];
+      UserDetail[] aus = new UserDetail[urs.length];
       for (int nI = 0; nI < urs.length; nI++) {
         aus[nI] = userRow2UserDetail(urs[nI]);
         SynchroReport.debug("UserManager.getUsersOfDomain()",

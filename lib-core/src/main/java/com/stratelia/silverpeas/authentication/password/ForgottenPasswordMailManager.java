@@ -24,9 +24,10 @@
 
 package com.stratelia.silverpeas.authentication.password;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.Properties;
+import com.silverpeas.util.MimeTypes;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -36,11 +37,9 @@ import javax.mail.event.TransportEvent;
 import javax.mail.event.TransportListener;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import com.silverpeas.util.MimeTypes;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.Properties;
 
 public class ForgottenPasswordMailManager {
 
@@ -71,9 +70,9 @@ public class ForgottenPasswordMailManager {
   private String fromName;
   private String adminEmail;
 
-  public ForgottenPasswordMailManager(Admin admin) {
+  public ForgottenPasswordMailManager() {
     initSmtpParameters();
-    initFromAddress(admin);
+    initFromAddress();
   }
 
   private void initSmtpParameters() {
@@ -94,10 +93,10 @@ public class ForgottenPasswordMailManager {
     session.setDebug(smtpDebug); // print on the console all SMTP messages.
   }
 
-  private void initFromAddress(Admin admin) {
+  private void initFromAddress() {
     ResourceLocator mailSettings = new ResourceLocator(
         "com.silverpeas.authentication.settings.forgottenPasswordMail", "");
-    adminEmail = mailSettings.getString("admin.mail", admin.getAdministratorEmail());
+    adminEmail = mailSettings.getString("admin.mail", AdminReference.getAdminService().getAdministratorEmail());
     fromAddress = mailSettings.getString("fromAddress", adminEmail);
     fromName = mailSettings.getString("fromName", "Silverpeas");
   }

@@ -23,7 +23,23 @@
  */
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.Resource;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,23 +47,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Session;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService;
-import javax.annotation.Resource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static com.silverpeas.util.PathTestUtil.*;
+import static com.silverpeas.util.PathTestUtil.BUILD_PATH;
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
 import static org.junit.Assert.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
 public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
