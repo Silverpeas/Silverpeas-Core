@@ -30,6 +30,17 @@
 
 package com.stratelia.silverpeas.authentication;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -42,18 +53,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * The class AuthenticationServlet is called to authenticate user in Silverpeas
@@ -80,8 +79,6 @@ public class LoginPasswordAuthentication {
   static final protected String m_UserDomainColumnName;
 
   static protected int m_AutoInc = 1;
-
-  private final static Admin admin = new Admin();
 
   static {
     ResourceLocator propFile = new ResourceLocator(
@@ -177,7 +174,7 @@ public class LoginPasswordAuthentication {
     m_Domains.clear();
     domains.clear();
     try {
-      Domain[] allDomains = admin.getAllDomains();
+      Domain[] allDomains = AdminReference.getAdminService().getAllDomains();
       for (Domain domain : allDomains) {
         m_Domains.put(domain.getId(), domain.getName());
         m_DomainsIds.add(domain.getId());

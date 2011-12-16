@@ -27,11 +27,6 @@ import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -45,8 +40,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

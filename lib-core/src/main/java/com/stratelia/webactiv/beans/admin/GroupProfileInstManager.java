@@ -50,13 +50,15 @@ public class GroupProfileInstManager {
       DDManager.organization.groupUserRole.createGroupUserRole(newRole);
       String sProfileId = idAsString(newRole.id);
 
-      for (int nI = 0; nI < groupProfileInst.getNumGroup(); nI++)
+      for (int nI = 0; nI < groupProfileInst.getNumGroup(); nI++) {
         DDManager.organization.groupUserRole.addGroupInGroupUserRole(
             idAsInt(groupProfileInst.getGroup(nI)), idAsInt(sProfileId));
+      }
 
-      for (int nI = 0; nI < groupProfileInst.getNumUser(); nI++)
+      for (int nI = 0; nI < groupProfileInst.getNumUser(); nI++) {
         DDManager.organization.groupUserRole.addUserInGroupUserRole(
             idAsInt(groupProfileInst.getUser(nI)), idAsInt(sProfileId));
+      }
 
       return sProfileId;
     } catch (Exception e) {
@@ -76,14 +78,15 @@ public class GroupProfileInstManager {
         ddManager.getOrganizationSchema();
         GroupRow group = ddManager.organization.group
             .getGroupOfGroupUserRole(idAsInt(sProfileId));
-        if (group == null)
+        if (group == null) {
           group = new GroupRow();
+        }
         sGroupId = idAsString(group.id);
       } catch (Exception e) {
         throw new AdminException("GroupProfileInstManager.getGroupProfileInst",
             SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
             "space profile Id: '" + sProfileId + "', groupId: '" + sGroupId
-            + "'", e);
+                + "'", e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -124,22 +127,24 @@ public class GroupProfileInstManager {
             .getDirectGroupIdsInGroupUserRole(idAsInt(sProfileId));
 
         // Set the groups to the space profile
-        for (int nI = 0; asGroupIds != null && nI < asGroupIds.length; nI++)
+        for (int nI = 0; asGroupIds != null && nI < asGroupIds.length; nI++) {
           groupProfileInst.addGroup(asGroupIds[nI]);
+        }
 
         // Get the Users
         String[] asUsersIds = ddManager.organization.user
             .getDirectUserIdsOfGroupUserRole(idAsInt(sProfileId));
 
         // Set the Users to the space profile
-        for (int nI = 0; asUsersIds != null && nI < asUsersIds.length; nI++)
+        for (int nI = 0; asUsersIds != null && nI < asUsersIds.length; nI++) {
           groupProfileInst.addUser(asUsersIds[nI]);
+        }
       }
     } catch (Exception e) {
       throw new AdminException("GroupProfileInstManager.setGroupProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE_PROFILE",
           "space profile Id: '" + sProfileId + "', groupId = '" + sGroupId
-          + "'", e);
+              + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -151,15 +156,17 @@ public class GroupProfileInstManager {
   public void deleteGroupProfileInst(GroupProfileInst groupProfileInst,
       DomainDriverManager ddManager) throws AdminException {
     try {
-      for (int nI = 0; nI < groupProfileInst.getNumGroup(); nI++)
+      for (int nI = 0; nI < groupProfileInst.getNumGroup(); nI++) {
         ddManager.organization.groupUserRole.removeGroupFromGroupUserRole(
             idAsInt(groupProfileInst.getGroup(nI)), idAsInt(groupProfileInst
             .getId()));
+      }
 
-      for (int nI = 0; nI < groupProfileInst.getNumUser(); nI++)
+      for (int nI = 0; nI < groupProfileInst.getNumUser(); nI++) {
         ddManager.organization.groupUserRole.removeUserFromGroupUserRole(
             idAsInt(groupProfileInst.getUser(nI)), idAsInt(groupProfileInst
             .getId()));
+      }
 
       // delete the groupProfile node
       ddManager.organization.groupUserRole
@@ -213,7 +220,8 @@ public class GroupProfileInstManager {
       for (String anAlNewProfileGroup : alNewProfileGroup) {
         if (!alOldProfileGroup.contains(anAlNewProfileGroup)) {
           alAddGroup.add(anAlNewProfileGroup);
-        } else {
+        }
+        else {
           alStayGroup.add(anAlNewProfileGroup);
         }
       }
@@ -256,7 +264,8 @@ public class GroupProfileInstManager {
       for (String anAlNewProfileUser : alNewProfileUser) {
         if (!alOldProfileUser.contains(anAlNewProfileUser)) {
           alAddUser.add(anAlNewProfileUser);
-        } else {
+        }
+        else {
           alStayUser.add(anAlNewProfileUser);
         }
       }
@@ -299,8 +308,9 @@ public class GroupProfileInstManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0)
+    if (id == null || id.length() == 0) {
       return -1; // the null id.
+    }
 
     try {
       return Integer.parseInt(id);

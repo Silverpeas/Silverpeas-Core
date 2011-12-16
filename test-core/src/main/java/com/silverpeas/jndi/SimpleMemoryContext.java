@@ -23,9 +23,6 @@
  */
 package com.silverpeas.jndi;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.Name;
@@ -35,13 +32,21 @@ import javax.naming.NameNotFoundException;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A JNDI context implementation that uses the memory as a dictionary of objects.
  */
 public class SimpleMemoryContext implements Context {
-  
+
   private Map<String, Object> dictionary = new ConcurrentHashMap<String, Object>();
+
+
+  public void clear() {
+    dictionary.clear();
+  }
 
   @Override
   public Object lookup(Name name) throws NamingException {
@@ -50,7 +55,10 @@ public class SimpleMemoryContext implements Context {
 
   @Override
   public Object lookup(String name) throws NamingException {
-    return dictionary.get(name);
+    if (dictionary.containsKey(name)) {
+      return dictionary.get(name);
+    }
+    throw new NameNotFoundException("Name " + name + " is not bound !");
   }
 
   @Override
@@ -123,22 +131,24 @@ public class SimpleMemoryContext implements Context {
 
   @Override
   public void destroySubcontext(Name name) throws NamingException {
-    throw new UnsupportedOperationException("Not supported yet.");
+    destroySubcontext(name.toString());
   }
 
   @Override
-  public void destroySubcontext(String string) throws NamingException {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public void destroySubcontext(String name) throws NamingException {
+    dictionary.remove(name);
   }
 
   @Override
   public Context createSubcontext(Name name) throws NamingException {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return createSubcontext(name.toString());
   }
 
   @Override
-  public Context createSubcontext(String string) throws NamingException {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public Context createSubcontext(String name) throws NamingException {
+    Context subContext = new SimpleMemoryContext();
+    bind(name, subContext);
+    return subContext;
   }
 
   @Override
@@ -195,5 +205,4 @@ public class SimpleMemoryContext implements Context {
   public String getNameInNamespace() throws NamingException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
-  
 }

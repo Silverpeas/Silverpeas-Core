@@ -29,7 +29,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.Vector;
 
 public class DomainSynchroThread extends Thread {
-  private Admin m_theAdmin = null;
   private boolean m_mustStop = false;
   private boolean m_mustBeRunning = false;
   private boolean m_isEncours = false;
@@ -37,8 +36,7 @@ public class DomainSynchroThread extends Thread {
   private Vector<String> m_Domains = new Vector<String>();
   private long m_nbSleepSec = 900; // 15 mn
 
-  public DomainSynchroThread(Admin theAdmin, long nbSleepSec) {
-    m_theAdmin = theAdmin;
+  public DomainSynchroThread(long nbSleepSec) {
     m_nbSleepSec = nbSleepSec;
   }
 
@@ -86,7 +84,7 @@ public class DomainSynchroThread extends Thread {
             "root.MSG_GEN_PARAM_VALUE", "------------DEBUT SYNCHRO DOMAINE #"
             + m_Domains.get(i) + "-----------");
         try {
-          m_theAdmin.difSynchro(m_Domains.get(i));
+          AdminReference.getAdminService().difSynchro(m_Domains.get(i));
         } catch (Exception e) {
           m_ErrorOccured = e;
           SilverTrace.error("admin", "DomainSynchroThread.run",
@@ -126,7 +124,7 @@ public class DomainSynchroThread extends Thread {
   }
 
   public Admin getTheAdmin() {
-    return m_theAdmin;
+    return AdminReference.getAdminService();
   }
 
   public void setEncours(boolean encours) {

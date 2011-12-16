@@ -23,11 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -40,10 +36,15 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class SpaceInstManager {
 
-  static ComponentInstManager m_ComponentInstManager = new ComponentInstManager();
-  static SpaceProfileInstManager m_SpaceProfileInstManager = new SpaceProfileInstManager();
+  static ComponentInstManager componentInstManager = new ComponentInstManager();
+  static SpaceProfileInstManager spaceProfileInstManager = new SpaceProfileInstManager();
 
   /**
    * Constructor
@@ -58,7 +59,7 @@ public class SpaceInstManager {
     if (spaceInstToCopy == null) {
       return null;
     }
-    
+
     SpaceInst spaceInst = new SpaceInst();
     spaceInst.setLevel(spaceInstToCopy.getLevel());
     spaceInst.setId(spaceInstToCopy.getId());
@@ -87,7 +88,7 @@ public class SpaceInstManager {
 
     // Create a copy of components
     for (int nI = 0; nI < spaceInstToCopy.getNumComponentInst(); nI++) {
-      spaceInst.addComponentInst(m_ComponentInstManager.copy(spaceInstToCopy.getComponentInst(nI)));
+      spaceInst.addComponentInst(componentInstManager.copy(spaceInstToCopy.getComponentInst(nI)));
     }
 
     // Create a copy of space profiles
@@ -126,7 +127,7 @@ public class SpaceInstManager {
 
       // Create the SpaceProfile nodes
       for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
-        m_SpaceProfileInstManager.createSpaceProfileInst(spaceInst.getSpaceProfileInst(nI),
+        spaceProfileInstManager.createSpaceProfileInst(spaceInst.getSpaceProfileInst(nI),
             ddManager, sSpaceNodeId);
       }
 
@@ -140,53 +141,54 @@ public class SpaceInstManager {
 
   /**
    * Get the space instance with the given space id
-   * @param sSpaceInstId driver space id
+   *
+   * @param spaceInstId driver space id
    * @return Space information as SpaceInst object
    */
-  public SpaceInst getSpaceInstById(DomainDriverManager ddManager,
-      String sSpaceInstId) throws AdminException {
+  public SpaceInst getSpaceInstById(DomainDriverManager ddManager, String spaceInstId)
+      throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-
       // Load the space detail
-      SpaceRow space = ddManager.organization.space.getSpace(idAsInt(sSpaceInstId));
-      
+      SpaceRow space = ddManager.organization.space.getSpace(idAsInt(spaceInstId));
+
       if (space == null) {
         SilverTrace.error("admin", "SpaceInstManager.getSpaceInstById",
-            "admin.EX_ERR_SPACE_NOT_FOUND", "spaceId = " + sSpaceInstId);
+            "admin.EX_ERR_SPACE_NOT_FOUND", "spaceId = " + spaceInstId);
         return null;
       }
 
       // Set the attributes of the space Inst
       SpaceInst spaceInst = spaceRow2SpaceInst(space);
-
       // Get the sub spaces
       String[] asSubSpaceIds = ddManager.organization.space.getDirectSubSpaceIds(idAsInt(
-          sSpaceInstId));
+          spaceInstId));
       spaceInst.setSubSpaceIds(asSubSpaceIds);
 
       // Get the components
-      String[] asCompoIds = ddManager.organization.instance.getAllComponentInstanceIdsInSpace(idAsInt(
-          sSpaceInstId));
+      String[] asCompoIds =
+          ddManager.organization.instance.getAllComponentInstanceIdsInSpace(idAsInt(
+              spaceInstId));
 
       // Insert the componentsInst in the spaceInst
       if (asCompoIds != null) {
         for (String componentId : asCompoIds) {
-          ComponentInst componentInst = m_ComponentInstManager.getComponentInst(
-              ddManager, componentId, sSpaceInstId);
+          ComponentInst componentInst = componentInstManager.getComponentInst(
+              ddManager, componentId, spaceInstId);
           spaceInst.addComponentInst(componentInst);
         }
       }
 
       // Get the space profiles
-      String[] asProfIds = ddManager.organization.spaceUserRole.getAllSpaceUserRoleIdsOfSpace(idAsInt(
-          sSpaceInstId));
+      String[] asProfIds =
+          ddManager.organization.spaceUserRole.getAllSpaceUserRoleIdsOfSpace(idAsInt(
+              spaceInstId));
 
       // Insert the spaceProfilesInst in the spaceInst
       if (asProfIds != null) {
         for (String profileId : asProfIds) {
           SpaceProfileInst spaceProfileInst =
-              m_SpaceProfileInstManager.getSpaceProfileInst(ddManager, profileId, sSpaceInstId);
+              spaceProfileInstManager.getSpaceProfileInst(ddManager, profileId, spaceInstId);
           spaceInst.addSpaceProfileInst(spaceProfileInst);
         }
       }
@@ -199,17 +201,17 @@ public class SpaceInstManager {
       spaceInst.addTranslation(translation);
 
       List<SpaceI18NRow> translations = ddManager.organization.spaceI18N.getTranslations(idAsInt(
-          sSpaceInstId));
+          spaceInstId));
       for (int t = 0; translations != null && t < translations.size(); t++) {
         SpaceI18NRow row = translations.get(t);
         spaceInst.addTranslation(new SpaceI18N(row));
       }
-      
+
       return spaceInst;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getSpaceInstById",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE", "spaceId : '"
-          + sSpaceInstId + "'", e);
+          + spaceInstId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -219,7 +221,6 @@ public class SpaceInstManager {
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-
       // Load the space detail
       SpaceRow space = ddManager.organization.space.getPersonalSpace(userId);
 
@@ -227,12 +228,13 @@ public class SpaceInstManager {
         SpaceInst spaceInst = spaceRow2SpaceInst(space);
 
         // Get the components
-        String[] asCompoIds = ddManager.organization.instance.getAllComponentInstanceIdsInSpace(idAsInt(spaceInst.
-            getId()));
+        String[] asCompoIds =
+            ddManager.organization.instance.getAllComponentInstanceIdsInSpace(idAsInt(spaceInst.
+                getId()));
 
         // Insert the componentsInst in the spaceInst
         for (int nI = 0; asCompoIds != null && nI < asCompoIds.length; nI++) {
-          ComponentInst componentInst = m_ComponentInstManager.getComponentInst(
+          ComponentInst componentInst = componentInstManager.getComponentInst(
               ddManager, asCompoIds[nI], spaceInst.getId());
           spaceInst.addComponentInst(componentInst);
         }
@@ -248,7 +250,7 @@ public class SpaceInstManager {
       ddManager.releaseOrganizationSchema();
     }
   }
-  
+
   private SpaceInst spaceRow2SpaceInst(SpaceRow space) throws AdminException {
     // Set the attributes of the space Inst
     SpaceInst spaceInst = new SpaceInst();
@@ -288,13 +290,14 @@ public class SpaceInstManager {
 
     spaceInst.setDisplaySpaceFirst(space.displaySpaceFirst == 1);
     spaceInst.setPersonalSpace(space.isPersonalSpace == 1);
-    
+
     return spaceInst;
   }
 
   /**
    * Get the space instance with the given space id
-   * @param sSpaceInstId driver space id
+   *
+   * @param spaceId driver space id
    * @return Space information as SpaceInst object
    */
   public SpaceInstLight getSpaceInstLightById(DomainDriverManager ddManager,
@@ -338,21 +341,6 @@ public class SpaceInstManager {
       throw new AdminException("SpaceInstManager.updateSpaceOrder",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACE",
           "space Id : '" + sSpaceId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  public void updateSpaceInheritance(DomainDriverManager ddManager,
-      String sSpaceId, boolean inheritanceBlocked) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      ddManager.organization.space.updateSpaceInheritance(idAsInt(sSpaceId),
-          inheritanceBlocked);
-    } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.updateSpaceInheritance",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACE_INHERITANCE",
-          "Component Id : '" + sSpaceId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -421,6 +409,7 @@ public class SpaceInstManager {
 
   /**
    * Return subspaces of a space
+   *
    * @return a List of SpaceInstLight
    */
   public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
@@ -453,11 +442,9 @@ public class SpaceInstManager {
     }
   }
 
-  private void setTranslations(DomainDriverManager ddManager,
-      SpaceInstLight space, SpaceRow row) {
+  private void setTranslations(DomainDriverManager ddManager, SpaceInstLight space, SpaceRow row) {
     try {
       space.setLanguage(row.lang);
-
       // Add default translation
       SpaceI18N translation = new SpaceI18N(row.lang, row.name, row.description);
       space.addTranslation(translation);
@@ -470,7 +457,6 @@ public class SpaceInstManager {
         }
       }
     } catch (AdminPersistenceException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -524,9 +510,8 @@ public class SpaceInstManager {
           sDomainFatherId));
       if (asSpaceIds != null) {
         return asSpaceIds;
-      } else {
-        return new String[0];
       }
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSubSpaceIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_SUBSPACE_IDS",
@@ -673,6 +658,7 @@ public class SpaceInstManager {
 
   /**
    * Tests if a space with given space id exists
+   *
    * @param ddManager
    * @param sSpaceInstId
    * @return true if the given space instance name is an existing space.

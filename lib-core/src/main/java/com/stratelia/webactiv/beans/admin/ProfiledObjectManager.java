@@ -24,15 +24,15 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.stratelia.webactiv.beans.admin.dao.RoleDAO;
 import com.stratelia.webactiv.organization.UserRoleRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfiledObjectManager {
   static ProfileInstManager m_ProfileInstManager = new ProfileInstManager();
@@ -117,7 +117,6 @@ public class ProfiledObjectManager {
     for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
       ProfileInst profileInst = m_ProfileInstManager.getProfileInst(ddManager,
           asProfileIds[nI], Integer.toString(componentId));
-      // profileInst.setObjectType(objectType);
       profiles.add(profileInst);
     }
 

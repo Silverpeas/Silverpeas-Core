@@ -29,30 +29,32 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.springframework.mock.web.MockJspWriter;
+
 import javax.naming.InitialContext;
 import javax.servlet.jsp.JspWriter;
 import javax.sql.DataSource;
-import org.junit.AfterClass;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.mockito.Mockito.*;
-import org.springframework.mock.web.MockJspWriter;
-
+import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import static com.silverpeas.util.PathTestUtil.SEPARATOR;
 import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import static org.mockito.Mockito.*;
 
 /**
  *
  * @author ehugonnet
  */
+@RunWith(BlockJUnit4ClassRunner.class)
 public class XmlFormTest {
 
   private static PublicationTemplate template;
@@ -82,6 +84,7 @@ public class XmlFormTest {
             + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping"
             + SEPARATOR + "templateMapping.xml";
     template = PublicationTemplateManager.getInstance().loadPublicationTemplate("MyForm.xml");
+    DBUtil.clearTestInstance();
   }
 
   @AfterClass

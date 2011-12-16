@@ -55,7 +55,7 @@
         <value>classpath:jdbc.properties</value>
       </list>
     </property>
-    <property name="searchSystemEnvironment" value="true" />
+    <property name="searchSystemEnvironment" value="false" />
   </bean>
 
   <bean id="dataSource" name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

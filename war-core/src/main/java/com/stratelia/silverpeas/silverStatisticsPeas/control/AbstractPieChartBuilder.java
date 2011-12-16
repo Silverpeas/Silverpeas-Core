@@ -20,23 +20,22 @@
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.jCharts.nonAxisChart.PieChart2D;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
-import com.silverpeas.util.StringUtil;
-import org.jCharts.nonAxisChart.PieChart2D;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.HashMap;
 
 /**
  * <p/>
@@ -46,7 +45,6 @@ public abstract class AbstractPieChartBuilder {
 
   private static final int LEGEND_MAX_LENGTH = 20;
   private Map<String, StatItem> statsByInstance = null;
-  private Admin admin = new Admin();
   private static final String FINESSE_TOUS = "FINESSE_TOUS";
   private static final String FINESSE_GROUPE = "FINESSE_GROUPE";
   private static final String FINESSE_USER = "FINESSE_USER";
@@ -70,7 +68,7 @@ public abstract class AbstractPieChartBuilder {
       tabValue = cmpStats.get(cmpId);
       ComponentInstLight cmp = null;
       try {
-        cmp = admin.getComponentInstLight(cmpId);
+        cmp = AdminReference.getAdminService().getComponentInstLight(cmpId);
       } catch (AdminException e) {
         SilverTrace.error("silverStatisticsPeas",
                 "AbstractPieChartBuilder.buildStatsByInstance()",
@@ -145,21 +143,21 @@ public abstract class AbstractPieChartBuilder {
       String[] componentIds = null;
 
       // build instance list
-      UserDetail userDetail = admin.getUserDetail(currentUserId);
+      UserDetail userDetail = AdminReference.getAdminService().getUserDetail(currentUserId);
       if (!StringUtil.isDefined(spaceId)) {
-        if ("A".equals(userDetail.getAccessLevel())) {// Admin
-          tabSpaceIds = admin.getAllRootSpaceIds(); // de type WA123
+        if (UserDetail.ADMIN_ACCESS.equals(userDetail.getAccessLevel())) {// Admin
+          tabSpaceIds = AdminReference.getAdminService().getAllRootSpaceIds(); // de type WA123
         } else {// Manager d'espaces ou de sous-espaces
           // manager d'espace
           List<String> listSpaceIds = new ArrayList<String>();
-          String[] tabManageableSpaceIds = admin.getUserManageableSpaceIds(currentUserId); // de type 123
+          String[] tabManageableSpaceIds = AdminReference.getAdminService().getUserManageableSpaceIds(currentUserId); // de type 123
           for (String manageableSpaceId : tabManageableSpaceIds) {
-            SpaceInstLight espace = admin.getSpaceInstLightById(manageableSpaceId);
+            SpaceInstLight espace = AdminReference.getAdminService().getSpaceInstLightById(manageableSpaceId);
             int level = espace.getLevel();
             boolean trouve = false;
             while (level > 0) {
               String idEspace = espace.getFatherId();
-              espace = admin.getSpaceInstLightById(idEspace);
+              espace = AdminReference.getAdminService().getSpaceInstLightById(idEspace);
               level--;
               if (isIdBelongsTo(idEspace, tabManageableSpaceIds)) {
                 trouve = true;
@@ -174,8 +172,8 @@ public abstract class AbstractPieChartBuilder {
         }
         componentIds = new String[0];
       } else {
-        tabSpaceIds = admin.getAllSubSpaceIds(spaceId); // de type WA123
-        componentIds = admin.getAllComponentIds(spaceId);
+        tabSpaceIds = AdminReference.getAdminService().getAllSubSpaceIds(spaceId); // de type WA123
+        componentIds = AdminReference.getAdminService().getAllComponentIds(spaceId);
       }
 
       // build data
@@ -190,8 +188,8 @@ public abstract class AbstractPieChartBuilder {
         long count2 = 0L;
         long count3 = 0L;
 
-        SpaceInstLight space = admin.getSpaceInstLightById(tabSpaceId);
-        allComponentsIds = admin.getAllComponentIdsRecur(tabSpaceId);
+        SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(tabSpaceId);
+        allComponentsIds = AdminReference.getAdminService().getAllComponentIdsRecur(tabSpaceId);
 
         for (String allComponentsId : allComponentsIds) {
           StatItem item = statsByInstance.get(allComponentsId);
@@ -212,9 +210,8 @@ public abstract class AbstractPieChartBuilder {
 
         legend.add("[" + ((space.getName().length() > LEGEND_MAX_LENGTH) ? space.getName().substring(
                 0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
-        currentStats.add(new String[]{"SPACE", tabSpaceId,
-                  space.getName(), String.valueOf(count1), String.valueOf(count2),
-                  String.valueOf(count3)});
+        currentStats.add(new String[]{"SPACE", tabSpaceId, space.getName(), String.valueOf(count1),
+                                      String.valueOf(count2), String.valueOf(count3)});
       }
 
       // then manage components
