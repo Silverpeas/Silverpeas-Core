@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import javax.ejb.CreateException;
 
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import org.apache.commons.lang.StringUtils;
 import org.jCharts.axisChart.AxisChart;
 import org.jCharts.nonAxisChart.PieChart2D;
@@ -113,7 +114,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(
           getLanguage());
   private ResourceLocator settings;
-  private Admin admin = new Admin();
   private PdcBm pdcBm = null;
 
   // init attributes
@@ -369,7 +369,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           String dateEnd, String idUser) {
     AxisChart axisChart = null;
     try {
-      UserDetail userDetail = admin.getUserDetail(idUser);
+      UserDetail userDetail = AdminReference.getAdminService().getUserDetail(idUser);
       String lastName = "";
       if (userDetail != null) {
         lastName = userDetail.getLastName();
@@ -476,7 +476,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       // title
       String title = this.getString("silverStatisticsPeas.LoginNumber") + " "
               + this.getString("silverStatisticsPeas.OfGroup") + " "
-              + admin.getGroupName(idGroup) + " ";
+              + AdminReference.getAdminService().getGroupName(idGroup) + " ";
       mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
@@ -891,7 +891,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       String title = this.getString("silverStatisticsPeas.EvolutionAccessDeb");
       if ("SPACE".equals(entite)) {
-        SpaceInstLight space = admin.getSpaceInstLightById(entiteId);
+        SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(entiteId);
         if (!filterIdGroup.equals("") && filterIdUser.equals("")) {
           title += " "
                   + this.getString("silverStatisticsPeas.EvolutionAccessGroup")
@@ -906,7 +906,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
                 + this.getString("silverStatisticsPeas.EvolutionAccessSpace")
                 + " [" + space.getName() + "]";
       } else {// CMP
-        ComponentInstLight cmp = admin.getComponentInstLight(entiteId);
+        ComponentInstLight cmp = AdminReference.getAdminService().getComponentInstLight(entiteId);
         if (!filterIdGroup.equals("") && filterIdUser.equals("")) {
           title += " "
                   + this.getString("silverStatisticsPeas.EvolutionAccessGroup")
@@ -938,14 +938,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @param spaceId
    */
   private void buildPath(String spaceId) {
-    if ((spaceId != null) && (spaceId.length() > 0) && (!spaceId.equals("WA0"))) {
+    if (StringUtil.isDefined(spaceId) && (!spaceId.equals("WA0"))) {
       try {
-        SpaceInstLight space = admin.getSpaceInstLightById(spaceId);
+        SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(spaceId);
         path.insertElementAt(new String[]{spaceId, space.getName()}, 0);
         buildPath("WA" + space.getFatherId());
       } catch (AdminException e) {
-        SilverTrace.error("silverStatisticsPeas",
-                "SilverStatisticsPeasSessionController.buildPath",
+        SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.buildPath",
                 "root.EX_SQL_QUERY_FAILED", e);
       }
 

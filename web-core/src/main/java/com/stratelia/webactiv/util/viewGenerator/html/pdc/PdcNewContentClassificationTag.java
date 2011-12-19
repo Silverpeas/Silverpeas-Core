@@ -34,7 +34,7 @@ import static com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcTagOperation
  * automatically (as the content can be not already existed). To set them, please use in conjonction
  * with this tag the PdcClassificationValidationTag one.
  */
-public class PdcNewClassificationTag extends BaseClassificationPdCTag {
+public class PdcNewContentClassificationTag extends BaseClassificationPdCTag {
 
   private static final long serialVersionUID = 3377113335947703561L;
 

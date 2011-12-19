@@ -56,10 +56,10 @@ public class PdcClassificationValidationTag extends BaseClassificationPdCTag {
   public void doTag() throws JspException {
     if (isPdcUsed()) {
       ElementContainer xhtmlcontainer = new ElementContainer();
-      String script = "if (!$('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID
-              + "').pdc('isClassificationValid')) { " + getErrorMessager() + " += \" - "
-              + getResources().getString("pdcPeas.theContent") + " " + getResources().getString(
-              "pdcPeas.MustContainsMandatoryAxis") + "\\n\"; " + getErrorCounter() + "++; }";
+      String script = "if (!$('#" + getId() + "').pdc('isClassificationValid')) { "
+              + getErrorMessager() + " += \" - " + getResources().getString("pdcPeas.theContent")
+              + " " + getResources().getString("pdcPeas.MustContainsMandatoryAxis") + "\\n\"; "
+              + getErrorCounter() + "++; }";
       xhtmlcontainer.addElement(script);
       xhtmlcontainer.output(getOut());
     }

@@ -23,27 +23,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ page isELIgnored="false"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="headLog.jsp" %>
 
 <%@ page import="java.util.*"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper"%>
 <%@ page import="com.stratelia.webactiv.kmelia.KmeliaSecurity"%>
 
 <%
-   HttpSession httpSession = request.getSession();
-    String redirection = (String) httpSession.getAttribute("gotoNew");
-    ResourceLocator mesLook = new ResourceLocator(
-        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle", "fr");
-    ResourceLocator authenticationBundle = new ResourceLocator(
-        "com.silverpeas.authentication.multilang.authentication", "");
+HttpSession httpSession = request.getSession();
+String redirection = (String) httpSession.getAttribute("gotoNew");
+ResourceLocator mesLook = new ResourceLocator(
+    "com.silverpeas.lookSilverpeasV5.multilang.lookBundle", "fr");
+ResourceLocator authenticationBundle = new ResourceLocator(
+    "com.silverpeas.authentication.multilang.authentication", "");
 
-    String errorCode = request.getParameter("ErrorCode");
-    if (errorCode == null || errorCode.equals("null")) {
-      errorCode = "";
-    }
+String errorCode = request.getParameter("ErrorCode");
+if (errorCode == null || errorCode.equals("null")) {
+  errorCode = "";
+}
 
 String componentId 	= (String) httpSession.getAttribute("RedirectToComponentId");
 String spaceId 		= (String) httpSession.getAttribute("RedirectToSpaceId");
@@ -187,13 +190,13 @@ function checkSubmit(ev)
 </head>
 
 
+<body>
 <%
 if (isAnonymousAccessAuthorized) { %>
-<body>
-	<form id="EDform" action="<%=m_context%>/AuthenticationServlet" method="post" accept-charset="UTF-8">
-		<input type="hidden" name="Login" value="<%= anonymousUser.getLogin() %>">
-		<input type="hidden" name="Password" value="<%= anonymousUser.getLogin() %>">
-		<input type="hidden" name="DomainId" value="0">
+	<form id="EDform" action="<c:url value="AuthenticationServlet" />" method="post" accept-charset="UTF-8">
+		<input type="hidden" name="Login" value="<%= anonymousUser.getLogin() %>" />
+		<input type="hidden" name="Password" value="<%= anonymousUser.getLogin() %>" />
+		<input type="hidden" name="DomainId" value="0" />
 	</form>
 
 	<script language="javascript1.2">
@@ -205,7 +208,6 @@ if (isAnonymousAccessAuthorized) { %>
 	java.util.List domainsIds = lpAuth.getDomainsIds();
 	//------------------------------------------------------------------
 %>
-<body>
 <form id="EDform" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
 <div id="top"></div> <!-- Backgroud fonce -->
         <div class="page"> <!-- Centrage horizontal des ?l?ments (960px) -->

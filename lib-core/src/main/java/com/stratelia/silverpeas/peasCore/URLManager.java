@@ -27,12 +27,15 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.util.ComponentHelper;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.Properties;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -98,7 +101,6 @@ public class URLManager {
   public final static int URL_VERSION = 9;
   private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL", "/silverpeas");
   static Properties specialsURL = null;
-  static Admin admin = null;
   static String httpMode = null;
   static boolean displayUniversalLinks = false;
 
@@ -106,7 +108,6 @@ public class URLManager {
     ResourceLocator resources = new ResourceLocator("com.stratelia.silverpeas.peasCore.URLManager",
         "");
     specialsURL = resources.getProperties();
-    admin = new Admin();
     httpMode = resources.getString("httpMode");
     displayUniversalLinks = resources.getBoolean("displayUniversalLinks", false);
   }
@@ -177,7 +178,7 @@ public class URLManager {
    */
   private static String buildStandardURL(String componentName, String sComponentId,
       boolean isGlobalSearch) {
-    String standardURL = '/' + admin.getRequestRouter(componentName) + '/' + sComponentId + '/';
+    String standardURL = '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/' + sComponentId + '/';
 
     if (isGlobalSearch) {
       if ("sources".equals(componentName) || "whitePages".equals(componentName)

@@ -24,12 +24,6 @@
 
 package com.silverpeas.workflow.engine.task;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.util.StringUtil;
@@ -42,20 +36,24 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 /**
  * The workflow engine services relate to task management.
  */
 public class TaskManagerImpl extends AbstractTaskManager {
-  final static Admin admin = new Admin();
-  static Hashtable<String, NotificationSender> notificationSenders =
-      new Hashtable<String, NotificationSender>();
+  static Hashtable<String, NotificationSender> notificationSenders = new Hashtable<String, NotificationSender>();
 
   /**
    * Adds a new task in the user's todos. Returns the external id given by the external todo system.
@@ -66,7 +64,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     ComponentInst compoInst = null;
 
     try {
-      compoInst = admin.getComponentInst(componentId);
+      compoInst = AdminReference.getAdminService().getComponentInst(componentId);
     } catch (AdminException e) {
       throw new WorkflowException("TaskManagerImpl.assignTask",
           "workflowEngine.EX_GET_COMPONENT_INST", e);
@@ -121,7 +119,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     ComponentInst compoInst = null;
 
     try {
-      compoInst = admin.getComponentInst(componentId);
+      compoInst = AdminReference.getAdminService().getComponentInst(componentId);
     } catch (AdminException e) {
       throw new WorkflowException("TaskManagerImpl.unassignTask",
           "workflowEngine.EX_GET_COMPONENT_INST", e);

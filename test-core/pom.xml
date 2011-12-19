@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.silverpeas</groupId>
@@ -10,8 +12,10 @@
   <groupId>com.silverpeas.core</groupId>
   <artifactId>test-core</artifactId>
   <packaging>jar</packaging>
-  <name>Test Core</name> 
-  <description>A library that provides the common classes dedicated in the writing of tests for Silverpeas code.</description>
+  <name>Test Core</name>
+  <description>A library that provides the common classes dedicated in the writing of tests for
+    Silverpeas code.
+  </description>
 
   <dependencies>
     <dependency>
@@ -120,13 +124,18 @@
       <classifier>jdk1.6-j2ee1.4</classifier>
       <scope>compile</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
