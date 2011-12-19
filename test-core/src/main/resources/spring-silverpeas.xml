@@ -21,4 +21,7 @@
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
         depends-on="schedulerFactory"/>
         
+  <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
+         factory-method="getInstance"/>
+        
 </beans>
