@@ -4137,6 +4137,13 @@ html:not([lang*=""]) .add_position:hover {
 	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
+.classification .another-value img {
+	margin-left: 3px;
+	width: 14px;
+	height: 14px;
+	vertical-align: middle;
+}
+
 #classification-mo  legend {
 	background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
 }
@@ -4147,7 +4154,14 @@ html:not([lang*=""]) .add_position:hover {
 
 .classification .pdc-edition-box .field,
 .pdc-edition-box.ui-dialog-content .field {
-	width:70%;
+	width:80%;
+}
+
+.pdc-edition-box .another-value img {
+	margin-left: 3px;
+	width: 14px;
+	height: 14px;
+	vertical-align: middle;
 }
 
 .pdc-edition-box .inlineMessage {

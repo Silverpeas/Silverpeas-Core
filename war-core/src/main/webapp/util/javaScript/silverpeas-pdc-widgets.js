@@ -159,7 +159,10 @@ function loadPdC( uri, onSuccess, onError ) {
       onError({
         uri: uri, 
         axis: []
-      }, { status: jqXHR.status, message: errorThrown });
+      }, {
+        status: jqXHR.status, 
+        message: errorThrown
+      });
     }
   })
 }
@@ -214,7 +217,10 @@ function loadClassification( uri, onSuccess, onError ) {
       onError({
         uri: uri, 
         positions: []
-      }, { status: jqXHR.status, message: errorThrown });
+      }, {
+        status: jqXHR.status, 
+        message: errorThrown
+      });
     }
   });
 }
@@ -252,9 +258,12 @@ function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
       },
       error: function(jqXHR, textStatus, errorThrown) {
         if (onError == null)
-        alert(errorThrown);
-      else
-        onError({ status: jqXHR.status, message: errorThrown });
+          alert(errorThrown);
+        else
+          onError({
+            status: jqXHR.status, 
+            message: errorThrown
+          });
       }
     });
   }
@@ -288,7 +297,10 @@ function postPosition( uri, position, onSuccess, onError ) {
       if (onError == null)
         alert(errorThrown);
       else
-        onError({ status: jqXHR.status, message: errorThrown });
+        onError({
+          status: jqXHR.status, 
+          message: errorThrown
+        });
     }
   });
 }
@@ -323,7 +335,10 @@ function updatePosition( uri, position, onSuccess, onError ) {
       if (onError == null)
         alert(errorThrown);
       else
-        onError({ status: jqXHR.status, message: errorThrown });
+        onError({
+          status: jqXHR.status, 
+          message: errorThrown
+        });
     }
   });
 }
@@ -364,11 +379,71 @@ function findPosition( withValues, inSomePositions ) {
 /**************************************************************************************************/
 
 /**
+ * Sorts the specified values according to the identifier of the axis they belong to.
+ * The array of values passed as parameter isn't modified; the sorted array is returned.
+ * Each value is of type:
+ * {
+ *   axisId: the identifier of the axis it belongs to,
+ *   ... whatever the other properties
+ * }
+ */
+function sortValues( values ) {
+  // the chosen algorithm is the insertion sort, as quick as a quick sort with an array with less
+  // than 15 elements but more stable than the quick sort
+  for (var i = 1; i < values.length; i++) {
+    var pivot = values[i], j = i;
+    while (j > 0 && values[j-1].axisId > pivot.axisId) {
+      values[j] = values[j - 1]
+      j--;
+    }
+    values[j] = pivot;
+  }
+}
+
+/**************************************************************************************************/
+
+/**
  * Is the specified position already in the the specified classification?
  * A position is in a classification if it already exists a position with exactly the same values.
  */
 function isAlreadyInClassification( position, classification ) {
   return findPosition(position.values, classification.positions) != null;
+}
+
+/**************************************************************************************************/
+
+/**
+ * Are the specified positions already in the the specified classification?
+ * If all the specified positions are in the specified classification, true is returned. If at least
+ * one of the specified positions isn't in the specified classification, false is returned.
+ * A position is in a classification if it already exists a position with exactly the same values.
+ */
+function areAlreadyInClassification( somePositions, classification ) {
+  var exist = true;
+  for(var i = 0; i < somePositions.length; i++) {
+    exist = isAlreadyInClassification(somePositions[i], classification);
+    if (!exist)
+      break;
+  }
+  return exist;
+}
+
+/**************************************************************************************************/
+
+/**
+ * Are the specified positions not already in the the specified classification?
+ * If all the specified positions are not in the specified classification, true is returned. If at least
+ * one of the specified positions is present in the specified classification, false is returned.
+ * A position is in a classification if it already exists a position with exactly the same values.
+ */
+function areNotAlreadyInClassification( somePositions, classification ) {
+  var exist = false;
+  for(var i = 0; i < somePositions.length; i++) {
+    exist = isAlreadyInClassification(somePositions[i], classification);
+    if (exist)
+      break;
+  }
+  return !exist;
 }
 
 /**************************************************************************************************/
@@ -407,16 +482,16 @@ function removePosition( position, positions ) {
         update             : {
           activated: true, /* is the update of a position activated? */
           title    :     'Editer la position', /* text to render with the update button */
-          icon     :      '/silverpeas/util/icons/update.gif' /* icon representing the position update */
+          icon     :      webContext + '/util/icons/update.gif' /* icon representing the position update */
         },
         addition           : {
           activated: true, /* is the addition of a new position activated? */
           title    :     'Ajouter une nouvelle position', /* text to render with the addition button */
-          icon     :      '/silverpeas/pdcPeas/jsp/icons/add.gif' /* the icon representing the position addition */
+          icon     :      webContext + '/pdcPeas/jsp/icons/add.gif' /* the icon representing the position addition */
         },
         deletion: {
           activated: true, /* is the deletion of a position activated? */
-          icon     : '/silverpeas/util/icons/delete.gif', /* text to render with the deletion button */
+          icon     : webContext + '/util/icons/delete.gif', /* text to render with the deletion button */
           title    : 'Supprimer la position' /* the icon representing the position deletion */
         },
         onAddition         : function() {}, /* the function to invoke when the adding of a new position is asked. 
@@ -492,20 +567,21 @@ function removePosition( position, positions ) {
       $('label[for="' + settings.id + '_allpositions"]').show();
       var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($("#" + settings.id + '_allpositions'));
       $.each(settings.positions, function(posindex, aPosition) {
-        var posId = posindex + 1, values =  [];
-        var currentPositionSection = $('<li>').appendTo(positionsSection);
-        var positionLabel = $('<span>').addClass('pdc_position').
-        html(settings.label + ' ' + posId).appendTo(currentPositionSection);
+        var values =  [], currentPositionSection = $('<li>').appendTo(positionsSection),
+        positionLabel = $('<span>').addClass('pdc_position').
+        html(settings.label + ' ' + (posindex + 1)).appendTo(currentPositionSection);
 
-        $.each(aPosition.values, function(valindex, value) {
+        sortValues(aPosition.values);
+        for (var valindex = 0; valindex < aPosition.values.length; valindex++) {
+          var value = aPosition.values[valindex];
           values.push('<li>' + value.meaning + '<i>' + value.synonyms.join(', ') + '</i></li>');
-        });
+        }
 
         if (settings.update.activated) {
           positionLabel.append(
             $('<a>',{
               href: '#', 
-              title: settings.update.title + ' ' + posId
+              title: settings.update.title + ' ' + (posindex + 1)
             }).addClass('edit').
             append($('<img>', {
               src: settings.update.icon,  
@@ -518,7 +594,7 @@ function removePosition( position, positions ) {
         if (settings.deletion.activated) {
           positionLabel.append($('<a>', {
             href: '#', 
-            title: settings.deletion.title + ' ' + posId
+            title: settings.deletion.title + ' ' + (posindex + 1)
           }).addClass('delete').
             append($('<img>', {
               src: settings.deletion.icon,  
@@ -581,23 +657,25 @@ function removePosition( position, positions ) {
       
       $('label[for="' + settings.id + '"]').show();
       var positionsSection = $('<ul>').addClass('list_pdc_position').appendTo($("#" + settings.id));
-      $.each(settings.positions, function(posindex, aPosition) {
-        var posId = posindex + 1, values =  [];
+      for (var posindex = 0; posindex < settings.positions.length; posindex++) {
+        var aPosition = settings.positions[posindex], posId = posindex + 1, values =  [];
+        sortValues(aPosition.values);
         var currentPositionSection = $('<li>').appendTo(positionsSection);
         $('<span>').addClass('pdc_position').
-          html(settings.label + ' ' + posId).appendTo(currentPositionSection);
+        html(settings.label + ' ' + posId).appendTo(currentPositionSection);
 
-        $.each(aPosition.values, function(valindex, value) {
-          var text = '<li title="' + value.meaning + '">', path = value.meaning.split('/');
+        for (var valindex = 0; valindex < aPosition.values.length; valindex++) {
+          var value = aPosition.values[valindex], text = '<li title="' + value.meaning + '">',
+          path = value.meaning.split('/');
           if (path.length > 2)
             text += path[0] + '/ ... /' + path[path.length -1];
           else text += value.meaning;
           text += '</li>';
           values.push(text);
-        });
+        }
           
         currentPositionSection.append($('<ul>').html(values.join('')));
-      });
+      }
       
     } else {
       $('label[for="' + settings.id + '"]').hide();
@@ -611,176 +689,328 @@ function removePosition( position, positions ) {
 /**
  * A Widget to render the axis of the PdC in order to select some of their values to create or to
  * update a position.
+ * If the multiValuation plugin parameter is set, then several values can be selected for one single
+ * axis. In this case, a position will be generated for each different selected value of the axis.
  */
 (function( $ ){
   
-  function getSelectedValues( values ) {
-    var selectedValues = [];
-    $.each(values, function(i, value) {
-      if(value != null) {
-        selectedValues.push({
-          id: value.id, 
-          axisId: value.axisId, 
-          treeId: value.treeId,
-          meaning: value.meaning,
-          synonyms: value.synonyms
-        });
+  function aPositionValueFrom( anAxisValue ) {
+    return {
+      id: anAxisValue.id, 
+      axisId: anAxisValue.axisId, 
+      treeId: anAxisValue.treeId,
+      meaning: anAxisValue.meaning,
+      synonyms: anAxisValue.synonyms
+    }
+  }
+  
+  function SelectedPositions( fromValues ) {
+    // the values at index 0 servs as the referencial position. Values at other indexes will be
+    // only for multiple values of a given single axis
+    this.matrix = [];
+    if (fromValues != null && fromValues.length > 0) {
+      this.matrix[0] = [];
+      for (var i = 0; i < fromValues.length; i++) {
+        this.matrix[0][fromValues[i].axisId] = fromValues[i];
       }
-    });
-    return selectedValues;
-  }
-  
-  function preselectedValuesFrom( values ) {
-    var preselectedValues = [];
-    $.each(values, function(i, value) {
-      preselectedValues[value.axisId] = value;
-    });
-    return preselectedValues;
-  }
-  
-  function areMandatoryAxisValued( axis, values ) {
-    for (var iaxis = 0; iaxis < axis.length; iaxis++) {
-      if (axis[iaxis].mandatory) {
-        var isValued = false;
-        for (var ival = 0; ival < values.length; ival++) {
-          if (values[ival].axisId == axis[iaxis].id) {
-            isValued = true;
-            break;
+    }
+    
+    this.put = function( positionIndex, axisId, value ) {
+      if (this.matrix[positionIndex] == null)
+        this.matrix[positionIndex] = [];
+      this.matrix[positionIndex][axisId] = value;
+      for (var i = 1; i < positionIndex; i++) {
+        if (this.matrix[i] == null)
+          this.matrix[i] = [];
+      }
+    }
+    
+    this.remove = function( positionIndex, axisId ) {
+      this.matrix[positionIndex][axisId] = null;
+    }
+    
+    this.clear = function() {
+      this.matrix = [];
+    }
+    
+    this.at = function( positionIndex, axisId ) {
+      if (this.matrix[positionIndex] != null)
+        return this.matrix[positionIndex][axisId];
+      return null;
+    }
+    
+    this.each = function( doWithPosition ) {
+      for (var i = 0; i < this.matrix.length; i++) {
+        var values = [];
+        for (var axisId in this.matrix[i]) {
+          if (i > 0) {
+            for (var axisId0 in this.matrix[0]) {
+              if (axisId0 != axisId && this.matrix[0][axisId0] != null) {
+                values.push(aPositionValueFrom(this.matrix[0][axisId0]));
+              }
+            }
           }
+          if (this.matrix[i][axisId] != null)
+            values.push(aPositionValueFrom(this.matrix[i][axisId]));
         }
-        if (!isValued) return false;
+        if (values.length > 0) {
+          sortValues(values);
+          doWithPosition({
+            values: values
+          });
+        }
+      }
+    }
+    
+    this.size = function() {
+      return this.matrix.length;
+    }
+  }
+  
+  function areMandatoryAxisValued( axis, positions ) {
+    for (var ipos = 0; ipos < positions.length; ipos++) {
+      var values = positions[ipos].values;
+      for (var iaxis = 0; iaxis < axis.length; iaxis++) {
+        if (axis[iaxis].mandatory) {
+          var isValued = false;
+          for (var ival = 0; ival < values.length; ival++) {
+            if (values[ival].axisId == axis[iaxis].id) {
+              isValued = true;
+              break;
+            }
+          }
+          if (!isValued) return false;
+        }
       }
     }
     return true;
   }
   
-  function informOfANewPosition( $thisPdcAxisValuesSelector, settings, values ) {
-    var selectedValues = getSelectedValues(values);
-    if (selectedValues.length == 0)
+  function informOfNewPositions( $thisPdcAxisValuesSelector, settings, selectedPositions ) {
+    var positions = [];
+    selectedPositions.each(function(aSelectedPosition) {
+      positions.push(aSelectedPosition);
+    });
+    if (positions.length == 0) {
       alert(settings.positionError)
-    else if (areMandatoryAxisValued(settings.axis, selectedValues)) {
-      if (settings.dialogBox)
-        $thisPdcAxisValuesSelector.dialog("destroy");
-      settings.onValuesSelected(selectedValues);
+    } else {
+      if (!areMandatoryAxisValued(settings.axis, positions)) {
+        alert(settings.mandatoryAxisError);
+      } else {
+        if (settings.dialogBox)
+          $thisPdcAxisValuesSelector.dialog("destroy");
+        else
+          refreshAxis(settings, selectedPositions);
+        settings.onValuesSelected(positions);
+      }
     }
-    else
-      alert(settings.mandatoryAxisError);
+  }
+  
+  function refreshAxis( settings, selectedPositions ) {
+    $('option[value="0"]').attr('selected', true);
+    selectedPositions.clear();
+    if (settings.multiValuation) {
+      for (var i = 0; i < settings.axis.length; i++) {
+        var anAxis = settings.axis[i], $axisDiv = $('div#' + settings.id + '_' + anAxis.id);
+        $axisDiv.children().remove();
+        renderAxis($axisDiv, settings, selectedPositions, anAxis);
+      }
+    }
+  }
+  
+  function contains($elt, childEltId) {
+    var children = $elt.children();
+    for (var i = 0; i < children.length; i++) {
+      if (children[i].id == childEltId)
+        return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Renders the specified axis as an XHMLT select element. Each option represents a value of the
+   * axis.
+   * If a value is set among the first selected position, then the corresponding option is preselected.
+   * If the axis is already rendered through an XHTML select element, then renders another occurrence
+   * of the select element just below the previous one. Several XHML select elements for the same
+   * axis is the way to select multiple values of the given axis; each of them generating then a
+   * different position.
+   */
+  function renderAxis( $axisDiv, settings, selectedPositions, anAxis ) {
+    var mandatoryField = '', idPrefix = settings.id + '_' + anAxis.id + '_', i = 0;
+    if (anAxis.mandatory)
+      mandatoryField = 'mandatoryField'
+    
+    // each select id ends with a number indicating the occurrence of duplicate selects
+    // compute then the next free number for the select occurrence to render
+    while(contains($axisDiv, idPrefix + i)) {
+      i++;
+    }
+    
+    // render the select with the values of the specified axis
+    var axisValuesSelection = $('<select>', {
+      'id': idPrefix + i,  
+      'name': anAxis.name
+    }).addClass(mandatoryField).appendTo($axisDiv).change( function() {
+      // take care of the change of the option selection (axis value selection)
+      var theValue = $('select[id=' + idPrefix + i + '] option:selected').val();
+      if (theValue == 0) {
+        selectedPositions.remove(i, anAxis.id);
+      } else {
+        selectedPositions.put(i, anAxis.id, anAxis.values[theValue]);
+        if (settings.multiValuation) {
+          // hide the other identical options in duplicate selects (to avoid the position duplication)
+          var j = 0;
+          while(contains($axisDiv, idPrefix + j)) {
+            if (j!= i)
+              $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").hide();
+            j++;
+          }
+        }
+      }
+    });
+    
+    // in the case of the axis multivaluation, renders a + button to add another select element for
+    // the same axis
+    if (settings.multiValuation) {
+      $('<a>', {
+        href: '#',
+        title: settings.anotherValueLegend
+      }).addClass('another-value').click(function () {
+        duplicateAxis($axisDiv, settings, selectedPositions, anAxis);
+      }).append($('<img>', {
+        src: settings.anotherValueIcon, 
+        alt: settings.anotherValueLegend
+      })).appendTo($axisDiv);
+    }
+    var path = [];
+    
+    var option = $('<option>').attr('value', '0').html('&nbsp;').appendTo(axisValuesSelection);
+      
+    // browse the values of the current axis and for each of them print out an option XHTML element
+    // take care of the selected values to preselect the corresponding options
+    if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
+      selectedPositions.put(0, anAxis.id, anAxis.values[anAxis.values.length - 1]);
+    $.each(anAxis.values, function(valueIndex, aValue) {
+      var level = '';
+      path.splice(aValue.level, path.length - aValue.level);
+      path[aValue.level] = aValue.term;
+      aValue.meaning = path.join(' / ');
+      if (aValue.id != '/0/') {
+        for (var i = 0; i < aValue.level; i++) {
+          level += '&nbsp;&nbsp;';
+        }
+        var option =
+        $('<option>').attr('value', valueIndex).html(level + aValue.term).appendTo(axisValuesSelection);
+        if (aValue.ascendant) {
+          option.attr('value', 'A').attr('disabled', true).addClass("intfdcolor51");
+        }
+        if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
+          selectedPositions.put(0, anAxis.id, aValue);
+          option.attr('disabled', true);
+        }
+        if (selectedPositions.size() == 1 && selectedPositions.at(0, anAxis.id) != null &&
+          aValue.id == selectedPositions.at(0, anAxis.id).id) {
+          option.attr('selected', true);
+        }
+        
+        // in the case of a duplicate select, hide any options that were previously selected for the
+        // same axis
+        if (settings.multiValuation && i > 0 && selectedPositions.size() > 0) {
+          for(var ipos = 0; ipos < selectedPositions.size(); ipos++) {
+            var selectedValue = selectedPositions.at(ipos, anAxis.id);
+            if (selectedValue != null && aValue == selectedValue) {
+              option.hide();
+              break;
+            }
+          }
+        }
+      }
+    });
+    
+    if (anAxis.mandatory) {
+    	option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
+        $('<img>', {
+          src: settings.mandatoryAxisIcon,
+          alt: settings.mandatoryAxisLegend, 
+          width: '5px',
+          height: '5px'
+        }).appendTo($axisDiv.append(' '));
+      }
+      if (anAxis.invariant) {
+        $('<img>', {
+          src: settings.invariantAxisIcon, 
+          alt: settings.invariantAxisLegend,
+          width: '10px',
+          height: '10px'
+        }).appendTo($axisDiv);
+      }
+ 
+    if (selectedPositions.at(i, anAxis.id) == null) {
+      option.attr('selected', true);
+    } else {
+      $('<span>').html('<i>' + selectedPositions.at(i, anAxis.id).synonyms.join(', ') + '</i>&nbsp;').appendTo($axisDiv);
+    }
+  }
+  
+  function duplicateAxis( $axisDiv, settings, selectedValues, axis) {
+    $('.another-value').remove();
+    renderAxis($axisDiv, settings, selectedValues, axis);
   }
   
   $.fn.pdcAxisValuesSelector = function( options ) {
     var settings = $.extend(true, {
-      id                  : "pdc-edition-box", /* the HTML element identifier to use for the top element of the widget */
       title               : "Editer", /* the title to display with the widget */
       positionError       : "Veuillez sélectionner au moins une valeur à la position",
       mandatoryAxisText   : "Veuillez selectionner une valeur",
       mandatoryAxisError  : "Le contenu doit disposer au moins d'une position avec les axes obligatoires",
-      mandatoryAxisIcon   : '/silverpeas/util/icons/mandatoryField.gif',
+      mandatoryAxisIcon   : webContext + '/util/icons/mandatoryField.gif',
       mandatoryAxisLegend : 'Obligatoire',
-      invariantAxisIcon   : '/silverpeas/util/icons/buletColoredGreen.gif',
+      invariantAxisIcon   : webContext + '/util/icons/buletColoredGreen.gif',
       invariantAxisLegend : 'invariantes',
+      anotherValueIcon    : webContext + '/util/icons/add.gif',
+      anotherValueLegend  : 'Autre valeur',
       labelOk             : 'Valider', /* the label of the validation button */
       labelCancel         : 'Annuler', /* the label of the canceling button in the dialog box */
+      multiValuation      : false, /* can axis be multivalued? If true, each different value on a given axis generates a different position */
       dialogBox           : true, /* is the selector should be displayed as a modal dialog box? */
       axis                : [], /* the different axis of the PdC to render */
       values              : [], /* the values to pre-select in the widget */
-      onValuesSelected    : function(values) {} /* function invoked when a set of values have been selected through the widget */
+      onValuesSelected    : function(positions) {} /* function invoked when a set of values have been selected through the widget */
     }, options);
     
     return this.each(function() {
-      var $thisPdcAxisValuesSelector = $(this), selectedValues = preselectedValuesFrom(settings.values),
-        hasMandatoryAxis = false, hasInvariantAxis = false;
+      var $thisPdcAxisValuesSelector = $(this), selectedPositions = new SelectedPositions(settings.values),
+      hasMandatoryAxis = false, hasInvariantAxis = false;
+      settings.id = $thisPdcAxisValuesSelector.attr('id');
+      if (settings.id == null || settings.id.length == 0)
+        settings.id = 'pdc-edition-box';
       $thisPdcAxisValuesSelector.children().remove();
       
       // browse the axis of the PdC and for each of them print out a select HTML element
-      $.each(settings.axis, function(axisIndex, anAxis) {
-        var currentAxisDiv = $('<div>').addClass('champs').appendTo($('<div>').addClass('field').
-          append($('<label >', {
-            'for': settings.id + '_' + anAxis.id
-          }).addClass('txtlibform').html(anAxis.name)).
-          appendTo($thisPdcAxisValuesSelector));
-        var mandatoryField = '';
-        if (anAxis.mandatory) {
-          mandatoryField = 'mandatoryField'
-        }
-        var axisValuesSelection = $('<select>', {
-          'id': settings.id + '_' + anAxis.id,  
-          'name': anAxis.name
-        }).addClass(mandatoryField).appendTo(currentAxisDiv).change( function() {
-          var theValue = $('select[id=' + settings.id + '_' + anAxis.id + '] option:selected').val();
-          if (theValue == 0) {
-            selectedValues[anAxis.id] = null;
-          } else {
-            selectedValues[anAxis.id] = anAxis.values[theValue];
-          }
-        });
-        var path = [];
-      
-        // browse the values of the current axis and for each of them print out an option HTML element
-        // within the select (representing the current axis)
-        if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
-          selectedValues[anAxis.id] = anAxis.values[anAxis.values.length - 1];
-        $.each(anAxis.values, function(valueIndex, aValue) {
-          var level = '';
-          path.splice(aValue.level, path.length - aValue.level);
-          path[aValue.level] = aValue.term;
-          aValue.meaning = path.join(' / ');
-          if (aValue.id != '/0/') {
-            for (var i = 0; i < aValue.level; i++) {
-              level += '&nbsp;&nbsp;';
-            }
-            var option =
-            $('<option>').attr('value', valueIndex).html(level + aValue.term).appendTo(axisValuesSelection);
-            if (aValue.ascendant) {
-              option.attr('value', 'A').attr('disabled', 'disabled').addClass("intfdcolor51");
-            }
-            if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
-              selectedValues[anAxis.id] = aValue;
-              option.attr('disabled', 'disabled');
-            }
-            if ((selectedValues[anAxis.id] != null && aValue.id == selectedValues[anAxis.id].id)) {
-              option.attr('selected', true);
-            }
-          }
-        });
-      
-        var option = $('<option>').attr('value', '0').html('&nbsp;').prependTo(axisValuesSelection);
-        if (anAxis.mandatory) {
-          option.attr('disabled', 'disabled').addClass('emphasis').html(settings.mandatoryAxisText);
-        }
-        if (selectedValues[anAxis.id] == null) {
-          option.attr('selected', true);
-        }
-        if (selectedValues[anAxis.id] != null) {
-          $('<span>').html('<i>' + selectedValues[anAxis.id].synonyms.join(', ') + '</i>&nbsp;').appendTo(currentAxisDiv);
-        }
-        if (anAxis.mandatory) {
-          hasMandatoryAxis = true;
-          $('<img>', {
-            src: settings.mandatoryAxisIcon,
-            alt: settings.mandatoryAxisLegend, 
-            width: '5px',
-            height: '5px'
-          }).appendTo(currentAxisDiv.append(' '));
-        }
-        if (anAxis.invariant) {
-          hasInvariantAxis = true;
-          $('<img>', {
-            src: settings.invariantAxisIcon, 
-            alt: settings.invariantAxisLegend,
-            width: '10px',
-            height: '10px'
-          }).appendTo(currentAxisDiv);
-        }
+      $.each(settings.axis, function(axisindex, anAxis) {
+        var currentAxisDiv = $('<div>', {
+          id: settings.id + '_' + anAxis.id
+        }).addClass('champs').appendTo($('<div>').addClass('field').append($('<label >', {
+          'for': settings.id + '_' + anAxis.id + '_0'
+        }).addClass('txtlibform').html(anAxis.name)).appendTo($thisPdcAxisValuesSelector));
+        
+        hasMandatoryAxis = anAxis.mandatory || hasMandatoryAxis;
+        hasInvariantAxis = anAxis.invariant || hasInvariantAxis;
+        
+        renderAxis(currentAxisDiv, settings, selectedPositions, anAxis);
+        
       });
     
-      $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
       if (!settings.dialogBox) {
         $thisPdcAxisValuesSelector.append($('<a>').attr('href', '#').
           addClass('valid_position').
           addClass('milieuBoutonV5').
           html(settings.labelOk).click(function() {
-            informOfANewPosition($thisPdcAxisValuesSelector, settings, selectedValues);
+            informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
           }));
+      } else {
+    	  $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
       }
       if (settings.axis.length > 0) {
         var legende = $('<p>').addClass('legende');
@@ -815,7 +1045,7 @@ function removePosition( position, positions ) {
           buttons: [{
             text: settings.labelOk,
             click: function() {
-              informOfANewPosition($thisPdcAxisValuesSelector, settings, selectedValues);
+              informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
             }
           }, {
             text: settings.labelCancel,
