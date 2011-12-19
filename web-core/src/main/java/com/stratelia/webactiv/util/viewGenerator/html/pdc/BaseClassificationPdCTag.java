@@ -61,7 +61,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * The key with which is associated the language of the user carried in his session.
    */
-  private static final String LANGUAGE_KEY = "resources";
+  private static final String LANGUAGE_KEY = "SilverSessionController";
   /**
    * The identifier of the XHTML tag within which the PdC classification will be displayed.
    */
@@ -234,7 +234,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
           }
           try {
             NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
-            String inLanguage = getSessionAttribute(LANGUAGE_KEY);
+            MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
+            String inLanguage = controller.getFavoriteLanguage();
             nodeName = node.getName(inLanguage);
           } catch (RemoteException ex) {
             Logger.getLogger(BaseClassificationPdCTag.class.getName()).log(Level.SEVERE, null, ex);
@@ -275,7 +276,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @throws JspTagException  if an error occurs while fetching the resources.
    */
   protected ResourcesWrapper getResources() throws JspTagException {
-    String language = getSessionAttribute(LANGUAGE_KEY);
+    MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
+    String language = controller.getFavoriteLanguage();
     ResourcesWrapper resources = new ResourcesWrapper(new ResourceLocator(
             "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
     return resources;

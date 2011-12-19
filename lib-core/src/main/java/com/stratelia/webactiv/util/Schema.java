@@ -59,25 +59,26 @@ public abstract class Schema {
   public Schema(int cl) throws UtilException {
     connectionLot = cl;
     createConnection();
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.webactiv.beans.admin.admin", "");
+    ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
     String m_sHaveToTestConnections = resources.getString("HaveToTestConnections");
-    if ((m_sHaveToTestConnections != null)
-        && (m_sHaveToTestConnections.equalsIgnoreCase("false"))) {
+    if ("false".equalsIgnoreCase(m_sHaveToTestConnections)) {
       haveToTestConnections = false;
     }
   }
 
   protected void createConnection() throws UtilException {
-    SilverTrace.info("util", "Schema.createConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("util", "Schema.createConnection()", "root.MSG_GEN_ENTER_METHOD");
     try {
       Context ctx = new InitialContext();
       DataSource src = (DataSource) ctx.lookup(getJNDIName());
+      if (this.connection != null) {
+        DBUtil.close(this.connection);
+      }
       this.connection = src.getConnection();
       if (!this.connection.getAutoCommit()) {
         managed = true;
-      } else {
+      }
+      else {
         managed = false;
         this.connection.setAutoCommit(false);
       }
@@ -140,12 +141,7 @@ public abstract class Schema {
     }
     statementsMap.clear();
     try {
-      if (isLocalConnection) {
-        connection.close();
-      }
-    } catch (SQLException e) {
-      SilverTrace.error("util", "Schema.close", "util.CAN_T_CLOSE_CONNECTION",
-          e);
+      DBUtil.close(this.connection);
     } finally {
       connection = null;
     }
@@ -155,29 +151,27 @@ public abstract class Schema {
    * @return <code>true</code> if the connection can be used.
    */
   public boolean isOk() {
-    Statement st = null;
-
     try {
       if (this.connection == null || this.connection.isClosed()) {
         return false;
       }
       if (haveToTestConnections) {
-        SilverTrace.info("util", "Schema.isOk()",
-            "root.MSG_GEN_ENTER_METHOD", "Connection Test");
-        st = connection.createStatement();
+        SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD", "Connection Test");
+        Statement st = connection.createStatement();
         st.close();
-        st = null;
       }
       return true;
     } catch (SQLException e) {
       SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD",
           "Connection Test Problem !!!", e);
+      close();
       return false;
     }
   }
 
   /**
    * Return the value of the managed property.
+   *
    * @return the value of managed.
    */
   public boolean isManaged() {
@@ -200,7 +194,6 @@ public abstract class Schema {
     SilverTrace.info("util", "Schema.releaseAll()",
         "root.MSG_GEN_ENTER_METHOD", "rs=" + rs + " ,ps=" + ps);
     DBUtil.close(rs, ps);
-    // DBUtil.close(rs);
   }
 
   public void releaseStatement(PreparedStatement ps) {
@@ -209,16 +202,15 @@ public abstract class Schema {
 
   public Connection getConnection() {
     if (!isOk() && isLocalConnection) {
-      SilverTrace.info("util", "Schema.getConnection",
-          "root.MSG_GEN_ENTER_METHOD",
+      SilverTrace.info("util", "Schema.getConnection", "root.MSG_GEN_ENTER_METHOD",
           "Connection WAS CLOSED !!!! -> Create new one");
       try {
         createConnection();
       } catch (UtilException e) {
-        SilverTrace.error("util", "Schema.getConnection",
-            "util.CAN_T_CLOSE_CONNECTION", e);
+        SilverTrace.error("util", "Schema.getConnection", "util.CAN_T_CLOSE_CONNECTION", e);
       }
-    } else {
+    }
+    else {
       SilverTrace.info("util", "Schema.getConnection",
           "root.MSG_GEN_ENTER_METHOD", "Connection Verified");
     }

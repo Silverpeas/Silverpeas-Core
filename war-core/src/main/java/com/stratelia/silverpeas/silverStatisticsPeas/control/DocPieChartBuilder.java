@@ -15,14 +15,14 @@
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * <p/>
@@ -54,7 +54,7 @@ public class DocPieChartBuilder extends AbstractPieChartBuilder {
 
     try {
       if (StringUtil.isDefined(this.spaceId) && (!"WA0".equals(this.spaceId))) {
-        SpaceInstLight space = new Admin().getSpaceInstLightById(this.spaceId);
+        SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(this.spaceId);
         title += message.getString("silverStatisticsPeas.FromSpace") + " [" + space.getName() + "]";
       }
     } catch (Exception e) {

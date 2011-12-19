@@ -61,6 +61,7 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -112,13 +113,11 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   private static final long serialVersionUID = -829288807683338746L;
   private String dbName = JNDINames.PUBLICATION_DATASOURCE;
-  private SimpleDateFormat formatter = new java.text.SimpleDateFormat(
-      "yyyy/MM/dd");
+  private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
   private static final ResourceLocator publicationSettings = new ResourceLocator(
       "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
 
-  public PublicationDetail getDetail(PublicationPK pubPK)
-      throws RemoteException {
+  public PublicationDetail getDetail(PublicationPK pubPK) throws RemoteException {
     if (pubPK.getInstanceId() == null) {
       // case of permalink. Only publication id is known.
       // As all primarykey attributes are mandatory to call findByPrimaryKey,
@@ -226,9 +225,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     }
   }
 
-  public void changePublicationsOrder(List<String> ids, NodePK nodePK)
-      throws RemoteException {
-    if (ids == null || ids.size() == 0) {
+  public void changePublicationsOrder(List<String> ids, NodePK nodePK) throws RemoteException {
+    if (ids == null || ids.isEmpty()) {
       return;
     }
 
@@ -1579,8 +1577,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       // index creator's full name
       if (publicationSettings.getString("indexAuthorName").equals("true")) {
         try {
-          Admin admin = new Admin();
-          UserDetail ud = admin.getUserDetail(pubDetail.getCreatorId());
+          UserDetail ud = AdminReference.getAdminService().getUserDetail(pubDetail.getCreatorId());
           if (ud != null) {
             indexEntry.addTextContent(ud.getDisplayedName());
           }
