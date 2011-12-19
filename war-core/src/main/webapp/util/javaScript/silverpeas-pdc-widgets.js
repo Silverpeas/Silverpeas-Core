@@ -880,12 +880,12 @@ function removePosition( position, positions ) {
         duplicateAxis($axisDiv, settings, selectedPositions, anAxis);
       }).append($('<img>', {
         src: settings.anotherValueIcon, 
-        alt: settings.anotherValueLegend,
-        width: '10px',
-        height: '10px'
+        alt: settings.anotherValueLegend
       })).appendTo($axisDiv);
     }
     var path = [];
+    
+    var option = $('<option>').attr('value', '0').html('&nbsp;').appendTo(axisValuesSelection);
       
     // browse the values of the current axis and for each of them print out an option XHTML element
     // take care of the selected values to preselect the corresponding options
@@ -927,11 +927,25 @@ function removePosition( position, positions ) {
         }
       }
     });
-      
-    var option = $('<option>').attr('value', '0').html('&nbsp;').prependTo(axisValuesSelection);
+    
     if (anAxis.mandatory) {
-      option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
-    }
+    	option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
+        $('<img>', {
+          src: settings.mandatoryAxisIcon,
+          alt: settings.mandatoryAxisLegend, 
+          width: '5px',
+          height: '5px'
+        }).appendTo($axisDiv.append(' '));
+      }
+      if (anAxis.invariant) {
+        $('<img>', {
+          src: settings.invariantAxisIcon, 
+          alt: settings.invariantAxisLegend,
+          width: '10px',
+          height: '10px'
+        }).appendTo($axisDiv);
+      }
+ 
     if (selectedPositions.at(i, anAxis.id) == null) {
       option.attr('selected', true);
     } else {
@@ -986,25 +1000,8 @@ function removePosition( position, positions ) {
         
         renderAxis(currentAxisDiv, settings, selectedPositions, anAxis);
         
-        if (anAxis.mandatory) {
-          $('<img>', {
-            src: settings.mandatoryAxisIcon,
-            alt: settings.mandatoryAxisLegend, 
-            width: '5px',
-            height: '5px'
-          }).appendTo(currentAxisDiv.append(' '));
-        }
-        if (anAxis.invariant) {
-          $('<img>', {
-            src: settings.invariantAxisIcon, 
-            alt: settings.invariantAxisLegend,
-            width: '10px',
-            height: '10px'
-          }).appendTo(currentAxisDiv);
-        }
       });
     
-      $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
       if (!settings.dialogBox) {
         $thisPdcAxisValuesSelector.append($('<a>').attr('href', '#').
           addClass('valid_position').
@@ -1012,6 +1009,8 @@ function removePosition( position, positions ) {
           html(settings.labelOk).click(function() {
             informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
           }));
+      } else {
+    	  $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
       }
       if (settings.axis.length > 0) {
         var legende = $('<p>').addClass('legende');
