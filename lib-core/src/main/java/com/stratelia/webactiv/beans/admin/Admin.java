@@ -83,7 +83,6 @@ import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
  * The class Admin is the main class of the Administrator.<BR/> The role of the administrator is to
  * create and maintain spaces.
  */
-@Named("adminController")
 public final class Admin {
 
   public static final String SPACE_KEY_PREFIX = "WA";
