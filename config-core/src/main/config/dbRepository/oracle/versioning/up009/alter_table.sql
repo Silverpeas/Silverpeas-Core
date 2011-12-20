@@ -6,7 +6,7 @@ ALTER TABLE SB_Version_Document MODIFY documentName NOT NULL;
 
 
 ALTER TABLE SB_Version_Version ADD (versionLogicalName_tmp VARCHAR2(255));
-UPDATE SB_Version_Version SET versionLogicalName_tmp = attachmentLogicalName;
+UPDATE SB_Version_Version SET versionLogicalName_tmp = versionLogicalName;
 ALTER TABLE SB_Version_Version DROP COLUMN versionLogicalName;
 ALTER TABLE SB_Version_Version RENAME COLUMN versionLogicalName_tmp TO versionLogicalName;
 ALTER TABLE SB_Version_Version MODIFY versionLogicalName NOT NULL;
