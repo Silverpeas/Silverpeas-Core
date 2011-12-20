@@ -26,20 +26,18 @@ package com.stratelia.webactiv.node;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
+import com.stratelia.webactiv.util.node.control.AnonymousMethodOnNode;
+import com.stratelia.webactiv.util.node.control.NodeDeletion;
+import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class NodeInstanciator extends SQLRequest {
+  
+  private static AnonymousMethodOnNode NO_METHOD = null;
 
   /**
    * Creates new NewsInstanciator
@@ -59,11 +57,20 @@ public class NodeInstanciator extends SQLRequest {
           InstanciationException {
     SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "spaceId = " + spaceId + ", componentId = " + componentId);
-    setDeleteQueries();
-    deleteDataOfInstance(con, componentId, "Node");
+    deleteNodes(con, componentId);
     deleteFavorites(con, componentId);
     SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD",
             "spaceId = " + spaceId + ", componentId = " + componentId);
+  }
+
+  private void deleteNodes(Connection connection, String componentId) throws InstanciationException {
+    try {
+      NodePK pk = new NodePK("0", componentId);
+      NodeDeletion.deleteNodes(pk, connection, NO_METHOD);
+    } catch (Exception ex) {
+      throw new InstanciationException("NodeInstanciator.deleteNodes()",
+              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", ex);
+    }
   }
 
   private void deleteFavorites(Connection con, String componentId) throws
@@ -84,44 +91,6 @@ public class NodeInstanciator extends SQLRequest {
         SilverTrace.error("node", "NodeInstanciator.deleteFavorites()",
                 "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
       }
-    }
-  }
-
-  /**
-   * Delete all data of one forum instance from the forum table.
-   * @param con (Connection) the connection to the data base
-   * @param componentId (String) the instance id of the Silverpeas component forum.
-   * @param suffixName (String) the suffixe of a Forum table
-   */
-  private void deleteDataOfInstance(Connection con, String componentId,
-          String suffixName) throws InstanciationException {
-    Statement stmt = null;
-    String deleteQuery = getDeleteQuery(componentId, suffixName);
-    try {
-      stmt = con.createStatement();
-      stmt.executeUpdate(deleteQuery);
-    } catch (SQLException se) {
-      throw new InstanciationException("NodeInstanciator.deleteDataOfInstance()",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
-    } finally {
-      try {
-        stmt.close();
-      } catch (SQLException err_closeStatement) {
-        SilverTrace.error("node", "NodeInstanciator.deleteDataOfInstance()",
-                "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
-      }
-    }
-  }
-
-  protected NodeBm getNodeBm() {
-    try {
-      NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-              JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      return home.create();
-    } catch (Exception ex) {
-      throw new NodeRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-              ex);
     }
   }
 }

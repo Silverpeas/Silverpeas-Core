@@ -1233,6 +1233,11 @@ td.browsebar a:hover {
   _position:absolute;
   _right:0px;
 }
+
+#domainsBar #spaces #favdiv img {
+	border: 0px;
+}
+
 .favorite {
   width: 12px;
   height: 12px;
@@ -4137,11 +4142,13 @@ html:not([lang*=""]) .add_position:hover {
 	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
-.classification .another-value img {
+.classification .another-value img,
+.pdc-edition-box .another-value img {
 	margin-left: 3px;
 	width: 14px;
 	height: 14px;
 	vertical-align: middle;
+	border: 0px;
 }
 
 #classification-mo  legend {
@@ -4155,13 +4162,6 @@ html:not([lang*=""]) .add_position:hover {
 .classification .pdc-edition-box .field,
 .pdc-edition-box.ui-dialog-content .field {
 	width:80%;
-}
-
-.pdc-edition-box .another-value img {
-	margin-left: 3px;
-	width: 14px;
-	height: 14px;
-	vertical-align: middle;
 }
 
 .pdc-edition-box .inlineMessage {
