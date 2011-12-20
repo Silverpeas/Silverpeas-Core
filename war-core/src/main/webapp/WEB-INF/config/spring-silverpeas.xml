@@ -86,6 +86,9 @@
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
         depends-on="schedulerFactory"/>
 
+  <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
+        factory-method="getInstance"/>
+
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
        the actual scheduling backend -->
   <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerFactory"
