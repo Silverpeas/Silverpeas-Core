@@ -32,9 +32,10 @@ import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -42,7 +43,7 @@ public class I18NHelper {
 
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
-  public final static Hashtable<String, List<I18NLanguage>> allLanguages = new Hashtable<String, List<I18NLanguage>>();
+  public final static Map<String, List<I18NLanguage>> allLanguages = new HashMap<String, List<I18NLanguage>>();
 
   private static int nbLanguages = 0;
   public static boolean isI18N = false;
@@ -56,9 +57,7 @@ public class I18NHelper {
 
   static {
     ResourceLocator rs = new ResourceLocator("com.silverpeas.util.i18n", "");
-
     String rsLanguages = rs.getString("languages");
-
     StringTokenizer tokenizer = new StringTokenizer(rsLanguages, ",");
     while (tokenizer.hasMoreTokens()) {
       String language = tokenizer.nextToken();
@@ -67,9 +66,8 @@ public class I18NHelper {
       if (defaultLanguage == null) {
         defaultLanguage = language;
       }
-
-      ResourceLocator rsLanguage = new ResourceLocator(
-          "com.silverpeas.util.multilang.i18n", language);
+      ResourceLocator rsLanguage = new ResourceLocator("com.silverpeas.util.multilang.i18n",
+          language);
 
       StringTokenizer tokenizer2 = new StringTokenizer(rsLanguages, ",");
       List<I18NLanguage> l = new ArrayList<I18NLanguage>();
@@ -282,8 +280,8 @@ public class I18NHelper {
         selected = "selected";
       }
 
-      list += "<option value=\"" + language.getCode() + "_"
-          + language.getTranslationId() + "\" " + selected + ">"
+      list += "<option value=\"" + language.getCode() + '_'
+          + language.getTranslationId() + "\" " + selected + '>'
           + language.getLabel() + "</option>\n";
     }
     list += "</SELECT>";

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,6 @@
 package com.stratelia.silverpeas.pdc.control;
 
 import com.silverpeas.pdc.PdcServiceFactory;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.pdc.dao.PdcRightsDAO;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -73,8 +65,15 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Named;
@@ -538,12 +537,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   public com.stratelia.silverpeas.pdc.model.Value getValue(String axisId,
           String valueId) throws PdcException {
     com.stratelia.silverpeas.pdc.model.Value value = null;
-    TreeNode node = null;
-
     Connection con = openConnection();
-
     try {
-      node = tree.getNode(con, new TreeNodePK(valueId), getTreeId(axisId));
+      TreeNode node = tree.getNode(con, new TreeNodePK(valueId), getTreeId(axisId));
       value = createValue(node);
     } catch (Exception exce_select) {
       throw new PdcException("PdcBmImpl.getValue", SilverpeasException.ERROR,
@@ -636,23 +632,18 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @see getDaughters
    */
   @Override
-  public List<Value> getFilteredAxisValues(String rootId, AxisFilter filter)
-          throws PdcException {
-    List<Value> values = new ArrayList<Value>();
+  public List<Value> getFilteredAxisValues(String rootId, AxisFilter filter) throws PdcException {
     try {
-      values = getAxisValues(Integer.parseInt(rootId), filter);
-
+      List<Value> values = getAxisValues(Integer.parseInt(rootId), filter);
       // for each filtered value, get all values from root to this finded value
       for (com.stratelia.silverpeas.pdc.model.Value value : values) {
         value.setPathValues(getFullPath(value.getValuePK().getId(), value.getTreeId()));
-      }
+      }    
+      return values;
     } catch (Exception exce_select) {
-      throw new PdcException("PdcBmImpl.getFilteredAxisValues",
-              SilverpeasException.ERROR, "Pdc.CANNOT_RETRIEVE_SUBNODES",
-              exce_select);
+      throw new PdcException("PdcBmImpl.getFilteredAxisValues", SilverpeasException.ERROR, 
+          "Pdc.CANNOT_RETRIEVE_SUBNODES", exce_select);
     }
-
-    return values;
   }
 
   /**
@@ -663,8 +654,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @see
    */
   @Override
-  public com.stratelia.silverpeas.pdc.model.Value getRoot(String axisId)
-          throws PdcException {
+  public com.stratelia.silverpeas.pdc.model.Value getRoot(String axisId) throws PdcException {
     Connection con = openConnection();
     SilverTrace.info("Pdc", "PdcBmImpl.getRoot", "root.MSG_GEN_PARAM_VALUE",
             "axisId = " + axisId);
@@ -1240,10 +1230,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       List<TreeNode> subtree = tree.getSubTree(con, treeNodePK, treeId);
       tree.deleteSubTree(con, treeNodePK, treeId);
 
-      Value value = new Value();
       // on efface les droits sur les valeurs
       for (TreeNode node : subtree) {
-        value = createValue(node);
+        Value value = createValue(node);
         PdcRightsDAO.deleteRights(con, axisId, value.getPK().getId());
       }
       // Warning, we must update the path of the Value(Classify)
