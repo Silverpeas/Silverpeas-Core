@@ -35,28 +35,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class Schema {
 
   private boolean isLocalConnection = true;
   private boolean haveToTestConnections = true;
   private boolean managed = false;
-  private int connectionLot = 0;
-  private Map statementsMap = new HashMap();
   private Connection connection = null;
 
   abstract protected String getJNDIName();
 
-  public Schema(int cl, Connection co) throws UtilException {
-    connectionLot = cl;
+  public Schema(Connection co) throws UtilException {
     connection = co;
     isLocalConnection = false;
   }
 
-  public Schema(int cl) throws UtilException {
-    connectionLot = cl;
+  public Schema() throws UtilException {
     createConnection();
     ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
     String m_sHaveToTestConnections = resources.getString("HaveToTestConnections");
@@ -65,7 +59,7 @@ public abstract class Schema {
     }
   }
 
-  protected synchronized void createConnection() throws UtilException {
+  protected final synchronized void createConnection() throws UtilException {
     SilverTrace.info("util", "Schema.createConnection()", "root.MSG_GEN_ENTER_METHOD");
     try {
       Context ctx = new InitialContext();
@@ -134,11 +128,11 @@ public abstract class Schema {
 
   public synchronized void close() {
     SilverTrace.info("util", "Schema.close()", "root.MSG_GEN_ENTER_METHOD");
-
+    /*
     for (Object o : statementsMap.values()) {
       DBUtil.close((Statement) o);
     }
-    statementsMap.clear();
+    statementsMap.clear();*/
     try {
       DBUtil.close(this.connection);
     } finally {
@@ -206,9 +200,5 @@ public abstract class Schema {
     }
 
     return connection;
-  }
-
-  public int getConnectionLot() {
-    return connectionLot;
   }
 }

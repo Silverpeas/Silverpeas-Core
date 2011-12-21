@@ -111,7 +111,7 @@ public class GroupTableTest {
         "Fake group", "DS_AccessLevel = *"));
     handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, " +
         "description, synchroRule FROM ST_Group WHERE id = ?", resultSet);
-    OrganizationSchema schema = new OrganizationSchema(1, connexion);
+    OrganizationSchema schema = new OrganizationSchema(connexion);
     GroupTable instance = new GroupTable(schema);    
     
     GroupRow result = instance.getGroup(id);
@@ -153,7 +153,7 @@ public class GroupTableTest {
         "Fake group", "DS_AccessLevel = *"));
     handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, description, " +
         "synchroRule FROM ST_Group WHERE domainId = ? AND specificId = ?", resultSet);
-    OrganizationSchema schema = new OrganizationSchema(1, connexion);
+    OrganizationSchema schema = new OrganizationSchema(connexion);
     GroupTable instance = new GroupTable(schema);    
     
     GroupRow result = instance.getGroupBySpecificId(domainId, specificId);
@@ -201,7 +201,7 @@ public class GroupTableTest {
         "DS_AccessLevel = *"));
     handler.prepareResultSet("SELECT id, specificId, domainId, superGroupId, name, description, " +
         "synchroRule FROM ST_Group WHERE superGroupId IS NULL AND name = ?", resultSet);
-    OrganizationSchema schema = new OrganizationSchema(1, connexion);
+    OrganizationSchema schema = new OrganizationSchema(connexion);
     GroupTable instance = new GroupTable(schema);    
     
     GroupRow result = instance.getRootGroup(name);
@@ -248,7 +248,7 @@ public class GroupTableTest {
     statementHandler.prepareResultSet("SELECT id, specificId, domainId, "
           + "superGroupId, name, description, synchroRule FROM ST_Group WHERE "
           + "superGroupId = ? AND name = ?", resultSet);
-    OrganizationSchema schema = new OrganizationSchema(1, connexion);
+    OrganizationSchema schema = new OrganizationSchema(connexion);
     GroupTable instance = new GroupTable(schema);    
     
     GroupRow result = instance.getGroup(superGroupId, name);
@@ -291,7 +291,7 @@ public class GroupTableTest {
         "DS_AccessLevel = A"));
     statementHandler.prepareResultSet("select id, specificId, domainId, "
           + "superGroupId, name, description, synchroRule from ST_Group", resultSet);
-    OrganizationSchema schema = new OrganizationSchema(1, connexion);
+    OrganizationSchema schema = new OrganizationSchema(connexion);
     GroupTable instance = new GroupTable(schema);    
     
     GroupRow[] result = instance.getAllGroups();

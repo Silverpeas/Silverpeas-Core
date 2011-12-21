@@ -31,16 +31,17 @@ import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class NotifSchema extends Schema {
-  public NotifSchema(int cl, Connection co) throws UtilException {
-    super(cl, co);
+  public NotifSchema(Connection co) throws UtilException {
+    super(co);
     init();
   }
 
-  public NotifSchema(int cl) throws UtilException {
-    super(cl);
+  public NotifSchema() throws UtilException {
+    super();
     init();
   }
 
+  @Override
   protected String getJNDIName() {
     return JNDINames.ADMIN_DATASOURCE;
   }

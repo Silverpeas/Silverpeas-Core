@@ -106,7 +106,7 @@ public class OrganizationSchemaTest {
    */
   @Test
   public void testGetJNDIName() {
-    OrganizationSchema instance = new OrganizationSchema(0);
+    OrganizationSchema instance = new OrganizationSchema();
     String result = instance.getJNDIName();
     assertThat(result, is("jdbc/Silverpeas"));
   }
@@ -116,7 +116,7 @@ public class OrganizationSchemaTest {
    */
   @Test
   public void testInit() {
-    OrganizationSchema instance = new OrganizationSchema(0);
+    OrganizationSchema instance = new OrganizationSchema();
     instance.init();
     assertThat(instance.accessLevel, is(notNullValue()));
     assertThat(instance.domain, is(notNullValue()));
