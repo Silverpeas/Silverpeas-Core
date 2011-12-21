@@ -226,8 +226,14 @@ public final class Admin {
         Integer.parseInt(space.getShortId()));
     spaceInCache.setComponents(components);
 
-    spaceInCache.setSubspaces(getSubSpaces(space.getShortId()));
+    List<SpaceInstLight> subSpaces = getSubSpaces(space.getShortId());
+    
+    spaceInCache.setSubspaces(subSpaces);
     TreeCache.addSpace(space.getShortId(), spaceInCache);
+    
+    for (SpaceInstLight subSpace : subSpaces) {
+      addSpaceInTreeCache(subSpace, false);
+    }
 
     if (addSpaceToSuperSpace) {
       if (!space.isRoot()) {
@@ -522,6 +528,11 @@ public final class Admin {
       String driverSpaceId = getDriverSpaceId(spaceId);
       // update data in database
       spaceManager.removeSpaceFromBasket(domainDriverManager, driverSpaceId);
+      
+      // force caches to be refreshed
+      cache.removeSpaceInst(driverSpaceId);
+      TreeCache.removeSpace(driverSpaceId);
+      
       // Get the space and put it in the cache
       SpaceInst spaceInst = getSpaceInstById(driverSpaceId, true);
       // set superspace profiles to space
@@ -535,6 +546,7 @@ public final class Admin {
       createSpaceIndex(Integer.parseInt(driverSpaceId));
       // reset space and eventually subspace
       cache.opAddSpace(spaceInst);
+      addSpaceInTreeCache(getSpaceInstLight(driverSpaceId), true);
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.restoreSpaceFromBasket", SilverpeasException.ERROR,
@@ -1422,7 +1434,7 @@ public final class Admin {
         domainDriverManager.commit();
       }
       cache.opRemoveComponent(componentInst);
-      TreeCache.removeComponent(getDriverSpaceId(sFatherClientId), sDriverComponentId);
+      TreeCache.removeComponent(getDriverSpaceId(sFatherClientId), componentId);
 
       // desindexation du composant
       deleteComponentIndex(componentInst);
