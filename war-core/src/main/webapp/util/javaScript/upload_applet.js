@@ -102,6 +102,9 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessag
 		  var alternatetext = document.createTextNode(altMessage);
 		  objectDND.appendChild(alternatetext);	
 	  } catch (e) {
+      if (typeof console !== 'undefined') {
+              console.log(e);
+      }
 	  }
   }
   

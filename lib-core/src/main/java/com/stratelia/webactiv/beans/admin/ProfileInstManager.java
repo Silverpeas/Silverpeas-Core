@@ -59,19 +59,19 @@ public class ProfileInstManager {
       UserRoleRow newRole = makeUserRoleRow(profileInst);
       newRole.id = -1; // new profile Id is to be defined
       newRole.instanceId = idAsInt(sFatherCompoId);
-      ddManager.organization.userRole.createUserRole(newRole);
+      ddManager.getOrganization().userRole.createUserRole(newRole);
       String sProfileNodeId = idAsString(newRole.id);
 
       // Update the CSpace with the links TProfile-TGroup
       for (int nI = 0; nI < profileInst.getNumGroup(); nI++) {
-        ddManager.organization.userRole.addGroupInUserRole(idAsInt(profileInst.getGroup(nI)),
+        ddManager.getOrganization().userRole.addGroupInUserRole(idAsInt(profileInst.getGroup(nI)),
             idAsInt(
             sProfileNodeId));
       }
 
       // Update the CSpace with the links TProfile-TUser
       for (int nI = 0; nI < profileInst.getNumUser(); nI++) {
-        ddManager.organization.userRole.addUserInUserRole(idAsInt(profileInst.getUser(nI)),
+        ddManager.getOrganization().userRole.addUserInUserRole(idAsInt(profileInst.getUser(nI)),
             idAsInt(
             sProfileNodeId));
       }
@@ -99,7 +99,7 @@ public class ProfileInstManager {
       ddManager.getOrganizationSchema();
 
       // Load the profile detail
-      UserRoleRow userRole = ddManager.organization.userRole.getUserRole(idAsInt(sProfileId));
+      UserRoleRow userRole = ddManager.getOrganization().userRole.getUserRole(idAsInt(sProfileId));
 
       if (userRole != null) {
         profileInst = userRoleRow2ProfileInst(userRole);
@@ -142,7 +142,7 @@ public class ProfileInstManager {
 
     // Get the groups
     String[] asGroupIds =
-        ddManager.organization.group.getDirectGroupIdsInUserRole(idAsInt(profileInst.getId()));
+        ddManager.getOrganization().group.getDirectGroupIdsInUserRole(idAsInt(profileInst.getId()));
 
     // Set the groups to the space profile
     if (asGroupIds != null) {
@@ -152,7 +152,7 @@ public class ProfileInstManager {
     }
 
     // Get the Users
-    String[] asUsersIds = ddManager.organization.user.getDirectUserIdsOfUserRole(idAsInt(
+    String[] asUsersIds = ddManager.getOrganization().user.getDirectUserIdsOfUserRole(idAsInt(
         profileInst.getId()));
 
     // Set the Users to the space profile
@@ -171,7 +171,7 @@ public class ProfileInstManager {
 
       // Load the profile detail
       UserRoleRow userRole =
-          ddManager.organization.userRole.getUserRole(idAsInt(instanceId), roleName, 1);
+          ddManager.getOrganization().userRole.getUserRole(idAsInt(instanceId), roleName, 1);
 
       ProfileInst profileInst = null;
       if (userRole != null) {
@@ -200,7 +200,7 @@ public class ProfileInstManager {
       DomainDriverManager ddManager) throws AdminException {
     try {
       // delete the profile node
-      ddManager.organization.userRole.removeUserRole(idAsInt(profileInst.getId()));
+      ddManager.getOrganization().userRole.removeUserRole(idAsInt(profileInst.getId()));
     } catch (Exception e) {
       throw new AdminException("ProfileInstManager.deleteProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_PROFILE",
@@ -256,14 +256,14 @@ public class ProfileInstManager {
       // Add the new Groups
       for (String groupId : alAddGroup) {
         // Create the links between the profile and the group
-        ddManager.organization.userRole.addGroupInUserRole(
+        ddManager.getOrganization().userRole.addGroupInUserRole(
             idAsInt(groupId), idAsInt(profileInst.getId()));
       }
 
       // Remove the removed groups
       for (String groupId : alRemGroup) {
         // delete the node link Profile_Group
-        ddManager.organization.userRole.removeGroupFromUserRole(
+        ddManager.getOrganization().userRole.removeGroupFromUserRole(
             idAsInt(groupId), idAsInt(profileInst.getId()));
       }
 
@@ -298,21 +298,21 @@ public class ProfileInstManager {
       // Add the new Users
       for (String userId : alAddUser) {
         // Create the links between the profile and the User
-        ddManager.organization.userRole.addUserInUserRole(
+        ddManager.getOrganization().userRole.addUserInUserRole(
             idAsInt(userId), idAsInt(profileInst.getId()));
       }
 
       // Remove the removed Users
       for (String userId : alRemUser) {
         // delete the node link Profile_User
-        ddManager.organization.userRole.removeUserFromUserRole(
+        ddManager.getOrganization().userRole.removeUserFromUserRole(
             idAsInt(userId), idAsInt(profileInst.getId()));
       }
 
       // update the profile node
       UserRoleRow changedUserRole = makeUserRoleRow(profileInstNew);
       changedUserRole.id = idAsInt(profileInstNew.getId());
-      ddManager.organization.userRole.updateUserRole(changedUserRole);
+      ddManager.getOrganization().userRole.updateUserRole(changedUserRole);
 
       return idAsString(changedUserRole.id);
     } catch (Exception e) {

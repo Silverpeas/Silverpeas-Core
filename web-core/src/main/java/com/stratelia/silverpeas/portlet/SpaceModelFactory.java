@@ -50,7 +50,6 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +132,7 @@ public class SpaceModelFactory {
     try {
       // Create a schema for accessing tables
       // PortletSchema schema = new PortletSchema(dataSource.getConnection()) ;
-      schema = new PortletSchema(0);
+      schema = new PortletSchema();
 
       // get the standard spaceModel for this spaceId
       sm = getSpaceModel(schema, aSpaceId);
@@ -213,32 +212,13 @@ public class SpaceModelFactory {
    * @throws PortletException -
    */
 
-  /*
-   * public static void portletSaveState(String aSpaceId, String aUserId, Portlet aPortlet) throws
-   * PortletException { PortletSchema os = null ; // Test the arguments if (aSpaceId == null) {throw
-   * new PortletException("spaceId is null");} if (aSpaceId.equalsIgnoreCase("")) {throw new
-   * PortletException("spaceId is empty");} if (aUserId == null) {throw new
-   * PortletException("userId is null");} if (aUserId.equalsIgnoreCase("")) {throw new
-   * PortletException("UserId is empty");} int spaceNum = Integer.parseInt(aSpaceId) ; try { //
-   * Create a schema for accessing tables // os = new PortletSchema(dataSource.getConnection()) ; os
-   * = new PortletSchema() ; PortletStateTable tPortletState = os.portletState ; // To be atomised
-   * in the future UserTable tUser = os.user ; UserRow ur = tUser.getByLdapId(aLDAPUserId) ; int
-   * aUserId = ur.getId() ; String req = "Select * from ST_PortletState" + "  Where portletRowId = "
-   * + aPortlet.getRowId() + "  and userId = " + aUserId ; PortletStateRow psr =
-   * tPortletState.getPortletState(req) ; // If there is not yet a State for this portlet and this
-   * user if (psr == null) { //We have to create one psr = new PortletStateRow(-1,
-   * aPortlet.getState(), aUserId, aPortlet.getRowId()) ; } else {
-   * psr.setState(aPortlet.getState()); } tPortletState.save(psr) ; os.commit(); } catch
-   * (UtilException e) { throw new PortletException(e, "Error Saving the portlet State") ; } finally
-   * { try { if (os != null) { os.close(); } } catch (UtilException e) { e.printStackTrace(); } } }
-   */
   public static void portletSaveState(SpaceModel space, Portlet aPortlet)
       throws PortletException {
     PortletSchema os = null;
 
     try {
       // Create a schema for accessing tables
-      os = new PortletSchema(0);
+      os = new PortletSchema();
       PortletStateTable tPortletState = os.portletState;
 
       String req = "Select * from ST_PortletState" + "  Where portletRowId = "
@@ -349,7 +329,7 @@ public class SpaceModelFactory {
 
     try {
       // Create a schema for accessing tables
-      os = new PortletSchema(0);
+      os = new PortletSchema();
       PortletColumnTable tPortletColumn = os.portletColumn;
       PortletRowTable tPortletRow = os.portletRow;
 
@@ -446,7 +426,7 @@ public class SpaceModelFactory {
 
     try {
       // Create a schema for accessing tables
-      os = new PortletSchema(0);
+      os = new PortletSchema();
       PortletRowTable prt = os.portletRow;
       //
       String req = "Select R.* from ST_PortletColumn C, ST_PortletRow R Where C.spaceId = "

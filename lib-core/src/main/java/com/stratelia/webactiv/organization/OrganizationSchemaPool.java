@@ -37,7 +37,7 @@ public class OrganizationSchemaPool extends SchemaPool {
   /**
    * The unique OrganizationSchemaPool built to serve all the requests.
    */
-  static private OrganizationSchemaPool singleton = new OrganizationSchemaPool();
+  static private final OrganizationSchemaPool singleton = new OrganizationSchemaPool();
 
   /**
    * The constructor is private, so we can ensure that only one pool will be created in the JVM.
@@ -69,7 +69,8 @@ public class OrganizationSchemaPool extends SchemaPool {
     singleton.releaseSchemas();
   }
 
-  protected Schema newSchema(int connectionLot) throws UtilException {
-    return new OrganizationSchema(connectionLot);
+  @Override
+  protected Schema newSchema() throws UtilException {
+    return new OrganizationSchema();
   }
 }

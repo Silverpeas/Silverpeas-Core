@@ -109,7 +109,7 @@ public class NotificationManager
     ArrayList<Properties> adresses = new ArrayList<Properties>();
     NotifSchema schema = null;
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifAddressTable nat = schema.notifAddress;
       NotificationParameters params = new NotificationParameters();
       // Add basic medias
@@ -171,7 +171,7 @@ public class NotificationManager
     Properties p = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotificationParameters params = new NotificationParameters();
 
       params.iMediaType = aNotificationAddressId;
@@ -201,7 +201,7 @@ public class NotificationManager
     NotificationParameters params = new NotificationParameters();
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       params.iMediaType = NotificationParameters.ADDRESS_BASIC_POPUP;
       row = getNotifAddressRow(params, aUserId, schema);
       p = new Properties();
@@ -251,7 +251,7 @@ public class NotificationManager
     int addressId = -1;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifDefaultAddressTable ndat = schema.notifDefaultAddress;
       NotifDefaultAddressRow[] ndars = null;
 
@@ -339,7 +339,7 @@ public class NotificationManager
     ArrayList<Properties> ar = new ArrayList<Properties>();
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifChannelTable nct = schema.notifChannel;
       NotifChannelRow[] rows = nct.getAllRows();
 
@@ -376,7 +376,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifPreferenceTable npt = schema.notifPreference;
       NotifPreferenceRow[] nprs = null;
 
@@ -410,7 +410,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifPreferenceTable npt = schema.notifPreference;
       NotifPreferenceRow npr = npt.getNotifPreference(aPrefId);
 
@@ -438,7 +438,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifDefaultAddressTable ndat = schema.notifDefaultAddress;
       NotifDefaultAddressRow[] ndars = null;
 
@@ -477,7 +477,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifDefaultAddressTable ndat = schema.notifDefaultAddress;
       NotifDefaultAddressRow newRow = new NotifDefaultAddressRow(-1, aUserId, aNotificationAddressId);
       ndat.create(newRow);
@@ -519,7 +519,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifPreferenceTable npt = schema.notifPreference;
       if (aMessageType == -1) {
         aMessageType = NotificationParameters.NORMAL;
@@ -592,7 +592,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifAddressTable nat = schema.notifAddress;
       if (aUsage == null) {
         aUsage = NotificationParameters.USAGE_PRO;
@@ -636,7 +636,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifPreferenceTable npt = schema.notifPreference;
 
       npt.delete(aPreferenceId);
@@ -672,7 +672,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifAddressTable nat = schema.notifAddress;
 
       List<Integer> defaultAddresses = getDefaultNotificationAddresses();
@@ -707,7 +707,7 @@ public class NotificationManager
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       NotifDefaultAddressTable nat = schema.notifDefaultAddress;
 
       nat.dereferenceUserId(userId);
@@ -745,7 +745,7 @@ public class NotificationManager
     NotificationParameters params = new NotificationParameters();
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
       params.iMediaType = aNotificationAddressId;
       params.sTitle = m_Multilang.getString("testMsgTitle");
       params.sMessage = m_Multilang.getString("testMsgBody");
@@ -818,9 +818,9 @@ public class NotificationManager
 
     try {
       if (params.connection != null) {
-        schema = new NotifSchema(0, params.connection);
+        schema = new NotifSchema(params.connection);
       } else {
-        schema = new NotifSchema(0);
+        schema = new NotifSchema();
       }
       params.traceObject();
       for (i = 0; i < aUserIds.length; i++) {

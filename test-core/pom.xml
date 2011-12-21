@@ -125,6 +125,17 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner-jdbc</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+      <scope>compile</scope>
+    </dependency>    
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>

@@ -51,7 +51,7 @@ public class ProfiledObjectManager {
     try {
       ddManager.getOrganizationSchema();
       // Get the profiles
-      asProfileIds = ddManager.organization.userRole.getAllUserRoleIdsOfObject(
+      asProfileIds = ddManager.getOrganization().userRole.getAllUserRoleIdsOfObject(
           objectId, objectType, componentId);
     } catch (Exception e) {
       throw new AdminException("ProfiledObjectManager.getProfiles",
@@ -104,7 +104,7 @@ public class ProfiledObjectManager {
     try {
       ddManager.getOrganizationSchema();
       // Get the profiles
-      asProfileIds = ddManager.organization.userRole
+      asProfileIds = ddManager.getOrganization().userRole
           .getAllObjectUserRoleIdsOfInstance(componentId);
     } catch (Exception e) {
       throw new AdminException("ProfiledObjectManager.getProfiles",

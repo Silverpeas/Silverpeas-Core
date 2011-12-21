@@ -25,6 +25,7 @@ package com.stratelia.webactiv.organization;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -286,7 +287,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
       throw new AdminPersistenceException("ComponentInstanceTable.sendComponentToBasket",
               SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
     } finally {
-      organization.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
   static final private String SEND_COMPONENT_IN_BASKET = "update ST_ComponentInstance set name = ?, "
@@ -310,7 +311,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
       throw new AdminPersistenceException("ComponentInstanceTable.restoreComponentFromBasket",
               SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
     } finally {
-      organization.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
   static final private String RESTORE_COMPONENT_FROM_BASKET =

@@ -33,31 +33,24 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class Schema {
 
   private boolean isLocalConnection = true;
   private boolean haveToTestConnections = true;
   private boolean managed = false;
-  private int connectionLot = 0;
-  private Map statementsMap = new HashMap();
   private Connection connection = null;
 
   abstract protected String getJNDIName();
 
-  public Schema(int cl, Connection co) throws UtilException {
-    connectionLot = cl;
+  public Schema(Connection co) throws UtilException {
     connection = co;
     isLocalConnection = false;
   }
 
-  public Schema(int cl) throws UtilException {
-    connectionLot = cl;
+  public Schema() throws UtilException {
     createConnection();
     ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
     String m_sHaveToTestConnections = resources.getString("HaveToTestConnections");
@@ -66,7 +59,7 @@ public abstract class Schema {
     }
   }
 
-  protected void createConnection() throws UtilException {
+  protected final synchronized void createConnection() throws UtilException {
     SilverTrace.info("util", "Schema.createConnection()", "root.MSG_GEN_ENTER_METHOD");
     try {
       Context ctx = new InitialContext();
@@ -135,11 +128,11 @@ public abstract class Schema {
 
   public synchronized void close() {
     SilverTrace.info("util", "Schema.close()", "root.MSG_GEN_ENTER_METHOD");
-
+    /*
     for (Object o : statementsMap.values()) {
       DBUtil.close((Statement) o);
     }
-    statementsMap.clear();
+    statementsMap.clear();*/
     try {
       DBUtil.close(this.connection);
     } finally {
@@ -181,7 +174,7 @@ public abstract class Schema {
   /**
    * All the statements are prepared and cached
    */
-  public PreparedStatement getStatement(String query) throws SQLException {
+  public synchronized PreparedStatement getStatement(String query) throws SQLException {
     SilverTrace.info("util", "Schema.getStatement()",
         "root.MSG_GEN_ENTER_METHOD", query);
     PreparedStatement statement = getConnection().prepareStatement(query);
@@ -190,17 +183,8 @@ public abstract class Schema {
     return statement;
   }
 
-  public void releaseAll(ResultSet rs, PreparedStatement ps) {
-    SilverTrace.info("util", "Schema.releaseAll()",
-        "root.MSG_GEN_ENTER_METHOD", "rs=" + rs + " ,ps=" + ps);
-    DBUtil.close(rs, ps);
-  }
 
-  public void releaseStatement(PreparedStatement ps) {
-    DBUtil.close(ps);
-  }
-
-  public Connection getConnection() {
+  public synchronized Connection getConnection() {
     if (!isOk() && isLocalConnection) {
       SilverTrace.info("util", "Schema.getConnection", "root.MSG_GEN_ENTER_METHOD",
           "Connection WAS CLOSED !!!! -> Create new one");
@@ -216,9 +200,5 @@ public abstract class Schema {
     }
 
     return connection;
-  }
-
-  public int getConnectionLot() {
-    return connectionLot;
   }
 }

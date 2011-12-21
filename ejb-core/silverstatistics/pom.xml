@@ -18,6 +18,7 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner-jdbc</artifactId>
@@ -32,7 +33,7 @@
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>
       <classifier>jdk1.6-j2ee1.4</classifier>
-    </dependency>
+    </dependency>-->
   </dependencies>
   
    <build>
