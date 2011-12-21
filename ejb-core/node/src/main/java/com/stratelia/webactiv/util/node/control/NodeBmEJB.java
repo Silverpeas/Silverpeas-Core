@@ -618,8 +618,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   @Override
   public void removeNode(NodePK pk) throws RemoteException {
+    Connection connection = null;
     try {
-      Connection connection = DBUtil.makeConnection(dbName);
+      connection = DBUtil.makeConnection(dbName);
       NodeDeletion.deleteNodes(pk, connection, new AnonymousMethodOnNode() {
 
         @Override
@@ -633,6 +634,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       throw new NodeRuntimeException("NodeBmEJB.removeNode()",
               SilverpeasRuntimeException.ERROR, "node.DELETING_NODE_FAILED",
               "nodeId = " + pk.getId(), re);
+    } finally {
+      DBUtil.close(connection);
     }
   }
 
