@@ -31,12 +31,14 @@ import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailPar
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Locale;
-import java.util.ResourceBundle;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -47,12 +49,10 @@ public abstract class FunctionHandler {
   private ResourceBundle resources;
   private ResourceLocator m_Multilang ;
   private ForgottenPasswordMailManager forgottenPasswordMailManager;
-  private Admin admin;
   private ResourceLocator general =
       new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
 
   public FunctionHandler() {
-    admin = new Admin();
     resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore.SessionManager",
         Locale.ROOT);
     String language = resources.getString("language");
@@ -61,7 +61,7 @@ public abstract class FunctionHandler {
     }
     m_Multilang = new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
         language);
-    forgottenPasswordMailManager = new ForgottenPasswordMailManager(admin);
+    forgottenPasswordMailManager = new ForgottenPasswordMailManager();
   }
 
   public abstract String doAction(HttpServletRequest request);
@@ -145,15 +145,9 @@ public abstract class FunctionHandler {
    * @return the admin
    */
   protected Admin getAdmin() {
-    return admin;
+    return AdminReference.getAdminService();
   }
 
-  /**
-   * @param admin the admin to set
-   */
-  protected void setAdmin(Admin admin) {
-    this.admin = admin;
-  }
 
   /**
    * @return the general

@@ -36,12 +36,12 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 	String help = parameter.getHelp();
 
 	if (help != null) {
-		//help = Encode.javaStringToJsString(help);
+		help = EncodeHelper.javaStringToHtmlString(help);
 	  	out.println("<td valign=\"top\" align=\"left\">");
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 		out.println("</td>");
 	} else {
-		out.println("<td align=left width=15>&nbsp;</td>");
+		out.println("<td width=\"15\">&nbsp;</td>");
 	
 	}
 	out.println("<td class=\"intfdcolor4\" nowrap valign=\"center\" align=left>");
@@ -63,17 +63,14 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 	}
 	else if (parameter.isSelect() || parameter.isXmlTemplate())
 	{
-		List options = parameter.getOptions();
-		if (options != null)
-		{
+		List<LocalizedOption> options = parameter.getOptions();
+		if (options != null) {
 			out.println("<select name=\""+parameter.getName()+"\">");
 			if (!parameter.isMandatory()) {
 			  out.println("<option value=\"\"></option>");
 			}
 			String selected = "";
-			for (int i=0; i<options.size(); i++)
-			{
-				LocalizedOption option = (LocalizedOption) options.get(i);
+			for (LocalizedOption option : options) {
 				String name = option.getName();
 				String value = option.getValue();
 				selected = "";
@@ -87,23 +84,20 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 	}
 	else if (parameter.isRadio())
 	{
-		List radios = parameter.getOptions();
-		if (radios != null)
-		{
+		List<LocalizedOption> radios = parameter.getOptions();
+		if (radios != null) {
 			for (int i = 0; i < radios.size(); i++) {
-          LocalizedOption radio = (LocalizedOption) radios.get(i);
-          String name = radio.getName();
-          String value = radio.getValue();
-          String checked = "";
-          if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i == 0) {
-            checked = " checked";
-          }
-          out.println(
-              "<input type=\"radio\" name=\"" + parameter.getName() + "\" value=\"" + value + "\"" + checked + ">");
-          out.println(name + "&nbsp;<br>");
-        }	
-		}
-		else {
+	          LocalizedOption radio = radios.get(i);
+	          String name = radio.getName();
+	          String value = radio.getValue();
+	          String checked = "";
+	          if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i == 0) {
+	            checked = " checked";
+	          }
+	          out.println("<input type=\"radio\" name=\"" + parameter.getName() + "\" value=\"" + value + "\"" + checked + ">");
+	          out.println(name + "&nbsp;<br>");
+        	}	
+		} else {
 			out.println(parameter.getValue());
 		}
 		out.println("</td>");
@@ -113,13 +107,20 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		boolean mandatory = parameter.isMandatory();;
 
 		String sSize = "60";
-		if (parameter.getSize() != null && parameter.getSize().intValue() > 0)
+		if (parameter.getSize() != null && parameter.getSize().intValue() > 0) {
 			sSize = parameter.getSize().toString();
+		}
+		
+		String value = parameter.getValue();
+		if (!StringUtil.isDefined(value)) {
+		  value = "";
+		}
 
-		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(parameter.getValue())+"\" "+disabled+">");
+		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(value)+"\" "+disabled+"/>");
 
-		if (mandatory) 
-			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\">");
+		if (mandatory) {
+			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\"/>");
+		}
 	}
 	out.println("</td>");
 }

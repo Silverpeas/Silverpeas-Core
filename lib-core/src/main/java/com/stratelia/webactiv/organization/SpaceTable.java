@@ -25,6 +25,7 @@ package com.stratelia.webactiv.organization;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
@@ -427,7 +428,7 @@ public class SpaceTable extends Table<SpaceRow> {
       throw new AdminPersistenceException("SpaceTable.sendSpaceToBasket", SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE", e);
     } finally {
-      organization.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
   static final private String SEND_SPACE_IN_BASKET =
@@ -451,7 +452,7 @@ public class SpaceTable extends Table<SpaceRow> {
       throw new AdminPersistenceException("SpaceTable.removeSpaceFromBasket",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
     } finally {
-      organization.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
   static final private String REMOVE_SPACE_FROM_BASKET =

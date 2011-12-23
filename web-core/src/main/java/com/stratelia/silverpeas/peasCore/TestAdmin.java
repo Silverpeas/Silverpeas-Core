@@ -31,8 +31,8 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -49,7 +49,6 @@ import java.sql.SQLException;
  * The role of the administrator is to create and maintain spaces.
  */
 public class TestAdmin {
-  static private Admin m_Admin = null;
   static private String m_Auc = null;
 
   // Production database
@@ -92,28 +91,24 @@ public class TestAdmin {
     String sComponentId = null;
     LoginPasswordAuthentication lpAuth = null;
 
-    // Authenticate the admin if necessary
-    if (m_Admin == null) {
-      m_Admin = new Admin();
       lpAuth = new LoginPasswordAuthentication();
       String sKey = lpAuth.authenticate(m_sAdministratorLogin,
           m_sAdministratorPassword, "0", null);
-      m_Auc = m_Admin.authenticate(sKey, "", false);
-    }
+      m_Auc = AdminReference.getAdminService().authenticate(sKey, "", false);
 
     // Add a space
     SpaceInst si = new SpaceInst();
     si.setName(sComponentName);
-    String sSpaceId = m_Admin.addSpaceInst(m_Auc, si);
+    String sSpaceId = AdminReference.getAdminService().addSpaceInst(m_Auc, si);
 
     try {
       // Add a component
       ComponentInst ci = new ComponentInst();
       ci.setName(sComponentName);
       ci.setDomainFatherId(sSpaceId);
-      sComponentId = m_Admin.addComponentInst(m_Auc, ci);
+      sComponentId = AdminReference.getAdminService().addComponentInst(m_Auc, ci);
     } catch (Exception e) {
-      m_Admin.deleteSpaceInstById(m_Auc, sSpaceId, true);
+      AdminReference.getAdminService().deleteSpaceInstById(m_Auc, sSpaceId, true);
       throw e;
     }
 
@@ -127,9 +122,9 @@ public class TestAdmin {
   static public void deleteComponent(CompoSpace cs) throws Exception {
     try {
       // Delete space
-      m_Admin.deleteSpaceInstById(m_Auc, cs.getSpaceId(), true);
+      AdminReference.getAdminService().deleteSpaceInstById(m_Auc, cs.getSpaceId(), true);
     } catch (Exception e) {
-      m_Admin.deleteComponentInst(m_Auc, cs.getComponentId(), true);
+      AdminReference.getAdminService().deleteComponentInst(m_Auc, cs.getComponentId(), true);
       throw e;
     }
   }

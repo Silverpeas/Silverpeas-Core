@@ -26,10 +26,10 @@ package com.silverpeas.subscribe.web;
 
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.subscribe.service.Subscription;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

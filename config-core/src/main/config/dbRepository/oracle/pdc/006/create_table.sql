@@ -51,16 +51,16 @@ CREATE TABLE SB_Pdc_Group_Rights
 
 create table PdcAxisValue (
   valueId number(19,0) not null,
-  axisId number(19,0),
+  axisId number(19,0) not null,
   primary key (valueId, axisId)
 );
 
 create table PdcClassification (
   id number(19,0) not null,
-  contentId varchar2(255 char),
-  instanceId varchar2(255 char) not null,
+  contentId varchar2(255),
+  instanceId varchar2(255) not null,
   modifiable number(1,0) not null,
-  nodeId varchar2(255 char),
+  nodeId varchar2(255),
   primary key (id)
 );
 

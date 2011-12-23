@@ -33,7 +33,7 @@ public enum RegisteredTopics {
    * This topic is for notifications about an action performed on a node. A node in Silverpeas is
    * a way to categorize in a hierarchical way information.
    */
-  NODE_TOPIC("node");
+  NODE_TOPIC("node"), ADMIN_TOPIC("admin");
   
   public String getTopicName() {
     return topicName;

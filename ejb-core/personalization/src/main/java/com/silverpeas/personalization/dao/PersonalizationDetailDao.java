@@ -24,9 +24,17 @@
 
 package com.silverpeas.personalization.dao;
 
-import com.silverpeas.personalization.UserPreferences;
+import java.util.List;
+
 import org.synyx.hades.dao.GenericDao;
+import org.synyx.hades.dao.Param;
+import org.synyx.hades.dao.Query;
+
+import com.silverpeas.personalization.UserPreferences;
 
 
 public interface PersonalizationDetailDao extends GenericDao<UserPreferences, String> {
+  
+  @Query("from UserPreferences p WHERE p.collaborativeWorkSpaceId = :space")
+  List<UserPreferences> findByDefaultSpace(@Param("space") String space);
 }

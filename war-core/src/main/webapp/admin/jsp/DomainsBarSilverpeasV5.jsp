@@ -31,6 +31,7 @@
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 
@@ -365,7 +366,7 @@ out.println(gef.getLookStyleSheet());
                     // domains are used by 'selectDomain.jsp.inc'
                     // Get a LoginPasswordAuthentication object
                     LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-                    Hashtable domains = lpAuth.getAllDomains();
+                    Hashtable<String, String> domains = lpAuth.getAllDomains();
                     //------------------------------------------------------------------
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.login"), "javaScript:login();", false);
                 %>

@@ -24,27 +24,23 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.scheduler.Scheduler;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SynchroGroupScheduler
     implements SchedulerEventListener {
 
   public static final String ADMINSYNCHROGROUP_JOB_NAME = "AdminSynchroGroupJob";
   private List<String> synchronizedGroupIds = null;
-  private Admin admin = null;
 
-  public void initialize(String cron,
-      Admin admin,
-      List<String> synchronizedGroupIds) {
+  public void initialize(String cron, List<String> synchronizedGroupIds) {
     try {
-      this.admin = admin;
       this.synchronizedGroupIds = synchronizedGroupIds;
 
       SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
@@ -59,25 +55,18 @@ public class SynchroGroupScheduler
   }
 
   public void doSynchroGroup() {
-    SilverTrace.info("admin", "SynchroGroupScheduler.doSynchroGroup()",
-        "root.MSG_GEN_ENTER_METHOD");
-
+    SilverTrace.info("admin", "SynchroGroupScheduler.doSynchroGroup()", "root.MSG_GEN_ENTER_METHOD");
     SynchroGroupReport.startSynchro();
 
-    String groupId = null;
-    for (int i = 0; synchronizedGroupIds != null
-        && i < synchronizedGroupIds.size(); i++) {
-      groupId = synchronizedGroupIds.get(i);
+    for (int i = 0; synchronizedGroupIds != null && i < synchronizedGroupIds.size(); i++) {
+      String groupId = synchronizedGroupIds.get(i);
       try {
-        admin.synchronizeGroupByRule(groupId, true);
+        AdminReference.getAdminService().synchronizeGroupByRule(groupId, true);
       } catch (AdminException e) {
-        SilverTrace.error("admin", "SynchroGroupScheduler.doSynchroGroup",
-            "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+        SilverTrace.error("admin", "SynchroGroupScheduler.doSynchroGroup","admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
       }
     }
-
     SynchroGroupReport.stopSynchro();
-
     SilverTrace.info("admin", "SynchroGroupScheduler.doScheduledImport()",
         "root.MSG_GEN_EXIT_METHOD");
   }

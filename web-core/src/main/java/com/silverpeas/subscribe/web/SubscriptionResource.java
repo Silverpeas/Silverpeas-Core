@@ -26,9 +26,9 @@ package com.silverpeas.subscribe.web;
 
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
-import com.silverpeas.subscribe.service.Subscription;
 import com.silverpeas.util.ForeignPK;
 import java.net.URI;
 import java.util.Collection;

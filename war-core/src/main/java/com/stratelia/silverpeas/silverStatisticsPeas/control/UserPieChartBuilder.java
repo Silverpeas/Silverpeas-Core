@@ -24,15 +24,16 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Map;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author BERTINL
@@ -69,25 +70,19 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
   public String getChartTitle() {
     String title = message.getString("silverStatisticsPeas.AccessNumber") + " ";
 
-    if (!this.filterIdGroup.equals("") && this.filterIdUser.equals("")) {
-      title += " "
-          + message.getString("silverStatisticsPeas.EvolutionAccessGroup")
-          + " "
-          + this.organizationController.getGroup(this.filterIdGroup).getName()
-          + " ";
+    if (StringUtil.isDefined(this.filterIdGroup) && !StringUtil.isDefined(this.filterIdUser)) {
+      title += " " + message.getString("silverStatisticsPeas.EvolutionAccessGroup")
+          + " " + this.organizationController.getGroup(this.filterIdGroup).getName() + " ";
     }
-    if (!this.filterIdUser.equals("")) {
-      title += " "
-          + message.getString("silverStatisticsPeas.EvolutionAccessUser")
-          + " "
-          + this.organizationController.getUserDetail(this.filterIdUser)
+    if (StringUtil.isDefined(this.filterIdUser)) {
+      title += " " + message.getString("silverStatisticsPeas.EvolutionAccessUser")
+          + " " + this.organizationController.getUserDetail(this.filterIdUser)
           .getLastName() + " ";
     }
 
     try {
-      if ((this.spaceId != null) && (this.spaceId.length() > 0)
-          && (!this.spaceId.equals("WA0"))) {
-        SpaceInstLight space = new Admin().getSpaceInstLightById(this.spaceId);
+      if (StringUtil.isDefined(this.spaceId ) && (!this.spaceId.equals("WA0"))) {
+        SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(this.spaceId);
         title += message.getString("silverStatisticsPeas.ToSpace") + " ["
             + space.getName() + "] ";
       }

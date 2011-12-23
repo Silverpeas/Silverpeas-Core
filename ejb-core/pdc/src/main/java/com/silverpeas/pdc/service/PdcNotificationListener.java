@@ -27,8 +27,6 @@ import com.silverpeas.node.notification.NodeDeletionNotification;
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,22 +38,18 @@ import static com.silverpeas.notification.RegisteredTopics.*;
  * classification on the PdC.
  */
 @Named
-public class PdcNotificationListener extends DefaultNotificationSubscriber implements CallBack {
+public class PdcNotificationListener extends DefaultNotificationSubscriber {
   
   @Inject
   private PdcClassificationService service;
   
   @Override
   public void subscribeOnTopics() {
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, this);
     subscribeForNotifications(onTopic(NODE_TOPIC.getTopicName()));
   }
 
   @Override
   public void unsubscribeOnTopics() {
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.unsubscribeAll(this);
     unsubscribeForNotifications(onTopic(NODE_TOPIC.getTopicName()));
   }
 
@@ -64,19 +58,7 @@ public class PdcNotificationListener extends DefaultNotificationSubscriber imple
     if (onTopic.getName().equals(NODE_TOPIC.getTopicName())) {
       NodeDeletionNotification deletion = (NodeDeletionNotification) notification;
       NodePK node = deletion.getNodePK();
-      service.deleteAllPreDefinedClassifications(node.getId(), node.getInstanceId());
-    }
-  }
-
-  @Override
-  public void subscribe() {
-  }
-
-  @Override
-  public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
-    if (action == CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT) {
-        String componentId = sParam;
-        service.deleteAllPreDefinedClassifications(null, componentId);
+      service.deletePreDefinedClassification(node.getId(), node.getInstanceId());
     }
   }
 }

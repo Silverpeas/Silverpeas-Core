@@ -49,7 +49,8 @@
   <ctx:component-scan base-package="com.stratelia.silverpeas.contentManager"/>
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
-  
+  <ctx:component-scan base-package="com.silverpeas.admin.notification"/>
+  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" />  
   
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
 
@@ -84,6 +85,9 @@
   <!-- The administration module -->
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
         depends-on="schedulerFactory"/>
+  
+  <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
+         factory-method="getInstance"/>
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
        the actual scheduling backend -->
@@ -92,8 +96,7 @@
 
   <!-- the Silverpeas look context gathering all of the look aspects -->
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"
-        factory-method="getSilverpeasLook"
-        depends-on="organizationController"/>
+        factory-method="getSilverpeasLook" depends-on="organizationController"/>
         
   <!-- the factory of the document format converters available in Silverpeas.
         It wraps and provides an access to the actual converter implementations -->
@@ -103,7 +106,11 @@
   <!-- the factory of the content management services.
         It wraps and provides an access to the actual content manager managed by the IoC container -->
   <bean id="contentManagerFactory" class="com.stratelia.silverpeas.contentManager.ContentManagerFactory"
-        factory-method="getFactory"/>     
+        factory-method="getFactory"/>
+        
+  <!-- the factory of the statistics management services.
+        It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
+  <bean id="silverStatisticsFactory" class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
+        factory-method="getFactory"/>  
 
 </beans>
-

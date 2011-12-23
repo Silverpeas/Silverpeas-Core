@@ -47,19 +47,15 @@ String			topBarParams			= "";
 String			frameBottomParams		= "";
 boolean			login					= false;
 
-if (m_MainSessionCtrl == null)
-{
+if (m_MainSessionCtrl == null) {
 %>
 	<script type="text/javascript">
 		top.location="../../Login.jsp";
 	</script>
 <%
-}
-else
-{
+} else {
 	LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
-	if (helper == null)
-	{
+	if (helper == null) {
 		helper = new LookSilverpeasV5Helper(m_MainSessionCtrl, gef.getFavoriteLookSettings());
 		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
 
@@ -68,20 +64,18 @@ else
 	}
 
 	boolean componentExists = false;
-	if (StringUtil.isDefined(componentIdFromRedirect))
+	if (StringUtil.isDefined(componentIdFromRedirect)) {
 		componentExists = (organizationCtrl.getComponentInstLight(componentIdFromRedirect) != null);
+	}
 
-
-	if (!componentExists)
-	{
+	if (!componentExists) {
 		String spaceId = m_MainSessionCtrl.getFavoriteSpace();
 		boolean spaceExists = false;
 		if (StringUtil.isDefined(spaceIdFromRedirect)) {
 			spaceExists = (organizationCtrl.getSpaceInstById(spaceIdFromRedirect) != null);
 		}
 
-		if (spaceExists)
-		{
+		if (spaceExists) {
 			spaceId = spaceIdFromRedirect;
 		} else {
 			if (helper != null && helper.getSpaceId() != null) {
@@ -92,9 +86,7 @@ else
 
 		String 	workSpace 	= "?SpaceId="+spaceId;
 		frameBottomParams 	= workSpace;
-	}
-	else
-	{
+	} else {
 		helper.setComponentIdAndSpaceIds(null, null, componentIdFromRedirect);
 		frameBottomParams 	= "?SpaceId=&amp;ComponentId="+componentIdFromRedirect;
 	}

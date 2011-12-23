@@ -24,14 +24,12 @@
 package com.silverpeas.jcrutil.model.impl;
 
 
-import javax.jcr.Repository;
-
-
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import javax.annotation.Resource;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+
+import javax.annotation.Resource;
+import javax.jcr.Repository;
 
 public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase {
 

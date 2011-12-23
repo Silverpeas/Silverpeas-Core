@@ -31,6 +31,7 @@ import com.silverpeas.components.model.SilverpeasJndiCase;
 import java.io.IOException;
 import javax.naming.NamingException;
 
+import com.silverpeas.subscribe.Subscription;
 import org.dbunit.database.IDatabaseConnection;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.sql.Connection;

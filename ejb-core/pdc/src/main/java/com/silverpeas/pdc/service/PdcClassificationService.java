@@ -44,8 +44,6 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
@@ -135,7 +133,7 @@ public class PdcClassificationService {
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the specified
    * node of the specified component instance. If the specified node isn't defined, then the
-   * predefined classification associated with the whole component instance is seeked.
+   * predefined classification associated with the whole component instance is get.
    * 
    * In the case no predefined classification is set for the specified node or for the component
    * instance, then a none classification is then returned.
@@ -211,41 +209,23 @@ public class PdcClassificationService {
   }
 
   /**
-   * Deletes all the predefined classification set for the specified node and its children nodes
-   * in the specified component instance. If the specified node is null, then all the predefined
-   * classifications set for all nodes in the component instance (plus the one for the component
-   * instance itself) are deleted.
-   * 
-   * This method is mainly dedicated when a given node or a given component instance is removed
-   * from Silverpeas.
-   * @param nodeId the unique identifier of the node.
-   * @param instanceId the unique identifier of the component instance.
+   * Deletes the predefined classification set for the specified node in the specified component
+   * instance. If the specified node is null, then the predefined classification set for the whole
+   * component instance is deleted.
+   * @param nodeId the unique identifier of the node for which the predefined classification has to
+   * be deleted.
+   * @param instanceId the unique identifier of the component instance to which the node belongs.
    */
-  public void deleteAllPreDefinedClassifications(String nodeId, String instanceId) {
-    Collection<NodeDetail> nodes;
-    if (isDefined(nodeId)) {
-      nodes = new ArrayList<NodeDetail>();
-      NodeDetail currentNode = new NodeDetail();
-      currentNode.setNodePK(new NodePK(nodeId, instanceId));
-      nodes.add(currentNode);
+  public void deletePreDefinedClassification(String nodeId, String instanceId) {
+    PdcClassification classification;
+    // the node with 0 as identifier matches the component instance itself
+    if (!isDefined(nodeId) || "0".equals(nodeId)) {
+      classification = getPreDefinedClassification(instanceId);
     } else {
-      try {
-        nodes = getNodeBm().getAllNodes(new NodePK(null, instanceId));
-        NodeDetail forComponentInstance = new NodeDetail();
-        forComponentInstance.setNodePK(new NodePK(null, instanceId));
-        nodes.add(forComponentInstance);
-      } catch (RemoteException ex) {
-        throw new PdcRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
-                ex.getMessage(), ex);
-      }
+      classification = getPreDefinedClassification(nodeId, instanceId);
     }
-
-    for (NodeDetail nodeDetail : nodes) {
-      PdcClassification classification = getPreDefinedClassification(
-              nodeDetail.getNodePK().getId(), instanceId);
-      if (classification != NONE_CLASSIFICATION) {
-        classificationDao.delete(classification);
-      }
+    if (classification != NONE_CLASSIFICATION) {
+      classificationDao.delete(classification);
     }
   }
 
@@ -342,6 +322,8 @@ public class PdcClassificationService {
    */
   public static PdcClassification withClassification(final PdcClassification classification) {
     return classification;
+
+
   }
 
   protected NodeBm getNodeBm() {

@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import org.junit.Before;
 
 /**
  *
@@ -42,7 +43,8 @@ public class TestInvitationService extends AbstractTestDao {
   private InvitationService invitationService;
 
   @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     super.setUp();
     invitationService = new InvitationService();
   }

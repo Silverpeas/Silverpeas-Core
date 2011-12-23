@@ -108,7 +108,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public final static String VER_USE_WRITERS = "1";
   public final static String VER_USE_READERS = "2";
   public final static String VER_USE_NONE = "3";
-  private String fileRightsMode = VER_USE_WRITERS_AND_READERS;
+  private String fileRightsMode = VER_USE_NONE;
   // Type of list in Writer's Panel
   public final static String WRITERS_LIST_SIMPLE = "0";
   public final static String WRITERS_LIST_APPROUVAL = "1";
@@ -980,8 +980,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return
    * @throws RemoteException
    */
-  public boolean isReader(Document document, String userId)
-      throws RemoteException {
+  public boolean isReader(Document document, String userId) throws RemoteException {
     if (!useRights()) {
       return true;
     }
@@ -1000,16 +999,20 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         if (profile.getObjectId() != -1) {
           // topic have no rights defined (on itself or by its fathers)
           // check if user have access to this component
-          return getOrganizationController().isComponentAvailable(getComponentId(), userId);
+          return isComponentAvailable(userId);
         }
       } else {
         // check if user have access to this component
-        return getOrganizationController().isComponentAvailable(getComponentId(), userId);
+        return isComponentAvailable(userId);
       }
     } else if (VER_USE_WRITERS.equals(fileRightsMode)) {
       profile = getInheritedProfile(READER);
     } else {
       profile = getCurrentProfile(READER);
+      if (profile.getObjectType() == null) {
+        // profile is from the application (no rights specified on document, nor on topic)
+        return isComponentAvailable(userId);
+      }
     }
 
     SilverTrace.info("versioningPeas",
@@ -1034,6 +1037,10 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       }
     }
     return isReader;
+  }
+  
+  private boolean isComponentAvailable(String userId) {
+    return getOrganizationController().isComponentAvailable(getComponentId(), userId);
   }
 
   public boolean isWriter(Document document, int userId) throws RemoteException {
@@ -1448,7 +1455,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       if (nodeDetail.haveRights()) {
         return getTopicProfile(role, Integer.toString(nodeDetail.getRightsDependsOn()));
       }
-
     }
     //Rights of the component
     return getComponentProfile(role);

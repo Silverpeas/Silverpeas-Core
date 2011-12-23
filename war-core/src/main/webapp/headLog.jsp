@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.authentication.*"%>
@@ -61,6 +62,8 @@ boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", f
 LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
 
 // list of domains
+// Let domains variable for backward compatibility purpose. getAllDomains is now deprecated !!!
 Hashtable domains = lpAuth.getAllDomains();
-List domainIds = new ArrayList(domains.keySet());
+List<Domain> listDomains = lpAuth.getListDomains();
+List<String> domainIds = lpAuth.getDomainsIds();
 %>

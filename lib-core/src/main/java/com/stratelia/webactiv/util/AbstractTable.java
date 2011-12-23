@@ -146,7 +146,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getUniqueRow", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -173,7 +173,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getUniqueRow", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -200,7 +200,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getUniqueRow", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -229,7 +229,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getUniqueRow", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -264,7 +264,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getUniqueRow", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -286,7 +286,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getUniqueRow", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -305,7 +305,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getRows", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -326,7 +326,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getRows", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -348,7 +348,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getRows", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -371,7 +371,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getRows", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -394,7 +394,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getRows", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -423,7 +423,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getRows", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -471,7 +471,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.getInteger", "Select failed", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -525,7 +525,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.insertRow", "Creation failed", e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 
@@ -542,7 +542,7 @@ public abstract class AbstractTable<T> {
     } catch (SQLException e) {
       throw new UtilException("AbstractTable.updateRow", "Update failed", e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 
@@ -564,7 +564,7 @@ public abstract class AbstractTable<T> {
       throw new UtilException("AbstractTable.updateRelation", "Update failed",
           e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 
@@ -588,7 +588,7 @@ public abstract class AbstractTable<T> {
       throw new UtilException("AbstractTable.updateRelation", "Update failed",
           e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 

@@ -4,14 +4,16 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>test-core</artifactId>
   <packaging>jar</packaging>
-  <name>Test Core</name> 
-  <description>A library that provides the common classes dedicated in the writing of tests for Silverpeas code.</description>
+  <name>Test Core</name>
+  <description>A library that provides the common classes dedicated in the writing of tests for
+    Silverpeas code.
+  </description>
 
   <dependencies>
     <dependency>
@@ -120,13 +122,29 @@
       <classifier>jdk1.6-j2ee1.4</classifier>
       <scope>compile</scope>
     </dependency>
-     <dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner-jdbc</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+      <scope>compile</scope>
+    </dependency>    
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

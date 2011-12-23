@@ -561,10 +561,14 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         destination = "/jobStartPagePeas/jsp/welcome.jsp";
       }
     } else if (function.equals("OpenComponent")) {
-      jobStartPageSC.init();
-
-      destination = getDestination("GoToComponent", jobStartPageSC, request);
-
+      //check if user can update it
+      String id = request.getParameter("ComponentId");
+      if (!jobStartPageSC.isComponentManageable(id)) {
+        destination = "/admin/jsp/accessForbidden.jsp";
+      } else {
+        jobStartPageSC.init();
+        destination = getDestination("GoToComponent", jobStartPageSC, request);
+      }
     }
 
     return destination;

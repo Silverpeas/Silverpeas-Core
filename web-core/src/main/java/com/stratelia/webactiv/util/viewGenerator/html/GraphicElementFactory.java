@@ -103,9 +103,10 @@ public class GraphicElementFactory {
   private MainSessionController mainSessionController = null;
   private String spaceId = null;
   public static final String defaultLookName = "Initial";
-  private static final String JQUERY_JS = "jquery-1.5.min.js";
-  private static final String JQUERYUI_JS = "jquery-ui-1.8.10.custom.min.js";
-  private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.10.custom.css";
+  private static final String JQUERY_JS = "jquery-1.7.1.min.js";
+  private static final String JQUERY_INCLUDE_JS = "jquery-include.js";
+  private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
+  private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
   private static final String JQUERYJSON_JS = "jquery.json-2.2.min.js";
   private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.4.min.js";
   private static final String FLOWPLAYER_CSS = "flowplayer.css";
@@ -362,12 +363,17 @@ public class GraphicElementFactory {
     }
 
     // append javascript
+    code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append(
+        "';").append("</script>\n");
+    
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYJSON_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERY_INCLUDE_JS).append("\"></script>\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");

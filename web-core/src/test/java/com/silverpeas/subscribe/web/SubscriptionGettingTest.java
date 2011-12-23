@@ -24,7 +24,8 @@
 package com.silverpeas.subscribe.web;
 
 import java.util.List;
-import com.silverpeas.subscribe.service.Subscription;
+
+import com.silverpeas.subscribe.Subscription;
 import org.junit.Before;
 import java.util.Collection;
 import com.google.common.collect.Lists;

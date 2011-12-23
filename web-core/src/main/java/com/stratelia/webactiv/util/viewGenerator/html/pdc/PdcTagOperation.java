@@ -27,23 +27,37 @@ package com.stratelia.webactiv.util.viewGenerator.html.pdc;
  * The operations the tags on the PdC classification supports.
  */
 public enum PdcTagOperation {
-  
+
+  /**
+   * Previews the classification on the PdC of a given content.
+   */
+  PREVIEW_CLASSIFICATION("preview"),
   /**
    * Reads the classification on the PdC of a given content.
    */
-  READ_CLASSIFICATION,
+  READ_CLASSIFICATION("open"),
   /**
    * Opens the classification on the PdC of a given content. By opening this classification, the
    * user can change it.
    */
-  OPEN_CLASSIFICATION,
+  OPEN_CLASSIFICATION("open"),
   /**
    * Creates a new classification on the PdC for a new or an existing content.
    */
-  CREATE_CLASSIFICATION,
+  CREATE_CLASSIFICATION("create"),
   /**
    * Predefines the classification on the PdC of contents that will published in a given node
    * of a given component instance.
    */
-  PREDEFINE_CLASSIFICATION;
+  PREDEFINE_CLASSIFICATION("predefine");
+  
+  private String pluginFunction;
+
+  private PdcTagOperation(String pluginFunction) {
+    this.pluginFunction = pluginFunction;
+  }
+  
+  public String getPluginFunction() {
+    return this.pluginFunction;
+  }
 }

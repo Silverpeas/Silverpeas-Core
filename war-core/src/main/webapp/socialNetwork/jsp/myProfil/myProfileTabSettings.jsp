@@ -45,7 +45,7 @@
           <td><select name="SelectedLook" size="1">
             <c:forEach items="${availableLooks}" var="look">
               <c:choose>
-                <c:when test="${request.preferences.look eq look}">
+                <c:when test="${preferences.look eq look}">
                   <option value="<c:out value="${look}"/>" selected="selected"><c:out
                       value="${look}"/></option>
                 </c:when>

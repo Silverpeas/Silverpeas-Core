@@ -9,6 +9,8 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.scheduler"/>
+  <ctx:component-scan base-package="com.stratelia.webactiv.beans.admin"/>
+  <ctx:component-scan base-package="com.silverpeas.notification.mock"/>
   
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
        the actual scheduling backend -->
@@ -18,4 +20,8 @@
   <!-- The administration module -->
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
         depends-on="schedulerFactory"/>
+        
+  <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
+         factory-method="getInstance"/>
+        
 </beans>

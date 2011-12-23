@@ -43,9 +43,9 @@ import java.util.List;
  */
 public class ImportExportSessionController extends AbstractComponentSessionController {
 
-  ExportThread m_theThread = null;
-  Exception m_ErrorOccured = null;
-  ExportReport m_ExportReport = null;
+  ExportThread exportThread = null;
+  Exception errorOccured = null;
+  ExportReport exportReport = null;
 
   public ImportExportSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle, String iconBundle) {
@@ -75,11 +75,11 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
       throws ImportExportException {
     SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
         "root.MSG_GEN_ENTER_METHOD");
-    if (m_theThread == null) {
-      m_theThread = new ExportXMLThread(this, itemsToExport, language, rootId);
-      m_ErrorOccured = null;
-      m_ExportReport = null;
-      m_theThread.startTheThread();
+    if (exportThread == null) {
+      exportThread = new ExportXMLThread(this, itemsToExport, language, rootId);
+      errorOccured = null;
+      exportReport = null;
+      exportThread.startTheThread();
       SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
           "root.MSG_GEN_PARAM_VALUE", "------------THREAD EXPORT LANCE-----------");
     } else {
@@ -89,29 +89,27 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   }
 
   public boolean isExportInProgress() {
-    if (m_theThread == null) {
+    if (exportThread == null) {
       return false;
-    } else {
-      return m_theThread.isEnCours();
     }
+    return exportThread.isEnCours();
   }
 
   public Exception getErrorOccured() {
-    return m_ErrorOccured;
+    return errorOccured;
   }
 
   public ExportReport getExportReport() {
-    if (m_ErrorOccured != null) {
-      return new ExportReport();
-    } else {
-      return m_ExportReport;
+    if (errorOccured != null) {
+      return new ExportReport(errorOccured);
     }
+    return exportReport;
   }
 
   public void threadFinished() {
-    m_ErrorOccured = m_theThread.getErrorOccured();
-    m_ExportReport = m_theThread.getReport();
-    m_theThread = null;
+    errorOccured = exportThread.getErrorOccured();
+    exportReport = exportThread.getReport();
+    exportThread = null;
   }
 
   /**

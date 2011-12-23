@@ -49,8 +49,7 @@ public class PdcClassificationPositionsTag extends BaseClassificationPdCTag {
   public void doTag() throws JspException {
     if (isPdcUsed()) {
       ElementContainer xhtmlcontainer = new ElementContainer();
-      String script = getSetIn() + " = $.toJSON( $('#" + PDC_CLASSIFICATION_WIDGET_TAG_ID
-              + "').pdc('positions') );";
+      String script = getSetIn() + " = $.toJSON( $('#" + getId() + "').pdc('positions') );";
       xhtmlcontainer.addElement(script);
       xhtmlcontainer.output(getOut());
     }

@@ -27,7 +27,7 @@ public class SpaceTableTest extends AbstractTestDao {
    */
   @Test
   public void testIsSpaceInstExist() throws Exception {
-    OrganizationSchema schema = new OrganizationSchema(1, getConnection().getConnection());
+    OrganizationSchema schema = new OrganizationSchema(getConnection().getConnection());
     SpaceTable instance = schema.space;
     assertTrue(instance.isSpaceInstExist(1));
     assertTrue(instance.isSpaceInstExist(2));
@@ -44,7 +44,7 @@ public class SpaceTableTest extends AbstractTestDao {
   @Test
   public void testGetAllSpaceIds() throws Exception {
     System.out.println("getAllRootSpaceIds");
-    OrganizationSchema schema = new OrganizationSchema(1, getConnection().getConnection());
+    OrganizationSchema schema = new OrganizationSchema(getConnection().getConnection());
     SpaceTable instance = schema.space;
     String[] expResult = new String[]{"1", "2", "3", "4", "5"};
     String[] result = instance.getAllSpaceIds();
@@ -58,7 +58,7 @@ public class SpaceTableTest extends AbstractTestDao {
    */
   @Test
   public void testGetAllRootSpaceIds() throws Exception {
-    OrganizationSchema schema = new OrganizationSchema(1, getConnection().getConnection());
+    OrganizationSchema schema = new OrganizationSchema(getConnection().getConnection());
     SpaceTable instance = schema.space;
     String[] expResult = new String[]{"1"};
     String[] result = instance.getAllRootSpaceIds();
@@ -72,7 +72,7 @@ public class SpaceTableTest extends AbstractTestDao {
    */
   @Test
   public void testGetDirectSubSpaceIds() throws Exception {
-    OrganizationSchema schema = new OrganizationSchema(1, getConnection().getConnection());
+    OrganizationSchema schema = new OrganizationSchema(getConnection().getConnection());
     SpaceTable instance = schema.space;
     String[] result = instance.getDirectSubSpaceIds(2);
     String[] expResult = new String[]{"3", "4"};

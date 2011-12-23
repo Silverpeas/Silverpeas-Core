@@ -23,20 +23,20 @@
  */
 package com.silverpeas.admin;
 
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 import com.silverpeas.components.model.AbstractSpringJndiDaoTest;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.List;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
 
 @ContextConfiguration(locations = {"classpath:/spring-jdbc-datasource.xml",
   "classpath:/spring-domains.xml"})
@@ -139,8 +139,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     GroupProfileInst profile = ac.getGroupProfile("1");
     profile.addUser("1");
     ac.updateGroupProfile(profile);
-    Admin admin = new Admin();
-    List<String> managerIds = admin.getUserManageableGroupIds("1");
+    List<String> managerIds = AdminReference.getAdminService().getUserManageableGroupIds("1");
     assertThat(managerIds, hasSize(1));
   }
 

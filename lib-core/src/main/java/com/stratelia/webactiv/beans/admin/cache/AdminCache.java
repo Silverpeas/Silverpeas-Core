@@ -33,8 +33,12 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The class Store and manage all the Admin's cache
@@ -44,25 +48,25 @@ public class AdminCache {
 
   static private boolean m_bUseCache = true;
   static private boolean m_bUseSpaceInstCache = true;
-  static private Hashtable<String, SpaceInst> m_hSpaceInstCache =
-      new Hashtable<String, SpaceInst>();
+  static private Map<String, SpaceInst> m_hSpaceInstCache =
+      new ConcurrentHashMap<String, SpaceInst> ();
   static private boolean m_bUseComponentInstCache = true;
-  static private Hashtable<String, ComponentInst> m_hComponentInstCache =
-      new Hashtable<String, ComponentInst>();
+  static private Map<String, ComponentInst> m_hComponentInstCache =
+      new ConcurrentHashMap<String, ComponentInst>();
   static private boolean m_bUseProfileInstCache = true;
-  static private Hashtable<String, ProfileInst> m_hProfileInstCache =
-      new Hashtable<String, ProfileInst>();
+  static private Map<String, ProfileInst> m_hProfileInstCache =
+      new ConcurrentHashMap<String, ProfileInst>();
   static private boolean m_bUseUserDetailCache = true;
-  static private Hashtable<String, UserDetail> m_hUserDetailCache =
-      new Hashtable<String, UserDetail>();
+  static private Map<String, UserDetail> m_hUserDetailCache =
+      new ConcurrentHashMap<String, UserDetail>();
   static private boolean m_bUseManageableSpaceIdsCache = true;
-  static private Hashtable<String, String[]> m_hManageableSpaceIdsCache =
-      new Hashtable<String, String[]>();
+  static private Map<String, String[]> m_hManageableSpaceIdsCache =
+      new ConcurrentHashMap<String, String[]>();
   static private boolean m_bUseAvailCompoIdsCache = true;
-  static private Hashtable<String, Hashtable<String, String[]>> m_hAvailCompoIdsCache =
-      new Hashtable<String, Hashtable<String, String[]>>();
+  static private Map<String, Map<String, String[]>> m_hAvailCompoIdsCache =
+      new ConcurrentHashMap<String, Map<String, String[]>>();
   static private boolean m_bUseProfileIdsCache = true;
-  static private Hashtable<String, String[]> m_hProfileIdsCache = new Hashtable<String, String[]>();
+  static private Map<String, String[]> m_hProfileIdsCache = new ConcurrentHashMap<String, String[]>();
 
   /**
    * Admin Constructor
@@ -410,9 +414,9 @@ public class AdminCache {
       SilverTrace.debug("admin", "AdminCache.putAvailCompoIds",
           "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
           + userId);
-      Hashtable<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
+      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable == null) {
-        spaceTable = new Hashtable<String, String[]>();
+        spaceTable = new ConcurrentHashMap<String, String[]> ();
         m_hAvailCompoIdsCache.put(spaceId, spaceTable);
       }
       spaceTable.put(userId, compoIds);
@@ -424,7 +428,7 @@ public class AdminCache {
       SilverTrace.debug("admin", "AdminCache.removeAvailCompoIds",
           "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
           + userId);
-      Hashtable<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
+      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable != null) {
         spaceTable.remove(userId);
       }
@@ -435,7 +439,7 @@ public class AdminCache {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
       SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForUser",
           "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
-      for (Hashtable<String, String[]> spaceTable : m_hAvailCompoIdsCache.values()) {
+      for (Map<String, String[]> spaceTable : m_hAvailCompoIdsCache.values()) {
         spaceTable.remove(userId);
       }
     }
@@ -451,7 +455,7 @@ public class AdminCache {
 
   public String[] getAvailCompoIds(String spaceId, String userId) {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      Hashtable<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
+      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable != null) {
         return spaceTable.get(userId);
       }
@@ -533,20 +537,10 @@ public class AdminCache {
       SpaceInst theFather = getSpaceInst(getShortSpaceId(theSpace.getDomainFatherId()));
       if (theFather != null) {
         String[] allChilds = theFather.getSubSpaceIds();
-        String[] newChilds;
         String theSpaceId = getShortSpaceId(theSpace.getId());
-        int j = 0;
-        newChilds = new String[allChilds.length - 1];
-        for (String allChild : allChilds) {
-          if (!theSpaceId.equals(allChild)) {
-            if (j < allChilds.length - 1) {
-              newChilds[j++] = allChild;
-            } else { // oups, the child did not exist
-              newChilds = allChilds;
-            }
-          }
-        }
-        theFather.setSubSpaceIds(newChilds);
+        List<String> newChilds = new ArrayList<String>(Arrays.asList(allChilds));
+        newChilds.remove(theSpaceId);
+        theFather.setSubSpaceIds(newChilds.toArray(new String[newChilds.size()]));
       }
     }
     opResetSpace(theSpace);

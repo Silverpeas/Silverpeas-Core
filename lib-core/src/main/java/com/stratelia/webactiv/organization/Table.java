@@ -26,9 +26,9 @@ package com.stratelia.webactiv.organization;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -149,7 +149,7 @@ public abstract class Table<T> {
    * an int column.
    * @param id references an unique row.
    */
-  protected T getUniqueRow(String query, int id) throws AdminPersistenceException {
+  protected synchronized T getUniqueRow(String query, int id) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -162,7 +162,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -175,7 +175,7 @@ public abstract class Table<T> {
    * an String column.
    * @param id references an unique row.
    */
-  protected T getUniqueRow(String query, String id) throws AdminPersistenceException {
+  protected synchronized T getUniqueRow(String query, String id) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -189,7 +189,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -199,7 +199,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<String> getIds(String query) throws AdminPersistenceException {
+  protected synchronized List<String> getIds(String query) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -211,7 +211,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -222,9 +222,8 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<String> getIds(String query, int id) throws AdminPersistenceException {
+  protected synchronized List<String> getIds(String query, int id) throws AdminPersistenceException {
     ResultSet rs = null;
-
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getIds", "root.MSG_QUERY", query + "  id: " + id);
@@ -236,7 +235,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -247,7 +246,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<String> getIds(String query, int[] ids) throws AdminPersistenceException {
+  protected synchronized  List<String> getIds(String query, int[] ids) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -263,7 +262,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -275,7 +274,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<String> getIds(String query, int[] ids, String[] params) throws
+  protected synchronized List<String> getIds(String query, int[] ids, String[] params) throws
           AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -296,7 +295,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -306,7 +305,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<T> getRows(String query) throws AdminPersistenceException {
+  protected synchronized List<T> getRows(String query) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -318,7 +317,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -329,7 +328,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<T> getRows(String query, int id) throws AdminPersistenceException {
+  protected synchronized List<T> getRows(String query, int id) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -342,7 +341,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -353,8 +352,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<T> getRows(String query, int[] ids) throws
-          AdminPersistenceException {
+  protected synchronized List<T> getRows(String query, int[] ids) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -370,7 +368,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -381,8 +379,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected List<T> getRows(String query, String[] params)
-          throws AdminPersistenceException {
+  protected List<T> getRows(String query, String[] params) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
 
@@ -399,7 +396,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getRows",
               SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -434,7 +431,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -461,7 +458,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -492,7 +489,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -526,7 +523,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getCount",
               SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -564,7 +561,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getCount",
               SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -598,7 +595,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getCount",
               SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -632,7 +629,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getCount",
               SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -672,7 +669,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
               "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -728,7 +725,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.getInteger",
               SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      schema.releaseAll(rs, select);
+      DBUtil.close(rs, select);
     }
   }
 
@@ -786,7 +783,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.insertRow", SilverpeasException.ERROR,
               "root.EX_RECORD_INSERTION_FAILED", e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 
@@ -803,7 +800,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.updateRow",
               SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 
@@ -818,7 +815,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
               "admin.EX_ERR_UPDATE", e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 
@@ -839,7 +836,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
               "admin.EX_ERR_UPDATE", e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
 
@@ -862,7 +859,7 @@ public abstract class Table<T> {
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
               "admin.EX_ERR_UPDATE", e);
     } finally {
-      schema.releaseStatement(statement);
+      DBUtil.close(statement);
     }
   }
   private Schema schema = null;

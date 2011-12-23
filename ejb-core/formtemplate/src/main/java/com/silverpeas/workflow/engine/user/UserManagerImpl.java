@@ -23,14 +23,6 @@
  */
 package com.silverpeas.workflow.engine.user;
 
-import java.util.Arrays;
-import java.util.Hashtable;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryResults;
-
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.ProcessModel;
@@ -39,11 +31,18 @@ import com.silverpeas.workflow.api.user.UserInfo;
 import com.silverpeas.workflow.api.user.UserSettings;
 import com.silverpeas.workflow.engine.exception.UnknownUserException;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
+import org.exolab.castor.jdo.QueryResults;
+
+import java.util.Arrays;
+import java.util.Hashtable;
 
 /**
  * A UserManager implementation built upon the silverpeas user management system.
@@ -54,10 +53,7 @@ public class UserManagerImpl implements UserManager {
    * The UserManagerImpl shares a silverpeas OrganisationController
    */
   static private final OrganizationController organizationController = new OrganizationController();
-  /**
-   * The UserManagerImpl shares a silverpeas Admin object
-   */
-  static private final Admin admin = new Admin();
+
   static final private Hashtable<String, UserSettings> userSettings = new Hashtable<String, UserSettings>();
 
   /**
@@ -74,7 +70,7 @@ public class UserManagerImpl implements UserManager {
    */
   @Override
   public User getUser(String userId) throws WorkflowException {
-    UserImpl user = new UserImpl(getUserDetail(userId), admin);
+    UserImpl user = new UserImpl(getUserDetail(userId));
     String[] groupIds = organizationController.getAllGroupIdsOfUser(userId);
     if (groupIds != null) {
       user.setGroupIds(Arrays.asList(groupIds));
@@ -109,8 +105,8 @@ public class UserManagerImpl implements UserManager {
     String roleNames[] = null;
     try {
       // the modelId is the peasId.
-      ComponentInst peas = admin.getComponentInst(modelId);
-      roleNames = admin.getCurrentProfiles(user.getUserId(), peas);
+      ComponentInst peas = AdminReference.getAdminService().getComponentInst(modelId);
+      roleNames = AdminReference.getAdminService().getCurrentProfiles(user.getUserId(), peas);
     } catch (AdminException e) {
       throw new WorkflowException("UserManagerImpl.getRoleNames",
           "workflowEngine.EXP_UNKNOWN_ROLE", e);
@@ -134,7 +130,7 @@ public class UserManagerImpl implements UserManager {
     UserDetail[] userDetails = null;
     try {
       // the modelId is the peasId.
-      ComponentInst peas = admin.getComponentInst(modelId);
+      ComponentInst peas = AdminReference.getAdminService().getComponentInst(modelId);
       userDetails = organizationController.getUsers(peas.getDomainFatherId(),
           modelId, roleName);
     } catch (AdminException e) {
@@ -185,7 +181,7 @@ public class UserManagerImpl implements UserManager {
   private User[] getUsers(UserDetail[] userDetails) {
     UserImpl[] users = new UserImpl[userDetails.length];
     for (int i = 0; i < userDetails.length; i++) {
-      users[i] = new UserImpl(userDetails[i], admin);
+      users[i] = new UserImpl(userDetails[i]);
       String[] groupIds = organizationController.getAllGroupIdsOfUser(userDetails[i].getId());
       if (groupIds != null) {
         users[i].setGroupIds(Arrays.asList(groupIds));

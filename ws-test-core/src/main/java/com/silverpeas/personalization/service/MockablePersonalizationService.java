@@ -53,4 +53,9 @@ private PersonalizationService service;
     return service.getUserSettings(userId);
   }
 
+  @Override
+  public void resetDefaultSpace(String spaceId) {
+    service.resetDefaultSpace(spaceId);
+  }
+
 }

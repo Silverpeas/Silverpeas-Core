@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
@@ -48,7 +48,7 @@
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>versioning</artifactId>
       <version>${project.parent.version}</version>
