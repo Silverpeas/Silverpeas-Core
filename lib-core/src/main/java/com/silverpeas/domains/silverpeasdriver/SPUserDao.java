@@ -24,14 +24,14 @@
 package com.silverpeas.domains.silverpeasdriver;
 
 import java.util.List;
-import org.synyx.hades.dao.GenericDao;
-import org.synyx.hades.dao.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
  * @author ehugonnet
  */
-public interface SPUserDao extends GenericDao<SPUser, Integer> {
+public interface SPUserDao extends JpaRepository<SPUser, Integer> {
 
   List<SPUser> findByFirstname(@Param("firstname") String firstName);
 

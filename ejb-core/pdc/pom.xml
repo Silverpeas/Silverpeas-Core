@@ -16,7 +16,13 @@
     a Silverpeas component instance, to classify a content, etc.
   </description>
 
-  <dependencies>
+  <dependencies> 
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>    
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>node</artifactId>
@@ -35,8 +41,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.synyx.hades</groupId>
-      <artifactId>org.synyx.hades</artifactId>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -61,6 +67,10 @@
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

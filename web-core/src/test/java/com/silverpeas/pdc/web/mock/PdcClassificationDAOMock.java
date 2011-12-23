@@ -29,7 +29,6 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.IdGenerator;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,10 +37,10 @@ import javax.inject.Named;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import org.synyx.hades.domain.Page;
-import org.synyx.hades.domain.Pageable;
-import org.synyx.hades.domain.Sort;
-import org.synyx.hades.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import static com.silverpeas.pdc.model.PdcClassificationHelper.*;
 
 /**
@@ -94,7 +93,7 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
       throw new ConstraintViolationException(violations);
     }
     if (isPersisted(t)) {
-      classification = readByPrimaryKey(idOf(t));
+      classification = findOne(idOf(t));
       if (t != classification) {
         classification.getPositions().clear();
         classification.getPositions().addAll(t.getPositions());
@@ -109,7 +108,7 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   }
 
   @Override
-  public List<PdcClassification> save(Collection<? extends PdcClassification> clctn) {
+  public List<PdcClassification> save(Iterable<? extends PdcClassification> clctn) {
     List<PdcClassification> saved = new ArrayList<PdcClassification>();
     for (PdcClassification pdcClassification : clctn) {
       saved.add(save(pdcClassification));
@@ -123,7 +122,7 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   }
 
   @Override
-  public PdcClassification readByPrimaryKey(Long pk) {
+  public PdcClassification findOne(Long pk) {
     return classifications.get(pk);
   }
 
@@ -133,40 +132,27 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   }
 
   @Override
-  public List<PdcClassification> readAll() {
+  public List<PdcClassification> findAll() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public List<PdcClassification> readAll(Sort sort) {
+  public List<PdcClassification> findAll(Sort sort) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public Page<PdcClassification> readAll(Pageable pgbl) {
+  public Page<PdcClassification> findAll(Pageable pgbl) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+ 
   @Override
-  public List<PdcClassification> readAll(Specification<PdcClassification> s) {
+  public long count() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  @Override
-  public Page<PdcClassification> readAll(Specification<PdcClassification> s, Pageable pgbl) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public Long count() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public Long count(Specification<PdcClassification> s) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
+ 
   @Override
   public void delete(PdcClassification t) {
     if (isPersisted(t)) {
@@ -175,7 +161,7 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
   }
 
   @Override
-  public void delete(Collection<? extends PdcClassification> clctn) {
+  public void delete(Iterable<? extends PdcClassification> clctn) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -199,6 +185,16 @@ public class PdcClassificationDAOMock implements PdcClassificationDAO {
 
   @Override
   public List<PdcClassification> findClassificationsByPdcAxisValues(List<PdcAxisValue> values) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void deleteInBatch(Iterable<PdcClassification> itrbl) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void delete(Long id) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

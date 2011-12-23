@@ -271,6 +271,6 @@ public class PdcClassificationDAOTest {
 
   @Transactional
   private PdcClassification findClassificationById(Long id) {
-    return dao.readByPrimaryKey(id);
+    return dao.findOne(id);
   }
 }

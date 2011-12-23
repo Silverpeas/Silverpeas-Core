@@ -23,17 +23,16 @@
  */
 package com.silverpeas.pdc.web.mock;
 
+import com.google.common.collect.Lists;
 import com.silverpeas.pdc.dao.PdcAxisValueDAO;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.inject.Named;
-import org.synyx.hades.domain.Page;
-import org.synyx.hades.domain.Pageable;
-import org.synyx.hades.domain.Sort;
-import org.synyx.hades.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 
 /**
  * Mock the PdcAxisValueDAO for tests.
@@ -47,8 +46,8 @@ public class PdcAxisValueDAOMock implements PdcAxisValueDAO {
   }
 
   @Override
-  public List<PdcAxisValue> save(Collection<? extends PdcAxisValue> clctn) {
-    return new ArrayList<PdcAxisValue>(clctn);
+  public List<PdcAxisValue> save(Iterable<? extends PdcAxisValue> clctn) {
+    return Lists.newArrayList(clctn);
   }
 
   @Override
@@ -57,7 +56,7 @@ public class PdcAxisValueDAOMock implements PdcAxisValueDAO {
   }
 
   @Override
-  public PdcAxisValue readByPrimaryKey(PdcAxisValuePk pk) {
+  public PdcAxisValue findOne(PdcAxisValuePk pk) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -67,39 +66,25 @@ public class PdcAxisValueDAOMock implements PdcAxisValueDAO {
   }
 
   @Override
-  public List<PdcAxisValue> readAll() {
+  public List<PdcAxisValue> findAll() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public List<PdcAxisValue> readAll(Sort sort) {
+  public List<PdcAxisValue> findAll(Sort sort) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public Page<PdcAxisValue> readAll(Pageable pgbl) {
+  public Page<PdcAxisValue> findAll(Pageable pgbl) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public List<PdcAxisValue> readAll(Specification<PdcAxisValue> s) {
+  public long count() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  @Override
-  public Page<PdcAxisValue> readAll(Specification<PdcAxisValue> s, Pageable pgbl) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public Long count() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public Long count(Specification<PdcAxisValue> s) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
 
   @Override
   public void delete(PdcAxisValue t) {
@@ -107,7 +92,7 @@ public class PdcAxisValueDAOMock implements PdcAxisValueDAO {
   }
 
   @Override
-  public void delete(Collection<? extends PdcAxisValue> clctn) {
+  public void delete(Iterable<? extends PdcAxisValue> clctn) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -123,6 +108,16 @@ public class PdcAxisValueDAOMock implements PdcAxisValueDAO {
 
   @Override
   public List<PdcAxisValue> findByAxisId(Long axisId) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void deleteInBatch(Iterable<PdcAxisValue> itrbl) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void delete(PdcAxisValuePk id) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
   
