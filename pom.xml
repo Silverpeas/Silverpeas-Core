@@ -80,7 +80,7 @@
   <artifactId>core</artifactId>
   <version>5.9-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Silverpeas Core</name>
+  <name>Silverpeas Core - ${version}</name>
 
   <build>
     <plugins>

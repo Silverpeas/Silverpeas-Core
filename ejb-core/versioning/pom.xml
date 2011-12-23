@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>versioning</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Versioning</name>
+  <name>EJB Versioning - ${version}</name>
 
   <build>
     <testResources>

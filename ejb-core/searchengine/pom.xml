@@ -10,5 +10,5 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>searchengine</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Search Engine</name>
+  <name>EJB Search Engine - ${version}</name>
 </project>

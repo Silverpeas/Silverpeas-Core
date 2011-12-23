@@ -11,6 +11,6 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>authentication</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Authentication</name>
+  <name>EJB Authentication - ${version}</name>
 </project>
 
