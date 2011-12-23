@@ -21,7 +21,9 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -52,7 +54,7 @@ public class UserServiceLegacy implements UserService {
 	public String registerUser(String firstName, String lastName,
 			String email) throws AdminException {
 
-		Admin admin = new Admin();
+		Admin admin = AdminReference.getAdminService();
 
 		String domainId = settings.getString("authentication.justRegisteredDomainId", "0");
 		String login = generateLogin(admin, domainId, email);

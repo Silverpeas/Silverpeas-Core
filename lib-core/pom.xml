@@ -347,6 +347,14 @@
       <type>jar</type>      
       <classifier>jdk6</classifier>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.social</groupId>
+      <artifactId>spring-social-linkedin</artifactId>
+      <version>1.0.0.BUILD</version>
+    </dependency>
+
+
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-facebook</artifactId>
