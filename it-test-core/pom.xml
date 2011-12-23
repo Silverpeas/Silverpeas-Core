@@ -4,14 +4,14 @@
 <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>it-test-core</artifactId>
-  <version>5.8-SNAPSHOT</version>
+  <version>5.9-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Integration Test Core</name>
+  <name>Integration Test Core - ${version}</name>
   <description>
      This module is aiming at gathering tests that take longer time to run. They are generally
      tests about the integration of the different Silverpeas core components.

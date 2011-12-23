@@ -30,16 +30,17 @@ import java.sql.Connection;
 
 public class OrganizationSchema extends Schema {
 
-  public OrganizationSchema(int cl) throws UtilException {
-    super(cl);
+  public OrganizationSchema() throws UtilException {
+    super();
     init();
   }
   
-  public OrganizationSchema(int cl, Connection connection) throws UtilException {
-    super(cl, connection);
+  public OrganizationSchema(Connection connection) throws UtilException {
+    super(connection);
     init();
   }
   
+  @Override
   protected String getJNDIName() {
     return JNDINames.ADMIN_DATASOURCE;
   }

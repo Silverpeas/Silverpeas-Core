@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>publication</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Publication</name>
+  <name>EJB Publication - ${version}</name>
 	
   <dependencies>
     <dependency>

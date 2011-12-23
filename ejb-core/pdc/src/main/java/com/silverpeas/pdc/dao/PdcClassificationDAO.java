@@ -26,12 +26,12 @@ package com.silverpeas.pdc.dao;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
 import java.util.List;
-import org.synyx.hades.dao.GenericDao;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * DAO that handles the persistence of PdcClassification beans.
  */
-public interface PdcClassificationDAO extends GenericDao<PdcClassification, Long> {
+public interface PdcClassificationDAO extends JpaRepository<PdcClassification, Long> {
 
   /**
    * Finds the predefined classification on the PdC that is set for the whole specified component

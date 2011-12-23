@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>importExport</artifactId>
   <packaging>jar</packaging>
-  <name>ImportExport</name>
+  <name>ImportExport - ${version}</name>
 	
   <dependencies>
     <dependency>
@@ -19,19 +19,19 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>publication</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pdc</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>versioning</artifactId>
       <version>${project.version}</version>

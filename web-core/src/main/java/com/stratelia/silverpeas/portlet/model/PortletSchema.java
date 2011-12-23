@@ -24,23 +24,23 @@
 
 package com.stratelia.silverpeas.portlet.model;
 
-import java.sql.Connection;
-
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.sql.Connection;
 
 public class PortletSchema extends Schema {
-  public PortletSchema(int cl, Connection co) throws UtilException {
-    super(cl, co);
+  public PortletSchema(Connection co) throws UtilException {
+    super(co);
     init();
   }
 
-  public PortletSchema(int cl) throws UtilException {
-    super(cl);
+  public PortletSchema() throws UtilException {
+    super();
     init();
   }
 
+  @Override
   protected String getJNDIName() {
     return JNDINames.ADMIN_DATASOURCE;
   }

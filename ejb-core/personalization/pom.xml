@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>personalization</artifactId>
   <packaging>jar</packaging>
-  <name>Personalization Service</name>
+  <name>Personalization Service - ${version}</name>
 
   <dependencies>
     <dependency>
@@ -19,8 +19,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.synyx.hades</groupId>
-      <artifactId>org.synyx.hades</artifactId>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -56,7 +56,7 @@ public class PortletCallBack implements CallBack {
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     PortletSchema schema = null;
     try {
-      schema = new PortletSchema(0);
+      schema = new PortletSchema();
 
       SilverTrace.info("portlet", "PortletCallBack.doInvoke()",
           "root.MSG_GEN_ENTER_METHOD", callBackManager.getInvokeString(action,

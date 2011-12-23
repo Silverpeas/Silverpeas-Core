@@ -75,7 +75,7 @@ public class PdcAxisValueDAOTest {
   @Test
   @Transactional
   public void findAPdcAxisValueByItsPk() {
-    PdcAxisValue value = dao.readByPrimaryKey(aPdcAxisValuePk(3, 1));
+    PdcAxisValue value = dao.findOne(aPdcAxisValuePk(3, 1));
     assertThat(value, notNullValue());
     assertThat(value, is(equalTo(aPdcAxisValue("3", "1"))));
   }
@@ -118,6 +118,6 @@ public class PdcAxisValueDAOTest {
   
   @Transactional
   private PdcAxisValue findPdcAxisValue(String valueId, String axisId) {
-    return dao.readByPrimaryKey(PdcAxisValuePk.aPdcAxisValuePk(valueId, axisId));
+    return dao.findOne(PdcAxisValuePk.aPdcAxisValuePk(valueId, axisId));
   }
 }

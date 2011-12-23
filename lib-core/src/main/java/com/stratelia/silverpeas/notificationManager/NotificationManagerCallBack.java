@@ -56,7 +56,7 @@ public class NotificationManagerCallBack implements CallBack {
     NotifSchema schema = null;
 
     try {
-      schema = new NotifSchema(0);
+      schema = new NotifSchema();
 
       SilverTrace.info("notificationManager",
           "NotificationManagerCallBack.doInvoke()",

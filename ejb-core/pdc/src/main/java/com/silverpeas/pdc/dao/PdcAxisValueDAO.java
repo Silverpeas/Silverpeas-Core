@@ -26,12 +26,12 @@ package com.silverpeas.pdc.dao;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
 import java.util.List;
-import org.synyx.hades.dao.GenericDao;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * DAO that handles the persistence of PdcAxisValue beans.
  */
-public interface PdcAxisValueDAO extends GenericDao<PdcAxisValue, PdcAxisValuePk> {
+public interface PdcAxisValueDAO extends JpaRepository<PdcAxisValue, PdcAxisValuePk> {
   
   /**
    * Finds all the values of the specified PdC's axis.

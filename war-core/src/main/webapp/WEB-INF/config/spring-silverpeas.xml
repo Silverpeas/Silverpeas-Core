@@ -85,9 +85,9 @@
   <!-- The administration module -->
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
         depends-on="schedulerFactory"/>
-
+  
   <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
-        factory-method="getInstance"/>
+         factory-method="getInstance"/>
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
        the actual scheduling backend -->
@@ -96,8 +96,7 @@
 
   <!-- the Silverpeas look context gathering all of the look aspects -->
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"
-        factory-method="getSilverpeasLook"
-        depends-on="organizationController"/>
+        factory-method="getSilverpeasLook" depends-on="organizationController"/>
         
   <!-- the factory of the document format converters available in Silverpeas.
         It wraps and provides an access to the actual converter implementations -->

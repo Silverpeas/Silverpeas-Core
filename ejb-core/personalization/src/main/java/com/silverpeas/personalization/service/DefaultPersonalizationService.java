@@ -23,17 +23,15 @@
  */
 package com.silverpeas.personalization.service;
 
-import java.util.List;
-
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationDetailDao;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.List;
+import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
 
 /**
  * Class declaration
@@ -72,6 +70,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
     dao.saveAndFlush(userPreferences);
   }
   
+  @Override
   public void resetDefaultSpace(String spaceId) {
     List<UserPreferences> prefs = dao.findByDefaultSpace(spaceId);
     for (UserPreferences pref : prefs) {
@@ -83,7 +82,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   @Override
   public UserPreferences getUserSettings(String userId) {
-    UserPreferences preferences = dao.readByPrimaryKey(userId);
+    UserPreferences preferences = dao.findOne(userId);
     if (preferences == null) {
       preferences = getDefaultUserSettings(userId);
     }

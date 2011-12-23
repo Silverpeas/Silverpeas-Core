@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:hades="http://schemas.synyx.org/hades"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
-	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
-
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
   <context:annotation-config/>
 
   <context:component-scan base-package="com.silverpeas.personalization.dao"/>
@@ -21,24 +22,13 @@
    <bean name="personalizationServiceFactory"
         class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
 
-  <hades:dao-config base-package="com.silverpeas.personalization" transaction-manager-ref="jpaTransactionManager"/>
+  <jpa:repositories base-package="com.silverpeas.personalization" transaction-manager-ref="jpaTransactionManager"/>
 
-  <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
-
-  <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
-        p:entityManagerFactory-ref="entityManagerFactory"/>
-
-  <bean id="entityManagerFactory"
-        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-        p:dataSource-ref="dataSource"
-        p:persistenceXmlLocation="classpath*:META-INF/persistence-personalization.xml"
-        p:persistenceUnitName="silverpeas-pu">
-    <property name="jpaVendorAdapter">
-      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-            p:showSql="false"
-            p:generateDdl="false"/>
-    </property>
-  </bean>
+  <import resource="spring-jpa.xml"/>
   
   <import resource="spring-silverpeas.xml"/>
+  
+    <util:list id="entities">
+    <value>com.silverpeas.personalization</value>
+  </util:list>
 </beans>

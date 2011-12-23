@@ -105,7 +105,7 @@ public class ComponentInstManager {
       // Create the component node
       ComponentInstanceRow newInstance = makeComponentInstanceRow(componentInst);
       newInstance.spaceId = idAsInt(sFatherId);
-      ddManager.organization.instance.createComponentInstance(newInstance);
+      ddManager.getOrganization().instance.createComponentInstance(newInstance);
       String sComponentNodeId = idAsString(newInstance.id);
 
       // Add the parameters if necessary
@@ -115,7 +115,7 @@ public class ComponentInstManager {
           "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
 
       for (Parameter parameter : parameters) {
-        ddManager.organization.instanceData.createInstanceData(
+        ddManager.getOrganization().instanceData.createInstanceData(
             idAsInt(sComponentNodeId), parameter);
       }
 
@@ -135,7 +135,7 @@ public class ComponentInstManager {
   public void sendComponentToBasket(DomainDriverManager ddManager, String componentId,
       String tempLabel, String userId) throws AdminException {
     try {
-      ddManager.organization.instance.sendComponentToBasket(idAsInt(componentId), tempLabel, userId);
+      ddManager.getOrganization().instance.sendComponentToBasket(idAsInt(componentId), tempLabel, userId);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.sendComponentToBasket",
           SilverpeasException.ERROR, "admin.EX_ERR_SEND_COMPONENT_TO_BASKET",
@@ -146,7 +146,7 @@ public class ComponentInstManager {
   public void restoreComponentFromBasket(DomainDriverManager ddManager, String componentId) throws
       AdminException {
     try {
-      ddManager.organization.instance.restoreComponentFromBasket(idAsInt(componentId));
+      ddManager.getOrganization().instance.restoreComponentFromBasket(idAsInt(componentId));
     } catch (Exception e) {
       throw new AdminException(
           "ComponentInstManager.restoreComponentFromBasket",
@@ -171,7 +171,7 @@ public class ComponentInstManager {
     if (sFatherId == null) {
       try {
         ddManager.getOrganizationSchema();
-        SpaceRow space = ddManager.organization.space.getSpaceOfInstance(idAsInt(sComponentId));
+        SpaceRow space = ddManager.getOrganization().space.getSpaceOfInstance(idAsInt(sComponentId));
         if (space == null) {
           space = new SpaceRow();
         }
@@ -203,7 +203,7 @@ public class ComponentInstManager {
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-      ComponentInstanceRow[] componentRows = ddManager.organization.instance.getRemovedComponents();
+      ComponentInstanceRow[] componentRows = ddManager.getOrganization().instance.getRemovedComponents();
 
       return componentInstanceRows2ComponentInstLights(componentRows);
     } catch (Exception e) {
@@ -227,7 +227,7 @@ public class ComponentInstManager {
     ComponentInstLight compoLight = null;
     try {
       ddManager.getOrganizationSchema();
-      ComponentInstanceRow compo = ddManager.organization.instance.getComponentInstance(idAsInt(
+      ComponentInstanceRow compo = ddManager.getOrganization().instance.getComponentInstance(idAsInt(
           sComponentId));
       if (compo != null) {
         compoLight = new ComponentInstLight(compo);
@@ -238,7 +238,7 @@ public class ComponentInstManager {
         ComponentI18N translation = new ComponentI18N(compo.lang, compo.name, compo.description);
         compoLight.addTranslation(translation);
 
-        List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N.
+        List<ComponentInstanceI18NRow> translations = ddManager.getOrganization().instanceI18N.
             getTranslations(compo.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
@@ -264,7 +264,7 @@ public class ComponentInstManager {
       ddManager.getOrganizationSchema();
 
       // Load the component detail
-      ComponentInstanceRow instance = ddManager.organization.instance.getComponentInstance(idAsInt(
+      ComponentInstanceRow instance = ddManager.getOrganization().instance.getComponentInstance(idAsInt(
           sComponentId));
 
       if (instance != null) {
@@ -294,13 +294,13 @@ public class ComponentInstManager {
 
         // Get the parameters if any
         List<Parameter> parameters =
-            ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
+            ddManager.getOrganization().instanceData.getAllParametersInComponent(idAsInt(
             sComponentId));
         componentInst.setParameters(parameters);
 
         // Get the profiles
         String[] asProfileIds =
-            ddManager.organization.userRole.getAllUserRoleIdsOfInstance(idAsInt(
+            ddManager.getOrganization().userRole.getAllUserRoleIdsOfInstance(idAsInt(
             componentInst.getId()));
 
         // Insert the profileInst in the componentInst
@@ -318,7 +318,7 @@ public class ComponentInstManager {
         componentInst.addTranslation(translation);
 
         List<ComponentInstanceI18NRow> translations =
-            ddManager.organization.instanceI18N.getTranslations(instance.id);
+            ddManager.getOrganization().instanceI18N.getTranslations(instance.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           ComponentInstanceI18NRow row = translations.get(t);
           componentInst.addTranslation(new ComponentI18N(row));
@@ -351,10 +351,10 @@ public class ComponentInstManager {
       AdminException {
     try {
       // delete translations
-      ddManager.organization.instanceI18N.removeTranslations(idAsInt(componentInst.getId()));
+      ddManager.getOrganization().instanceI18N.removeTranslations(idAsInt(componentInst.getId()));
 
       // delete the component node
-      ddManager.organization.instance.removeComponentInstance(idAsInt(componentInst.getId()));
+      ddManager.getOrganization().instance.removeComponentInstance(idAsInt(componentInst.getId()));
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.deleteComponentInst",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_COMPONENT",
@@ -369,7 +369,7 @@ public class ComponentInstManager {
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-      ddManager.organization.instance.updateComponentOrder(
+      ddManager.getOrganization().instance.updateComponentOrder(
           idAsInt(sComponentId), orderNum);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.updateComponentOrder",
@@ -387,7 +387,7 @@ public class ComponentInstManager {
       String sComponentId, boolean inheritanceBlocked) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-      ddManager.organization.instance.updateComponentInheritance(
+      ddManager.getOrganization().instance.updateComponentInheritance(
           idAsInt(sComponentId), inheritanceBlocked);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.updateComponentOrder",
@@ -407,7 +407,7 @@ public class ComponentInstManager {
     try {
       List<Parameter> parameters = compoInstNew.getParameters();
       for (Parameter parameter : parameters) {
-        ddManager.organization.instanceData.updateInstanceData(idAsInt(compoInstNew.getId()),
+        ddManager.getOrganization().instanceData.updateInstanceData(idAsInt(compoInstNew.getId()),
             parameter);
       }
 
@@ -415,7 +415,7 @@ public class ComponentInstManager {
       ComponentInstanceRow changedInstance = makeComponentInstanceRow(compoInstNew);
       changedInstance.id = idAsInt(compoInstNew.getId());
 
-      ComponentInstanceRow old = ddManager.organization.instance.getComponentInstance(
+      ComponentInstanceRow old = ddManager.getOrganization().instance.getComponentInstance(
           changedInstance.id);
 
       SilverTrace.debug("admin", this.getClass().getName() +
@@ -427,7 +427,7 @@ public class ComponentInstManager {
         // Remove of a translation is required
         if (old.lang.equalsIgnoreCase(compoInstNew.getLanguage())) {
           // Default language = translation
-          List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N.
+          List<ComponentInstanceI18NRow> translations = ddManager.getOrganization().instanceI18N.
               getTranslations(changedInstance.id);
 
           if (translations != null && translations.size() > 0) {
@@ -437,12 +437,12 @@ public class ComponentInstManager {
             changedInstance.name = translation.name;
             changedInstance.description = translation.description;
 
-            ddManager.organization.instance.updateComponentInstance(changedInstance);
+            ddManager.getOrganization().instance.updateComponentInstance(changedInstance);
 
-            ddManager.organization.instanceI18N.removeTranslation(translation.id);
+            ddManager.getOrganization().instanceI18N.removeTranslation(translation.id);
           }
         } else {
-          ddManager.organization.instanceI18N.removeTranslation(Integer.parseInt(compoInstNew.
+          ddManager.getOrganization().instanceI18N.removeTranslation(Integer.parseInt(compoInstNew.
               getTranslationId()));
         }
       } else {
@@ -461,9 +461,9 @@ public class ComponentInstManager {
               // update translation
               row.id = Integer.parseInt(compoInstNew.getTranslationId());
 
-              ddManager.organization.instanceI18N.updateTranslation(row);
+              ddManager.getOrganization().instanceI18N.updateTranslation(row);
             } else {
-              ddManager.organization.instanceI18N.createTranslation(row);
+              ddManager.getOrganization().instanceI18N.createTranslation(row);
             }
 
             changedInstance.lang = old.lang;
@@ -472,7 +472,7 @@ public class ComponentInstManager {
           }
         }
 
-        ddManager.organization.instance.updateComponentInstance(changedInstance);
+        ddManager.getOrganization().instance.updateComponentInstance(changedInstance);
       }
 
       return idAsString(changedInstance.id);
@@ -490,7 +490,7 @@ public class ComponentInstManager {
       String componentId) throws AdminException {
     try {
       // Create the component node
-      ddManager.organization.instance.moveComponentInstance(idAsInt(spaceId),
+      ddManager.getOrganization().instance.moveComponentInstance(idAsInt(spaceId),
           idAsInt(componentId));
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.moveComponentInst",
@@ -521,7 +521,7 @@ public class ComponentInstManager {
 
       // Search for components instance with given component name
       ComponentInstanceRow[] cirs =
-          ddManager.organization.instance.getAllMatchingComponentInstances(
+          ddManager.getOrganization().instance.getAllMatchingComponentInstances(
           cir);
       if (cirs == null) {
         return ArrayUtil.EMPTY_STRING_ARRAY;
@@ -616,7 +616,7 @@ public class ComponentInstManager {
 
       // Get the parameters if any
       List<Parameter> parameters =
-          ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
+          ddManager.getOrganization().instanceData.getAllParametersInComponent(idAsInt(
           componentId));
       return (parameters);
     } catch (Exception e) {

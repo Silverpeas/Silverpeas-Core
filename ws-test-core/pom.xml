@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>ws-test-core</artifactId>
   <packaging>jar</packaging>
-  <name>Web Service Test Core Library</name>
+  <name>Web Service Test Core Library - ${version}</name>
   <description>A library that provides the common classes dedicated in the writing of tests on
   the REST web services in Silverpeas
   </description>

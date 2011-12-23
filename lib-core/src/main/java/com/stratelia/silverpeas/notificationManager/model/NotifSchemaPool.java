@@ -62,7 +62,8 @@ public class NotifSchemaPool extends SchemaPool {
     singleton.releaseSchemas();
   }
 
-  protected Schema newSchema(int connectionLot) throws UtilException {
-    return new NotifSchema(connectionLot);
+  @Override
+  protected Schema newSchema() throws UtilException {
+    return new NotifSchema();
   }
 }

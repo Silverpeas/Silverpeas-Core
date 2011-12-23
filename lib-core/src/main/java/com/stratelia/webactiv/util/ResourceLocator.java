@@ -72,7 +72,7 @@ public class ResourceLocator implements Serializable {
   public ResourceLocator(String sPropertyFile, String sLanguage, ResourceLocator defaultResource) {
     this.defaultResource = defaultResource;
     propertyFile = sPropertyFile;
-    if (sLanguage != null) {
+    if (StringUtil.isDefined(sLanguage)) {
       propertyLocale = new Locale(sLanguage);
     } else {
       propertyLocale = Locale.getDefault();

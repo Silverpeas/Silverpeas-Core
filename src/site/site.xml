@@ -86,7 +86,8 @@
       <item name="Source Code" href="source-repository.html" collapse="true"/>
     </menu>
     <menu name="Configuration" inherit="none">
-      <item name="Security" href="securing.html"  collapse="true"/>
+      <item name="Securing Jboss" href="securing_jboss.html" collapse="true"/>
+      <item name="Security" href="securing.html" collapse="true"/>
       <item name="Migration" href="migration.html"  collapse="true"/>
       <item name="Configuring a reverse-proxy" href="proxy.html"  collapse="true"/>
     </menu>

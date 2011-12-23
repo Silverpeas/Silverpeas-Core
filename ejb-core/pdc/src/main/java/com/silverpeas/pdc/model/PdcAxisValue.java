@@ -39,48 +39,47 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 
 /**
  * A value of one of the PdC's axis.
- * 
+ *
  * A value belongs to an axis. An axis represents a given concept for which it defines an hierarchic
  * tree of semantic terms belonging to the concept. A value of an axis is then the path from the
- * axis origin down to a given node of the tree, where each node is a term refining or specifying 
+ * axis origin down to a given node of the tree, where each node is a term refining or specifying
  * the parent term a little more.
- * 
- * For example, for an axis representing the concept of geography, one possible value can be
- * "France / Rhônes-Alpes / Isère / Grenoble" where France, Rhônes-Alpes, Isère and Grenoble are
- * each a term (thus a node) in the axis. "France" is another value, parent of the above one, and
- * that is also a base value of the axis as it has no parent (one of the root values of the axis).
+ *
+ * For example, for an axis representing the concept of geography, one possible value can be "France
+ * / Rhônes-Alpes / Isère / Grenoble" where France, Rhônes-Alpes, Isère and Grenoble are each a term
+ * (thus a node) in the axis. "France" is another value, parent of the above one, and that is also a
+ * base value of the axis as it has no parent (one of the root values of the axis).
  */
 @Entity
-@IdClass(PdcAxisValuePk.class)
+//@IdClass(PdcAxisValuePk.class) : https://jira.springsource.org/browse/DATAJPA-50
 @NamedQueries({
-  @NamedQuery(name = "PdcAxisValue.findByAxisId",
-  query = "from PdcAxisValue where axisId = ?1")
+  @NamedQuery(name = "PdcAxisValue.findByAxisId", query = "from PdcAxisValue where axisId = ?1")
 })
 public class PdcAxisValue implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 2345886411781136417L;
-  @Id
-  private Long valueId;
-  @Id
-  private Long axisId;
+  /*
+   * @Id private Long valueId; @Id private Long axisId;
+   */
+  @EmbeddedId
+  PdcAxisValuePk pk = new PdcAxisValuePk();
   @Transient
   private TreeNode treeNode;
   @Transient
   private List<? extends TreeNode> treeNodeParents = null;
 
   /**
-   * Creates a value of a PdC's axis from the specified tree node.
-   * Currently, an axis of the PdC is persited as an hierarchical tree in which each node is a value
-   * of the axis.
+   * Creates a value of a PdC's axis from the specified tree node. Currently, an axis of the PdC is
+   * persited as an hierarchical tree in which each node is a value of the axis.
+   *
    * @param treeNode the current persistence representation of the axis value.
    * @return a PdC axis value.
    */
@@ -92,18 +91,19 @@ public class PdcAxisValue implements Serializable, Cloneable {
         parents = pdcBm.getFullPath(treeNode.getFatherId(), treeNode.getTreeId());
       }
       return new PdcAxisValue().fromTreeNode(treeNode).withAsTreeNodeParents(parents).
-              inAxisId(treeNode.getTreeId());
+          inAxisId(treeNode.getTreeId());
     } catch (PdcException ex) {
-      throw new PdcRuntimeException(PdcAxisValue.class.getSimpleName()
-              + ".aPdcAxisValueFromTreeNode()", SilverpeasException.ERROR, ex.getMessage(), ex);
+      throw new PdcRuntimeException(PdcAxisValue.class.getSimpleName() +
+           ".aPdcAxisValueFromTreeNode()", SilverpeasException.ERROR, ex.getMessage(), ex);
     }
   }
-  
+
   /**
-   * Creates a value of a PdC's axis from the specified value information.
-   * Currently, an axis of the PdC is persited as an hierarchical tree in which each node is a value
-   * of the axis. The parameters refers the unique identifier of the node and in the tree related to
-   * the axis identifier.
+   * Creates a value of a PdC's axis from the specified value information. Currently, an axis of the
+   * PdC is persited as an hierarchical tree in which each node is a value of the axis. The
+   * parameters refers the unique identifier of the node and in the tree related to the axis
+   * identifier.
+   *
    * @param valueId the unique identifier of the existing value.
    * @param axisId the unique identifier of the axis the value belongs to.
    * @return a PdC axis value.
@@ -113,21 +113,23 @@ public class PdcAxisValue implements Serializable, Cloneable {
   }
 
   public String getId() {
-    return valueId.toString();
+    return pk.getValueId().toString();
   }
 
   /**
    * Gets the unique identifier of the axis to which this value belongs to.
+   *
    * @return the unique identifier of the axis value.
    */
   public String getAxisId() {
-    return axisId.toString();
+    return pk.getAxisId().toString();
   }
 
   /**
-   * Gets all the values into which this one can be refined or specifying in a little more.
-   * Theses values are the children of this one in the semantic tree represented by the axis to
-   * which this value belongs.
+   * Gets all the values into which this one can be refined or specifying in a little more. Theses
+   * values are the children of this one in the semantic tree represented by the axis to which this
+   * value belongs.
+   *
    * @return an unmodifiable set of values that are children of this one. If this value is a leaf,
    * then an empty set is returned.
    */
@@ -141,13 +143,14 @@ public class PdcAxisValue implements Serializable, Cloneable {
       return Collections.unmodifiableSet(children);
     } catch (PdcException ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getChildValues()",
-              SilverpeasException.ERROR, ex.getMessage(), ex);
+          SilverpeasException.ERROR, ex.getMessage(), ex);
     }
   }
 
   /**
    * Gets the value this one refines or specifies a little more. The returned value is the parent of
    * this one in the semantic tree represented by the axis to which this value belongs.
+   *
    * @return the axis value parent of this one or null if this value has no parent (in that case,
    * this value is a base one).
    */
@@ -157,13 +160,14 @@ public class PdcAxisValue implements Serializable, Cloneable {
     if (node.hasFather()) {
       int lastNodeIndex = treeNodeParents.size() - 1;
       parent = new PdcAxisValue().fromTreeNode(treeNodeParents.get(lastNodeIndex)).inAxisId(
-              getAxisId()).withAsTreeNodeParents(treeNodeParents.subList(0, lastNodeIndex));
+          getAxisId()).withAsTreeNodeParents(treeNodeParents.subList(0, lastNodeIndex));
     }
     return parent;
   }
 
   /**
    * Gets the term carried by this value.
+   *
    * @return the term of the value.
    */
   public String getTerm() {
@@ -172,6 +176,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
 
   /**
    * Gets the term carried by this value and translated in the specified language.
+   *
    * @param language the language in which the term should be translated.
    * @return the term translated in the specified language. If no such translation exists, then
    * return the default term as get by calling getTerm() method.
@@ -182,6 +187,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
 
   /**
    * Is this value is a base one?
+   *
    * @return true if this value is an axis base value.
    */
   public boolean isBaseValue() {
@@ -191,9 +197,10 @@ public class PdcAxisValue implements Serializable, Cloneable {
   }
 
   /**
-   * Gets the meaning carried by this value. The meaning is in fact the complete path of terms
-   * that made this value. For example, in an axis representing the geography, the meaning of 
-   * the value "France / Rhônes-Alpes / Isère" is "Geography / France / Rhônes-Alpes / Isère".
+   * Gets the meaning carried by this value. The meaning is in fact the complete path of terms that
+   * made this value. For example, in an axis representing the geography, the meaning of the value
+   * "France / Rhônes-Alpes / Isère" is "Geography / France / Rhônes-Alpes / Isère".
+   *
    * @return the meaning carried by this value, in other words the complete path of this value.
    */
   public String getMeaning() {
@@ -201,10 +208,11 @@ public class PdcAxisValue implements Serializable, Cloneable {
   }
 
   /**
-   * Gets the meaning carried by this value translated in the specified language.
-   * The meaning is in fact the complete path of translated terms that made this value.
-   * For example, in an axis representing the geography, the meaning of the value 
-   * "France / Rhônes-Alpes / Isère" is in french "Geographie / France / Rhônes-Alpes / Isère".
+   * Gets the meaning carried by this value translated in the specified language. The meaning is in
+   * fact the complete path of translated terms that made this value. For example, in an axis
+   * representing the geography, the meaning of the value "France / Rhônes-Alpes / Isère" is in
+   * french "Geographie / France / Rhônes-Alpes / Isère".
+   *
    * @return the meaning carried by this value, in other words the complete path of this value
    * translated in the specified language. If no such translations exist, then the result is
    * equivalent to the call of the getMeaning() method.
@@ -219,8 +227,9 @@ public class PdcAxisValue implements Serializable, Cloneable {
   }
 
   /**
-   * Gets the path of this value from the root value (that is a base value of the axis).
-   * The path is made up of the identifiers of each parent value; for example : /0/2/3
+   * Gets the path of this value from the root value (that is a base value of the axis). The path is
+   * made up of the identifiers of each parent value; for example : /0/2/3
+   *
    * @return the path of its value.
    */
   public String getValuePath() {
@@ -241,6 +250,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
 
   /**
    * Gets the axis to which this value belongs to and that is used to classify contents on the PdC.
+   *
    * @return a PdC axis configured to be used in the classification of contents.
    */
   protected UsedAxis getUsedAxis() {
@@ -253,13 +263,14 @@ public class PdcAxisValue implements Serializable, Cloneable {
       return usedAxis;
     } catch (PdcException ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getUsedAxis()",
-              SilverpeasException.ERROR, ex.getMessage(), ex);
+          SilverpeasException.ERROR, ex.getMessage(), ex);
     }
   }
 
   /**
-   * Gets the persisted representation of this axis value.
-   * By the same way, the parents of this tree node are also set.
+   * Gets the persisted representation of this axis value. By the same way, the parents of this tree
+   * node are also set.
+   *
    * @return a tree node representing this axis value in the persistence layer.
    */
   protected TreeNode getTreeNode() {
@@ -270,21 +281,21 @@ public class PdcAxisValue implements Serializable, Cloneable {
   }
 
   protected void setId(long id) {
-    this.valueId = id;
+    pk.setValueId(id);
   }
 
   protected PdcAxisValue withId(String id) {
-    this.valueId = Long.valueOf(id);
+    pk.setValueId(Long.valueOf(id));
     return this;
   }
 
   protected PdcAxisValue inAxisId(String axisId) {
-    this.axisId = Long.valueOf(axisId);
+    pk.setAxisId(Long.valueOf(axisId));
     return this;
   }
 
   protected PdcAxisValue fromTreeNode(final TreeNode treeNode) {
-    this.valueId = Long.valueOf(treeNode.getPK().getId());
+    pk.setValueId(Long.valueOf(treeNode.getPK().getId()));
     this.treeNode = treeNode;
     return this;
   }
@@ -303,11 +314,12 @@ public class PdcAxisValue implements Serializable, Cloneable {
       return false;
     }
     final PdcAxisValue other = (PdcAxisValue) obj;
-    if (this.valueId != other.valueId &&
-            (this.valueId == null || !this.valueId.equals(other.valueId))) {
+    if (this.pk.getValueId() != other.pk.getValueId() &&
+        (this.pk.getValueId() == null || !this.pk.getValueId().equals(other.pk.getValueId()))) {
       return false;
     }
-    if (this.axisId != other.axisId && (this.axisId == null || !this.axisId.equals(other.axisId))) {
+    if (this.pk.getAxisId() != other.pk.getAxisId() &&
+        (this.pk.getAxisId() == null || !this.pk.getAxisId().equals(other.pk.getAxisId()))) {
       return false;
     }
     return true;
@@ -316,20 +328,21 @@ public class PdcAxisValue implements Serializable, Cloneable {
   @Override
   public int hashCode() {
     int hash = 5;
-    hash = 89 * hash + (this.valueId != null ? this.valueId.hashCode() : 0);
-    hash = 89 * hash + (this.axisId != null ? this.axisId.hashCode() : 0);
+    hash = 89 * hash + (this.pk.getValueId() != null ? this.pk.getValueId().hashCode() : 0);
+    hash = 89 * hash + (this.pk.getAxisId() != null ? this.pk.getAxisId().hashCode() : 0);
     return hash;
   }
 
   @Override
   public String toString() {
-    return "PdcAxisValue{" + "id=" + getId() + ", parent=" + getParentValue() + ", term="
-            + getTerm() + ", axisId=" + getAxisId() + '}';
+    return "PdcAxisValue{" + "id=" + getId() + ", parent=" + getParentValue() + ", term=" +
+         getTerm() + ", axisId=" + getAxisId() + '}';
   }
 
   /**
    * Converts this PdC axis value to a ClassifyValue instance. This method is for compatibility with
    * the old way to manage the classification.
+   *
    * @return a ClassifyValue instance.
    * @throws PdcException if an error occurs while transforming this value into a ClassifyValue
    * instance.
@@ -339,15 +352,15 @@ public class PdcAxisValue implements Serializable, Cloneable {
     List<Value> fullPath = new ArrayList<Value>();
     for (TreeNode aTreeNode : getTreeNodeParents()) {
       fullPath.add(new Value(aTreeNode.getPK().getId(), aTreeNode.getTreeId(), aTreeNode.getName(),
-              aTreeNode.getDescription(), aTreeNode.getCreationDate(),
-              aTreeNode.getCreatorId(), aTreeNode.getPath(), aTreeNode.getLevelNumber(), aTreeNode.
-              getOrderNumber(), aTreeNode.getFatherId()));
+          aTreeNode.getDescription(), aTreeNode.getCreationDate(),
+          aTreeNode.getCreatorId(), aTreeNode.getPath(), aTreeNode.getLevelNumber(), aTreeNode.
+          getOrderNumber(), aTreeNode.getFatherId()));
     }
     TreeNode lastValue = getTreeNode();
     fullPath.add(new Value(lastValue.getPK().getId(), lastValue.getTreeId(), lastValue.getName(),
-            lastValue.getDescription(), lastValue.getCreationDate(),
-            lastValue.getCreatorId(), lastValue.getPath(), lastValue.getLevelNumber(),
-            lastValue.getOrderNumber(), lastValue.getFatherId()));
+        lastValue.getDescription(), lastValue.getCreationDate(),
+        lastValue.getCreatorId(), lastValue.getPath(), lastValue.getLevelNumber(),
+        lastValue.getOrderNumber(), lastValue.getFatherId()));
     value.setFullPath(fullPath);
     return value;
   }
@@ -369,7 +382,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
       this.treeNodeParents = paths.subList(0, lastNodeIndex);
     } catch (PdcException ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".loadTreeNodes()",
-              SilverpeasException.ERROR, ex.getMessage(), ex);
+          SilverpeasException.ERROR, ex.getMessage(), ex);
     }
   }
 

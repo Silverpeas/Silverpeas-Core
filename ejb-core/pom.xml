@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>ejb-core</artifactId>
   <packaging>pom</packaging>
-  <name> EJB Core</name>
+  <name> EJB Core - ${version}</name>
   <description>A module to aggregate all the EJBs required for the core of Silverpeas.</description>
 
   <dependencies>

@@ -36,6 +36,8 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import com.stratelia.webactiv.beans.admin.cache.TreeCache;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -131,6 +133,27 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     space = organizationController.getSpaceInstById("WA1");
     assertNull(space);
   }
+  
+  @Test
+  public void testDeleteAndRestoreSpace() throws AdminException {
+    admin.deleteSpaceInstById(userId, "WA1", false);
+
+    SpaceInst space = organizationController.getSpaceInstById("WA1");
+    assertEquals("R", space.getStatus());
+    assertNull(TreeCache.getSpaceInstLight("1"));
+    assertNull(TreeCache.getSpaceInstLight("2"));
+    
+    admin.restoreSpaceFromBasket("WA1");
+    space = organizationController.getSpaceInstById("WA1");
+    assertEquals(null, space.getStatus());
+    assertNotNull(TreeCache.getSpaceInstLight("1"));
+    
+    assertEquals(1, TreeCache.getSubSpaces("1").size());
+    
+    assertEquals(2, TreeCache.getComponentsInSpaceAndSubspaces("1").size());
+    assertNotNull(TreeCache.getComponent("kmelia1"));
+    assertNotNull(TreeCache.getComponent("almanach2"));
+  }
 
   public void testAddSubSpace() {
     AdminController ac = getAdminController();
@@ -174,6 +197,20 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     ac.deleteComponentInst("kmelia1", true);
     component = ac.getComponentInst("kmelia1");
     assertEquals("", component.getName());
+  }
+  
+  @Test
+  public void testDeleteAndRestoreComponent() {
+    AdminController ac = getAdminController();
+
+    ac.deleteComponentInst("kmelia1", false);
+
+    ComponentInst component = ac.getComponentInst("kmelia1");
+    assertEquals("R", component.getStatus());
+    assertNull(TreeCache.getComponent("kmelia1"));
+    
+    ac.restoreComponentFromBasket("kmelia1");
+    assertNotNull(TreeCache.getComponent("kmelia1"));
   }
 
   @Test

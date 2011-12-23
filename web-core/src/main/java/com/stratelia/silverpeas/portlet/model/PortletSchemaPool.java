@@ -62,7 +62,8 @@ public class PortletSchemaPool extends SchemaPool {
     singleton.releaseSchemas();
   }
 
-  protected Schema newSchema(int connectionLot) throws UtilException {
-    return new PortletSchema(connectionLot);
+  @Override
+  protected Schema newSchema() throws UtilException {
+    return new PortletSchema();
   }
 }
