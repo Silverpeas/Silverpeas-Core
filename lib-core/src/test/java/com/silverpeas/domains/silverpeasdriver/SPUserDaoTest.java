@@ -76,7 +76,7 @@ public class SPUserDaoTest {
    */
   @Test
   public void testReadByPrimaryKey() {
-    SPUser bart = dao.readByPrimaryKey(1000);
+    SPUser bart = dao.findOne(1000);
     Set<SPGroup> groups = bart.getGroups();
     assertThat(groups, is(notNullValue()));
     assertThat(groups, hasSize(2));

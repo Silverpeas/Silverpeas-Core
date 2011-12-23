@@ -37,18 +37,17 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.inject.Inject;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -126,7 +125,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void deleteUser(String userId) {
-    SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
+    SPUser user = userDao.findOne(Integer.valueOf(userId));
     if(user.getGroups() != null) {
       for(SPGroup group : user.getGroups()) {
         group.getUsers().remove(user);
@@ -138,7 +137,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public void updateUserFull(UserFull userFull) throws UtilException {
-    SPUser oldUser = userDao.readByPrimaryKey(Integer.valueOf(userFull.getSpecificId()));
+    SPUser oldUser = userDao.findOne(Integer.valueOf(userFull.getSpecificId()));
     oldUser.setFirstname(userFull.getFirstName());
     oldUser.setLastname(userFull.getLastName());
     oldUser.setLogin(userFull.getLogin());
@@ -172,7 +171,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void updateUserDetail(UserDetail ud) {
-    SPUser user = userDao.readByPrimaryKey(Integer.valueOf(ud.getSpecificId()));
+    SPUser user = userDao.findOne(Integer.valueOf(ud.getSpecificId()));
     if (user != null) {
       userDao.save(convertToSPUser(ud, user));
     }
@@ -184,13 +183,13 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public UserDetail getUser(String userId) {
-    SPUser spUser = userDao.readByPrimaryKey(Integer.parseInt(userId));
+    SPUser spUser = userDao.findOne(Integer.parseInt(userId));
     return convertToUser(spUser, new UserDetail());
   }
 
   @Override
   public UserFull getUserFull(String userId) {
-    SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
+    SPUser user = userDao.findOne(Integer.valueOf(userId));
     UserFull userFull = new UserFull(this);
     if (user != null) {
       userFull.setFirstName(user.getFirstname());
@@ -223,7 +222,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public UserDetail[] getAllUsers() {
-    List<SPUser> users = userDao.readAll();
+    List<SPUser> users = userDao.findAll();
     List<UserDetail> details = new ArrayList<UserDetail>(users.size());
     for (SPUser sPUser : users) {
       details.add(convertToUser(sPUser, new UserDetail()));
@@ -296,12 +295,12 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       spGroup.setDescription(group.getDescription());
       spGroup.setName(group.getName());
       if (StringUtil.isDefined(group.getSuperGroupId())) {
-        SPGroup parent = groupDao.readByPrimaryKey(Integer.valueOf(group.getSuperGroupId()));
+        SPGroup parent = groupDao.findOne(Integer.valueOf(group.getSuperGroupId()));
         spGroup.setParent(parent);
       }
       String[] userIds = group.getUserIds();
       for (String userId : userIds) {
-        SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
+        SPUser user = userDao.findOne(Integer.valueOf(userId));
         spGroup.getUsers().add(user);
         user.getGroups().add(spGroup);
       }
@@ -318,7 +317,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void deleteGroup(String groupId) {
-    SPGroup group = groupDao.readByPrimaryKey(Integer.valueOf(groupId));
+    SPGroup group = groupDao.findOne(Integer.valueOf(groupId));
     if (group != null) {
       for (SPUser user : group.getUsers()) {
         user.getGroups().remove(group);
@@ -352,7 +351,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
 
     // Update the group node
-    SPGroup gr = groupDao.readByPrimaryKey(Integer.valueOf(group.getSpecificId()));
+    SPGroup gr = groupDao.findOne(Integer.valueOf(group.getSpecificId()));
     gr = convertToSPGroup(group, gr);
     Set<SPUser> users = gr.getUsers();
     Map<String, SPUser> existingUsers = new HashMap<String, SPUser>(users.size());
@@ -366,7 +365,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
         addedUsers.add(existingUsers.get(userId));
         existingUsers.remove(userId);
       } else {
-        SPUser newUser = userDao.readByPrimaryKey(Integer.valueOf(userId));
+        SPUser newUser = userDao.findOne(Integer.valueOf(userId));
         addedUsers.add(newUser);
       }
     }
@@ -381,7 +380,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public Group getGroup(String groupId) {
-    SPGroup gr = groupDao.readByPrimaryKey(Integer.valueOf(groupId));
+    SPGroup gr = groupDao.findOne(Integer.valueOf(groupId));
     return convertToGroup(gr);
   }
 
@@ -396,7 +395,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public Group[] getGroups(String groupId) {
-    SPGroup gr = groupDao.readByPrimaryKey(Integer.valueOf(groupId));
+    SPGroup gr = groupDao.findOne(Integer.valueOf(groupId));
     Set<SPGroup> subGroups = gr.getSubGroups();
     List<Group> groups = new ArrayList<Group>(subGroups.size());
     for (SPGroup spGroup : subGroups) {
@@ -410,7 +409,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public Group[] getAllGroups() {
-    List<SPGroup> groups = groupDao.readAll();
+    List<SPGroup> groups = groupDao.findAll();
     List<Group> result = new ArrayList<Group>(groups.size());
     for (SPGroup spGroup : groups) {
       result.add(convertToGroup(spGroup));
@@ -451,8 +450,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @throws Exception  
    */
   public void addUserInGroup(String userId, String groupId) throws Exception {
-    SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
-    SPGroup group = groupDao.readByPrimaryKey(Integer.valueOf(groupId));
+    SPUser user = userDao.findOne(Integer.valueOf(userId));
+    SPGroup group = groupDao.findOne(Integer.valueOf(groupId));
     user.getGroups().add(group);
     group.getUsers().add(user);
     groupDao.saveAndFlush(group);
@@ -463,8 +462,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @param groupId
    */
   public void removeUserFromGroup(String userId, String groupId) {
-    SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
-    SPGroup group = groupDao.readByPrimaryKey(Integer.valueOf(groupId));
+    SPUser user = userDao.findOne(Integer.valueOf(userId));
+    SPGroup group = groupDao.findOne(Integer.valueOf(groupId));
     user.getGroups().remove(group);
     group.getUsers().remove(user);
     groupDao.saveAndFlush(group);
@@ -479,7 +478,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
     if (StringUtil.isDefined(group.getSuperGroupId()) && StringUtil.isInteger(
         group.getSuperGroupId())) {
-      SPGroup parent = groupDao.readByPrimaryKey(Integer.valueOf(group.getSuperGroupId()));
+      SPGroup parent = groupDao.findOne(Integer.valueOf(group.getSuperGroupId()));
       spGroup.setParent(parent);
     }
     spGroup.setName(group.getName());

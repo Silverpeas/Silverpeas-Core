@@ -19,8 +19,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.synyx.hades</groupId>
-      <artifactId>org.synyx.hades</artifactId>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

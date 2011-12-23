@@ -24,13 +24,14 @@
 package com.silverpeas.pdc.model;
 
 import java.io.Serializable;
+import javax.persistence.Id;
 
 /**
  * The composite primary key used to store values of PdC's axis.
  */
 public class PdcAxisValuePk implements Serializable {
   private static final long serialVersionUID = 6046047003447540458L;
-  
+ 
   private Long valueId;
   private Long axisId;
   
