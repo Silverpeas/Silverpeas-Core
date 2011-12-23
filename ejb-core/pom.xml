@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core</groupId>
   <artifactId>ejb-core</artifactId>
   <packaging>pom</packaging>
-  <name> EJB Core - ${version}</name>
+  <name> EJB Core - ${project.version}</name>
   <description>A module to aggregate all the EJBs required for the core of Silverpeas.</description>
 
   <dependencies>

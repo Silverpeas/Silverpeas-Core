@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core</groupId>
   <artifactId>config-core</artifactId>
   <packaging>pom</packaging>
-  <name>Configuration Core</name>
+  <name>Configuration Core - ${project.version}</name>
   <description>A module to store all the configuration for the core services of Silverpeas.</description>
 
   <build>

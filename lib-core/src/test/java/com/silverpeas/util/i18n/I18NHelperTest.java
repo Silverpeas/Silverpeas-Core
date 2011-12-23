@@ -25,12 +25,12 @@ package com.silverpeas.util.i18n;
 
 import com.google.common.collect.Lists;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import java.util.ArrayList;
+
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,6 +39,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -150,14 +151,18 @@ public class I18NHelperTest {
     String url = "http://www.google.fr";
     String currentLanguage = "fr";
     String result = I18NHelper.getHTMLLinks(url, currentLanguage);
-    assertThat(result, is("<a href=\"http://www.google.fr?SwitchLanguage=fr\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
+    assertThat(result,
+        is(
+        "<a href=\"http://www.google.fr?SwitchLanguage=fr\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
         "&nbsp;<a href=\"http://www.google.fr?SwitchLanguage=en\" class=\"\" id=\"translation_en\">EN</a>" +
         "&nbsp;<a href=\"http://www.google.fr?SwitchLanguage=de\" class=\"\" id=\"translation_de\">DE</a>"));
-    
+
     url = "http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8";
     currentLanguage = "en";
     result = I18NHelper.getHTMLLinks(url, currentLanguage);
-    assertThat(result, is("<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=fr\" class=\"\" id=\"translation_fr\">FR</a>" +
+    assertThat(result,
+        is(
+        "<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=fr\" class=\"\" id=\"translation_fr\">FR</a>" +
         "&nbsp;<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=en\" class=\"ArrayNavigationOn\" id=\"translation_en\">EN</a>" +
         "&nbsp;<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=de\" class=\"\" id=\"translation_de\">DE</a>"));
   }
@@ -170,38 +175,54 @@ public class I18NHelperTest {
     List<String> languages = Lists.newArrayList("fr", "en");
     String currentLanguage = "fr";
     String result = I18NHelper.getHTMLLinks(languages, currentLanguage);
-    assertThat(result, is("<a href=\"javaScript:showTranslation('fr');\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
+    assertThat(result,
+        is(
+        "<a href=\"javaScript:showTranslation('fr');\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
         "&nbsp;<a href=\"javaScript:showTranslation('en');\" class=\"\" id=\"translation_en\">EN</a>"));
   }
 
-//  /**
-//   * Test of getHTMLLinks method, of class I18NHelper.
-//   */
-//  @Test
-//  public void testGetHTMLLinks_I18NBean_String() {
-//    System.out.println("getHTMLLinks");
-//    I18NBean bean = null;
-//    String currentLanguage = "";
-//    String expResult = "";
-//    String result = I18NHelper.getHTMLLinks(bean, currentLanguage);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-//  }
-//
-//  /**
-//   * Test of getFormLine method, of class I18NHelper.
-//   */
-//  @Test
-//  public void testGetFormLine_ResourcesWrapper() {
-//    System.out.println("getFormLine");
-//    ResourcesWrapper resources = null;
-//    String expResult = "";
-//    String result = I18NHelper.getFormLine(resources);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-//  }
+  /**
+   * Test of getHTMLLinks method, of class I18NHelper.
+   */
+  @Test
+  public void testGetHTMLLinksForI18NBeanAndCurrentLanguage() {
+    I18NBean bean = mock(I18NBean.class);
+    Translation tradFR = new Translation();
+    tradFR.setId(1);
+    tradFR.setLanguage("fr");
+    tradFR.setObjectId("18");
+    Translation tradEN = new Translation();
+    tradEN.setId(2);
+    tradEN.setLanguage("en");
+    tradEN.setObjectId("28");
+    Hashtable<String, Translation> translations = new Hashtable<String, Translation>(2);
+    translations.put("fr", tradFR);
+    translations.put("en", tradEN);
+    when(bean.getTranslation("fr")).thenReturn(tradFR);
+    when(bean.getTranslation("en")).thenReturn(tradEN);
+    when(bean.getTranslations()).thenReturn(translations);
+    String currentLanguage = "fr";
+    String result = I18NHelper.getHTMLLinks(bean, currentLanguage);
+    assertThat(result,
+        is(
+        "<a href=\"javaScript:showTranslation('fr');\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
+        "&nbsp;<a href=\"javaScript:showTranslation('en');\" class=\"\" id=\"translation_en\">EN</a>"));
+  }
+
+  /**
+   * Test of getFormLine method, of class I18NHelper.
+   */
+  @Test
+  public void testGetFormLine() {
+    ResourcesWrapper resources = mock(ResourcesWrapper.class);
+    when(resources.getString("GML.language")).thenReturn("Langue");
+    when(resources.getLanguage()).thenReturn("fr");
+    String result = I18NHelper.getFormLine(resources);
+    assertThat(result, is("<tr>\n<td class=\"txtlibform\">Langue :</td>\n<td><SELECT name=\"I18NLanguage\" >\n" +
+        "<option value=\"fr_-1\" >Français</option>\n" +
+        "<option value=\"en_-1\" >Anglais</option>\n" +
+        "<option value=\"de_-1\" >Allemand</option>\n</SELECT></td></tr>\n"));
+  }
 //
 //  /**
 //   * Test of getFormLine method, of class I18NHelper.
@@ -224,17 +245,25 @@ public class I18NHelperTest {
 //   */
 //  @Test
 //  public void testGetHTMLSelectObject() {
-//    System.out.println("getHTMLSelectObject");
-//    String userLanguage = "";
-//    I18NBean bean = null;
-//    String selectedTranslation = "";
+//    String userLanguage = "fr";
+//    I18NBean bean = mock(I18NBean.class);
+//    Translation tradFR = new Translation();
+//    tradFR.setId(1);
+//    tradFR.setLanguage("fr");
+//    tradFR.setObjectId("18");
+//    Translation tradEN = new Translation();
+//    tradEN.setId(2);
+//    tradEN.setLanguage("en");
+//    tradEN.setObjectId("28");
+//    String selectedTranslation = "rn";
 //    String expResult = "";
 //    String result = I18NHelper.getHTMLSelectObject(userLanguage, bean, selectedTranslation);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+//    assertThat(result, is("<SELECT name=\"I18NLanguage\" >\n" +
+//        "<option value=\"fr_-1\" >Français</option>\n" +
+//        "<option value=\"en_-1\" >Anglais</option>\n" +
+//        "<option value=\"de_-1\" >Allemand</option>\n</SELECT>"));
 //  }
-//
+
 //  /**
 //   * Test of updateHTMLLinks method, of class I18NHelper.
 //   */
