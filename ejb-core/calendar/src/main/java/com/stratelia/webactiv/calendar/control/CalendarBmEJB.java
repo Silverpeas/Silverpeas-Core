@@ -47,7 +47,7 @@ import com.stratelia.webactiv.calendar.model.Schedulable;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import com.stratelia.webactiv.calendar.model.ToDoDAO;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
-import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;

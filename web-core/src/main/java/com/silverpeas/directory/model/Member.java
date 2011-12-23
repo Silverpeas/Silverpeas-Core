@@ -25,8 +25,8 @@ package com.silverpeas.directory.model;
 
 import java.util.Collection;
 
-import com.silverpeas.socialNetwork.invitation.InvitationService;
-import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.socialnetwork.invitation.InvitationService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;

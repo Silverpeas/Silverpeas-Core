@@ -33,7 +33,7 @@ import java.util.List;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
-import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;

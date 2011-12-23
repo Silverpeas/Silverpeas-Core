@@ -23,7 +23,6 @@
  */
 package com.silverpeas.authentication;
 
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
@@ -66,7 +65,7 @@ public class AuthenticationServlet extends HttpServlet {
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding("UTF-8");
     }
-    if(AUTHENTICATION_SERVICE.isAnonymousUser(request)) {
+    if (AUTHENTICATION_SERVICE.isAnonymousUser(request)) {
       AUTHENTICATION_SERVICE.unauthenticate(request);
     }
 
@@ -83,7 +82,9 @@ public class AuthenticationServlet extends HttpServlet {
     String authenticationKey = identify(request, identificationParameters, sDomainId);
     String url;
     if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
-      storeDomain(response, sDomainId);
+      if (sDomainId != null) {
+        storeDomain(response, sDomainId);
+      }
       storeLogin(response, isNewEncryptMode, identificationParameters.getLogin());
 
       // if required by user, store password in cookie
@@ -112,14 +113,15 @@ public class AuthenticationServlet extends HttpServlet {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
       String errorCode;
-      if("Error_1".equals(authenticationKey)) {
+      if ("Error_1".equals(authenticationKey)) {
         errorCode = INCORRECT_LOGIN_PWD;
-      }else {
+      } else {
         errorCode = TECHNICAL_ISSUE;
       }
       url = "/Login.jsp?ErrorCode=" + errorCode;
     }
-    response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request) + url));
+    response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request) +
+        url));
   }
 
   private void storePassword(HttpServletResponse response, String sStorePassword,
@@ -133,9 +135,11 @@ public class AuthenticationServlet extends HttpServlet {
         writeCookie(response, "var2", EncryptionFactory.getInstance().getEncryption().encode(
                 sDecodedPassword), 31536000);
       } else {
-        writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption().encode(
+        writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
+            .encode(
                 sDecodedPassword), -1);
-        writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption().encode(
+        writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
+            .encode(
                 sDecodedPassword), 31536000);
       }
     }
@@ -178,6 +182,8 @@ public class AuthenticationServlet extends HttpServlet {
     if (!StringUtil.isDefined(testKey)) {
       if (identificationParameters.isCasMode()) {
         return lpAuth.authenticate(identificationParameters.getLogin(), sDomainId, request);
+      } else if (identificationParameters.isSocialNetworkMode()) {
+        return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters.getDomainId(), request);
       }
       return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters.
               getClearPassword(),
@@ -191,7 +197,7 @@ public class AuthenticationServlet extends HttpServlet {
    * @param request the HTTP request.
    * @param response the HTTP response.
    * @throws ServletException if the servlet fails to answer the request.
-   * @throws IOException  if an IO error occurs with the client.
+   * @throws IOException if an IO error occurs with the client.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)

@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.publication.socialNetwork;
+package com.stratelia.webactiv.publication.socialnetwork;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import java.util.Date;

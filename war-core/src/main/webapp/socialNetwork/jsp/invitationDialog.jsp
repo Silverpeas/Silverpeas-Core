@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-<%@page import="com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONActions"%>
+
+<%@page import="com.silverpeas.socialnetwork.invitation.servlets.InvitationJSONActions"%>
 
 <script type="text/javascript">
 $(function() {
@@ -15,7 +15,7 @@ $(function() {
 			"<fmt:message key="GML.ok"/>": function() {
 				var message = $("#invitation-message").val();
 		    	$.getJSON("<%=m_context%>/InvitationJSON",
-             	{ 
+             	{
      				IEFix: new Date().getTime(),
      				Action: "<%=InvitationJSONActions.SendInvitation%>",
      				Message: message,
@@ -28,7 +28,7 @@ $(function() {
          					$("#user-"+invitationTargetUserId+" .invitation").hide('slow')
          				} catch (e) {
              				//do nothing
-             				//As fragment is externalized, class invitation can be missing 
+             				//As fragment is externalized, class invitation can be missing
          				}
          			} else {
              			alert(data.error);
@@ -54,8 +54,8 @@ function closeInvitationDialog() {
   	$("#invitation-message").val("");
 }
 </script>
-    
-<!-- Dialog to notify a user -->	
+
+<!-- Dialog to notify a user -->
 <div id="invitationDialog">
 	<form>
 		<table>

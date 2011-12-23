@@ -8,7 +8,7 @@
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%>
+<%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%
 ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");

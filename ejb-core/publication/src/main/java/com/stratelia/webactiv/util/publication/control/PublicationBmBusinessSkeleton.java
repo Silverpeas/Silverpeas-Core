@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;

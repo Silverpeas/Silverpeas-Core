@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.socialNetwork.status.StatusService;
+import com.silverpeas.socialnetwork.status.StatusService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;

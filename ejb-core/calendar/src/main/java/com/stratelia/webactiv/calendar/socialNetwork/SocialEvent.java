@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.calendar.socialNetwork;
+package com.stratelia.webactiv.calendar.socialnetwork;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import com.silverpeas.calendar.Date;
-import com.silverpeas.socialNetwork.provider.SocialEventsInterface;
+import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarBmHome;
 import com.stratelia.webactiv.calendar.control.CalendarException;

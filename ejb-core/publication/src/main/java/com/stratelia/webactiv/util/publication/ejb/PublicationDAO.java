@@ -40,10 +40,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
+import com.stratelia.webactiv.publication.socialnetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -401,8 +401,8 @@ public class PublicationDAO {
         }else {
           nodeTree = new NodeTree(new NodePK(nodeIdentifier, instanceId));
           nodes.put(nodeIdentifier, nodeTree);
-        }         
-        nodeTree.setNbPublications(rs.getInt("nbPubli"));        
+        }
+        nodeTree.setNbPublications(rs.getInt("nbPubli"));
         String fatherId = rs.getString("nodefatherid");
         NodeTree father;
         if (nodes.containsKey(fatherId)) {
@@ -2017,7 +2017,7 @@ public class PublicationDAO {
    */
   public static List<SocialInformation> getAllPublicationsIDbyUserid(Connection con,
       String userId, Date begin, Date end) throws SQLException {
-    
+
     List<SocialInformation> listPublications = new ArrayList<SocialInformation>();
 
     String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi WHERE pubcreatorid = ? and pubstatus = 'Valid' and pubCreationDate >= ? and pubCreationDate <= ? )"

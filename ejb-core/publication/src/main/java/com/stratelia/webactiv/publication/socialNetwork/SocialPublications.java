@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.publication.socialNetwork;
+package com.stratelia.webactiv.publication.socialnetwork;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.silverpeas.calendar.Date;
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.silverpeas.socialNetwork.provider.SocialPublicationsInterface;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;

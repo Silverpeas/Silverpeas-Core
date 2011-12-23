@@ -21,11 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.calendar.socialNetwork;
+package com.stratelia.webactiv.calendar.socialnetwork;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
-import static com.silverpeas.socialNetwork.model.SocialInformationType.*;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformationType;
+
+import static com.silverpeas.socialnetwork.model.SocialInformationType.*;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.calendar.model.Schedulable;
@@ -69,7 +70,7 @@ public class SocialInformationEvent implements SocialInformation {
     if(schedulable.getEndDate().after(new Date()))
     type=EVENT;
     else
-    type=LASTEVENT;  
+    type=LASTEVENT;
   }
 /**
    * return the type of this SocialInformation

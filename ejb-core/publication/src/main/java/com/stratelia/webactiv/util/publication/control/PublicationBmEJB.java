@@ -46,7 +46,7 @@ import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.ejb.TagCloudBmHome;
 import com.silverpeas.tagcloud.model.TagCloud;

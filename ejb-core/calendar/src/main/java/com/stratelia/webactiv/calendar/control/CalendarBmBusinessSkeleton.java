@@ -33,7 +33,7 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
-import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 
 public interface CalendarBmBusinessSkeleton {

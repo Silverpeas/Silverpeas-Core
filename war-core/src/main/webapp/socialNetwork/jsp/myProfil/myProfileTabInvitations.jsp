@@ -1,15 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
+
 <%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page import="java.util.List"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="com.silverpeas.socialNetwork.invitation.model.InvitationUser"%>
-<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%>
-<%@page import="com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONActions"%>
+<%@page import="com.silverpeas.socialnetwork.invitation.model.InvitationUser"%>
+<%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
+<%@page import="com.silverpeas.socialnetwork.invitation.servlets.InvitationJSONActions"%>
 
 <%
 	List invitations = null;
@@ -30,7 +30,7 @@
 	<% if (invitations != null && !invitations.isEmpty()) { %>
 		display: none;
 	<% } %>
-} 
+}
 </style>
 <script type="text/javascript">
 var invitationId;
@@ -43,7 +43,7 @@ $(function() {
 		buttons: {
 			"<fmt:message key="GML.yes" />": function() {
 				$.getJSON("<%=m_context%>/InvitationJSON",
-	                { 
+	                {
 	        			IEFix: new Date().getTime(),
 	        			Action: "<%=InvitationJSONActions.IgnoreInvitation%>",
 	        			Id: invitationId
@@ -72,7 +72,7 @@ $(function() {
 		buttons: {
 			"<fmt:message key="GML.yes" />": function() {
 				$.getJSON("<%=m_context%>/InvitationJSON",
-	                { 
+	                {
 	        			IEFix: new Date().getTime(),
 	        			Action: "<%=InvitationJSONActions.AcceptInvitation%>",
 	        			Id: invitationId
@@ -82,7 +82,7 @@ $(function() {
 	            			$("#invitation-"+invitationId).hide('slow');
 	            			nbInvitations--;
 	            			showEmptyListMessage();
-	            			
+
 	            		} else {
 	                		alert(data.error);
 	            		}
@@ -105,7 +105,7 @@ $(function() {
 			},
 			"<fmt:message key="GML.yes" />": function() {
 				$.getJSON("<%=m_context%>/InvitationJSON",
-	                { 
+	                {
 	        			IEFix: new Date().getTime(),
 	        			Action: "<%=InvitationJSONActions.IgnoreInvitation%>",
 	        			Id: invitationId
@@ -166,9 +166,9 @@ function showEmptyListMessage() {
 			<fmt:message key="myProfile.invitations.inbox.empty" />
 		<% } %>
 	</div>
-	
+
 	<div id="invitations-list">
-		
+
 		<% for (int i=0; i<invitations.size(); i++) {
 		  	InvitationUser invitation = (InvitationUser) invitations.get(i);
 		  	String senderId = invitation.getUserDetail().getId();
@@ -198,9 +198,9 @@ function showEmptyListMessage() {
 					</div>
 	      </div>
 	      <% } %>
-	      
+
 	</div>
-      
+
 </div>
 
 <div id="dialog-confirmCancel" title="<fmt:message key="myProfile.invitations.dialog.cancel.title" />">

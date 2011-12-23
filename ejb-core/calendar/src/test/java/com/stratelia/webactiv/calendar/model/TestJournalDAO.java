@@ -4,7 +4,7 @@
  */
 package com.stratelia.webactiv.calendar.model;
 
-import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import com.stratelia.webactiv.util.DateUtil;
 import com.silverpeas.components.model.AbstractTestDao;
 
@@ -67,10 +67,10 @@ public class TestJournalDAO extends AbstractTestDao {
     List<JournalHeader> list = null;
     try {
       connexion = getConnection();
-      
+
       Date end = DateUtil.parse("2011/07/31");
       Date begin = DateUtil.parse("2011/07/01");
-      
+
       list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, begin, end);
 
       assertNotNull("Event should exist", list);
@@ -78,7 +78,7 @@ public class TestJournalDAO extends AbstractTestDao {
       assertEquals("First should be ", s1.getName(), list.get(0).getName());
       assertEquals("First should be ", s2.getName(), list.get(2).getName());
       assertEquals("First should be ", s3.getName(), list.get(1).getName());
-      
+
       begin = DateUtil.parse("2011/07/09");
       list = null;
       list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, begin, end);
@@ -89,7 +89,7 @@ public class TestJournalDAO extends AbstractTestDao {
       assertEquals("First should be ", s3.getName(), list.get(0).getName());
       SocialInformationEvent event1 = new SocialInformationEvent(list.get(0));
       assertEquals("First should be ", s3.getName(), event1.getTitle());
-      
+
       list = null;
       begin = DateUtil.parse("2011/07/10");
       list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, begin, end);
@@ -137,10 +137,10 @@ public class TestJournalDAO extends AbstractTestDao {
       connexion = getConnection();
       List<String> myContactIds = new ArrayList<String>();
       myContactIds.add("1");
-      
+
       Date end = DateUtil.parse("2011/07/31");
       Date begin = DateUtil.parse("2011/07/01");
-      
+
       list = dao.getNextEventsForMyContacts(connexion.getConnection(), "2011/07/07", "2",
           myContactIds, begin, end);
 
@@ -208,10 +208,10 @@ public class TestJournalDAO extends AbstractTestDao {
       connexion = getConnection();
       List<String> myContactIds = new ArrayList<String>();
       myContactIds.add("1");
-      
+
       Date end = DateUtil.parse("2011/07/31");
       Date begin = DateUtil.parse("2011/07/01");
-      
+
       list = dao.getLastEventsForMyContacts(connexion.getConnection(), "2012/07/07", "2",
           myContactIds, begin, end);
 //order S3,S2,S1
