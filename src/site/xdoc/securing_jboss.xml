@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+  <properties>
+    <title>Securing JBoss</title>
+    <author>Emmanuel Hugonnet</author>
+  </properties>
+  <body>
+    <section name="Using the Groovy Script">
+      <subsection name="Extract from JBoss Wiki">
+        <p>This is based on <a href="http://community.jboss.org/wiki/SimpleWayToLockUpYourJBossASInstance">this JBoss Wiki Page</a>.</p>
+        <p>JBoss 6.x AS is distributed by default as not secured (locked up). If you want to work with locked up version you can try this easy way.</p>
+        <ol>
+          <li>Download Groovy script attached to this docment or check the latest version at 
+            <a href="https://github.com/pskopek/sec-script">https://github.com/pskopek/sec-script</a>.
+          </li>
+          <li>Install Groovy:
+            <br/>
+            <ul>
+              <li>Use 
+                <a href="http://groovy.codehaus.org/Download">http://groovy.codehaus.org/Download</a>
+              </li>
+              <li>Use your OS favourite method: Fedora: yum install groovy</li>
+            </ul>
+          </li>
+          <li>Run: groovy securejboss.groovy [JBOSS SERVER HOME]</li>
+        </ol>
+        <p>You can specify more then one JBoss Server Home directories. In that case common/deploy content will generate warning because it already is secured.
+          check output for possible problems (pay special attention to warnings)
+          <br/>
+          Note: Always test your installation if it is secured properly.
+          The script currently supports JBoss AS 6.1.0.Final and 6.0.0.Final. Check later for JBoss AS 5 and 5.1 support.
+        </p>
+      </subsection>		
+      <subsection name="Enabling the usage of Silverpeas stop script">
+        <p>The groovy script will lock everything in JBoss even the shutdown process. To enable it again you must follow this porcess :</p>
+        <ul>
+          <li><p>Create a JMX user in the configuration file 
+            <i>$JBOSS_HOME/server/default/conf/props/jmx-console-users.properties</i> with the following pattern: </p>
+            <code>USERNAME=PASSWORD</code>
+          </li>
+          <li><p>Give hime the 
+            <b>HttpInvoker</b> role by adding the following line to the file 
+            <i>$JBOSS_HOME/server/default/conf/props/jmx-console-roles.properties</i>: </p>
+            <code>USERNAME=HttpInvoker</code>
+          </li>
+          <li><p>Edit the script according to your OS 
+            <i>$SILVERPEAS_HOME/silverpeas_stop_jboss.sh</i> or 
+            <i>%SILVERPEAS_HOME%\silverpeas_stop_jboss.cmd</i> to pass the USERNAME and the PASSWORD as parameters like this :</p>
+            <code>sh shutdown.sh -u goliath -p CharybdeEtScylla -S</code>
+          </li>
+        </ul>
+      </subsection>  
+    </section>
+  </body>
+</document>
