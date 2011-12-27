@@ -138,42 +138,65 @@ div.clear hr{
 
 
 ul.menu li a {
-	background-color:#333;
-	border-radius:12px;
-	padding:5px 24px;
-	margin:8px;
-	
-	font-size:16px;
-	line-height:0;
-	font-weight:bold;
-	display:inline;
-
+    background-image: url("../images/ongletgauche.png");
+    background-position: left top;
+    background-repeat: no-repeat;
+    display: block;
+	float:left;
+    font-size: 16px;
+    font-weight: bold;
+    height: 29px;
+    line-height: 0;
+    margin: 8px;
+    padding: 0 0 0 11px;
+    text-align: left;
 }
+
+ul.menu li a span {
+    background-image: url("../images/ongletdroite.png");
+    background-position: right top;
+    background-repeat: no-repeat;
+    display: block;
+	float:left;
+    height: 29px;
+    line-height: 28px;
+    padding: 0 12px 0 0;
+}
+
 
 .topbar div > ul > li, .nav > li {
 	float:left;
 }
 
+ul.menu li a:hover span {
+	background-image:url("../images/ongletdroitehover.png");
+	background-position: right top;
+    background-repeat: no-repeat;
+
+}
+
 
 ul.menu li a:hover {
-	background-color:#424040;
-	border-radius: 12px 12px 12px 12px;
-	display: inline;
+	background-image: url("../images/ongletgauchehover.png");
+	background-position: left top;
+    background-repeat: no-repeat;
+	display: block;
     font-size: 16px;
     font-weight: bold;
-    
-    margin: 8px;
-    padding: 5px 24px;
+	cursor: pointer;
+
 }
 
 ul.menu  {
 	list-style-type:none;
 	font-family: arial;
     left: 333px;
-	top: 80px;
-	}
+	top: 65px;
+}
+	
 ul.menu li {
-	display:inline;
+	display: block;
+    float: left;
 	
 	}
 
@@ -380,6 +403,7 @@ img.poweredBy {
 }
 #home #presentation{
    height:250px;
+   width: 990px;
 }
 
 
