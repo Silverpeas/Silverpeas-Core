@@ -28,10 +28,10 @@
           "-//JBoss//DTD JBOSS 4.0//EN"
           "http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd">
 <jboss>
-    <enterprise-beans>
-        <message-driven>
-        	<ejb-name>ejb/SilverStatisticsMessageDriven</ejb-name>
-        	<destination-jndi-name>queue/statisticsQueue</destination-jndi-name>
-        </message-driven>
-    </enterprise-beans>
+  <enterprise-beans>
+    <message-driven>
+      <ejb-name>SilverStatisticsMessageDriven</ejb-name>
+      <destination-jndi-name>queue/statisticsQueue</destination-jndi-name>
+    </message-driven>
+  </enterprise-beans>
 </jboss>

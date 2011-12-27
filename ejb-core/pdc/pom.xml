@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>pdc</artifactId>
   <packaging>ejb</packaging>
-  <name>PdC service - ${version}</name>
+  <name>PdC service - ${project.version}</name>
   <description>
     Provides business beans and services to define a classification plan, to parameterize it for
     a Silverpeas component instance, to classify a content, etc.

@@ -33,23 +33,23 @@
   <enterprise-beans>
     <session>
       <description>no description</description>
-      <display-name>ejb/PdcBm</display-name>
-      <ejb-name>ejb/PdcBm</ejb-name>
+      <display-name>PdcBm</display-name>
+      <ejb-name>PdcBm</ejb-name>
       <home>com.silverpeas.pdc.ejb.PdcBmHome</home>
       <remote>com.silverpeas.pdc.ejb.PdcBm</remote>
       <ejb-class>com.silverpeas.pdc.ejb.PdcBmEJB</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
       <resource-ref>
-		<res-ref-name>jdbc/Silverpeas</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </session>
     <session>
       <description>no description</description>
-      <display-name>ejb/pdcSubscription</display-name>
-      <ejb-name>ejb/pdcSubscription</ejb-name>
+      <display-name>pdcSubscription</display-name>
+      <ejb-name>pdcSubscription</ejb-name>
       <home>com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome</home>
       <remote>com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm</remote>
       <ejb-class>com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmEJB</ejb-class>
@@ -63,8 +63,8 @@
     </session>
     <session>
       <description>no description</description>
-      <display-name>ejb/InterestCenter</display-name>
-      <ejb-name>ejb/InterestCenter</ejb-name>
+      <display-name>InterestCenter</display-name>
+      <ejb-name>InterestCenter</ejb-name>
       <home>com.silverpeas.interestCenter.ejb.InterestCenterBmHome</home>
       <remote>com.silverpeas.interestCenter.ejb.InterestCenterBm</remote>
       <ejb-class>com.silverpeas.interestCenter.ejb.InterestCenterBmEJB</ejb-class>
@@ -78,48 +78,48 @@
     </session>
     <session>
       <description>no description</description>
-      <display-name>ejb/ThesaurusBm</display-name>
-      <ejb-name>ejb/ThesaurusBm</ejb-name>
+      <display-name>ThesaurusBm</display-name>
+      <ejb-name>ThesaurusBm</ejb-name>
       <home>com.silverpeas.thesaurus.ejb.ThesaurusBmHome</home>
       <remote>com.silverpeas.thesaurus.ejb.ThesaurusBm</remote>
       <ejb-class>com.silverpeas.thesaurus.ejb.ThesaurusBmEJB</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
       <resource-ref>
-		<res-ref-name>jdbc/Silverpeas</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </session>
   </enterprise-beans>
   <assembly-descriptor>
     <container-transaction>
       <method>
-		<ejb-name>ejb/PdcBm</ejb-name>
-		<method-name>*</method-name>
+        <ejb-name>PdcBm</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     
     <container-transaction>
-        <method>
-	        <ejb-name>ejb/pdcSubscription</ejb-name>
-	        <method-intf>Remote</method-intf>
-	        <method-name>*</method-name>
-        </method>
-        <trans-attribute>Supports</trans-attribute>
-    </container-transaction>
-    <container-transaction>
-        <method>
-            <ejb-name>ejb/pdcSubscription</ejb-name>
-            <method-intf>Remote</method-intf>
-            <method-name>createPDCSubscription</method-name>
-        </method>
-        <trans-attribute>Required</trans-attribute>
+      <method>
+        <ejb-name>pdcSubscription</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/pdcSubscription</ejb-name>
+        <ejb-name>pdcSubscription</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createPDCSubscription</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>pdcSubscription</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>updatePDCSubscription</method-name>
       </method>
@@ -127,38 +127,38 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/pdcSubscription</ejb-name>
+        <ejb-name>pdcSubscription</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>removePDCSubscriptionById</method-name>
-		<method-params>
-	    	<method-param>int</method-param>
-		</method-params>
+        <method-params>
+          <method-param>int</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/pdcSubscription</ejb-name>
+        <ejb-name>pdcSubscription</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>removePDCSubscriptionById</method-name>
-		<method-params>
-	   		<method-param>int[]</method-param>
-		</method-params>
+        <method-params>
+          <method-param>int[]</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     
     <container-transaction>
-    	<method>
-	        <ejb-name>ejb/InterestCenter</ejb-name>
-	        <method-intf>Remote</method-intf>
-	        <method-name>*</method-name>
-        </method>
-        <trans-attribute>Supports</trans-attribute>
+      <method>
+        <ejb-name>InterestCenter</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/InterestCenter</ejb-name>
+        <ejb-name>InterestCenter</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>removeICByPK</method-name>
         <method-params>
@@ -169,7 +169,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/InterestCenter</ejb-name>
+        <ejb-name>InterestCenter</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>removeICByPK</method-name>
         <method-params>
@@ -180,7 +180,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/InterestCenter</ejb-name>
+        <ejb-name>InterestCenter</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>createIC</method-name>
       </method>
@@ -188,7 +188,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/InterestCenter</ejb-name>
+        <ejb-name>InterestCenter</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>updateIC</method-name>
       </method>
@@ -197,8 +197,8 @@
     
     <container-transaction>
       <method>
-		<ejb-name>ejb/ThesaurusBm</ejb-name>
-		<method-name>*</method-name>
+        <ejb-name>ThesaurusBm</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>

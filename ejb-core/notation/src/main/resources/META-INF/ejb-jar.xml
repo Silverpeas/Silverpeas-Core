@@ -24,37 +24,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>NotationJar</display-name>
   <enterprise-beans>
     <session>
       <description>no description</description>
-      <display-name>ejb/NotationBm</display-name>
-      <ejb-name>ejb/NotationBm</ejb-name>
+      <display-name>NotationBm</display-name>
+      <ejb-name>NotationBm</ejb-name>
       <home>com.silverpeas.notation.ejb.NotationBmHome</home>
       <remote>com.silverpeas.notation.ejb.NotationBm</remote>
       <ejb-class>com.silverpeas.notation.ejb.NotationBmEJB</ejb-class>
       <session-type>Stateless</session-type>	
       <transaction-type>Container</transaction-type>      
       <resource-ref>
-	<res-ref-name>jdbc/Silverpeas</res-ref-name>
-	<res-type>javax.sql.DataSource</res-type>
-	<res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </session>
   </enterprise-beans>
   <assembly-descriptor>
     <container-transaction>
-	<method>
-		<ejb-name>ejb/NotationBm</ejb-name>
-		<method-intf>Remote</method-intf>
-		<method-name> * </method-name>
-	</method>
-	<trans-attribute>Supports</trans-attribute>
+      <method>
+        <ejb-name>NotationBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name> * </method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
     </container-transaction>
   </assembly-descriptor>
 </ejb-jar>

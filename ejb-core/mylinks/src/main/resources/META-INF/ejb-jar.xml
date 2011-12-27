@@ -24,18 +24,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>MyLinksJAR</display-name>
 
   <enterprise-beans>
     <session>
       <description>no description</description>
-      <display-name>ejb/MyLinks</display-name>
-      <ejb-name>ejb/MyLinks</ejb-name>
+      <display-name>MyLinks</display-name>
+      <ejb-name>MyLinks</ejb-name>
       <home>com.silverpeas.myLinks.ejb.MyLinksBmHome</home>
       <remote>com.silverpeas.myLinks.ejb.MyLinksBm</remote>
       <ejb-class>com.silverpeas.myLinks.ejb.MyLinksBmEJB</ejb-class>
@@ -51,12 +50,12 @@
 
   <assembly-descriptor>
     <container-transaction>
-        <method>
-                <ejb-name>ejb/MyLinks</ejb-name>
-                <method-intf>Remote</method-intf>
-                <method-name> * </method-name>
-        </method>
-        <trans-attribute>Supports</trans-attribute>
+      <method>
+        <ejb-name>MyLinks</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name> * </method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
     </container-transaction>
   </assembly-descriptor>
 </ejb-jar>

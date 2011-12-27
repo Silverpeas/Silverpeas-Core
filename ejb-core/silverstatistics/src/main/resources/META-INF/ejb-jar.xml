@@ -24,29 +24,27 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
-  <description>no description</description>
-  
-  <display-name>SilverStatisticsJar</display-name>
-  
-  <enterprise-beans>
-   
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
+  <description>no description</description>  
+  <display-name>SilverStatisticsJar</display-name>  
+  <enterprise-beans>   
     <message-driven>
-      <ejb-name>ejb/SilverStatisticsMessageDriven</ejb-name>
+      <ejb-name>SilverStatisticsMessageDriven</ejb-name>
       <ejb-class>com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsMessageDriven</ejb-class>
+      <messaging-type>javax.jms.MessageListener</messaging-type>
       <transaction-type>Bean</transaction-type>
-	  <acknowledge-mode>Auto-acknowledge</acknowledge-mode>      
-      <message-driven-destination>
-        <destination-type>
-          javax.jms.Queue
-        </destination-type>
-      </message-driven-destination>
+      <activation-config>
+        <activation-config-property>
+          <activation-config-property-name>destinationType</activation-config-property-name>
+          <activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+        </activation-config-property>
+        <activation-config-property>
+          <activation-config-property-name>acknowledgeMode</activation-config-property-name>
+          <activation-config-property-value>AutoAcknowledge</activation-config-property-value>
+        </activation-config-property>
+      </activation-config>
     </message-driven>
   </enterprise-beans>       
 </ejb-jar>
-
-
-

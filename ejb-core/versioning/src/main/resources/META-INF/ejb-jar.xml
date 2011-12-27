@@ -24,20 +24,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
-
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>VersioningJar</display-name>
-
-
   <enterprise-beans>
     <session>
       <description>no description</description>
-      <display-name>ejb/Versioning</display-name>
-      <ejb-name>ejb/Versioning</ejb-name>
+      <display-name>Versioning</display-name>
+      <ejb-name>Versioning</ejb-name>
       <home>com.stratelia.silverpeas.versioning.ejb.VersioningBmHome</home>
       <remote>com.stratelia.silverpeas.versioning.ejb.VersioningBm</remote>
       <ejb-class>com.stratelia.silverpeas.versioning.ejb.VersioningBmEJB</ejb-class>
@@ -50,61 +46,47 @@
       </resource-ref>
     </session>
   </enterprise-beans>
-
-
-  
   <assembly-descriptor>
-
-
-    <container-transaction>
-        <method>
-                <ejb-name>ejb/Versioning</ejb-name>
-                <method-intf>Remote</method-intf>
-                <method-name>getLastPublicDocumentVersion</method-name>
-        </method>
-        <trans-attribute>Supports</trans-attribute>
-    </container-transaction>
-
-    <container-transaction>
-        <method>
-                <ejb-name>ejb/Versioning</ejb-name>
-                <method-intf>Remote</method-intf>
-                <method-name>getDocumentVersions</method-name>
-        </method>
-        <trans-attribute>Supports</trans-attribute>
-    </container-transaction>
-
-    <container-transaction>
-        <method>
-                <ejb-name>ejb/Versioning</ejb-name>
-                <method-intf>Remote</method-intf>
-                <method-name>getDocuments</method-name>
-        </method>
-        <trans-attribute>Supports</trans-attribute>
-    </container-transaction>
-
-    <container-transaction>
-        <method>
-                <ejb-name>ejb/Versioning</ejb-name>
-                <method-intf>Remote</method-intf>
-                <method-name>getDocument</method-name>
-        </method>
-        <trans-attribute>Supports</trans-attribute>
-    </container-transaction>
-
-
-
     <container-transaction>
       <method>
-        <ejb-name>ejb/Versioning</ejb-name>
+        <ejb-name>Versioning</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>getLastPublicDocumentVersion</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>Versioning</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>getDocumentVersions</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>Versioning</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>getDocuments</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>Versioning</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>getDocument</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>Versioning</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>*</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
-
-
   </assembly-descriptor>
-
 </ejb-jar>
 

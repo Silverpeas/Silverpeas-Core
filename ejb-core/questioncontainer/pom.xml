@@ -11,7 +11,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>questioncontainer</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Question Container - ${version}</name>
+  <name>EJB Question Container - ${project.version}</name>
 
   <dependencies>
     <dependency>
