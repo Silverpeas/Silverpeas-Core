@@ -23,13 +23,6 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -39,7 +32,6 @@ import com.stratelia.silverpeas.pdc.model.AxisPK;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -47,12 +39,18 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class PdcRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionController> {
 
   private static final long serialVersionUID = -1233766141114104308L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public PdcSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcSessionController(mainSessionCtrl, componentContext,
         "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
@@ -86,9 +84,8 @@ public class PdcRequestRouter extends ComponentRequestRouter {
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, PdcSessionController pdcSC,
       HttpServletRequest request) {
-    PdcSessionController pdcSC = (PdcSessionController) componentSC; // get the
     String destination = "";
     try {
       // récupération de la langue et passage en paramètre à la jsp
@@ -125,7 +122,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // mise à jour de la langue courante
         pdcSC.setCurrentLanguage(currentLanguage);
         // rechargement de la page avec la nouvelle langue
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", pdcSC, request);
 
       } else if (function.equals("ChangeLanguageView")) {
         // récupération de la langue choisie
@@ -139,7 +136,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // mise à jour de la langue courante
         pdcSC.setCurrentLanguage(currentLanguage);
         // rechargement de la page avec la nouvelle langue
-        destination = getDestination("ViewAxis", componentSC, request);
+        destination = getDestination("ViewAxis", pdcSC, request);
 
       } else if (function.equals("ChangeLanguageValue")) {
         // récupération de la langue choisie
@@ -159,7 +156,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // mise à jour de la langue courante
         pdcSC.setCurrentLanguage(currentLanguage);
         // rechargement de la page avec la nouvelle langue
-        destination = getDestination("ViewValue", componentSC, request);
+        destination = getDestination("ViewValue", pdcSC, request);
 
       } else if (function.startsWith("ChangeViewType")) {
         // the user changes the view
@@ -171,7 +168,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         pdcSC.setCurrentView(type);
 
         // create the new destination
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", pdcSC, request);
 
       } else if (function.startsWith("NewAxis")) {
         // the user wants to add a new axis into the PDC.
@@ -263,7 +260,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
           pdcSC.deleteAxis(st.nextToken());
         }
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", pdcSC, request);
 
       } else if (function.startsWith("ViewAxis")) {
         // the user wants to see the axis
@@ -336,7 +333,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
             request.setAttribute("ViewType", pdcSC.getCurrentView());
             request.setAttribute("SecondaryAxis", pdcSC.getSecondaryAxis());
             request.setAttribute("PrimaryAxis", pdcSC.getPrimaryAxis());
-            destination = getDestination("AxisAlreadyExist", componentSC,
+            destination = getDestination("AxisAlreadyExist", pdcSC,
                 request);
             break;
           default:
@@ -387,8 +384,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
             request.setAttribute("ViewType", pdcSC.getCurrentView());
             request.setAttribute("SecondaryAxis", pdcSC.getSecondaryAxis());
             request.setAttribute("PrimaryAxis", pdcSC.getPrimaryAxis());
-            destination = getDestination("AxisAlreadyExist", componentSC,
-                request);
+            destination = getDestination("AxisAlreadyExist", pdcSC, request);
             break;
           default:
             destination = "/pdcPeas/jsp/reloadPdc.jsp";
@@ -499,8 +495,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         } else {
           request.setAttribute("AlreadyExist", "1"); // already exist
         }
-        destination = getDestination("ToMoveValueChooseMother", componentSC,
-            request);
+        destination = getDestination("ToMoveValueChooseMother", pdcSC, request);
       } else if (function.startsWith("MoveValue")) {
         // we need to move the subtree
 
@@ -522,8 +517,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         switch (status) {
           case 1:
             request.setAttribute("AlreadyExist", "1"); // already exist
-            destination = getDestination("ToMoveValueChooseMother",
-                componentSC, request);
+            destination = getDestination("ToMoveValueChooseMother", pdcSC, request);
             break;
           default:
             destination = "/pdcPeas/jsp/reloadAxis.jsp";
@@ -680,7 +674,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
             } else {
               request.setAttribute("Root", "0");
             }
-            destination = getDestination("NewMotherValue", componentSC, request);
+            destination = getDestination("NewMotherValue", pdcSC, request);
             break;
           default:
             destination = "/pdcPeas/jsp/reloadAxis.jsp";
@@ -706,13 +700,11 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         switch (status) {
           case 1:
             request.setAttribute("ValueToCreate", value);
-            destination = getDestination("NewDaughterValue", componentSC,
-                request);
+            destination = getDestination("NewDaughterValue", pdcSC, request);
             break;
           default:
             request.setAttribute("ValueCreated", "1");
-            destination = getDestination("NewDaughterValue", componentSC,
-                request);
+            destination = getDestination("NewDaughterValue", pdcSC, request);
         }
 
       } else if (function.startsWith("ToRefresh")) {
@@ -762,7 +754,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
               "JobStartPagePeasRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
-        destination = getDestination("ViewManager", componentSC, request);
+        destination = getDestination("ViewManager", pdcSC, request);
       } else if (function.startsWith("EraseManager")) {
         // to delete the permissions on the current value
         try {
@@ -772,7 +764,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
               "JobStartPagePeasRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
-        destination = getDestination("ViewManager", componentSC, request);
+        destination = getDestination("ViewManager", pdcSC, request);
 
       } else if (function.startsWith("vsicAddPdc")) {
 
@@ -796,7 +788,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // selected axe
 
         pdcSC.setCurrentView(type);
-        destination = getDestination("vsicAddList", componentSC, request);
+        destination = getDestination("vsicAddList", pdcSC, request);
 
       } else if (function.startsWith("vsicAddTree")) {// get URL parameters
         String axeId = request.getParameter("Id"); // get the id of the selected axis

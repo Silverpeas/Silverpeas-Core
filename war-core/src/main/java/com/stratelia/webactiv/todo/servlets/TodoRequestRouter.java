@@ -27,37 +27,35 @@
 
 package com.stratelia.webactiv.todo.servlets;
 
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.todo.control.ToDoSessionController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+
 /**
  * Class declaration
+ *
  * @author
  */
-public class TodoRequestRouter extends ComponentRequestRouter {
+public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionController> {
 
   private static final long serialVersionUID = 6455939825707914384L;
 
   /**
    * This method creates a TodoSessionController instance
+   *
    * @param mainSessionCtrl The MainSessionController instance
-   * @param context Context of current component instance
+   * @param context         Context of current component instance
    * @return a TodoSessionController instance
    */
-  public ComponentSessionController createComponentSessionController(
+  public ToDoSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component = (ComponentSessionController) new ToDoSessionController(
-        mainSessionCtrl, context);
-    return component;
+    return new ToDoSessionController(mainSessionCtrl, context);
   }
 
   /**
@@ -71,18 +69,15 @@ public class TodoRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Controller, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @param scc      The component Session Controller, build and initialised.
+   * @param request  The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-
-    SilverTrace.info("todo", "TodoRequestRooter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD");
-    ToDoSessionController scc = (ToDoSessionController) componentSC;
+  public String getDestination(String function, ToDoSessionController scc,
+      HttpServletRequest request) {
+    SilverTrace.info("todo", "TodoRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD");
     String destination = "";
 
     try {

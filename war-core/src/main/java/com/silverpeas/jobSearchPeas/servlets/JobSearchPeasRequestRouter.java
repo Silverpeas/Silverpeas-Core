@@ -24,25 +24,21 @@
 
 package com.silverpeas.jobSearchPeas.servlets;
 
-import java.util.List;
-
-
-import javax.servlet.http.HttpServletRequest;
-
-
 import com.silverpeas.jobSearchPeas.SearchResult;
 import com.silverpeas.jobSearchPeas.control.JobSearchPeasSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Class declaration
  * @author Cécile Bonin
  */
-public class JobSearchPeasRequestRouter extends ComponentRequestRouter {
+public class JobSearchPeasRequestRouter extends ComponentRequestRouter<JobSearchPeasSessionController> {
   
 /**
    * 
@@ -57,10 +53,9 @@ public class JobSearchPeasRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public JobSearchPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new JobSearchPeasSessionController(mainSessionCtrl,
-        componentContext);
+    return new JobSearchPeasSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
@@ -76,20 +71,15 @@ public class JobSearchPeasRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param jobSearchPeasSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function,JobSearchPeasSessionController jobSearchPeasSC, HttpServletRequest request) {
     String destination = "";
-    JobSearchPeasSessionController jobSearchPeasSC =
-        (JobSearchPeasSessionController) componentSC;
-    SilverTrace.info("jobSearchPeas",
-        "JobSearchPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobSearchPeasSC.getUserId()
-        + " Function=" + function);
+    SilverTrace.info("jobSearchPeas", "JobSearchPeasRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + jobSearchPeasSC.getUserId() + " Function=" + function);
 
     try {
       if (function.equals("Main")) {

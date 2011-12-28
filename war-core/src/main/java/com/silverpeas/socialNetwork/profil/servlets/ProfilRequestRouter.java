@@ -23,24 +23,22 @@
  */
 package com.silverpeas.socialNetwork.profil.servlets;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.silverpeas.socialNetwork.profil.control.ProfilSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author azzedine
  */
-public class ProfilRequestRouter extends ComponentRequestRouter {
+public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionController> {
 
   private static final long serialVersionUID = 1L;
 
@@ -50,17 +48,15 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public ProfilSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ProfilSessionController(mainSessionCtrl, componentContext);
   }
 
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, ProfilSessionController profileSC,
       HttpServletRequest request) {
     String destination = "#";
-
-    ProfilSessionController profileSC = (ProfilSessionController) componentSC;
     String userId = request.getParameter("userId");
     String m_context = request.getScheme() + "://" + request.getServerName() + ":" + request.
         getServerPort() + request.getContextPath();

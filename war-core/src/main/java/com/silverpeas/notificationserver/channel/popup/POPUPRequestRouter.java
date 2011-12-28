@@ -33,21 +33,20 @@ package com.silverpeas.notificationserver.channel.popup;
  * @version 1.0
  */
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
  * @author
  * @version %I%, %G%
  */
-public class POPUPRequestRouter extends ComponentRequestRouter {
+public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionController> {
   
   private static final long serialVersionUID = -240502612963231503L;
   /**
@@ -59,11 +58,9 @@ public class POPUPRequestRouter extends ComponentRequestRouter {
   public POPUPRequestRouter() {
   }
 
-  public ComponentSessionController createComponentSessionController(
+  public POPUPSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component = new POPUPSessionController(
-        mainSessionCtrl, context);
-    return component;
+    return new POPUPSessionController(mainSessionCtrl, context);
   }
 
   /**
@@ -74,13 +71,10 @@ public class POPUPRequestRouter extends ComponentRequestRouter {
     return SESSION_BEAN_NAME;
   }
 
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function,POPUPSessionController popupSC, HttpServletRequest request) {
     String destination = "/POPUP/jsp/" + function;
     SilverTrace.info("popup", "POPUPRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function=" + function);
-
-    POPUPSessionController popupSC = (POPUPSessionController) componentSC;
 
     if (function.startsWith("Main")) {
       destination = "/POPUP/jsp/main.jsp";

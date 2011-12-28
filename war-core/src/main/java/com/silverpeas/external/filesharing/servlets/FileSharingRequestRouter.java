@@ -23,25 +23,23 @@
  */
 package com.silverpeas.external.filesharing.servlets;
 
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.external.filesharing.control.FileSharingSessionController;
 import com.silverpeas.external.filesharing.model.TicketDetail;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
-public class FileSharingRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+
+public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharingSessionController> {
 
   private static final long serialVersionUID = -8855028133035807994L;
 
@@ -62,7 +60,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public FileSharingSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new FileSharingSessionController(mainSessionCtrl, componentContext);
   }
@@ -76,14 +74,12 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, FileSharingSessionController fileSharingSC,
       HttpServletRequest request) {
     String destination = "";
     String rootDest = "/fileSharing/jsp/";
-
-    FileSharingSessionController fileSharingSC = (FileSharingSessionController) componentSC;
     SilverTrace.info("fileSharing", "FileSharingRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + fileSharingSC.getUserId() + " Function=" + function);
 
     try {
       if (function.equals("Main")) {

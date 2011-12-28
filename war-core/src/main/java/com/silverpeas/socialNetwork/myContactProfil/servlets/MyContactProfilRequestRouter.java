@@ -23,24 +23,22 @@
  */
 package com.silverpeas.socialNetwork.myContactProfil.servlets;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialNetwork.myContactProfil.control.MyContactProfilSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * @author azzedine
  */
-public class MyContactProfilRequestRouter extends ComponentRequestRouter {
+public class MyContactProfilRequestRouter extends ComponentRequestRouter<MyContactProfilSessionController> {
 
   private static final long serialVersionUID = 1L;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
@@ -61,7 +59,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
    * @return ComponentSessionController
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public MyContactProfilSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MyContactProfilSessionController(mainSessionCtrl, componentContext);
   }
@@ -69,15 +67,14 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
   /**
    *get Destination
    * @param function
-   * @param componentSC
+   * @param sc
    * @param request
    * @return
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, MyContactProfilSessionController sc,
       HttpServletRequest request) {
     String destination = "#";
-    MyContactProfilSessionController sc = (MyContactProfilSessionController) componentSC;
     String userId = request.getParameter("userId");
     if (function.equalsIgnoreCase("Infos")) {
       request.setAttribute("View", function);

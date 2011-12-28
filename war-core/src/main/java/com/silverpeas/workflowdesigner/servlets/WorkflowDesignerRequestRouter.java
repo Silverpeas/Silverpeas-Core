@@ -51,7 +51,6 @@ import com.silverpeas.workflow.engine.model.ProcessModelImpl;
 import com.silverpeas.workflowdesigner.control.WorkflowDesignerSessionController;
 import com.silverpeas.workflowdesigner.model.WorkflowDesignerException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -71,7 +70,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
+public class WorkflowDesignerRequestRouter
+    extends ComponentRequestRouter<WorkflowDesignerSessionController> {
 
   static private Map mapHandler; // mapping of functions to their handlers
   static final private String root = "/workflowDesigner/jsp/"; // the root
@@ -95,28 +95,26 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public WorkflowDesignerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new WorkflowDesignerSessionController(mainSessionCtrl,
-        componentContext);
+    return new WorkflowDesignerSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
-   * @param function    The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param function           The entering request function (ex : "Main.jsp")
+   * @param workflowDesignerSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
-      HttpServletRequest request) {
+  public String getDestination(String function,
+      WorkflowDesignerSessionController workflowDesignerSC, HttpServletRequest request) {
     String destination = null;
-    WorkflowDesignerSessionController workflowDesignerSC =
-        (WorkflowDesignerSessionController) componentSC;
     FunctionHandler handler = getHandler(function);
     SilverTrace.info("workflowDesigner", "WorkflowDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE",
+        "User=" + workflowDesignerSC.getUserId() + " Function=" + function);
 
     // Check access rights
     if (!workflowDesignerSC.getUserDetail().isAccessAdmin()) {
@@ -286,7 +284,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
         WorkflowDesignerSessionController workflowDesignerSC,
         HttpServletRequest request) throws WorkflowDesignerException,
         WorkflowException {
-      String strProcessFileName  ;
+      String strProcessFileName;
       ProcessModel processModel = null;
 
       if ("AddWorkflow".equals(function)) {

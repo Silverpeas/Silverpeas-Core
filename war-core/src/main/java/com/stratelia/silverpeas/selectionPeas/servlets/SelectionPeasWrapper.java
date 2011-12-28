@@ -24,30 +24,29 @@
 
 package com.stratelia.silverpeas.selectionPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selectionPeas.control.SelectionPeasWrapperSessionController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A simple wrapper for the userpanel.
  */
-public class SelectionPeasWrapper extends ComponentRequestRouter {
+public class SelectionPeasWrapper
+    extends ComponentRequestRouter<SelectionPeasWrapperSessionController> {
 
   private static final long serialVersionUID = 1L;
 
   /**
    * Returns a new session controller
    */
-  public ComponentSessionController createComponentSessionController(
+  public SelectionPeasWrapperSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SelectionPeasWrapperSessionController(mainSessionCtrl,
         componentContext);
@@ -63,17 +62,15 @@ public class SelectionPeasWrapper extends ComponentRequestRouter {
   /**
    * Do the requested function and return the destination url.
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-    SelectionPeasWrapperSessionController session =
-        (SelectionPeasWrapperSessionController) componentSC;
-
+  public String getDestination(String function, SelectionPeasWrapperSessionController session,
+      HttpServletRequest request) {
     try {
       if (function.equals("open")) {
         session.setFormName(request.getParameter("formName"));
         session.setElementId(request.getParameter("elementId"));
         session.setElementName(request.getParameter("elementName"));
-        boolean selectionMultiple = StringUtil.getBooleanValue(request.getParameter("selectionMultiple"));
+        boolean selectionMultiple =
+            StringUtil.getBooleanValue(request.getParameter("selectionMultiple"));
         String instanceId = request.getParameter("instanceId");
         List<String> roles = getRoles(request.getParameter("roles"));
 
@@ -125,7 +122,7 @@ public class SelectionPeasWrapper extends ComponentRequestRouter {
       return "/admin/jsp/errorpageMain.jsp";
     }
   }
-  
+
   private List<String> getRoles(String param) {
     if (StringUtil.isDefined(param)) {
       return Arrays.asList(StringUtil.split(param, ","));

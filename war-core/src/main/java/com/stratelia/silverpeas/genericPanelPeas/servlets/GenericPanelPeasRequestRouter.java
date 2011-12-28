@@ -27,40 +27,40 @@
 
 package com.stratelia.silverpeas.genericPanelPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.genericPanelPeas.control.GenericPanelPeasSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Class declaration
+ *
  * @author
  */
-public class GenericPanelPeasRequestRouter extends ComponentRequestRouter {
+public class GenericPanelPeasRequestRouter
+    extends ComponentRequestRouter<GenericPanelPeasSessionController> {
 
   private static final long serialVersionUID = 157358334718653187L;
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public GenericPanelPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new GenericPanelPeasSessionController(mainSessionCtrl,
-        componentContext);
+    return new GenericPanelPeasSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
@@ -74,18 +74,16 @@ public class GenericPanelPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   *
+   * @param function           The entering request function (ex : "Main.jsp")
+   * @param genericPanelPeasSC The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      GenericPanelPeasSessionController genericPanelPeasSC, HttpServletRequest request) {
     String destination = "";
-    GenericPanelPeasSessionController genericPanelPeasSC =
-        (GenericPanelPeasSessionController) componentSC;
-    SilverTrace.info("genericPanelPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
+    SilverTrace.info("genericPanelPeas", "getDestination()", "root.MSG_GEN_PARAM_VALUE",
+        "Function=" + function);
 
     try {
       if (function.startsWith("Main")) {
@@ -139,40 +137,25 @@ public class GenericPanelPeasRequestRouter extends ComponentRequestRouter {
 
       // Prepare the parameters
       if (destination.equals("genericPanelPeas.jsp")) {
-        request.setAttribute("isZoomToItemValid", new Boolean(
-            genericPanelPeasSC.isZoomToItemValid()));
-        request.setAttribute("isFilterValid", new Boolean(genericPanelPeasSC
-            .isFilterValid()));
-        request.setAttribute("isMultiSelect", new Boolean(genericPanelPeasSC
-            .isMultiSelect()));
-        request.setAttribute("isSelectable", new Boolean(genericPanelPeasSC
-            .isSelectable()));
+        request.setAttribute("isZoomToItemValid", genericPanelPeasSC.isZoomToItemValid());
+        request.setAttribute("isFilterValid", genericPanelPeasSC.isFilterValid());
+        request.setAttribute("isMultiSelect", genericPanelPeasSC.isMultiSelect());
+        request.setAttribute("isSelectable", genericPanelPeasSC.isSelectable());
         request.setAttribute("pageName", genericPanelPeasSC.getPageName());
-        request.setAttribute("pageSubTitle", genericPanelPeasSC
-            .getPageSubTitle());
-        request.setAttribute("searchTokens", genericPanelPeasSC
-            .getSearchTokens());
-        request.setAttribute("searchNumber", genericPanelPeasSC
-            .getSearchUsersNumber());
-        request.setAttribute("selectedNumber", genericPanelPeasSC
-            .getSelectedNumber());
-        request.setAttribute("pageNavigation", genericPanelPeasSC
-            .getPageNavigation());
+        request.setAttribute("pageSubTitle", genericPanelPeasSC.getPageSubTitle());
+        request.setAttribute("searchTokens", genericPanelPeasSC.getSearchTokens());
+        request.setAttribute("searchNumber", genericPanelPeasSC.getSearchUsersNumber());
+        request.setAttribute("selectedNumber", genericPanelPeasSC.getSelectedNumber());
+        request.setAttribute("pageNavigation", genericPanelPeasSC.getPageNavigation());
         request.setAttribute("elementsToDisplay", genericPanelPeasSC.getPage());
-        request.setAttribute("operationsToDisplay", genericPanelPeasSC
-            .getPanelOperations());
-        request.setAttribute("columnsHeader", genericPanelPeasSC
-            .getColumnsHeader());
-        request.setAttribute("miniFilterSelect", genericPanelPeasSC
-            .getMiniFilterString());
-        request.setAttribute("HostSpaceName", genericPanelPeasSC
-            .getHostSpaceName());
-        request.setAttribute("HostComponentName", genericPanelPeasSC
-            .getHostComponentName());
+        request.setAttribute("operationsToDisplay", genericPanelPeasSC.getPanelOperations());
+        request.setAttribute("columnsHeader", genericPanelPeasSC.getColumnsHeader());
+        request.setAttribute("miniFilterSelect", genericPanelPeasSC.getMiniFilterString());
+        request.setAttribute("HostSpaceName", genericPanelPeasSC.getHostSpaceName());
+        request.setAttribute("HostComponentName", genericPanelPeasSC.getHostComponentName());
         request.setAttribute("HostPath", genericPanelPeasSC.getHostPath());
       }
-      request.setAttribute("ToPopup", new Boolean(genericPanelPeasSC
-          .isPopupMode()));
+      request.setAttribute("ToPopup", genericPanelPeasSC.isPopupMode());
 
       destination = "/genericPanelPeas/jsp/" + destination;
     } catch (Exception e) {
@@ -199,7 +182,7 @@ public class GenericPanelPeasRequestRouter extends ComponentRequestRouter {
       i++;
       theValue = request.getParameter("filter" + Integer.toString(i));
     }
-    return (String[]) filters.toArray(new String[0]);
+    return filters.toArray(new String[filters.size()]);
   }
 
   protected Set<String> getSelected(HttpServletRequest request, int nbMaxDisplayed) {

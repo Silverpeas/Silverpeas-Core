@@ -23,15 +23,6 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.thesaurus.model.Jargon;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -40,17 +31,25 @@ import com.stratelia.silverpeas.pdcPeas.control.PdcClassifySessionController;
 import com.stratelia.silverpeas.pdcPeas.control.PdcFieldPositionsManager;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import static com.silverpeas.util.StringUtil.*;
 
-public class PdcClassifyRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+
+public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassifySessionController> {
 
   private static final long serialVersionUID = -7647574714509474585L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public PdcClassifySessionController createComponentSessionController(
           MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcClassifySessionController(mainSessionCtrl, componentContext,
             "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
@@ -83,12 +82,10 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public String getDestination(String function,
-          ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, PdcClassifySessionController pdcSC, HttpServletRequest request) {
     String destination = "";
 
     // get the session controller to inform the request
-    PdcClassifySessionController pdcSC = (PdcClassifySessionController) componentSC;
     PdcFieldPositionsManager pdcFPM = pdcSC.getPdcFieldPositionsManager();
 
     try {
@@ -179,7 +176,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
             request.setAttribute("ToURL", toURL);
             destination = "/pdcPeas/jsp/redirectToComponent.jsp";
           } else {
-            destination = getDestination("Main", componentSC, request);
+            destination = getDestination("Main", pdcSC, request);
           }
         }
       } else if (function.startsWith("CreatePosition")) {
@@ -305,7 +302,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
           }
         }
 
-        destination = getDestination("NewPosition", componentSC, request);
+        destination = getDestination("NewPosition", pdcSC, request);
 
       } else if (function.equals("PdcFieldMode")) {
         String pdcFieldName = request.getParameter("pdcFieldName");
@@ -313,7 +310,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         String pdcAxis = request.getParameter("pdcAxis");
         String action = request.getParameter("action");
         pdcFPM.init(pdcFieldName, pdcFieldPositions, pdcAxis);
-        destination = getDestination(action, componentSC, request);
+        destination = getDestination(action, pdcSC, request);
       } else {
         destination = "/pdcPeas/jsp/" + function;
       }

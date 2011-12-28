@@ -36,23 +36,21 @@ package com.stratelia.silverpeas.notificationserver.channel.silvermail;
  * @version 1.0
  */
 
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 /**
  * Class declaration
  * @author
  * @version %I%, %G%
  */
-public class SILVERMAILRequestRouter extends ComponentRequestRouter {
+public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSessionController> {
 
   private static final long serialVersionUID = -1666867964822716456L;
 
@@ -77,12 +75,9 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
   public SILVERMAILRequestRouter() {
   }
 
-  public ComponentSessionController createComponentSessionController(
+  public SILVERMAILSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component =
-        (ComponentSessionController) new SILVERMAILSessionController(
-        mainSessionCtrl, context);
-    return component;
+    return new SILVERMAILSessionController(mainSessionCtrl, context);
   }
 
   /**
@@ -94,7 +89,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
   }
 
   public String getDestination(String action,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      SILVERMAILSessionController componentSC, HttpServletRequest request) {
     String destination = "/SILVERMAIL/jsp/" + action;
     String function = extractFunctionName(action);
 
@@ -105,7 +100,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
 
     try {
       requestHandler = getHandlerInstance(function);
-      ((SILVERMAILSessionController) componentSC).setCurrentFunction(function);
+      componentSC.setCurrentFunction(function);
 
       // Return the URL of the view the RequestHandler instance
       // chooses after doing the work of processing the request

@@ -24,22 +24,12 @@
 package com.silverpeas.jobStartPagePeas.servlets;
 
 import com.silverpeas.admin.components.Parameter;
-
 import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterSorter;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.admin.localized.LocalizedParameter;
 import com.silverpeas.admin.localized.LocalizedParameterSorter;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.SpaceLookHelper;
 import com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController;
@@ -48,7 +38,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -67,14 +56,21 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.util.Collections;
+import org.apache.commons.fileupload.FileItem;
 
-public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
   private static final long serialVersionUID = 3751632991093466433L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public JobStartPagePeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new JobStartPagePeasSessionController(mainSessionCtrl,
         componentContext);
@@ -966,11 +962,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, JobStartPagePeasSessionController jobStartPageSC,
       HttpServletRequest request) {
     String destination = null;
-    JobStartPagePeasSessionController jobStartPageSC =
-        (JobStartPagePeasSessionController) componentSC;
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobStartPageSC.getUserId() + " Function="
         + function);
