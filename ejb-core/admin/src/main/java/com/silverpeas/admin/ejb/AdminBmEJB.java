@@ -1,35 +1,24 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.admin.ejb;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.SessionContext;
 
 import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -38,9 +27,14 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+
+import javax.ejb.SessionContext;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-public class AdminBmEJB implements javax.ejb.SessionBean {
+public class AdminBmEJB implements javax.ejb.SessionBean, AdminBusiness {
 
   private static final long serialVersionUID = 8753816261083500713L;
   AdminController ac = null;
@@ -55,7 +49,8 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
     return ac;
   }
 
-  public ArrayList<String> getAllRootSpaceIds() throws RemoteException {
+  @Override
+  public ArrayList<String> getAllRootSpaceIds() {
     String[] spaceIds = getAdminController().getAllRootSpaceIds();
     ArrayList<String> result = new ArrayList<String>();
     result.addAll(Arrays.asList(spaceIds));
@@ -63,23 +58,28 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
     return result;
   }
 
-  public SpaceInst getSpaceInstById(String spaceId) throws RemoteException {
+  @Override
+  public SpaceInst getSpaceInstById(String spaceId) {
     return getAdminController().getSpaceInstById(spaceId);
   }
 
-  public SpaceInstLight getSpaceInstLight(String spaceId) throws RemoteException {
+  @Override
+  public SpaceInstLight getSpaceInstLight(String spaceId) {
     return getAdminController().getSpaceInstLight(spaceId);
   }
 
-  public ComponentInst getComponentInst(String componentId) throws RemoteException {
+  @Override
+  public ComponentInst getComponentInst(String componentId) {
     return getAdminController().getComponentInst(componentId);
   }
 
-  public ComponentInstLight getComponentInstLight(String componentId) throws RemoteException {
+  @Override
+  public ComponentInstLight getComponentInstLight(String componentId) {
     return getAdminController().getComponentInstLight(componentId);
   }
 
-  public ArrayList<String> getAvailCompoIds(String spaceId, String userId) throws RemoteException {
+  @Override
+  public ArrayList<String> getAvailCompoIds(String spaceId, String userId) {
     String[] compoIds = getAdminController().getAvailCompoIds(spaceId, userId);
     ArrayList<String> result = new ArrayList<String>();
     result.addAll(Arrays.asList(compoIds));
@@ -87,12 +87,13 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
     return result;
   }
 
-  public boolean isComponentAvailable(String spaceId, String componentId, String userId)
-      throws RemoteException {
+  @Override
+  public boolean isComponentAvailable(String spaceId, String componentId, String userId) {
     return getAdminController().isComponentAvailable(componentId, userId);
   }
 
-  public List<String> getAvailableSpaceIds(String userId) throws RemoteException {
+  @Override
+  public List<String> getAvailableSpaceIds(String userId) {
     String[] spaceIds = getAdminController().getAllSpaceIds(userId);
     List<String> result = new ArrayList<String>();
     result.addAll(Arrays.asList(spaceIds));
@@ -100,7 +101,8 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
     return result;
   }
 
-  public List<String> getAvailableSubSpaceIds(String spaceId, String userId) throws RemoteException {
+  @Override
+  public List<String> getAvailableSubSpaceIds(String spaceId, String userId) {
     String[] subSpaceIds = getAdminController().getAllSubSpaceIds(spaceId, userId);
     List<String> result = new ArrayList<String>();
     result.addAll(Arrays.asList(subSpaceIds));
@@ -108,41 +110,45 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
     return result;
   }
 
-  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws RemoteException {
+  @Override
+  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId) {
     return getAdminController().getTreeView(userId, spaceId);
   }
 
-  public String authenticate(String sKey, String sSessionId) throws RemoteException {
+  @Override
+  public String authenticate(String sKey, String sSessionId) {
     return getAdminController().authenticate(sKey, sSessionId, false);
   }
 
-  public String getUserIdByLoginAndDomain(String login, String domainId)
-      throws RemoteException {
+  @Override
+  public String getUserIdByLoginAndDomain(String login, String domainId) {
     return getAdminController().getUserIdByLoginAndDomain(login, domainId);
   }
 
-  public void addSecurityData(String securityId, String userId, String domainId)
-      throws RemoteException {
+  @Override
+  public void addSecurityData(String securityId, String userId, String domainId) {
     SecurityHolder.addData(securityId, userId, domainId);
   }
 
+  @Override
   public void addSecurityData(String securityId, String userId, String domainId,
-      boolean persistent)
-      throws RemoteException {
+      boolean persistent) {
     SecurityHolder.addData(securityId, userId, domainId, persistent);
   }
-  
-  public String addComponentInst(ComponentInst componentInst, String userId)
-      throws RemoteException {
+
+  @Override
+  public String addComponentInst(ComponentInst componentInst, String userId) {
     return getAdminController().addComponentInst(componentInst, userId);
   }
-  
-  public void updateComponentOrderNum(String sComponentId, int orderNum) throws RemoteException {
+
+  @Override
+  public void updateComponentOrderNum(String sComponentId, int orderNum) {
     getAdminController().updateComponentOrderNum(sComponentId, orderNum);
   }
 
-  /* Ejb Methods */
-
+  /*
+   * Ejb Methods
+   */
   public void ejbCreate() {
   }
 
@@ -161,5 +167,4 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   @Override
   public void setSessionContext(SessionContext sc) {
   }
-
 }
