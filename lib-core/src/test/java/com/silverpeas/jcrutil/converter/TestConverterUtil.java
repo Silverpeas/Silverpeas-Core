@@ -24,10 +24,10 @@
 
 package com.silverpeas.jcrutil.converter;
 
+import junit.framework.TestCase;
+
 import java.text.ParseException;
 import java.util.Calendar;
-
-import junit.framework.TestCase;
 
 
 public class TestConverterUtil extends TestCase {
@@ -40,8 +40,8 @@ public class TestConverterUtil extends TestCase {
     assertEquals("/", ConverterUtil.convertToJcrPath("/"));
     assertEquals("/toto", ConverterUtil.convertToJcrPath("/toto"));
     assertEquals("/theme__test", ConverterUtil.convertToJcrPath("/theme test"));
-    assertEquals("/theme__test/sous__theme__test", ConverterUtil
-        .convertToJcrPath("/theme test/sous theme test"));
+    assertEquals("/theme__test/sous__theme__test", ConverterUtil.convertToJcrPath(
+        "/theme test/sous theme test"));
     assertEquals("/theme__test%7C", ConverterUtil.convertToJcrPath("/theme test|"));
     assertEquals("/theme__test%09", ConverterUtil.convertToJcrPath("/theme test\t"));
     assertEquals("/theme__test%0D", ConverterUtil.convertToJcrPath("/theme test\r"));
@@ -50,8 +50,8 @@ public class TestConverterUtil extends TestCase {
     assertEquals("theme.", ConverterUtil.convertToJcrPath("theme."));
     assertEquals("/theme%2A", ConverterUtil.convertToJcrPath("/theme*"));
     assertEquals("/theme__%5Btest%5D", ConverterUtil.convertToJcrPath("/theme [test]"));
-    assertEquals("/theme%22", ConverterUtil.convertToJcrPath("/theme\""));
-    assertEquals("/theme%27", ConverterUtil.convertToJcrPath("/theme'"));
+    assertEquals("/theme\"", ConverterUtil.convertToJcrPath("/theme\""));
+    assertEquals("/theme'", ConverterUtil.convertToJcrPath("/theme'"));
     assertEquals("/theme__20%25", ConverterUtil.convertToJcrPath("/theme 20%"));
     assertEquals("/theme%3Atest", ConverterUtil.convertToJcrPath("/theme:test"));
   }
@@ -59,10 +59,9 @@ public class TestConverterUtil extends TestCase {
   public void testConvertFromJcrPath() {
     assertEquals("/", ConverterUtil.convertFromJcrPath("/"));
     assertEquals("/toto", ConverterUtil.convertFromJcrPath("/toto"));
-    assertEquals("/theme test", ConverterUtil
-        .convertFromJcrPath("/theme__test"));
-    assertEquals("/theme test/sous theme test", ConverterUtil
-        .convertFromJcrPath("/theme__test/sous__theme__test"));
+    assertEquals("/theme test", ConverterUtil.convertFromJcrPath("/theme__test"));
+    assertEquals("/theme test/sous theme test", ConverterUtil.convertFromJcrPath(
+        "/theme__test/sous__theme__test"));
     assertEquals("/theme test|", ConverterUtil.convertFromJcrPath("/theme__test%7C"));
     assertEquals("/theme test\t", ConverterUtil.convertFromJcrPath("/theme__test%09"));
     assertEquals("/theme test\r", ConverterUtil.convertFromJcrPath("/theme__test%0D"));

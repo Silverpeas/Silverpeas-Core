@@ -10,6 +10,6 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>mylinks</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB My Links - ${version}</name>
+  <name>EJB My Links - ${project.version}</name>
 
 </project>

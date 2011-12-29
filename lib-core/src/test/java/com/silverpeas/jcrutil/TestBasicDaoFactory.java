@@ -23,23 +23,22 @@
  */
 package com.silverpeas.jcrutil;
 
+import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import org.apache.jackrabbit.value.ValueFactoryImpl;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import java.util.Calendar;
 
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import java.util.Calendar;
 
-import org.apache.jackrabbit.value.ValueFactoryImpl;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = {"/spring-in-memory-jcr.xml"})
@@ -73,20 +72,16 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetComponentId() throws Exception {
-    System.out.println("testGetComponentId");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String firstNodeName = RandomGenerator.getRandomString();
-      Node firstNode = componentNode.addNode(firstNodeName,
-          JcrConstants.NT_FOLDER);
+      Node firstNode = componentNode.addNode(firstNodeName, JcrConstants.NT_FOLDER);
       assertNotNull(firstNode);
       assertEquals("kmelia36", BasicDaoFactory.getComponentId(firstNode));
       String secondNodeName = RandomGenerator.getRandomString();
-      Node secondNode = firstNode.addNode(secondNodeName,
-          JcrConstants.NT_FOLDER);
+      Node secondNode = firstNode.addNode(secondNodeName, JcrConstants.NT_FOLDER);
       assertNotNull(secondNode);
       assertEquals("kmelia36", BasicDaoFactory.getComponentId(secondNode));
       String thirdNodeName = RandomGenerator.getRandomString();
@@ -100,27 +95,22 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testAddStringProperty() throws Exception {
-    System.out.println("testAddStringProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_I18N_NODE);
       String property = RandomGenerator.getRandomString();
-      BasicDaoFactory.addStringProperty(node, JcrConstants.SLV_PROPERTY_NAME,
-          property);
+      BasicDaoFactory.addStringProperty(node, JcrConstants.SLV_PROPERTY_NAME, property);
       assertTrue(node.hasProperty(JcrConstants.SLV_PROPERTY_NAME));
       assertEquals(property, node.getProperty(JcrConstants.SLV_PROPERTY_NAME).getString());
       String description = RandomGenerator.getRandomString();
-      BasicDaoFactory.addStringProperty(node,
-          JcrConstants.SLV_PROPERTY_DESCRIPTION, description);
+      BasicDaoFactory.addStringProperty(node, JcrConstants.SLV_PROPERTY_DESCRIPTION, description);
       assertTrue(node.hasProperty(JcrConstants.SLV_PROPERTY_DESCRIPTION));
-      assertEquals(description, node.getProperty(
-          JcrConstants.SLV_PROPERTY_DESCRIPTION).getString());
-      BasicDaoFactory.addStringProperty(node,
-          JcrConstants.SLV_PROPERTY_DESCRIPTION, null);
+      assertEquals(description,
+          node.getProperty(JcrConstants.SLV_PROPERTY_DESCRIPTION).getString());
+      BasicDaoFactory.addStringProperty(node, JcrConstants.SLV_PROPERTY_DESCRIPTION, null);
       assertFalse(node.hasProperty(JcrConstants.SLV_PROPERTY_DESCRIPTION));
     } finally {
       BasicDaoFactory.logout(session);
@@ -129,22 +119,19 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testAddDateProperty() throws Exception {
-    System.out.println("testAddDateProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       Calendar calend = RandomGenerator.getRandomCalendar();
-      BasicDaoFactory.addDateProperty(node,
-          JcrConstants.SLV_PROPERTY_CREATION_DATE, calend.getTime());
+      BasicDaoFactory
+          .addDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, calend.getTime());
       assertTrue(node.hasProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE));
-      assertEquals(calend.getTime(), node.getProperty(
-          JcrConstants.SLV_PROPERTY_CREATION_DATE).getDate().getTime());
-      BasicDaoFactory.addDateProperty(node,
-          JcrConstants.SLV_PROPERTY_CREATION_DATE, null);
+      assertEquals(calend.getTime(),
+          node.getProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE).getDate().getTime());
+      BasicDaoFactory.addDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, null);
       assertFalse(node.hasProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE));
     } finally {
       BasicDaoFactory.logout(session);
@@ -153,22 +140,18 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testAddCalendarProperty() throws Exception {
-    System.out.println("testAddCalendarProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       Calendar calend = RandomGenerator.getRandomCalendar();
-      BasicDaoFactory.addCalendarProperty(node,
-          JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
+      BasicDaoFactory.addCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
       assertTrue(node.hasProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE));
-      assertEquals(calend, node.getProperty(
-          JcrConstants.SLV_PROPERTY_CREATION_DATE).getDate());
-      BasicDaoFactory.addDateProperty(node,
-          JcrConstants.SLV_PROPERTY_CREATION_DATE, null);
+      assertEquals(calend.getTimeInMillis(),
+          node.getProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE).getDate().getTimeInMillis());
+      BasicDaoFactory.addDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, null);
       assertFalse(node.hasProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE));
     } finally {
       BasicDaoFactory.logout(session);
@@ -177,7 +160,6 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetStringProperty() throws Exception {
-    System.out.println("testGetStringProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -198,22 +180,20 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetCalendarProperty() throws Exception {
-    System.out.println("testGetCalendarProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       Calendar calend = RandomGenerator.getRandomCalendar();
-      Property dateProperty = node.setProperty(
-          JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
-      assertEquals(calend, BasicDaoFactory.getCalendarProperty(node,
-          JcrConstants.SLV_PROPERTY_CREATION_DATE));
+      Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
+      assertEquals(calend.getTimeInMillis(),
+          BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE)
+              .getTimeInMillis());
       dateProperty.remove();
-      assertNull(BasicDaoFactory.getCalendarProperty(node,
-          JcrConstants.SLV_PROPERTY_CREATION_DATE));
+      assertNull(
+          BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -221,22 +201,18 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetDateProperty() throws Exception {
-    System.out.println("testGetDateProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       Calendar calend = RandomGenerator.getRandomCalendar();
-      Property dateProperty = node.setProperty(
-          JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
+      Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
       assertEquals(calend.getTime(), BasicDaoFactory.getDateProperty(node,
           JcrConstants.SLV_PROPERTY_CREATION_DATE));
       dateProperty.remove();
-      assertNull(BasicDaoFactory.getDateProperty(node,
-          JcrConstants.SLV_PROPERTY_CREATION_DATE));
+      assertNull(BasicDaoFactory.getDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -244,21 +220,17 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetIntProperty() throws Exception {
-    System.out.println("testGetIntProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       int id = RandomGenerator.getRandomYear();
       Property property = node.setProperty(JcrConstants.SLV_PROPERTY_AUTHOR, id);
-      assertEquals(id, BasicDaoFactory.getIntProperty(node,
-          JcrConstants.SLV_PROPERTY_AUTHOR));
+      assertEquals(id, BasicDaoFactory.getIntProperty(node, JcrConstants.SLV_PROPERTY_AUTHOR));
       property.remove();
-      assertEquals(0, BasicDaoFactory.getIntProperty(node,
-          JcrConstants.SLV_PROPERTY_AUTHOR));
+      assertEquals(0, BasicDaoFactory.getIntProperty(node, JcrConstants.SLV_PROPERTY_AUTHOR));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -266,21 +238,17 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetLongProperty() throws Exception {
-    System.out.println("testGetLongProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       long id = RandomGenerator.getRandomYear();
       Property property = node.setProperty(JcrConstants.SLV_PROPERTY_AUTHOR, id);
-      assertEquals(id, BasicDaoFactory.getLongProperty(node,
-          JcrConstants.SLV_PROPERTY_AUTHOR));
+      assertEquals(id, BasicDaoFactory.getLongProperty(node, JcrConstants.SLV_PROPERTY_AUTHOR));
       property.remove();
-      assertEquals(0l, BasicDaoFactory.getLongProperty(node,
-          JcrConstants.SLV_PROPERTY_AUTHOR));
+      assertEquals(0l, BasicDaoFactory.getLongProperty(node, JcrConstants.SLV_PROPERTY_AUTHOR));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -288,16 +256,15 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testRemoveReference() throws Exception {
-    System.out.println("testRemoveReference");
     String uuid1 = RandomGenerator.getRandomString();
     String uuid2 = RandomGenerator.getRandomString();
     String uuid3 = RandomGenerator.getRandomString();
     String uuid4 = RandomGenerator.getRandomString();
     Value[] references = new Value[]{
-      ValueFactoryImpl.getInstance().createValue(uuid1),
-      ValueFactoryImpl.getInstance().createValue(uuid2),
-      ValueFactoryImpl.getInstance().createValue(uuid3),
-      ValueFactoryImpl.getInstance().createValue(uuid4)};
+        ValueFactoryImpl.getInstance().createValue(uuid1),
+        ValueFactoryImpl.getInstance().createValue(uuid2),
+        ValueFactoryImpl.getInstance().createValue(uuid3),
+        ValueFactoryImpl.getInstance().createValue(uuid4)};
     Value[] result = BasicDaoFactory.removeReference(references, uuid3);
     assertNotNull(result);
     assertEquals(3, result.length);
@@ -314,7 +281,6 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testComputeUniqueName() throws Exception {
-    System.out.println("testComputeUniqueName");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();

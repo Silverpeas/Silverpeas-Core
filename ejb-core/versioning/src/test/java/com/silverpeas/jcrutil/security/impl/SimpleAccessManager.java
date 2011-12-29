@@ -24,18 +24,18 @@
 
 package com.silverpeas.jcrutil.security.impl;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.NoSuchWorkspaceException;
-import javax.jcr.RepositoryException;
-
-import org.apache.jackrabbit.core.ItemId;
+import org.apache.jackrabbit.core.id.ItemId;
 import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
 import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
 import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
 import org.apache.jackrabbit.spi.Name;
 import org.apache.jackrabbit.spi.Path;
+
+import javax.jcr.AccessDeniedException;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.NoSuchWorkspaceException;
+import javax.jcr.RepositoryException;
 
 public class SimpleAccessManager implements AccessManager {
 
@@ -88,8 +88,9 @@ public class SimpleAccessManager implements AccessManager {
   }
 
   @Override
-  public boolean canRead(Path path) throws RepositoryException {
+  public boolean canRead(Path itemPath, ItemId itemId) throws RepositoryException {
     return true;
   }
+
 
 }

@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>formtemplate</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB FormTemplate - ${version}</name>
+  <name>EJB FormTemplate - ${project.version}</name>
 
   
   <dependencies>

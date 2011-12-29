@@ -24,8 +24,21 @@
 
 package com.stratelia.webactiv.jaas;
 
-import java.util.Iterator;
-import java.util.Set;
+import com.silverpeas.jcrutil.JcrConstants;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
+import org.apache.jackrabbit.core.HierarchyManager;
+import org.apache.jackrabbit.core.id.ItemId;
+import org.apache.jackrabbit.core.id.NodeId;
+import org.apache.jackrabbit.core.security.AMContext;
+import org.apache.jackrabbit.core.security.AccessManager;
+import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
+import org.apache.jackrabbit.core.security.authorization.Permission;
+import org.apache.jackrabbit.core.security.authorization.PrivilegeRegistry;
+import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.Path;
+import org.apache.jackrabbit.spi.commons.conversion.NamePathResolver;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemNotFoundException;
@@ -38,22 +51,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.security.auth.Subject;
-
-import org.apache.jackrabbit.core.HierarchyManager;
-import org.apache.jackrabbit.core.ItemId;
-import org.apache.jackrabbit.core.NodeId;
-import org.apache.jackrabbit.core.security.AMContext;
-import org.apache.jackrabbit.core.security.AccessManager;
-import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
-import org.apache.jackrabbit.core.security.authorization.PrivilegeRegistry;
-import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
-import org.apache.jackrabbit.spi.Name;
-import org.apache.jackrabbit.spi.Path;
-import org.apache.jackrabbit.spi.commons.conversion.NamePathResolver;
-
-import com.silverpeas.jcrutil.JcrConstants;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
+import java.util.Set;
 
 public class SilverpeasAccessManager implements AccessManager {
 
@@ -134,6 +132,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
+   *
    * @param principal
    * @param id
    * @return
@@ -165,6 +164,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
+   *
    * @param principal
    * @param id
    * @return
@@ -206,6 +206,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
+   *
    * @param id
    * @return
    * @throws LoginException
@@ -250,6 +251,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
+   *
    * @param id
    * @return
    * @throws LoginException
@@ -368,7 +370,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   protected Node getNode(Session session, ItemId id) throws RepositoryException {
     NodeId nodeId = (NodeId) id;
-    return session.getNodeByUUID(nodeId.getUUID().toString());
+    return session.getNodeByIdentifier(id.toString());
   }
 
   protected String getRelativePath(Path path) throws NamespaceException {
@@ -385,7 +387,11 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   @Override
-  public boolean canRead(Path path) throws RepositoryException {
-    return isGranted(path, org.apache.jackrabbit.core.security.authorization.Permission.READ);
+  public boolean canRead(Path path, ItemId itemid) throws RepositoryException {
+    boolean canAccessPath = true;
+    if (path != null) {
+      canAccessPath = isGranted(path, Permission.READ);
+    }
+    return canAccessPath && isGranted(itemid, Permission.READ);
   }
 }

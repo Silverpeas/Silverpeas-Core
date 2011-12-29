@@ -24,19 +24,13 @@
 
 package com.stratelia.silverpeas.versioning.jcr.impl;
 
-import java.io.FileNotFoundException;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import org.apache.jackrabbit.commons.cnd.ParseException;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.NamespaceException;
+import javax.annotation.Resource;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
-
-import org.apache.jackrabbit.core.nodetype.InvalidNodeTypeDefException;
-import org.apache.jackrabbit.core.nodetype.compact.ParseException;
-
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import javax.annotation.Resource;
+import java.io.IOException;
 
 public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase {
 
@@ -61,10 +55,8 @@ public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase
     return repository;
   }
 
-  public void registerSilverpeasNodeTypes() throws NamespaceException,
-      UnsupportedRepositoryOperationException, AccessDeniedException,
-      RepositoryException, ParseException, FileNotFoundException,
-      InvalidNodeTypeDefException {
+  public void registerSilverpeasNodeTypes() throws RepositoryException, ParseException,
+        IOException {
     if (registred) {
       return;
     }

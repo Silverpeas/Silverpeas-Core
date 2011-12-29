@@ -24,7 +24,21 @@
 package com.silverpeas.jcrutil.servlets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
-import java.io.FileNotFoundException;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.apache.jackrabbit.core.state.ItemStateException;
+import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
+import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
+
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -36,27 +50,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIServerSocketFactory;
-
-import javax.jcr.AccessDeniedException;
-import javax.jcr.NamespaceException;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.jackrabbit.core.nodetype.InvalidNodeTypeDefException;
-import org.apache.jackrabbit.core.nodetype.compact.ParseException;
-import org.apache.jackrabbit.core.state.ItemStateException;
-import org.apache.jackrabbit.rmi.jackrabbit.JackrabbitServerAdapterFactory;
-import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
-
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * This Class implements a servlet that is used as unified mechanism to retrieve a jcr repository
@@ -79,19 +72,16 @@ public class RepositoryAccessServlet extends HttpServlet {
    * Keeps a strong reference to the server side RMI repository instance to prevent the RMI
    * distributed Garbage Collector from collecting the instance making the repository unaccessible
    * though it should still be. This field is only set to a non-<code>null</code> value, if
-   * registration of the repository to an RMI registry succeeded in the {@link #registerRMI()}
-   * method.
-   * @see #registerRMI()
-   * @see #unregisterRMI()
+   * registration of the repository to an RMI registry succeeded in the
    */
   private Remote rmiRepository;
 
   /**
-   * Initializes the servlet.<br>
-   * Please note that only one repository startup servlet may exist per webapp. it registers itself
-   * as context attribute and acts as singleton.
+   * Initializes the servlet.<br> Please note that only one repository startup servlet may exist per
+   * webapp. it registers itself as context attribute and acts as singleton.
+   *
    * @throws ServletException if a same servlet is already registered or of another initialization
-   * error occurs.
+   *                          error occurs.
    */
   @Override
   public void init() throws ServletException {
@@ -131,10 +121,6 @@ public class RepositoryAccessServlet extends HttpServlet {
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet error", e);
       throw new ServletException(e);
-    } catch (InvalidNodeTypeDefException e) {
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
-          "RepositoryAccessServlet error", e);
-      throw new ServletException(e);
     } catch (ParseException e) {
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet error", e);
@@ -143,12 +129,11 @@ public class RepositoryAccessServlet extends HttpServlet {
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet error", e);
       throw e;
-    } 
+    }
   }
 
-  private void registerSilverpeasNodeTypes() throws NamespaceException,
-      UnsupportedRepositoryOperationException, AccessDeniedException,
-      RepositoryException, ParseException, FileNotFoundException, InvalidNodeTypeDefException {
+  private void registerSilverpeasNodeTypes()
+      throws RepositoryException, ParseException, IOException {
     String cndFileName = this.getClass().getClassLoader().getResource(
         "silverpeas-jcr.txt").getFile().replaceAll("%20", " ");
     SilverpeasRegister.registerNodeTypes(cndFileName);
@@ -186,6 +171,7 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the instance of this servlet
+   *
    * @param ctx the servlet context
    * @return this servlet
    */
@@ -201,6 +187,7 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the JCR repository
+   *
    * @return a JCR repository
    * @throws IllegalStateException if the repository is not available in the context.
    */
@@ -210,6 +197,7 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the JCR repository
+   *
    * @param ctx the servlet context
    * @return a JCR repository
    * @throws IllegalStateException if the repository is not available in the context.
@@ -223,6 +211,7 @@ public class RepositoryAccessServlet extends HttpServlet {
    * name is returned must implement the {@link RemoteFactoryDelegater} interface.
    * <p/>
    * Subclasses may override this method for providing a name of a own implementation.
+   *
    * @return getClass().getName() + "$RMIRemoteFactoryDelegater"
    */
   protected String getRemoteFactoryDelegaterClass() {
@@ -300,7 +289,7 @@ public class RepositoryAccessServlet extends HttpServlet {
           SilverTrace.error("attachment", "RepositoryAccessServlet",
               "jackrabbit.init",
               "Cannot create the reference to the registry at "
-              + config.getHost() + ":" + config.getPort(), re);
+                  + config.getHost() + ":" + config.getPort(), re);
         }
       }
 
@@ -359,10 +348,11 @@ public class RepositoryAccessServlet extends HttpServlet {
    * which just creates instances of the <code>java.net.ServerSocket</code> class bound to the given
    * <code>hostAddress</code>. Implementations may overwrite this method to provide factory
    * instances, which provide more elaborate server socket creation, such as SSL server sockets.
+   *
    * @param hostAddress The <code>InetAddress</code> instance representing the the interface on the
-   * localResourceLocator host to which the server sockets are bound.
+   *                    localResourceLocator host to which the server sockets are bound.
    * @return A new instance of a simple <code>RMIServerSocketFactory</code> creating
-   * <code>java.net.ServerSocket</code> instances bound to the <code>rmiHost</code>.
+   *         <code>java.net.ServerSocket</code> instances bound to the <code>rmiHost</code>.
    */
   protected RMIServerSocketFactory getRMIServerSocketFactory(
       final InetAddress hostAddress) {
@@ -388,7 +378,7 @@ public class RepositoryAccessServlet extends HttpServlet {
    */
   protected static class RMIRemoteFactoryDelegater extends RemoteFactoryDelegater {
 
-    private static final RemoteAdapterFactory FACTORY = new JackrabbitServerAdapterFactory();
+    private static final RemoteAdapterFactory FACTORY = new ServerAdapterFactory();
 
     @Override
     public Remote createRemoteRepository(Repository repository) throws RemoteException {
