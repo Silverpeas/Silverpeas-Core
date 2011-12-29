@@ -522,7 +522,7 @@ function showExternalSearchError() {
         </tr>
         <c:if test="${activeSelection or exportEnabled}">
 			<tr id="globalResultSelectAllResult">
-				<td class="txtlibform"><fmt:message key="pdcPeas.selectAll" /></td><td><input type="checkbox" name="selectAll" onClick="selectEveryResult(this);"></td></tr>
+				<td class="txtlibform"><fmt:message key="pdcPeas.selectAll" /></td><td><input type="checkbox" name="selectAll" onClick="selectEveryResult(this);"/></td>
 			</tr>
         </c:if>
 		</table>
@@ -535,8 +535,7 @@ function showExternalSearchError() {
 <view:board>
   
 <%
-	if (results != null)
-	{
+	if (results != null) {
 		Pagination	pagination			= gef.getPagination(nbTotalResults, nbResToDisplay.intValue(), indexOfFirstResult);
 
 		List		resultsOnThisPage	= results;
@@ -569,15 +568,10 @@ function showExternalSearchError() {
     </table>
   </c:if>
 <%
-
-		
-
-
 		out.println("</td></tr>");
 		out.println("<tr class=\"intfdcolor4\"><td>&nbsp;</td></tr>");
 
-		if (nbTotalResults > resultsOnThisPage.size())
-		{
+		if (nbTotalResults > resultsOnThisPage.size()) {
 			out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
 			out.println("<td align=\"center\">");
 			out.println(pagination.printIndex("doPagination"));
@@ -589,7 +583,7 @@ function showExternalSearchError() {
 	} else { 
 %>
     <table border="0" cellspacing="0" cellpadding="0" width="100%">
-      <tr valign="middle" class="intfdcolor">
+      <tr valign="middle">
         <td align="center"><%=resource.getString("pdcPeas.NoResult")%></td>
       </tr>
     </table>
@@ -598,8 +592,7 @@ function showExternalSearchError() {
 %>
     </view:board>
     </div>
-    <div id="globalResultHelp">
-    <view:board>
+    <div id="globalResultHelp" class="inlineMessage">
 		<table width="100%" border="0"><tr><td valign="top" width="30%">
         <fmt:message key="pdcPeas.helpCol1Header" /><br><br>
         <fmt:message key="pdcPeas.helpCol1Content1" /><br>
@@ -624,7 +617,6 @@ function showExternalSearchError() {
         <fmt:message key="pdcPeas.helpCol3Content4" /><br>
 		</td>
 		</tr></table>
-    </view:board>
   </div>
   </view:frame>
 </div>
