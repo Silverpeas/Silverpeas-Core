@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -247,17 +248,23 @@ if (query != null)
 	userDetail			= query.getCreatorDetail();
 }
 
-if (keywords == null)
+if (keywords == null) {
 	keywords = "";
-if (createAfterDate == null)
+}
+if (createAfterDate == null) {
   	createAfterDate = "";
-if (createBeforeDate == null)
+}
+if (createBeforeDate == null) {
   	createBeforeDate = "";
-if (updateAfterDate == null)
+}
+if (updateAfterDate == null) {
   	updateAfterDate = "";
-if (updateBeforeDate == null)
+}
+if (updateBeforeDate == null) {
   	updateBeforeDate = "";
+}
 
+String itemType = (String) request.getAttribute("ItemType");
 
 // Retrieve data search space
 Vector searchDomains			= (Vector) request.getAttribute("searchDomains");
@@ -561,8 +568,8 @@ function deleteUser()
 }
 
  $(document).ready(function(){
-		//used for keywords autocompletion
-	    <%  if(resource.getSetting("enableAutocompletion", false)){ %>
+    <% if(resource.getSetting("enableAutocompletion", false)){ %>
+  		//used for keywords autocompletion
 	    $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
 	            minChars: <%=autocompletionMinChars%>,
 	            max: 50,
@@ -571,12 +578,16 @@ function deleteUser()
 	            matchContains: false,
 	            scrollHeight: 220
 	    });
-	    <%}%>
+	<%}%>
+	
+	<% if (StringUtil.isDefined(itemType)) { %>
+		$("#dataType option[value='<%=itemType%>']").attr("selected", "selected");
+	<% } %>
  });
- 
+
 </script>
 </head>
-<body onLoad="onLoadStart();">
+<body onload="onLoadStart();">
 <%
 if (!isPDCSubscription) {
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
@@ -609,8 +620,9 @@ if (!isPDCSubscription) {
 	}
 	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", searchType==1);
 	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", searchType==2);
-	if ( isXmlSearchVisible )
-		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", searchType==3);	
+	if (isXmlSearchVisible) {
+		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", searchType==3);
+	}
 } else {
 	browseBar.setComponentName(resource.getString("pdcSubscription.path"));
 	if (isNewPDCSubscription) {
@@ -622,18 +634,18 @@ out.println(window.printBefore());
 <center>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
   <!-- champs cache pour voir ou non les axes secondaires -->
-  <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
-  <input type="hidden" name="showNotOnlyPertinentAxisAndValues" value="<%=showNotOnlyPertinentAxisAndValues%>">
-  <input type="hidden" name="AxisId">
-  <input type="hidden" name="ValueId">
-  <input type="hidden" name="Ids">
-  <input type="hidden" name="requestName">
-  <input type="hidden" name="mode">
-  <input type="hidden" name="AxisValueCouples">
-  <input type="hidden" name="sortOrder" value=<%=sortOrder%>>
+  <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>"/>
+  <input type="hidden" name="showNotOnlyPertinentAxisAndValues" value="<%=showNotOnlyPertinentAxisAndValues%>"/>
+  <input type="hidden" name="AxisId"/>
+  <input type="hidden" name="ValueId"/>
+  <input type="hidden" name="Ids"/>
+  <input type="hidden" name="requestName"/>
+  <input type="hidden" name="mode"/>
+  <input type="hidden" name="AxisValueCouples"/>
+  <input type="hidden" name="sortOrder" value="<%=sortOrder%>"/>
 
   <% if (isNewPDCSubscription) { %>
-     <input type="hidden" name="isNewPDCSubscription" value="true">
+     <input type="hidden" name="isNewPDCSubscription" value="true"/>
   <% } 
 
 	if (isPDCSubscription) { 
@@ -647,18 +659,18 @@ out.println(window.printBefore());
         <table cellpadding="5" cellspacing="0" border="0" width="100%">
 		<tr>
         	<td valign="top" nowrap align="left" class="txtlibform" width="30%"><%=resource.getString("pdcSubscription.Name")%> :</td>
-            <td align="left"><input type="text" name="scName" size="50" maxlength="100" value="<%=scResName%>"><input type="hidden" name="isPDCSubscription" value="true"></td>
+            <td align="left"><input type="text" name="scName" size="50" maxlength="100" value="<%=scResName%>"/><input type="hidden" name="isPDCSubscription" value="true"/></td>
         </tr>
         </table>
   <%    
   		out.println(board.printAfter());
-  		out.println("<br>");
+  		out.println("<br/>");
         out.println("<center>");
         buttonPane.addButton((Button) gef.getFormButton(resource.getString("pdcSubscription.ok"), "javascript:addSubscription()", false));
         out.println(buttonPane.print());
         out.println("</center>");
 		out.println(frame.printAfter());
-		out.println("<br>");
+		out.println("<br/>");
 		out.println(frame.printBefore());
  	} %>
 <%
@@ -675,7 +687,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
           <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.SearchFind")%></td>
           <td align="left" valign="middle">
           	<table border="0" cellspacing="0" cellpadding="0"><tr valign="middle">
-                        <td valign="middle"><input type="text" onkeypress="checkEnter(event)" name="query" size="60" value="<%=keywords%>" id="query"></td>
+                        <td valign="middle"><input type="text" onkeypress="checkEnter(event)" name="query" size="60" value="<%=keywords%>" id="query"/></td>
           		<td valign="middle">&nbsp;</td>
           		<td align="left" valign="middle" width="100%">
           			<% 
@@ -783,7 +795,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 			<%
 				out.println("<td valign=\"top\" nowrap align=\"left\"><span class=\"txtlibform\">"+resource.getString("pdcPeas.ComponentSelect")+"</span></td>");
 				out.println("<td align=\"left\">");
-				out.println("<select name=\"componentSearch\" size=1 onChange=\"javascript:viewAdvancedSearch()\">");
+				out.println("<select name=\"componentSearch\" size=\"1\" onChange=\"javascript:viewAdvancedSearch()\">");
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
 				ComponentInstLight component = null;
 				for(int nI = 0; allComponents!=null && nI < allComponents.size(); nI++) {
@@ -802,7 +814,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
         <tr align="center" id="contribution-type-filter">
           <td valign="top" nowrap align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.searchType")%></span></td>
           <td align="left">
-    		<select name="dataType">
+    		<select name="dataType" id="dataType">
       			<option value="0"><%=resource.getString("pdcPeas.AllAuthors")%></option>
   				<c:if test="${not empty dataTypes}">
     			<c:forEach var="dataType" items="${dataTypes}">
@@ -875,8 +887,9 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 		out.println(board.printAfter());
 	}
 }
-if (searchType == 2 && !isPDCSubscription)
-	out.println("<br>");
+if (searchType == 2 && !isPDCSubscription) {
+	out.println("<br/>");
+}
 	
 if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 	out.println(board.printBefore());
@@ -890,11 +903,8 @@ if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 } 
 %>
 <!-- fin de la recherche -->
-<%
- if (!showAllAxis) {
-    out.println("<br>");
-	out.println(board.printBefore());
-%>
+<% if (!showAllAxis) { %>
+	<div class="inlineMessage">
 	<table width="100%" border="0"><tr><td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol1Header")%><br><br>
 		<%=resource.getString("pdcPeas.helpCol1Content1")%><br>
@@ -919,8 +929,8 @@ if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 		<%=resource.getString("pdcPeas.helpCol3Content4")%><br>
 		</td>
 		</tr></table>
+	</div>
 <%
-	out.println(board.printAfter());
 }
 out.println(frame.printAfter());
 %>

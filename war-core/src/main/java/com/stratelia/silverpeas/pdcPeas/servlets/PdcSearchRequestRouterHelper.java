@@ -177,6 +177,9 @@ public class PdcSearchRequestRouterHelper {
     } else {
       pdcSC.setSortImplemtor(null);
     }
+    
+    // Set component search type
+    pdcSC.setDataType(request.getParameter("dataType"));
     return queryParameters;
   }
 
@@ -204,6 +207,7 @@ public class PdcSearchRequestRouterHelper {
     request.setAttribute("NbResToDisplay", Integer.valueOf(pdcSC.getNbResToDisplay()));
     request.setAttribute("SortValue", Integer.valueOf(pdcSC.getSortValue()));
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
+    request.setAttribute("ItemType", pdcSC.getDataType());
 
     // List of user favorite requests
     List<InterestCenter> favoriteRequests = buildICentersList(pdcSC);

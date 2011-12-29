@@ -545,8 +545,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
             pdcSC.setSearchType(Integer.parseInt(searchType));
           }
         }
-        // Set component search type
-        pdcSC.setDataType(request.getParameter("dataType"));
 
         pdcSC.setSelectedSilverContents(new ArrayList<GlobalSilverResult>());
         // This is the main function of global search
