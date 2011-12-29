@@ -230,6 +230,10 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   public int getOrderNum() {
     return orderNum;
   }
+  
+  public void setOrderNum(int orderNum) {
+    this.orderNum = orderNum;
+  }
 
   public Date getCreateDate() {
     return createDate;

@@ -733,9 +733,12 @@ public final class Admin {
       domainDriverManager.commit();
       cache.opUpdateSpace(spaceManager.getSpaceInstById(domainDriverManager, driverSpaceId));
 
-      // Update subspaces sort in TreeCache
+      // Updating TreeCache
       SpaceInstLight space = TreeCache.getSpaceInstLight(driverSpaceId);
+      // Update space order
+      space.setOrderNum(orderNum);
       if (!space.isRoot()) {
+        // Update brothers sort in TreeCache
         TreeCache.setSubspaces(space.getFatherId(), getSubSpaces(space.getFatherId()));
       }
     } catch (Exception e) {
