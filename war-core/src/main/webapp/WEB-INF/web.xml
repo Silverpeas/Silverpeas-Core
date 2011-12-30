@@ -932,7 +932,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LaunchWebdavEdition</servlet-name>
-        <url-pattern>/launch.jsp</url-pattern>
+        <url-pattern>/attachment/jsp/launch.jsp</url-pattern>
     </servlet-mapping>
     <error-page>
         <error-code>404</error-code>
