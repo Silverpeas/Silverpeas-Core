@@ -278,7 +278,7 @@
     <servlet>
         <description>The webdav servlet that connects HTTP request to the repository.</description>
         <servlet-name>Webdav</servlet-name>
-        <servlet-class>com.silverpeas.jcrutil.servlets.SimpleWebdavServlet</servlet-class>
+        <servlet-class>com.silverpeas.jcrutil.servlets.SimpleDigestWebdavServlet</servlet-class>
         <init-param>
             <description>Defines the prefix for spooling resources out of the repository.</description>
             <param-name>resource-path-prefix</param-name>
@@ -532,6 +532,10 @@
     <servlet>
         <servlet-name>NodesJSONServlet</servlet-name>
         <servlet-class>com.silverpeas.node.servlets.GetNodes</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LaunchWebdavEdition</servlet-name>
+        <servlet-class>com.silverpeas.attachment.servlets.LaunchWebdavEdition</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>REST Container</servlet-name>
@@ -925,6 +929,10 @@
     <servlet-mapping>
         <servlet-name>AutoRedirectServlet</servlet-name>
         <url-pattern>/autoRedirect.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LaunchWebdavEdition</servlet-name>
+        <url-pattern>/launch.jsp</url-pattern>
     </servlet-mapping>
     <error-page>
         <error-code>404</error-code>
