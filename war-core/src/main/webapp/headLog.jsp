@@ -65,5 +65,7 @@ LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
 // Let domains variable for backward compatibility purpose. getAllDomains is now deprecated !!!
 Hashtable domains = lpAuth.getAllDomains();
 List<Domain> listDomains = lpAuth.getListDomains();
+pageContext.setAttribute("listDomains", listDomains);
+pageContext.setAttribute("multipleDomains", (listDomains != null && !listDomains.isEmpty() && listDomains.size() > 1));
 List<String> domainIds = lpAuth.getDomainsIds();
 %>
