@@ -22,8 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$.include(webContext + '/util/javaScript/silverpeas-pdc-widgets.js');
-
 /**
  * A JQuery plugin providing some functionalities on the classification of the Silverpeas
  * resources (publication, comments, ...) on the classification plan (named PdC).

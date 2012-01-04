@@ -10,6 +10,20 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
+    <description>Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
+    in charge by the tag.</description>
+    <name>includePlugin</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.IncludeJSPluginTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The plugin name (plugin identifier). For example, qtip for the JQuery qtip plugin</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Tag to print out an HTML/javascript widget with which the predefined classification
     on the PdC of a component instance or of a node (a topic, a category, ...) can be defined or
     modified.

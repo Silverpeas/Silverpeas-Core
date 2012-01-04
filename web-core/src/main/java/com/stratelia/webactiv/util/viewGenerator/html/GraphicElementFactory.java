@@ -107,12 +107,9 @@ public class GraphicElementFactory {
   private static final String JQUERY_INCLUDE_JS = "jquery-include.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
-  private static final String JQUERYJSON_JS = "jquery.json-2.2.min.js";
-  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.4.min.js";
-  private static final String FLOWPLAYER_CSS = "flowplayer.css";
-  private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
-  private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
-  private static final String SILVERPEAS_PDC_JS = "silverpeas-pdc.js";
+  private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
+//  private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
+//  private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
 
   /**
    * Constructor declaration
@@ -303,10 +300,6 @@ public class GraphicElementFactory {
     String specificJS = null;
 
     if (externalStylesheet == null) {
-
-      code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
-          "/util/styleSheets/").append(FLOWPLAYER_CSS).append("\" rel=\"stylesheet\"/>\n");
-
       code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
           "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
 
@@ -392,20 +385,6 @@ public class GraphicElementFactory {
     // include specific browseBar javaScript
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/browseBarComplete.js\"></script>\n");
-
-    // include the Flowplayer javascript code
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/").append(FLOWPLAYER_JS).append("\"></script>\n");
-
-    // include qTip javascript files
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_QTIP).append("\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/jquery/").append(JQUERY_QTIP_STYLE).append("\"></script>\n");
-
-    // include the PdC javascript code
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/").append(SILVERPEAS_PDC_JS).append("\"></script>\n");
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {

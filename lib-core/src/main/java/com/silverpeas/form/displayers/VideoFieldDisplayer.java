@@ -40,13 +40,11 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.apache.ecs.xhtml.script;
 
 import java.io.File;
 import java.io.IOException;
@@ -146,10 +144,12 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     }
     if (!template.isHidden()) {
       ElementContainer xhtmlcontainer = new ElementContainer();
+      VideoPlayer videoPlayer = new VideoPlayer();
+      videoPlayer.init(xhtmlcontainer);
       if (template.isReadOnly()) {
-        displayVideo(attachmentId, template, xhtmlcontainer, pagesContext);
+        displayVideo(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
       } else if (!template.isDisabled()) {
-        displayVideoFormInput(attachmentId, template, xhtmlcontainer, pagesContext);
+        displayVideoFormInput(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
       }
       
       out.println(xhtmlcontainer.toString());
@@ -246,31 +246,30 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   /**
    * Displays the video refered by the specified URL into the specified XHTML container.
+   * @param videoPlayer the video player to display.
    * @param attachmentId the identifier of the attached file containing the video to display.
    * @param template the template of the field to which is mapped the video.
    * @param xhtmlcontainer the XMLHTML container into which the video is displayed.
    */
-  private void displayVideo(final String attachmentId, final FieldTemplate template,
-          final ElementContainer xhtmlcontainer, final PagesContext pagesContext) {
+  private void displayVideo(final VideoPlayer videoPlayer, final String attachmentId,
+          final FieldTemplate template, final ElementContainer xhtmlContainer,
+          final PagesContext pagesContext) {
     String videoURL = computeVideoURL(attachmentId, pagesContext);
-    if (!videoURL.isEmpty()) {
-      Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
-      Element videoLink = createVideoLink(videoURL, parameters);
-      xhtmlcontainer.addElement(videoLink);
-    }
-    Element player = createVideoPlayer(videoURL,
-            template.getParameters(pagesContext.getLanguage()));
-    xhtmlcontainer.addElement(player);
+    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
+    initVideoPlayer(videoPlayer, videoURL, parameters);
+    videoPlayer.renderIn(xhtmlContainer);
   }
 
   /**
    * Displays the form part corresponding to the video input.
    * The form input is a way to change or to remove the video file if this one exists.
+   * @param videoPlayer the video player to display as a form input.
    * @param attachmentId the identifier of the attached file containing the video to display.
    * @param template the template of the field to which is mapped the video.
    * @param pagesContext the context of the displaying page.
    */
-  private void displayVideoFormInput(final String attachmentId, final FieldTemplate template,
+  private void displayVideoFormInput(final VideoPlayer videoPlayer,
+          final String attachmentId, final FieldTemplate template,
           final ElementContainer xhtmlContainer, final PagesContext pagesContext) {
     String fieldName = template.getFieldName();
     String language = pagesContext.getLanguage();
@@ -284,8 +283,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
       parameters.remove(PARAMETER_WIDTH);
       parameters.remove(PARAMETER_HEIGHT);
-      // a link to the video
-      Element videoLink = createVideoLink(videoURL, parameters);
+      initVideoPlayer(videoPlayer, videoURL, parameters);
 
       // a link to the deletion operation
       img deletionImage = new img();
@@ -300,7 +298,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       div videoDiv = new div();
       videoDiv.setID(fieldName + "Video");
       videoDiv.setClass("video");
-      videoDiv.addElement(videoLink);
+      videoPlayer.renderIn(videoDiv);
       videoDiv.addElement("&nbsp;");
       videoDiv.addElement(removeLink);
       
@@ -328,46 +326,26 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       selectionDiv.addElement(Util.getMandatorySnippet());
     }
     xhtmlContainer.addElement(selectionDiv);
-    
-    Element player = createVideoPlayer(videoURL,
-            template.getParameters(pagesContext.getLanguage()));
-    xhtmlContainer.addElement(player);
   }
   
   /**
-   * Creates a XHTML element that refers the video identified by the specified URL.
-   * @param videoURL the URL of the video to display.
-   * @return the XHTML element that displays the video.
-   */
-  private Element createVideoLink(final String videoURL, final Map<String, String> parameters) {
-    a videoElement = new a();
-    String width = (parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH):
-      DEFAULT_WIDTH);
-    String height = (parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT):
-      DEFAULT_HEIGHT);
-    videoElement.setStyle("display:block;width:" + width + "px;height:" + height + "px;");
-    String videoId = VIDEO_PLAYER_ID + videoURL.hashCode();
-    videoElement.setHref(videoURL).setID(videoId);
-    return videoElement;
-  }
-  
-  /**
-   * Creates an XHTML element that represents the video player that will play the video located 
-   * at the specified URL.
+   * Initializes the specified video player with the specified URL and the specified parameters.
+   * @param videoPlayer the video player to set up.
    * @param videoURL the URL of the video to play.
-   * @param parameters the parameters to pass to the video player.
-   * @return the XHTML representation of the video player.
+   * @param parameters the parameters from which the video player will be initialized (height, width,
+   * ...)
    */
-  private Element createVideoPlayer(String videoURL, Map<String, String> parameters) {
+  private void initVideoPlayer(final VideoPlayer videoPlayer, String videoURL, Map<String, String> parameters) {
+    String width = (parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH):
+      DEFAULT_WIDTH) + "px";
+    String height = (parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT):
+      DEFAULT_HEIGHT) + "px";
     boolean autoplay = (parameters.containsKey(PARAMETER_AUTOPLAY)
             ? Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)) : false);
-    String playerPath = FileServerUtils.getApplicationContext() + SWF_PLAYER_PATH;
-    String videoId = VIDEO_PLAYER_ID + videoURL.hashCode();
-    script js = new script("flowplayer('" + videoId + "', '" + playerPath
-            + "', {wmode: 'opaque', clip: { autoBuffering: " + !autoplay + ", autoPlay: " + autoplay + " } });");
-    js.setLanguage("javascript");
-    js.setType("text/javascript");
-    return js;
+    videoPlayer.setVideoURL(videoURL);
+    videoPlayer.setAutoplay(autoplay);
+    videoPlayer.setWidth(width);
+    videoPlayer.setHeight(height);
   }
 
   /**
