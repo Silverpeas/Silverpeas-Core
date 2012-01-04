@@ -1,50 +1,42 @@
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.Random;
+import com.silverpeas.form.displayers.VideoPlayer;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
+import org.apache.ecs.ElementContainer;
 
 public class VideoPlayerTag extends TagSupport {
   private static final long serialVersionUID = 1425756234498404463L;
 
+  private static final Integer DEFAULT_WIDTH = 360;
+  
+  private static final Integer DEFAULT_HEIGHT = 240;
+  
   private String url;
 
-  private Integer width = 360;
+  private Integer width = DEFAULT_WIDTH;
 
-  private Integer height = 240;
+  private Integer height = DEFAULT_HEIGHT;
 
-  private Boolean autostart = false;
-
-  private static final String playerUrl = URLManager.getApplicationURL() + "/util/flowplayer/flowplayer-3.2.4.swf";
-
-  private static final Random randomGenerator = new Random();
-
-  private static final String template = "<a id=''{0}'' href=''{1}'' " +
-  		"style=''display:block;width:{2,number,integer}px;height:{3,number,integer}px;''>" +
-  		"</a><script type=''text/javascript'' language=''javascript''>" +
-  		"flowplayer(''{0}'', ''{4}'', '{'wmode: ''opaque'', clip: '{' " +
-  		"autoBuffering: false, autoPlay: {5} '}' '}');</script>";
+  private boolean autostart = false;
 
   @Override
   public int doStartTag() throws JspException {
 
     try {
-      pageContext.getOut().print(MessageFormat.format(template, getGeneratedId(),
-          getUrl(), getWidth(), getHeight(), playerUrl, isAutostart()));
-    } catch (IOException e) {
+      ElementContainer xhtmlContainer = new ElementContainer();
+      VideoPlayer videoPlayer = new VideoPlayer(getUrl(), isAutostart());
+      videoPlayer.setHeight(String.valueOf(getHeight()) + "px");
+      videoPlayer.setWidth(String.valueOf(getWidth()) + "px");
+      videoPlayer.init(xhtmlContainer);
+      videoPlayer.renderIn(xhtmlContainer);
+      xhtmlContainer.output(pageContext.getOut());
+    } catch (Exception e) {
       throw new JspException("Can't display video player", e);
     }
     return SKIP_BODY;
-  }
-
-
-  private String getGeneratedId() {
-    return "player" + randomGenerator.nextInt();
   }
 
   public String getUrl() {
@@ -60,7 +52,7 @@ public class VideoPlayerTag extends TagSupport {
   }
 
   public void setWidth(Integer width) {
-    this.width = width;
+    this.width = (width == null? DEFAULT_WIDTH:width);
   }
 
   public Integer getHeight() {
@@ -68,7 +60,7 @@ public class VideoPlayerTag extends TagSupport {
   }
 
   public void setHeight(Integer height) {
-    this.height = height;
+    this.height = (height == null? DEFAULT_HEIGHT:height);
   }
 
   public Boolean isAutostart() {
@@ -78,7 +70,5 @@ public class VideoPlayerTag extends TagSupport {
   public void setAutostart(Boolean autostart) {
     this.autostart = autostart;
   }
-
-
 
 }

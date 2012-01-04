@@ -30,6 +30,8 @@
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%
     ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
@@ -47,6 +49,7 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
+<view:includePlugin name="qtip"/>
 </head>
 <body>
 <%
