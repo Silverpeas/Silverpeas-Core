@@ -112,7 +112,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
     <section name="Installation">
       <p>You will get better performance with GNU/Linux systems.</p>
       <subsection name="Installing JBoss">
-        <p>Since version 5.6, Silverpeas runs by default with JBoss AS 6.0.<br/>
+        <p><b>Since version 5.8, Silverpeas runs by default with JBoss AS 6.1.0.<br/> If you are upgrading from Silverpeas 5.7 or older please check your JBoss version.<br/></b>
         Please download it from:</p>
         <ul>
           <li><a href="http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final.zip"><img src="images/windows_logo_24X24.png"/><img src="images/linux_logo_24X24.png"/>here for both Windows and GNU/Linux</a></li>
