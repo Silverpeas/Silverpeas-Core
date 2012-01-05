@@ -57,11 +57,11 @@ public class SilverStatisticsService implements SilverStatistics {
    * @param data 
    */
   @Override
-  public void putStats(StatType type, String data) {
-    Connection myCon = DBUtil.makeConnection(SILVERSTATISTICS_DATASOURCE);
+  public void putStats(StatType type, String data) {   
     StrTokenizer stData = new StrTokenizer(data, SEPARATOR);
     List<String> dataArray =  stData.getTokenList();
     if (myStatsConfig.isGoodDatas(type, dataArray)) {
+      Connection myCon = DBUtil.makeConnection(SILVERSTATISTICS_DATASOURCE);
       try {
         SilverStatisticsDAO.putDataStats(myCon, type, dataArray, myStatsConfig);
         if(!myCon.getAutoCommit()) {

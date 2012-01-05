@@ -22,7 +22,7 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
+import java.io.Closeable;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
@@ -34,7 +34,6 @@ import javax.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.io.Closeable;
 
 import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_JMS_FACTORY;
 import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_JMS_QUEUE;
