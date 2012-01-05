@@ -29,5 +29,6 @@ package com.stratelia.webactiv.util.viewGenerator.html;
  */
 public enum SupportedJavaScriptPlugins {
   
-  qtip;
+  qtip,
+  datepicker;
 }

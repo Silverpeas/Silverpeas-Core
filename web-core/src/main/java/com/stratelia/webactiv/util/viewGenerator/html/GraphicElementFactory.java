@@ -372,16 +372,6 @@ public class GraphicElementFactory {
           "\"></script>\n");
     }
 
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/jquery/jquery.ui.datepicker-").append(getLanguage()).append(
-        ".js\"></script>\n");
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/silverpeas-defaultDatePicker.js\"></script>\n");
-
-    // include javascript to manage in-progress message
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/progressMessage.js\"></script>\n");
-
     // include specific browseBar javaScript
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/browseBarComplete.js\"></script>\n");
