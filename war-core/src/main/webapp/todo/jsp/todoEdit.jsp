@@ -58,6 +58,8 @@
 
 <%@ include file="checkTodo.jsp" %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
 
   String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -68,17 +70,11 @@
   action = request.getParameter("Action"); 
 %>
 
-<%
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-%>
 <html>
 <head>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-
+  <view:looknfeel/>
+  <view:includePlugin name="datepicker"/>
 <TITLE>_________________/ Silverpeas - Corporate portal organizer \_________________/</TITLE>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 
@@ -208,7 +204,6 @@ function test(){
 }
 
 </SCRIPT>
-</HEAD>
 
 <%
 
@@ -308,14 +303,16 @@ function test(){
                 action = "View";
                 %>
            
-                 <Script language="JavaScript">
+                 <Script language="javascript" type="text/javascript">
                          SP_openWindow('diffusion.jsp','diffusion','750','550','scrollbars=yes, resizable, alwaysRaised');
                  </Script>
                  <%  
                 } 
         }
-  } //fin else  
+  } //fin else  %>
+  </HEAD>
   
+  <%
   /* ReallyAdd || ReallyUpdate */ 
   if ((action.equals("ReallyAdd")) || (action.equals("ReallyUpdate"))) {
     String name = request.getParameter("Name");
@@ -418,7 +415,6 @@ function test(){
   }  
     
 %>
-
 <BODY onLoad="document.todoEditForm.Name.focus();">
 <FORM NAME="todoEditForm" ACTION="todoEdit.jsp" METHOD=POST >
 
