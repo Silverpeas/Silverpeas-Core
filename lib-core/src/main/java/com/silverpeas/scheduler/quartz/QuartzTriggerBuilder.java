@@ -48,10 +48,11 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
    * @param job the scheduler job implementation for Quartz.
    * @return a Quartz scheduler trigger.
    */
-  public Trigger buildFrom(final QuartzSchedulerJob job) {
-    job.getTrigger().accept(this);
-    quartzTrigger.setName(job.getName());
-    return quartzTrigger;
+  public static Trigger buildFrom(final QuartzSchedulerJob job) {
+    QuartzTriggerBuilder visitor = new QuartzTriggerBuilder();
+    job.getTrigger().accept(visitor);
+    visitor.quartzTrigger.setName(job.getName());
+    return visitor.quartzTrigger;
   }
 
   @Override
@@ -86,5 +87,8 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
     } catch (ParseException ex) {
       throw new RuntimeException(ex.getMessage(), ex);
     }
+  }
+  
+  private QuartzTriggerBuilder() {
   }
 }
