@@ -54,12 +54,9 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
 
   public ImportReport processImport(String xmlFileName,
       ResourcesWrapper resource) throws ImportExportException {
-    ImportReport importReport = null;
     ImportExport importExport = new ImportExport();
-
-    importReport = importExport.processImport(getUserDetail(), xmlFileName);
+    ImportReport importReport = importExport.processImport(getUserDetail(), xmlFileName);
     importExport.writeImportToLog(importReport, resource);
-
     return importReport;
   }
 
