@@ -166,7 +166,7 @@ public class SilverpeasAccessManager implements AccessManager {
    * Rustine
    *
    * @param principal
-   * @param id
+   * @param path 
    * @return
    * @throws RepositoryException
    */
@@ -252,7 +252,7 @@ public class SilverpeasAccessManager implements AccessManager {
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
    *
-   * @param id
+   * @param path 
    * @return
    * @throws LoginException
    * @throws ItemNotFoundException

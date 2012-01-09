@@ -33,6 +33,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.WithNested;
+import java.security.Principal;
 import org.apache.jackrabbit.core.security.AnonymousPrincipal;
 import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
 
@@ -56,7 +57,7 @@ public class SilverpeasLoginModule implements LoginModule {
   // initial state
   private Subject subject;
   private CallbackHandler callbackHandler;
-  private Set principals = new HashSet();
+  private Set<Principal> principals = new HashSet<Principal>();
   private LoginPasswordAuthentication authenticator;
   private OrganizationController controller;
   private Admin administrator;
@@ -108,6 +109,7 @@ public class SilverpeasLoginModule implements LoginModule {
     this.callbackHandler = callbackHandler;
   }
 
+  @Override
   public boolean login() throws LoginException {
     // prompt for a user name and password
     if (callbackHandler == null) {

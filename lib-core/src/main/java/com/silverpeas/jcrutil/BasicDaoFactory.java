@@ -61,6 +61,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import javax.naming.InitialContext;
+import org.apache.jackrabbit.core.jndi.RegistryHelper;
 
 /**
  * He
@@ -71,8 +73,10 @@ public class BasicDaoFactory implements ApplicationContextAware {
   public static final String JRC_REPOSITORY = "repository";
   private ApplicationContext context;
   private static final BasicDaoFactory instance = new BasicDaoFactory();
+  
+  
 
-  private BasicDaoFactory() {
+  private BasicDaoFactory() {   
   }
 
   protected ApplicationContext getApplicationContext() {

@@ -52,6 +52,11 @@
           <groupId>org.springframework</groupId>
         </exclusion>
       </exclusions>
+    </dependency>    
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

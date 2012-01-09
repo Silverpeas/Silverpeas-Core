@@ -44,13 +44,7 @@
       access manager:
       class: FQN of class implementing the AccessManager interface
     -->
-    <AccessManager class="com.silverpeas.jcrutil.security.ProxyAccessManager">
-      <!-- <param name="config" value="${rep.home}/access.xml"/> -->
-    </AccessManager>
-    <!--
-      <LoginModule class="org.apache.jackrabbit.core.security.SimpleLoginModule"> <param name="anonymousId"
-      value="anonymous" /> <param name="defaultUserId" value="superuser"/> </LoginModule>
-    -->
+    <AccessManager class="com.silverpeas.jcrutil.security.ProxyAccessManager" />
     <LoginModule class="com.silverpeas.jcrutil.security.ProxyLoginModule">
     </LoginModule>
   </Security>
@@ -74,10 +68,8 @@
       persistence manager of the workspace: class: FQN of class implementing the PersistenceManager interface
     -->
     <PersistenceManager class="${jcr.configuration.persistence.manager}">
-      <param name="url" value="${WaProductionDb}" />
-      <param name="password" value="${WaProductionPswd}" />
-      <param name="user" value="${WaProductionUser}" />
-      <param name="driver" value="${AdminDBDriver}" />
+      <param name="driver" value="javax.naming.InitialContext"/>
+      <param name="url" value="datasources/DocumentStoreDS"/>
       <param name="schema" value="${schema}" />
       <param name="schemaObjectPrefix" value="JCR_" />
     </PersistenceManager>
@@ -115,10 +107,8 @@
       value="version_"/> </PersistenceManager>
     -->
     <PersistenceManager class="${jcr.configuration.persistence.manager}">
-      <param name="url" value="${WaProductionDb}" />
-      <param name="password" value="${WaProductionPswd}" />
-      <param name="user" value="${WaProductionUser}" />
-      <param name="driver" value="${AdminDBDriver}" />
+      <param name="driver" value="javax.naming.InitialContext"/>
+      <param name="url" value="datasources/DocumentStoreDS"/>
       <param name="schemaObjectPrefix" value="version_" />
     </PersistenceManager>
   </Versioning>

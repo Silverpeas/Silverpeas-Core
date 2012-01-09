@@ -162,7 +162,7 @@ function checkSubmit(ev)
                         <img src="<%=logo%>" class="logo" alt="logo"/>
                         <p class="information">
                           <c:choose>
-                            <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode}">                              
+                            <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">                              
                               <c:set var="erroMessageKey">authentication.logon.<c:out value="${param.ErrorCode}"/></c:set>
                                 <span><fmt:message key="${erroMessageKey}" /></span>
                             </c:when><c:otherwise>

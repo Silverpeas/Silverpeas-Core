@@ -40,24 +40,29 @@ public class ProxyLoginModule implements LoginModule {
     this.realModule = RepositoryHelper.getJcrLoginModule();
   }
 
+  @Override
   public boolean abort() throws LoginException {
     return realModule.abort();
   }
 
+  @Override
   public boolean commit() throws LoginException {
     return realModule.commit();
   }
 
   @SuppressWarnings("unchecked")
+  @Override
   public void initialize(Subject subject, CallbackHandler callbackHandler,
       Map sharedState, Map options) {
     realModule.initialize(subject, callbackHandler, sharedState, options);
   }
 
+  @Override
   public boolean login() throws LoginException {
     return realModule.login();
   }
 
+  @Override
   public boolean logout() throws LoginException {
     return realModule.logout();
   }
