@@ -29,9 +29,11 @@
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 <%@ page import="com.stratelia.webactiv.util.DateUtil" %>
 <%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="checkVersion.jsp" %>
 
+<view:includePlugin name="qtip"/>
 <script type="text/javascript"
         src="<%=m_context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
 <script type="text/javascript"

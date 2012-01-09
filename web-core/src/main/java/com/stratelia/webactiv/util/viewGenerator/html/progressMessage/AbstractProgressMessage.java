@@ -33,9 +33,12 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.progressMessage;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import java.util.List;
 
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.script;
 
 /**
  * @author neysseri
@@ -45,14 +48,20 @@ public abstract class AbstractProgressMessage implements ProgressMessage {
 
   protected List<String> messages;
   protected ResourceLocator multilang;
+  private ElementContainer xhtmlRenderer = new ElementContainer();
 
   public AbstractProgressMessage() {
   }
 
+  @Override
   public void init(List<String> messages) {
     this.messages = messages;
+    script progressMessage = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/progressMessage.js");
+    xhtmlRenderer.addElement(progressMessage);
   }
   
+  @Override
   public void setMultilang(ResourceLocator resource) {
     multilang = resource;
   }
@@ -65,5 +74,7 @@ public abstract class AbstractProgressMessage implements ProgressMessage {
     return multilang;
   }
 
-  public abstract String print();
+  protected ElementContainer getXHTMLRenderer() {
+    return xhtmlRenderer;
+  }
 }

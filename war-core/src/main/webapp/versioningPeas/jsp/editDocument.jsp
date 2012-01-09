@@ -29,10 +29,12 @@
 <%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
 <%@ page import="com.stratelia.silverpeas.versioning.util.VersioningUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ClientBrowserUtil"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkVersion.jsp" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
+<view:includePlugin name="qtip"/>
 <script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
 
