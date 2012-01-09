@@ -63,13 +63,12 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -108,8 +107,6 @@ public class GraphicElementFactory {
   private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
   private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
-//  private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
-//  private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
 
   /**
    * Constructor declaration
@@ -222,7 +219,7 @@ public class GraphicElementFactory {
    */
   public final void setLook(String look) {
     lookSettings = getLookSettings();
-    String selectedLook = null;
+    String selectedLook;
 
     // get the customer lookSettings
     try {
@@ -371,10 +368,6 @@ public class GraphicElementFactory {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
     }
-
-    // include specific browseBar javaScript
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/browseBarComplete.js\"></script>\n");
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {
@@ -548,7 +541,7 @@ public class GraphicElementFactory {
    * @return returns an object implementing the Frame interface. That's the new frame to use.
    */
   public Frame getFrame() {
-    Frame frame = null;
+    Frame frame;
     String frameClassName = getFavoriteLookSettings().getString("Frame");
 
     try {
@@ -567,7 +560,7 @@ public class GraphicElementFactory {
    * @return returns an object implementing the Board interface. That's the new board to use.
    */
   public Board getBoard() {
-    Board board = null;
+    Board board;
     String boardClassName = getFavoriteLookSettings().getString("Board");
 
     try {
@@ -586,7 +579,7 @@ public class GraphicElementFactory {
    * @return returns an object implementing the NavigationList interface.
    */
   public NavigationList getNavigationList() {
-    NavigationList navigationList = null;
+    NavigationList navigationList;
     String navigationListClassName = getFavoriteLookSettings().getString(
         "NavigationList");
 
@@ -823,7 +816,7 @@ public class GraphicElementFactory {
    */
   public OperationPane getOperationPane() {
     String operationPaneClassName = getFavoriteLookSettings().getString("OperationPane");
-    OperationPane operationPane = null;
+    OperationPane operationPane;
     try {
       operationPane = (OperationPane) Class.forName(operationPaneClassName).newInstance();
     } catch (Exception e) {
@@ -879,7 +872,7 @@ public class GraphicElementFactory {
 
   public Pagination getPagination(int nbItems, int nbItemsPerPage, int firstItemIndex) {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination");
-    Pagination pagination = null;
+    Pagination pagination;
     if (paginationClassName == null) {
       paginationClassName =
           "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
@@ -898,7 +891,7 @@ public class GraphicElementFactory {
 
   public ProgressMessage getProgressMessage(List<String> messages) {
     String progressClassName = getFavoriteLookSettings().getString("Progress");
-    ProgressMessage progress = null;
+    ProgressMessage progress;
     if (progressClassName == null) {
       progressClassName =
           "com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
@@ -952,7 +945,7 @@ public class GraphicElementFactory {
    */
   public String getDefaultLookName() {
     // Retrieve user personal look settings
-    String userLookStyle = null;
+    String userLookStyle;
     try {
       userLookStyle = mainSessionController.getPersonalization().getLook();
     } catch (Exception t) {
