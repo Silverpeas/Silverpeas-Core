@@ -63,11 +63,7 @@ public class QuartzScheduler
    * The Quartz scheduler (the backend).
    */
   private org.quartz.Scheduler backend;
-  /**
-   * A Quartz trigger builder.
-   */
-  private final QuartzTriggerBuilder triggerBuilder = new QuartzTriggerBuilder();
-
+  
   /**
    * Constructs a new scheduler and bootstraps the Quartz scheduler backend.
    * @throws SchedulerException if the unerlying Quartz scheduler setting up fails.
@@ -176,7 +172,7 @@ public class QuartzScheduler
    */
   private void schedule(final QuartzSchedulerJob job, final JobDetail jobDetail) throws
           org.quartz.SchedulerException {
-    Trigger quartzTrigger = triggerBuilder.buildFrom(job);
+    Trigger quartzTrigger = QuartzTriggerBuilder.buildFrom(job);
     this.backend.scheduleJob(jobDetail, quartzTrigger);
     job.setNextExecutionTime(quartzTrigger.getNextFireTime());
   }
