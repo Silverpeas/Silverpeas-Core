@@ -129,7 +129,7 @@ public abstract class AbstractForm implements Form {
         pc.incCurrentFieldIndex(1);
       }
 
-      out.append(Util.getJavascriptIncludes())
+      out.append(Util.getJavascriptIncludes(language))
               .append("\n<script type=\"text/javascript\">\n")
               .append("	var errorNb = 0;\n")
               .append("	var errorMsg = \"\";\n")
