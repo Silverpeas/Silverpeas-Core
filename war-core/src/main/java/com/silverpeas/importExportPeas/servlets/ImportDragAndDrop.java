@@ -20,10 +20,21 @@
  */
 package com.silverpeas.importExportPeas.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
+import com.silverpeas.importExport.control.MassiveDocumentImport;
+import com.silverpeas.importExport.report.MassiveReport;
+import com.silverpeas.importExport.report.UnitReport;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -31,32 +42,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
-import com.silverpeas.importExport.control.GEDImportExport;
-import com.silverpeas.importExport.control.ImportExportFactory;
-import com.silverpeas.importExport.control.ImportExportHelper;
-import com.silverpeas.importExport.control.RepositoriesTypeManager;
-import com.silverpeas.importExport.report.ImportReportManager;
-import com.silverpeas.importExport.report.MassiveReport;
-import com.silverpeas.importExport.report.UnitReport;
-import com.silverpeas.pdc.PdcServiceFactory;
-import com.silverpeas.pdc.importExport.PdcImportExport;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.silverpeas.versioning.importExport.VersioningImportExport;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
@@ -74,26 +63,26 @@ public class ImportDragAndDrop extends HttpServlet {
       super.init(config);
     } catch (ServletException se) {
       SilverTrace.fatal("importExportPeas", "ImportDragAndDrop.init",
-              "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
-          throws ServletException, IOException {
+      throws ServletException, IOException {
     doPost(req, res);
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse res)
-          throws ServletException, IOException {
+      throws ServletException, IOException {
     SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
     request.setCharacterEncoding("UTF-8");
     if (!FileUploadUtil.isRequestMultipart(request)) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
-    
+
     StringBuilder result = new StringBuilder();
     try {
       String componentId = request.getParameter("ComponentId");
@@ -101,7 +90,7 @@ public class ImportDragAndDrop extends HttpServlet {
       if (!StringUtil.isDefined(topicId)) {
         String sessionId = request.getParameter("SessionId");
         HttpSession session =
-                SessionManager.getInstance().getSessionInfo(sessionId).getHttpSession();
+            SessionManager.getInstance().getSessionInfo(sessionId).getHttpSession();
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");
@@ -109,20 +98,21 @@ public class ImportDragAndDrop extends HttpServlet {
       String draftMode = request.getParameter("Draft");
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
-              "componentId = " + componentId + " topicId = " + topicId
+          "componentId = " + componentId + " topicId = " + topicId
               + " userId = " + userId + " ignoreFolders = " + ignoreFolders
               + ", draftMode = " + draftMode);
 
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
-              + File.separator + topicId + System.currentTimeMillis() + File.separator;
+          + File.separator + topicId + System.currentTimeMillis() + File.separator;
 
       List<FileItem> items = FileUploadUtil.parseRequest(request);
       SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-              "debut de la boucle");
+          "debut de la boucle");
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
-          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
+          String parentPath =
+              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
           String fileName = FileUploadUtil.getFileName(item);
           if (StringUtil.isDefined(parentPath)) {
             if (parentPath.endsWith(":\\")) { // special case for file on root of disk
@@ -131,15 +121,15 @@ public class ImportDragAndDrop extends HttpServlet {
           }
           parentPath = FileUploadUtil.convertPathToServerOS(parentPath);
           SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-                  "fileName = " + fileName);
+              "fileName = " + fileName);
           if (fileName != null) {
             if (fileName.contains(File.separator)) {
               fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
               parentPath = parentPath + File.separatorChar + fileName.substring(0, fileName.
-                      lastIndexOf(File.separatorChar));
+                  lastIndexOf(File.separatorChar));
             }
             SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-                    "fileName on Unix = " + fileName);
+                "fileName on Unix = " + fileName);
           }
           if (!"1".equals(ignoreFolders)) {
             fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
@@ -154,38 +144,19 @@ public class ImportDragAndDrop extends HttpServlet {
           }
         } else {
           SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
-                  + item.getFieldName() + " - " + item.getString());
+              + item.getFieldName() + " - " + item.getString());
         }
       }
-      AttachmentImportExport attachmentIE = new AttachmentImportExport();
-      VersioningImportExport versioningIE = new VersioningImportExport();
-      PdcImportExport pdcIE = new PdcImportExport();
-
+      MassiveReport massiveReport = new MassiveReport();
       OrganizationController controller = new OrganizationController();
       UserDetail userDetail = controller.getUserDetail(userId);
-      ComponentInst componentInst = controller.getComponentInst(componentId);
-
-      // Import Report creation
-      ImportReportManager.init();
-      MassiveReport massiveReport = new MassiveReport();
-      massiveReport.setRepositoryPath(savePath);
-      ImportReportManager.addMassiveReport(massiveReport, componentId);
-      GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(
-              userDetail, componentId);
-      RepositoriesTypeManager rtm = new RepositoriesTypeManager();
-
-      boolean isVersioningUsed = ImportExportHelper.isVersioningUsed(componentInst);
-
       boolean isDraftUsed = "1".equals(draftMode);
-
-      boolean isPOIUsed = true;
       try {
-        // Traitement recursif specifique
-        List<PublicationDetail> importedPublications = rtm.processImportRecursiveReplicate(
-                massiveReport, userDetail, new File(savePath), gedIE, attachmentIE, versioningIE,
-                pdcIE, componentId, Integer.parseInt(topicId), isPOIUsed, isVersioningUsed, isDraftUsed);
-        ImportReportManager.setEndDate(new Date());
-        
+        MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
+        List<PublicationDetail> importedPublications = massiveImporter
+            .importDocuments(userDetail, componentId, savePath, Integer.parseInt(topicId),
+                isDraftUsed, true, massiveReport);
+
         if (isDefaultClassificationModifiable(topicId, componentId)) {
           for (PublicationDetail publicationDetail : importedPublications) {
             result.append("pubid=").append(publicationDetail.getId()).append("&");
@@ -196,37 +167,35 @@ public class ImportDragAndDrop extends HttpServlet {
         res.getOutputStream().println("ERROR");
         return;
       }
-      // Delete import Folder
-      FileFolderManager.deleteFolder(savePath);
     } catch (Exception e) {
       SilverTrace.debug("importExportPeas", "FileUploader.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       res.getOutputStream().println("ERROR");
       return;
     }
-    
+
     if (result.length() > 0) {
       res.getOutputStream().println(result.substring(0, result.length() - 1));
     } else {
       res.getOutputStream().println("SUCCESS");
     }
   }
-  
+
   /**
    * Is the default classification on the PdC used to classify the publications published in the
-   * specified topic of the specified component instance can be modified during the multi-publications
-   * import process?
-   * If no default classification is defined for the specified topic (and for any of its parent topics),
-   * then false is returned.
-   * @param topicId the unique identifier of the topic.
+   * specified topic of the specified component instance can be modified during the
+   * multi-publications import process? If no default classification is defined for the specified
+   * topic (and for any of its parent topics), then false is returned.
+   *
+   * @param topicId     the unique identifier of the topic.
    * @param componentId the unique identifier of the component instance.
    * @return true if the default classification can be modified during the automatical
-   * classification of the imported publications. False otherwise.
+   *         classification of the imported publications. False otherwise.
    */
   protected boolean isDefaultClassificationModifiable(String topicId, String componentId) {
     PdcClassificationService classificationService = PdcServiceFactory.getFactory().
-            getPdcClassificationService();
+        getPdcClassificationService();
     PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
-            topicId, componentId);
+        topicId, componentId);
     return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
   }
 }
