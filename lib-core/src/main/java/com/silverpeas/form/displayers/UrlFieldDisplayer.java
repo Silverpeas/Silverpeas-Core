@@ -139,7 +139,7 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
     if (template.isReadOnly() && !template.isHidden()) {
       if (StringUtil.isDefined(value)) {
-        if (!value.startsWith("http") && !value.startsWith("ftp:")) {
+        if (!value.startsWith("http") && !value.startsWith("ftp:") && !value.startsWith("/")) {
           value = "http://" + value;
         }
         html =
