@@ -87,11 +87,11 @@ public final class Admin {
   public static final String SPACE_KEY_PREFIX = "WA";
   // Divers
   static private final Object semaphore = new Object();
-  static private long threadDelay = 900;
   static private boolean delUsersOnDiffSynchro = true;
   static private boolean shouldFallbackGroupNames = true;
   static private boolean shouldFallbackUserLogins = false;
   static private String m_groupSynchroCron = "";
+  static private String m_domainSynchroCron = "";
   // Helpers
   static private final SpaceInstManager spaceManager = new SpaceInstManager();
   static private final ComponentInstManager componentManager = new ComponentInstManager();
@@ -99,7 +99,6 @@ public final class Admin {
   static private final SpaceProfileInstManager spaceProfileManager = new SpaceProfileInstManager();
   static private final GroupManager groupManager = new GroupManager();
   static private final UserManager userManager = new UserManager();
-  private final DomainDriverManager synchroDomainDriverManager = new DomainDriverManager();
   static private final ProfiledObjectManager profiledObjectManager = new ProfiledObjectManager();
   static private final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
   // Component instanciator
@@ -123,6 +122,7 @@ public final class Admin {
   static private final ScheduledDBReset scheduledDBReset;
   public static final String basketSuffix = " (Restauré)";
   static private SynchroGroupScheduler groupSynchroScheduler = null;
+  static private SynchroDomainScheduler domainSynchroScheduler = null;
   static private ResourceLocator roleMapping = null;
   static private boolean useProfileInheritance = false;
   private static transient boolean cacheLoaded = false;
@@ -151,7 +151,7 @@ public final class Admin {
 
     shouldFallbackGroupNames = resources.getBoolean("FallbackGroupNames", true);
     shouldFallbackUserLogins = resources.getBoolean("FallbackUserLogins", false);
-    threadDelay = resources.getLong("AdminThreadedSynchroDelay", 900);
+    m_domainSynchroCron = resources.getString("DomainSynchroCron", "* 4 * * *");
     m_groupSynchroCron = resources.getString("GroupSynchroCron", "* 5 * * *");
     delUsersOnDiffSynchro = resources.getBoolean("DelUsersOnThreadedSynchro", true);
 
@@ -196,17 +196,48 @@ public final class Admin {
   // -------------------------------------------------------------------------
   // Start Server actions
   // -------------------------------------------------------------------------
-  public void startServer() throws Exception {
+  public void startServer() {
+    // init synchronization of domains
+    List<String> synchroDomainIds = new ArrayList<String>();
+    DomainDriverManager ddm = DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    Domain[] domains = null;
     try {
-      synchroDomainDriverManager.startServer(threadDelay);
-    } catch (Exception e) {
-      SilverTrace.error(MODULE_ADMIN, "Admin.startServer", "ERROR_WHEN_STARTING_DOMAINS", e);
+      domains = ddm.getAllDomains();
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "Admin.startServer()",
+          "admin.CANT_LOAD_DOMAINS_DURING_INITIALIZATION", e);
     }
-    Group[] groups = getSynchronizedGroups();
-    List<String> synchronizedGroupIds = new ArrayList<String>(groups.length);
-    for (Group group : groups) {
-      if (group.isSynchronized()) {
-        synchronizedGroupIds.add(group.getId());
+    if (domains != null) {
+      for (Domain domain : domains) {
+        DomainDriver synchroDomain;
+        try {
+          synchroDomain = ddm.getDomainDriver(Integer.parseInt(domain.getId()));
+          if (synchroDomain != null && synchroDomain.isSynchroThreaded()) {
+            synchroDomainIds.add(domain.getId());
+          }
+        } catch (Exception e) {
+          SilverTrace.error("admin", "Admin.startServer()",
+              "admin.CANT_LOAD_DOMAIN_DURING_INITIALIZATION", "domainId = " + domain.getId(), e);
+        }
+      }
+    }
+    domainSynchroScheduler = new SynchroDomainScheduler();
+    domainSynchroScheduler.initialize(m_domainSynchroCron, synchroDomainIds);
+    
+    // init synchronization of groups
+    Group[] groups = null;
+    try {
+      groups = getSynchronizedGroups();
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "Admin.startServer()",
+          "admin.CANT_LOAD_SYNCHRONIZED_GROUPS_DURING_INITIALIZATION", e);
+    }
+    List<String> synchronizedGroupIds = new ArrayList<String>();
+    if (groups != null) {
+      for (Group group : groups) {
+        if (group.isSynchronized()) {
+          synchronizedGroupIds.add(group.getId());
+        }
       }
     }
     groupSynchroScheduler = new SynchroGroupScheduler();
@@ -3412,7 +3443,15 @@ public final class Admin {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
     try {
-      return domainDriverManager.createDomain(theDomain);
+      String id = domainDriverManager.createDomain(theDomain);
+
+      // Update the synchro scheduler
+      DomainDriver domainDriver = domainDriverManager.getDomainDriver(Integer.parseInt(id));
+      if (domainDriver.isSynchroThreaded()) {
+        domainSynchroScheduler.addDomain(id);
+      }
+
+      return id;
     } catch (Exception e) {
       throw new AdminException("Admin.addDomain", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_DOMAIN", "domain name : '" + theDomain.getName() + "'", e);
@@ -3467,6 +3506,8 @@ public final class Admin {
       }
       // Remove the domain
       domainDriverManager.removeDomain(domainId);
+      // Update the synchro scheduler
+      domainSynchroScheduler.removeDomain(domainId);
       DomainCache.removeDomain(domainId);
 
       return domainId;

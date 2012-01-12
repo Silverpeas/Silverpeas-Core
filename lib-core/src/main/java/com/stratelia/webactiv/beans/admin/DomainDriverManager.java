@@ -47,7 +47,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   private OrganizationSchema organization = null;
   private Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<String, DomainDriver>();
-  private DomainSynchroThread theThread = null;
 
   public DomainDriverManager() {
   }
@@ -85,34 +84,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
         getOrganization().close();
         organization = null;
       }
-    }
-  }
-
-  public void startServer(long nbSleepSec) throws Exception {
-    Domain[] doms = getAllDomains();
-    theThread = new DomainSynchroThread(nbSleepSec);
-    for (Domain dom : doms) {
-      try {
-        DomainDriver synchroDomain = getDomainDriver(Integer.parseInt(dom.getId()));
-        if (synchroDomain != null && synchroDomain.isSynchroThreaded()) {
-          theThread.addDomain(dom.getId());
-        }
-      } catch (Exception e) {
-        SilverTrace.warn("admin", "DomainDriverManager.startServer", "admin.CANT_GET_DOMAIN", e);
-      }
-    }
-    startSynchroThread();
-  }
-
-  public void startSynchroThread() throws Exception {
-    if (theThread != null) {
-      theThread.startTheThread();
-    }
-  }
-
-  public void stopSynchroThread() throws Exception {
-    if (theThread != null) {
-      theThread.stopTheThread();
     }
   }
 
@@ -931,7 +902,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   /**
    * @return Domain[]
    */
-  public Domain[] getAllDomains() throws Exception {
+  public Domain[] getAllDomains() throws AdminException {
     Domain[] valret = null;
     int i;
 
@@ -994,11 +965,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
       getOrganization().domain.createDomain(dr);
       this.commit();
       LoginPasswordAuthentication.initDomains();
-      // Update the synchro thread
-      DomainDriver domainDriver = getDomainDriver(dr.id);
-      if (domainDriver.isSynchroThreaded() && theThread != null) {
-        theThread.addDomain(idAsString(dr.id));
-      }
 
       return idAsString(dr.id);
     } catch (AdminException e) {
@@ -1035,11 +1001,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       this.commit();
       LoginPasswordAuthentication.initDomains();
-      // Update the synchro thread
-      DomainDriver domainDriver = getDomainDriver(dr.id);
-      if (!domainDriver.isSynchroThreaded() && theThread != null) {
-        theThread.removeDomain(theDomain.getId());
-      }
 
       return theDomain.getId();
     } catch (AdminException e) {
@@ -1068,10 +1029,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       this.commit();
       LoginPasswordAuthentication.initDomains();
-      if (theThread != null) {
-        // Update the synchro thread
-        theThread.removeDomain(domainId);
-      }
+      
       return domainId;
     } catch (AdminException e) {
       try {
