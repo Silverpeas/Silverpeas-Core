@@ -728,28 +728,28 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + EncodeHelper.escapeXml(message.getString("Diary"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_AGENDA) + "Main\"/>");
+                + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("todoVisible", true)) {
         writer.write("<item id=\"todo\" name=\""
                 + EncodeHelper.escapeXml(message.getString("ToDo"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp\"/>");
+                + URLManager.getURL(URLManager.CMP_TODO, null, null) + "todo.jsp\"/>");
       }
       if (settings.getBoolean("notificationVisible", true)) {
         writer.write("<item id=\"notification\" name=\""
                 + EncodeHelper.escapeXml(message.getString("Mail"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main\"/>");
+                + URLManager.getURL(URLManager.CMP_SILVERMAIL, null, null) + "Main\"/>");
       }
       if (settings.getBoolean("interestVisible", true)) {
         writer.write("<item id=\"subscriptions\" name=\""
                 + EncodeHelper.escapeXml(message.getString("MyInterestCenters"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION)
+                + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null)
                 + "subscriptionList.jsp\"/>");
       }
       if (settings.getBoolean("favRequestVisible", true)) {
@@ -757,7 +757,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + EncodeHelper.escapeXml(message.getString("FavRequests"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)
+                + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS, null, null)
                 + "iCenterList.jsp\"/>");
       }
       if (settings.getBoolean("linksVisible", true)) {
@@ -765,7 +765,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + EncodeHelper.escapeXml(message.getString("FavLinks"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_MYLINKSPEAS)
+                + URLManager.getURL(URLManager.CMP_MYLINKSPEAS, null, null)
                 + "Main\"/>");
       }
       if (settings.getBoolean("fileSharingVisible", true)) {
@@ -776,7 +776,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                   + EncodeHelper.escapeXml(message.getString("FileSharing"))
                   +
               "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                  + URLManager.getURL(URLManager.CMP_FILESHARING)
+                  + URLManager.getURL(URLManager.CMP_FILESHARING, null, null)
                   + "Main\"/>");
         }
       }
@@ -788,7 +788,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                   + EncodeHelper.escapeXml(message.getString("WebConnections"))
                   +
               "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                  + URLManager.getURL(URLManager.CMP_WEBCONNECTIONS)
+                  + URLManager.getURL(URLManager.CMP_WEBCONNECTIONS, null, null)
                   + "Main\"/>");
         }
       }
@@ -799,7 +799,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main\"/>");
+                + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + "Main\"/>");
       }
 
       if (settings.getBoolean("customVisible", true)) {
@@ -807,7 +807,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + EncodeHelper.escapeXml(message.getString("Personalization"))
                 +
             "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                + URLManager.getURL(URLManager.CMP_MYPROFILE)
+                + URLManager.getURL(URLManager.CMP_MYPROFILE, null, null)
                 + "Main\"/>");
       }
       if (settings.getBoolean("mailVisible", true)) {
