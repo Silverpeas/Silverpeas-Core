@@ -130,7 +130,10 @@ public class AjaxServletLookV5 extends HttpServlet {
     if (helper.isMenuPersonalisationEnabled()) {
       if (StringUtil.isDefined(request.getParameter("UserMenuDisplayMode"))) {
         displayMode = UserMenuDisplay.valueOf(request.getParameter("UserMenuDisplayMode"));
-      } else if (preferences.getDisplay().isNotDefault()) {
+      } else if (preferences.getDisplay().isNotDefault() &&
+          !UserMenuDisplay.ALL.equals(displayMode) &&
+          !UserMenuDisplay.BOOKMARKS.equals(displayMode)) {
+        // Initialize displayMode from user preferences
         displayMode = preferences.getDisplay();
       }
     }
@@ -213,7 +216,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private void displayPDC(boolean displayPDC, String spaceId, String componentId,
-          String userId,MainSessionController mainSC, Writer writer)
+          String userId, MainSessionController mainSC, Writer writer)
           throws IOException {
     try {
       writer.write("<pdc>");
@@ -249,8 +252,8 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   /**
-   * @param spaceId        : space identifier
-   * @param listUFS        : the list of user favorite space
+   * @param spaceId : space identifier
+   * @param listUFS : the list of user favorite space
    * @param orgaController : the OrganizationController object
    * @return true if the current space contains user favorites sub space, false else if
    */
@@ -271,7 +274,6 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   /**
    * displaySpace build XML response tree of current spaceId
-   *
    * @param spaceId
    * @param componentId
    * @param spacePath
@@ -291,7 +293,8 @@ public class AjaxServletLookV5 extends HttpServlet {
           String userId, String language, String defaultLook,
           boolean displayPDC, boolean displayTransverse,
           OrganizationController orgaController, LookHelper helper, Writer writer,
-          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode) throws IOException {
+          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
+      throws IOException {
     boolean isTransverse = false;
     int i = 0;
     while (!isTransverse && i < spacePath.size()) {
@@ -373,7 +376,8 @@ public class AjaxServletLookV5 extends HttpServlet {
   private void displayTree(String userId, String targetComponentId,
           List<String> spacePath, String language, String defaultLook,
           OrganizationController orgaController, LookHelper helper, Writer out,
-          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode) throws IOException {
+          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
+      throws IOException {
     // Then get all first level spaces
     String[] availableSpaceIds = getRootSpaceIds(userId, orgaController, helper);
 
@@ -386,7 +390,8 @@ public class AjaxServletLookV5 extends HttpServlet {
               orgaController);
       if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController, helper)) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language,
-                defaultLook, false, false, orgaController, helper, out, listUFS, userMenuDisplayMode);
+                defaultLook, false, false, orgaController, helper, out, listUFS,
+            userMenuDisplayMode);
       }
       loadCurSpace = false;
     }
@@ -414,10 +419,9 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   /**
    * Recursive method to get the right look.
-   *
    * @param space
    * @param defaultLook : current default look name
-   * @param orga        : the organization controller
+   * @param orga : the organization controller
    * @return the space style according to the space hierarchy
    */
   private String getSpaceLookAttribute(SpaceInstLight space, String defaultLook,
@@ -525,7 +529,8 @@ public class AjaxServletLookV5 extends HttpServlet {
           String userId, String language, OrganizationController orgaController,
           Writer out, UserMenuDisplay userMenuDisplayMode, List<UserFavoriteSpaceVO> listUFS)
           throws IOException {
-    boolean loadCurComponent = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
+    boolean loadCurComponent =
+        isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
             orgaController);
     if (loadCurComponent) {
       String[] componentIds = orgaController.getAvailCompoIdsAtRoot(spaceId, userId);
@@ -628,7 +633,8 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   private List<Value> getPertinentValues(String spaceId, String componentId,
           String userId, String axisId, String valuePath,
-          boolean displayContextualPDC, MainSessionController mainSC, Writer out) throws IOException,
+          boolean displayContextualPDC, MainSessionController mainSC, Writer out)
+      throws IOException,
           PdcException {
     List<Value> daughters = null;
     SearchContext searchContext = new SearchContext();
@@ -678,7 +684,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   private String getWallPaper(String spaceId) {
     String path = FileRepositoryManager.getAbsolutePath("Space" + spaceId.substring(2),
-            new String[]{"look"});
+            new String[] { "look" });
     File file = new File(path + "wallPaper.jpg");
     if (file.isFile()) {
       return "1";
@@ -720,39 +726,45 @@ public class AjaxServletLookV5 extends HttpServlet {
       if (settings.getBoolean("agendaVisible", true)) {
         writer.write("<item id=\"agenda\" name=\""
                 + EncodeHelper.escapeXml(message.getString("Diary"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_AGENDA) + "Main\"/>");
       }
       if (settings.getBoolean("todoVisible", true)) {
         writer.write("<item id=\"todo\" name=\""
                 + EncodeHelper.escapeXml(message.getString("ToDo"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp\"/>");
       }
       if (settings.getBoolean("notificationVisible", true)) {
         writer.write("<item id=\"notification\" name=\""
                 + EncodeHelper.escapeXml(message.getString("Mail"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main\"/>");
       }
       if (settings.getBoolean("interestVisible", true)) {
         writer.write("<item id=\"subscriptions\" name=\""
                 + EncodeHelper.escapeXml(message.getString("MyInterestCenters"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION)
                 + "subscriptionList.jsp\"/>");
       }
       if (settings.getBoolean("favRequestVisible", true)) {
         writer.write("<item id=\"requests\" name=\""
                 + EncodeHelper.escapeXml(message.getString("FavRequests"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)
                 + "iCenterList.jsp\"/>");
       }
       if (settings.getBoolean("linksVisible", true)) {
         writer.write("<item id=\"links\" name=\""
                 + EncodeHelper.escapeXml(message.getString("FavLinks"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_MYLINKSPEAS)
                 + "Main\"/>");
       }
@@ -762,7 +774,8 @@ public class AjaxServletLookV5 extends HttpServlet {
         if (!fileSharing.getTicketsByUser(userId).isEmpty()) {
           writer.write("<item id=\"fileSharing\" name=\""
                   + EncodeHelper.escapeXml(message.getString("FileSharing"))
-                  + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                  +
+              "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                   + URLManager.getURL(URLManager.CMP_FILESHARING)
                   + "Main\"/>");
         }
@@ -773,38 +786,47 @@ public class AjaxServletLookV5 extends HttpServlet {
         if (webConnections.listWebConnectionsOfUser(userId).size() > 0) {
           writer.write("<item id=\"webConnections\" name=\""
                   + EncodeHelper.escapeXml(message.getString("WebConnections"))
-                  + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                  +
+              "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                   + URLManager.getURL(URLManager.CMP_WEBCONNECTIONS)
                   + "Main\"/>");
         }
       }
-      
+
       // fonctionnalité "Trouver une date"
       if (settings.getBoolean("scheduleEventVisible", false)) {
         writer.write("<item id=\"scheduleevent\" name=\""
                 + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main\"/>");
       }
 
       if (settings.getBoolean("customVisible", true)) {
         writer.write("<item id=\"personalize\" name=\""
                 + EncodeHelper.escapeXml(message.getString("Personalization"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+                +
+            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
                 + URLManager.getURL(URLManager.CMP_MYPROFILE)
                 + "Main\"/>");
       }
       if (settings.getBoolean("mailVisible", true)) {
-        writer.write(
+        writer
+            .write(
                 "<item id=\"notifAdmins\" name=\""
-                + EncodeHelper.escapeXml(message.getString("Feedback"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
+                    +
+                    EncodeHelper.escapeXml(message.getString("Feedback"))
+                    +
+                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
       }
       if (settings.getBoolean("clipboardVisible", true)) {
-        writer.write(
+        writer
+            .write(
                 "<item id=\"clipboard\" name=\""
-                + EncodeHelper.escapeXml(message.getString("Clipboard"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
+                    +
+                    EncodeHelper.escapeXml(message.getString("Clipboard"))
+                    +
+                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
       }
 
       if (settings.getBoolean("PersonalSpaceAddingsEnabled", true)) {
@@ -819,22 +841,33 @@ public class AjaxServletLookV5 extends HttpServlet {
             }
             String url = URLManager.getURL(component.getName(), null, component.getName()
                     + component.getId()) + "Main";
-            writer.write("<item id=\""
-                    + component.getName()
-                    + component.getId()
-                    + "\" name=\""
-                    + EncodeHelper.escapeXml(label)
-                    + "\" description=\"\" type=\"component\" kind=\"personalComponent\" level=\"1\" open=\"false\" url=\""
+            writer
+                .write("<item id=\""
+                    +
+                    component.getName()
+                    +
+                    component.getId()
+                    +
+                    "\" name=\""
+                    +
+                    EncodeHelper.escapeXml(label)
+                    +
+                    "\" description=\"\" type=\"component\" kind=\"personalComponent\" level=\"1\" open=\"false\" url=\""
                     + url + "\"/>");
           }
         }
         int nbComponentAvailables = psc.getVisibleComponents(orgaController).size();
         if (nbComponentAvailables > 0) {
-          if (personalSpace == null || personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
-            writer.write(
+          if (personalSpace == null ||
+              personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
+            writer
+                .write(
                     "<item id=\"addComponent\" name=\""
-                    + EncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add"))
-                    + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:listComponents()\"/>");
+                        +
+                        EncodeHelper.escapeXml(helper
+                            .getString("lookSilverpeasV5.personalSpace.add"))
+                        +
+                        "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:listComponents()\"/>");
           }
         }
       }
@@ -857,7 +890,6 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   /**
    * a Space is visible if at least one of its items is visible for the currentUser
-   *
    * @param userId
    * @param spaceId
    * @param orgaController
