@@ -68,18 +68,16 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
 
   public void doSynchro() {
     SilverTrace.info("admin", "SynchroDomainScheduler.doSynchro()", "root.MSG_GEN_ENTER_METHOD");
-    //SynchroGroupReport.startSynchro();
     if (domainIds != null) {
       for (String domainId : domainIds) {
         try {
-          AdminReference.getAdminService().difSynchro(domainId);
+          AdminReference.getAdminService().synchronizeSilverpeasWithDomain(domainId, true);
         } catch (Exception e) {
           SilverTrace.error("admin", "SynchroDomainScheduler.doSynchro()",
               "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
         }
       }
     }
-    //SynchroGroupReport.stopSynchro();
     SilverTrace.info("admin", "SynchroDomainScheduler.doSynchro()", "root.MSG_GEN_EXIT_METHOD");
   }
 
