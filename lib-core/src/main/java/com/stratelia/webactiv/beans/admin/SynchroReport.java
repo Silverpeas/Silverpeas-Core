@@ -64,6 +64,7 @@ public class SynchroReport {
    * Fixe le niveau de trace
    */
   static public void setTraceLevel(int iTraceLevelFixed) {
+    SilverTrace.setTraceLevel(getModuleName(), iTraceLevelFixed);
     iTraceLevel = iTraceLevelFixed;
   }
 

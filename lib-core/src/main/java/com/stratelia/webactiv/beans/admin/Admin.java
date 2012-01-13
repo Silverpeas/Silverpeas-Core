@@ -87,11 +87,11 @@ public final class Admin {
   public static final String SPACE_KEY_PREFIX = "WA";
   // Divers
   static private final Object semaphore = new Object();
-  static private long threadDelay = 900;
   static private boolean delUsersOnDiffSynchro = true;
   static private boolean shouldFallbackGroupNames = true;
   static private boolean shouldFallbackUserLogins = false;
   static private String m_groupSynchroCron = "";
+  static private String m_domainSynchroCron = "";
   // Helpers
   static private final SpaceInstManager spaceManager = new SpaceInstManager();
   static private final ComponentInstManager componentManager = new ComponentInstManager();
@@ -99,7 +99,6 @@ public final class Admin {
   static private final SpaceProfileInstManager spaceProfileManager = new SpaceProfileInstManager();
   static private final GroupManager groupManager = new GroupManager();
   static private final UserManager userManager = new UserManager();
-  private final DomainDriverManager synchroDomainDriverManager = new DomainDriverManager();
   static private final ProfiledObjectManager profiledObjectManager = new ProfiledObjectManager();
   static private final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
   // Component instanciator
@@ -123,6 +122,7 @@ public final class Admin {
   static private final ScheduledDBReset scheduledDBReset;
   public static final String basketSuffix = " (Restauré)";
   static private SynchroGroupScheduler groupSynchroScheduler = null;
+  static private SynchroDomainScheduler domainSynchroScheduler = null;
   static private ResourceLocator roleMapping = null;
   static private boolean useProfileInheritance = false;
   private static transient boolean cacheLoaded = false;
@@ -151,7 +151,7 @@ public final class Admin {
 
     shouldFallbackGroupNames = resources.getBoolean("FallbackGroupNames", true);
     shouldFallbackUserLogins = resources.getBoolean("FallbackUserLogins", false);
-    threadDelay = resources.getLong("AdminThreadedSynchroDelay", 900);
+    m_domainSynchroCron = resources.getString("DomainSynchroCron", "* 4 * * *");
     m_groupSynchroCron = resources.getString("GroupSynchroCron", "* 5 * * *");
     delUsersOnDiffSynchro = resources.getBoolean("DelUsersOnThreadedSynchro", true);
 
@@ -196,17 +196,48 @@ public final class Admin {
   // -------------------------------------------------------------------------
   // Start Server actions
   // -------------------------------------------------------------------------
-  public void startServer() throws Exception {
+  public void startServer() {
+    // init synchronization of domains
+    List<String> synchroDomainIds = new ArrayList<String>();
+    DomainDriverManager ddm = DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    Domain[] domains = null;
     try {
-      synchroDomainDriverManager.startServer(threadDelay);
-    } catch (Exception e) {
-      SilverTrace.error(MODULE_ADMIN, "Admin.startServer", "ERROR_WHEN_STARTING_DOMAINS", e);
+      domains = ddm.getAllDomains();
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "Admin.startServer()",
+          "admin.CANT_LOAD_DOMAINS_DURING_INITIALIZATION", e);
     }
-    Group[] groups = getSynchronizedGroups();
-    List<String> synchronizedGroupIds = new ArrayList<String>(groups.length);
-    for (Group group : groups) {
-      if (group.isSynchronized()) {
-        synchronizedGroupIds.add(group.getId());
+    if (domains != null) {
+      for (Domain domain : domains) {
+        DomainDriver synchroDomain;
+        try {
+          synchroDomain = ddm.getDomainDriver(Integer.parseInt(domain.getId()));
+          if (synchroDomain != null && synchroDomain.isSynchroThreaded()) {
+            synchroDomainIds.add(domain.getId());
+          }
+        } catch (Exception e) {
+          SilverTrace.error("admin", "Admin.startServer()",
+              "admin.CANT_LOAD_DOMAIN_DURING_INITIALIZATION", "domainId = " + domain.getId(), e);
+        }
+      }
+    }
+    domainSynchroScheduler = new SynchroDomainScheduler();
+    domainSynchroScheduler.initialize(m_domainSynchroCron, synchroDomainIds);
+    
+    // init synchronization of groups
+    Group[] groups = null;
+    try {
+      groups = getSynchronizedGroups();
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "Admin.startServer()",
+          "admin.CANT_LOAD_SYNCHRONIZED_GROUPS_DURING_INITIALIZATION", e);
+    }
+    List<String> synchronizedGroupIds = new ArrayList<String>();
+    if (groups != null) {
+      for (Group group : groups) {
+        if (group.isSynchronized()) {
+          synchronizedGroupIds.add(group.getId());
+        }
       }
     }
     groupSynchroScheduler = new SynchroGroupScheduler();
@@ -3412,7 +3443,15 @@ public final class Admin {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
     try {
-      return domainDriverManager.createDomain(theDomain);
+      String id = domainDriverManager.createDomain(theDomain);
+
+      // Update the synchro scheduler
+      DomainDriver domainDriver = domainDriverManager.getDomainDriver(Integer.parseInt(id));
+      if (domainDriver.isSynchroThreaded()) {
+        domainSynchroScheduler.addDomain(id);
+      }
+
+      return id;
     } catch (Exception e) {
       throw new AdminException("Admin.addDomain", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_DOMAIN", "domain name : '" + theDomain.getName() + "'", e);
@@ -3467,6 +3506,8 @@ public final class Admin {
       }
       // Remove the domain
       domainDriverManager.removeDomain(domainId);
+      // Update the synchro scheduler
+      domainSynchroScheduler.removeDomain(domainId);
       DomainCache.removeDomain(domainId);
 
       return domainId;
@@ -5309,199 +5350,6 @@ public final class Admin {
   // //////////////////////////////////////////////////////////
   // Synchronization tools
   // //////////////////////////////////////////////////////////
-  // Performs a differencial synchro
-  public void difSynchro(String domainId) throws Exception {
-    String sReport = "Dif User synchronization : \n";
-    DomainDriver synchroDomain;
-    String specificId;
-    String silverpeasId;
-    UserDetail[] distantUDs;
-    UserDetail spUserDetail;
-    Group[] distantGroups;
-    Group spGroup;
-    int nI;
-    String fromTimeStamp, toTimeStamp;
-    Domain theDomain;
-    String timeStampField;
-
-    Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
-    Collection<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-        getCurrentDomainDriverManager();
-    try {
-      synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
-      if (!synchroDomain.isSynchroInProcess()) {
-        synchronized (semaphore) {
-          theDomain = domainDriverManager.getDomain(domainId);
-          fromTimeStamp = theDomain.getTheTimeStamp();
-          toTimeStamp = synchroDomain.getTimeStamp(fromTimeStamp);
-          timeStampField = synchroDomain.getTimeStampField();
-
-          if (timeStampField == null ||
-              (timeStampField != null && !fromTimeStamp.equals(toTimeStamp))) {
-            // FIRST Synchro the users
-            // -----------------------
-            // Get all users of the domain from distant datasource that have
-            // changed since last full or update synchro
-            distantUDs = synchroDomain.getAllChangedUsers(fromTimeStamp,
-                toTimeStamp);
-            for (nI = 0; nI < distantUDs.length; nI++) {
-              specificId = distantUDs[nI].getSpecificId();
-              silverpeasId = "";
-              try {
-                silverpeasId = userManager.getUserIdBySpecificIdAndDomainId(
-                    domainDriverManager, specificId, domainId);
-              } catch (AdminException e) {
-                // The user doesn't exist -> Synchronize him
-                SilverTrace.warn("admin", "Admin.difSynchro",
-                    "admin.EX_ERR_USER_NOT_FOUND", "SpecId=" + specificId, e);
-                try {
-                  synchronizeImportUser(domainId, specificId, false);
-                } catch (AdminException ex) {
-                  // The user's synchro failed -> ignore him
-                  SilverTrace.warn("admin", "Admin.difSynchro",
-                      "admin.MSG_ERR_SYNCHRONIZE_USER", "SpecId=" + specificId,
-                      ex);
-                }
-              }
-              if (silverpeasId.length() > 0) {
-                try {
-                  // The user exist -> update it
-                  spUserDetail = getUserDetail(silverpeasId);
-                  distantUDs[nI].setId(silverpeasId);
-                  distantUDs[nI].setAccessLevel(spUserDetail.getAccessLevel());
-                  distantUDs[nI].setDomainId(spUserDetail.getDomainId());
-                  if (!distantUDs[nI].equals(spUserDetail)) {
-                    userManager.updateUser(domainDriverManager, distantUDs[nI]);
-                    cache.opUpdateUser(
-                        userManager.getUserDetail(domainDriverManager, silverpeasId));
-                    listUsersUpdate.add(distantUDs[nI]);
-                  }
-                } catch (AdminException ex) {
-                  // The user's synchro failed -> ignore him
-                  SilverTrace.warn("admin", "Admin.difSynchro",
-                      "admin.MSG_ERR_SYNCHRONIZE_USER", "UserId=" +
-                      silverpeasId + " SpecId=" + specificId, ex);
-                }
-              }
-            }
-
-            // SECOND Synchro the groups
-            // -------------------------
-
-            distantGroups = synchroDomain.getAllChangedGroups(fromTimeStamp,
-                toTimeStamp);
-            // Add new users or update existing ones from distant datasource
-            for (nI = 0; nI < distantGroups.length; nI++) {
-              specificId = distantGroups[nI].getSpecificId();
-              silverpeasId = "";
-              try {
-                silverpeasId =
-                    groupManager.getGroupIdBySpecificIdAndDomainId(domainDriverManager,
-                        specificId,
-                        domainId);
-              } catch (AdminException e) {
-                SilverTrace.warn("admin", "Admin.difSynchro",
-                    "admin.EX_ERR_GROUP_NOT_FOUND", "SpecId=" + specificId, e);
-                // The group doesnt exist -> import him
-                try {
-                  synchronizeImportGroup(domainId, specificId, null, false,
-                      true);
-                } catch (AdminException ex) {
-                  // The group's synchro failed -> ignore him
-                  SilverTrace.warn("admin", "Admin.difSynchro",
-                      "admin.MSG_ERR_SYNCHRONIZE_GROUP",
-                      "SpecId=" + specificId, ex);
-                }
-              }
-              if (silverpeasId.length() > 0) {
-                try {
-                  // The group exist -> update it
-                  spGroup = getGroup(silverpeasId);
-                  distantGroups[nI].setId(silverpeasId);
-                  distantGroups[nI].setDomainId(spGroup.getDomainId());
-                  // For the moment, Group's move is not supported
-                  distantGroups[nI].setSuperGroupId(spGroup.getSuperGroupId());
-                  distantGroups[nI].setUserIds(translateUserIds(domainId,
-                      distantGroups[nI].getUserIds()));
-                  updateGroup(distantGroups[nI], true);
-                } catch (AdminException ex) {
-                  // The group's synchro failed -> ignore him
-                  SilverTrace.warn("admin", "Admin.difSynchro",
-                      "admin.MSG_ERR_SYNCHRONIZE_GROUP", "GroupId=" +
-                      silverpeasId + " SpecId=" + specificId, ex);
-                }
-              }
-            }
-
-            if (delUsersOnDiffSynchro) {
-              // Remove deleted users from distant datasource
-              // Get all users of the domain from distant datasource
-              distantUDs = domainDriverManager.getAllUsers(domainId);
-
-              // Get all users of the domain from Silverpeas
-              UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(
-                  domainDriverManager, domainId);
-
-              boolean bFound;
-              int nbDeletedUsers = 0;
-              for (nI = 0; nI < silverpeasUDs.length; nI++) {
-                bFound = false;
-                specificId = silverpeasUDs[nI].getSpecificId();
-
-                // search for user in distant datasource
-                for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
-                  if (distantUDs[nJ].getSpecificId().equals(specificId)) {
-                    bFound = true;
-                  }
-                }
-
-                // if found, do nothing, else delete
-                if (!bFound) {
-                  try {
-                    SilverTrace.info("admin", "admin.difSynchro",
-                        "root.MSG_GEN_PARAM_VALUE",
-                        "%%%%DIFFSYNCHRO%%%%>Delete User : " +
-                            silverpeasUDs[nI]);
-                    userManager.deleteUser(domainDriverManager, silverpeasUDs[nI], true);
-                    listUsersRemove.add(distantUDs[nI]);
-                  } catch (AdminException aeDel) {
-                    SilverTrace.error("admin", "admin.difSynchro",
-                        "root.MSG_GEN_PARAM_VALUE",
-                        "%%%%DIFFSYNCHRO%%%%>PB deleting User ! " + specificId,
-                        aeDel);
-                  }
-                }
-              }
-              SilverTrace.warn("admin", "admin.difSynchro",
-                  "root.MSG_GEN_PARAM_VALUE", nbDeletedUsers +
-                  " users have been deleted !");
-            }
-
-            // All the synchro is finished -> set the new timestamp
-            // ----------------------------------------------------
-            theDomain.setTheTimeStamp(toTimeStamp);
-            updateDomain(theDomain);
-
-            // traitement spécifique des users selon l'interface implémentée
-            processSpecificSynchronization(domainId, null, listUsersUpdate, listUsersRemove);
-          }
-        }
-      } else {
-        SilverTrace.warn("admin", "admin.difSynchro",
-            "root.MSG_GEN_EXIT_METHOD",
-            "Full synchro currently running, skipping diff synchro....");
-      }
-    } catch (Exception e) {
-      SynchroReport.error("admin.difSynchro",
-          "Problème lors de la synchronisation des utilisateurs : " +
-              e.getMessage(), null);
-      throw new AdminException("admin.difSynchro", SilverpeasException.ERROR,
-          "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS", "domain id : '" + domainId +
-          "'\nReport:" + sReport, e);
-    }
-  }
-
   private List<String> translateGroupIds(String sDomainId, String[] groupSpecificIds,
       boolean recursGroups) throws Exception {
     List<String> convertedGroupIds = new ArrayList<String>();
@@ -5860,11 +5708,16 @@ public final class Admin {
     processSpecificSynchronization(theUserDetail.getDomainId(), null, null, listUsersRemove);
     return userId;
   }
+  
+  public String synchronizeSilverpeasWithDomain(String sDomainId) throws Exception {
+    return synchronizeSilverpeasWithDomain(sDomainId, false);
+  }
 
   /**
    * Synchronize Users and groups between cache and domain's datastore
    */
-  public String synchronizeSilverpeasWithDomain(String sDomainId) throws Exception {
+  public String synchronizeSilverpeasWithDomain(String sDomainId, boolean threaded)
+      throws AdminException {
     String sReport = "Starting synchronization...\n\n";
     Map<String, String> userIds = new HashMap<String, String>();
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
@@ -5873,13 +5726,14 @@ public final class Admin {
       SilverTrace.info("admin", "admin.synchronizeSilverpeasWithDomain",
           "root.MSG_GEN_ENTER_METHOD", "domainID=" + sDomainId);
       // Démarrage de la synchro avec la Popup d'affichage
+      if (threaded) {
+        SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_WARN);
+      }
       SynchroReport.startSynchro();
-      // SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
-      // "Début de synchronisation...",null);
       try {
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
-            "Domaine : " + domainDriverManager.getDomain(sDomainId).getName() +
-                ", ID : " + sDomainId, null);
+            "Domain '" + domainDriverManager.getDomain(sDomainId).getName() +
+                "', Id : " + sDomainId, null);
         // Start synchronization
         domainDriverManager.beginSynchronization(sDomainId);
 
@@ -5891,35 +5745,41 @@ public final class Admin {
         SilverTrace.info("admin", "admin.synchronizeSilverpeasWithDomain",
             "root.MSG_GEN_ENTER_METHOD", "TimeStamps from " + fromTimeStamp +
             " to " + toTimeStamp);
-
-        // Start transaction
-        domainDriverManager.startTransaction(false);
-        domainDriverManager.startTransaction(sDomainId, false);
-
-        // Synchronize users
-        if (synchroDomain.mustImportUsers()) {
-          sReport += synchronizeUsers(sDomainId, userIds);
+        
+        if (fromTimeStamp.equals(toTimeStamp)) {
+          String uptodate =
+              "Domain '" + domainDriverManager.getDomain(sDomainId).getName() +
+                  "' is already up-to-date !";
+          SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", uptodate, null);
+          sReport += uptodate + "\n";
         } else {
-          sReport += synchronizeOnlyExistingUsers(sDomainId, userIds);
+          // Start transaction
+          domainDriverManager.startTransaction(false);
+          domainDriverManager.startTransaction(sDomainId, false);
+  
+          // Synchronize users
+          if (synchroDomain.mustImportUsers() || threaded) {
+            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded, true);
+          } else {
+            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded, false);
+          }
+  
+          // Synchronize groups
+          sReport += "\n" + synchronizeGroups(sDomainId, userIds, fromTimeStamp, toTimeStamp);
+  
+          // All the synchro is finished -> set the new timestamp
+          // ----------------------------------------------------
+          theDomain.setTheTimeStamp(toTimeStamp);
+          updateDomain(theDomain);
+  
+          // Commit the transaction
+          domainDriverManager.commit();
+          domainDriverManager.commit(sDomainId);
         }
-
-        // Synchronize groups
-        sReport += "\n" + synchronizeGroups(sDomainId, userIds);
-
-        // All the synchro is finished -> set the new timestamp
-        // ----------------------------------------------------
-        theDomain.setTheTimeStamp(toTimeStamp);
-        updateDomain(theDomain);
-
-        // Commit the transaction
-        domainDriverManager.commit();
-        domainDriverManager.commit(sDomainId);
-
         // End synchronization
         String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
-        SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
-            "----------------" + sDomainSpecificErrors, null);
-        // return group id
+        SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", "----------------" +
+            sDomainSpecificErrors, null);
         return sReport + "\n----------------\n" + sDomainSpecificErrors;
       } catch (Exception e) {
         try {
@@ -5942,7 +5802,6 @@ public final class Admin {
         // Reset the cache
         cache.resetCache();
         domainDriverManager.releaseOrganizationSchema();
-        domainDriverManager.releaseOrganizationSchema();
       }
     }
   }
@@ -5950,33 +5809,34 @@ public final class Admin {
   /**
    * Synchronize users between cache and domain's datastore
    */
-  private String synchronizeUsers(String domainId, Map<String, String> userIds) throws Exception {
+  private String synchronizeUsers(String domainId, Map<String, String> userIds,
+      String fromTimeStamp, String toTimeStamp, boolean threaded, boolean importUsers)
+      throws AdminException {
     boolean bFound;
     String specificId;
-    String silverpeasId;
     String sReport = "User synchronization : \n";
-    int iNbUsersAdded = 0;
-    int iNbUsersMaj = 0;
-    int iNbUsersDeleted = 0;
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-        getCurrentDomainDriverManager();
-    Collection<UserDetail> listUsersCreate = new ArrayList<UserDetail>();
-    Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
-    Collection<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
+    String message = "";
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    Collection<UserDetail> addedUsers = new ArrayList<UserDetail>();
+    Collection<UserDetail> updateUsers = new ArrayList<UserDetail>();
+    Collection<UserDetail> removedUsers = new ArrayList<UserDetail>();
 
-    SynchroReport.warn("admin.synchronizeUsers", "SYNCHRONISATION UTILISATEURS :", null);
+    SynchroReport.warn("admin.synchronizeUsers", "Starting users synchronization...", null);
     try {
       // Clear conversion table
       userIds.clear();
       // Get all users of the domain from distant datasource
-      UserDetail[] distantUDs = domainDriverManager.getAllUsers(domainId);
+      DomainDriver domainDriver = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
+      UserDetail[] distantUDs = domainDriver.getAllChangedUsers(fromTimeStamp, toTimeStamp);
+      
+      message = distantUDs.length+" user(s) have been changed in LDAP since the last synchronization";
+      sReport += message + "\n";
+      SynchroReport.info("admin.synchronizeUsers", message, null);
+      
       // Get all users of the domain from Silverpeas
       UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, domainId);
-      SynchroReport.info("admin.synchronizeUsers",
-          "AJOUT ou MISE A JOUR des utilisateurs dans la base...", null);
-      SynchroReport.info("admin.synchronizeUsers",
-          "Valeur du paramètre 'm_bFallbackUserLogins' = " +
-              shouldFallbackUserLogins, null);
+      SynchroReport.info("admin.synchronizeUsers", "Adding or updating users in database...", null);
 
       // Add new users or update existing ones from distant datasource
       for (UserDetail distantUD : distantUDs) {
@@ -5998,111 +5858,37 @@ public final class Admin {
         }
 
         distantUD.setDomainId(domainId);
-        // if found, update, else create
-        if (bFound) { // MAJ
-          try {
-            SilverTrace.info("admin", "admin.synchronizeUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>Update User : " + distantUD.getId());
-            silverpeasId = userManager.updateUser(domainDriverManager, distantUD);
-            listUsersUpdate.add(distantUD);
-            iNbUsersMaj++;
-            SynchroReport.warn("admin.synchronizeUsers", "maj utilisateur " +
-                distantUD.getFirstName() + " " +
-                distantUD.getLastName() + " (id:" + silverpeasId +
-                " / specificId:" + specificId + ") OK", null);
-            sReport += "updating user " + distantUD.getFirstName() + " " +
-                distantUD.getLastName() + "(id:" + specificId + ")\n";
-          } catch (AdminException aeMaj) {
-            SilverTrace.info("admin", "admin.synchronizeUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>PB Updating User ! " + specificId, aeMaj);
-            sReport += "problem updating user " + distantUD.getFirstName() +
-                " " + distantUD.getLastName() + " (specificId:" +
-                specificId + ") - " + aeMaj.getMessage() + "\n";
-            sReport += "user has not been updated\n";
-          }
-        } else// AJOUT
-        {
-          try {
-            silverpeasId = userManager.addUser(domainDriverManager, distantUD, true);
-            if (silverpeasId.equals("")) {
-              SilverTrace.info("admin", "admin.synchronizeUsers",
-                  "root.MSG_GEN_PARAM_VALUE",
-                  "%%%%FULLSYNCHRO%%%%>PB Adding User ! " + specificId);
-              sReport += "problem adding user " + distantUD.getFirstName() +
-                  " " + distantUD.getLastName() + "(specificId:" +
-                  specificId + ") - Login and LastName must be set !!!\n";
-              sReport += "user has not been added\n";
-            } else {
-              iNbUsersAdded++;
-              SilverTrace.info("admin", "admin.synchronizeUsers",
-                  "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Add User : " +
-                  silverpeasId);
-              listUsersCreate.add(distantUD);
-              sReport += "adding user " + distantUD.getFirstName() + " " +
-                  distantUD.getLastName() + "(id:" + silverpeasId +
-                  " / specificId:" + specificId + ")\n";
-              SynchroReport.warn("admin.synchronizeUsers", "ajout utilisateur " +
-                  distantUD.getFirstName() + " " +
-                  distantUD.getLastName() + " (id:" + silverpeasId +
-                  " / specificId:" + specificId + ") OK", null);
-              userIds.put(specificId, silverpeasId);
-            }
-          } catch (AdminException ae) {
-            SilverTrace.info("admin", "admin.synchronizeUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>PB Adding User ! " + specificId, ae);
-            sReport += "problem adding user " + distantUD.getFirstName() +
-                " " + distantUD.getLastName() + "(specificId:" +
-                specificId + ") - " + ae.getMessage() + "\n";
-            sReport += "user has not been added\n";
-          }
+
+        if (bFound) {
+          // update user
+          updateUserDuringSynchronization(domainDriverManager, distantUD, updateUsers, sReport);
+        } else if (importUsers){
+          // add user
+          addUserDuringSynchronization(domainDriverManager, distantUD, addedUsers, userIds, sReport);
         }
       }
 
-      // Delete obsolete users from Silverpeas
-      SynchroReport.info("admin.synchronizeUsers",
-          "SUPPRESSION des éventuels utilisateurs obsolètes de la base...",
-          null);
-      for (UserDetail silverpeasUD : silverpeasUDs) {
-        bFound = false;
-        specificId = silverpeasUD.getSpecificId();
+      if (!threaded || (threaded && delUsersOnDiffSynchro)) {
+        // Delete obsolete users from Silverpeas
+        SynchroReport.info("admin.synchronizeUsers", "Removing users from database...", null);
+        distantUDs = domainDriverManager.getAllUsers(domainId);
+        for (UserDetail silverpeasUD : silverpeasUDs) {
+          bFound = false;
+          specificId = silverpeasUD.getSpecificId();
 
-        // search for user in distant datasource
-        for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
-          if (distantUDs[nJ].getSpecificId().equals(specificId) ||
-              (shouldFallbackUserLogins && silverpeasUD.getLogin().equals(
-                  distantUDs[nJ].getLogin()))) {
-            bFound = true;
+          // search for user in distant datasource
+          for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
+            if (distantUDs[nJ].getSpecificId().equals(specificId) ||
+                (shouldFallbackUserLogins && silverpeasUD.getLogin().equals(
+                    distantUDs[nJ].getLogin()))) {
+              bFound = true;
+            }
           }
-        }
 
-        // if found, do nothing, else delete
-        if (!bFound) {
-          try {
-            SilverTrace.info("admin", "admin.synchronizeUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>Delete User : " + silverpeasUD);
-            userManager.deleteUser(domainDriverManager, silverpeasUD, true);
-            listUsersRemove.add(silverpeasUD);
-            iNbUsersDeleted++;
-            sReport += "deleting user " + silverpeasUD.getFirstName() +
-                " " + silverpeasUD.getLastName() + "(id:" + specificId +
-                ")\n";
-            SynchroReport.warn("admin.synchronizeUsers",
-                "suppression utilisateur " + silverpeasUD.getFirstName() +
-                    " " + silverpeasUD.getLastName() + " (specificId:" +
-                    specificId + ") OK", null);
-          } catch (AdminException aeDel) {
-            SilverTrace.info("admin", "admin.synchronizeUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>PB deleting User ! " + specificId, aeDel);
-            sReport += "problem deleting user " +
-                silverpeasUD.getFirstName() + " " +
-                silverpeasUD.getLastName() + " (specificId:" +
-                specificId + ") - " + aeDel.getMessage() + "\n";
-            sReport += "user has not been deleted\n";
+          // if found, do nothing, else delete
+          if (!bFound) {
+            deleteUserDuringSynchronization(domainDriverManager, silverpeasUD, removedUsers,
+                sReport);
           }
         }
       }
@@ -6112,144 +5898,114 @@ public final class Admin {
       silverpeasUDs = null;
 
       // traitement spécifique des users selon l'interface implémentée
-      processSpecificSynchronization(domainId, listUsersCreate, listUsersUpdate, listUsersRemove);
+      processSpecificSynchronization(domainId, addedUsers, updateUsers, removedUsers);
 
-      sReport += "User synchronization terminated\n";
-      SynchroReport.info("admin.synchronizeUsers",
-          "Nombre d'utilisateurs mis à jour : " + iNbUsersMaj + ", ajoutés : " +
-              iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
-      SynchroReport.warn("admin.synchronizeUsers",
-          "Synchronisation utilisateurs terminée", null);
+      message = "Users synchronization terminated";
+      sReport += message + "\n";
+      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      message =
+          "# of updated users : " + updateUsers.size() + ", added : " + addedUsers.size() +
+              ", removed : " + removedUsers.size();
+      sReport += message + "\n";
+      SynchroReport.warn("admin.synchronizeUsers", message, null);
       return sReport;
     } catch (Exception e) {
-      SynchroReport.error("admin.synchronizeUsers",
-          "Problème lors de la synchronisation des utilisateurs : " +
-              e.getMessage(), null);
+      SynchroReport.error("admin.synchronizeUsers", "Problem during synchronization of users : " +
+          e.getMessage(), null);
       throw new AdminException("admin.synchronizeUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
-          "domain id : '" + domainId + "'\nReport:" + sReport, e);
+          "domainId : '" + domainId + "'\nReport:" + sReport, e);
     }
   }
-
-  /**
-   * Synchronize users between cache and domain's datastore
-   */
-  private String synchronizeOnlyExistingUsers(String domainId, Map<String, String> userIds)
-      throws Exception {
-    boolean bFound;
-    String specificId;
-    String silverpeasId;
-    String sReport = "User synchronization : \n";
-    int iNbUsersAdded = 0;
-    int iNbUsersMaj = 0;
-    int iNbUsersDeleted = 0;
-    Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
-    Collection<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-        getCurrentDomainDriverManager();
-    SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
-        "SYNCHRONISATION UTILISATEURS :", null);
+  
+  private void updateUserDuringSynchronization(DomainDriverManager domainDriverManager,
+      UserDetail distantUD, Collection<UserDetail> updatedUsers, String sReport) {
+    String specificId = distantUD.getSpecificId();
     try {
-      // Clear conversion table
-      userIds.clear();
-
-      // Get all users of the domain from distant datasource
-      UserDetail[] distantUDs = domainDriverManager.getAllUsers(domainId);
-
-      // Get all users of the domain from Silverpeas
-      UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, domainId);
-
-      SynchroReport.info("admin.synchronizeOnlyExistingUsers",
-          "MISE A JOUR ou SUPPRESSION des utilisateurs dans la base...", null);
-      SynchroReport.info("admin.synchronizeOnlyExistingUsers",
-          "Valeur du paramètre 'm_bFallbackUserLogins' = " + shouldFallbackUserLogins, null);
-      UserDetail userLDAP = null;
-      // Update existing users from distant datasource
-      for (UserDetail userSP : silverpeasUDs) {
-        bFound = false;
-        specificId = userSP.getSpecificId();
-        // search for user in distant datasource
-        for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
-          userLDAP = distantUDs[nJ];
-          if (userLDAP.getSpecificId().equals(specificId) || (shouldFallbackUserLogins && userLDAP.
-              getLogin().equals(userSP.getLogin()))) {
-            bFound = true;
-            userLDAP.setId(userSP.getId());
-            userLDAP.setAccessLevel(userSP.getAccessLevel());
-            userIds.put(specificId, userSP.getId());
-          }
-        }
-        if (userLDAP != null) {
-          userLDAP.setDomainId(domainId);
-        }
-        // if found, update else delete
-        if (bFound) { // MAJ
-          try {
-            SilverTrace.info("admin", "admin.synchronizeOnlyExistingUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>Update User : " + userLDAP.getId());
-            silverpeasId = userManager.updateUser(domainDriverManager, userLDAP);
-            listUsersUpdate.add(userLDAP);
-            iNbUsersMaj++;
-            SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
-                "maj utilisateur " + userLDAP.getDisplayedName() + " (id:" +
-                    silverpeasId + " / specificId:" + specificId + ") OK",
-                null);
-            sReport += "updating user " + userLDAP.getDisplayedName() + "(id:" +
-                specificId + ")\n";
-          } catch (AdminException aeMaj) {
-            SilverTrace.info("admin", "admin.synchronizeOnlyExistingUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>PB Updating User ! " + specificId, aeMaj);
-            sReport += "problem updating user " + userLDAP.getDisplayedName() +
-                " (specificId:" + specificId + ") - " + aeMaj.getMessage() +
-                "\n";
-            sReport += "user has not been updated\n";
-          }
-        } else {
-          try {
-            SilverTrace.info("admin", "admin.synchronizeOnlyExistingUsers",
-                "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Delete User : " + userSP);
-            userManager.deleteUser(domainDriverManager, userSP, true);
-            listUsersRemove.add(userSP);
-            iNbUsersDeleted++;
-            sReport += "deleting user " + userSP.getDisplayedName() + "(id:" +
-                specificId + ")\n";
-            SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
-                "suppression utilisateur " + userSP.getDisplayedName() +
-                    " (specificId:" + specificId + ") OK", null);
-          } catch (AdminException aeDel) {
-            SilverTrace.info("admin", "admin.synchronizeOnlyExistingUsers",
-                "root.MSG_GEN_PARAM_VALUE",
-                "%%%%FULLSYNCHRO%%%%>PB deleting User ! " + specificId, aeDel);
-            sReport += "problem deleting user " + userSP.getDisplayedName() +
-                " (specificId:" + specificId + ") - " + aeDel.getMessage() + "\n";
-            sReport += "user has not been deleted\n";
-          }
-        }
+      SilverTrace.info("admin", "admin.updateUserDuringSynchronization",
+          "root.MSG_GEN_PARAM_VALUE",
+          "%%%%FULLSYNCHRO%%%%>Update User : " + distantUD.getId());
+      
+      String silverpeasId = userManager.updateUser(domainDriverManager, distantUD);
+      updatedUsers.add(distantUD);
+      String message =
+          "user " + distantUD.getDisplayedName() + " updated (id:" + silverpeasId +
+              " / specificId:" + specificId + ")";
+      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      sReport += message + "\n";
+    } catch (AdminException aeMaj) {
+      SilverTrace.info("admin", "admin.updateUserDuringSynchronization",
+          "root.MSG_GEN_PARAM_VALUE",
+          "%%%%FULLSYNCHRO%%%%>PB Updating User ! " + specificId, aeMaj);
+      String message = "problem updating user " + distantUD.getDisplayedName() + " (specificId:" +
+          specificId + ") - " + aeMaj.getMessage();
+      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      sReport += message + "\n";
+      sReport += "user has not been updated\n";
+    }
+  }
+  
+  private void addUserDuringSynchronization(DomainDriverManager domainDriverManager,
+      UserDetail distantUD, Collection<UserDetail> addedUsers, Map<String, String> userIds,
+      String sReport) {
+    String specificId = distantUD.getSpecificId();
+    try {
+      String silverpeasId = userManager.addUser(domainDriverManager, distantUD, true);
+      if (silverpeasId.equals("")) {
+        SilverTrace.info("admin", "admin.addUserDuringSynchronization",
+            "root.MSG_GEN_PARAM_VALUE",
+            "%%%%FULLSYNCHRO%%%%>PB Adding User ! " + specificId);
+        String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:" +
+            specificId + ") - Login and LastName must be set !!!";
+        sReport += message + "\n";
+        SynchroReport.warn("admin.synchronizeUsers", message, null);
+        sReport += "user has not been added\n";
+      } else {
+        SilverTrace.info("admin", "admin.addUserDuringSynchronization",
+            "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Add User : " +
+            silverpeasId);
+        addedUsers.add(distantUD);
+        String message = "user " + distantUD.getDisplayedName() + " added (id:" + silverpeasId +
+            " / specificId:" + specificId + ")";
+        sReport += message + "\n";
+        SynchroReport.warn("admin.synchronizeUsers", message, null);
+        userIds.put(specificId, silverpeasId);
       }
-
-      //noinspection UnusedAssignment,UnusedAssignment,UnusedAssignment,UnusedAssignment
-      distantUDs = null;
-      silverpeasUDs = null;
-
-      // traitement spécifique des users selon l'interface implémentée
-      processSpecificSynchronization(domainId, null, listUsersUpdate, listUsersRemove);
-
-      sReport += "User synchronization terminated\n";
-      SynchroReport.info("admin.synchronizeOnlyExistingUsers",
-          "Nombre d'utilisateurs mis à jour : " + iNbUsersMaj + ", ajoutés : " +
-              iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
-      SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
-          "Synchronisation utilisateurs terminée", null);
-      return sReport;
-    } catch (Exception e) {
-      SynchroReport.error("admin.synchronizeOnlyExistingUsers",
-          "Problème lors de la synchronisation des utilisateurs : " +
-              e.getMessage(), null);
-      throw new AdminException("admin.synchronizeOnlyExistingUsers",
-          SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
-          "domain id : '" + domainId + "'\nReport:" + sReport, e);
+    } catch (AdminException ae) {
+      SilverTrace.info("admin", "admin.addUserDuringSynchronization",
+          "root.MSG_GEN_PARAM_VALUE",
+          "%%%%FULLSYNCHRO%%%%>PB Adding User ! " + specificId, ae);
+      String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:" +
+          specificId + ") - " + ae.getMessage();
+      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      sReport += message + "\n";
+      sReport += "user has not been added\n";
+    }
+  }
+  
+  private void deleteUserDuringSynchronization(DomainDriverManager domainDriverManager,
+      UserDetail silverpeasUD, Collection<UserDetail> deletedUsers, String sReport) {
+    String specificId = silverpeasUD.getSpecificId();
+    try {
+      SilverTrace.info("admin", "admin.deleteUserDuringSynchronization",
+          "root.MSG_GEN_PARAM_VALUE",
+          "%%%%FULLSYNCHRO%%%%>Delete User : " + silverpeasUD);
+      userManager.deleteUser(domainDriverManager, silverpeasUD, true);
+      deletedUsers.add(silverpeasUD);
+      String message =
+          "user " + silverpeasUD.getDisplayedName() + " deleted (id:" + specificId + ")";
+      sReport += message + "\n";
+      SynchroReport.warn("admin.synchronizeUsers", message, null);
+    } catch (AdminException aeDel) {
+      SilverTrace.info("admin", "admin.deleteUserDuringSynchronization",
+          "root.MSG_GEN_PARAM_VALUE",
+          "%%%%FULLSYNCHRO%%%%>PB deleting User ! " + specificId, aeDel);
+      String message =
+          "problem deleting user " + silverpeasUD.getDisplayedName() + " (specificId:" +
+              specificId + ") - " + aeDel.getMessage();
+      sReport += message + "\n";
+      SynchroReport.warn("admin.synchronizeUsers", message, null);
+      sReport += "user has not been deleted\n";
     }
   }
 
@@ -6262,7 +6018,6 @@ public final class Admin {
     ResourceLocator propDomainLdap = new ResourceLocator(propDomainFileName, "");
     String nomClasseSynchro = propDomainLdap.getString("synchro.Class");
     if (StringUtil.isDefined(nomClasseSynchro)) {
-
       Collection<UserDetail> added = usersAdded;
       Collection<UserDetail> updated = usersUpdated;
       Collection<UserDetail> removed = usersRemoved;
@@ -6291,7 +6046,8 @@ public final class Admin {
   /**
    * Synchronize groups between cache and domain's datastore
    */
-  private String synchronizeGroups(String domainId, Map<String, String> userIds) throws Exception {
+  private String synchronizeGroups(String domainId, Map<String, String> userIds,
+      String fromTimeStamp, String toTimeStamp) throws Exception {
     boolean bFound;
     String specificId;
     String sReport = "Group synchronization : \n";
@@ -6301,22 +6057,21 @@ public final class Admin {
     int iNbGroupsDeleted = 0;
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
         getCurrentDomainDriverManager();
-    SynchroReport.warn("admin.synchronizeGroups", "SYNCHRONISATION GROUPES :", null);
+    SynchroReport.warn("admin.synchronizeGroups", "Starting groups synchronization...", null);
     try {
       // Get all root groups of the domain from distant datasource
       Group[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
       // Get all groups of the domain from Silverpeas
       Group[] silverpeasGroups = groupManager.getGroupsOfDomain(domainDriverManager, domainId);
 
-      SynchroReport.info("admin.synchronizeGroups",
-          "AJOUT ou MISE A JOUR des groupes dans la base...", null);
+      SynchroReport.info("admin.synchronizeGroups", "Adding or updating groups in database...",
+          null);
       // Check for new groups resursively
       sReport += checkOutGroups(domainId, silverpeasGroups, distantRootGroups, allDistantGroups,
           userIds, null, iNbGroupsAdded, iNbGroupsMaj, iNbGroupsDeleted);
 
       // Delete obsolete groups
-      SynchroReport.info("admin.synchronizeGroups",
-          "SUPPRESSION des éventuels groupes obsolètes de la base...", null);
+      SynchroReport.info("admin.synchronizeGroups", "Removing groups from database...", null);
       Group[] distantGroups = allDistantGroups.values().toArray(
           new Group[allDistantGroups.size()]);
       for (Group silverpeasGroup : silverpeasGroups) {
@@ -6324,9 +6079,7 @@ public final class Admin {
         specificId = silverpeasGroup.getSpecificId();
 
         // search for group in distant datasource
-        for (int nJ = 0;
-            nJ < distantGroups.length && !bFound;
-            nJ++) {
+        for (int nJ = 0; nJ < distantGroups.length && !bFound; nJ++) {
           if (distantGroups[nJ].getSpecificId().equals(specificId)) {
             bFound = true;
           } else if (shouldFallbackGroupNames && distantGroups[nJ].getName().equals(specificId)) {
@@ -6343,8 +6096,8 @@ public final class Admin {
             groupManager.deleteGroupById(domainDriverManager, silverpeasGroup, true);
             iNbGroupsDeleted++;
             sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroReport.warn("admin.synchronizeGroups", "suppression groupe " +
-                silverpeasGroup.getName() + "(SpecificId:" + specificId + ") OK", null);
+            SynchroReport.warn("admin.synchronizeGroups", "Group " +
+                silverpeasGroup.getName() + " deleted (SpecificId:" + specificId + ")", null);
           } catch (AdminException aeDel) {
             SilverTrace.info("admin", "admin.synchronizeGroups", "root.MSG_GEN_PARAM_VALUE",
                 "%%%%FULLSYNCHRO%%%%>PB deleting group ! " + specificId, aeDel);
@@ -6354,12 +6107,11 @@ public final class Admin {
           }
         }
       }
-      sReport += "Group synchronization terminated\n";
+      sReport += "Groups synchronization terminated\n";
       SynchroReport.info("admin.synchronizeGroups",
-          "Nombre de groupes mis à jour : " + iNbGroupsMaj + ", ajoutés : " +
-              iNbGroupsAdded + ", supprimés : " + iNbGroupsDeleted, null);
-      SynchroReport.warn("admin.synchronizeGroups",
-          "Synchronisation groupes terminée", null);
+          "# of groups updated : " + iNbGroupsMaj + ", added : " +
+              iNbGroupsAdded + ", deleted : " + iNbGroupsDeleted, null);
+      SynchroReport.warn("admin.synchronizeGroups", "Groups synchronization terminated", null);
       return sReport;
     } catch (Exception e) {
       SynchroReport.error("admin.synchronizeGroups",
@@ -6569,8 +6321,7 @@ public final class Admin {
           // add users indirectly attach to profile (groups attached to profile)
           List<String> groupIds = profile.getAllGroups();
           List<String> allGroupIds = new ArrayList<String>();
-          for (String groupId :
-              groupIds) {
+          for (String groupId : groupIds) {
             allGroupIds.add(groupId);
             allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
           }
