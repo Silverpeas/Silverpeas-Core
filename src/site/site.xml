@@ -74,15 +74,18 @@
       </script>
     </head>
     <breadcrumbs>
-      <item name="Silverpeas" href="http://www.silverpeas.com"/>
+      <item name="Silverpeas" href="http://www.silverpeas.org"/>
+      <item name="Home" href="http://www.silverpeas.org/docs/core"/>
     </breadcrumbs>
     <menu name="Overview" inherit="none">
       <item name="Introduction" href="index.html" collapse="false"/>
+      <item name="Try Silverpeas" href="izpack.html" collapse="false"/>
       <item name="Roadmap" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1" collapse="false"/>
       <item name="Changelog" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
       <item name="Release Notes" href="releasenotes.html" collapse="false"/>
       <item name="Installation" href="installation.html" collapse="false"/>
       <item name="Migration" href="migration.html" collapse="true"/>
+      <item name="FAQ" href="faq.html" collapse="true"/>
       <item name="Source Code" href="source-repository.html" collapse="true"/>
     </menu>
     <menu name="Configuration" inherit="none">
