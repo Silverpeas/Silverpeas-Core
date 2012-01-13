@@ -31,6 +31,9 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.AdminController"%>
 
 <%@ include file="check.jsp" %>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%
     Board board = gef.getBoard();
     String userId = (String)request.getAttribute("userid"); //peut être null
@@ -86,6 +89,7 @@ function openComponent(componentId) {
 <%
 out.println(gef.getLookStyleSheet());
 %>
+<view:includePlugin name="qtip"/>
 </head>
 <BODY>
 <div id="content">

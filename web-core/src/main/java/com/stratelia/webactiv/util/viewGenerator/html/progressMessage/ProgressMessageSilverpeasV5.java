@@ -21,11 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.progressMessage;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.div;
+import org.apache.ecs.xhtml.img;
 
 /**
  * @author neysseri
@@ -41,12 +43,11 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
    * @return
    * @see
    */
+  @Override
   public String print() {
-    StringBuilder sBuilder = new StringBuilder();
-    
     String message1 = getMultilang().getString("GEF.progressMessage.message1");
     String message2 = getMultilang().getString("GEF.progressMessage.message2");
-    
+
     if (getMessages() != null && !getMessages().isEmpty()) {
       String extMessage1 = getMessages().get(0);
       if (StringUtil.isDefined(extMessage1)) {
@@ -59,14 +60,19 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
         }
       }
     }
+
+    ElementContainer xhtmlRenderer = getXHTMLRenderer();
+    div progressMessage = new div();
+    progressMessage.setStyle("display: none");
+    progressMessage.setID("gef-progressMessage");
+
+    progressMessage.addElement(new div(message1).setID("gef-progress-message1"));
+    progressMessage.addElement(new div(message2).setID("gef-progress-message2"));
+    progressMessage.addElement(new img().setSrc(GraphicElementFactory.getIconsPath()
+            + "/inProgress.gif").setAlt(""));
     
-    sBuilder.append("<div id=\"gef-progressMessage\" style=\"display: none\">");
-    sBuilder.append("<div id=\"gef-progress-message1\">").append(message1).append("</div>");
-    sBuilder.append("<div id=\"gef-progress-message2\">").append(message2).append("</div>");
-    sBuilder.append("<img src=\"").append(GraphicElementFactory.getIconsPath()).append("/inProgress.gif\" alt=\"\"/>");
-    sBuilder.append("</div");
+    xhtmlRenderer.addElement(progressMessage);
 
-    return sBuilder.toString();
+    return xhtmlRenderer.toString();
   }
-
 }
