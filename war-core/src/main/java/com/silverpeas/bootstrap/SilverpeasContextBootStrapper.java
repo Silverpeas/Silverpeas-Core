@@ -36,11 +36,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.Security;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
 
@@ -63,6 +65,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
     ResourceBundle silverpeasInitialisationSettings = FileUtil.loadBundle(
         "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
         new Locale("fr", ""));
+    Security.addProvider(new BouncyCastleProvider());
     File pathInitialize = new File(silverpeasInitialisationSettings.getString("pathInitialize"));
     if (pathInitialize == null) {
       Logger.getLogger("bootstrap").log(Level.SEVERE,
