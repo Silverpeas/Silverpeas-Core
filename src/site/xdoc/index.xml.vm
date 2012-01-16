@@ -33,33 +33,7 @@
   <head>
   </head>
   <body>
-    <section name="Try Silverpeas easily">
-      <p><img src="images/logos/logo_izPack.png" alt="izpack" style="padding-right:10px;float:left;position:relative;"/><br/>We provide an easy way to try Silverpeas using 
-        <a href="http://izpack.org/">Izpack</a> with a pre-configured JBoss Server and an H2 Database.</p>
-        <p>
-        <b>You have to have a Java 6 JDK installed.</b><b>This version is not suitable for production !</b>.
-      </p>
-      <ol>
-        <li>Download the 
-          <a href="http://www.silverpeas.org/files/Silverpeas-${installer_stable_version}-installer.jar">installer</a>
-        </li>
-        <li>Run the following command (or double click on the jar file) 
-          <code>java -jar Silverpeas-${installer_stable_version}-installer.jar</code>
-        </li>
-        <li>When all has been installed, go to the 
-          <code>bin</code> directory under the installation directory and run the following scripts in that order 
-          <ol>
-            <li>start_db.bat (thus starting the database).</li>
-            <li>silverpeas_start_jboss.cmd (to start Silverpeas)</li>
-          </ol>
-        </li>
-        <li>Now you can open a browser to 
-          <a href="http://localhost:8000/silverpeas">http://localhost:8000/silverpeas</a> an login using the account 
-          <i>SilverAdmin/SilverAdmin</i>
-        </li>
-      </ol>
-    </section> 
-<section name="Architecture">
+    <section name="Architecture">
       <p>
         <img align="right" src="images/bus_silverpeas.png" alt="" />
       </p>        

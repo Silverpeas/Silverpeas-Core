@@ -33,6 +33,26 @@
     <title>Technical Administration</title>
     <faq id="jboss">
       <question>
+        JBoss is listening only on <b>localhost</b>. How do I configure the binding address(es) ?
+      </question>
+      <answer>
+        <p>Symptoms: </p>        
+        <ul>
+          <li>You can only reach Silverpeas using <i>localhost</i> or <i>127.0.0.1</i>.</li>         
+        </ul>
+        <ol>
+          <li>Stop Silverpeas.</li>
+          <li>Edit the file 
+            <i>silverpeas_start_jboss.sh</i> or<i>silverpeas_start_jboss.cmd</i> and on the last line append             
+            <source>-b 0.0.0.0</source> before the <b>-c</b>.
+          </li>
+          <li>Restart Silverpeas </li>
+        </ol>                
+        <p>Jboss should be listening on every IP address.</p>
+      </answer>
+    </faq>
+    <faq id="hornetq">
+      <question>
         JBoss Hornet Q won't start with AIO library ?
       </question>
       <answer>
@@ -40,7 +60,7 @@
         <ul>
           <li>Silverpeas doesn't start.</li>
           <li>You have something like this in the 
-            <i>booot.log</i>
+            <i>boot.log</i>
           </li>
         </ul>
         <source>
