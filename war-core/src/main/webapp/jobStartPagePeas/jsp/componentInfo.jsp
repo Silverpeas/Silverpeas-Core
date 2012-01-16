@@ -145,7 +145,6 @@ String prof = null;
 while (i.hasNext()) {
 	theProfile = (ProfileInst) i.next();
 	profile = theProfile.getLabel();
-  System.out.println(theProfile + " " + profile);
 	prof = resource.getString(profile.replace(' ', '_'));
 	if (prof.equals(""))
 		prof = profile;
