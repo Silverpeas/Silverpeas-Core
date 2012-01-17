@@ -660,7 +660,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
    *                    'commit' statement)
    */
-  public void startTransaction(boolean bAutoCommit) throws Exception {
+  public void startTransaction(boolean bAutoCommit) {
     // Access in read only -> no need to support transaction mode
   }
 
