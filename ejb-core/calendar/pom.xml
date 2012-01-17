@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>calendar</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Calendar - ${version}</name>
+  <name>EJB Calendar - ${project.version}</name>
 
   <build>
     <testResources>
