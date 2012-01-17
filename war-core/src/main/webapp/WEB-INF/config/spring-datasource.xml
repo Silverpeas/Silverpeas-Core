@@ -26,19 +26,19 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="myDataSource" name="myDataSource"
-    class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName">
-      <value>jdbc/Silverpeas</value>
-    </property>
+  <bean id="myDataSource" name="myDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="jdbc/Silverpeas" />
+  </bean>
+  
+  <bean id="jpaDataSource" name="jpaDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="jpa/Silverpeas" />
   </bean>
 
   <bean id="dataSource" name="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-    destroy-method="close">
+        destroy-method="close">
     <property name="driverClassName" value="${jdbc.driver}" />
     <property name="url" value="${jdbc.url}" />
     <property name="username" value="${jdbc.username}" />

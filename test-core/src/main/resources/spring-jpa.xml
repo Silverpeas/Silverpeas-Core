@@ -22,7 +22,7 @@
         
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
         p:packagesToScan-ref="entities"
-        p:dataSource-ref="dataSource"
+        p:dataSource-ref="jpaDataSource"
         p:jpaVendorAdapter-ref="hibernateVendor"
         p:jpaPropertyMap-ref="jpaPropertyMap"/>
 

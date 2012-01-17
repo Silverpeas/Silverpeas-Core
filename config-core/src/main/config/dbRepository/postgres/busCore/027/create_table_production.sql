@@ -1,5 +1,5 @@
 CREATE TABLE UniqueId (
-	maxId int NOT NULL ,
+	maxId int NOT NULL, 
 	tableName varchar(100) NOT NULL
 );
 
