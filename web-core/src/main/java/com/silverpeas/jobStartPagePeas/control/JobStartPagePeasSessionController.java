@@ -51,6 +51,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.ComponentSelection;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
+import com.stratelia.webactiv.beans.admin.Recover;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
@@ -565,6 +566,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
       return res;
     }
+  }
+  
+  public void recoverSpaceRights(String spaceId) throws AdminException {
+    Recover recover = new Recover();
+    recover.recoverSpaceRights(spaceId);
   }
 
   /*********************** Gestion des managers d'espaces *****************************************/

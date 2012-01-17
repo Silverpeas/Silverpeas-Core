@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -76,6 +77,9 @@
         }
         if (isUserAdmin || m_SubSpace != null) {
             operationPane.addOperation(resource.getIcon("JSPP.spaceDel"),resource.getString("JSPP.SpacePanelDeleteTitle"),"javascript:onClick=deleteSpace()");
+            if (JobStartPagePeasSettings.recoverRightsEnable) {
+            	operationPane.addOperation("useless",resource.getString("JSPP.spaceRecover"),"javascript:onClick=recoverRights()");
+            }
         }
         
         if (isBackupEnable) {
@@ -171,6 +175,11 @@ function clipboardPaste() {
 
 function clipboardCopy() {
 	top.IdleFrame.location.href = 'copy?Type=Space&Id=<%=space.getId()%>';
+}
+
+function recoverRights() {
+	$.progressMessage();
+	location.href = "RecoverSpaceRights?Id=<%=space.getId()%>";
 }
 -->
 </script>

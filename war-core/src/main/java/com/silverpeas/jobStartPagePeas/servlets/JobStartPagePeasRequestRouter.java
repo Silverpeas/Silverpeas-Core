@@ -700,6 +700,10 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       } else {
         destination = getDestination("welcome", jobStartPageSC, request);
       }
+    } else if (function.equals("RecoverSpaceRights")) {
+      String spaceId = request.getParameter("Id");
+      jobStartPageSC.recoverSpaceRights(spaceId);
+      destination = "/jobStartPagePeas/jsp/startPageInfo.jsp";
     } else if (function.equals("SpaceManager")) {
       String role = request.getParameter("Role");
 

@@ -47,6 +47,7 @@ public class JobStartPagePeasSettings {
   public static String SPACEDISPLAYPOSITION_BEFORE;
   public static String SPACEDISPLAYPOSITION_TODEFINE;
   public static String SPACEDISPLAYPOSITION_CONFIG;
+  public static boolean recoverRightsEnable;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -63,5 +64,6 @@ public class JobStartPagePeasSettings {
     SPACEDISPLAYPOSITION_AFTER = rs.getString("DisplaySpacesAfterComponents", "AFTER");
     SPACEDISPLAYPOSITION_BEFORE = rs.getString("DisplaySpacesBeforeComponents", "BEFORE");
     SPACEDISPLAYPOSITION_TODEFINE = rs.getString("DisplaySpacesToDefine", "TODEFINE");
+    recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
   }
 }

@@ -810,11 +810,7 @@ public final class Admin {
         }
         if (!space.isRoot()) {
           // 2 - affectation des droits de l'espace au sous espace
-          setSpaceProfilesToSubSpace(space, null);
-          profiles = space.getInheritedProfiles();
-          for (SpaceProfileInst profile : profiles) {
-            addSpaceProfileInst(profile, null, false);
-          }
+          setSpaceProfilesToSubSpace(space, null, true, false);
         }
       }
     } catch (AdminException e) {
@@ -1611,6 +1607,12 @@ public final class Admin {
    * @throws AdminException
    */
   private void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space)
+    throws AdminException {
+    setSpaceProfilesToSubSpace(subSpace, space, false, false);
+  }
+  
+  protected void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space,
+      boolean persist, boolean startNewTransaction)
       throws AdminException {
     SpaceInst currentSpace = space;
     if (currentSpace == null) {
@@ -1621,6 +1623,16 @@ public final class Admin {
     setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.publisher);
     setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.writer);
     setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.reader);
+    
+    if (persist) {
+      for (SpaceProfileInst profile : subSpace.getInheritedProfiles()) {
+        if (StringUtil.isDefined(profile.getId())) {
+          updateSpaceProfileInst(profile, null, startNewTransaction);
+        } else {
+          addSpaceProfileInst(profile, null, startNewTransaction);
+        }
+      }
+    }
   }
 
   /**
@@ -1632,15 +1644,21 @@ public final class Admin {
    * @throws AdminException
    */
   private void setSpaceProfileToSubSpace(SpaceInst subSpace, SpaceInst space, SilverpeasRole role) {
-    SpaceProfileInst subSpaceProfile = null;
     String profileName = role.toString();
-
+    SpaceProfileInst subSpaceProfile = subSpace.getInheritedSpaceProfileInst(profileName);
+    if (subSpaceProfile != null) {
+      subSpaceProfile.removeAllGroups();
+      subSpaceProfile.removeAllUsers();
+    }
+    
     // Retrieve superSpace local profile
     SpaceProfileInst profile = space.getSpaceProfileInst(profileName);
     if (profile != null) {
-      subSpaceProfile = new SpaceProfileInst();
-      subSpaceProfile.setName(profileName);
-      subSpaceProfile.setInherited(true);
+      if (subSpaceProfile == null) {
+        subSpaceProfile = new SpaceProfileInst();
+        subSpaceProfile.setName(profileName);
+        subSpaceProfile.setInherited(true);
+      }
       subSpaceProfile.addGroups(profile.getAllGroups());
       subSpaceProfile.addUsers(profile.getAllUsers());
     }
@@ -1653,7 +1671,6 @@ public final class Admin {
         subSpaceProfile.setName(profileName);
         subSpaceProfile.setInherited(true);
       }
-
       subSpaceProfile.addGroups(inheritedProfile.getAllGroups());
       subSpaceProfile.addUsers(inheritedProfile.getAllUsers());
     }
@@ -1661,6 +1678,11 @@ public final class Admin {
     if (subSpaceProfile != null) {
       subSpace.addSpaceProfileInst(subSpaceProfile);
     }
+  }
+  
+  public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws
+      AdminException {
+    setSpaceProfilesToComponent(component, space, false);
   }
 
   /**
@@ -1670,50 +1692,72 @@ public final class Admin {
    * @param space     the object to get profiles
    * @throws AdminException
    */
-  public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws
-      AdminException {
+  public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space,
+      boolean startNewTransaction) throws AdminException {
     WAComponent waComponent = Instanciateur.getWAComponent(component.getName());
     List<Profile> componentRoles = waComponent.getProfiles();
 
     if (space == null) {
       space = getSpaceInstById(component.getDomainFatherId(), false);
     }
-
-    for (Profile componentRole : componentRoles) {
-      ProfileInst inheritedProfile = component.getInheritedProfileInst(componentRole.getName());
-
-      if (inheritedProfile != null) {
-        inheritedProfile.removeAllGroups();
-        inheritedProfile.removeAllUsers();
-      } else {
-        inheritedProfile = new ProfileInst();
-        inheritedProfile.setComponentFatherId(component.getId());
-        inheritedProfile.setInherited(true);
-        inheritedProfile.setName(componentRole.getName());
+    
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    try {
+      if (startNewTransaction) {
+        domainDriverManager.startTransaction(false);
       }
-
-      List<String> spaceRoles = componentRole2SpaceRoles(componentRole.getName(),
-          component.getName());
-      for (String spaceRole : spaceRoles) {
-        SpaceProfileInst spaceProfile = space.getSpaceProfileInst(spaceRole);
-        if (spaceProfile != null) {
-          inheritedProfile.addGroups(spaceProfile.getAllGroups());
-          inheritedProfile.addUsers(spaceProfile.getAllUsers());
+  
+      for (Profile componentRole : componentRoles) {
+        ProfileInst inheritedProfile = component.getInheritedProfileInst(componentRole.getName());
+  
+        if (inheritedProfile != null) {
+          inheritedProfile.removeAllGroups();
+          inheritedProfile.removeAllUsers();
+        } else {
+          inheritedProfile = new ProfileInst();
+          inheritedProfile.setComponentFatherId(component.getId());
+          inheritedProfile.setInherited(true);
+          inheritedProfile.setName(componentRole.getName());
         }
-
-        spaceProfile = space.getInheritedSpaceProfileInst(spaceRole);
-        if (spaceProfile != null) {
-          inheritedProfile.addGroups(spaceProfile.getAllGroups());
-          inheritedProfile.addUsers(spaceProfile.getAllUsers());
+  
+        List<String> spaceRoles = componentRole2SpaceRoles(componentRole.getName(),
+            component.getName());
+        for (String spaceRole : spaceRoles) {
+          SpaceProfileInst spaceProfile = space.getSpaceProfileInst(spaceRole);
+          if (spaceProfile != null) {
+            inheritedProfile.addGroups(spaceProfile.getAllGroups());
+            inheritedProfile.addUsers(spaceProfile.getAllUsers());
+          }
+  
+          spaceProfile = space.getInheritedSpaceProfileInst(spaceRole);
+          if (spaceProfile != null) {
+            inheritedProfile.addGroups(spaceProfile.getAllGroups());
+            inheritedProfile.addUsers(spaceProfile.getAllUsers());
+          }
+        }
+  
+        if (StringUtil.isDefined(inheritedProfile.getId())) {
+          updateProfileInst(inheritedProfile, null, false);
+        } else {
+          if (!inheritedProfile.isEmpty()) {
+            addProfileInst(inheritedProfile, null, false);
+          }
         }
       }
-
-      if (StringUtil.isDefined(inheritedProfile.getId())) {
-        updateProfileInst(inheritedProfile, null, false);
-      } else {
-        if (!inheritedProfile.isEmpty()) {
-          addProfileInst(inheritedProfile, null, false);
-        }
+      
+      if (startNewTransaction) {
+        domainDriverManager.commit();
+      }
+    } catch (Exception e) {
+      if (startNewTransaction) {
+        rollback();
+      }
+      throw new AdminException("Admin.setSpaceProfilesToComponent", SilverpeasException.ERROR,
+          "admin.EX_ERR_SET_PROFILES", e);
+    } finally {
+      if (startNewTransaction) {
+        domainDriverManager.releaseOrganizationSchema();
       }
     }
   }
@@ -2236,10 +2280,17 @@ public final class Admin {
 
   public String updateSpaceProfileInst(SpaceProfileInst newSpaceProfile, String userId) throws
       AdminException {
+    return updateSpaceProfileInst(newSpaceProfile, userId, true);
+  }
+    
+  public String updateSpaceProfileInst(SpaceProfileInst newSpaceProfile, String userId, boolean startNewTransaction)
+      throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
     try {
-      domainDriverManager.startTransaction(false);
+      if (startNewTransaction) {
+        domainDriverManager.startTransaction(false);
+      }
       SpaceProfileInst oldSpaceProfile = spaceProfileManager.getSpaceProfileInst(
           domainDriverManager, newSpaceProfile.getId(), null);
       String sSpaceProfileNewId = spaceProfileManager.updateSpaceProfileInst(oldSpaceProfile,
@@ -2262,18 +2313,23 @@ public final class Admin {
         }
         spreadSpaceProfile(spaceId, newSpaceProfile);
       }
-      domainDriverManager.commit();
+      if (startNewTransaction) {
+        domainDriverManager.commit();
+      }
       cache.opUpdateSpaceProfile(spaceProfileManager.getSpaceProfileInst(domainDriverManager,
           newSpaceProfile.getId(), null));
 
       return sSpaceProfileNewId;
     } catch (Exception e) {
-      rollback();
+      if (startNewTransaction) {
+        rollback();
+      }
       throw new AdminException("Admin.updateSpaceProfileInst", SilverpeasException.ERROR,
-          "admin.EX_ERR_UPDATE_SPACEPROFILE", "space profile Id: '" + newSpaceProfile.getId() + "'",
-          e);
+          "admin.EX_ERR_UPDATE_SPACEPROFILE", "space profile Id: '" + newSpaceProfile.getId() + "'", e);
     } finally {
-      domainDriverManager.releaseOrganizationSchema();
+      if (startNewTransaction) {
+        domainDriverManager.releaseOrganizationSchema();
+      }
     }
   }
 
