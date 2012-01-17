@@ -21,7 +21,6 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.domains.DomainDriverFactory;
-
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
@@ -34,6 +33,7 @@ import com.stratelia.webactiv.organization.OrganizationSchema;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import java.util.ArrayList;
@@ -1159,9 +1159,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * Start a new transaction
    */
   @Override
-  public void startTransaction(boolean bAutoCommit) throws Exception {
+  public void startTransaction(boolean bAutoCommit) {
+    try {
     getOrganizationSchema();
     inTransaction = !bAutoCommit;
+    } catch (AdminException ex) {
+      throw new UtilException("DomainDriverManager", "startTransaction", ex);
+    }
   }
 
   /**

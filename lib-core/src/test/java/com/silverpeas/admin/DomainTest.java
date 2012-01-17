@@ -24,20 +24,19 @@
 
 package com.silverpeas.admin;
 
+import com.silverpeas.components.model.AbstractTestDao;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.Domain;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.silverpeas.components.model.AbstractTestDao;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.Domain;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jdbc-datasource.xml"})
+@ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jpa-datasource.xml"})
 public class DomainTest extends AbstractTestDao {
 
   private AdminController getAdminController() {

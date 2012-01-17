@@ -39,6 +39,6 @@
    <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
         factory-method="getFactory"/>
   <import resource="spring-personalization.xml" />
-  <import resource="spring-jdbc-datasource.xml" />
+  <import resource="spring-jpa-datasource.xml" />
 </beans>
 

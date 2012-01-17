@@ -30,15 +30,14 @@ import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.List;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@ContextConfiguration(locations = {"classpath:/spring-jdbc-datasource.xml",
+@ContextConfiguration(locations = {"classpath:/spring-jpa-datasource.xml",
   "classpath:/spring-domains.xml"})
 public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
 

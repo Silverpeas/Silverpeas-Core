@@ -444,7 +444,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public void startTransaction(boolean bAutoCommit) throws Exception {
+  public void startTransaction(boolean bAutoCommit) {
   }
 
   @Override

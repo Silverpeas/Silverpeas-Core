@@ -56,7 +56,7 @@
     <property name="searchSystemEnvironment" value="true" />
   </bean>
 
-  <bean id="dataSource" name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+  <bean id="jpaDataSource" name="jpaDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="${jdbc.driver}" />
     <property name="url" value="${jdbc.url}" />
     <property name="username" value="${jdbc.username}" />

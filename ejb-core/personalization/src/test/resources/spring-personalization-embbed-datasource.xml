@@ -6,7 +6,7 @@
 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
 
-  <jdbc:embedded-database id="dataSource" type="H2" >
+  <jdbc:embedded-database id="jpaDataSource" type="H2" >
     <jdbc:script location="classpath:/com/silverpeas/personalization/dao/create-database.sql" />
   </jdbc:embedded-database>
 
