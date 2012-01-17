@@ -48,7 +48,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jdbc-datasource.xml"})
+@ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jpa-datasource.xml"})
 public class SpacesAndComponentsTest extends AbstractTestDao {
   
   @Inject
