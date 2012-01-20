@@ -113,10 +113,12 @@ out.println(window.printBefore());
 out.println(tabbedPane.print());
 out.println(frame.printBefore());
 %>
-<span class="inlineMessage">
-<%=resource.getString("JSPP.Manager.help")%>
-</span>
-<br clear="all"/>
+<% if (role.equals("Manager")) { %>
+	<span class="inlineMessage">
+	<%=resource.getString("JSPP.Manager.help")%>
+	</span>
+	<br clear="all"/>
+<% } %>
 <%
 out.println(board.printBefore());
 %>
