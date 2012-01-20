@@ -27,37 +27,37 @@
 
 <contribution product="contentManager">
 
-    <requirement>
-    </requirement>
+  <requirement>
+  </requirement>
 
-    <current version="004">
-        <create_table>
-            <file name="postgres\contentManager\004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_table>
-        <create_constraint>
-            <file name="postgres\contentManager\004\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_constraint>
-        <create_index>
-            <file name="postgres\contentManager\004\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_index>        
-        <drop_table>
-            <file name="postgres\contentManager\004\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </drop_table>
-        <drop_constraint>
-            <file name="postgres\contentManager\004\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </drop_constraint>
-        <drop_index>
-            <file name="postgres\contentManager\004\drop_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </drop_index>
-    </current>
+  <current version="004">
+    <create_table>
+      <file name="postgres\contentManager\004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_table>
+    <create_constraint>
+      <file name="postgres\contentManager\004\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_constraint>
+    <create_index>
+      <file name="postgres\contentManager\004\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_index>        
+    <drop_table>
+      <file name="postgres\contentManager\004\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </drop_table>
+    <drop_constraint>
+      <file name="postgres\contentManager\004\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </drop_constraint>
+    <drop_index>
+      <file name="postgres\contentManager\004\drop_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </drop_index>
+  </current>
 
-    <upgrade version="003">
-      <create_table>
-            <file name="DuplicateContentRemoving.jar" type="javalib" classname="com.silverpeas.migration.contentmanagement.DuplicateContentRemoving" methodname="migrate"/>
-       </create_table>
-       <create_constraint>
-            <file name="postgres\contentManager\up003\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-       </create_constraint>
-    </upgrade>
+  <upgrade version="003">
+    <create_table>
+      <file name="DuplicateContentRemoving.jar" type="javalib" classname="org.silverpeas.migration.contentmanagement.DuplicateContentRemoving" methodname="migrate"/>
+    </create_table>
+    <create_constraint>
+      <file name="postgres\contentManager\up003\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_constraint>
+  </upgrade>
 
 </contribution>
