@@ -89,12 +89,6 @@ import static java.io.File.separator;
  */
 public class PublicationsTypeManager {
 
-  public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, String exportPath) throws ImportExportException,
-      IOException {
-    return processExport(exportReport, userDetail, listItemsToExport, exportPath, true);
-  }
-
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications
    * spécifiées en paramètre. passé en paramètre au moteur d'importExport.
@@ -109,8 +103,8 @@ public class PublicationsTypeManager {
    * @throws IOException  
    */
   public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
-      throws ImportExportException, IOException {
+      List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
+      boolean bExportPublicationPath) throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport();
     PublicationsType publicationsType = new PublicationsType();
@@ -157,7 +151,7 @@ public class PublicationsTypeManager {
             getListNodePositionType().get(0);
         exportPublicationRelativePath = createPathDirectoryForPublicationExport(
             exportPath, nodePositionType.getId(), componentId, componentInst.getLabel(),
-            publicationDetail, useNameForFolders);
+            publicationDetail, useNameForFolders, bExportPublicationPath);
         exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       }
       //To avoid problems with Winzip
@@ -189,7 +183,7 @@ public class PublicationsTypeManager {
         }
       }
       exportAttachments(attachmentIE, versioningIE, componentInst, publicationType,
-          publicationDetail, exportPublicationRelativePath, exportPublicationPath);
+          publicationDetail.getPK(), exportPublicationRelativePath, exportPublicationPath);
       exportPdc(pdc_impExp, pubId, gedIE, publicationType);
       int nbThemes = getNbThemes(gedIE, publicationType);
       if (!writePublicationHtml(exportReport, wysiwygText, pubId, publicationType,
@@ -274,19 +268,19 @@ public class PublicationsTypeManager {
 
   void exportAttachments(AttachmentImportExport attachmentIE, VersioningImportExport versioningIE,
       ComponentInst componentInst, PublicationType publicationType,
-      PublicationDetail publicationDetail, String exportPublicationRelativePath,
+      PublicationPK publicationPK, String exportPublicationRelativePath,
       String exportPublicationPath) throws ImportExportException {
     // Récupération des attachments et copie des fichiers
     try {
       List<AttachmentDetail> attachments;
       if (ImportExportHelper.isVersioningUsed(componentInst)) {
-        attachments = versioningIE.exportDocuments(publicationDetail.getPK(),
+        attachments = versioningIE.exportDocuments(publicationPK,
             exportPublicationPath, exportPublicationRelativePath, null);
       } else {
-        attachments = attachmentIE.getAttachments(publicationDetail.getPK(),
+        attachments = attachmentIE.getAttachments(publicationPK,
             exportPublicationPath, exportPublicationRelativePath, null);
       }
-      if (attachments != null && attachments.size() > 0) {
+      if (attachments != null && attachments.size() > 0 && publicationType != null) {
         publicationType.setAttachmentsType(new AttachmentsType());
         publicationType.getAttachmentsType().setListAttachmentDetail(attachments);
       }
@@ -363,7 +357,7 @@ public class PublicationsTypeManager {
   }
 
   /**
-   * Méthode créant l'arboresecne des répertoires pour une publication exportée
+   * Méthode créant l'arboresence des répertoires pour une publication exportée
    * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
    * @param topicId - id du topic dont on veut la branche
    * @param componentId - id du composant de la publication
@@ -372,42 +366,39 @@ public class PublicationsTypeManager {
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForPublicationExport(String exportPath, int topicId,
-      String componentId, String componentLabel, PublicationDetail pub, boolean useNameForFolders)
-      throws IOException {
-    String pubNameForm;
+      String componentId, String componentLabel, PublicationDetail pub, boolean useNameForFolders,
+      boolean exportPublicationPath) throws IOException {
+    String pubNameForm = pub.getPK().getId();
     if (useNameForFolders) {
       pubNameForm = DirectoryUtils.formatToDirectoryNamingCompliant(pub.getName());
-    } else {
-      pubNameForm = pub.getPK().getId();
     }
 
-    String componentLabelForm = "";
-    if (useNameForFolders || isKmax(componentId)) {
-      componentLabelForm = DirectoryUtils.formatToDirectoryNamingCompliant(componentLabel);
-    } else {
-      componentLabelForm = componentId;
-    }
-
-    NodeImportExport nodeIE = new NodeImportExport();
-    StringBuilder relativeExportPath = new StringBuilder(componentLabelForm);
-    StringBuilder pathToCreate = new StringBuilder(exportPath).append(File.separatorChar).append(
-        componentLabelForm);
-    List<NodeDetail> listNodes = new ArrayList<NodeDetail>(nodeIE.getPathOfNode(new NodePK(String.
-        valueOf(topicId), "useless", componentId)));
-    Collections.reverse(listNodes);
-    for (NodeDetail nodeDetail : listNodes) {
-      String nodeNameForm;
-      if (useNameForFolders) {
-        nodeNameForm = DirectoryUtils.formatToDirectoryNamingCompliant(nodeDetail.getName());
-      } else {
-        nodeNameForm = nodeDetail.getNodePK().getId();
+    StringBuilder relativeExportPath = new StringBuilder();
+    StringBuilder pathToCreate = new StringBuilder(exportPath);
+    if (exportPublicationPath) {
+      String componentLabelForm = componentId;
+      if (useNameForFolders || isKmax(componentId)) {
+        componentLabelForm = DirectoryUtils.formatToDirectoryNamingCompliant(componentLabel);
       }
-      pathToCreate.append(separator).append(nodeNameForm);
-      relativeExportPath.append(separator).append(nodeNameForm);
+  
+      NodeImportExport nodeIE = new NodeImportExport();
+      relativeExportPath.append(componentLabelForm);
+      pathToCreate.append(File.separatorChar).append(componentLabelForm);
+      List<NodeDetail> listNodes = new ArrayList<NodeDetail>(nodeIE.getPathOfNode(new NodePK(String.
+          valueOf(topicId), "useless", componentId)));
+      Collections.reverse(listNodes);
+      for (NodeDetail nodeDetail : listNodes) {
+        String nodeNameForm = nodeDetail.getNodePK().getId();
+        if (useNameForFolders) {
+          nodeNameForm = DirectoryUtils.formatToDirectoryNamingCompliant(nodeDetail.getName());
+        }
+        pathToCreate.append(separator).append(nodeNameForm);
+        relativeExportPath.append(separator).append(nodeNameForm);
+      }
     }
     relativeExportPath.append(separator).append(pubNameForm);
     pathToCreate.append(separator).append(pubNameForm);
-
+    
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
     String relativeExportPathAscii =
@@ -428,6 +419,28 @@ public class PublicationsTypeManager {
       }
     }
     return relativeExportPathAscii;
+  }
+  
+  public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
+      List<WAAttributeValuePair> listItemsToExport, String exportPath)
+      throws ImportExportException, IOException {
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    VersioningImportExport versioningIE = new VersioningImportExport();
+    OrganizationController orgaController = new OrganizationController();
+
+    // Parcours des publications à exporter
+    for (WAAttributeValuePair attValue : listItemsToExport) {
+      SilverTrace.debug("importExport", "PublicationTypeManager.processExportOfFilesOnly",
+          "root.MSG_GEN_PARAM_VALUE", "objectId = " + attValue.getName() + ", instanceId = "
+          + attValue.getValue());
+
+      String pubId = attValue.getName();
+      String componentId = attValue.getValue();
+      PublicationPK pk = new PublicationPK(pubId, componentId);
+      ComponentInst componentInst = orgaController.getComponentInst(componentId);
+
+      exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", exportPath);
+    }
   }
 
   public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport, UserDetail userDetail,

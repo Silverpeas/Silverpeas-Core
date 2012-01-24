@@ -93,13 +93,23 @@ public class ImportExportRequestRouter extends ComponentRequestRouter<ImportExpo
             getAttribute("resources"));
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
+      } else if ("SelectExportMode".equals(function)) {
+        List<WAAttributeValuePair> itemPKs =
+            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
+        String rootId = (String) request.getAttribute("RootId");
+        importExportSC.saveItems(itemPKs, rootId);
+        destination = "/importExportPeas/jsp/selectExportMode.jsp";
+      } else if ("ExportSavedItems".equals(function)) {
+        String mode = request.getParameter("ExportMode");
+        importExportSC.processExportOfSavedItems(mode);
+        destination = "/importExportPeas/jsp/pingExport.jsp";
       } else if ("ExportItems".equals(function)) {
         @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs = (List<WAAttributeValuePair>) request.getAttribute(
             "selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
         if (itemPKs != null && !itemPKs.isEmpty()) {
-          importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
+          importExportSC.processExport(itemPKs, rootId);
           destination = "/importExportPeas/jsp/pingExport.jsp";
         } else {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
