@@ -60,12 +60,6 @@
     </property>
     <property name="dataSource"  ref="dataSource"/>
   </bean>
-  <!--
-    <bean id="MyDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName"><value>jdbc/Silverpeas</value></property>
-    </bean>
-  -->
-
 
   <aop:config>
     <aop:pointcut id="serviceOperation"

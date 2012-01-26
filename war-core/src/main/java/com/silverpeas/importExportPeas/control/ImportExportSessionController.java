@@ -46,6 +46,9 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   ExportThread exportThread = null;
   Exception errorOccured = null;
   ExportReport exportReport = null;
+  
+  private List<WAAttributeValuePair> items = null;
+  private String rootId = null;
 
   public ImportExportSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle, String iconBundle) {
@@ -67,13 +70,16 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    * @param rootId
    * @throws ImportExportException
    */
-  public void processExport(String language, List<WAAttributeValuePair> itemsToExport,
-      String rootId)
+  public void processExport(List<WAAttributeValuePair> itemsToExport, String rootId)
+    throws ImportExportException {
+    processExport(itemsToExport, rootId, ImportExport.EXPORT_FULL);
+  }
+  public void processExport(List<WAAttributeValuePair> itemsToExport, String rootId, int mode)
       throws ImportExportException {
     SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
         "root.MSG_GEN_ENTER_METHOD");
     if (exportThread == null) {
-      exportThread = new ExportXMLThread(this, itemsToExport, language, rootId);
+      exportThread = new ExportXMLThread(this, itemsToExport, getLanguage(), rootId, mode);
       errorOccured = null;
       exportReport = null;
       exportThread.startTheThread();
@@ -139,6 +145,20 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
     ExportReport report = importExport.processExportKmax(getUserDetail(),
         language, itemsToExport, combination, timeCriteria);
     return report;
+  }
+  
+  public void processExportOfSavedItems(String mode) throws ImportExportException {
+    processExport(this.items, this.rootId, Integer.parseInt(mode));
+  }
+  
+  public void saveItems(List<WAAttributeValuePair> items, String rootId) {
+    this.items = items;
+    this.rootId = rootId;
+  }
+  
+  public void clearItems() {
+    this.items = null;
+    this.rootId = null;
   }
 
 }

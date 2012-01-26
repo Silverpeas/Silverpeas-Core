@@ -123,7 +123,11 @@ public class ImportExport {
           "com.silverpeas.importExport.settings.mapping", "");
   public final static String iframePublication = "publications";
   public final static String iframeIndexPublications = "indexPublications";
-
+  
+  public final static int EXPORT_FULL = 0;
+  public final static int EXPORT_FILESONLY = 1;
+  public final static int EXPORT_PUBLICATIONSONLY = 2;
+  
   /**
    * Unique constructeur de la classe
    */
@@ -336,15 +340,14 @@ public class ImportExport {
    */
   private String extractUriNameIndex(String uri) {
 
-    if ((uri == null) || (uri.length() == 0)) {
+    if (uri == null || uri.length() == 0) {
       return "";
     }
 
     int first = 0;
     int last = uri.length();
-    int i;
 
-    i = uri.lastIndexOf('#');
+    int i = uri.lastIndexOf('#');
     if (i >= 0) {
       last = i;
     }
@@ -358,7 +361,7 @@ public class ImportExport {
       first = i + 1;
     }
     i = uri.indexOf("://") + 2;
-    if ((i >= 2) && (i > first) && (i < last)) {
+    if (i >= 2 && i > first && i < last) {
       first = i + 1;
     }
 
@@ -420,12 +423,23 @@ public class ImportExport {
   }
 
   public ExportReport processExport(UserDetail userDetail, String language,
-          List<WAAttributeValuePair> listItemsToExport) throws ImportExportException {
-    return processExport(userDetail, language, listItemsToExport, null);
+          List<WAAttributeValuePair> listItemsToExport, String rootId, int mode) throws ImportExportException {
+    ExportReport report = null;
+    switch (mode) {
+      case ImportExport.EXPORT_FULL:
+        report = processExport(userDetail, language, listItemsToExport, rootId);
+        break;
+      case ImportExport.EXPORT_FILESONLY:
+        report = processExportOfFilesOnly(userDetail, language, listItemsToExport);
+        break;
+      case ImportExport.EXPORT_PUBLICATIONSONLY:
+        report = processExportOfPublicationsOnly(userDetail, language, listItemsToExport);
+    }
+    return report;
   }
-
-  public ExportReport processExport(UserDetail userDetail, String language,
-          List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
+  
+  private ExportReport processExport(UserDetail userDetail, String language,
+      List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
     // pour le multilangue
     ResourceLocator resourceLocator = new ResourceLocator(
             "com.silverpeas.importExport.multilang.importExportBundle", language);
@@ -458,7 +472,7 @@ public class ImportExport {
         // création des répertoires avec le nom des thèmes et des
         // publications
         publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-                fileExportDir.getPath(), true);
+                fileExportDir.getPath(), true, true);
         if (publicationsType == null) {
           // les noms des thèmes et des publication est trop long ou au moins > 200 caractères
           // création des répertoires avec les Id des thèmes et des publications
@@ -477,7 +491,7 @@ public class ImportExport {
             tempDir = FileRepositoryManager.getTemporaryPath();
             fileExportDir = new File(tempDir + thisExportDir);
             publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail,
-                    listItemsToExport, fileExportDir.getPath(), false);
+                    listItemsToExport, fileExportDir.getPath(), false, true);
           } catch (IOException e) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
           }
@@ -534,19 +548,7 @@ public class ImportExport {
                 iex);
       }
       // Création du zip
-      try {
-        String zipFileName = fileExportDir.getName() + ".zip";
-        long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-                + zipFileName);
-        exportReport.setZipFileName(zipFileName);
-        exportReport.setZipFileSize(zipFileSize);
-        exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
-      } catch (IOException ex) {
-        throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
-
-      }
-      // Stockage de la date de fin de l'export dans l'objet rapport
-      exportReport.setDateFin(new Date());
+      createZipFile(fileExportDir, exportReport);
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
     } catch (NodeRuntimeException ex) {
@@ -590,7 +592,7 @@ public class ImportExport {
   }
 
   private void createExportDirectory(String thisExportDir, String tempDir)
-          throws ImportExportException {
+      throws ImportExportException {
     try {
       // créer le répertoire pour le zip
       FileFolderManager.createFolder(tempDir + thisExportDir + separator + "treeview");
@@ -783,7 +785,6 @@ public class ImportExport {
    * @return
    * @throws ImportExportException
    */
-  @SuppressWarnings({"unchecked", "unchecked"})
   public ExportReport processExportKmax(UserDetail userDetail, String language,
           List<WAAttributeValuePair> itemsToExport, List<String> combination, String timeCriteria)
           throws ImportExportException {
@@ -823,7 +824,7 @@ public class ImportExport {
       try {
         // création des répertoires avec le nom des publications
         publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail, itemsToExport,
-                fileExportDir.getPath(), false);
+                fileExportDir.getPath(), false, true);
       } catch (IOException e) {
         throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
       }
@@ -1086,17 +1087,7 @@ public class ImportExport {
           + "importExport.xml");
 
       // Création du zip
-      try {
-        String zipFileName = fileExportDir.getName() + ".zip";
-        long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-                + zipFileName);
-        exportReport.setZipFileName(zipFileName);
-        exportReport.setZipFileSize(zipFileSize);
-        exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
-      } catch (Exception ex) {
-      }
-      // Stockage de la date de fin de l'export dans l'objet rapport
-      exportReport.setDateFin(new Date());
+      createZipFile(fileExportDir, exportReport);
     } catch (Exception ex) {
       throw new ImportExportException("importExport", "ImportExport.processExportKmax()", ex);
     }
@@ -1160,5 +1151,91 @@ public class ImportExport {
       addNodeToList(nodesIds, parentNodeDetail);
     }
     return nodesIds;
+  }
+  
+  private ExportReport processExportOfFilesOnly(UserDetail userDetail, String language,
+      List<WAAttributeValuePair> listItemsToExport) throws ImportExportException {
+    PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
+    ExportReport exportReport = new ExportReport();
+
+    try {
+      // Creates export folder
+      File fileExportDir = createExportDir(userDetail);
+
+      // Export files attached to publications
+      try {
+        pub_Typ_Mger.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
+            fileExportDir.getPath());
+      } catch (IOException e1) {
+        throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
+      }
+      
+      // Create ZIP file
+      createZipFile(fileExportDir, exportReport);
+    } catch (IOException e1) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
+    }
+    return exportReport;
+  }
+  
+  private ExportReport processExportOfPublicationsOnly(UserDetail userDetail, String language,
+      List<WAAttributeValuePair> listItemsToExport) throws ImportExportException {
+    PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
+    ExportReport exportReport = new ExportReport();
+
+    try {
+      // Stockage de la date de démarrage de l'export dans l'objet rapport
+      exportReport.setDateDebut(new Date());
+      
+      File fileExportDir = createExportDir(userDetail);
+      
+      try {
+        // création des répertoires avec le nom des thèmes et des publications
+        pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
+            fileExportDir.getPath(), true, false);
+      } catch (IOException e1) {
+        throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
+      }
+      
+      // Création du zip
+      createZipFile(fileExportDir, exportReport);
+    } catch (IOException e1) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
+    }
+    return exportReport;
+  }
+  
+  private File createExportDir(UserDetail userDetail) throws ImportExportException, IOException {
+    // Purge le répertoire Temp de Silverpeas
+    TempDirectoryManager.purgeTempDir();
+
+    String thisExportDir = generateExportDirName(userDetail, "export");
+    String tempDir = FileRepositoryManager.getTemporaryPath();
+    File fileExportDir = new File(tempDir + thisExportDir);
+    if (!fileExportDir.exists()) {
+      try {
+        FileFolderManager.createFolder(fileExportDir);
+      } catch (UtilException ex) {
+        throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
+      }
+    }
+    return fileExportDir;
+  }
+  
+  private void createZipFile(File fileExportDir, ExportReport exportReport)
+      throws ImportExportException {
+    try {
+      String zipFileName = fileExportDir.getName() + ".zip";
+      String tempDir = FileRepositoryManager.getTemporaryPath();
+      long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
+          + zipFileName);
+      exportReport.setZipFileName(zipFileName);
+      exportReport.setZipFileSize(zipFileSize);
+      exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
+
+      exportReport.setDateFin(new Date());
+    } catch (IOException ex) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
+    }
   }
 }
