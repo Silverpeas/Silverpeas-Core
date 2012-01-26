@@ -26,6 +26,14 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="com.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle"/>
+
 <%
 	Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
 
@@ -81,7 +89,7 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 <form name="csvFileForm" action="usersCsvImport" method="POST" enctype="multipart/form-data">
-    <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+    <table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr>			
             <td valign="baseline" align=left  class="txtlibform">
                 <%=resource.getString("JDP.csvFile") %> :
@@ -90,16 +98,22 @@ out.println(board.printBefore());
                 <input type="file" name="file_upload" size="50" maxlength="50" VALUE="">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> 
             </td>
         </tr>
+        <tr id="sendEmailTRid">
+            <td class="txtlibform"><fmt:message key="JDP.sendEmail" /></td>
+            <td>
+                <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />&nbsp;<fmt:message key="GML.yes" /> <br/>
+            </td>
+        </tr>        
         <tr> 
             <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> 
       : <%=resource.getString("GML.requiredField")%>)</td>
         </tr>
     </table>
 
+</form>
 <%
 out.println(board.printAfter());
 %>
-</form>
 <br/>
 		<%
 		  ButtonPane bouton = gef.getButtonPane();

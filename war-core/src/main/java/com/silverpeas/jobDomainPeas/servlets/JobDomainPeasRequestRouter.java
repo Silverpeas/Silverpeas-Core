@@ -62,7 +62,6 @@ import java.util.StringTokenizer;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class JobDomainPeasRequestRouter
@@ -72,7 +71,6 @@ public class JobDomainPeasRequestRouter
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -96,10 +94,10 @@ public class JobDomainPeasRequestRouter
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   * @param function    The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param jobDomainSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex :
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, JobDomainPeasSessionController jobDomainSC,
@@ -110,9 +108,9 @@ public class JobDomainPeasRequestRouter
 
     try {
       if (!jobDomainSC.isAccessGranted()) {
-        throw new JobDomainPeasException( "JobDomainPeasRequestRouter.getDestination",
+        throw new JobDomainPeasException("JobDomainPeasRequestRouter.getDestination",
             SilverpeasException.ERROR, "root.EX_BAD_USER_RIGHT", "MODULE JOBDOMAIN : user "
-            + jobDomainSC.getUserId());
+                + jobDomainSC.getUserId());
       }
       // 1) Performs the action
       // ----------------------
@@ -157,21 +155,30 @@ public class JobDomainPeasRequestRouter
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
-          jobDomainSC.createUser(EncodeHelper.htmlStringToJavaString(request.getParameter(
-              "userLogin")), EncodeHelper.htmlStringToJavaString(
-              request.getParameter("userLastName")),
+          String sendEmailParam = request.getParameter("sendEmail");
+          boolean sendEmail =
+              (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
+
+          jobDomainSC.createUser(
+              EncodeHelper.htmlStringToJavaString(request.getParameter("userLogin")),
+              EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
               userPasswordValid,
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")), properties,
-              request.getParameter("GroupId"));
+              EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
+              properties, request.getParameter("GroupId"), request, sendEmail);
 
         } else if (function.startsWith("usersCsvImport")) {
-          FileItem fileItem = FileUploadUtil.getFile(request);
+          List<FileItem> fileItems = FileUploadUtil.parseRequest(request);
+
+          FileItem fileItem = FileUploadUtil.getFile(fileItems, "file_upload");
+          String sendEmailParam = FileUploadUtil.getParameter(fileItems, "sendEmail");
+          boolean sendEmail =
+              (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
 
           if (fileItem != null) {
-            jobDomainSC.importCsvUsers(fileItem);
+            jobDomainSC.importCsvUsers(fileItem, sendEmail, request);
           }
 
           destination = "domainContent.jsp";
@@ -185,6 +192,10 @@ public class JobDomainPeasRequestRouter
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
+          String sendEmailParam = request.getParameter("sendEmail");
+          boolean sendEmail =
+              (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
+
           jobDomainSC.modifyUser(request.getParameter("Iduser"),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
@@ -192,7 +203,7 @@ public class JobDomainPeasRequestRouter
               EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
-              properties);
+              properties, request, sendEmail);
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
@@ -289,16 +300,16 @@ public class JobDomainPeasRequestRouter
             domainId = "-1";
           }
 
-          //not refresh the domain
+          // not refresh the domain
           jobDomainSC.setRefreshDomain(false);
 
-          //domaine
+          // domaine
           jobDomainSC.setTargetDomain(domainId);
 
-          //réinitialise les groupes
+          // réinitialise les groupes
           jobDomainSC.returnIntoGroup(null);
 
-          //groupe d'appartenance
+          // groupe d'appartenance
           AdminController adminController = new AdminController(jobDomainSC.getUserId());
           String[] groupIds = adminController.getDirectGroupsIdsOfUser(userId);
           if (groupIds != null && groupIds.length > 0) {
@@ -316,7 +327,7 @@ public class JobDomainPeasRequestRouter
             }
           }
 
-          //user  
+          // user
           jobDomainSC.setTargetUser(userId);
         }
         if (destination.length() <= 0) {
@@ -414,20 +425,20 @@ public class JobDomainPeasRequestRouter
               domainId = "-1";
             }
 
-            //not refresh the domain
+            // not refresh the domain
             jobDomainSC.setRefreshDomain(false);
 
-            //domaine
+            // domaine
             jobDomainSC.setTargetDomain(domainId);
             jobDomainSC.returnIntoGroup(null);
 
-            //groupe(s) père(s)
+            // groupe(s) père(s)
             List<String> groupList = orgaController.getPathToGroup(groupId);
             for (String elementGroupId : groupList) {
               jobDomainSC.goIntoGroup(elementGroupId);
             }
 
-            //groupe
+            // groupe
             jobDomainSC.goIntoGroup(groupId);
 
             destination = "groupContent.jsp";
@@ -461,18 +472,17 @@ public class JobDomainPeasRequestRouter
           } // Operation functions
           else if (function.startsWith("domainCreate")) {
             String newDomainId =
-                jobDomainSC.createDomain(EncodeHelper.htmlStringToJavaString(request.
-                    getParameter("domainName")),
+                jobDomainSC.createDomain(EncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainName")),
                     EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
                     EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
                     EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                    EncodeHelper
-                        .htmlStringToJavaString(request.getParameter("domainAuthentication")),
+                    EncodeHelper.htmlStringToJavaString(request
+                        .getParameter("domainAuthentication")),
                     EncodeHelper
                         .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
                     EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
-            request.setAttribute("URLForContent", "domainNavigation?Iddomain="
-                + newDomainId);
+            request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLCreate")) {
             String newDomainId =
@@ -481,8 +491,7 @@ public class JobDomainPeasRequestRouter
                     EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
                     EncodeHelper
                         .htmlStringToJavaString(request.getParameter("silverpeasServerURL")));
-            request.setAttribute("URLForContent", "domainNavigation?Iddomain="
-                + newDomainId);
+            request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainModify")) {
             String modifiedDomainId =
@@ -496,8 +505,7 @@ public class JobDomainPeasRequestRouter
                     EncodeHelper
                         .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
                     EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
-            request.setAttribute("URLForContent", "domainNavigation?Iddomain="
-                + modifiedDomainId);
+            request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLModify")) {
             String modifiedDomainId = jobDomainSC.modifySQLDomain(EncodeHelper.
@@ -522,10 +530,8 @@ public class JobDomainPeasRequestRouter
               String strSynchroReport = jobDomainSC.getSynchroReport();
 
               jobDomainSC.refresh();
-              SilverTrace.info("jobDomainPeas",
-                  "JobDomainPeasRequestRouter.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE", "SynchroReport="
-                  + strSynchroReport);
+              SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
+                  "root.MSG_GEN_PARAM_VALUE", "SynchroReport=" + strSynchroReport);
               request.setAttribute("SynchroReport", strSynchroReport);
               destination = "domainSynchroReport.jsp";
             }
@@ -557,22 +563,22 @@ public class JobDomainPeasRequestRouter
           request.setAttribute("groupObject", newGroup);
           request.setAttribute("action", "groupCreate");
           request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC.getString("JDP.groupAdd")
-              + "..."));
+              (String) request.getAttribute("myComponentURL"), jobDomainSC
+                  .getString("JDP.groupAdd")
+                  +
+                  "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupModify")) {
           request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
           request.setAttribute("action", "groupModify");
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-              "JDP.groupUpdate")
-              + "..."));
+                  "JDP.groupUpdate") + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupImport")) {
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-              "JDP.groupImport")
-              + "..."));
+                  "JDP.groupImport") + "..."));
           destination = "groupImport.jsp";
         } else if (function.startsWith("displaySelectUserOrGroup")) {
           destination =
@@ -594,17 +600,17 @@ public class JobDomainPeasRequestRouter
           request.setAttribute("userObject", newUser);
           request.setAttribute("action", "userCreate");
           request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC.getString("JDP.userAdd")
-              + "..."));
+              (String) request.getAttribute("myComponentURL"),
+              jobDomainSC.getString("JDP.userAdd") + "..."));
           request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
           request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.
-              isBlanksAllowedInPwd()));
+          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC
+              .isBlanksAllowedInPwd()));
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           // if community management is activated, add groups on this user is manager
           if (JobDomainSettings.m_UseCommunityManagement) {
-            request
-                .setAttribute("GroupsManagedByCurrentUser", jobDomainSC.getUserManageableGroups());
+            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC
+                .getUserManageableGroups());
           }
 
           destination = "userCreate.jsp";
@@ -728,8 +734,9 @@ public class JobDomainPeasRequestRouter
         request.setAttribute("isDomainRW", ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
             || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
         request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
-        request.setAttribute("isDomainSync", ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-            || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
+        request.setAttribute("isDomainSync",
+            ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
+                || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
 
         request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
         request.setAttribute("isUserAddingAllowedForGroupManager", jobDomainSC.
@@ -746,8 +753,9 @@ public class JobDomainPeasRequestRouter
         request.setAttribute("isDomainRW", ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
             || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
         request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
-        request.setAttribute("isDomainSync", ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-            || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
+        request.setAttribute("isDomainSync",
+            ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
+                || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
 
         request
             .setAttribute("isGroupManagerOnThisGroup", jobDomainSC.isGroupManagerOnCurrentGroup());
@@ -761,14 +769,13 @@ public class JobDomainPeasRequestRouter
         if (jobDomainSC.getTargetDomain() != null) {
           long domainRight = jobDomainSC.getDomainActions();
 
-          SilverTrace.info("jobDomainPeas",
-              "JobDomainPeasRequestRouter.getDestination()",
+          SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "domainRight=" + domainRight
-              + " & DomainDriver.ACTION_X509_USER = "
-              + DomainDriver.ACTION_X509_USER);
+                  + " & DomainDriver.ACTION_X509_USER = " + DomainDriver.ACTION_X509_USER);
 
-          request.setAttribute("isDomainRW", ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
-              || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
+          request.setAttribute("isDomainRW",
+              ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
+                  || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
           request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
           request.setAttribute("isDomainSync",
               ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
@@ -810,8 +817,7 @@ public class JobDomainPeasRequestRouter
       }
     }
 
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasRequestRouter.getDestination()",
+    SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
