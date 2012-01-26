@@ -42,7 +42,7 @@
     <init>
       <file name="mssql\busCore\027\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
       <file name="mssql\busCore\027\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
-      <file name="java\dbBuilder_ep.jar" type="javalib" classname="com.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
+      <file name="java\dbBuilder_ep.jar" type="javalib" classname="org.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
     </init>
     <create_index>
       <file name="mssql\busCore\027\create_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
