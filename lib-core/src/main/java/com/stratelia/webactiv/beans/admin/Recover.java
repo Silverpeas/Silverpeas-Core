@@ -26,6 +26,15 @@ public class Recover {
   }
 
   public void recoverSpaceRights(String spaceId) throws AdminException {
+    recoverSpaceRights(spaceId, true);
+  }
+
+  private void recoverSpaceRights(String spaceId, boolean firstAccess) throws AdminException {
+    int oldTraceLevel = SilverTrace.TRACE_LEVEL_ERROR;
+    if (firstAccess) {
+      oldTraceLevel = SilverTrace.getTraceLevel("admin", false);
+      SilverTrace.setTraceLevel("admin", SilverTrace.TRACE_LEVEL_WARN);
+    }
     // check if space do not inherit rights but still have inherit rights
     SpaceInst space = admin.getSpaceInstById(spaceId);
     if (!space.isRoot()) {
@@ -49,7 +58,7 @@ public class Recover {
     // recover subspaces rights
     String[] subSpaceIds = space.getSubSpaceIds();
     for (String subSpaceId : subSpaceIds) {
-      recoverSpaceRights(subSpaceId);
+      recoverSpaceRights(subSpaceId, false);
     }
 
     // recover components rights
@@ -57,9 +66,14 @@ public class Recover {
     for (ComponentInst component : components) {
       recoverComponentRights(component, space);
     }
+
+    if (firstAccess) {
+      SilverTrace.setTraceLevel("admin", oldTraceLevel);
+    }
   }
 
-  private void recoverComponentRights(ComponentInst component, SpaceInst space) throws AdminException {
+  private void recoverComponentRights(ComponentInst component, SpaceInst space)
+      throws AdminException {
     // check if component does not inherit rights but still have inherit rights
     if (component.isInheritanceBlocked()) {
       List<ProfileInst> profiles = component.getInheritedProfiles();
