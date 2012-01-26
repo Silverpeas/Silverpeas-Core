@@ -68,7 +68,7 @@ public class SQLDriver extends AbstractDomainDriver {
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
     Group group = getGroup(groupId);
     if ((group != null) && (group.getSuperGroupId() != null)) {
-      return new String[]{group.getSuperGroupId()};
+      return new String[] { group.getSuperGroupId() };
     }
     return null;
   }
@@ -156,7 +156,7 @@ public class SQLDriver extends AbstractDomainDriver {
           false);
       return idAsString(userId);
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.createUser", SilverpeasException.ERROR, 
+      throw new AdminException("SQLDriver.createUser", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_USER", ud.getFirstName() + " " + ud.getLastName(), e);
     } finally {
       this.closeConnection();
@@ -181,7 +181,8 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param uf
+   * Update the data inside domain<DOMAIN_NAME>_user table
+   * @param uf a UserFull object
    */
   @Override
   public void updateUserFull(UserFull uf) throws Exception {
@@ -199,32 +200,33 @@ public class SQLDriver extends AbstractDomainDriver {
 
       // PWD specific treatment
       if (drvSettings.isUserPasswordAvailable()) {
-        String fromPwd = localUserMgr.getUserPassword(openedConnection, userId);
-        String toPwd;
-        if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) &&
-            !uf.getPassword().equals(fromPwd)) {
-          toPwd = UnixMD5Crypt.crypt(uf.getPassword());
-        } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption) &&
-            !uf.getPassword().equals(fromPwd)) {
-          toPwd = CryptMD5.crypt(uf.getPassword());
-        } else {
-          toPwd = uf.getPassword();
+        if (StringUtil.isDefined(uf.getPassword())) {
+          String fromPwd = localUserMgr.getUserPassword(openedConnection, userId);
+          String toPwd;
+          if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) &&
+              !uf.getPassword().equals(fromPwd)) {
+            toPwd = UnixMD5Crypt.crypt(uf.getPassword());
+          } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption) &&
+              !uf.getPassword().equals(fromPwd)) {
+            toPwd = CryptMD5.crypt(uf.getPassword());
+          } else {
+            toPwd = uf.getPassword();
+          }
+          localUserMgr.updateUserPassword(openedConnection, userId, toPwd);
         }
-        localUserMgr.updateUserPassword(openedConnection, userId, toPwd);
-        localUserMgr.updateUserPasswordValid(openedConnection, userId,
-            uf.isPasswordValid());
+        localUserMgr.updateUserPasswordValid(openedConnection, userId, uf.isPasswordValid());
       }
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.updateUserFull",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", uf.getFirstName() +
-          " " + uf.getLastName(), e);
+      throw new AdminException("SQLDriver.updateUserFull", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_USER", uf.getFirstName() + " " + uf.getLastName(), e);
     } finally {
       this.closeConnection();
     }
   }
 
   /**
-   * @param ud
+   * @param ud a UserDetail object which contains all the data to update inside
+   * domain<DOMAIN_NAME>_user table
    */
   @Override
   public void updateUserDetail(UserDetail ud) throws Exception {
@@ -234,7 +236,7 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateUserDetail",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud.getFirstName() +
-          " " + ud.getLastName(), e);
+              " " + ud.getLastName(), e);
     } finally {
       this.closeConnection();
     }
@@ -374,8 +376,8 @@ public class SQLDriver extends AbstractDomainDriver {
       }
       return theGrpIdStr;
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.createGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP", group.getName(), e);
+      throw new AdminException("SQLDriver.createGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_ADD_GROUP", group.getName(), e);
     } finally {
       this.closeConnection();
     }
@@ -402,9 +404,8 @@ public class SQLDriver extends AbstractDomainDriver {
         localGroupMgr.deleteGroup(openedConnection, gid);
       }
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.deleteGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP",
-          "groupId : " + groupId, e);
+      throw new AdminException("SQLDriver.deleteGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_DELETE_GROUP", "groupId : " + groupId, e);
     } finally {
       this.closeConnection();
     }
@@ -420,8 +421,8 @@ public class SQLDriver extends AbstractDomainDriver {
     try {
       if (group == null || group.getName().length() == 0 ||
           group.getSpecificId().length() == 0) {
-        throw new AdminException("SQLDriver.updateGroup",
-            SilverpeasException.ERROR, "admin.EX_ERR_INVALID_GROUP");
+        throw new AdminException("SQLDriver.updateGroup", SilverpeasException.ERROR,
+            "admin.EX_ERR_INVALID_GROUP");
       }
 
       this.openConnection();
@@ -451,9 +452,8 @@ public class SQLDriver extends AbstractDomainDriver {
         localGroupUserRelMgr.createGroupUserRel(openedConnection, groupId, idAsInt(alAddUser));
       }
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.updateGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP",
-          "groupId : " + group.getSpecificId(), e);
+      throw new AdminException("SQLDriver.updateGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_GROUP", "groupId : " + group.getSpecificId(), e);
     } finally {
       this.closeConnection();
     }
@@ -466,19 +466,17 @@ public class SQLDriver extends AbstractDomainDriver {
   public Group getGroup(String groupId) throws Exception {
     try {
       this.openConnection();
-      Group valret = localGroupMgr.getGroup(openedConnection,
-          idAsInt(groupId));
+      Group valret = localGroupMgr.getGroup(openedConnection, idAsInt(groupId));
       if (valret != null) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
-            idAsInt(groupId));
+        List<String> asUsersId =
+            localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection, idAsInt(groupId));
         valret.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
       return valret;
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.getGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP",
-          "groupId : " + groupId, e);
+      throw new AdminException("SQLDriver.getGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_GROUP", "groupId : " + groupId, e);
     } finally {
       this.closeConnection();
     }
@@ -495,9 +493,8 @@ public class SQLDriver extends AbstractDomainDriver {
           groupName);
       return valret;
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.getGroupByName",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP",
-          "groupName : " + groupName, e);
+      throw new AdminException("SQLDriver.getGroupByName", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_GROUP", "groupName : " + groupName, e);
     } finally {
       this.closeConnection();
     }
@@ -521,9 +518,8 @@ public class SQLDriver extends AbstractDomainDriver {
 
       return ar.toArray(new Group[ar.size()]);
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.getGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS",
-          "father group id : " + groupId, e);
+      throw new AdminException("SQLDriver.getGroups", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_GROUPS", "father group id : " + groupId, e);
     } finally {
       this.closeConnection();
     }
@@ -546,8 +542,8 @@ public class SQLDriver extends AbstractDomainDriver {
 
       return ar.toArray(new Group[ar.size()]);
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.getAllGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_GROUPS", e);
+      throw new AdminException("SQLDriver.getAllGroups", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_ALL_GROUPS", e);
     } finally {
       this.closeConnection();
     }
@@ -569,8 +565,7 @@ public class SQLDriver extends AbstractDomainDriver {
 
       return ar.toArray(new Group[ar.size()]);
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.getAllRootGroups",
-          SilverpeasException.ERROR,
+      throw new AdminException("SQLDriver.getAllRootGroups", SilverpeasException.ERROR,
           "admin.EX_ERR_GET_ALL_ROOT_GROUPS", e);
     } finally {
       this.closeConnection();
@@ -584,13 +579,11 @@ public class SQLDriver extends AbstractDomainDriver {
   public void addUserInGroup(String userId, String groupId) throws Exception {
     try {
       this.openConnection();
-      localGroupUserRelMgr.createGroupUserRel(openedConnection,
-          idAsInt(groupId), idAsInt(userId));
+      localGroupUserRelMgr.createGroupUserRel(openedConnection, idAsInt(groupId), idAsInt(userId));
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.addUserInGroup",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_ADD_USER_IN_GROUP", "userId : '" + userId +
-          "', groupId : '" + groupId + "'", e);
+      throw new AdminException("SQLDriver.addUserInGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_ADD_USER_IN_GROUP", "userId : '" + userId + "', groupId : '" + groupId +
+              "'", e);
     } finally {
       this.closeConnection();
     }
@@ -608,10 +601,9 @@ public class SQLDriver extends AbstractDomainDriver {
           idAsInt(groupId), idAsInt(userId));
 
     } catch (Exception e) {
-      throw new AdminException("SQLDriver.removeUserFromGroup",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_REMOVE_USER_FROM_GROUP", "userId : '" +
-          userId + "', groupId : '" + groupId + "'", e);
+      throw new AdminException("SQLDriver.removeUserFromGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_REMOVE_USER_FROM_GROUP", "userId : '" + userId + "', groupId : '" +
+              groupId + "'", e);
     } finally {
       this.closeConnection();
     }
@@ -646,8 +638,8 @@ public class SQLDriver extends AbstractDomainDriver {
       inTransaction = false;
       closeConnection();
     } catch (AdminPersistenceException e) {
-      throw new AdminException("SQLDriver.commit",
-          SilverpeasException.ERROR, "root.EX_ERR_COMMIT", e);
+      throw new AdminException("SQLDriver.commit", SilverpeasException.ERROR, "root.EX_ERR_COMMIT",
+          e);
     }
   }
 
@@ -662,8 +654,8 @@ public class SQLDriver extends AbstractDomainDriver {
       inTransaction = false;
       closeConnection();
     } catch (AdminPersistenceException e) {
-      throw new AdminException("SQLDriver.rollback",
-          SilverpeasException.ERROR, "admin.EX_ERR_ROLLBACK", e);
+      throw new AdminException("SQLDriver.rollback", SilverpeasException.ERROR,
+          "admin.EX_ERR_ROLLBACK", e);
     }
   }
 
