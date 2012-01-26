@@ -24,11 +24,6 @@
 
 package com.stratelia.silverpeas.versioning.jcr.impl;
 
-import java.io.IOException;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
@@ -36,6 +31,10 @@ import com.stratelia.silverpeas.versioning.jcr.JcrDocumentDao;
 import com.stratelia.silverpeas.versioning.jcr.JcrDocumentService;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.io.IOException;
 
 public class JcrDocumentServiceImpl implements JcrDocumentService {
 
@@ -155,8 +154,7 @@ public class JcrDocumentServiceImpl implements JcrDocumentService {
   /**
    * Indicate if the node for the specified attachment is currently locked (for example by Office in
    * the case of a webdav online edition).
-   * @param attachment the attachment.
-   * @param language the language to obtain the file.
+   * @param document the attachment.
    * @return true if the node is locked - false otherwise.
    * @throws RepositoryException
    */

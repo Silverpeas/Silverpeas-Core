@@ -20,25 +20,36 @@
  */
 package com.silverpeas.jcrutil.servlets;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
+import com.silverpeas.jcrutil.security.impl.SilverpeasDigestCredentialsProvider;
 import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.jackrabbit.server.CredentialsProvider;
+import org.apache.jackrabbit.util.Text;
 
-public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
+public class SimpleDigestWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 
   private static final long serialVersionUID = -1609493516113921269L;
+  private static final int DIGEST_KEY_SIZE = 16;
   private static final ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.jcr", "");
+
+  @Override
+  public String getAuthenticateHeaderValue() {
+    String nOnce = generateNOnce();
+    return "Digest realm=\"" + resources.getString("jcr.authentication.realm") + "\", " +
+        "qop=\"auth\", nonce=\"" + nOnce + "\", " + "opaque=\"" + Text.md5(nOnce) + "\"";
+  }
+
+  protected String generateNOnce() {
+    String nOnceValue = RandomStringUtils.random(DIGEST_KEY_SIZE) + ":" 
+        + System.currentTimeMillis() + ":" + resources.getString("jcr.authentication.realm");
+    return Text.md5(nOnceValue);
+  }
   /**
    * the jcr repository
    */
   private Repository repository;
-
-  @Override
-  public String getAuthenticateHeaderValue() {
-    return "Basic realm=\"" + resources.getString("jcr.authentication.realm") + "\"";
-  }
 
   /**
    * {@inheritDoc}
@@ -63,6 +74,6 @@ public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.Sim
    */
   @Override
   protected CredentialsProvider getCredentialsProvider() {
-    return new SilverpeasBasicCredentialsProvider(getInitParameter(INIT_PARAM_MISSING_AUTH_MAPPING));
+    return new SilverpeasDigestCredentialsProvider();
   }
 }

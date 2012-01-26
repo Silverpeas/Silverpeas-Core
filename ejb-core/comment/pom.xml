@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>comment</artifactId>
   <packaging>jar</packaging>
-  <name>Lib Comment - ${version}</name>
+  <name>Lib Comment - ${project.version}</name>
 	
   <dependencies>
     <dependency>
