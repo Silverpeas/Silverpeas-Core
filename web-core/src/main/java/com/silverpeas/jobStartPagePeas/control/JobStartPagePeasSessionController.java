@@ -107,8 +107,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   private int scope = SCOPE_BACKOFFICE;
 
   private static final Properties templateConfiguration = new Properties();
-  private static final String WELCOME_SPACE_ADMIN_TEMPLATE_FILE = "welcome_space_admin";
-  private static final String WELCOME_SPACE_MGR_TEMPLATE_FILE = "welcome_space_manager";
   
   public JobStartPagePeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -1438,14 +1436,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   /**
-   * Return the silverpeas template email configuration
-   * @param userDetail the current user detail
-   * @param loginURL the login URL String
-   * @param userPassword the current user password we have to send to new/modified user
-   * @param isNew true if it's a created user, false else if
+   * Return the silverpeas template linked to JobStartPage module
    * @return a SilverpeasTemplate
    */
-  public SilverpeasTemplate getWelcomeTemplate() {
+  public SilverpeasTemplate getSilverpeasTemplate() {
     Properties configuration = new Properties(templateConfiguration);
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     return template;

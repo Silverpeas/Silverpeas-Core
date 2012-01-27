@@ -195,9 +195,8 @@ public class JobStartPagePeasRequestRouter extends
     } else if ("jobStartPageNav".equals(function)) {
       destination = "/jobStartPagePeas/jsp/jobStartPageNav.jsp";
     } else if ("welcome".equals(function)) {
-      // TODO add silverpeas template content inside request before displaying view
-      SilverpeasTemplate template = jobStartPageSC.getWelcomeTemplate();
-
+      // Get Silverpeas template from JobStartSessionSettings
+      SilverpeasTemplate template = jobStartPageSC.getSilverpeasTemplate();
       // Check user right
       if (jobStartPageSC.isUserAdmin()) {
         request.setAttribute("Content", template
@@ -206,11 +205,6 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("Content", template
             .applyFileTemplate(WELCOME_SPACE_MGR_TEMPLATE_FILE + jobStartPageSC.getLanguage()));
       }
-      String userAccess = jobStartPageSC.getUserAccessLevel();
-      String userRole = jobStartPageSC.getUserRoleLevel();
-      SilverTrace.debug("jobStartPagePeas", "JobStartPagePeasRequestRouter.getDestinationNavBar",
-          "root.MSG_GEN_PARAM_VALUE", "userAccess = " + userAccess + ", userRole=" + userRole);
-
       destination = "/jobStartPagePeas/jsp/welcome.jsp";
     } else if ("ViewBin".equals(function)) {
       request.setAttribute("Spaces", jobStartPageSC.getRemovedSpaces());

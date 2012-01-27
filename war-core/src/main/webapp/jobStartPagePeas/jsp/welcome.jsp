@@ -41,6 +41,8 @@
 <c:set var="isBasketEnable" value="${requestScope['IsBasketEnable']}" />
 <c:set var="clipboardNotEmpty" value="${requestScope['ObjectsSelectedInClipboard']}" />
 
+<c:set var="content" value="${requestScope['Content']}" />
+
 <%
 	// Space edition
    /*if (isUserAdmin) {
@@ -137,16 +139,14 @@ function recoverRights() {
 <view:frame>
 <view:board>
 <center>
-<div align="center" class="txtNav">
 <c:choose>
-<c:when test="${globalMode}">
-<font color="#ff0000"><fmt:message key="JSPP.maintenanceTout" /></font>
-</c:when>
-<c:otherwise>
-<fmt:message key="JSPP.welcome" />
-</c:otherwise>
+  <c:when test="${globalMode}">
+    <font color="#ff0000"><fmt:message key="JSPP.maintenanceTout" /></font>
+  </c:when>
+  <c:otherwise>
+    <c:out value="${content}" escapeXml="false" />
+  </c:otherwise>
 </c:choose>
-</div>
 </center>
 </view:board>
 </view:frame>
