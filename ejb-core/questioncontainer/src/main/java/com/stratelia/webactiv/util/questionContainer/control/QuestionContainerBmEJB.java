@@ -77,7 +77,6 @@ import java.util.Vector;
 
 /**
  * Class declaration
- *
  * @author neysseri
  */
 public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, SessionBean {
@@ -154,7 +153,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
       int nbMaxPoints = 0;
       QuestionContainerHeader questionContainerHeader = it.next();
       QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
-      Collection<Question> questions  ;
+      Collection<Question> questions;
       try {
         questions =
             questionBm.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().getId());
@@ -180,7 +179,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     int nbMaxPoints = 0;
     QuestionBm questionBm = getQuestionBm();
-    Collection<Question> questions  ;
+    Collection<Question> questions;
     QuestionPK questionPK = new QuestionPK(null, questionContainerHeader
         .getPK());
 
@@ -285,8 +284,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainersWithScores()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     Connection con = null;
 
     try {
@@ -463,7 +461,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "QuestionContainerBmEJB.getWorstScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
             + questionContainerPK + ", nbScores = " + nbScores);
-    Collection<ScoreDetail> scores  ;
+    Collection<ScoreDetail> scores;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
@@ -481,24 +479,19 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
   public Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK)
       throws RemoteException {
-    SilverTrace.info("questionContainer",
-        "QuestionContainerBmEJB.getScoresByFatherId()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
-    Collection<ScoreDetail> scores  ;
+    SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getScoresByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+    Collection<ScoreDetail> scores;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
     try {
-      scores = scoreBm
-          .getScoresByFatherId(scorePK, questionContainerPK.getId());
+      scores = scoreBm.getScoresByFatherId(scorePK, questionContainerPK.getId());
       if (scores != null) {
-        SilverTrace.info("questionContainer",
-            "QuestionContainerBmEJB.getScoresByFatherId()",
+        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getScoresByFatherId()",
             "root.MSG_GEN_PARAM_VALUE", "Le score : Size=" + scores.size());
       } else {
-        SilverTrace.info("questionContainer",
-            "QuestionContainerBmEJB.getScoresByFatherId()",
+        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getScoresByFatherId()",
             "root.MSG_GEN_PARAM_VALUE", "Le score : null");
       }
       return scores;
@@ -512,10 +505,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
   public float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK)
       throws RemoteException {
-    SilverTrace.info("questionContainer",
-        "QuestionContainerBmEJB.getAverageScoreByFatherId()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+    SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getAverageScoreByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     float averageScore;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
@@ -540,7 +531,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
             + questionContainerPK + ", userId = " + userId);
     Connection con = null;
-    Collection<Question> questions  ;
+    Collection<Question> questions;
     Collection<Comment> comments = null;
     QuestionContainerHeader questionContainerHeader;
     Collection<QuestionResult> userVotes = null;
@@ -619,9 +610,9 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
             + questionContainerPK + ", userId = " + userId
             + ", participationId = " + participationId);
-    Collection<Question> questions  ;
-    Collection<Comment> comments  ;
-    QuestionContainerHeader questionContainerHeader  ;
+    Collection<Question> questions;
+    Collection<Comment> comments;
+    QuestionContainerHeader questionContainerHeader;
     Collection<QuestionResult> userVotes = null;
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
@@ -671,13 +662,11 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
       con = getConnection();
 
       // begin PDC integration
-      QuestionContainerHeader qc = QuestionContainerDAO
-          .getQuestionContainerHeader(con, questionContainerPK);
+      QuestionContainerHeader qc =
+          QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
       QuestionContainerContentManager.updateSilverContentVisibility(qc, false);
       // end PDC integration
-
       QuestionContainerDAO.closeQuestionContainer(con, questionContainerPK);
-
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
           "QuestionContainerBmEJB.closeQuestionContainer()",
@@ -722,7 +711,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "QuestionContainerBmEJB.getNbVotersByQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
             + questionContainerPK);
-    int nbVoters  ;
+    int nbVoters;
 
     ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
@@ -750,18 +739,18 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
             + questionContainerPK + ", userId = " + userId);
     SimpleDateFormat formatterDB = new java.text.SimpleDateFormat("yyyy/MM/dd");
-    QuestionPK questionPK  ;
+    QuestionPK questionPK;
     AnswerPK answerPK;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
-    QuestionResult result  ;
+    QuestionResult result;
     QuestionResultBm questionResultBm = getQuestionResultBm();
     AnswerBm answerBm = getAnswerBm();
     QuestionBm questionBm = getQuestionBm();
     ScoreBm scoreBm = getScoreBm();
-    Answer answer  ;
+    Answer answer;
     int participationId = scoreBm.getUserNbParticipationsByFatherId(scorePK,
         questionContainerPK.getId(), userId) + 1;
-    int questionUserScore  ;
+    int questionUserScore;
     int userScore = 0;
 
     Enumeration<String> keys = reply.keys();
@@ -771,7 +760,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
       String questionId = keys.nextElement();
 
       questionPK = new QuestionPK(questionId, questionContainerPK);
-      Question question  ;
+      Question question;
 
       try {
         question = questionBm.getQuestion(questionPK);
@@ -1174,7 +1163,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getSuggestions()", "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK);
-    Collection<QuestionResult> suggestions  ;
+    Collection<QuestionResult> suggestions;
     QuestionPK questionPK = new QuestionPK(questionContainerPK.getId(),
         questionContainerPK.getSpace(), questionContainerPK.getComponentName());
     QuestionResultBm questionResultBm = getQuestionResultBm();
@@ -1237,7 +1226,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "QuestionContainerBmEJB.getAveragePoints()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
             + questionContainerPK);
-    float averagePoints  ;
+    float averagePoints;
     ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
     ScoreBm scoreBm = getScoreBm();
@@ -1289,7 +1278,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
             + questionContainerPK + ", userId = " + userId
             + ", participationId = " + participationId);
-    ScoreDetail scoreDetail  ;
+    ScoreDetail scoreDetail;
 
     ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
@@ -1328,7 +1317,6 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
   /**
    * Called on : - createQuestionContainer() - updateQuestionContainer()
-   *
    * @param header the question container to index.
    */
   private void createIndex(QuestionContainerHeader header) {
@@ -1376,7 +1364,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getSilverObjectId()",
         "root.MSG_GEN_ENTER_METHOD", "pk = " + pk.toString());
-    int silverObjectId  ;
+    int silverObjectId;
     try {
       silverObjectId = QuestionContainerContentManager.getSilverObjectId(pk
           .getId(), pk.getComponentName());
@@ -1384,7 +1372,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         QuestionContainerHeader questionContainerHeader = getQuestionContainerHeader(pk);
         silverObjectId = QuestionContainerContentManager.createSilverContent(
             null, questionContainerHeader, questionContainerHeader
-            .getCreatorId(), true);
+                .getCreatorId(), true);
       }
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
@@ -1592,7 +1580,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
   }
 
   public String getHTMLQuestionPath(QuestionContainerDetail questionDetail) {
-    String htmlPath  ;
+    String htmlPath;
     try {
       QuestionContainerHeader questionHeader = questionDetail.getHeader();
       QuestionContainerPK pk = questionHeader.getPK();
@@ -1635,7 +1623,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
   /* EJB METHODS */
 
   /**
-   * **********************************************************************************************************************
+   * ***********************************************************************************************
+   * ***********************
    */
 
   public void ejbCreate() {

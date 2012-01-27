@@ -58,6 +58,10 @@ public class ScoreDAO {
   private static final String ADD_SCORE_FOR_QUESTION =
       "INSERT INTO sb_question_score values(?, ?, ?, ?, ?, ?, ?, ?) ";
 
+  private static final String SELECT_SCORE_BY_FATHER_ID =
+      "SELECT " + SCORECOLUMNNAMES +
+          " FROM SB_Question_Score WHERE qcId = ? ORDER BY scoreScore DESC";
+
   /**
    * Method declaration
    * @param rs
@@ -291,12 +295,9 @@ public class ScoreDAO {
       String fatherId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail = null;
-    String selectStatement = "select " + SCORECOLUMNNAMES + " from "
-        + scorePK.getTableName() + " where qcId = ? order by scoreScore desc";
     PreparedStatement prepStmt = null;
-
     try {
-      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt = con.prepareStatement(SELECT_SCORE_BY_FATHER_ID);
       prepStmt.setInt(1, Integer.parseInt(fatherId));
       rs = prepStmt.executeQuery();
       List<ScoreDetail> result = new ArrayList<ScoreDetail>();
