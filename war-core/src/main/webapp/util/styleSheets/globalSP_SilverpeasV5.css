@@ -4253,7 +4253,9 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 
-
+.vertical_align {
+  vertical-align:middle;
+}
 
 
 

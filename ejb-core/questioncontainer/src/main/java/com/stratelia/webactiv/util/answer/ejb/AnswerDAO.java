@@ -30,7 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
@@ -49,6 +48,15 @@ public class AnswerDAO {
 
   public static final String ANSWERCOLUMNNAMES =
       "answerId, questionId, answerLabel, answerNbPoints, answerIsSolution, answerComment, answerNbVoters, answerIsOpened, answerImage, answerQuestionLink";
+
+  private static final String SQL_DELETE_QUESTION_ANSWERS =
+      "delete from SB_Question_Answer where questionId = ? ";
+
+  private static final String SQL_DELETE_QUESTION_ANSWER =
+      "delete from SB_Question_Answer where questionId = ? and answerId = ? ";
+  
+  private static final String SQL_INSERT_ANSWER = 
+    "insert into SB_Question_Answer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   /**
    * Build an Answer objet with data containing in the Resulset
@@ -99,8 +107,9 @@ public class AnswerDAO {
     Answer answer = null;
     AnswerPK answerPK = new AnswerPK(null, questionPK);
 
-    String selectStatement = "select " + ANSWERCOLUMNNAMES + " from "
-        + answerPK.getTableName() + " where questionId = ? order by answerId ";
+    String selectStatement =
+        "select " + ANSWERCOLUMNNAMES +
+            " from SB_Question_Answer where questionId = ? order by answerId ";
 
     List<Answer> result = new ArrayList<Answer>();
     PreparedStatement prepStmt = null;
@@ -130,12 +139,11 @@ public class AnswerDAO {
    */
   public static void recordThisAnswerAsVote(Connection con,
       ForeignPK questionPK, AnswerPK answerPK) throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.recordThisAnswerAsVote()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK
-        + ", answerPK =" + answerPK);
-    String updateStatement = "update " + answerPK.getTableName()
-        + " set answerNbVoters = answerNbVoters + 1" + " where answerId = ? "
-        + " and questionId = ?";
+    SilverTrace.info("answer", "AnswerDAO.recordThisAnswerAsVote()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK + ", answerPK =" + answerPK);
+
+    String updateStatement =
+        "update SB_Question_Answer set answerNbVoters = answerNbVoters + 1 where answerId = ? and questionId = ?";
 
     PreparedStatement prepStmt = null;
 
@@ -158,13 +166,10 @@ public class AnswerDAO {
    */
   public static void addAnswersToAQuestion(Connection con, Collection<Answer> answers,
       ForeignPK questionPK) throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.addAnswersToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+    SilverTrace.info("answer", "AnswerDAO.addAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK);
     if (answers != null) {
-      Iterator<Answer> it = answers.iterator();
-
-      while (it.hasNext()) {
-        Answer answer = it.next();
+      for (Answer answer : answers) {
         addAnswerToAQuestion(con, answer, questionPK);
       }
     }
@@ -179,14 +184,11 @@ public class AnswerDAO {
    */
   public static void addAnswerToAQuestion(Connection con, Answer answer,
       ForeignPK questionPK) throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.addAnswerToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+    SilverTrace.info("answer", "AnswerDAO.addAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK);
     int newId = 0;
 
     AnswerPK answerPK = new AnswerPK("unknown", questionPK);
-
-    String updateStatement = "insert into " + answerPK.getTableName()
-        + " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try {
       /* Recherche de la nouvelle PK de la table */
@@ -195,11 +197,9 @@ public class AnswerDAO {
       throw new AnswerRuntimeException("AnswerDAO.addAnswerToAQuestion()",
           SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);
     }
-
     PreparedStatement prepStmt = null;
-
     try {
-      prepStmt = con.prepareStatement(updateStatement);
+      prepStmt = con.prepareStatement(SQL_INSERT_ANSWER);
       prepStmt.setInt(1, newId);
       prepStmt.setInt(2, Integer.parseInt(questionPK.getId()));
       prepStmt.setString(3, answer.getLabel());
@@ -232,17 +232,11 @@ public class AnswerDAO {
    */
   public static void deleteAnswersToAQuestion(Connection con,
       ForeignPK questionPK) throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.deleteAnswersToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
-    AnswerPK answerPK = new AnswerPK("unknown", questionPK);
-
-    String deleteStatement = "delete from " + answerPK.getTableName()
-        + " where questionId = ? ";
-
+    SilverTrace.info("answer", "AnswerDAO.deleteAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK);
     PreparedStatement prepStmt = null;
-
     try {
-      prepStmt = con.prepareStatement(deleteStatement);
+      prepStmt = con.prepareStatement(SQL_DELETE_QUESTION_ANSWERS);
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.executeUpdate();
     } finally {
@@ -259,18 +253,11 @@ public class AnswerDAO {
    */
   public static void deleteAnswerToAQuestion(Connection con,
       ForeignPK questionPK, String answerId) throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.deleteAnswerToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-        + ", answerId = " + answerId);
-    AnswerPK answerPK = new AnswerPK("unknown", questionPK);
-
-    String deleteStatement = "delete from " + answerPK.getTableName()
-        + " where questionId = ? and answerId = ? ";
-
+    SilverTrace.info("answer", "AnswerDAO.deleteAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK = " + questionPK + ", answerId = " + answerId);
     PreparedStatement prepStmt = null;
-
     try {
-      prepStmt = con.prepareStatement(deleteStatement);
+      prepStmt = con.prepareStatement(SQL_DELETE_QUESTION_ANSWER);
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setInt(2, Integer.parseInt(answerId));
       prepStmt.executeUpdate();
@@ -288,17 +275,15 @@ public class AnswerDAO {
    */
   public static void updateAnswerToAQuestion(Connection con,
       ForeignPK questionPK, Answer answer) throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.updateAnswerToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-        + ", answer = " + answer.toString());
-    AnswerPK answerPK = answer.getPK();
+    SilverTrace.info("answer", "AnswerDAO.updateAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK = " + questionPK + ", answer = " + answer.toString());
 
-    String updateStatement = "update " + answerPK.getTableName()
-        + " set questionId = ?," + " set answerLabel = ?,"
-        + " set answerNbPoints = ?," + " set answerIsSolution = ?,"
-        + " set answerComment = ?," + " set answerNbVoters = ?,"
-        + " set answerIsOpened = ?," + " set answerImage = ?,"
-        + " set answerQuestionLink = ?," + " where answerId = ? ";
+    String updateStatement =
+        "update SB_Question_Answer set questionId = ?," + " set answerLabel = ?,"
+            + " set answerNbPoints = ?," + " set answerIsSolution = ?,"
+            + " set answerComment = ?," + " set answerNbVoters = ?,"
+            + " set answerIsOpened = ?," + " set answerImage = ?,"
+            + " set answerQuestionLink = ?," + " where answerId = ? ";
 
     PreparedStatement prepStmt = null;
 
@@ -312,7 +297,7 @@ public class AnswerDAO {
         prepStmt.setInt(4, 1);
       } else {
         prepStmt.setInt(4, 0);
-      } 
+      }
       prepStmt.setString(5, answer.getComment());
       prepStmt.setInt(6, answer.getNbVoters());
 
@@ -320,7 +305,7 @@ public class AnswerDAO {
         prepStmt.setInt(7, 1);
       } else {
         prepStmt.setInt(7, 0);
-      } 
+      }
       prepStmt.setString(8, answer.getImage());
       prepStmt.setString(9, answer.getQuestionLink());
       prepStmt.setString(10, answer.getPK().getId());
