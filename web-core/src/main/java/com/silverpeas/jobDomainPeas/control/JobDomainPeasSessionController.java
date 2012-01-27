@@ -64,7 +64,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.X509Factory;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -322,7 +321,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           new NotificationMetaData(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL,
               getString("JDP.createAccountNotifTitle"),
               templates, USER_ACCOUNT_TEMPLATE_FILE);
-      // notifMetaData.setSender(fromUserId);
       notifMetaData.addUserRecipient(new UserRecipient(user.getId()));
       NotificationSender sender = new NotificationSender(null);
       try {
@@ -351,8 +349,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         loginPage += "?DomainId=" + domainId;
       }
     }
-    String loginUrl = URLManager.getFullApplicationURL(req) + loginPage;
-    return loginUrl;
+    return URLManager.getFullApplicationURL(req) + loginPage;
   }
 
   /**
