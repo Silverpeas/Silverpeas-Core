@@ -27,9 +27,6 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-
 <%@ include file="headLog.jsp"%>
 <%
     ResourceLocator reinitPasswordBundle = new ResourceLocator("com.silverpeas.authentication.multilang.forgottenPasswordMail", "");
@@ -39,25 +36,16 @@
 	String actionLabel = "";
 	String actionTitle = reinitPasswordBundle.getString("screen.title.reinitRequested");
 	    
-	if ("InvalidLogin".equalsIgnoreCase(action))
-	{
+	if ("InvalidLogin".equalsIgnoreCase(action)) {
 	  actionLabel = reinitPasswordBundle.getString("screen.invalidLogin");
-	}
-	else if ("FirstMailSended".equalsIgnoreCase(action))
-	{
+	} else if ("FirstMailSended".equalsIgnoreCase(action)) {
 	  actionLabel = reinitPasswordBundle.getString("screen.reinitRequested");
-	}
-	else if ("ChangeNotAllowed".equalsIgnoreCase(action))
-	{
+	} else if ("ChangeNotAllowed".equalsIgnoreCase(action)) {
 	  actionLabel = reinitPasswordBundle.getString("screen.reinitNotAllowed");
-	}
-	else if ("NewPasswordSended".equalsIgnoreCase(action))
-	{
+	} else if ("NewPasswordSended".equalsIgnoreCase(action)) {
 	  actionLabel = reinitPasswordBundle.getString("screen.reinitDone");
 	  actionTitle = reinitPasswordBundle.getString("screen.title.reinitDone");
-	}
-	else if ("NewPasswordError".equalsIgnoreCase(action))
-	{
+	} else if ("NewPasswordError".equalsIgnoreCase(action)) {
 	  actionLabel = reinitPasswordBundle.getString("screen.reinitError");
 	}
 %>
@@ -65,8 +53,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title><%=generalMultilang.getString("GML.popupTitle")%></title>
-	<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
-	<link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
+	<link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"></link>
+	<link type="text/css" rel="stylesheet" href="<%=styleSheet%>"></link>
 	<!--[if lt IE 8]>
 		<style>
 		input{
@@ -84,11 +72,11 @@
 		</style>
 	<![endif]-->
 </head>
-<body>
-        <div id="top"></div> <!-- Backgroud fonc� -->
-        <div class="page"> <!-- Centrage horizontal des �l�ments (960px) -->
+<body id="reinit-password">
+        <div id="top"></div>
+        <div class="page">
             <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %></div>
-            <div id="background"> <!-- image de fond du formulaire -->    	
+            <div id="background">
                 <div class="cadre">   
                     <div id="header">
                         <img src="<%=logo%>" class="logo" />
@@ -102,5 +90,4 @@
             </div>
         </div>
 </body>
-
 </html>
