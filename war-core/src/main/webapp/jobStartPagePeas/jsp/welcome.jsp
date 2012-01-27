@@ -63,12 +63,10 @@ boolean	clipboardNotEmpty = new Boolean((String) request.getAttribute("ObjectsSe
     }
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -86,16 +84,13 @@ function clipboardPaste() {
 }
 -->
 </script>
-</HEAD>
-<BODY>
-<%
-out.println(window.printBefore());
-out.println(frame.printBefore());
-%>
+</head>
+<body>
+<view:window>
+<view:frame>
+
 <center>
-<%
-out.println(board.printBefore());
-%>
+<view:board>
 <div align="center" class="txtNav">
 <%
     if (globalMode) {
@@ -103,15 +98,14 @@ out.println(board.printBefore());
     } else {
         out.print(resource.getString("JSPP.welcome"));
     }
-%></div>
-<%
-out.println(board.printAfter());
 %>
+</div>
+</view:board>
 </center>
-<% 
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+
+</view:frame>
+</view:window>
+
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
