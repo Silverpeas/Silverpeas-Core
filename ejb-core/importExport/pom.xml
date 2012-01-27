@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>importExport</artifactId>
   <packaging>jar</packaging>
-  <name>ImportExport - ${version}</name>
+  <name>ImportExport - ${project.version}</name>
 	
   <dependencies>
     <dependency>

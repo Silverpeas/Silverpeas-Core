@@ -15,6 +15,15 @@
 
   <dependencies>
     <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.nekohtml</groupId>
+      <artifactId>nekohtml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.artofsolving</groupId>
       <artifactId>jodconverter</artifactId>
     </dependency>
@@ -153,10 +162,6 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-spi-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-text-extractors</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springmodules</groupId>

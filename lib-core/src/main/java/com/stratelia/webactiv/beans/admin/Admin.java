@@ -5778,7 +5778,7 @@ public final class Admin {
       try {
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
             "Domain '" + domainDriverManager.getDomain(sDomainId).getName() +
-            "', Id : " + sDomainId, null);
+                "', Id : " + sDomainId, null);
         // Start synchronization
         domainDriverManager.beginSynchronization(sDomainId);
 
@@ -5794,7 +5794,7 @@ public final class Admin {
         if (fromTimeStamp.equals(toTimeStamp)) {
           String uptodate =
               "Domain '" + domainDriverManager.getDomain(sDomainId).getName() +
-              "' is already up-to-date !";
+                  "' is already up-to-date !";
           SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", uptodate, null);
           sReport += uptodate + "\n";
         } else {
@@ -5804,11 +5804,9 @@ public final class Admin {
 
           // Synchronize users
           if (synchroDomain.mustImportUsers() || threaded) {
-            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded,
-                true);
+            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded, true);
           } else {
-            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded,
-                false);
+            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded, false);
           }
 
           // Synchronize groups
@@ -5818,7 +5816,7 @@ public final class Admin {
           // ----------------------------------------------------
           theDomain.setTheTimeStamp(toTimeStamp);
           updateDomain(theDomain);
-
+          
           // Commit the transaction
           domainDriverManager.commit();
           domainDriverManager.commit(sDomainId);
@@ -5927,7 +5925,7 @@ public final class Admin {
           for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
             if (distantUDs[nJ].getSpecificId().equals(specificId) ||
                 (shouldFallbackUserLogins && silverpeasUD.getLogin().equals(
-                distantUDs[nJ].getLogin()))) {
+                    distantUDs[nJ].getLogin()))) {
               bFound = true;
             }
           }
@@ -5952,7 +5950,7 @@ public final class Admin {
       SynchroReport.warn("admin.synchronizeUsers", message, null);
       message =
           "# of updated users : " + updateUsers.size() + ", added : " + addedUsers.size() +
-          ", removed : " + removedUsers.size();
+              ", removed : " + removedUsers.size();
       sReport += message + "\n";
       SynchroReport.warn("admin.synchronizeUsers", message, null);
       return sReport;
@@ -5977,7 +5975,7 @@ public final class Admin {
       updatedUsers.add(distantUD);
       String message =
           "user " + distantUD.getDisplayedName() + " updated (id:" + silverpeasId +
-          " / specificId:" + specificId + ")";
+              " / specificId:" + specificId + ")";
       SynchroReport.warn("admin.synchronizeUsers", message, null);
       sReport += message + "\n";
     } catch (AdminException aeMaj) {
@@ -6049,7 +6047,7 @@ public final class Admin {
           "%%%%FULLSYNCHRO%%%%>PB deleting User ! " + specificId, aeDel);
       String message =
           "problem deleting user " + silverpeasUD.getDisplayedName() + " (specificId:" +
-          specificId + ") - " + aeDel.getMessage();
+              specificId + ") - " + aeDel.getMessage();
       sReport += message + "\n";
       SynchroReport.warn("admin.synchronizeUsers", message, null);
       sReport += "user has not been deleted\n";
@@ -6157,7 +6155,7 @@ public final class Admin {
       sReport += "Groups synchronization terminated\n";
       SynchroReport.info("admin.synchronizeGroups",
           "# of groups updated : " + iNbGroupsMaj + ", added : " +
-          iNbGroupsAdded + ", deleted : " + iNbGroupsDeleted, null);
+              iNbGroupsAdded + ", deleted : " + iNbGroupsDeleted, null);
       SynchroReport.warn("admin.synchronizeGroups", "Groups synchronization terminated", null);
       return sReport;
     } catch (Exception e) {
