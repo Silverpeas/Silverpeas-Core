@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>channels</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Notification Channels - ${version}</name>
+  <name>EJB Notification Channels - ${project.version}</name>
 
   <dependencies>
     <dependency>

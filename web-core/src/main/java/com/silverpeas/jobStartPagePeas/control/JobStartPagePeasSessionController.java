@@ -580,7 +580,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public void recoverSpaceRights(String spaceId) throws AdminException {
     Recover recover = new Recover();
-    recover.recoverSpaceRights(spaceId);
+    if (spaceId == null) {
+      recover.recoverRights();
+    } else if (StringUtil.isDefined(spaceId)) {
+      recover.recoverSpaceRights(spaceId);
+    }
   }
 
   /*********************** Gestion des managers d'espaces *****************************************/

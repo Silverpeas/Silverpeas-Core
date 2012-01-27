@@ -359,8 +359,7 @@
                                     && (userId.equals(attachmentDetail.getWorkerId()) || profile.equals("admin"))) {
                               String ooUrl = URLManager.getServerURL(request);
                               pageContext.setAttribute("httpServerBase", URLManager.getFullApplicationURL(request));
-                              pageContext.setAttribute("ooo_url", ooUrl
-                                      + attachmentDetail.getWebdavUrl(contentLanguage));
+                              pageContext.setAttribute("ooo_url", ooUrl + attachmentDetail.getWebdavUrl(contentLanguage));
                 %>
                 <c:url var="webdavUrl" value="${pageScope.httpServerBase}/attachment/jsp/launch.jsp">
                   <c:param name="documentUrl" value="${pageScope.ooo_url}" />
@@ -385,7 +384,7 @@
                             lastDirContext = "";
                           }
                           if (originWysiwyg) {
-              %> <a href="javascript:SelectFile('<%=Encode.javaStringToJsString(urlAttachment)%>');"><%=attachmentDetail.getLogicalName(contentLanguage)%></a> <%
+              %> <a href="javascript:SelectFile('<%=EncodeHelper.javaStringToJsString(urlAttachment)%>');"><%=attachmentDetail.getLogicalName(contentLanguage)%></a> <%
                           } else {
                             if (attachmentDetail.isReadOnly()
                                     && attachmentDetail.isOpenOfficeCompatible(contentLanguage)

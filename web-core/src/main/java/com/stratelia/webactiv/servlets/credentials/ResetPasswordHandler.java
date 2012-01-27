@@ -24,6 +24,8 @@
 package com.stratelia.webactiv.servlets.credentials;
 
 import com.silverpeas.util.PasswordGenerator;
+import com.stratelia.silverpeas.authentication.AuthenticationException;
+import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -68,14 +70,14 @@ public class ResetPasswordHandler extends FunctionHandler {
               "CredentialsServlet.resetPasswordHandler.doAction()",
               "forgottenPassword.EX_GET_FULL_USER_DETAIL", "userId=" + userId, e);
         }
-        user.setPassword(password);
-
+        
+        LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
         try {
-          getAdmin().updateUserFull(user);
-        } catch (AdminException e) {
+          auth.resetPassword(user.getLogin(), password, user.getDomainId());
+        } catch (AuthenticationException e1) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.resetPasswordHandler.doAction()",
-              "forgottenPassword.EX_UPDATE_USER_DETAIL", "userId=" + userId, e);
+              "forgottenPassword.EX_RESET_PASSWORD_FAILED", "userId=" + userId, e1);
         }
 
         parameters.setPassword(password);

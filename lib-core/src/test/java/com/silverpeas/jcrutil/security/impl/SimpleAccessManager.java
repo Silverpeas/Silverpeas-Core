@@ -29,7 +29,7 @@ import javax.jcr.ItemNotFoundException;
 import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.RepositoryException;
 
-import org.apache.jackrabbit.core.ItemId;
+import org.apache.jackrabbit.core.id.ItemId;
 import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
 import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
@@ -87,7 +87,7 @@ public class SimpleAccessManager implements AccessManager {
   }
 
   @Override
-  public boolean canRead(Path path) throws RepositoryException {
+  public boolean canRead(Path path, ItemId itemid) throws RepositoryException {
     return true;
   }
 

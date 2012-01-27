@@ -24,16 +24,14 @@
 
 package com.silverpeas.jcrutil.security;
 
+import com.silverpeas.jcrutil.security.impl.RepositoryHelper;
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.RepositoryException;
-
-import org.apache.jackrabbit.core.ItemId;
+import org.apache.jackrabbit.core.id.ItemId;
 import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
-
-import com.silverpeas.jcrutil.security.impl.RepositoryHelper;
 import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
 import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
 import org.apache.jackrabbit.spi.Name;
@@ -99,7 +97,7 @@ public class ProxyAccessManager implements AccessManager {
   }
 
   @Override
-  public boolean canRead(Path path) throws RepositoryException {
-    return this.realManager.canRead(path);
+  public boolean canRead(Path path, ItemId itemid) throws RepositoryException {
+    return this.realManager.canRead(path, itemid);
   }
 }

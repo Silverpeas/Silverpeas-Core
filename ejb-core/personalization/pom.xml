@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>personalization</artifactId>
   <packaging>jar</packaging>
-  <name>Personalization Service - ${version}</name>
+  <name>Personalization Service - ${project.version}</name>
 
   <dependencies>
     <dependency>
