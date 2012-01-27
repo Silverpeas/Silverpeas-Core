@@ -156,14 +156,18 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     oldUser.setCellphone(userFull.getValue("cellularPhone"));
     oldUser.setAddress(userFull.getValue("address"));
     oldUser.setLoginmail("");
-    if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
-        && !userFull.getPassword().equals(oldUser.getPassword())) {
-      oldUser.setPassword(UnixMD5Crypt.crypt(userFull.getPassword()));
-    } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)
-        && !userFull.getPassword().equals(oldUser.getPassword())) {
-      oldUser.setPassword(CryptMD5.crypt(userFull.getPassword()));
-    } else {
-      oldUser.setPassword(userFull.getPassword());
+    
+    // Only update password when this field has been filled
+    if (StringUtil.isDefined(userFull.getPassword())) {
+      if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
+          && !userFull.getPassword().equals(oldUser.getPassword())) {
+        oldUser.setPassword(UnixMD5Crypt.crypt(userFull.getPassword()));
+      } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)
+          && !userFull.getPassword().equals(oldUser.getPassword())) {
+        oldUser.setPassword(CryptMD5.crypt(userFull.getPassword()));
+      } else {
+        oldUser.setPassword(userFull.getPassword());
+      }
     }
     oldUser.setPasswordValid(userFull.isPasswordValid());
     this.userDao.saveAndFlush(oldUser);
