@@ -23,13 +23,12 @@
  */
 package com.silverpeas.profile.web;
 
+import com.silverpeas.profile.service.UserProfileService;
 import com.silverpeas.rest.RESTWebService;
-import javax.persistence.OneToMany;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.net.URI;
+import java.util.List;
+import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -46,6 +45,9 @@ import org.springframework.stereotype.Service;
 @Scope("request")
 @Path("profile/users")
 public class UserProfileResource extends RESTWebService {
+  
+  @Inject
+  private UserProfileService service;
 
   /**
    * Creates a new instance of UserProfileResource
@@ -59,15 +61,23 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAllUsers() {
-    return "{}";
+  public SelectableUser[] getAllUsers() {
+    checkUserAuthentication();
+    List<UserDetail> allUsers = service.getAllUsersAccessibleTo(getUserDetail().getId());
+    return asWebEntity(allUsers, locatedAt(getUriInfo().getRequestUri()));
   }
-
-  
 
   @Override
   protected String getComponentId() {
     throw new UnsupportedOperationException("The UserProfileResource doesn't belong to any component"
             + " instances");
+  }
+  
+  protected URI locatedAt(URI uri) {
+    return uri;
+  }
+
+  private SelectableUser[] asWebEntity(List<UserDetail> allUsers, URI baseUri) {
+    return SelectableUser.fromUsers(allUsers, baseUri);
   }
 }

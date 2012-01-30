@@ -35,6 +35,8 @@ import java.io.Serializable;
 
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
+import java.util.Arrays;
+import java.util.List;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
 
@@ -61,8 +63,31 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private String m_sLoginQuestion = "";
   private String m_sLoginAnswer = "";
   
+  /**
+   * Gets the detail about the specified user.
+   * @param userId the unique identifier of the user to get.
+   * @return the detail about the user with the specified identifier or null if no such user exists.
+   */
   public static UserDetail getById(String userId) {
     return getOrganizationController().getUserDetail(userId);
+  }
+  
+  /**
+   * Gets the detail about all the users in Silverpeas, whatever their domain.
+   * @return a list with all the users in Silverpeas.
+   */
+  public static List<UserDetail> getAll() {
+    return Arrays.asList(getOrganizationController().getAllUsers());
+  }
+  
+  /**
+   * Gets the detail about all the users belonging in the specified domain.
+   * @param domainId the unique identifier of the domain.
+   * @return a list with all the users that defined in the specified domain or null if no such
+   * domain exists.
+   */
+  public static List<UserDetail> getAllInDomain(String domainId) {
+    return Arrays.asList(getOrganizationController().getAllUsersInDomain(domainId));
   }
 
   /**
@@ -247,6 +272,16 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       m_sAccessLevel = USER_ACCESS;
     }
 
+  }
+  
+  /**
+   * Is the specified user is restricted to access the resource in its own domain?
+   * @return true if he's restricted in its own domain, false otherwise.
+   */
+  public boolean isDomainRestricted() {
+    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE ||
+            (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH &&
+            ! "0".equals(getDomainId()))) && !isAccessAdmin();
   }
 
   public boolean isDomainAdminRestricted() {

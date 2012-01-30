@@ -455,6 +455,23 @@ public class OrganizationController implements java.io.Serializable {
     }
     return null;
   }
+  
+  /**
+   * Gets all the users that belong to the specified domain.
+   * @param domainId the unique identifier of the domain.
+   * @return an array of UserDetail objects or null if no such domain exists.
+   */
+  public UserDetail[] getAllUsersInDomain(String domainId) {
+    try {
+      if (domainId != null) {
+        return getAdminService().getUsersOfDomain(domainId);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getAllUsersInDomain",
+          "admin.EX_ERR_GET_USER_DETAILS", "domainId: '" + domainId, e);
+    }
+    return null;
+  }
 
   /**
    * For use in userPanel : return the users that are direct child of a given group

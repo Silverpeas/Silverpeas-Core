@@ -63,6 +63,10 @@ public abstract class TestResources implements ApplicationContextAware {
    * Default language to use in the unit tests on the REST-based web services.
    */
   public static final String DEFAULT_LANGUAGE = "fr";
+  /**
+   * The default domain the default user belongs to.
+   */
+  public static final String DEFAULT_DOMAIN = "0";
   @Inject
   private SessionManagement sessionManager;
   @Inject
@@ -151,7 +155,8 @@ public abstract class TestResources implements ApplicationContextAware {
     UserDetail user = new UserDetail();
     user.setFirstName("Toto");
     user.setLastName("Chez-les-papoos");
-    user.setId("2");
+    user.setId(USER_ID_IN_TEST);
+    user.setDomainId(DEFAULT_DOMAIN);
     return user;
   }
 

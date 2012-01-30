@@ -21,24 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.rest.mock;
 
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.inject.Named;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A mock the OrganizationController objects for testing purpose.
  */
 @Named("organizationController")
 public class OrganizationControllerMock extends OrganizationController {
-  private static final long serialVersionUID = -3271734262141821655L;
 
+  private static final long serialVersionUID = -3271734262141821655L;
   private Map<String, UserDetail> users = new HashMap<String, UserDetail>();
   private Set<String> components = new HashSet<String>();
 
@@ -47,8 +44,33 @@ public class OrganizationControllerMock extends OrganizationController {
     return users.get(sUserId);
   }
 
+  @Override
+  public UserDetail[] getAllUsers() {
+    UserDetail[] allUsers = new UserDetail[users.size()];
+    int i = 0;
+    for (UserDetail userDetail : users.values()) {
+      allUsers[i++] = userDetail;
+    }
+    return allUsers;
+  }
+
+  @Override
+  public UserDetail[] getAllUsersInDomain(String domainId) {
+    if (isDefined(domainId)) {
+      List<UserDetail> allUsers = new ArrayList<UserDetail>();
+      for (UserDetail userDetail : users.values()) {
+        if (userDetail.getDomainId().equals(domainId)) {
+          allUsers.add(userDetail);
+        }
+      }
+      return allUsers.toArray(new UserDetail[allUsers.size()]);
+    }
+    return null;
+  }
+
   /**
    * Adds a new user for tests.
+   *
    * @param userDetail the detail about the user to add for tests.
    */
   public void addUserDetail(final UserDetail userDetail) {
@@ -75,7 +97,9 @@ public class OrganizationControllerMock extends OrganizationController {
   /**
    * Adds a component instance to use on tests. All component instances others than the added ones
    * are considered as non existing.
-   * @param componentId the unique identifier of the component instance to take into account in tests.
+   *
+   * @param componentId the unique identifier of the component instance to take into account in
+   * tests.
    */
   public void addComponentInstance(String componentId) {
     components.add(componentId);

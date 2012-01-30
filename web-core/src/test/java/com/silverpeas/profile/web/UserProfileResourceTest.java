@@ -26,8 +26,16 @@ package com.silverpeas.profile.web;
 import static com.silverpeas.profile.web.UserProfileTestResources.*;
 import com.silverpeas.rest.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.List;
+import org.junit.Test;
 import org.junit.Before;
 import org.junit.Ignore;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static com.silverpeas.profile.web.matchers.UsersMatcher.*;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
+import java.util.Collections;
 
 /**
  * Unit tests on the operations published by the UserProfileResource REST service.
@@ -35,7 +43,6 @@ import org.junit.Ignore;
 public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTestResources> {
   
   private String sessionKey;
-  private UserDetail caller;
   
   public UserProfileResourceTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -43,8 +50,50 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   
   @Before
   public void prepareTestResources() {
-    caller = aUser();
-    sessionKey = authenticate(caller);
+    getTestResources().allocate();
+    sessionKey = authenticate(aUser());
+  }
+  
+  @Test
+  public void gettingAllUsersWhateverTheDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
+    SelectableUser[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.length));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+  
+  @Test
+  public void getAllUsersInItsOwnsDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
+    getTestResources().getWebServiceCaller().setDomainId(domainId);
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
+    SelectableUser[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.length));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+  
+  @Test
+  public void getAllUsersWhateverTheDomainWhenInSilverpeasDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
+    
+    SelectableUser[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.length));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+  
+  @Test
+  public void getAllUsersInItsOwnDomainWhenNotInSilverpeasDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((1));
+    getTestResources().getWebServiceCaller().setDomainId(domainId);
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
+    
+    SelectableUser[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.length));
+    assertThat(actualUsers, contains(expectedUsers));
   }
 
   @Override
@@ -83,9 +132,8 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   }
 
   @Override
-  public Class<?> getWebEntityClass() {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public Class<SelectableUser[]> getWebEntityClass() {
+    return SelectableUser[].class;
   }
-  
-  
+
 }
