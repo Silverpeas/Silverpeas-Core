@@ -308,8 +308,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
 
   public String getPermalink() {
     if (URLManager.displayUniversalLinks()) {
-      return URLManager.getSimpleURL(URLManager.URL_SURVEY, getId(),
-          getInstanceId());
+      return URLManager.getSimpleURL(URLManager.URL_SURVEY, getId(), getInstanceId());
     }
     return null;
   }

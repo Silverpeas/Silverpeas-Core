@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
+  private static final long serialVersionUID = -109886153681824159L;
 
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   public static final String ADMIN_ACCESS = "A";
@@ -47,27 +48,29 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String GUEST_ACCESS = "G";
   public static final String KM_ACCESS = "K";
   public static final String DOMAIN_ACCESS = "D";
-  private static final String AVATAR_PROPERTY = GeneralPropertiesManager.getString("avatar.property", "login");
-  private static final String AVATAR_EXTENSION = GeneralPropertiesManager.getString("avatar.extension", "jpg");
+  private static final String AVATAR_PROPERTY =
+      GeneralPropertiesManager.getString("avatar.property", "login");
+  private static final String AVATAR_EXTENSION =
+      GeneralPropertiesManager.getString("avatar.extension", "jpg");
   private static final ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-  private static final long serialVersionUID = -109886153681824159L;
-  private String m_sId = null;
-  private String m_sSpecificId = null;
-  private String m_sDomainId = null;
-  private String m_sLogin = null;
-  private String m_sFirstName = "";
-  private String m_sLastName = "";
-  private String m_seMail = "";
-  private String m_sAccessLevel = "";
-  private String m_sLoginQuestion = "";
-  private String m_sLoginAnswer = "";
-  
+
+  private String id = null;
+  private String specificId = null;
+  private String domainId = null;
+  private String login = null;
+  private String firstName = "";
+  private String lastName = "";
+  private String eMail = "";
+  private String accessLevel = "";
+  private String loginQuestion = "";
+  private String loginAnswer = "";
+
   /**
    * Gets the detail about the specified user.
    * @param userId the unique identifier of the user to get.
    * @return the detail about the user with the specified identifier or null if no such user exists.
-   */
+   */      
   public static UserDetail getById(String userId) {
     return getOrganizationController().getUserDetail(userId);
   }
@@ -97,32 +100,46 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public UserDetail(UserDetail toClone) {
-    m_sId = toClone.getId();
-    m_sSpecificId = toClone.getSpecificId();
-    m_sDomainId = toClone.getDomainId();
-    m_sLogin = toClone.getLogin();
-    m_sFirstName = toClone.getFirstName();
-    m_sLastName = toClone.getLastName();
-    m_seMail = toClone.geteMail();
-    m_sAccessLevel = toClone.getAccessLevel();
-    m_sLoginQuestion = toClone.getLoginQuestion();
-    m_sLoginAnswer = toClone.getLoginAnswer();
+    id = toClone.getId();
+    specificId = toClone.getSpecificId();
+    domainId = toClone.getDomainId();
+    login = toClone.getLogin();
+    firstName = toClone.getFirstName();
+    lastName = toClone.getLastName();
+    eMail = toClone.geteMail();
+    accessLevel = toClone.getAccessLevel();
+    loginQuestion = toClone.getLoginQuestion();
+    loginAnswer = toClone.getLoginAnswer();
   }
 
+  /**
+   * @return the login question String representation
+   */
   public String getLoginQuestion() {
-    return m_sLoginQuestion;
+    return loginQuestion;
   }
 
-  public void setLoginQuestion(String mSLoginQuestion) {
-    m_sLoginQuestion = mSLoginQuestion;
+  /**
+   * Set the login question
+   * @param loginQuestion
+   */
+  public void setLoginQuestion(String loginQuestion) {
+    this.loginQuestion = loginQuestion;
   }
 
+  /**
+   * @return the login answer
+   */
   public String getLoginAnswer() {
-    return m_sLoginAnswer;
+    return loginAnswer;
   }
 
-  public void setLoginAnswer(String mSLoginAnswer) {
-    m_sLoginAnswer = mSLoginAnswer;
+  /**
+   * Set the login answer
+   * @param loginAnswer
+   */
+  public void setLoginAnswer(String loginAnswer) {
+    this.loginAnswer = loginAnswer;
   }
 
   /**
@@ -130,15 +147,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return
    */
   public String getId() {
-    return m_sId;
+    return this.id;
   }
 
   /**
-   * Set user id
-   * @param sId
+   * Set user identifier
+   * @param id the user identifier to set
    */
-  public void setId(String sId) {
-    m_sId = sId;
+  public void setId(String id) {
+    this.id = id;
   }
 
   /**
@@ -146,15 +163,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return
    */
   public String getSpecificId() {
-    return m_sSpecificId;
+    return specificId;
   }
 
   /**
    * Set specific user id
-   * @param sSpecificId
+   * @param specificId
    */
-  public void setSpecificId(String sSpecificId) {
-    m_sSpecificId = sSpecificId;
+  public void setSpecificId(String specificId) {
+    this.specificId = specificId;
   }
 
   /**
@@ -162,15 +179,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return user's domain id
    */
   public String getDomainId() {
-    return m_sDomainId;
+    return domainId;
   }
 
   /**
    * Set user domain id
-   * @param sDomainId
+   * @param domainId
    */
-  public void setDomainId(String sDomainId) {
-    m_sDomainId = sDomainId;
+  public void setDomainId(String domainId) {
+    this.domainId = domainId;
   }
 
   /**
@@ -178,18 +195,18 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return user's login
    */
   public String getLogin() {
-    return m_sLogin;
+    return this.login;
   }
 
   /**
    * Set user login
-   * @param sLogin
+   * @param login the login to set
    */
-  public void setLogin(String sLogin) {
-    if (sLogin != null) {
-      m_sLogin = sLogin;
+  public void setLogin(String login) {
+    if (login != null) {
+      this.login = login;
     } else {
-      m_sLogin = "";
+      this.login = "";
     }
   }
 
@@ -198,18 +215,18 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return user's first name
    */
   public String getFirstName() {
-    return m_sFirstName;
+    return firstName;
   }
 
   /**
    * Set user first name
-   * @param sFirstName user first name
+   * @param firstName user first name
    */
-  public void setFirstName(String sFirstName) {
-    if (sFirstName != null) {
-      m_sFirstName = sFirstName.trim();
+  public void setFirstName(String firstName) {
+    if (firstName != null) {
+      this.firstName = firstName.trim();
     } else {
-      m_sFirstName = "";
+      this.firstName = "";
     }
   }
 
@@ -218,7 +235,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return user's last name
    */
   public String getLastName() {
-    return m_sLastName;
+    return lastName;
   }
 
   /**
@@ -227,9 +244,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public void setLastName(String sLastName) {
     if (sLastName != null) {
-      m_sLastName = sLastName.trim();
+      this.lastName = sLastName.trim();
     } else {
-      m_sLastName = "";
+      this.lastName = "";
     }
   }
 
@@ -239,9 +256,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public void seteMail(String seMail) {
     if (seMail != null) {
-      m_seMail = seMail;
+      this.eMail = seMail;
     } else {
-      m_seMail = "";
+      this.eMail = "";
     }
   }
 
@@ -250,7 +267,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return
    */
   public String geteMail() {
-    return m_seMail;
+    return this.eMail;
   }
 
   /**
@@ -258,7 +275,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return
    */
   public String getAccessLevel() {
-    return m_sAccessLevel;
+    return accessLevel;
   }
 
   /**
@@ -267,9 +284,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public void setAccessLevel(String sAccessLevel) {
     if (sAccessLevel != null) {
-      m_sAccessLevel = sAccessLevel.trim();
+      this.accessLevel = sAccessLevel.trim();
     } else {
-      m_sAccessLevel = USER_ACCESS;
+      this.accessLevel = USER_ACCESS;
     }
 
   }
@@ -295,27 +312,27 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public boolean isAccessAdmin() {
-    return ADMIN_ACCESS.equalsIgnoreCase(m_sAccessLevel);
+    return ADMIN_ACCESS.equalsIgnoreCase(accessLevel);
   }
 
   public boolean isAccessDomainManager() {
-    return DOMAIN_ACCESS.equalsIgnoreCase(m_sAccessLevel);
+    return DOMAIN_ACCESS.equalsIgnoreCase(accessLevel);
   }
 
   public boolean isAccessUser() {
-    return USER_ACCESS.equalsIgnoreCase(m_sAccessLevel);
+    return USER_ACCESS.equalsIgnoreCase(accessLevel);
   }
 
   public boolean isAccessRemoved() {
-    return REMOVED_ACCESS.equalsIgnoreCase(m_sAccessLevel);
+    return REMOVED_ACCESS.equalsIgnoreCase(accessLevel);
   }
 
   public boolean isAccessGuest() {
-    return GUEST_ACCESS.equalsIgnoreCase(m_sAccessLevel);
+    return GUEST_ACCESS.equalsIgnoreCase(accessLevel);
   }
 
   public boolean isAccessKMManager() {
-    return KM_ACCESS.equalsIgnoreCase(m_sAccessLevel);
+    return KM_ACCESS.equalsIgnoreCase(accessLevel);
   }
 
   /**
@@ -332,7 +349,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public static UserDetail getAnonymousUser() {
     UserDetail anonymousUser = null;
-    if(isAnonymousUserExist()) {
+    if (isAnonymousUserExist()) {
       OrganizationController organizationController = new OrganizationController();
       anonymousUser = organizationController.getUserDetail(getAnonymousUserId());
     }
@@ -346,15 +363,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   @Override
   public boolean equals(Object other) {
     if (other instanceof UserDetail) {
-      UserDetail cmpUser = (UserDetail)other;
-      return areStringEquals(m_sId, cmpUser.getId())
-        && areStringEquals(m_sSpecificId, cmpUser.getSpecificId())
-        && areStringEquals(m_sDomainId, cmpUser.getDomainId())
-        && areStringEquals(m_sLogin, cmpUser.getLogin())
-        && areStringEquals(m_sFirstName, cmpUser.getFirstName())
-        && areStringEquals(m_sLastName, cmpUser.getLastName())
-        && areStringEquals(m_seMail, cmpUser.geteMail())
-        && areStringEquals(m_sAccessLevel, cmpUser.getAccessLevel());
+      UserDetail cmpUser = (UserDetail) other;
+      return areStringEquals(id, cmpUser.getId())
+          && areStringEquals(specificId, cmpUser.getSpecificId())
+          && areStringEquals(domainId, cmpUser.getDomainId())
+          && areStringEquals(login, cmpUser.getLogin())
+          && areStringEquals(firstName, cmpUser.getFirstName())
+          && areStringEquals(lastName, cmpUser.getLastName())
+          && areStringEquals(eMail, cmpUser.geteMail())
+          && areStringEquals(accessLevel, cmpUser.getAccessLevel());
     }
     return false;
   }
@@ -362,38 +379,34 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 41 * hash + (this.m_sId != null ? this.m_sId.hashCode() : 0);
-    hash = 41 * hash + (this.m_sSpecificId != null ? this.m_sSpecificId.hashCode() : 0);
-    hash = 41 * hash + (this.m_sDomainId != null ? this.m_sDomainId.hashCode() : 0);
-    hash = 41 * hash + (this.m_sLogin != null ? this.m_sLogin.hashCode() : 0);
-    hash = 41 * hash + (this.m_sFirstName != null ? this.m_sFirstName.hashCode() : 0);
-    hash = 41 * hash + (this.m_sLastName != null ? this.m_sLastName.hashCode() : 0);
-    hash = 41 * hash + (this.m_seMail != null ? this.m_seMail.hashCode() : 0);
-    hash = 41 * hash + (this.m_sAccessLevel != null ? this.m_sAccessLevel.hashCode() : 0);
+    hash = 41 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 41 * hash + (this.specificId != null ? this.specificId.hashCode() : 0);
+    hash = 41 * hash + (this.domainId != null ? this.domainId.hashCode() : 0);
+    hash = 41 * hash + (this.login != null ? this.login.hashCode() : 0);
+    hash = 41 * hash + (this.firstName != null ? this.firstName.hashCode() : 0);
+    hash = 41 * hash + (this.lastName != null ? this.lastName.hashCode() : 0);
+    hash = 41 * hash + (this.eMail != null ? this.eMail.hashCode() : 0);
+    hash = 41 * hash + (this.accessLevel != null ? this.accessLevel.hashCode() : 0);
     return hash;
   }
-
-
+  
   /**
    * Dump user values to the trace system
    */
   public void traceUser() {
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "Id : " + m_sId);
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "SpecificId : " + m_sSpecificId);
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "DomainId : " + m_sDomainId);
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "Login : " + m_sLogin);
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "FirstName : " + m_sFirstName);
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "LastName : " + m_sLastName);
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "eMail : " + m_seMail);
-    SilverTrace.info("admin", "UserDetail.traceUser",
-        "admin.MSG_DUMP_USER", "AccessLevel : " + m_sAccessLevel);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Id : " + id);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : " +
+        specificId);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : " +
+        domainId);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Login : " + login);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : " +
+        firstName);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : " +
+        lastName);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "eMail : " + eMail);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "AccessLevel : " +
+        accessLevel);
   }
 
   @Override
@@ -423,7 +436,8 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public String getStatus() {
-    String status = new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
+    String status =
+        new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
     if (isDefined(status)) {
       return status;
     }
@@ -454,7 +468,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   protected static String getAnonymousUserId() {
     return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
   }
-  
+
   private static OrganizationController getOrganizationController() {
     return OrganizationControllerFactory.getFactory().getOrganizationController();
   }

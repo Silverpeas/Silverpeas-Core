@@ -33,22 +33,17 @@
   Board board = gef.getBoard();
 %>
 
-
-
-
 <%@page import="org.antlr.stringtemplate.*"%>
-
-<%@page
-	import="org.antlr.stringtemplate.language.AngleBracketTemplateLexer"%>
+<%@page import="org.antlr.stringtemplate.language.AngleBracketTemplateLexer"%>
 <%@page import="com.silverpeas.util.template.SilverpeasTemplate"%>
-<%@page import="com.silverpeas.util.template.SilverpeasTemplateFactory"%><HTML>
-<HEAD>
+<%@page import="com.silverpeas.util.template.SilverpeasTemplateFactory"%>
+<html>
+<head>
 <%
   out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5"
-	bgcolor="#FFFFFF">
+</head>
+<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
 <%
   if (displayOperations.booleanValue()) {
     operationPane.addOperation(resource.getIcon("JDP.domainAdd"), resource
@@ -73,5 +68,5 @@
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

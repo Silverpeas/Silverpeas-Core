@@ -703,7 +703,6 @@ public class ImportExport {
       List<AttachmentDetail> pdfList = pubTypeManager.processPDFExport(report, userDetail,
               itemsToExport, fileExportDir.getPath(), true);
 
-
       try {
         int pageOffset = 0;
         List master = new ArrayList();
@@ -711,35 +710,52 @@ public class ImportExport {
         PdfCopy writer = null;
 
         if (!pdfList.isEmpty()) {
-          for (int nbFiles = 0; nbFiles < pdfList.size(); nbFiles++) {
-            AttachmentDetail attDetail = pdfList.get(nbFiles);
-            PdfReader reader = new PdfReader(fileExportDir.getPath() + File.separatorChar
-                    + attDetail.getLogicalName());
-            reader.consolidateNamedDestinations();
-            int nbPages = reader.getNumberOfPages();
-            List bookmarks = SimpleBookmark.getBookmark(reader);
-            if (bookmarks != null) {
-              if (pageOffset != 0) {
-                SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
+          boolean firstPage = true;
+          for (AttachmentDetail attDetail : pdfList) {
+            PdfReader reader = null;
+            try {
+              reader = new PdfReader(fileExportDir.getPath() + File.separatorChar
+                      + attDetail.getLogicalName());
+            } catch (IOException ioe) {
+              // Attached file is not physically present on disk, ignore it and log event
+              SilverTrace.error("importExport", "PublicationTypeManager.processExportPDF",
+                  "CANT_FIND_PDF_FILE", "PDF file '" + attDetail.getLogicalName() +
+                      "' is not present on disk", ioe);
+            }
+            if (reader != null) {
+              reader.consolidateNamedDestinations();
+              int nbPages = reader.getNumberOfPages();
+              List bookmarks = SimpleBookmark.getBookmark(reader);
+              if (bookmarks != null) {
+                if (pageOffset != 0) {
+                  SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
+                }
+                master.addAll(bookmarks);
               }
-              master.addAll(bookmarks);
-            }
-            pageOffset += nbPages;
-
-            if (nbFiles == 0) {
-              document = new Document(reader.getPageSizeWithRotation(1));
-              writer = new PdfCopy(document, new FileOutputStream(pdfFileName));
-              document.open();
-            }
-
-            for (int i = 1; i <= nbPages; i++) {
-              PdfImportedPage page = writer.getImportedPage(reader, i);
-              writer.addPage(page);
-            }
-
-            PRAcroForm form = reader.getAcroForm();
-            if (form != null) {
-              writer.copyAcroForm(reader);
+              pageOffset += nbPages;
+  
+              if (firstPage) {
+                document = new Document(reader.getPageSizeWithRotation(1));
+                writer = new PdfCopy(document, new FileOutputStream(pdfFileName));
+                document.open();
+                firstPage = false;
+              }
+  
+              for (int i = 1; i <= nbPages; i++) {
+                try {
+                  PdfImportedPage page = writer.getImportedPage(reader, i);
+                  writer.addPage(page);
+                } catch (Exception e) {
+                  // Can't import PDF file, ignore it and log event
+                  SilverTrace.error("importExport", "PublicationTypeManager.processExportPDF",
+                      "CANT_MERGE_PDF_FILE", "PDF file is " + attDetail.getLogicalName(), e);
+                }
+              }
+  
+              PRAcroForm form = reader.getAcroForm();
+              if (form != null) {
+                writer.copyAcroForm(reader);
+              }
             }
           }
 
