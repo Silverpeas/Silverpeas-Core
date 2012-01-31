@@ -64,7 +64,7 @@ public class UserProfileResource extends RESTWebService {
   public SelectableUser[] getAllUsers() {
     checkUserAuthentication();
     List<UserDetail> allUsers = service.getAllUsersAccessibleTo(getUserDetail().getId());
-    return asWebEntity(allUsers, locatedAt(getUriInfo().getRequestUri()));
+    return asWebEntity(allUsers, locatedAt(getUriInfo().getBaseUri()));
   }
 
   @Override

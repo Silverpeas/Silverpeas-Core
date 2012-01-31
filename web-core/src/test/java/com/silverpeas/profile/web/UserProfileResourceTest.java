@@ -24,18 +24,16 @@
 package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.UserProfileTestResources.*;
+import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 import com.silverpeas.rest.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.List;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.Ignore;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static com.silverpeas.profile.web.matchers.UsersMatcher.*;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
-import java.util.Collections;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Unit tests on the operations published by the UserProfileResource REST service.

@@ -469,7 +469,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
   }
 
-  private static OrganizationController getOrganizationController() {
+  protected static OrganizationController getOrganizationController() {
     return OrganizationControllerFactory.getFactory().getOrganizationController();
   }
 }

@@ -28,6 +28,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.*;
 import javax.inject.Named;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.stratelia.webactiv.beans.admin.Domain;
 
 /**
  * A mock the OrganizationController objects for testing purpose.
@@ -92,6 +93,18 @@ public class OrganizationControllerMock extends OrganizationController {
   @Override
   public boolean isComponentExist(String componentId) {
     return components.contains(componentId);
+  }
+
+  @Override
+  public Domain getDomain(String domainId) {
+    Domain domain = new Domain();
+    domain.setId(domainId);
+    if ("0".equals(domainId)) {
+      domain.setName("Silverpeas");
+    } else {
+      domain.setName("Domaine " + domainId);
+    }
+    return domain;
   }
 
   /**

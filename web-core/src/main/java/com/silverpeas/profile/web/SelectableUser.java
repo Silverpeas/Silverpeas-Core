@@ -27,7 +27,6 @@ import com.silverpeas.web.Selectable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,31 +34,34 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * A user that is selectable.
- * It is a web entity representing the profile of a user that can be
- * selected among others in order to participate to a given action in the Silverpeas portal.
- * It is a decorator that decorates a UserDetail object with additional properties concerning the selection.
+ * A user that is selectable. It is a web entity representing the profile of a user that can be
+ * selected among others in order to participate to a given action in the Silverpeas portal. It is a
+ * decorator that decorates a UserDetail object with additional properties concerning the selection.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class SelectableUser extends UserDetail implements Selectable {
+
   private static final long serialVersionUID = -5011846708353591604L;
-  
+
   /**
-   * Decorates the specified user with selectable features.
-   * By default, the decorated user isn't selected.
+   * Decorates the specified user with selectable features. By default, the decorated user isn't
+   * selected.
+   *
    * @param user the user to decorate.
    * @return a selectable user, not selected by default.
    */
   public static SelectableUser fromUser(final UserDetail user) {
     return new SelectableUser(user);
   }
-  
+
   /**
-   * Decorates the specified users with selectable features.
-   * By default, the decorated users aren't selected.
+   * Decorates the specified users with selectable features. By default, the decorated users aren't
+   * selected.
+   *
    * @param users a list of users to decorate.
    * @param baseURI the URI at which the specified users are defined.
    * @return a list of selectable users, not selected by default.
@@ -72,13 +74,21 @@ public class SelectableUser extends UserDetail implements Selectable {
     }
     return selectableUsers;
   }
-  
   private UserDetail user = null;
+  @XmlElement
   private boolean selected = false;
+  @XmlElement
   private URI uri;
+  @XmlElement
+  private String avatar;
+  @XmlElement
+  private String domainName;
 
   private SelectableUser(UserDetail user) {
     this.user = user;
+    this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
+            getName();
+    this.avatar = this.user.getAvatar();
   }
 
   @Override
@@ -88,12 +98,10 @@ public class SelectableUser extends UserDetail implements Selectable {
   }
 
   @Override
-  @XmlElement
   public boolean isSelected() {
     return this.selected;
   }
 
-  @XmlElement
   public URI getUri() {
     return uri;
   }
@@ -136,6 +144,7 @@ public class SelectableUser extends UserDetail implements Selectable {
   @Override
   public void setDomainId(String sDomainId) {
     this.user.setDomainId(sDomainId);
+    this.domainName = UserDetail.getOrganizationController().getDomain(sDomainId).getName();
   }
 
   @Override
@@ -154,12 +163,11 @@ public class SelectableUser extends UserDetail implements Selectable {
   }
 
   @Override
-  @XmlElement
-  public String getAvatarFileName() {
-    return this.user.getAvatarFileName();
-  }
-  
-  public void setAvatarFileName(String avatar) {
+  public String getAvatar() {
+    if (!isDefined(avatar)) {
+      avatar = this.user.getAvatar();
+    }
+    return avatar;
   }
 
   @Override
@@ -184,6 +192,10 @@ public class SelectableUser extends UserDetail implements Selectable {
     this.user.setLogin(sLogin);
   }
 
+  public String getDomainName() {
+    return this.domainName;
+  }
+
   @Override
   public void select() {
     this.selected = true;
@@ -193,7 +205,7 @@ public class SelectableUser extends UserDetail implements Selectable {
   public void unselect() {
     this.selected = false;
   }
-  
+
   public SelectableUser withAsBaseUri(URI baseUri) {
     try {
       this.uri = new URI(baseUri.toString() + "/" + getId());
@@ -203,23 +215,15 @@ public class SelectableUser extends UserDetail implements Selectable {
       throw new RuntimeException(ex);
     }
   }
-  
+
   public UserDetail toUserDetail() {
     return this.user;
   }
-  
+
   protected SelectableUser() {
     user = new UserDetail();
   }
 
-  protected void setSelected(boolean selected) {
-    this.selected = selected;
-  }
-
-  protected void setUri(URI uri) {
-    this.uri = uri;
-  }
-  
   @Override
   public void setId(String id) {
     this.user.setId(id);
@@ -228,7 +232,7 @@ public class SelectableUser extends UserDetail implements Selectable {
   @Override
   public boolean equals(Object other) {
     if (other instanceof SelectableUser) {
-      return  this.user.equals(((SelectableUser) other).user);
+      return this.user.equals(((SelectableUser) other).user);
     } else {
       return this.user.equals(other);
     }
@@ -238,5 +242,4 @@ public class SelectableUser extends UserDetail implements Selectable {
   public int hashCode() {
     return this.user.hashCode();
   }
-  
 }
