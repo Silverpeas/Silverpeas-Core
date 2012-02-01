@@ -138,7 +138,6 @@ function recoverRights() {
 <view:window>
 <view:frame>
 <view:board>
-<center>
 <c:choose>
   <c:when test="${globalMode}">
     <font color="#ff0000"><fmt:message key="JSPP.maintenanceTout" /></font>
@@ -147,7 +146,6 @@ function recoverRights() {
     <c:out value="${content}" escapeXml="false" />
   </c:otherwise>
 </c:choose>
-</center>
 </view:board>
 </view:frame>
 </view:window>
