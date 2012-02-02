@@ -43,34 +43,6 @@
 
 <c:set var="content" value="${requestScope['Content']}" />
 
-<%
-	// Space edition
-   /*if (isUserAdmin) {
-        operationPane.addOperation(resource.getIcon("JSPP.spaceAdd"),resource.getString("JSPP.SpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace', 750, 300)");
-        if (clipboardNotEmpty) {
-  			operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onClick=clipboardPaste()");
-  		}
-        // All Silverpeas
-        if (globalMode) {
-            operationPane.addOperation(resource.getIcon("JSPP.spaceUnlock"),resource.getString("JSPP.maintenanceModeToOff"),"DesactivateMaintenance?allIntranet=1");
-        } else {
-            operationPane.addOperation(resource.getIcon("JSPP.spaceLock"),resource.getString("JSPP.maintenanceModeToOn"),"ActivateMaintenance?allIntranet=1");
-        }
-        if (isBackupEnable) {
-    		operationPane.addLine();
-	    	operationPane.addOperation(resource.getIcon("JSPP.silverpeasBackup"),resource.getString("JSPP.BackupUnlimited"),"javascript:onClick=openPopup('"+m_context+URLManager.getURL(URLManager.CMP_JOBBACKUP)+"Main?spaceToSave=Admin', 750, 550)");
-	    }
-        if (JobStartPagePeasSettings.recoverRightsEnable) {
-        	operationPane.addLine();
-        	operationPane.addOperation("useless",resource.getString("JSPP.spaceRecover"),"javascript:onClick=recoverRights()");
-        }
-        if (isBasketEnable) {
-        	operationPane.addLine();
-        	operationPane.addOperation(resource.getIcon("JSPP.bin"), resource.getString("JSPP.Bin"), "ViewBin");
-        }
-    }*/
-%>
-
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -79,11 +51,10 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <!--
-function openPopup(action, larg, haut) {
-	url = action;
+function openPopup() {
 	windowName = "actionWindow";
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	actionWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+	actionWindow = SP_openWindow("CreateSpace", windowName, 750, 400, windowParams, false);
 }
 function clipboardPaste() {
 	$.progressMessage();
@@ -101,7 +72,7 @@ function recoverRights() {
 <c:if test="${isUserAdmin}">
 <view:operationPane>
 	<fmt:message var="spaceAdd" key="JSPP.SpacePanelCreateTitle" />
-    <view:operation altText="${spaceAdd}" icon="" action="javascript:onClick=openPopup('CreateSpace', 750, 300);"></view:operation>
+    <view:operation altText="${spaceAdd}" icon="" action="javascript:onClick=openPopup();"></view:operation>
     
     <c:if test="${clipboardNotEmpty}">
     	<fmt:message var="paste" key="GML.paste" />
@@ -132,12 +103,12 @@ function recoverRights() {
     	<fmt:message var="bin" key="JSPP.Bin" />
     	<view:operation altText="${bin}" icon="" action="ViewBin"></view:operation>
     </c:if>
-
 </view:operationPane>
 </c:if>
 <view:window>
 <view:frame>
 <view:board>
+<div id="spaces-welcome-message">
 <c:choose>
   <c:when test="${globalMode}">
     <font color="#ff0000"><fmt:message key="JSPP.maintenanceTout" /></font>
@@ -146,6 +117,7 @@ function recoverRights() {
     <c:out value="${content}" escapeXml="false" />
   </c:otherwise>
 </c:choose>
+</div>
 </view:board>
 </view:frame>
 </view:window>

@@ -1,33 +1,31 @@
-<div class="componentNav">
+<span class="txtNav"><center>Welcome to space & applications management</center></span><br/>
 
-<span class="txtNav"><center>Welcome to the "Space & Applications" manager</center></span><br/>
+Silverpeas is structured into spaces that contain applications. Each space may also contains sub-spaces.<br/>
+A wide range of applications ready to use is offered to meet all your needs : document management, image gallery, blog, surveys, project management...<br/>
+As an <b>administrator</b> you can manage all spaces and applications.
 
-As an administrator you can manage all the spaces and applications. A space contains applications and also subspaces.
-
-<h2>It's very easy to change the structure of your platform</h2>
-You can create a space root quiclky following <a href="javascript:onclick=openPopup('CreateSpace',750,300)">this link</a> or when following right corner operation "Create a space" from menu <b>What do you want to do next ?</b>.
-All the space root can be accessed by drop down list in the left panel.  You must select one of those in order to modify, delete or upgrade a space.
-You will find available features on current selected space inside <b>What do you want to do next ?</b> menu.
-
-Specifically, you can do :
+<h3>It's very easy to change the structure of your platform !</h3>
+You can create a root space quickly following <a href="javascript:onclick=openPopup()">this link</a> or when following right corner operation "Create a space" from menu <b>What do you want to do next ?</b>.<br/>
+All first-level spaces are accessible in the drop-down list on the left. To edit, delete or manage a space, simply select it from this list.<br/>
+The content of the selected space will then appear in this list.
+All the operations available on this space are accessible via the menu <b>What do you want to do next?</b>.<br/>
+You can especially :
 <ul>
-<li>Delegate space management to any user,</li>
-<li>Grant access right to applications,</li>
-<li>Define a specific home page,</li>
+<li>add, edit or remove applications,</li>
+<li>define the access rights that apply to those applications,</li>
+<li>delegate its management to any user,</li>
+<li>define a specific home page,</li>
 <li>...</li>
 </ul>
-You will find on the left side the content of the selected space.
-You can select any subspace or applications from this left panel in order to interact with using the <b>What do you want to do next ?</b> menu.
+To manage a subspace or application, click on their name. It will give you access to all its operations, using the menu <b>What do you want to do next?</b>.
 
-<h2>Oups I have deleted the wrong space !!!</h2>
-To prevent user from doing some wrong handling, all the spaces and applications are not permanently erased.
-You can always find them inside the <a href="ViewBin">bin</a>. 
-The bin is only accessible from administrators. So you are the only one who can restore or permanently delete spaces or applications.
+<h3>Oups I have deleted the wrong space !!!</h3>
+To prevent user from doing some wrong handling, all the spaces and applications are not permanently erased.<br/>
+You can always find them inside the <a href="ViewBin">bin</a>.<br/>
+The bin is only accessible to administrators. So you are the only one(s) who can restore or permanently delete spaces or applications.<br/>
 Keep in mind that you will need to grant new specific access right when restoring a space or an application.
 
-<h2>Maintenace mode</h2>
-This mode allows you to close access to the platform.
-Only administrators can access the platform, so it's useful for major changes.
-You can activate this mode only at space level. Users will be warned of the temporary unavailability.
-
-</div>
+<h3>Maintenace mode</h3>
+This mode allows you to close access to the platform.<br/>
+Only administrators can access the platform, so it's useful for major changes.<br/>
+This mode is also available in each space. Users will be warned of the temporary unavailability.

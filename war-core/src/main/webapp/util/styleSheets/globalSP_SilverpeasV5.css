@@ -4257,6 +4257,16 @@ html:not([lang*=""]) .add_position:hover {
   vertical-align:middle;
 }
 
+#spaces-welcome-message a {
+	text-decoration: underline;
+}
+
+#spaces-welcome-message h3 {
+	font-size: 13px;
+	padding: 0px;
+	margin: 15px 0px 5px 0px;
+}
+
 
 
 

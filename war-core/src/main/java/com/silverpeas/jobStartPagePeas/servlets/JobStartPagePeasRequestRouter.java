@@ -73,8 +73,8 @@ public class JobStartPagePeasRequestRouter extends
 
   private static final long serialVersionUID = 3751632991093466433L;
 
-  private static final String WELCOME_SPACE_ADMIN_TEMPLATE_FILE = "welcome_space_admin_";
-  private static final String WELCOME_SPACE_MGR_TEMPLATE_FILE = "welcome_space_manager_";
+  private static final String WELCOME_SPACE_ADMIN_TEMPLATE_FILE = "/space/welcome_space_admin_";
+  private static final String WELCOME_SPACE_MGR_TEMPLATE_FILE = "/space/welcome_space_manager_";
 
   @Override
   public JobStartPagePeasSessionController createComponentSessionController(
