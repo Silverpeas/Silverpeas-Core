@@ -41,6 +41,9 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<%
+      out.println(gef.getLookStyleSheet());
+%> 
   
 <script type="text/javascript">
   $(document).ready(function() 
