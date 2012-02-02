@@ -1,3 +1,4 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%--
 
     Copyright (C) 2000 - 2011 Silverpeas
@@ -35,91 +36,86 @@
   browseBar.setClickable(false);
   browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
 %>
-<html>
-  <head>
-    <title><%=resource.getString("GML.popupTitle")%></title>
-    <view:looknfeel/>
-    <%
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
+<%
       out.println(gef.getLookStyleSheet());
-    %>
-    <view:includePlugin name="qtip"/>
-    <script type="text/javascript">
-      $(document).ready(function() 
-      {
-        // By suppling no content attribute, the library uses each elements title attribute by default
-        $('a[title]').qtip({
-          content: {
-            text: false // Use each elements title attribute
-          },
-          style: 'silverpeas',
-          position: {
-            corner: {
-              target: 'topRight',
-              tooltip: 'bottomLeft'
-            },
-            adjust: {
-              screen: true
-            }
-          }
-        });
-      });
-    </script>
-    <style type="text/css">
-      .component-icon {
-        margin: 2px;
-      }
-    </style>
-  </head>
-  <body onLoad="javascript:window.resizeTo(750,700)">
-    <view:window>
-      <view:frame> 
-      <center>
-        <view:board>
-          <br />
-          <table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-            <c:set var="currentSuite" value="" scope="page"/>
-            <c:forEach items="${requestScope.ListComponents}" var="component" varStatus="loop">
-              <c:if test="${component.visible}">
-                <c:if test="${component.suite != null && component.suite != currentSuite}">
-                  <c:set var="currentSuite" value="${component.suite}" scope="page"/>         
-                  <tr>
-                    <td colspan="2" align="center" class="txttitrecol">&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-                  </tr>
-                  <tr>
-                    <td align="center" class="txttitrecol">&nbsp;</td>
-                    <td align="center" class="txttitrecol"><c:out value="${currentSuite}"/></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" align="center" height="2"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-                  </tr>
-                </c:if>
-                <tr>
-                  <td align="center" width="30">
-                    <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />"><img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Small.gif" class="component-icon" alt=""/></a>
-                  </td>
-                  <td align="left">
-                    <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />"><c:out value="${component.label}" /></a>
-                  </td>
-                </tr>
-              </c:if>
-            </c:forEach>
-          </table>
-        </view:board>
-        <br /><br />
-        <%
-          ButtonPane buttonPane = gef.getButtonPane();
-          buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"),
-              "javascript:window.close();", false));
-          out.println(buttonPane.print());
-        %>
-      </center>
-    </view:frame>
-  </view:window>
+%> 
+  
+<script type="text/javascript">
+  $(document).ready(function() 
+  {
+	
+		$(".linkSee").click(function() {
+			$(".applicationsType ul").hide();
+			$(".linkSee").removeClass("select");
+			$(this).addClass("select");
+			$(this).parents('.applicationsType').children("ul").show();
+		});
+		
+		$(".application a").hover(
+			function() {
+			$(this).children("p").show();
+			$(this).children("h3").hide();
+			},
+			function(){
+			$(this).children("h3").show();
+			$(this).children("p").hide();
+			}
+		);
+		
+		$(".linkSee span").html(function() {
+			id = $.trim($(this).text()).substring(0,2);
+			$(this).html($.trim($(this).text()).substring(3));
+			$(this).parents('.applicationsType').addClass("type_"+id);
+		});
+		
+		
+		
+		$(".type_01 ul").show();
+		$(".type_01 .linkSee").addClass("select");
+	
+  });
+</script>
+<style>
+<!--
+/* ne peut être ajouter à la global html heit à 100% a trop d'impacte*/
+body , html {
+height:100%;
+}
+-->
+</style>
+
+</head>
+<body>
+		<ul class="applicationsTypeList">
+				<c:set var="currentSuite" value="null" scope="page"/>
+				<c:forEach items="${requestScope.ListComponents}" var="component" varStatus="loop">
+				  <c:if test="${component.visible}">
+					<c:if test="${component.suite != null && component.suite != currentSuite  && currentSuite != 'null'}">
+						</ul></li>
+					</c:if>
+					<c:if test="${component.suite != null && component.suite != currentSuite}">
+					  <c:set var="currentSuite" value="${component.suite}" scope="page"/>         
+						<li class="applicationsType"><a class="linkSee" href="#"><span><c:out value="${currentSuite}"/></span></a>
+						<ul class="applicationList">
+					</c:if>
+							<li id="<c:out value="${component.name}" />" class="application">
+								<a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />">
+									<img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Big.png" class="component-icon" alt=""/>
+									
+									<h3 class="applicationName"><c:out value="${component.label}" /></h3>
+									<p class="applicationDescription">${component.description}</p>
+								</a>
+							</li>
+				  </c:if>
+				</c:forEach>
+		</ul>
+       
+        <br />
+     
 </body>
 </html>
