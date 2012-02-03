@@ -33,7 +33,6 @@
   String spaceId = (String) request.getAttribute("CurrentSpaceId");
 
   browseBar.setSpaceId(spaceId);
-  browseBar.setClickable(false);
   browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
 %>
 
@@ -41,10 +40,6 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<%
-      out.println(gef.getLookStyleSheet());
-%> 
-  
 <script type="text/javascript">
   $(document).ready(function() 
   {
@@ -82,7 +77,7 @@
 </script>
 <style>
 <!--
-/* ne peut être ajouter à la global html heit à 100% a trop d'impacte*/
+/* ne peut ï¿½tre ajouter ï¿½ la global html heit ï¿½ 100% a trop d'impacte*/
 body , html {
 height:100%;
 }
@@ -91,6 +86,7 @@ height:100%;
 
 </head>
 <body>
+	<% out.print(window.printBefore()); %>
 		<ul class="applicationsTypeList">
 				<c:set var="currentSuite" value="null" scope="page"/>
 				<c:forEach items="${requestScope.ListComponents}" var="component" varStatus="loop">
@@ -104,8 +100,13 @@ height:100%;
 						<ul class="applicationList">
 					</c:if>
 							<li id="<c:out value="${component.name}" />" class="application">
-								<a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />">
-									<img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Big.png" class="component-icon" alt=""/>
+								<a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<%=resource.getString("JSPP.applications.add")%>">
+									<c:if test="${component.suite == '05 Workflow'}">
+										<img src="<%=iconsPath%>/util/icons/component/workflowBig.png" class="component-icon" alt=""/>
+									</c:if>
+									<c:if test="${component.suite != '05 Workflow'}">
+										<img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Big.png" class="component-icon" alt=""/>
+									</c:if>
 									
 									<h3 class="applicationName"><c:out value="${component.label}" /></h3>
 									<p class="applicationDescription">${component.description}</p>
@@ -116,6 +117,6 @@ height:100%;
 		</ul>
        
         <br />
-     
+     <% out.print(window.printAfter()); %>
 </body>
 </html>

@@ -315,8 +315,7 @@ public class JobStartPagePeasRequestRouter extends
         jobStartPageSC.setManagedInstanceId(sComponentId);
         jobStartPageSC.setComponentPlace(request.getParameter("ComponentBefore"));
         refreshNavBar(jobStartPageSC, request);
-        request.setAttribute("urlToReload", "GoToComponent?ComponentId=" + sComponentId);
-        destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
+        destination = getDestination("GoToCurrentComponent", jobStartPageSC, request);
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas déportée vers les
@@ -338,13 +337,8 @@ public class JobStartPagePeasRequestRouter extends
       if (StringUtil.isDefined(componentId)) {
         if (jobStartPageSC.getScope() == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
           refreshNavBar(jobStartPageSC, request);
-          request.setAttribute("urlToReload", "GoToComponent?ComponentId="
-              + componentInst.getId());
-        } else {
-          request.setAttribute("urlToReload", "SetupComponent?ComponentId="
-              + componentInst.getId());
         }
-        destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
+        destination = getDestination("GoToCurrentComponent", jobStartPageSC, request);
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas
@@ -1291,7 +1285,7 @@ public class JobStartPagePeasRequestRouter extends
     List<LocalizedParameter> localizedParameters = new ArrayList<LocalizedParameter>(
         parameters.size());
     for (Parameter parameter : parameters) {
-      localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
+      localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
     }
     List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
     String isHidden = "no";
@@ -1313,9 +1307,10 @@ public class JobStartPagePeasRequestRouter extends
     Collections.sort(localizedParameters, new LocalizedParameterSorter());
     request.setAttribute("HiddenParameters", getHiddenParameters(localizedParameters));
     request.setAttribute("JobPeas", localizedComponent.getLabel());
+    request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("ComponentInst", componentInst);
-    request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-        JobStartPagePeasSettings.isInheritanceEnable));
+    request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+    request.setAttribute("Scope", sessionController.getScope());
     return "/jobStartPagePeas/jsp/updateInstance.jsp";
   }
 
@@ -1379,8 +1374,7 @@ public class JobStartPagePeasRequestRouter extends
     request.setAttribute("ComponentInst", componentInst);
     request.setAttribute("JobPeas", localizedComponent.getName());
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
-    request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-        JobStartPagePeasSettings.isInheritanceEnable));
+    request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("Scope", sessionController.getScope());
   }
 }

@@ -3816,9 +3816,10 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 }
 
 #admin-component #parameters-header {
+	border: 2px solid #CCCCCC;
 	background-color: #EDEDED;
 	text-align: center;
-	margin-top:20px;
+	margin-top:10px;
 	padding:5px;
 }
 
@@ -4276,18 +4277,20 @@ html:not([lang*=""]) .add_position:hover {
 ul.applicationsTypeList *{
 	padding:0;
 	margin:0;
+	list-style-type: none;
 }
 ul.applicationsTypeList {
 	padding:0;
 	margin:0;
 	width:206px;
 	height:100%;
+	border-left: 1px solid #333;
 	
 	background-color:#333333;
-	background-image: url(../icons/gradientSVG.jsp?from=555555&to=333333&vertical=0&horizontal=100);
+	background-image: url(../icons/gradientSVG.jsp?from=CCCCCC&to=333333&vertical=0&horizontal=100);
 		-moz-background-size: 100%;
 	
-	-pie-background: linear-gradient(#555555, #333333);
+	-pie-background: linear-gradient(#CCCCCC, #333333);
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 li.applicationsType{
@@ -4311,7 +4314,7 @@ li.applicationsType a span{
 }
 
 li.applicationsType a.linkSee:hover {
-	background-color:#000;
+	background-color:#333;
 	background-position:180px -63px
 }
 li.applicationsType a.linkSee.select {
@@ -4328,6 +4331,7 @@ ul.applicationList {
 	width:auto;
 	height:100%;
 	margin-left:206px;
+	margin-top: 30px;
 	display:none;
 }
 
@@ -4337,7 +4341,7 @@ li.application {
 	margin:5px 0 5px 12px;
 	padding:0;
 	width:400px;
-	height:75px;
+	height:72px;
 	float:left;
 	overflow:hidden;
 	border:1px solid #dfdfdf;
@@ -4367,18 +4371,18 @@ li.application {
 li.application  a {
 	padding:2px 10px 2px 72px;
 	width:318px;
-	height:71px;
+	height:68px;
 	display:table-cell;
 	vertical-align:middle;
 }
 
 li.application  a:hover{
-	background:transparent url(../icons/arrow/type_fleche.png) 385px -63px no-repeat;
+	background:transparent url(../icons/arrow/type_fleche.png) 380px -63px no-repeat;
 	}
 
 li.application  img {
 	position:absolute;
-	bottom:11px;
+	bottom:7px;
 	right:332px;
 	border:0;
 }
@@ -4429,7 +4433,7 @@ li.application  .applicationName {
 }
 
 .type_01  li.application  a:hover{
-	background:transparent url(../icons/arrow/type_fleche.png) 385px -40px no-repeat;
+	background:transparent url(../icons/arrow/type_fleche.png) 380px -40px no-repeat;
 }
 
 /** pour ie7 qui ne comprend pas le vertical-align **/
