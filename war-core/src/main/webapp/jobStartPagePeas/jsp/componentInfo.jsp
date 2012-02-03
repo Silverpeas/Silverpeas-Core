@@ -127,7 +127,7 @@ browseBar.setComponentId(compoInst.getId());
 browseBar.setExtraInformation(resource.getString("GML.description"));	
 browseBar.setI18N(compoInst, resource.getLanguage());
 
-operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getString("JSPP.ComponentPanelModifyTitle"),"javascript:onClick=updateInstance(800, 350)");
+operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getString("JSPP.ComponentPanelModifyTitle"),"javascript:onClick=updateInstance()");
 if (scope == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
 	operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
 	if (JobStartPagePeasSettings.useComponentsCopy) {
@@ -199,12 +199,8 @@ function deleteInstance() {
 	}
 }
 
-function updateInstance(larg, haut) 
-{
-	url = "UpdateInstance?ComponentNum=<%=compoInst.getId()%>&Translation="+currentLanguage;
-	windowName = "actionWindow";
-	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	actionWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+function updateInstance() {
+	location.href = "UpdateInstance?ComponentNum=<%=compoInst.getId()%>&Translation="+currentLanguage;
 }
 
 function clipboardCopy() {

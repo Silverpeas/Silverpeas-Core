@@ -31,8 +31,7 @@
 
 <%!
 
-void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
-{
+void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException {
 	String help = parameter.getHelp();
 
 	if (help != null) {
@@ -42,12 +41,11 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		out.println("</td>");
 	} else {
 		out.println("<td width=\"15\">&nbsp;</td>");
-	
 	}
-	out.println("<td class=\"intfdcolor4\" nowrap valign=\"center\" align=left>");
+	out.println("<td class=\"intfdcolor4\" nowrap=\"nowrap\" valign=\"center\" align=\"left\">");
 	out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span>");
 	out.println("</td>");
-	out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
+	out.println("<td class=\"intfdcolor4\" align=\"left\" valign=\"top\">");
 
 	String disabled = "disabled";
 	if (parameter.isAlwaysUpdatable()) {
@@ -60,9 +58,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 			checked = "checked";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+">");
-	}
-	else if (parameter.isSelect() || parameter.isXmlTemplate())
-	{
+	} else if (parameter.isSelect() || parameter.isXmlTemplate()) {
 		List<LocalizedOption> options = parameter.getOptions();
 		if (options != null) {
 			out.println("<select name=\""+parameter.getName()+"\">");
@@ -81,9 +77,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 			}		
 			out.println("</select>");
 		}
-	}
-	else if (parameter.isRadio())
-	{
+	} else if (parameter.isRadio()) {
 		List<LocalizedOption> radios = parameter.getOptions();
 		if (radios != null) {
 			for (int i = 0; i < radios.size(); i++) {
@@ -95,14 +89,13 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 	            checked = " checked";
 	          }
 	          out.println("<input type=\"radio\" name=\"" + parameter.getName() + "\" value=\"" + value + "\"" + checked + ">");
-	          out.println(name + "&nbsp;<br>");
+	          out.println(name + "&nbsp;<br/>");
         	}	
 		} else {
 			out.println(parameter.getValue());
 		}
 		out.println("</td>");
-	}
-	else {
+	} else {
 		// check if parameter is mandatory or not
 		boolean mandatory = parameter.isMandatory();;
 
@@ -130,22 +123,40 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 <%
 ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
-List 			parameters 			= (List) request.getAttribute("Parameters");
-List 			hiddenParameters 	= (List) request.getAttribute("HiddenParameters");
+List<LocalizedParameter> parameters = (List<LocalizedParameter>) request.getAttribute("Parameters");
+List<LocalizedParameter> hiddenParameters = (List<LocalizedParameter>) request.getAttribute("HiddenParameters");
+List<ProfileInst> m_Profiles 		= (List<ProfileInst>) request.getAttribute("Profiles");
 String			translation 		= (String) request.getParameter("Translation");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+int				scope				= ((Integer) request.getAttribute("Scope")).intValue();
+
+if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) {
+  //use default breadcrumb
+  browseBar.setSpaceJavascriptCallback(null);
+  browseBar.setComponentJavascriptCallback(null);
+}
 
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+"Small.gif";
 
-LocalizedParameter parameter = null;
-
 browseBar.setComponentId(compoInst.getId());
-browseBar.setExtraInformation(resource.getString("GML.modify"));
+browseBar.setExtraInformation(resource.getString("GML.modify"));	
+browseBar.setI18N(compoInst, resource.getLanguage());
+
+TabbedPane tabbedPane = gef.getTabbedPane();
+tabbedPane.addTab(resource.getString("GML.description"), "#", true);
+for (ProfileInst theProfile : m_Profiles) {
+	String profile = theProfile.getLabel();
+	String prof = resource.getString(profile.replace(' ', '_'));
+	if (prof.equals("")) {
+		prof = profile;
+	}	
+	tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
+}
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -154,36 +165,31 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="javascript/component.js"></script>
 <script type="text/javascript">
-
-function B_ANNULER_ONCLICK() {
-	window.close();
+function cancel() {
+	location.href = "GoToCurrentComponent";
 }
 
 /*****************************************************************************/
-function B_VALIDER_ONCLICK() {
+function validate() {
 	if (isCorrectForm()) {
 		<%
-		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
-		{ 
-			parameter = (LocalizedParameter) parameters.get(nI);
+		for(int nI=0; parameters != null && nI < parameters.size(); nI++) { 
+		  	LocalizedParameter parameter = parameters.get(nI);
 			if (parameter.isCheckbox()) {
 			%>
-		    	if (document.infoInstance.<%=parameter.getName()%>.checked)
+		    	if (document.infoInstance.<%=parameter.getName()%>.checked) {
 		        	document.infoInstance.<%=parameter.getName()%>.value = "yes";
-		        else 
+		    	} else { 
 		        	document.infoInstance.<%=parameter.getName()%>.value = "no";
+		    	}
 		    <%
 			}
 			%>
 			document.infoInstance.<%=parameter.getName()%>.disabled = false;
-		<%
-		}
-		%>	
+		<% } %>	
 		document.infoInstance.submit();
 	}
 }
-
-/*****************************************************************************/
 
 function isCorrectForm() {		
 	var errorMsg = "";
@@ -205,11 +211,9 @@ function isCorrectForm() {
 	}  	  	
 	
 	<%
-	for(int nI=0; parameters != null && nI < parameters.size(); nI++)
-	{ 
-		parameter = (LocalizedParameter) parameters.get(nI);
-		if (parameter.isMandatory() && !parameter.isRadio()) 
-		{
+	for(int nI=0; parameters != null && nI < parameters.size(); nI++) { 
+	  	LocalizedParameter parameter = parameters.get(nI);
+		if (parameter.isMandatory() && !parameter.isRadio()) {
 		%>
 			var paramValue = stripInitialWhitespace(document.infoInstance.<%=parameter.getName()%>.value);
 			if (isWhitespace(paramValue)) {
@@ -221,8 +225,7 @@ function isCorrectForm() {
 	}
 	%>		 	
 	
-	switch(errorNb)
-	{
+	switch(errorNb) {
 	case 0 :
 	    result = true;
 	    break;
@@ -241,63 +244,37 @@ function isCorrectForm() {
      
 }
 
-function toDoOnLoad() {
-	<% 
-		int height = 385;
-		if (parameters!=null)
-		{
-			int nbParameters = parameters.size();
-			if (nbParameters >= 5)
-				height = height+15*nbParameters;
-			else
-				height = height+30*nbParameters;
-		}
-	%>
-	var height = <%=height%>;
-
-	//resize window
-	window.resizeTo(750,height);
-
-	//eventually, move up window
-    if (height > 800)
-        window.moveBy(0, -250);
-    
+function toDoOnLoad() {  
     document.infoInstance.NameObject.focus();
 }
 
 <%
-String lang = "";
-Iterator codes = compoInst.getTranslations().keySet().iterator();
-while (codes.hasNext())
-{
-	lang = (String) codes.next();
+for (String lang : compoInst.getTranslations().keySet()) {
 	out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
 	out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
 }
 %>
 
-function showTranslation(lang)
-{
+function showTranslation(lang) {
 	showFieldTranslation('compoName', 'name_'+lang);
 	showFieldTranslation('compoDesc', 'desc_'+lang);
 }
 
-function removeTranslation()
-{
+function removeTranslation() {
 	document.infoInstance.submit();
 }
 
 </script>
-</HEAD>
-
-<BODY id="admin-component" onLoad="javascript:toDoOnLoad()">
-<FORM NAME="infoInstance" action = "EffectiveUpdateInstance" METHOD="POST">
+</head>
+<body id="admin-component" onload="javascript:toDoOnLoad()">
+<form name="infoInstance" action="EffectiveUpdateInstance" method="post">
 <%
 out.println(window.printBefore());
+out.println(tabbedPane.print());
 out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
-<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr> 
 		<td class="txtlibform"><%=resource.getString("GML.type")%> :</td>
 		<td><img src="<%=m_ComponentIcon%>" class="componentIcon" alt=""/>&nbsp;<%=m_JobPeas%></td>
@@ -309,18 +286,18 @@ out.println(board.printBefore());
 	</tr>
 	<tr>
 		<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
-		<td><textarea name="Description" id="compoDesc" wrap="VIRTUAL" rows="4" cols="59"><%=EncodeHelper.javaStringToHtmlString(compoInst.getDescription())%></textarea></td>
+		<td><textarea name="Description" id="compoDesc" rows="3" cols="59"><%=EncodeHelper.javaStringToHtmlString(compoInst.getDescription())%></textarea></td>
 	</tr>
 	<% if (isInHeritanceEnable) { %>
 	<tr>
-		<td class="txtlibform" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+		<td class="txtlibform" nowrap="nowrap" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
 		<td align="left" valign="baseline" width="100%">
 		<% if (compoInst.isInheritanceBlocked()) { %>
-			<input type="radio" name="InheritanceBlocked" value="true" checked /> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
+			<input type="radio" name="InheritanceBlocked" value="true" checked="checked" /> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
 			<input type="radio" name="InheritanceBlocked" value="false" /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
 		<% } else { %>
 			<input type="radio" name="InheritanceBlocked" value="true"/> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
-			<input type="radio" name="InheritanceBlocked" value="false" checked /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
+			<input type="radio" name="InheritanceBlocked" value="false" checked="checked" /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
 		<% } %>
 		</td>
 	</tr>
@@ -331,69 +308,64 @@ out.println(board.printBefore());
 		<span class="txtlibform"><%=resource.getString("JSPP.parameters") %></span>
 	</div>
 <% } %>
-<table border=0>
+<table border="0">
 <tr>
 <%
 	boolean on2Columns = false;
-	if (parameters.size() >= 5)
+	if (parameters.size() >= 5) {
 		on2Columns = true;
+	}
 	
-	if (on2Columns)
-	{
+	if (on2Columns) {
 		out.println("<td>");
-		out.println("<table border=0 width=\"100%\">");
-		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
-		{
-			parameter = (LocalizedParameter) parameters.get(nI);
-			if (nI%2 == 0)
+		out.println("<table border=\"0\" width=\"100%\">");
+		for(int nI=0; parameters != null && nI < parameters.size(); nI++) {
+		  	LocalizedParameter parameter = parameters.get(nI);
+			if (nI%2 == 0) {
 				out.println("<tr valign=\"middle\">");
+			}
 
 			displayParameter(parameter, resource, out);
 
-			if (nI%2 != 0)
+			if (nI%2 != 0) {
 				out.println("</tr>");
-			else
+			} else {
 				out.println("<td width=\"40px\">&nbsp;</td>");
+			}
 		}
-		if (parameters.size()%2 != 0)
-		{
+		if (parameters.size()%2 != 0) {
 			out.println("<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>");
 			out.println("</tr>");
 		}
 		out.println("</table>");
 		out.println("</td>");
 	} else {
-		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
-		{
-			parameter = (LocalizedParameter) parameters.get(nI);
-			out.println("<tr valign=\"middle\">");
+		for(LocalizedParameter parameter : parameters) {
+		  	out.println("<tr valign=\"middle\">");
 			displayParameter(parameter, resource, out);
 			out.println("</tr>");
 		}
 	}
 	
-	for(int nI=0; hiddenParameters != null && nI < hiddenParameters.size(); nI++)
-	{
-		parameter = (LocalizedParameter) hiddenParameters.get(nI);
-		
+	for(int nI=0; hiddenParameters != null && nI < hiddenParameters.size(); nI++) {
+	  	LocalizedParameter parameter = hiddenParameters.get(nI);
 		out.println("<input type=\"hidden\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\"/>\n");
 	}
 %>
-	<tr align=left> 
-		<td colspan="3"><br>(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
+	<tr align="left"> 
+		<td colspan="3"><br/>(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</td>
 	</tr>	
 </table>
 <%
 	out.println(board.printAfter());
 
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton( gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-	buttonPane.addButton( gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
-	out.println("<BR><center>"+buttonPane.print()+"</center>");	
+	buttonPane.addButton( gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validate();", false));
+	buttonPane.addButton( gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=cancel();", false));
+	out.println("<br/><center>"+buttonPane.print()+"</center>");	
 	out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</FORM>
-
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
