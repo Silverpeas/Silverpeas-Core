@@ -39,102 +39,13 @@
     </c:choose>
       
     <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-      var rootGroup = { childrenUri: webContext + '/services/profile/groups', name: '<fmt:message key="GML.groupes"/>' };
-      var path = [];
-      
-      function updateGroupPathWith(group) {
-        for(var i = 0; i < path.length; i++) {
-          if (path[i].id == group.id)
-            break;
-        }
-        if (i < path.length)
-          path.splice(i + 1);
-        else
-          path.push(group);
-      }
-      
-      function renderGroupPathAt(elt) {
-        elt.text('');
-        for(var i = 0; i < path.length - 1; i++) {
-          var group = path[i];
-          elt.append($('<a>', {href: '#'}).click(function() {
-            loadSubGroups(group);
-          }).text(group.name)).append(' :: ');
-        }
-        elt.append(path[path.length - 1].name);
-      }
-      
-      function loadSubGroups(theGroup) {
-        $('tr.group').remove();
+      function loadUsers(inGroup) {
+        $('tr.user').remove();
+        var uriOfUsers = webContext + '/services/profile/users';
+        if (inGroup)
+          uriOfUsers += "?group=" + inGroup.id;
         $.ajax({
-          url: theGroup.childrenUri,
-          type: 'GET',
-          dataType: 'json',
-          cache: false,
-          success: function(groups) {
-            var style = 'even';
-            updateGroupPathWith(theGroup);
-            renderGroupPathAt($('#current-group_name'));
-            $.each(groups, function(i, group) {
-              $('<tr>').addClass('group').addClass(style).
-                append($('<td>').append($('<input>', {type: type, name: 'group', value: group.id}))).
-                append($('<td>').addClass('name').append($('<a>', {href: '#'}).click(function() {
-                  loadSubGroups(group);
-                }).text(group.name))).
-                append($('<td>').addClass('description').text(group.description)).
-                append($('<td>').addClass('users').text(group.userCount)).
-                append($('<td>').addClass('domain').text(group.domainId))
-              .appendTo('#group_list');
-              if (style == 'even')
-                style = 'odd';
-              else
-                style = 'even';
-            });
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            alert(errorThrown);
-          }
-        });
-      }
-      
-      function valUsersSelection() {
-        var usersSelection = '';
-        $('#users :' + type + ':checked').each(function() {
-          usersSelection += $(this).val() + ' ';
-        });
-        $("input#user-selection").val($.trim(usersSelection));
-      }
-    </c:if>
-    
-    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
-      function valGroupsSelection() {
-        var groupsSelection = '';
-        $('#groups :' + type + ':checked').each(function() {
-          groupsSelection += $(this).val() + ' ';
-        });
-        $("input#group-selection").val($.trim(groupsSelection));
-      }
-    </c:if>
-      
-      function validateSelection() {
-        if(callbackUrl) {
-    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
-          valGroupsSelection();
-    </c:if>
-    <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-          valUsersSelection();
-    </c:if>
-          $("#selection").submit();
-        }
-      }
-      
-      $(document).ready(function() {
-    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
-        loadSubGroups(rootGroup);
-  </c:if>
-  <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>      
-        $.ajax({
-          url: webContext + '/services/profile/users',
+          url: uriOfUsers,
           type: 'GET',
           dataType: 'json',
           cache: false,
@@ -159,8 +70,120 @@
             alert(errorThrown);
           }
         });
-      });
+      }
+      
+      function valUsersSelection() {
+        var usersSelection = '';
+        $('#users :' + type + ':checked').each(function() {
+          usersSelection += $(this).val() + ' ';
+        });
+        $("input#user-selection").val($.trim(usersSelection));
+      }
+    </c:if>
+    
+    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
+      var rootGroup = { childrenUri: webContext + '/services/profile/groups', name: '<fmt:message key="GML.groupes"/>' };
+      var path = [];
+    <c:choose>
+      <c:when test='${selectionScope == "user" || selectionScope == "usergroup"}'>
+      var onGroupChange = function(newGroup) {
+        if (newGroup != rootGroup)
+          loadUsers(newGroup);
+        else
+          loadUsers();
+      }
+      </c:when>
+      <c:otherwise>
+      var onGroupChange = null;
+      </c:otherwise>
+    </c:choose>
+
+      function updateGroupPathWith(group) {
+        for(var i = 0; i < path.length; i++) {
+          if (path[i].id == group.id)
+            break;
+        }
+        if (i < path.length)
+          path.splice(i + 1);
+        else
+          path.push(group);
+      }
+      
+      function renderGroupPathAt(elt) {
+        elt.text('');
+        for(var i = 0; i < path.length - 1; i++) {
+          var group = path[i];
+          elt.append($('<a>', {href: '#'}).click(function() {
+            loadSubGroups(group, onGroupChange);
+          }).text(group.name)).append(' :: ');
+        }
+        elt.append(path[path.length - 1].name);
+      }
+      
+      function loadSubGroups(theGroup, onGroupLoaded) {
+        $('tr.group').remove();
+        $.ajax({
+          url: theGroup.childrenUri,
+          type: 'GET',
+          dataType: 'json',
+          cache: false,
+          success: function(groups) {
+            var style = 'even';
+            updateGroupPathWith(theGroup);
+            renderGroupPathAt($('#current-group_name'));
+            $.each(groups, function(i, group) {
+              $('<tr>').addClass('group').addClass(style).
+                append($('<td>').append($('<input>', {type: type, name: 'group', value: group.id}))).
+                append($('<td>').addClass('name').append($('<a>', {href: '#'}).click(function() {
+                  loadSubGroups(group, onGroupLoaded);
+                }).text(group.name))).
+                append($('<td>').addClass('description').text(group.description)).
+                append($('<td>').addClass('users').text(group.userCount)).
+                append($('<td>').addClass('domain').text(group.domainId))
+              .appendTo('#group_list');
+              if (style == 'even')
+                style = 'odd';
+              else
+                style = 'even';
+            });
+            if (onGroupLoaded)
+              onGroupLoaded(theGroup);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+          }
+        });
+      }
+      
+      function valGroupsSelection() {
+        var groupsSelection = '';
+        $('#groups :' + type + ':checked').each(function() {
+          groupsSelection += $(this).val() + ' ';
+        });
+        $("input#group-selection").val($.trim(groupsSelection));
+      }
+    </c:if>
+      
+      function validateSelection() {
+        if(callbackUrl) {
+    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
+          valGroupsSelection();
+    </c:if>
+    <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
+          valUsersSelection();
+    </c:if>
+          $("#selection").submit();
+        }
+      }
+      
+      $(document).ready(function() {
+    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
+        loadSubGroups(rootGroup, onGroupChange);
   </c:if>
+  <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>      
+        loadUsers();
+  </c:if>
+      });
     </script>
   </head>
   <body>

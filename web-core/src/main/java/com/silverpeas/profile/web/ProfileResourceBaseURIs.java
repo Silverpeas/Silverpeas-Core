@@ -23,6 +23,8 @@
  */
 package com.silverpeas.profile.web;
 
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -36,6 +38,15 @@ public final class ProfileResourceBaseURIs {
   public static final String USERS_BASE_URI = "profile/users";
   
   public static final String GROUPS_BASE_URI = "profile/groups";
+  
+  public static URI uriOfUser(final UserDetail user, String atUsersUri) {
+    try {
+      return new URI(atUsersUri + "/" + user.getId());
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(ProfileResourceBaseURIs.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+  }
   
   public static URI computeParentUriOfGroupByUri(final URI groupUri) {
     String uri = groupUri.toString();
@@ -52,9 +63,9 @@ public final class ProfileResourceBaseURIs {
     }
   }
   
-  public static URI uriOfGroup(String baseUri, String groupId) {
+  public static URI uriOfGroup(final Group group, String atGroupsUri) {
     try {
-      return new URI(baseUri + "/" + groupId);
+      return new URI(atGroupsUri + "/" + group.getId());
     } catch (URISyntaxException ex) {
       Logger.getLogger(ProfileResourceBaseURIs.class.getName()).log(Level.SEVERE, null, ex);
       throw new RuntimeException(ex.getMessage(), ex);
@@ -72,7 +83,7 @@ public final class ProfileResourceBaseURIs {
   
   public static URI computeUsersUriOfGroupById(String groupId) {
     try {
-      return new URI(USERS_BASE_URI + "?groupId=" + groupId);
+      return new URI(USERS_BASE_URI + "?group=" + groupId);
     } catch (URISyntaxException ex) {
       Logger.getLogger(ProfileResourceBaseURIs.class.getName()).log(Level.SEVERE, null, ex);
       throw new RuntimeException(ex.getMessage(), ex);

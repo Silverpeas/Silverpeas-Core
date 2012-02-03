@@ -26,11 +26,15 @@ package com.silverpeas.profile.web;
 import static com.silverpeas.profile.web.UserProfileTestResources.*;
 import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 import com.silverpeas.rest.ResourceGettingTest;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import java.util.List;
+import javax.ws.rs.core.Response;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,19 +43,19 @@ import org.junit.Test;
  * Unit tests on the operations published by the UserProfileResource REST service.
  */
 public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTestResources> {
-  
+
   private String sessionKey;
-  
+
   public UserProfileResourceTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
-  
+
   @Before
   public void prepareTestResources() {
     sessionKey = authenticate(aUser());
     getTestResources().allocate();
   }
-  
+
   @Test
   public void gettingAllUsersWhateverTheDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
@@ -60,7 +64,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
   }
-  
+
   @Test
   public void getAllUsersInItsOwnsDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
@@ -71,32 +75,166 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
   }
-  
+
   @Test
   public void getAllUsersWhateverTheDomainWhenInSilverpeasDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
-    
+
     SelectableUser[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
   }
-  
+
   @Test
   public void getAllUsersInItsOwnDomainWhenNotInSilverpeasDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((1));
     getTestResources().getWebServiceCaller().setDomainId(domainId);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
-    
+
     SelectableUser[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
   }
 
+  @Test
+  public void getAGivenUserWhateverItsDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
+    SelectableUser actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
+            SelectableUser.class);
+    assertThat(actualUser, notNullValue());
+    assertThat(actualUser.getId(), is(expectedUser.getId()));
+  }
+
+  @Test
+  public void getAGivenUserInItsOwnsDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
+    getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId());
+    SelectableUser actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
+            SelectableUser.class);
+    assertThat(actualUser, notNullValue());
+    assertThat(actualUser.getId(), is(expectedUser.getId()));
+  }
+
+  @Test
+  public void getAUserWhateverTheDomainWhenInSilverpeasDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
+    SelectableUser actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
+            SelectableUser.class);
+    assertThat(actualUser, notNullValue());
+    assertThat(actualUser.getId(), is(expectedUser.getId()));
+  }
+
+  @Test
+  public void getAGivenUserInItsOwnDomainWhenNotInSilverpeasDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
+    getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId());
+    SelectableUser actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
+            SelectableUser.class);
+    assertThat(actualUser, notNullValue());
+    assertThat(actualUser.getId(), is(expectedUser.getId()));
+  }
+
+  @Test
+  public void getAnUnaccessibleUserInAnotherDomain() {
+    try {
+      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+      UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
+      getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId() + "0");
+      getAt(aResourceURI() + "/" + expectedUser.getId(), SelectableUser.class);
+      fail("The user shouldn't be get as it is unaccessible");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, is(forbidden));
+    }
+  }
+
+  @Test
+  public void getAnUnaccessibleUserInAnotherDomainWhenOtherThanSilverpeasOne() {
+    try {
+      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
+      getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId() + "0");
+      getAt(aResourceURI() + "/" + expectedUser.getId(), SelectableUser.class);
+      fail("The user shouldn't be get as it is unaccessible");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, is(forbidden));
+    }
+  }
+
+  @Test
+  public void gettingAllUsersOfAGivenGroupWhateverTheDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
+    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.size()));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+
+  @Test
+  public void getAllUsersOfAGivenGroupInItsOwnsDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
+    getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId());
+    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.size()));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+
+  @Test
+  public void getAllUsersOfAGivenGroupWhateverTheDomainWhenInSilverpeasDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
+    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.size()));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+
+  @Test
+  public void getAllUsersOfAGivenGroupInItsOwnDomainWhenNotInSilverpeasDomain() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
+    getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId());
+    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.size()));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+
+  @Test
+  public void getAllUsersOfAnUnaccessibleGivenGroup() {
+    try {
+      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+      Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
+      getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId() + "0");
+      List<UserDetail> expectedUsers = aGroup.getAllUsers();
+      getAt(aResourceURI() + "?group=" + aGroup.getId(), getWebEntityClass());
+      fail("The user shouldn't be get as it is unaccessible");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, is(forbidden));
+    }
+  }
+
   @Override
   @Ignore
-  public void gettingAResourceByAnUnauthorizedUser() { 
+  public void gettingAResourceByAnUnauthorizedUser() {
   }
 
   @Override
@@ -106,7 +244,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[] { };
+    return new String[]{};
   }
 
   @Override
@@ -133,5 +271,4 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public Class<SelectableUser[]> getWebEntityClass() {
     return SelectableUser[].class;
   }
-
 }

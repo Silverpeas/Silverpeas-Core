@@ -108,7 +108,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getAGivenAccessibleGroupWhateverTheDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
-    Group actualGroup = getTestResources().aGroup();
+    Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup);
     SelectableUserGroup expectedGroup = getAt(path, SelectableUserGroup.class);
     assertThat(expectedGroup, notNullValue());
@@ -145,7 +145,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getTheSubGroupsOfAGivenAccessibleGroupWhateverTheDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
-    Group actualGroup = getTestResources().aGroup();
+    Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup) + "/groups";
     List<Group> actualSubGroups = actualGroup.getSubGroups();
     SelectableUserGroup[] expectedSubGroups = getAt(path, getWebEntityClass());

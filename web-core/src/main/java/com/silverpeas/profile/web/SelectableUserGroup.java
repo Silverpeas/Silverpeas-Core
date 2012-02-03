@@ -66,10 +66,10 @@ public class SelectableUserGroup extends Group implements Selectable {
    */
   public static SelectableUserGroup[] fromGroups(final List<Group> groups, URI groupsURI) {
     SelectableUserGroup[] selectableGroups = new SelectableUserGroup[groups.size()];
-    String baseUri = groupsURI.toString();
+    String fromGroupsUri = groupsURI.toString();
     int i = 0;
     for (Group aGroup : groups) {
-      selectableGroups[i++] = fromGroup(aGroup).withAsUri(uriOfGroup(baseUri, aGroup.getId()));
+      selectableGroups[i++] = fromGroup(aGroup).withAsUri(uriOfGroup(aGroup, fromGroupsUri));
     }
     return selectableGroups;
   }

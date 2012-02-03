@@ -328,4 +328,12 @@ public class Group implements Serializable, Comparable<Group> {
   public List<Group> getSubGroups() {
     return Arrays.asList(getOrganizationController().getAllSubGroups(getId()));
   }
+  
+  /**
+   * Gets the detail about all the users that are in this group (and in the subgroups of this group).
+   * @return a list of all the user details in this group.
+   */
+  public List<UserDetail> getAllUsers() {
+    return Arrays.asList(getOrganizationController().getAllUsersOfGroup(getId()));
+  }
 }

@@ -23,18 +23,16 @@
  */
 package com.silverpeas.profile.web;
 
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.Selectable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A user that is selectable. It is a web entity representing the profile of a user that can be
@@ -66,11 +64,12 @@ public class SelectableUser extends UserDetail implements Selectable {
    * @param baseURI the URI at which the specified users are defined.
    * @return a list of selectable users, not selected by default.
    */
-  public static SelectableUser[] fromUsers(final List<UserDetail> users, URI baseURI) {
+  public static SelectableUser[] fromUsers(final List<UserDetail> users, URI usersUri) {
     SelectableUser[] selectableUsers = new SelectableUser[users.size()];
+    String fromUsersUri = usersUri.toString();
     int i = 0;
     for (UserDetail aUser : users) {
-      selectableUsers[i++] = fromUser(aUser).withAsBaseUri(baseURI);
+      selectableUsers[i++] = fromUser(aUser).withAsUri(uriOfUser(aUser, fromUsersUri));
     }
     return selectableUsers;
   }
@@ -206,14 +205,9 @@ public class SelectableUser extends UserDetail implements Selectable {
     this.selected = false;
   }
 
-  public SelectableUser withAsBaseUri(URI baseUri) {
-    try {
-      this.uri = new URI(baseUri.toString() + "/" + getId());
-      return this;
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(SelectableUser.class.getName()).log(Level.SEVERE, null, ex);
-      throw new RuntimeException(ex);
-    }
+  public SelectableUser withAsUri(URI userUri) {
+    this.uri = userUri;
+    return this;
   }
 
   public UserDetail toUserDetail() {

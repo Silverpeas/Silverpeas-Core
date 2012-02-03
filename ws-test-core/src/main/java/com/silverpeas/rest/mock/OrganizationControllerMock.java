@@ -138,6 +138,22 @@ public class OrganizationControllerMock extends OrganizationController {
     List<Group> allGroups = new ArrayList<Group>(groups.values());
     return allGroups.toArray(new Group[allGroups.size()]);
   }
+
+  @Override
+  public UserDetail[] getAllUsersOfGroup(String groupId) {
+    List<UserDetail> users = new ArrayList<UserDetail>();
+    Group group = getGroup(groupId);
+    Group[] subgroups = getAllSubGroups(groupId);
+    for (String userId : group.getUserIds()) {
+      users.add(getUserDetail(userId));
+    }
+    for (Group aSubGroup : subgroups) {
+      for (String userId : aSubGroup.getUserIds()) {
+        users.add(getUserDetail(userId));
+      }
+    }
+    return users.toArray(new UserDetail[users.size()]);
+  }
   
   /**
    * Adds a new user for tests.

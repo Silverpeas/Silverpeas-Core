@@ -113,10 +113,27 @@ public class UserProfileTestResources extends TestResources {
   }
   
   /**
+   * Gets randomly an existing user detail among the available resources for tests.
+   * @return a user detail.
+   */
+  public UserDetail anExistingUser() {
+    UserDetail[] allUsers = organization.getAllUsers();
+    return allUsers[new Random().nextInt(allUsers.length)];
+  }
+  
+  public UserDetail anExistingUserNotInSilverpeasDomain() {
+    UserDetail user;
+    do {
+      user = anExistingUser();
+    } while("0".equals(user.getDomainId()));
+    return user;
+  }
+  
+  /**
    * Gets randomly an existing group among the available resources for tests.
    * @return a group.
    */
-  public Group aGroup() {
+  public Group anExistingGroup() {
     Group[] allGroups = organization.getAllGroups();
     return allGroups[new Random().nextInt(allGroups.length)];
   }
@@ -126,9 +143,9 @@ public class UserProfileTestResources extends TestResources {
    * @return a group in a domain other than internal one.
    */
   public Group getAGroupNotInAnInternalDomain() {
-    Group group = aGroup();
+    Group group = anExistingGroup();
     while(group.getDomainId().equals("-1")) {
-      group = aGroup();
+      group = anExistingGroup();
     }
     return group;
   }

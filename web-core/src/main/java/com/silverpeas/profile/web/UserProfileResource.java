@@ -23,17 +23,21 @@
  */
 package com.silverpeas.profile.web;
 
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 import com.silverpeas.rest.RESTWebService;
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.inject.Inject;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas.
@@ -49,6 +53,9 @@ import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 @Scope("request")
 @Path(USERS_BASE_URI)
 public class UserProfileResource extends RESTWebService {
+  
+  @Inject
+  private UserProfileService profileService;
 
   /**
    * Creates a new instance of UserProfileResource
@@ -61,15 +68,33 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUser[] getAllUsers() {
+  public SelectableUser[] getUsers(@QueryParam("group") String groupId) {
     checkUserAuthentication();
     List<UserDetail> allUsers;
-    if (getUserDetail().isDomainRestricted()) {
-      allUsers = UserDetail.getAllInDomain(getUserDetail().getDomainId());
+    if (isDefined(groupId)) {
+      allUsers = getAllUsersInGroup(groupId);
     } else {
-      allUsers = UserDetail.getAll();
+      allUsers = getAllUsers();
     }
     return asWebEntity(allUsers, locatedAt(getUriInfo().getAbsolutePath()));
+  }
+  
+  @GET
+  @Path("{userId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public SelectableUser getUser(@PathParam("userId") String userId) {
+    checkUserAuthentication();
+    UserDetail theUser = UserDetail.getById(userId);
+    if (theUser == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+    if (getUserDetail().isDomainRestricted() && !theUser.getDomainId().equals(getUserDetail().getDomainId())) {
+      Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
+                + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
+                  userId});
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+    return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
   }
 
   @Override
@@ -78,11 +103,34 @@ public class UserProfileResource extends RESTWebService {
             + " instances");
   }
   
-  protected URI locatedAt(URI uri) {
+  protected URI locatedAt(final URI uri) {
+    return uri;
+  }
+  
+  protected URI identifiedBy(final URI uri) {
     return uri;
   }
 
-  private SelectableUser[] asWebEntity(List<UserDetail> allUsers, URI baseUri) {
+  private SelectableUser[] asWebEntity(final List<UserDetail> allUsers, final URI baseUri) {
     return SelectableUser.fromUsers(allUsers, baseUri);
+  }
+  
+  private SelectableUser asWebEntity(final UserDetail user, final URI userUri) {
+    return SelectableUser.fromUser(user).withAsUri(userUri);
+  }
+
+  private List<UserDetail> getAllUsersInGroup(String groupId) {
+    Group theGroup = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+    return theGroup.getAllUsers();
+  }
+
+  private List<UserDetail> getAllUsers() {
+    List<UserDetail> allUsers;
+    if (getUserDetail().isDomainRestricted()) {
+      allUsers = UserDetail.getAllInDomain(getUserDetail().getDomainId());
+    } else {
+      allUsers = UserDetail.getAll();
+    }
+    return allUsers;
   }
 }

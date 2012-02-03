@@ -24,11 +24,12 @@
 package com.silverpeas.profile.web.matchers;
 
 import com.silverpeas.profile.web.SelectableUser;
+import static com.silverpeas.profile.web.UserProfileTestResources.USER_PROFILE_PATH;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import static com.silverpeas.profile.web.UserProfileTestResources.USER_PROFILE_PATH;
 
 /**
  * A matcher of one or more users details.
@@ -37,6 +38,9 @@ public class UsersMatcher extends TypeSafeMatcher<SelectableUser[]> {
 
   public static Matcher<SelectableUser[]> contains(final UserDetail[] users) {
     return new UsersMatcher(users);
+  }
+  public static Matcher<SelectableUser[]> contains(final List<UserDetail> users) {
+    return new UsersMatcher(users.toArray(new UserDetail[users.size()]));
   }
   private final UserDetail[] expected;
   private String whatIsExpected = "";
