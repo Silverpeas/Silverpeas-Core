@@ -48,6 +48,8 @@ public class JobStartPagePeasSettings {
   public static String SPACEDISPLAYPOSITION_TODEFINE;
   public static String SPACEDISPLAYPOSITION_CONFIG;
   public static boolean recoverRightsEnable;
+  public static String TEMPLATE_PATH;
+  public static String CUSTOMERS_TEMPLATE_PATH;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -65,5 +67,7 @@ public class JobStartPagePeasSettings {
     SPACEDISPLAYPOSITION_BEFORE = rs.getString("DisplaySpacesBeforeComponents", "BEFORE");
     SPACEDISPLAYPOSITION_TODEFINE = rs.getString("DisplaySpacesToDefine", "TODEFINE");
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
+    TEMPLATE_PATH = rs.getString("templatePath");
+    CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
   }
 }
