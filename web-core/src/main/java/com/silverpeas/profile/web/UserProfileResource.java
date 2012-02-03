@@ -23,31 +23,32 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.profile.service.UserProfileService;
 import com.silverpeas.rest.RESTWebService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
-import javax.inject.Inject;
-import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 
 /**
- * REST Web Service
- *
- * @author mmoquillon
+ * A REST-based Web service that acts on the user profiles in Silverpeas.
+ * Each provided method is a way to access a representation of one or several user profile. This
+ * representation is vehiculed as a Web entity in the HTTP requests and responses.
+ * 
+ * The users that are published depend on some parameters whose the domain isolation and the
+ * profile of the user behind the requesting.
+ * The domain isolation defines the visibility of a user or a group of users in a given domain to
+ * the others domains in Silverpeas.
  */
 @Service
 @Scope("request")
-@Path("profile/users")
+@Path(USERS_BASE_URI)
 public class UserProfileResource extends RESTWebService {
-  
-  @Inject
-  private UserProfileService service;
 
   /**
    * Creates a new instance of UserProfileResource
@@ -56,15 +57,19 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Retrieves representation of an instance of com.silverpeas.profile.UserProfileResource
-   * @return an instance of java.lang.String
+   * Gets all the users defined in Silverpeas.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public SelectableUser[] getAllUsers() {
     checkUserAuthentication();
-    List<UserDetail> allUsers = service.getAllUsersAccessibleTo(getUserDetail().getId());
-    return asWebEntity(allUsers, locatedAt(getUriInfo().getBaseUri()));
+    List<UserDetail> allUsers;
+    if (getUserDetail().isDomainRestricted()) {
+      allUsers = UserDetail.getAllInDomain(getUserDetail().getDomainId());
+    } else {
+      allUsers = UserDetail.getAll();
+    }
+    return asWebEntity(allUsers, locatedAt(getUriInfo().getAbsolutePath()));
   }
 
   @Override

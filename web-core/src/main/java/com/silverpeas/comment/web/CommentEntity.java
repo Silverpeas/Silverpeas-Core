@@ -40,6 +40,8 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.rest.Exposable;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 /**
  * The comment entity is a comment object that is exposed in the web as an entity (web entity).
@@ -48,6 +50,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * accessing it.
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CommentEntity implements Exposable {
 
   private static final long serialVersionUID = 8023645204584179638L;

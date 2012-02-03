@@ -15,6 +15,12 @@
 <fmt:message var="selectLabel" key="GML.validate"/>
 <fmt:message var="cancelLabel" key="GML.cancel"/>
 
+<c:set var="selectionType" value="${param.type}"/>
+<c:set var="selectionScope" value="${param.scope}"/>
+<c:if test="${selectionScope == null || fn:length(fn:trim(selectionScope)) == 0}">
+  <c:set var="selectionScope" value="usergroup"/>
+</c:if>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -22,20 +28,111 @@
     <view:looknfeel />
     <title><fmt:message key="GML.selection"/></title>
     <script type="text/javascript" >
-      var callbackUrl = '<c:out value="${requestScope.url}"/>';
+      var callbackUrl = '<c:out value="${param.url}"/>';
+    <c:choose>
+      <c:when test='${selectionType == "multiple"}'>
+      var type = 'checkbox';
+      </c:when>
+      <c:otherwise>
+      var type = 'radio';
+      </c:otherwise>
+    </c:choose>
       
-      function validateSelection() {
-        var usersSelection = '', groupsSelection = '';
-        $('#users :checkbox:checked').each(function() {
+    <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
+      var rootGroup = { childrenUri: webContext + '/services/profile/groups', name: '<fmt:message key="GML.groupes"/>' };
+      var path = [];
+      
+      function updateGroupPathWith(group) {
+        for(var i = 0; i < path.length; i++) {
+          if (path[i].id == group.id)
+            break;
+        }
+        if (i < path.length)
+          path.splice(i + 1);
+        else
+          path.push(group);
+      }
+      
+      function renderGroupPathAt(elt) {
+        elt.text('');
+        for(var i = 0; i < path.length - 1; i++) {
+          var group = path[i];
+          elt.append($('<a>', {href: '#'}).click(function() {
+            loadSubGroups(group);
+          }).text(group.name)).append(' :: ');
+        }
+        elt.append(path[path.length - 1].name);
+      }
+      
+      function loadSubGroups(theGroup) {
+        $('tr.group').remove();
+        $.ajax({
+          url: theGroup.childrenUri,
+          type: 'GET',
+          dataType: 'json',
+          cache: false,
+          success: function(groups) {
+            var style = 'even';
+            updateGroupPathWith(theGroup);
+            renderGroupPathAt($('#current-group_name'));
+            $.each(groups, function(i, group) {
+              $('<tr>').addClass('group').addClass(style).
+                append($('<td>').append($('<input>', {type: type, name: 'group', value: group.id}))).
+                append($('<td>').addClass('name').append($('<a>', {href: '#'}).click(function() {
+                  loadSubGroups(group);
+                }).text(group.name))).
+                append($('<td>').addClass('description').text(group.description)).
+                append($('<td>').addClass('users').text(group.userCount)).
+                append($('<td>').addClass('domain').text(group.domainId))
+              .appendTo('#group_list');
+              if (style == 'even')
+                style = 'odd';
+              else
+                style = 'even';
+            });
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+          }
+        });
+      }
+      
+      function valUsersSelection() {
+        var usersSelection = '';
+        $('#users :' + type + ':checked').each(function() {
           usersSelection += $(this).val() + ' ';
         });
+        $("input#user-selection").val($.trim(usersSelection));
+      }
+    </c:if>
+    
+    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
+      function valGroupsSelection() {
+        var groupsSelection = '';
+        $('#groups :' + type + ':checked').each(function() {
+          groupsSelection += $(this).val() + ' ';
+        });
+        $("input#group-selection").val($.trim(groupsSelection));
+      }
+    </c:if>
+      
+      function validateSelection() {
         if(callbackUrl) {
-          $("input#user-selection").val($.trim(usersSelection));
+    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
+          valGroupsSelection();
+    </c:if>
+    <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
+          valUsersSelection();
+    </c:if>
           $("#selection").submit();
         }
       }
       
       $(document).ready(function() {
+    <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
+        loadSubGroups(rootGroup);
+  </c:if>
+  <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>      
         $.ajax({
           url: webContext + '/services/profile/users',
           type: 'GET',
@@ -44,13 +141,13 @@
           success: function(users) {
             var style = 'even';
             $.each(users, function() {
-              $('<li>').addClass(style).
-                append($('<input>', {type: 'checkbox', value: this.id})).
-                append($('<img>', {src: webContext + this.avatar, alt: this.lastName + ' ' + this.firstName})).
-                append($('<span>').addClass('lastname').text(this.lastName)).
-                append($('<span>').addClass('fistname').text(this.firtstName)).
-                append($('<span>').addClass('email').text('(' + this.eMail + ')')).
-                append($('<span>').addClass('domain').text(this.domainName))
+              $('<tr>').addClass('user').addClass(style).
+                append($('<td>').append($('<input>', {type: type, name: 'user', value: this.id}))).
+                append($('<td>').append($('<img>', {src: webContext + this.avatar, alt: this.lastName + ' ' + this.firstName}).addClass('avatar'))).
+                append($('<td>').addClass('name').text(this.lastName)).
+                append($('<td>').addClass('fistname').text(this.firstName)).
+                append($('<td>').addClass('email').text(this.eMail)).
+                append($('<td>').addClass('domain').text(this.domainName))
               .appendTo('#user_list');
               if (style == 'even')
                 style = 'odd';
@@ -63,17 +160,47 @@
           }
         });
       });
+  </c:if>
     </script>
   </head>
   <body>
     <form action="<c:out value='${requestScope.url}'/>" id="selection" method="POST">
-      <input id="user-selection" type="hidden" value=""/>
-      <input id="group-selection" type="hidden" value=""/>
-      <div id="users">
-        <ul id="user_list">
-        </ul>
-      </div>
+      <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
+        <input id="group-selection" type="hidden" value=""/>
+        <div id="groups">
+          <table id="group_list">
+            <caption id="current-group_name"></caption>
+            <tr class="heading">
+              <th></th>
+              <th><fmt:message key="GML.name"/></th>
+              <th><fmt:message key="GML.description"/></th>
+              <th><fmt:message key="GML.users"/></th>
+              <th><fmt:message key="GML.domain"/></th>
+            </tr>
+          </table>
+        </div>
+      </c:if>
+      <c:if test='${selectionScope == "usergroup"}'>
+        <hr/>
+      </c:if>
+      <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
+        <input id="user-selection" type="hidden" value=""/>
+        <div id="users">
+          <table id="user_list">
+            <caption><fmt:message key="GML.users"/></caption>
+             <tr class="heading">
+              <th></th>
+              <th></th>
+              <th><fmt:message key="GML.lastName"/></th>
+              <th><fmt:message key="GML.firstName"/></th>
+              <th><fmt:message key="GML.eMail"/></th>
+              <th><fmt:message key="GML.domain"/></th>
+            </tr>
+          </table>
+        </div>
+      </c:if>
     </form>
+    <br clear="all"/>
     <div id="validate">
       <view:buttonPane>
         <view:button label="${selectLabel}" action="javascript: validateSelection();"/>

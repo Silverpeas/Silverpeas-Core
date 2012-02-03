@@ -23,12 +23,13 @@
  */
 package com.silverpeas.rest.mock;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.*;
 import javax.inject.Named;
-import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.Domain;
 
 /**
  * A mock the OrganizationController objects for testing purpose.
@@ -38,6 +39,7 @@ public class OrganizationControllerMock extends OrganizationController {
 
   private static final long serialVersionUID = -3271734262141821655L;
   private Map<String, UserDetail> users = new HashMap<String, UserDetail>();
+  private Map<String, Group> groups = new HashMap<String, Group>();
   private Set<String> components = new HashSet<String>();
 
   @Override
@@ -45,6 +47,10 @@ public class OrganizationControllerMock extends OrganizationController {
     return users.get(sUserId);
   }
 
+  /**
+   * The behaviour matches the expected one from OrganizationController: if no users, null is
+   * returned.
+   */
   @Override
   public UserDetail[] getAllUsers() {
     UserDetail[] allUsers = new UserDetail[users.size()];
@@ -52,6 +58,7 @@ public class OrganizationControllerMock extends OrganizationController {
     for (UserDetail userDetail : users.values()) {
       allUsers[i++] = userDetail;
     }
+    if (allUsers.length == 0) return null;
     return allUsers;
   }
 
@@ -70,6 +77,69 @@ public class OrganizationControllerMock extends OrganizationController {
   }
 
   /**
+   * The behaviour matches the expected one from OrganizationController: if no g, null is
+   * returned.
+   */
+  @Override
+  public Group[] getAllRootGroups() {
+    List<Group> allGroups = new ArrayList<Group>();
+    int i = 0;
+    for (Group group : groups.values()) {
+      if (group.isRoot()) {
+        allGroups.add(group);
+      }
+    }
+    if (allGroups.isEmpty()) return null;
+    return allGroups.toArray(new Group[allGroups.size()]);
+  }
+
+  @Override
+  public Group[] getAllRootGroupsInDomain(String domainId) {
+    if (isDefined(domainId)) {
+      List<Group> allGroups = new ArrayList<Group>();
+      for (Group group : groups.values()) {
+        if (group.getDomainId().equals(domainId) && group.isRoot()) {
+          allGroups.add(group);
+        }
+      }
+      return allGroups.toArray(new Group[allGroups.size()]);
+    }
+    return null;
+  }
+
+  @Override
+  public int getAllSubUsersNumber(String sGroupId) {
+    int count = 0;
+    Group[] subgroups = getAllSubGroups(sGroupId);
+    for (Group group : subgroups) {
+      count += group.getNbUsers();
+    }
+    return count;
+  }
+
+  @Override
+  public Group[] getAllSubGroups(String parentGroupId) {
+    List<Group> allsubGroups = new ArrayList<Group>();
+    for (Group group : groups.values()) {
+      if (parentGroupId.equals(group.getSuperGroupId())) {
+        allsubGroups.add(group);
+      }
+    }
+    return allsubGroups.toArray(new Group[allsubGroups.size()]);
+  }
+  
+  @Override
+  public Group getGroup(String sGroupId) {
+    return this.groups.get(sGroupId);
+  }
+
+  @Override
+  public Group[] getAllGroups() {
+    List<Group> allGroups = new ArrayList<Group>(groups.values());
+    return allGroups.toArray(new Group[allGroups.size()]);
+  }
+  
+  /**
    * Adds a new user for tests.
    *
    * @param userDetail the detail about the user to add for tests.
@@ -77,12 +147,22 @@ public class OrganizationControllerMock extends OrganizationController {
   public void addUserDetail(final UserDetail userDetail) {
     users.put(userDetail.getId(), userDetail);
   }
+  
+  /**
+   * Adds a new user group for tests.
+   *
+   * @param group the user group to add for tests.
+   */
+  public void addGroup(final Group group) {
+    groups.put(group.getId(), group);
+  }
 
   /**
    * Clears all of the data used in tests.
    */
   public void clearAll() {
     users.clear();
+    groups.clear();
   }
 
   @Override
@@ -101,6 +181,8 @@ public class OrganizationControllerMock extends OrganizationController {
     domain.setId(domainId);
     if ("0".equals(domainId)) {
       domain.setName("Silverpeas");
+    } else if ("-1".equals(domainId)) {
+      domain.setName("interne");
     } else {
       domain.setName("Domaine " + domainId);
     }

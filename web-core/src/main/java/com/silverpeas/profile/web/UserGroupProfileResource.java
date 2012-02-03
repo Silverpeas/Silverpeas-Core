@@ -1,0 +1,124 @@
+/*
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.silverpeas.profile.web;
+
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
+import com.silverpeas.rest.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Group;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+/**
+ * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a
+ * way to access a representation of one or several user groups. This representation is vehiculed as
+ * a Web entity in the HTTP requests and responses.
+ *
+ * The user groups that are published depend on some parameters whose the domain isolation and the
+ * profile of the user behind the requesting. The domain isolation defines the visibility of a user
+ * or a group of users in a given domain to the others domains in Silverpeas.
+ */
+@Service
+@Scope("request")
+@Path(GROUPS_BASE_URI)
+public class UserGroupProfileResource extends RESTWebService {
+  
+  @Inject
+  private UserProfileService profileService;
+
+  /**
+   * Creates a new instance of UserGroupProfileResource
+   */
+  public UserGroupProfileResource() {
+  }
+
+  /**
+   * Gets all the root user groups in Silverpeas.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public SelectableUserGroup[] getAllRootGroups() {
+    checkUserAuthentication();
+    List<Group> accessibleGroups = new ArrayList<Group>();
+    if (getUserDetail().isDomainRestricted()) {
+      accessibleGroups.addAll(Group.getAllRootsInDomain("-1"));
+      accessibleGroups.addAll(Group.getAllRootsInDomain(getUserDetail().getDomainId()));
+    } else {
+      accessibleGroups.addAll(Group.getAllRoots());
+    }
+    return asWebEntity(accessibleGroups, locatedAt(getUriInfo().getAbsolutePath()));
+  }
+  
+  @GET
+  @Path("{path: [0-9]+(/groups/[0-9]+)*}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public SelectableUserGroup getGroup(@PathParam("path") String groupPath) {
+    checkUserAuthentication();
+    String[] groupIds = groupPath.split("/groups/");
+    String groupId = groupIds[groupIds.length - 1];
+    Group theGroup = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+    return asWebEntity(theGroup, identifiedBy(getUriInfo().getAbsolutePath()));
+  }
+  
+  @GET
+  @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public SelectableUserGroup[] getSubGroups(@PathParam("path") String groups) {
+    checkUserAuthentication();
+    String[] groupIds = groups.split("/groups/?");
+    String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
+    SelectableUserGroup group = getGroup(groupId);
+    return asWebEntity(group.getSubGroups(), locatedAt(getUriInfo().getAbsolutePath()));
+  }
+  
+  @Override
+  protected String getComponentId() {
+    throw new UnsupportedOperationException("The UserGroupProfileResource doesn't belong to any component"
+            + " instances");
+  }
+  
+  protected URI locatedAt(final URI uri) {
+    return uri;
+  }
+  
+  protected URI identifiedBy(final URI uri) {
+    return uri;
+  }
+  
+  private SelectableUserGroup[] asWebEntity(List<Group> allGroups, URI baseUri) {
+    return SelectableUserGroup.fromGroups(allGroups, baseUri);
+  }
+  
+  private SelectableUserGroup asWebEntity(Group group, URI groupUri) {
+    return SelectableUserGroup.fromGroup(group).withAsUri(groupUri);
+  }
+}

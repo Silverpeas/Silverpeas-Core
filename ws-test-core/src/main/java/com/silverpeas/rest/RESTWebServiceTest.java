@@ -23,28 +23,30 @@
  */
 package com.silverpeas.rest;
 
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import javax.ws.rs.core.MultivaluedMap;
 import com.silverpeas.personalization.UserMenuDisplay;
-import com.sun.jersey.test.framework.JerseyTest;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.rest.mock.AccessControllerMock;
 import com.silverpeas.rest.mock.OrganizationControllerMock;
 import com.silverpeas.session.SessionInfo;
-import java.util.UUID;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
-import com.silverpeas.rest.mock.AccessControllerMock;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
+import java.util.UUID;
+import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Before;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.springframework.web.context.ContextLoaderListener;
-import static org.mockito.Mockito.*;
 
 /**
  * The base class for testing REST web services in Silverpeas.

@@ -48,8 +48,8 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   
   @Before
   public void prepareTestResources() {
-    getTestResources().allocate();
     sessionKey = authenticate(aUser());
+    getTestResources().allocate();
   }
   
   @Test

@@ -27,11 +27,11 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
+import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-import static com.silverpeas.util.ArrayUtil.EMPTY_STRING_ARRAY;
-import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import java.util.*;
+import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
@@ -465,6 +465,23 @@ public class OrganizationController implements java.io.Serializable {
     try {
       if (domainId != null) {
         return getAdminService().getUsersOfDomain(domainId);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getAllUsersInDomain",
+          "admin.EX_ERR_GET_USER_DETAILS", "domainId: '" + domainId, e);
+    }
+    return null;
+  }
+  
+  /**
+   * Gets all the user groups that belong to the specified domain.
+   * @param domainId the unique identifier of the domain.
+   * @return an array of Group objects or null if no such domain exists.
+   */
+  public Group[] getAllRootGroupsInDomain(String domainId) {
+    try {
+      if (domainId != null) {
+        return getAdminService().getRootGroupsOfDomain(domainId);
       }
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsersInDomain",

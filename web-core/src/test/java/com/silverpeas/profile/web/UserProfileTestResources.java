@@ -25,17 +25,11 @@ package com.silverpeas.profile.web;
 
 import com.silverpeas.rest.TestResources;
 import com.silverpeas.rest.mock.OrganizationControllerMock;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.annotation.PostConstruct;
+import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.springframework.aop.SpringProxy;
-import org.springframework.context.ApplicationContext;
 
 /**
  * The resources to use in the test on the UserProfileResource REST service. Theses objects manage
@@ -48,32 +42,51 @@ public class UserProfileTestResources extends TestResources {
   public static final String JAVA_PACKAGE = "com.silverpeas.profile.web";
   public static final String SPRING_CONTEXT = "spring-profile-webservice.xml";
   public static final String USER_PROFILE_PATH = "/profile/users";
-  
+  public static final String GROUP_PROFILE_PATH = "/profile/groups";
   @Inject
   private OrganizationControllerMock organization;
   private Set<String> domainIds = new HashSet<String>();
-  
+
   /**
    * Allocates the resources required by the unit tests.
    */
   public void allocate() {
     prepareSeveralUsers();
+    prepareSeveralGroups();
+    putUsersInGroups();
   }
   
+  public void deallocate() {
+    organization.clearAll();
+  }
+
   public UserDetail[] getAllExistingUsers() {
     return organization.getAllUsers();
   }
-  
+
   public UserDetail[] getAllExistingUsersInDomain(String domainId) {
-    List<UserDetail> theUsers = new ArrayList<UserDetail>();
-    for (UserDetail userDetail : getAllExistingUsers()) {
-      if (userDetail.getDomainId().equals(domainId)) {
-        theUsers.add(userDetail);
-      }
-    }
-    return theUsers.toArray(new UserDetail[theUsers.size()]);
+    return organization.getAllUsersInDomain(domainId);
+  }
+
+  public Group[] getAllExistingRootGroups() {
+    return organization.getAllRootGroups();
+  }
+
+  public Group[] getAllExistingRootGroupsInDomain(String domainId) {
+    return organization.getAllRootGroupsInDomain(domainId);
   }
   
+  public Group[] getAllRootGroupsAccessibleFromDomain(String domainId) {
+    List<Group> groups = new ArrayList<Group>();
+    groups.addAll(Arrays.asList(organization.getAllRootGroupsInDomain(domainId)));
+    groups.addAll(Arrays.asList(organization.getAllRootGroupsInDomain("-1")));
+    return groups.toArray(new Group[groups.size()]);
+  }
+  
+  public Group getGroupById(String groupId) {
+    return organization.getGroup(groupId);
+  }
+
   public UserDetail getWebServiceCaller() {
     UserDetail caller = null;
     for (UserDetail userDetail : getAllExistingUsers()) {
@@ -84,11 +97,11 @@ public class UserProfileTestResources extends TestResources {
     }
     return caller;
   }
-  
+
   public List<String> getAllDomainIds() {
     return new ArrayList<String>(domainIds);
   }
-  
+
   public List<String> getAllDomainIdsExceptedSilverpeasOne() {
     List<String> otherDomainIds = new ArrayList<String>(domainIds.size() - 1);
     for (String aDomainId : domainIds) {
@@ -99,18 +112,39 @@ public class UserProfileTestResources extends TestResources {
     return otherDomainIds;
   }
   
+  /**
+   * Gets randomly an existing group among the available resources for tests.
+   * @return a group.
+   */
+  public Group aGroup() {
+    Group[] allGroups = organization.getAllGroups();
+    return allGroups[new Random().nextInt(allGroups.length)];
+  }
+  
+  /**
+   * Gets a group that isn't in an internal domain.
+   * @return a group in a domain other than internal one.
+   */
+  public Group getAGroupNotInAnInternalDomain() {
+    Group group = aGroup();
+    while(group.getDomainId().equals("-1")) {
+      group = aGroup();
+    }
+    return group;
+  }
+
   private void prepareSeveralUsers() {
     UserDetail[] users = new UserDetail[5];
-    for(int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
       String suffix = String.valueOf(10 + i);
-      String domainId = String.valueOf((i + 1) % 2) + 1;
+      String domainId = (i == 0 ? "0" : (i < 3 ? "1" : "2"));
       domainIds.add(domainId);
       users[i] = aUser("Toto" + suffix, "Foo" + suffix, suffix, domainId);
     }
     addSomeUsers(users);
   }
-  
-  private void addSomeUsers(final UserDetail ... users) {
+
+  private void addSomeUsers(final UserDetail... users) {
     for (UserDetail userDetail : users) {
       organization.addUserDetail(userDetail);
     }
@@ -123,5 +157,56 @@ public class UserProfileTestResources extends TestResources {
     user.setId(id);
     user.setDomainId(domainId);
     return user;
+  }
+
+  private void prepareSeveralGroups() {
+    addSomeGroups(aGroup("Groupe 1", "1", null, "-1"),
+            aGroup("Groupe 2", "2", null, "-1"),
+            aGroup("Groupe 3", "3", null, "0"),
+            aGroup("Groupe 4 - 3", "4", "3", "0"),
+            aGroup("Groupe 5 - 4", "5", "4", "0"),
+            aGroup("Groupe 6", "6", null, "1"),
+            aGroup("Groupe 7 - 6", "7", "6", "1"),
+            aGroup("Groupe 8 - 6", "8", "6", "1"),
+            aGroup("Groupe 9 - 7", "9", "7", "1"));
+  }
+  
+  private void putUsersInGroups() {
+    Group internalGroup = organization.getGroup("1");
+    UserDetail[] users = organization.getAllUsers();
+    internalGroup.setUserIds(getUserIds(users));
+    
+    for (int i = 0; i <= 1; i++) {
+      String domainId = String.valueOf(i);
+      users = organization.getAllUsersInDomain(domainId);
+      if (users != null) {
+        Group[] groups = organization.getAllRootGroupsInDomain(domainId);
+        groups[0].setUserIds(getUserIds(users));
+      }
+    }
+  }
+
+  private void addSomeGroups(final Group... groups) {
+    for (Group group : groups) {
+      organization.addGroup(group);
+    }
+  }
+
+  private Group aGroup(String name, String id, String fatherId, String domainId) {
+    Group group = new Group();
+    group.setName(name);
+    group.setDescription("This is the group " + name);
+    group.setSuperGroupId(fatherId);
+    group.setId(id);
+    group.setDomainId(domainId);
+    return group;
+  }
+  
+  private String[] getUserIds(final UserDetail ... users) {
+    String[] ids = new String[users.length];
+    for(int i = 0; i < users.length; i++) {
+      ids[i] = users[i].getId();
+    }
+    return ids;
   }
 }

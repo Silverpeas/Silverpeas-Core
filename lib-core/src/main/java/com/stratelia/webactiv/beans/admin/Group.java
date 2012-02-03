@@ -25,9 +25,11 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.ArrayUtil;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class Group implements Serializable, Comparable<Group> {
 
@@ -42,6 +44,32 @@ public class Group implements Serializable, Comparable<Group> {
   private String[] m_sUserIds = ArrayUtil.EMPTY_STRING_ARRAY;
 
   private int nbUsers = -1;
+  
+  /**
+   * Gets the group with the specified unique identifier.
+   * @param id the unique identifier of the group to get.
+   * @return the group with the specified unique identifier or null if no such group exists.
+   */
+  public static Group getById(String id) {
+    return getOrganizationController().getGroup(id);
+  }
+  
+  /**
+   * Gets all root groups available in Silverpeas, whatever their domain.
+   * @return a list with all the groups in the Silverpeas portal.
+   */
+  public static List<Group> getAllRoots() {
+    return Arrays.asList(getOrganizationController().getAllRootGroups());
+  }
+  
+  /**
+   * Gets all root groups available in the specified domain in Silverpeas.
+   * @param domainId the unique identifier of the domain to which the root groups belong.
+   * @return a list with all the root user groups in the specified domain.
+   */
+  public static List<Group> getAllRootsInDomain(String domainId) {
+    return Arrays.asList(getOrganizationController().getAllRootGroupsInDomain(domainId));
+  }
 
   /**
    * Constructor
@@ -190,6 +218,7 @@ public class Group implements Serializable, Comparable<Group> {
     }
   }
 
+  @Override
   public int compareTo(Group o) {
     return (getName().toLowerCase()).compareTo(o.getName().toLowerCase());
   }
@@ -212,9 +241,91 @@ public class Group implements Serializable, Comparable<Group> {
     }
     return nbUsers;
   }
+  
+  /**
+   * Gets the total number of users in this group and in its subgroups.
+   * @return the total number of users.
+   */
+  public int getTotalNbUsers() {
+    return getOrganizationController().getAllSubUsersNumber(getId());
+  }
 
   public void setNbUsers(int nbUsers) {
     this.nbUsers = nbUsers;
   }
 
+  protected static OrganizationController getOrganizationController() {
+    return OrganizationControllerFactory.getFactory().getOrganizationController();
+  }
+
+  /**
+   * Is this group is a root one?
+   * A root group is a group that has no father group.
+   * @return true if this group is a root one, false otherwise.
+   */
+  public boolean isRoot() {
+    return !isDefined(this.superGroupId);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Group other = (Group) obj;
+    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+      return false;
+    }
+    if ((this.specificId == null) ? (other.specificId != null)
+            : !this.specificId.equals(other.specificId)) {
+      return false;
+    }
+    if ((this.domainId == null) ? (other.domainId != null) : !this.domainId.equals(other.domainId)) {
+      return false;
+    }
+    if ((this.superGroupId == null) ? (other.superGroupId != null)
+            : !this.superGroupId.equals(other.superGroupId)) {
+      return false;
+    }
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    if ((this.description == null) ? (other.description != null)
+            : !this.description.equals(other.description)) {
+      return false;
+    }
+    if ((this.rule == null) ? (other.rule != null) : !this.rule.equals(other.rule)) {
+      return false;
+    }
+    if (this.getNbUsers() != other.getNbUsers()) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 97 * hash + (this.specificId != null ? this.specificId.hashCode() : 0);
+    hash = 97 * hash + (this.domainId != null ? this.domainId.hashCode() : 0);
+    hash = 97 * hash + (this.superGroupId != null ? this.superGroupId.hashCode() : 0);
+    hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
+    hash = 97 * hash + (this.description != null ? this.description.hashCode() : 0);
+    hash = 97 * hash + (this.rule != null ? this.rule.hashCode() : 0);
+    hash = 97 * hash + this.nbUsers;
+    return hash;
+  }
+  
+  /**
+   * Gets the direct subgroups of this user group.
+   * @return a list with its direct subgroups. If this group hasn't children group, then the
+   * returned list is empty.
+   */
+  public List<Group> getSubGroups() {
+    return Arrays.asList(getOrganizationController().getAllSubGroups(getId()));
+  }
 }

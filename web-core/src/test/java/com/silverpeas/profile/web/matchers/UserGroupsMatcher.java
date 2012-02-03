@@ -23,48 +23,56 @@
  */
 package com.silverpeas.profile.web.matchers;
 
-import com.silverpeas.profile.web.SelectableUser;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.silverpeas.profile.web.SelectableUserGroup;
+import com.stratelia.webactiv.beans.admin.Group;
+import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import static com.silverpeas.profile.web.UserProfileTestResources.USER_PROFILE_PATH;
 
 /**
- * A matcher of one or more users details.
+ * A matcher of one or more user groups.
  */
-public class UsersMatcher extends TypeSafeMatcher<SelectableUser[]> {
+public class UserGroupsMatcher extends TypeSafeMatcher<SelectableUserGroup[]> {
 
-  public static Matcher<SelectableUser[]> contains(final UserDetail[] users) {
-    return new UsersMatcher(users);
+  public static Matcher<SelectableUserGroup[]> contains(final Group[] groups) {
+    return new UserGroupsMatcher(groups);
   }
-  private final UserDetail[] expected;
+  
+  public static Matcher<SelectableUserGroup[]> contains(final List<Group> groups) {
+    return new UserGroupsMatcher((groups.toArray(new Group[groups.size()])));
+  }
+  
+  private final Group[] expected;
   private String whatIsExpected = "";
 
-  private UsersMatcher(UserDetail[] users) {
-    this.expected = users;
+  private UserGroupsMatcher(Group[] groups) {
+    this.expected = groups;
   }
 
   @Override
-  protected boolean matchesSafely(SelectableUser[] actual) {
+  protected boolean matchesSafely(SelectableUserGroup[] actual) {
     boolean match = true;
     if (actual.length != expected.length) {
       match = false;
-      whatIsExpected = "The count of actual users should be the count of the expected users";
+      whatIsExpected = "The count of actual user groups should be the count of the expected groups";
     } else {
-      for (UserDetail expectedUser : expected) {
+      for (Group expectedGroup : expected) {
         boolean found = false;
-        for (SelectableUser actualUser : actual) {
-          if (actualUser.getId().equals(expectedUser.getId())) {
+        for (SelectableUserGroup actualGroup : actual) {
+          if (actualGroup.getId().equals(expectedGroup.getId())) {
             found = true;
-            if (!actualUser.getUri().toString().endsWith(USER_PROFILE_PATH + '/' + actualUser.getId())) {
+            if (!actualGroup.getUri().toString().endsWith("/" + actualGroup.getId())) {
               match = false;
-              whatIsExpected += "The actual user URI is incorrect: " + actualUser.getUri().toString();
+              whatIsExpected += "The actual user group URI is incorrect: " + actualGroup.getUri().toString();
             } else {
-              match = actualUser.equals(expectedUser);
+              match = actualGroup.getName().equals(expectedGroup.getName()) && actualGroup.
+                      getDescription().equals(expectedGroup.getDescription()) && actualGroup.
+                      getDomainId().equals(expectedGroup.getDomainId());
               if (!match) {
-                whatIsExpected += "The actual user of id '" + actualUser.getId() + " should match the "
-                      + "expected user with the same id. ";
+                whatIsExpected += "The actual user group of id '" + actualGroup.getId()
+                        + " should match the "
+                        + "expected group with the same id. ";
               }
             }
             break;
@@ -72,8 +80,8 @@ public class UsersMatcher extends TypeSafeMatcher<SelectableUser[]> {
         }
         if (!found) {
           match = false;
-          whatIsExpected += "The expected user of id '" + expectedUser.getId() + " isn't found " +
-                  "amoung the actual users. ";
+          whatIsExpected += "The expected user group of id '" + expectedGroup.getId()
+                  + " isn't found " + "amoung the actual groups. ";
         }
       }
     }
