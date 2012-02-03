@@ -103,7 +103,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         destination = doPagination(request, users, directorySC);
       } else if (function.equalsIgnoreCase("searchByKey")) {
 
-        users = directorySC.getUsersByQuery(request.getParameter("key").toUpperCase());
+        users = directorySC.getUsersByQuery(request.getParameter("key"));
         destination = doPagination(request, users, directorySC);
 
       } else if (function.equalsIgnoreCase("tous")) {
@@ -188,6 +188,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("pagination", pagination);
     request.setAttribute("View", directorySC.getCurrentView());
     request.setAttribute("Scope", directorySC.getCurrentDirectory());
+    request.setAttribute("Query", directorySC.getCurrentQuery());
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }
