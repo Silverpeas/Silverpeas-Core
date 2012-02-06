@@ -91,6 +91,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private SpaceInstLight currentSpace;
   private Properties stConfig;
   private RelationShipService relationShipService;
+  private String currentQuery;
 
   /**
    * Standard Session Controller Constructeur
@@ -126,6 +127,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getAllUsers() {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_DEFAULT);
+    setCurrentQuery(null);
     switch (GeneralPropertiesManager.getDomainVisibility()) {
       case GeneralPropertiesManager.DVIS_ALL:
         // all users are visible
@@ -148,7 +150,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
-
   }
 
   private List<UserDetail> getUsersOfCurrentUserDomain() {
@@ -170,6 +171,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public List<UserDetail> getUsersByIndex(String index) {
     setCurrentView(index);
+    setCurrentQuery(null);
     lastListUsersCalled = new ArrayList<UserDetail>();
     for (UserDetail varUd : lastAlllistUsersCalled) {
       if (varUd.getLastName().toUpperCase().startsWith(index)) {
@@ -187,6 +189,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public List<UserDetail> getUsersByQuery(String query) throws DirectoryException {
     setCurrentView("query");
+    setCurrentQuery(query);
     lastListUsersCalled = new ArrayList<UserDetail>();
 
     QueryDescription queryDescription = new QueryDescription(query);
@@ -224,6 +227,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getAllUsersByGroup(String groupId) {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_GROUP);
+    setCurrentQuery(null);
     currentGroup = getOrganizationController().getGroup(groupId);
     lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAlllistUsersCalled;
@@ -236,6 +240,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public List<UserDetail> getLastListOfAllUsers() {
     setCurrentView("tous");
+    setCurrentQuery(null);
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
   }
@@ -256,6 +261,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getAllUsersBySpace(String spaceId) {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_SPACE);
+    setCurrentQuery(null);
     currentSpace = getOrganizationController().getSpaceInstLightById(spaceId);
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
@@ -305,6 +311,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getAllUsersByDomains(List<String> domainIds) {
     getAllUsers();// recuperer tous les users
     setCurrentDirectory(DIRECTORY_DOMAIN);
+    setCurrentQuery(null);
     currentDomains = new ArrayList<Domain>();
     for (String domainId : domainIds) {
       currentDomains.add(getOrganizationController().getDomain(domainId));
@@ -321,6 +328,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public List<UserDetail> getAllContactsOfUser(String userId) {
     setCurrentView("tous");
+    setCurrentQuery(null);
     if (getUserId().equals(userId)) {
       setCurrentDirectory(DIRECTORY_MINE);
     } else {
@@ -400,6 +408,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public List<UserDetail> getConnectedUsers() {
     setCurrentView("connected");
+    setCurrentQuery(null);
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
     Collection<SessionInfo> sessions =
@@ -493,5 +502,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public SpaceInstLight getCurrentSpace() {
     return currentSpace;
+  }
+
+  public void setCurrentQuery(String currentQuery) {
+    this.currentQuery = currentQuery;
+  }
+
+  public String getCurrentQuery() {
+    return currentQuery;
   }
 }
