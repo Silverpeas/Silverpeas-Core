@@ -89,7 +89,7 @@
               <table cellpadding="5" cellspacing="0" border="0" width="100%">
                 <tr>
                   <td class="txtlibform" nowrap="nowrap"><fmt:message key="date" /> :</td>
-                  <td><fmt:formatDate value="${msg.date}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
+                  <td><view:formatDate value="${msg.date}" /></td>
                 </tr>
                 <tr>
                   <td class="txtlibform" nowrap="nowrap"><fmt:message key="source" /> :</td>

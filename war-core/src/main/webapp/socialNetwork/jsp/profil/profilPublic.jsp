@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -40,6 +42,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%  
+	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
 
     UserFull userFull = (UserFull) request.getAttribute("userFull");
@@ -71,9 +74,9 @@
                
 	    <!-- action  -->
         <div class="action">
-        	<a href="#" class="link invitation" onclick="initInvitation(<%=member.getId() %>,'<%=userFull.getDisplayedName() %>');"><fmt:message key="invitation.send" /></a>
+        	<a href="#" class="link invitation" onclick="initInvitation(<%=member.getId() %>,'<%=member.getUserDetail().getDisplayedName() %>');"><fmt:message key="invitation.send" /></a>
             <br />
-            <a href="#" class="link notification" onclick="initNotification(<%=member.getId() %>,'<%=userFull.getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
+            <a href="#" class="link notification" onclick="initNotification(<%=member.getId() %>,'<%=member.getUserDetail().getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
         </div> <!-- /action  -->
 
         <!-- profilPhoto  -->  
@@ -95,7 +98,7 @@
 
 	<!-- sousNav  --> 
 	<div class="sousNavBulle">
-		<p><fmt:message key="profil.subnav.display" /> : <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a></p>
+		<p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a></p>
 	</div><!-- /sousNav  --> 
 
 	<div class="tab-content">
@@ -122,8 +125,14 @@
 		}
 	%>
 	</table>
-	</div>              
-
+	<% 
+		  ButtonPane buttonPane = gef.getButtonPane();
+		  Button button = gef.getFormButton(resource.getString("GML.back"), "javascript:history.back()", false);
+		  buttonPane.addButton(button);
+		  out.print(buttonPane.print());
+	%>
+	
+	</div>
 </div><!-- /publicProfileContenu  -->   
 </view:window>
     
