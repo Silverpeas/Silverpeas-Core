@@ -84,7 +84,7 @@
       <item name="Changelog" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
       <item name="Release Notes" href="releasenotes.html" collapse="false"/>
       <item name="Installation" href="installation.html" collapse="false"/>
-      <item name="Migration" href="migration.html" collapse="true"/>
+      <item name="Screenshots" href="screenshots.html" collapse="true"/>
       <item name="FAQ" href="faq.html" collapse="true"/>
       <item name="Source Code" href="source-repository.html" collapse="true"/>
     </menu>
@@ -96,6 +96,7 @@
     </menu>
     <menu name="Product" inherit="none">
       <item name="Key Features" href="product/features.html" collapse="true"/>
+      <item name="Screenshots" href="screenshots.html" collapse="true"/>
       <item name="Collaboration" href="product/collaboration.html" collapse="true"/>
       <item name="Applications" href="product/applications.html" collapse="true">
         <item name="Social Network" href="product/social_network.html" collapse="true"/>
