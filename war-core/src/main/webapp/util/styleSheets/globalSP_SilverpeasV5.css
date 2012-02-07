@@ -4257,18 +4257,37 @@ html:not([lang*=""]) .add_position:hover {
 .vertical_align {
   vertical-align:middle;
 }
-
+#spaces-welcome-message h2 {
+	margin:0 0 20px;
+}
 #spaces-welcome-message a {
 	text-decoration: underline;
+	font-size:12px;
+}
+#spaces-welcome-message ul {
+	font-size:12px;
+	color:#333;
+}
+#spaces-welcome-message  p {
+	font-size:12px;
+	line-height:140%;
+	margin:10px 0 20px;
+	color:#333;
 }
 
+#spaces-welcome-message .accroche {
+	line-height:150%;
+}
+#topPage #spaces-welcome-message .yuimenu {
+	padding:1px 7px;
+	margin:0 5px;
+}
 #spaces-welcome-message h3 {
+	color:#000;
 	font-size: 13px;
 	padding: 0px;
 	margin: 15px 0px 5px 0px;
 }
-
-
 
 /********************************/
 /** BackEnd Applications List **/
