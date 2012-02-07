@@ -30,28 +30,24 @@
 
 <%
 //Recuperation des parametres
-ArrayLine arrayLine = null;
-Iterator   iter1 = null;
+Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
 
-	 Vector vStatsData = (Vector)request.getAttribute("StatsData");
+int totalNumberOfInstances = 0;
+
+TabbedPane tabbedPane = gef.getTabbedPane();
+tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",true);
+tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
+tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",false);
 %>
 
-<%
-	TabbedPane tabbedPane = gef.getTabbedPane();
-	
-	tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",true);
-	tabbedPane.addTab(resources.getString("GML.publications"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
-	tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",false);
-%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
 </head>
-<body>
+<body class="admin stats volume applications">
 <%
-
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.Volumes"));
     browseBar.setPath(resources.getString("silverStatisticsPeas.JobPeas"));
@@ -59,41 +55,39 @@ Iterator   iter1 = null;
     out.println(window.printBefore());
     out.println(tabbedPane.print());
     out.println(frame.printBefore());
+    
+    ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
+    arrayPane.setVisibleLineNumber(50);
+
+    arrayPane.addArrayColumn(resources.getString("GML.jobPeas"));
+    arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.InstancesNumber"));
+
+    if (vStatsData != null) {
+    	for (String[] item : vStatsData) {
+        	ArrayLine arrayLine = arrayPane.addArrayLine();				
+       		arrayLine.addArrayCellText(item[0]);
+            ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[1]);
+            Integer nbInstances = new Integer(item[1]);
+            totalNumberOfInstances += nbInstances;
+            cellTextCount.setCompareOn(nbInstances);
+        }
+	}
 %>
 
-<div align="center">
-<img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=(new Date()).getTime()%>"/>
+<div align="center" id="chart">
+	<img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=new Date().getTime()%>"/>
+</div>
+<div align="center" id="total">
+	<span><span class="number"><%=totalNumberOfInstances %></span> <%=resources.getString("silverStatisticsPeas.sums.applications") %></span>
 </div>
 
 <%
-		  // Tableau
-
-          ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
-          arrayPane.setVisibleLineNumber(50);
-
-          arrayPane.addArrayColumn(resources.getString("GML.jobPeas"));
-          arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.InstancesNumber"));
-
-        if (vStatsData != null)
-        {
-        	iter1 = vStatsData.iterator();
-        	
-        	while (iter1.hasNext())
-        	{        		
-				arrayLine = arrayPane.addArrayLine();
-				
-				String[] item = (String[]) iter1.next();
-				
-       			arrayLine.addArrayCellText(item[0]);
-              	ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[1]);
-              	cellTextCount.setCompareOn(new Integer(item[1]));
-        	}
-        	out.println(arrayPane.print());
-		}
-  %>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
+    if (vStatsData != null) {
+        out.println(arrayPane.print());
+	}
+  
+	out.println(frame.printAfter());
+	out.println(window.printAfter());
 %>
 </body>
 </html>

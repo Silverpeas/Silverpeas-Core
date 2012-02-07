@@ -29,26 +29,43 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-//Recuperation des parametres
-ArrayLine arrayLine = null;
-Iterator   iter1 = null;
-    
     String spaceId = (String) request.getAttribute("SpaceId");
-	Vector vPath = (Vector) request.getAttribute("Path");
-    Vector vStatsData = (Vector)request.getAttribute("StatsData");
+	Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
+    Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
     String userProfile = (String)request.getAttribute("UserProfile");
-%>
+    
+    long totalSize = 0;
 
-<%
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (userProfile.equals("A"))
-    {
+	if (userProfile.equals("A")) {
 		tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 	}
-	tabbedPane.addTab(resources.getString("GML.publications"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
+	tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
 	tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",true);
+	
+	ArrayPane arrayPane = gef.getArrayPane("List", "ViewVolumeSizeServer"+( (spaceId==null) ? "" : ("?SpaceId="+spaceId) ), request,session);
+	arrayPane.setVisibleLineNumber(50);
+      	
+    ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
+    ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsSize"));
+      	
+    if (vStatsData != null) {
+       	for (String[] item : vStatsData) {
+       	  	ArrayLine arrayLine = arrayPane.addArrayLine();
+           	if ("SPACE".equals(item[0])) {
+				arrayLine.addArrayCellLink("<b>"+item[2]+"</b>", "ViewVolumeSizeServer?SpaceId="+item[1]);
+           	} else {
+				arrayLine.addArrayCellText(item[2]);
+           	}
+         	long size = Long.parseLong(item[3]);
+         	totalSize += size;
+			ArrayCellText cellTextCount = arrayLine.addArrayCellText(FileRepositoryManager.formatFileSize(size));
+         	cellTextCount.setCompareOn(new Long(size));
+       	}
+    }
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
@@ -61,21 +78,16 @@ Iterator   iter1 = null;
 	}
 </script>
 </head>
-<body>
+<body class="admin stats volume attachments">
  <form name="volumeServerFormulaire" action="ViewVolumeSizeServer" method="post">
 <%
-
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes") + " > "+resources.getString("GML.attachments"));
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.AttachmentsSize"), "ViewVolumeSizeServer?SpaceId=");
     
-    if (spaceId != null && ! "".equals(spaceId))
-	{
+    if (spaceId != null && !"".equals(spaceId))	{
 		String path = "";
 		String separator = "";
-		Iterator i = vPath.iterator();
-		while ( i.hasNext() )
-		{
-			String[] pathItem = (String[]) i.next();
+		for (String[] pathItem : vPath) {
 			if (userProfile.equals("A")) {
 				path += separator + "<a href=\"ViewVolumeSizeServer"+( (pathItem[0]==null) ? "" : ("?SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
 			} else {
@@ -83,7 +95,6 @@ Iterator   iter1 = null;
 			}
 			separator = " > ";
 		}
-		
 		browseBar.setPath(path);
 	}
 	
@@ -96,67 +107,29 @@ Iterator   iter1 = null;
 
 	<div align="right">
 		<%=resources.getString("silverStatisticsPeas.Display")%>&nbsp;:
-		<select name="Display" size="1" onChange="changeDisplay()">
+		<select name="Display" size="1" onchange="changeDisplay()">
 			<option value="ViewVolumeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsNumber")%></option>
 			<option value="ViewVolumeSizeServer" selected><%=resources.getString("silverStatisticsPeas.AttachmentsSize")%></option>
-			<%
-			if (userProfile.equals("A"))
-    		{
-    		%>
+			<% if (userProfile.equals("A")) { %>
 				<option value="ViewEvolutionVolumeSizeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsTotalSize")%></option>
-			<%
-			}
-			%>
+			<% } %>
 		</select>
 	</div>
 
-<%
-	//Graphiques
-   	if (vStatsData != null)
-   	{
-%>
-<div align="center">
-	<img src="<%=m_context%>/ChartServlet/?chart=DOCSIZE_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
-</div>
-<%
-	}
-%>
+<% if (vStatsData != null) { %>
+	<div align="center" id="chart">
+		<img src="<%=m_context%>/ChartServlet/?chart=DOCSIZE_VENTIL_CHART&random=<%=new Date().getTime()%>"/>
+	</div>
+	<div align="center" id="total">
+		<span><span class="number"><%=FileRepositoryManager.formatFileSize(totalSize) %></span> <%=resources.getString("silverStatisticsPeas.sums.attachments.size") %></span>
+	</div>
+<% } %>
 <br/>
-<%
-
-		  // Tableau
-
-          	ArrayPane arrayPane = gef.getArrayPane("List", "ViewVolumeSizeServer"+( (spaceId==null) ? "" : ("?SpaceId="+spaceId) ), request,session);
-			arrayPane.setVisibleLineNumber(50);
-	      	
-	      	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
-            ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsSize"));
-	      	
-	      	if (vStatsData != null)
-	        {
-	        	iter1 = vStatsData.iterator();
-	        	
-	        	while (iter1.hasNext())
-	        	{
-					arrayLine = arrayPane.addArrayLine();
-					
-	            	String[] item = (String[]) iter1.next();
-	            	
-	            	if ( "SPACE".equals(item[0]) )
-	          			arrayLine.addArrayCellLink("<B>"+item[2]+"</B>", "ViewVolumeSizeServer?SpaceId="+item[1]);
-	          		else
-	          			arrayLine.addArrayCellText(item[2]);
-	          			
-					ArrayCellText cellTextCount = arrayLine.addArrayCellText(FileRepositoryManager.formatFileSize(Long.parseLong(item[3])));
-
-	          		cellTextCount.setCompareOn(new Long(item[3]));
-	        	}
-			
-				out.println(arrayPane.print());
-		        out.println("");
-	    }
+<%     	
+    if (vStatsData != null) {
+  		out.println(arrayPane.print());
+    }
   %>
-
  </form>
 <%
 out.println(frame.printAfter());
