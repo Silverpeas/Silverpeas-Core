@@ -30,25 +30,44 @@
 
 <%
 //Recuperation des parametres
-ArrayLine arrayLine = null;
-Iterator   iter1 = null;
-    
-    String spaceId = (String) request.getAttribute("SpaceId");
-	Vector vPath = (Vector) request.getAttribute("Path");
-    Vector vStatsData = (Vector)request.getAttribute("StatsData");
-    String userProfile = (String)request.getAttribute("UserProfile");
+String spaceId = (String) request.getAttribute("SpaceId");
+Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
+Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
+String userProfile = (String)request.getAttribute("UserProfile");
+
+int totalNumberOfAttachments = 0;
+
+TabbedPane tabbedPane = gef.getTabbedPane();
+if (userProfile.equals("A")) {
+	tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
+}
+tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
+tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",true);
+
+ArrayPane arrayPane = gef.getArrayPane("List", "ViewVolumeServer"+( (spaceId==null) ? "" : ("?SpaceId="+spaceId) ), request,session);
+arrayPane.setVisibleLineNumber(50);
+     
+ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
+ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsNumber"));
+ 	
+if (vStatsData != null) {
+   	for (String[] item : vStatsData) {
+   	  	ArrayLine arrayLine = arrayPane.addArrayLine();
+       	if ("SPACE".equals(item[0])) {
+    		arrayLine.addArrayCellLink("<b>"+item[2]+"</b>", "ViewVolumeServer?SpaceId="+item[1]);
+       	} else {
+    		arrayLine.addArrayCellText(item[2]);
+       	}
+     			
+   		ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[3]);
+   		Integer nb = new Integer(item[3]);
+   		totalNumberOfAttachments += nb;
+   		cellTextCount.setCompareOn(nb);
+  	}
+ }
 %>
 
-<%
-	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (userProfile.equals("A"))
-    {
-		tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
-	}
-	tabbedPane.addTab(resources.getString("GML.publications"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
-	tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",true);
-%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
@@ -61,21 +80,17 @@ Iterator   iter1 = null;
 	}
 </script>
 </head>
-<body>
+<body class="admin stats volume attachments">
  <form name="volumeServerFormulaire" action="ViewVolumeServer" method="post">
 <%	
 
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes") + " > "+resources.getString("GML.attachments"));
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.AttachmentsNumber"), "ViewVolumeServer?SpaceId=");
     
-    if (spaceId != null && ! "".equals(spaceId))
-	{
+    if (spaceId != null && !"".equals(spaceId)) {
 		String path = "";
 		String separator = "";
-		Iterator i = vPath.iterator();
-		while ( i.hasNext() )
-		{
-			String[] pathItem = (String[]) i.next();
+		for (String[] pathItem : vPath) {
 			if (userProfile.equals("A")) {
 				path += separator + "<a href=\"ViewVolumeServer"+( (pathItem[0]==null) ? "" : ("?SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
 			} else {
@@ -83,7 +98,6 @@ Iterator   iter1 = null;
 			}
 			separator = " > ";
 		}
-		
 		browseBar.setPath(path);
 	}
     
@@ -95,68 +109,30 @@ Iterator   iter1 = null;
 <br/>
 	<div align="right">
 		<%=resources.getString("silverStatisticsPeas.Display")%>&nbsp;:
-		<select name="Display" size="1" onChange="changeDisplay()">
-			<option value="ViewVolumeServer" selected><%=resources.getString("silverStatisticsPeas.AttachmentsNumber")%></option>
+		<select name="Display" size="1" onchange="changeDisplay()">
+			<option value="ViewVolumeServer" selected="selected"><%=resources.getString("silverStatisticsPeas.AttachmentsNumber")%></option>
 			<option value="ViewVolumeSizeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsSize")%></option>
-			<%
-			if (userProfile.equals("A"))
-    		{
-    		%>
+			<% if (userProfile.equals("A")) { %>
 				<option value="ViewEvolutionVolumeSizeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsTotalSize")%></option>
-			<%
-			}
-			%>
+			<% } %>
 		</select>
 	</div>
 		    
-<%
-	//Graphiques
-   	if (vStatsData != null)
-   	{
-%>
-<div align="center">
-	<img src="<%=m_context%>/ChartServlet/?chart=DOC_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
-</div>
-<%
-	}
-%>
+<% if (vStatsData != null) { %>
+	<div align="center" id="chart">
+		<img src="<%=m_context%>/ChartServlet/?chart=DOC_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
+	</div>
+	<div align="center" id="total">
+		<span><span class="number"><%=totalNumberOfAttachments %></span> <%=resources.getString("silverStatisticsPeas.sums.attachments.number") %></span>
+	</div>
+<% } %>
 <br/>
 <%
-
-		  // Tableau
-
-          	ArrayPane arrayPane = gef.getArrayPane("List", "ViewVolumeServer"+( (spaceId==null) ? "" : ("?SpaceId="+spaceId) ), request,session);
-			arrayPane.setVisibleLineNumber(50);
-          
-	      	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
-            ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsNumber"));
-	      	
-	      	if (vStatsData != null)
-	        {
-	        	iter1 = vStatsData.iterator();
-	        	
-	        	while (iter1.hasNext())
-	        	{
-					arrayLine = arrayPane.addArrayLine();
-					
-	            	String[] item = (String[]) iter1.next();
-	            	
-	            	if ( "SPACE".equals(item[0]) )
-	          			arrayLine.addArrayCellLink("<B>"+item[2]+"</B>", "ViewVolumeServer?SpaceId="+item[1]);
-	          		else
-	          			arrayLine.addArrayCellText(item[2]);
-	          			
-	          		ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[3]);
-	          		cellTextCount.setCompareOn(new Integer(item[3]));
-	          		
-	        	}
-			
-				out.println(arrayPane.print());
-		        out.println("");
-	    }
-  %>
-
- </form>
+	if (vStatsData != null) {
+		out.println(arrayPane.print());
+ 	}
+%>
+</form>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
