@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%!
 
 	private String formatDate(ResourcesWrapper resources, String date) 
@@ -69,45 +69,32 @@
 	}
 %>
 
-<%
-//Recuperation des parametres
-ArrayLine arrayLine = null;
-Iterator   iter1 = null;
-    
-    Vector vStatsData = (Vector)request.getAttribute("StatsData");
+<%  
+    Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
     String userProfile = (String)request.getAttribute("UserProfile");
-%>
 
-<%
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (userProfile.equals("A"))
-    {
+	if (userProfile.equals("A")) {
 		tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 	}
-	tabbedPane.addTab(resources.getString("GML.publications"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
+	tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
 	tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",true);
 %>
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<!--[ JAVASCRIPT ]-->
-<SCRIPT LANGUAGE="JAVASCRIPT">
-
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
+<script type="text/javascript">
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
 		document.volumeServerFormulaire.submit();		
 	}
-
-</SCRIPT>
+</script>
+</head>
+<body>
+<form name="volumeServerFormulaire" action="ViewEvolutionVolumeSizeServer" method="post">
 <%
-   out.println(gef.getLookStyleSheet());
-%>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
- <FORM name="volumeServerFormulaire" action="ViewEvolutionVolumeSizeServer" method="post">
-<%
-
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes"));
     browseBar.setComponentName(resources.getString("GML.attachments"));
     browseBar.setPath(resources.getString("silverStatisticsPeas.AttachmentsTotalSize"));
@@ -117,59 +104,42 @@ Iterator   iter1 = null;
     out.println(frame.printBefore());
 %>
 
-<BR>
+<br/>
 
 	<div align="right">
 		<%=resources.getString("silverStatisticsPeas.Display")%>&nbsp;:
-		<select name="Display" size="1" onChange="changeDisplay()">
+		<select name="Display" size="1" onchange="changeDisplay()">
 			<option value="ViewVolumeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsNumber")%></option>
 			<option value="ViewVolumeSizeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsSize")%></option>
-			<%
-			if (userProfile.equals("A"))
-    		{
-    		%>
+			<% if (userProfile.equals("A")) { %>
 				<option value="ViewEvolutionVolumeSizeServer" selected><%=resources.getString("silverStatisticsPeas.AttachmentsTotalSize")%></option>
-			<%
-			}
-			%>
+			<% } %>
 		</select>
 	</div>
-<%
-	//Graphiques
-   	if (vStatsData != null)
-   	{
-%>
-<div align="center">
-	<img src="<%=m_context%>/ChartServlet/?chart=EVOLUTION_DOCSIZE_CHART&random=<%=(new Date()).getTime()%>">
+<% if (vStatsData != null) { %>
+<div align="center" id="chart">
+	<img src="<%=m_context%>/ChartServlet/?chart=EVOLUTION_DOCSIZE_CHART&random=<%=new Date().getTime()%>"/>
 </div>
+<% } %>
+<br/>
 <%
-	}
-%>
-<br>
-<%
-		  // Tableau
-
           	ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
 			arrayPane.setVisibleLineNumber(50);
-          	if (arrayPane.getColumnToSort()==0)
+          	if (arrayPane.getColumnToSort()==0) {
 	      		arrayPane.setColumnToSort(1);
+          	}
 	      	
 	      	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("GML.date"));
             ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("GML.name"));
             ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("GML.size"));
 	      	
-	      	if (vStatsData != null)
-	        {
-	        	iter1 = vStatsData.iterator();
+	      	if (vStatsData != null) {
 	        	ArrayCellText cellText;
 	        	
-	        	while (iter1.hasNext())
-	        	{
-					arrayLine = arrayPane.addArrayLine();
-					
-	            	String[] item = (String[]) iter1.next();
+	        	for (String[] item : vStatsData) {
+					ArrayLine arrayLine = arrayPane.addArrayLine();
 	            	
-	            	//transformation de la date 2007-02-01 -> F�v. 2007            	
+	            	//transformation de la date 2007-02-01 -> Fév. 2007            	
 					cellText = arrayLine.addArrayCellText(formatDate(resources, item[0]));
 					cellText.setCompareOn(item[0]);
 
@@ -184,10 +154,10 @@ Iterator   iter1 = null;
 	    }
   %>
   
- </FORM>
+ </form>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

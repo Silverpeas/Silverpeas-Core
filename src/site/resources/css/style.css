@@ -1,0 +1,103 @@
+
+
+
+.mygallery {
+	margin-top:20px;
+}
+
+
+
+
+.tn3-image-in {
+	background: silver url(tn3/diagonals2.gif) fixed;
+}
+/*
+
+.tn3-gallery {
+	background-color: #eceded;
+	height:402px;
+	float:left;
+	width:834px;
+	position:relative;
+}
+
+
+
+.tn3-image {
+	width:834px;
+	height:342px;
+	overflow:hidden;
+	position:relative;
+	top:13px;
+	background-color:#eceded;
+}
+
+
+.tn3-text-bg {
+	top:0px;
+}
+
+.tn3-controls-bg {
+	height:47px;
+	position:absolute;
+	width:743px;
+	bottom:0;
+	left:45px;
+}
+
+.tn3-sep1 {
+	height:47px;
+	left:47px;
+	width:2px;
+	position:absolute;
+}
+
+.tn3-sep2 {
+	height:47px;
+	position:absolute;
+	right:96px;
+	width:2px;
+}
+
+.tn3-sep3 {
+	height:47px;
+	position:absolute;
+	width:2px;
+	right:47px;
+}
+	
+.tn3-thumbs {
+	height:37px;
+	left:94px;
+	padding:4px 28px;
+	width:540px;
+	bottom:0px;
+}
+
+.tn3-fullscreen {
+	right:57px
+}
+
+.tn3-next-page {
+	right:145px
+}
+
+#title "Powered by TN3 Gallery" {
+	right:102px;
+}
+
+.tn3-prev-page {
+	left:95px
+}
+
+.tn3-play {
+	left:58px
+} */
+
+#desc {
+	float:left;
+	font-family:Arial, Helvetica, sans-serif;
+	color:#000;
+	margin:10px 0px 0px;
+	font-size:13px;
+}
