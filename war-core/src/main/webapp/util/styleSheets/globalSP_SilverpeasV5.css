@@ -4257,22 +4257,41 @@ html:not([lang*=""]) .add_position:hover {
 .vertical_align {
   vertical-align:middle;
 }
-
+#spaces-welcome-message h2 {
+	margin:0 0 20px;
+}
 #spaces-welcome-message a {
 	text-decoration: underline;
+	font-size:12px;
+}
+#spaces-welcome-message ul {
+	font-size:12px;
+	color:#333;
+}
+#spaces-welcome-message  p {
+	font-size:12px;
+	line-height:140%;
+	margin:10px 0 20px;
+	color:#333;
 }
 
+#spaces-welcome-message .accroche {
+	line-height:150%;
+}
+#topPage #spaces-welcome-message .yuimenu {
+	padding:1px 7px;
+	margin:0 5px;
+}
 #spaces-welcome-message h3 {
+	color:#000;
 	font-size: 13px;
 	padding: 0px;
 	margin: 15px 0px 5px 0px;
 }
 
-
-
 /********************************/
 /** BackEnd Applications List **/
-/******************************/
+/*******************************/
 
 ul.applicationsTypeList *{
 	padding:0;
@@ -4455,4 +4474,28 @@ li.application  .applicationName {
 .type_05 a  span{background:transparent url(../icons/component/groupe_Type_workflow.png) 18px 3px no-repeat;}
 .type_06 a  span {background:transparent url(../icons/component/groupe_Type_connecteur.png) 18px 3px no-repeat;}
 
+/*************************************/
+/** BackEnd Applications List - End */
+/***********************************/
 
+.admin.stats.volume #chart {
+	float: left;
+	width: 75%;
+}
+
+.admin.stats.volume #total {
+	float: left;
+	font-size: 16px;
+	font-weight: bold;
+	display: table;
+	height: 350px;
+}
+
+.admin.stats.volume #total>span {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.admin.stats.volume #total .number {
+	color: #F1790F;
+}
