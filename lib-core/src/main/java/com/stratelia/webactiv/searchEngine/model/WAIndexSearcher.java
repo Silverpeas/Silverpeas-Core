@@ -23,47 +23,23 @@
  */
 package com.stratelia.webactiv.searchEngine.model;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Set;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
-import com.stratelia.webactiv.util.indexEngine.model.ExternalComponent;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
-import com.stratelia.webactiv.util.indexEngine.model.IndexSearchersCache;
-import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
+import com.stratelia.webactiv.util.indexEngine.model.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.*;
 
 /**
  * The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
@@ -139,7 +115,7 @@ public class WAIndexSearcher {
     MatchingIndexEntry matchingIndexEntry = null;
     Searcher searcher = getSearcher(set);
     try {
-      TopDocs topDocs = null;
+      TopDocs topDocs;
       Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
 
       TermQuery query = new TermQuery(term);
@@ -170,12 +146,12 @@ public class WAIndexSearcher {
   public MatchingIndexEntry[] search(QueryDescription query)
           throws com.stratelia.webactiv.searchEngine.model.ParseException {
     long startTime = System.nanoTime();
-    List<MatchingIndexEntry> results = null;
+    List<MatchingIndexEntry> results;
 
     Searcher searcher = getSearcher(query);
 
     try {
-      TopDocs topDocs = null;
+      TopDocs topDocs;
       BooleanQuery booleanQuery = new BooleanQuery();
       booleanQuery.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
       booleanQuery.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
@@ -260,7 +236,7 @@ public class WAIndexSearcher {
 
     String language = query.getRequestedLanguage();
 
-    Query parsedQuery = null;
+    Query parsedQuery;
     if (I18NHelper.isI18N && "*".equals(language)) {
       // search over all languages
       String[] fields = new String[I18NHelper.getNumberOfLanguages()];
@@ -306,7 +282,7 @@ public class WAIndexSearcher {
           IOException {
 
     try {
-      Hashtable<String, String> xmlQuery = query.getXmlQuery();
+      Map<String, String> xmlQuery = query.getXmlQuery();
       String xmlTitle = query.getXmlTitle();
 
       int nbFields = xmlQuery.size();
@@ -422,7 +398,7 @@ public class WAIndexSearcher {
     // and puts them in MatchingIndexEntry object
     if ("Publication".equals(indexEntry.getObjectType())) {
       HashMap<String, String> sortableField = new HashMap<String, String>();
-      String fieldValue = null;
+      String fieldValue;
 
       for (String formXMLFieldName : SearchEnginePropertiesManager.getFieldsNameList()) {
         if ("*".equals(requestedLanguage) || I18NHelper.isDefaultLanguage(requestedLanguage)) {
@@ -450,7 +426,7 @@ public class WAIndexSearcher {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
 
     if (topDocs != null) {
-      ScoreDoc scoreDoc = null;
+      ScoreDoc scoreDoc;
 
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         scoreDoc = topDocs.scoreDocs[i];

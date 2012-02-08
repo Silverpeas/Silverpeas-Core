@@ -114,7 +114,7 @@ public class UserGroupProfileResource extends RESTWebService {
     return uri;
   }
   
-  private SelectableUserGroup[] asWebEntity(List<Group> allGroups, URI baseUri) {
+  private SelectableUserGroup[] asWebEntity(List<? extends Group> allGroups, URI baseUri) {
     return SelectableUserGroup.fromGroups(allGroups, baseUri);
   }
   

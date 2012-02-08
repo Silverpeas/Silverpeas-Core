@@ -28,7 +28,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
 
@@ -131,7 +130,7 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   ComponentIndexerInterface getIndexer(ComponentInstLight compoInst) {
-    ComponentIndexerInterface componentIndexer = null;
+    ComponentIndexerInterface componentIndexer;
     String compoName= firstLetterToUpperCase(compoInst.getName());
     String className = getClassName(compoInst);
     String packageName  = getPackage(compoInst);
@@ -214,14 +213,10 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   public void indexUsers() {
-    AdminController admin = new AdminController(null);
     admin.indexAllUsers();
-    admin = null;
   }
   
   public void indexGroups() {
-    AdminController admin = new AdminController(null);
     admin.indexAllGroups();
-    admin = null;
   }
 }

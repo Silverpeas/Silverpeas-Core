@@ -147,7 +147,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup) + "/groups";
-    List<Group> actualSubGroups = actualGroup.getSubGroups();
+    List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
     SelectableUserGroup[] expectedSubGroups = getAt(path, getWebEntityClass());
     assertThat(actualSubGroups.size(), is(expectedSubGroups.length));
     assertThat(expectedSubGroups, contains(actualSubGroups));
@@ -159,7 +159,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
     getTestResources().getWebServiceCaller().setDomainId(actualGroup.getDomainId());
     String path = buildURIPathOf(actualGroup) + "/groups";
-    List<Group> actualSubGroups = actualGroup.getSubGroups();
+    List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
     SelectableUserGroup[] expectedSubGroups = getAt(path, getWebEntityClass());
     assertThat(actualSubGroups.size(), is(expectedSubGroups.length));
     assertThat(expectedSubGroups, contains(actualSubGroups));

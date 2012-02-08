@@ -174,7 +174,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void gettingAllUsersOfAGivenGroupWhateverTheDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
-    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
     SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -186,7 +186,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId());
-    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
     SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -197,7 +197,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAllUsersOfAGivenGroupWhateverTheDomainWhenInSilverpeasDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
-    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
     SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -209,7 +209,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId());
-    List<UserDetail> expectedUsers = aGroup.getAllUsers();
+    List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
     SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -222,7 +222,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
       GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
       Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
       getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId() + "0");
-      List<UserDetail> expectedUsers = aGroup.getAllUsers();
+      List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
       getAt(aResourceURI() + "?group=" + aGroup.getId(), getWebEntityClass());
       fail("The user shouldn't be get as it is unaccessible");
     } catch (UniformInterfaceException ex) {
@@ -230,6 +230,50 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
       int forbidden = Response.Status.FORBIDDEN.getStatusCode();
       assertThat(receivedStatus, is(forbidden));
     }
+  }
+  
+  @Test
+  public void getAUserByItsFirstName() {
+    UserDetail expectedUser =  getTestResources().anExistingUser();
+    UserDetail[] actualUsers = getAt(aResourceURI() + "?name=" + expectedUser.getFirstName(),
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(1));
+    assertThat(actualUsers[0], is(expectedUser));
+  }
+  
+  @Test
+  public void getAUserByItsLastName() {
+    UserDetail expectedUser =  getTestResources().anExistingUser();
+    SelectableUser[] actualUsers = getAt(aResourceURI() + "?name=" + expectedUser.getLastName(),
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(1));
+    assertThat(actualUsers[0], is(expectedUser));
+  }
+  
+  @Test
+  public void getAUserByTheFirstCharactersOfItsName() {
+    UserDetail[] expectedUsers =  getTestResources().getAllExistingUsers();
+    String name = expectedUsers[0].getFirstName().substring(0, 2) + "*";
+    SelectableUser[] actualUsers = getAt(aResourceURI() + "?name=" + name,
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.length));
+    assertThat(actualUsers, contains(expectedUsers));
+  }
+  
+  @Test
+  public void getAUserInAGivenGroupByTheFirstCharactersOfItsName() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    Group group;
+    List<? extends UserDetail> expectedUsers;
+    do {
+      group = getTestResources().getAGroupNotInAnInternalDomain();
+      expectedUsers =  group.getAllUsers();
+    } while(expectedUsers.isEmpty());
+    String name = expectedUsers.get(0).getFirstName().substring(0, 2) + "*";
+    SelectableUser[] actualUsers = getAt(aResourceURI() + "?group=" + group.getId() + "?name=" + name,
+            getWebEntityClass());
+    assertThat(actualUsers.length, is(expectedUsers.size()));
+    assertThat(actualUsers, contains(expectedUsers));
   }
 
   @Override

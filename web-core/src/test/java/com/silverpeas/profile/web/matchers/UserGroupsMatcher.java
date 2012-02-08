@@ -39,7 +39,7 @@ public class UserGroupsMatcher extends TypeSafeMatcher<SelectableUserGroup[]> {
     return new UserGroupsMatcher(groups);
   }
   
-  public static Matcher<SelectableUserGroup[]> contains(final List<Group> groups) {
+  public static Matcher<SelectableUserGroup[]> contains(final List<? extends Group> groups) {
     return new UserGroupsMatcher((groups.toArray(new Group[groups.size()])));
   }
   

@@ -14,6 +14,7 @@
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" />
 <fmt:message var="selectLabel" key="GML.validate"/>
 <fmt:message var="cancelLabel" key="GML.cancel"/>
+<fmt:message var="searchLabel" key="GML.search"/>
 
 <c:set var="selectionType" value="${param.type}"/>
 <c:set var="selectionScope" value="${param.scope}"/>
@@ -29,6 +30,7 @@
     <title><fmt:message key="GML.selection"/></title>
     <script type="text/javascript" >
       var callbackUrl = '<c:out value="${param.url}"/>';
+      var path = [];
     <c:choose>
       <c:when test='${selectionType == "multiple"}'>
       var type = 'checkbox';
@@ -39,11 +41,19 @@
     </c:choose>
       
     <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-      function loadUsers(inGroup) {
+      function searchUsers() {
+        var name = $('input#user-search-field').val() + "*";
+        var group = (path.length <= 1 ? null:path[path.length - 1]);
+        loadUsers(group, name);
+      }
+      
+      function loadUsers(inGroup, withName) {
         $('tr.user').remove();
         var uriOfUsers = webContext + '/services/profile/users';
         if (inGroup)
           uriOfUsers += "?group=" + inGroup.id;
+        if (withName)
+          uriOfUsers += "?name=" + withName;
         $.ajax({
           url: uriOfUsers,
           type: 'GET',
@@ -83,7 +93,6 @@
     
     <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
       var rootGroup = { childrenUri: webContext + '/services/profile/groups', name: '<fmt:message key="GML.groupes"/>' };
-      var path = [];
     <c:choose>
       <c:when test='${selectionScope == "user" || selectionScope == "usergroup"}'>
       var onGroupChange = function(newGroup) {
@@ -130,7 +139,7 @@
           success: function(groups) {
             var style = 'even';
             updateGroupPathWith(theGroup);
-            renderGroupPathAt($('#current-group_name'));
+            renderGroupPathAt($('#group-path'));
             $.each(groups, function(i, group) {
               $('<tr>').addClass('group').addClass(style).
                 append($('<td>').append($('<input>', {type: type, name: 'group', value: group.id}))).
@@ -192,7 +201,7 @@
         <input id="group-selection" type="hidden" value=""/>
         <div id="groups">
           <table id="group_list">
-            <caption id="current-group_name"></caption>
+            <caption id="group-path"></caption>
             <tr class="heading">
               <th></th>
               <th><fmt:message key="GML.name"/></th>
@@ -209,6 +218,10 @@
       <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
         <input id="user-selection" type="hidden" value=""/>
         <div id="users">
+          <div id="user-search">
+            <input id="user-search-field" type="text" value=""/>
+            <view:button label="${searchLabel}" action="javascript:searchUsers();"/>
+          </div>
           <table id="user_list">
             <caption><fmt:message key="GML.users"/></caption>
              <tr class="heading">

@@ -28,7 +28,9 @@ import com.silverpeas.rest.RESTWebService;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,20 +42,19 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
- * A REST-based Web service that acts on the user profiles in Silverpeas.
- * Each provided method is a way to access a representation of one or several user profile. This
- * representation is vehiculed as a Web entity in the HTTP requests and responses.
- * 
- * The users that are published depend on some parameters whose the domain isolation and the
- * profile of the user behind the requesting.
- * The domain isolation defines the visibility of a user or a group of users in a given domain to
- * the others domains in Silverpeas.
+ * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
+ * way to access a representation of one or several user profile. This representation is vehiculed
+ * as a Web entity in the HTTP requests and responses.
+ *
+ * The users that are published depend on some parameters whose the domain isolation and the profile
+ * of the user behind the requesting. The domain isolation defines the visibility of a user or a
+ * group of users in a given domain to the others domains in Silverpeas.
  */
 @Service
 @Scope("request")
 @Path(USERS_BASE_URI)
 public class UserProfileResource extends RESTWebService {
-  
+
   @Inject
   private UserProfileService profileService;
 
@@ -68,17 +69,17 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUser[] getUsers(@QueryParam("group") String groupId) {
+  public SelectableUser[] getUsers(@QueryParam("group") String groupId,
+          @QueryParam("name") String name) {
     checkUserAuthentication();
-    List<UserDetail> allUsers;
-    if (isDefined(groupId)) {
-      allUsers = getAllUsersInGroup(groupId);
-    } else {
+    List<? extends UserDetail> allUsers = findUsersByGroup(groupId);
+    allUsers = findUsersByName(name, allUsers);
+    if (allUsers == null) {
       allUsers = getAllUsers();
     }
     return asWebEntity(allUsers, locatedAt(getUriInfo().getAbsolutePath()));
   }
-  
+
   @GET
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -88,11 +89,12 @@ public class UserProfileResource extends RESTWebService {
     if (theUser == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    if (getUserDetail().isDomainRestricted() && !theUser.getDomainId().equals(getUserDetail().getDomainId())) {
+    if (getUserDetail().isDomainRestricted() && !theUser.getDomainId().equals(getUserDetail().
+            getDomainId())) {
       Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
-                + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
-                  userId});
-        throw new WebApplicationException(Response.Status.FORBIDDEN);
+              + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
+                userId});
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
     return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
   }
@@ -102,26 +104,21 @@ public class UserProfileResource extends RESTWebService {
     throw new UnsupportedOperationException("The UserProfileResource doesn't belong to any component"
             + " instances");
   }
-  
+
   protected URI locatedAt(final URI uri) {
     return uri;
   }
-  
+
   protected URI identifiedBy(final URI uri) {
     return uri;
   }
 
-  private SelectableUser[] asWebEntity(final List<UserDetail> allUsers, final URI baseUri) {
+  private SelectableUser[] asWebEntity(final List<? extends UserDetail> allUsers, final URI baseUri) {
     return SelectableUser.fromUsers(allUsers, baseUri);
   }
-  
+
   private SelectableUser asWebEntity(final UserDetail user, final URI userUri) {
     return SelectableUser.fromUser(user).withAsUri(userUri);
-  }
-
-  private List<UserDetail> getAllUsersInGroup(String groupId) {
-    Group theGroup = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
-    return theGroup.getAllUsers();
   }
 
   private List<UserDetail> getAllUsers() {
@@ -132,5 +129,43 @@ public class UserProfileResource extends RESTWebService {
       allUsers = UserDetail.getAll();
     }
     return allUsers;
+  }
+
+  private List<? extends UserDetail> findUsersByName(String name,
+          final List<? extends UserDetail> users) {
+    if (isDefined(name)) {
+      List<UserDetail> foundUsers = null;
+      UserDetail model = new UserDetail();
+      if (users != null && !users.isEmpty()) {
+        model.setDomainId(users.get(0).getId());
+      } else if (getUserDetail().isDomainRestricted()) {
+        model.setDomainId(getUserDetail().getDomainId());
+      }
+      String filterByName = name.replaceAll("\\*", "%");
+      model.setFirstName(filterByName);
+      model.setLastName(filterByName);
+      UserDetail[] usersWithExpectedName = getOrganizationController().searchUsers(model, false);
+      if (users == null || users.isEmpty()) {
+        foundUsers = Arrays.asList(usersWithExpectedName);
+      } else {
+        foundUsers = new ArrayList<UserDetail>();
+        for (UserDetail expectedUser : usersWithExpectedName) {
+          if (users.contains(expectedUser)) {
+            foundUsers.add(expectedUser);
+          }
+        }
+      }
+      return foundUsers;
+    }
+    return users;
+  }
+
+  private List<? extends UserDetail> findUsersByGroup(String groupId) {
+    List<? extends UserDetail> foundUsers = null;
+    if (isDefined(groupId)) {
+      Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+      foundUsers = group.getAllUsers();
+    }
+    return foundUsers;
   }
 }

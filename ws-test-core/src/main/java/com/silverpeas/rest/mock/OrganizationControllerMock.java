@@ -215,4 +215,36 @@ public class OrganizationControllerMock extends OrganizationController {
   public void addComponentInstance(String componentId) {
     components.add(componentId);
   }
+
+  @Override
+  public UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd) {
+    List<UserDetail> foundUsers = new ArrayList<UserDetail>();
+    for (UserDetail user : users.values()) {
+      if (modelUser.getFirstName() != null && modelUser.getFirstName().endsWith("%")) {
+        String name = modelUser.getFirstName().replace("%", "");
+        if (user.getFirstName().startsWith(name)) {
+          foundUsers.add(user);
+          continue;
+        }
+      } else {
+        if (user.getFirstName().equals(modelUser.getFirstName())) {
+          foundUsers.add(user);
+          continue;
+        }
+      }
+      if (modelUser.getLastName() != null && modelUser.getLastName().endsWith("%")) {
+        String name = modelUser.getFirstName().replace("%", "");
+        if (user.getLastName().startsWith(name)) {
+          foundUsers.add(user);
+          continue;
+        }
+      } else {
+        if (user.getLastName().equals(modelUser.getLastName())) {
+          foundUsers.add(user);
+          continue;
+        }
+      }
+    }
+    return foundUsers.toArray(new UserDetail[foundUsers.size()]);
+  }
 }

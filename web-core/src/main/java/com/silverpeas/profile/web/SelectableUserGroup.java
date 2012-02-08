@@ -64,7 +64,7 @@ public class SelectableUserGroup extends Group implements Selectable {
    * @param groupsURI the URI at which the specified groups are defined.
    * @return a list of selectable user groups, not selected by default.
    */
-  public static SelectableUserGroup[] fromGroups(final List<Group> groups, URI groupsURI) {
+  public static SelectableUserGroup[] fromGroups(final List<? extends Group> groups, URI groupsURI) {
     SelectableUserGroup[] selectableGroups = new SelectableUserGroup[groups.size()];
     String fromGroupsUri = groupsURI.toString();
     int i = 0;
@@ -245,7 +245,7 @@ public class SelectableUserGroup extends Group implements Selectable {
   }
 
   @Override
-  public List<Group> getSubGroups() {
+  public List<? extends Group> getSubGroups() {
     return this.group.getSubGroups();
   }
 

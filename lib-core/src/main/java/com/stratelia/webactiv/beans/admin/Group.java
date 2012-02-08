@@ -325,7 +325,7 @@ public class Group implements Serializable, Comparable<Group> {
    * @return a list with its direct subgroups. If this group hasn't children group, then the
    * returned list is empty.
    */
-  public List<Group> getSubGroups() {
+  public List<? extends Group> getSubGroups() {
     return Arrays.asList(getOrganizationController().getAllSubGroups(getId()));
   }
   
@@ -333,7 +333,7 @@ public class Group implements Serializable, Comparable<Group> {
    * Gets the detail about all the users that are in this group (and in the subgroups of this group).
    * @return a list of all the user details in this group.
    */
-  public List<UserDetail> getAllUsers() {
+  public List<? extends UserDetail> getAllUsers() {
     return Arrays.asList(getOrganizationController().getAllUsersOfGroup(getId()));
   }
 }

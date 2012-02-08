@@ -39,7 +39,7 @@ public class UsersMatcher extends TypeSafeMatcher<SelectableUser[]> {
   public static Matcher<SelectableUser[]> contains(final UserDetail[] users) {
     return new UsersMatcher(users);
   }
-  public static Matcher<SelectableUser[]> contains(final List<UserDetail> users) {
+  public static Matcher<SelectableUser[]> contains(final List<? extends UserDetail> users) {
     return new UsersMatcher(users.toArray(new UserDetail[users.size()]));
   }
   private final UserDetail[] expected;

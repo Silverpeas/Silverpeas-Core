@@ -64,7 +64,7 @@ public class SelectableUser extends UserDetail implements Selectable {
    * @param baseURI the URI at which the specified users are defined.
    * @return a list of selectable users, not selected by default.
    */
-  public static SelectableUser[] fromUsers(final List<UserDetail> users, URI usersUri) {
+  public static SelectableUser[] fromUsers(final List<? extends UserDetail> users, URI usersUri) {
     SelectableUser[] selectableUsers = new SelectableUser[users.size()];
     String fromUsersUri = usersUri.toString();
     int i = 0;
