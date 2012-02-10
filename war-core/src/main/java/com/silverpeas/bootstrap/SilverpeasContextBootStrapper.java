@@ -56,7 +56,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
 
   /**
    * Initialise the System.properties according to Silverpeas needs and configuration.
-   * @param sce 
+   * @param sce
    */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
@@ -73,6 +73,15 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         fis = new FileInputStream(new File(pathInitialize, "systemSettings.properties"));
         Properties systemFileProperties = new Properties(System.getProperties());
         systemFileProperties.load(fis);
+
+        // Fix - empty proxy port and proxy host not supported by Spring Social
+        if ( !StringUtil.isDefined(systemFileProperties.getProperty("http.proxyPort")) ) {
+          systemFileProperties.remove("http.proxyPort");
+        }
+        if ( !StringUtil.isDefined(systemFileProperties.getProperty("http.proxyHost")) ) {
+          systemFileProperties.remove("http.proxyHost");
+        }
+
         System.setProperties(systemFileProperties);
         if (isTrustoreConfigured()) {
           registerSSLSocketFactory();
@@ -98,7 +107,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
 
   /**
    * Adding SilverpeasSSLSocketFactory as the SSLSocketFactory for all mail protocoles.
-   * @throws GeneralSecurityException 
+   * @throws GeneralSecurityException
    */
   void registerSSLSocketFactory() throws GeneralSecurityException {
     System.setProperty("mail.imap.ssl.enable", "true");

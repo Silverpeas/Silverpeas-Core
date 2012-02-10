@@ -2,9 +2,13 @@ package com.silverpeas.socialnetwork.model;
 
 import java.io.Serializable;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 public class AccountId implements Serializable{
 	private static final long serialVersionUID = -9044047461214852788L;
 
+	@Enumerated(EnumType.STRING)
 	private SocialNetworkID networkId = null;
 	private String profileId = null;
 

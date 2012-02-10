@@ -1,10 +1,10 @@
 package com.silverpeas.authentication;
 
+import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import com.silverpeas.socialnetwork.service.SocialNetworkServiceProvider;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.EncryptionInterface;
@@ -88,17 +88,15 @@ public class IdentificationParameters {
 
   private void checkSocialNetworkMode(HttpSession session) {
     this.socialNetworkMode = false;
-    this.networkId =
-        (SocialNetworkID) session.getAttribute(SocialNetworkService.SOCIALNETWORK_ID_SESSION_ATTR);
+    this.networkId = SocialNetworkService.getInstance().getSocialNetworkIDUsedForLogin(session);
     if (this.networkId != null) {
       AccessToken authorizationToken =
-          (AccessToken) session.getAttribute(SocialNetworkService.AUTHORIZATION_TOKEN_SESSION_ATTR);
+        SocialNetworkService.getInstance().getStoredAuthorizationToken(session, networkId);
       String profileId =
-          SocialNetworkServiceProvider.getInstance().getSocialNetworkService(networkId)
+          SocialNetworkService.getInstance().getSocialNetworkConnector(networkId)
               .getUserProfileId(authorizationToken);
       ExternalAccount account =
-          SocialNetworkServiceProvider.getInstance().getSocialNetworkService(networkId)
-              .getExternalAccount(networkId, profileId);
+          SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
       OrganizationController controller = new OrganizationController();
       UserDetail user = controller.getUserDetail(account.getSilverpeasUserId());

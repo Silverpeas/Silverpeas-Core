@@ -27,9 +27,16 @@ import com.silverpeas.directory.servlets.ImageProfil;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.socialnetwork.SocialNetworkException;
+import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
 import com.silverpeas.socialnetwork.myProfil.control.MyProfilSessionController;
+import com.silverpeas.socialnetwork.service.AccessToken;
+import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
+import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.silverpeas.socialnetwork.user.model.SNFullUser;
+import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
+import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -40,6 +47,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -94,6 +102,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
 
     MyProfileRoutes route = valueOf(function);
+    SocialNetworkHelper socialNetworkHelper = new SocialNetworkHelper();
 
     try {
       if (route == MyInfos) {
@@ -140,7 +149,26 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
         updateUserSettings(request, myProfilSC);
 
         return getDestination(MySettings.toString(), componentSC, request);
-      } else if (route == MyInvitations) {
+      } else if (route == MyNetworks) {
+        request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == UnlinkFromSVP) {
+        socialNetworkHelper.unlinkFromSilverpeas(myProfilSC, request);
+        request.setAttribute("View", MyNetworks.name());
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == LinkToSVP) {
+        return socialNetworkHelper.buildAuthenticationURL(request, route);
+      } else if (route == CreateLinkToSVP) {
+        socialNetworkHelper.linkToSilverpeas(myProfilSC, request);
+        request.setAttribute("View", MyNetworks.name());
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == PublishStatus) {
+        return socialNetworkHelper.buildAuthenticationURL(request, route);
+      } else if (route == DoPublishStatus) {
+        socialNetworkHelper.publishStatus(myProfilSC, request);
+        request.setAttribute("View", MyNetworks.name());
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      }  else if (route == MyInvitations) {
         MyInvitationsHelper helper = new MyInvitationsHelper();
         helper.getAllInvitationsReceived(myProfilSC, request);
         request.setAttribute("View", function);
@@ -177,6 +205,10 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
+
+    socialNetworkHelper.getAllMyNetworks(myProfilSC, request);
+    socialNetworkHelper.setupJSAttributes(myProfilSC, request);
+
     request.setAttribute("UserFull", snUserFull.getUserFull());
     List<String> contactIds = myProfilSC.getContactsIdsForUser(myProfilSC.getUserId());
     request.setAttribute("Contacts", getContactsToDisplay(contactIds, myProfilSC));

@@ -50,7 +50,7 @@ import com.silverpeas.socialnetwork.model.SocialNetworkID;
  * @author lbertin
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-socialnetwork.xml", "/spring-socialnetwork-embbed-datasource.xml"})
+@ContextConfiguration(locations = {"/spring-socialnetwork.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class ExternalAccountDaoTest {
 
@@ -75,7 +75,7 @@ public class ExternalAccountDaoTest {
   @Test
   @Transactional
   public void testReadByPrimaryKey() throws Exception {
-    ExternalAccount account = dao.readByPrimaryKey(new AccountId(SocialNetworkID.LINKEDIN, "1234"));
+    ExternalAccount account = dao.findOne(new AccountId(SocialNetworkID.LINKEDIN, "1234"));
     assertThat(account.getSilverpeasUserId(), is("11"));
   }
 

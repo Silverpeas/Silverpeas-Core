@@ -43,10 +43,10 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
    */
   public String print() {
     StringBuilder sBuilder = new StringBuilder();
-    
+
     String message1 = getMultilang().getString("GEF.progressMessage.message1");
     String message2 = getMultilang().getString("GEF.progressMessage.message2");
-    
+
     if (getMessages() != null && !getMessages().isEmpty()) {
       String extMessage1 = getMessages().get(0);
       if (StringUtil.isDefined(extMessage1)) {
@@ -59,12 +59,12 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
         }
       }
     }
-    
+
     sBuilder.append("<div id=\"gef-progressMessage\" style=\"display: none\">");
     sBuilder.append("<div id=\"gef-progress-message1\">").append(message1).append("</div>");
     sBuilder.append("<div id=\"gef-progress-message2\">").append(message2).append("</div>");
     sBuilder.append("<img src=\"").append(GraphicElementFactory.getIconsPath()).append("/inProgress.gif\" alt=\"\"/>");
-    sBuilder.append("</div");
+    sBuilder.append("</div>");
 
     return sBuilder.toString();
   }

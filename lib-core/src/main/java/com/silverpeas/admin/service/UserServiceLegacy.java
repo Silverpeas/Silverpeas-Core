@@ -24,6 +24,7 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -36,7 +37,7 @@ public class UserServiceLegacy implements UserService {
 	ResourceLocator settings = null;
   ResourceLocator multilang = null;
 	String templatePath = null;
-  String customerTemplatePath = null;
+  String customersTemplatePath = null;
 
 	@PostConstruct
 	void init() {
@@ -47,7 +48,7 @@ public class UserServiceLegacy implements UserService {
         "com.silverpeas.socialnetwork.multilang.registration", DisplayI18NHelper.getDefaultLanguage());
 
 		templatePath = settings.getString("templatePath");
-    customerTemplatePath = settings.getString("customerTemplatePath");
+    customersTemplatePath = settings.getString("customersTemplatePath");
 	}
 
 	@Override
@@ -95,6 +96,8 @@ public class UserServiceLegacy implements UserService {
 			}
 		}
 
+		Domain domain = admin.getDomain(domainId);
+		sendCredentialsToUser(uf, password, domain.getSilverpeasServerURL());
 		return userId;
 	}
 
@@ -127,7 +130,7 @@ public class UserServiceLegacy implements UserService {
 		return null;
 	}
 
-	private void sendCredentialsToUser(UserFull user, String password) {
+	private void sendCredentialsToUser(UserFull user, String password, String silverpeasServerURL) {
     try {
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       String subject = multilang.getString("credentialsMail.subject");
@@ -137,6 +140,7 @@ public class UserServiceLegacy implements UserService {
       template.setAttribute("fullName", user.getDisplayedName());
       template.setAttribute("login", user.getLogin());
       template.setAttribute("password", password);
+      template.setAttribute("url", silverpeasServerURL+"/"+URLManager.getApplicationURL());
       templates.put(DisplayI18NHelper.getDefaultLanguage(), template);
       notifMetaData.addLanguage(DisplayI18NHelper.getDefaultLanguage(), subject, "");
       notifMetaData.setSender("0");
@@ -152,7 +156,7 @@ public class UserServiceLegacy implements UserService {
   private SilverpeasTemplate getNewTemplate() {
     Properties templateConfiguration = new Properties();
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, templatePath);
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, customerTemplatePath);
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, customersTemplatePath);
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 

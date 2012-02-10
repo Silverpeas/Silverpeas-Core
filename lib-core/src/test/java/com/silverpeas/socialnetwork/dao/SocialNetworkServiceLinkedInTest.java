@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.sql.DataSource;
 
 import org.dbunit.database.DatabaseConnection;
@@ -51,12 +50,11 @@ import com.silverpeas.socialnetwork.service.SocialNetworkService;
  * @author lbertin
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-socialnetwork.xml",
-		"/spring-socialnetwork-embbed-datasource.xml" })
+@ContextConfiguration(locations = { "/spring-socialnetwork.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class SocialNetworkServiceLinkedInTest {
 
-	@Inject @Named("serviceLinkedIn")
+	@Inject
 	private SocialNetworkService service = null;
 	@Inject
 	private DataSource dataSource;

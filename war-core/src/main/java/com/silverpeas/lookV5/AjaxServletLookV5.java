@@ -104,6 +104,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     String pdc = request.getParameter("Pdc");
     boolean displayContextualPDC = helper.displayContextualPDC();
     boolean displayPDC = "true".equalsIgnoreCase(request.getParameter("GetPDC"));
+    boolean restrictedPath = helper.getSettings("restrictedPathForSpaceTransverse", false);
 
     // User favorite space DAO
     List<UserFavoriteSpaceVO> listUserFS = new ArrayList<UserFavoriteSpaceVO>();
@@ -157,7 +158,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         // space transverse
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
                 defaultLook, displayPDC, true, orgaController, helper, writer, listUserFS,
-                displayMode);
+                displayMode, restrictedPath);
 
         // other spaces
         displayTree(userId, componentId, spaceIdsPath, preferences.getLanguage(),
@@ -188,7 +189,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
                 defaultLook, displayPDC, false, orgaController, helper, writer, listUserFS,
-                displayMode);
+                displayMode, restrictedPath);
         displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
       }
     } else if (StringUtil.isDefined(componentId)) {
@@ -291,7 +292,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           String userId, String language, String defaultLook,
           boolean displayPDC, boolean displayTransverse,
           OrganizationController orgaController, LookHelper helper, Writer writer,
-          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode) throws IOException {
+          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode, boolean restrictedPath) throws IOException {
     boolean isTransverse = false;
     int i = 0;
     while (!isTransverse && i < spacePath.size()) {
@@ -305,7 +306,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     }
 
     boolean open = (spacePath != null && spacePath.contains(spaceId));
-    if (open) {
+    if (open && !restrictedPath) {
       spaceId = spacePath.remove(0);
     }
 
@@ -386,7 +387,7 @@ public class AjaxServletLookV5 extends HttpServlet {
               orgaController);
       if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController, helper)) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language,
-                defaultLook, false, false, orgaController, helper, out, listUFS, userMenuDisplayMode);
+                defaultLook, false, false, orgaController, helper, out, listUFS, userMenuDisplayMode, false);
       }
       loadCurSpace = false;
     }

@@ -1,40 +1,44 @@
 package com.silverpeas.socialnetwork.model;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-@Entity @IdClass(AccountId.class)
+@Entity
+//@IdClass(AccountId.class)
 @Table(name = "sb_socialnetwork_externalaccount")
-public class ExternalAccount {
+@NamedQueries({
+  @NamedQuery(name = "ExternalAccount.findBySilverpeasUserId", query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId")
+  })
+  public class ExternalAccount {
 
-	@Id
-	private String profileId = null;
-
-	@Id @Enumerated(EnumType.STRING)
-	private SocialNetworkID networkId = null;
+  @EmbeddedId
+  private AccountId accountId = new AccountId();
 
 	@Column(name="silverpeasUserId")
 	private String silverpeasUserId = null;
 
 	public String getProfileId() {
-		return profileId;
+		return accountId.getProfileId();
 	}
 
 	public void setProfileId(String profileId) {
-		this.profileId = profileId;
+		accountId.setProfileId(profileId);
 	}
 
 	public SocialNetworkID getNetworkId() {
-		return networkId;
+		return accountId.getNetworkId();
 	}
 
 	public void setNetworkId(SocialNetworkID networkId) {
-		this.networkId = networkId;
+		accountId.setNetworkId(networkId);
 	}
 
 	public String getSilverpeasUserId() {

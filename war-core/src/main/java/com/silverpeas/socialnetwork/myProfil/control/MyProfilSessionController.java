@@ -36,12 +36,15 @@ import java.util.Set;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.socialnetwork.invitation.model.InvitationUser;
 import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
+import com.silverpeas.socialnetwork.invitation.model.InvitationUser;
+import com.silverpeas.socialnetwork.model.ExternalAccount;
+import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -429,6 +432,26 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public boolean updatablePropertyExists() {
     UserFull userFull = getUserFul(getUserId());
     return ( (userFull.isAtLeastOnePropertyUpdatableByUser()) || (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()) );
+  }
+
+  /**
+   * Get all social networks linked to current user account
+   *
+   * @return
+   */
+  public Map<SocialNetworkID, ExternalAccount> getAllMyNetworks() {
+    Map<SocialNetworkID, ExternalAccount> networks = new HashMap<SocialNetworkID, ExternalAccount>();
+
+    List<ExternalAccount> externalAccounts = SocialNetworkService.getInstance().getUserExternalAccounts(getUserId());
+    for (ExternalAccount account : externalAccounts) {
+      networks.put(account.getNetworkId(), account);
+    }
+
+    return networks;
+  }
+
+  public void unlinkSocialNetworkFromSilverpeas(SocialNetworkID networkId) {
+    SocialNetworkService.getInstance().removeExternalAccount(getUserId(), networkId);
   }
 
 }

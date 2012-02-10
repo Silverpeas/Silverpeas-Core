@@ -205,7 +205,7 @@ Definition des class de style Silverpeas
 * html 	.bgDegradeGris.header {
 	background-color:#efefef;
 }
-	
+
 .bgDegradeGris p, .bgDegradeGris .paragraphe {
 	padding:11px 17px 0 17px;
 	margin:0;
@@ -1459,7 +1459,7 @@ td.browsebar a:hover {
 
 /****************************************/
 /****** Look V5 - ViewGenerator *********/
-/****************************************/ 
+/****************************************/
 /* objet window */
 .cellBrowseBar {
 	border-bottom-width: 1px;
@@ -1808,7 +1808,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /*- [ admin ] --------------------------- */
-#admin-treeview  img{ 
+#admin-treeview  img{
 	border:none;
 }
 
@@ -3375,8 +3375,8 @@ caption {
   	font-size:11px;
   	padding:5px 0 14px;
 	}
-.sousNavBulle p { 
-	margin:0; 
+.sousNavBulle p {
+	margin:0;
   	padding:0 5px 0;
 	}
 
@@ -3854,7 +3854,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 		webkit-border-radius:10px;
 	padding:10px;
 	position:relative;
-	margin:70px 2em 0;    
+	margin:70px 2em 0;
 }
 
 .commentaires #edition-box {
@@ -3894,7 +3894,7 @@ html>/**/body .commentaires .oneComment{
 
 .commentaires #edition-box .title , .commentaires .oneComment p.author{
   font-size: 8pt;
-  color: #111111;    
+  color: #111111;
   height: 20px;
   margin:0;
   position:absolute;
@@ -3912,7 +3912,7 @@ html>/**/body .commentaires .oneComment{
 	font-size:11px;
 }
 
-.commentaires .oneComment .text {      
+.commentaires .oneComment .text {
 	color: #888888;
     font-family: Arial;
     font-size: 13px;
@@ -4181,7 +4181,7 @@ html:not([lang*=""]) .add_position:hover {
     line-height: 20px;
 	float:left;
 }
-.classification .legende { 
+.classification .legende {
 	margin:10px 0 0;
 	float:left;
 	line-height:18px
@@ -4233,12 +4233,12 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #classification-modification span.header {
-	display:block;  
+	display:block;
 	background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
 	background-color:#F0F0F0;
 	border:1px solid #CDCDCD;
 	border-left:0;
-	border-right:0;	
+	border-right:0;
 	line-height:100%;
 	padding:8px 0 6px 26px;
 	margin:10px 12px 0;
@@ -4252,9 +4252,33 @@ html:not([lang*=""]) .add_position:hover {
 	background-image:url("/silverpeas/util/icons/ok.gif") ;
 }
 
+#socialNetwork {
+	border-bottom: 1px solid gray;
+    padding-bottom: 20px;
+    width: 100%;
+}
 
+#socialNetworkLogo {
+	float: left;
+}
 
+#socialNetworkInfos {
+	font-weight: bold;
+    padding-top: 10px;
+}
 
+#FBpublishButton {
+	display: none;
+}
 
+#FBloginButton {
+	display: none;
+}
 
+#LinkedInPublishButton {
+	display: none;
+}
 
+#LinkedInLoginButton {
+	display: none;
+}

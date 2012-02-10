@@ -12,12 +12,13 @@ import org.springframework.social.connect.UserProfile;
 
 import com.silverpeas.admin.service.UserService;
 import com.silverpeas.admin.service.UserServiceProvider;
+import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import com.silverpeas.socialnetwork.service.SocialNetworkServiceProvider;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 
@@ -68,33 +69,33 @@ public class SocialNetworkLoginController extends HttpServlet {
 
 		// First step, check Linked authentication
 		if (command==null) {
-			String networkId = req.getParameter("networkId");
-			String authenticateURL = getSocialNetworkAuthenticateURL(networkId);
+		  SocialNetworkID networkId = SocialNetworkID.valueOf( req.getParameter("networkId") );
+			String authenticateURL = getAuthenticateURL(networkId, req);
 			resp.sendRedirect(authenticateURL);
 		}
 
 		// Then
 		else if ("backFromSocialNetworkAuthentication".equals(command)) {
-			String networkId = req.getParameter("networkId");
-			SocialNetworkService service = getSocialNetworkService(networkId);
+		  SocialNetworkID networkId = SocialNetworkID.valueOf( req.getParameter("networkId") );
+			SocialNetworkConnector connector = getSocialNetworkConnector(networkId);
 
 			AccessToken authorizationToken;
 			try {
-				authorizationToken = service.exchangeForAccessToken(req, getRedirectURL(networkId));
+				authorizationToken = connector.exchangeForAccessToken(req, getRedirectURL(networkId, req));
 			} catch (SocialNetworkAuthorizationException e) {
 				resp.sendRedirect("/Login.jsp");
 				return;
 			}
-			req.getSession().setAttribute(SocialNetworkService.AUTHORIZATION_TOKEN_SESSION_ATTR, authorizationToken);
-      req.getSession().setAttribute(SocialNetworkService.SOCIALNETWORK_ID_SESSION_ATTR, SocialNetworkID.valueOf(networkId));
+
+			SocialNetworkService.getInstance().storeAuthorizationToken(req.getSession(true), networkId, authorizationToken);
 
 			// Try to retrieve a silverpeas account linked to remote social network account
-			String profileId = service.getUserProfileId(authorizationToken);
-			ExternalAccount account = service.getExternalAccount(SocialNetworkID.valueOf(networkId), profileId);
+			String profileId = connector.getUserProfileId(authorizationToken);
+			ExternalAccount account = SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
 			// no Silverpeas account yet
 			if (account == null) {
-				UserProfile profile = service.getUserProfile(authorizationToken);
+				UserProfile profile = connector.getUserProfile(authorizationToken);
 				req.setAttribute("userProfile", profile);
 				req.setAttribute("networkId", networkId);
 				req.getRequestDispatcher("/admin/jsp/registerFromRemoteSocialNetwork.jsp").forward(req, resp);
@@ -109,8 +110,8 @@ public class SocialNetworkLoginController extends HttpServlet {
 
 		// Silverpeas registration
 		else if ("register".equals(command)) {
-			String networkId = req.getParameter("networkId");
-			SocialNetworkService socialNetworkService = getSocialNetworkService(networkId);
+		  SocialNetworkID networkId = SocialNetworkID.valueOf( req.getParameter("networkId") );
+			SocialNetworkConnector socialNetworkConnector = getSocialNetworkConnector(networkId);
 
 			String firstName = req.getParameter("firstName");
 			String lastName = req.getParameter("lastName");
@@ -118,9 +119,9 @@ public class SocialNetworkLoginController extends HttpServlet {
 
 			try {
 				String userId = userService.registerUser(firstName, lastName, email);
-				AccessToken authorizationToken = (AccessToken) req.getSession().getAttribute(SocialNetworkService.AUTHORIZATION_TOKEN_SESSION_ATTR);
-				String profileId = socialNetworkService.getUserProfileId(authorizationToken);
-				socialNetworkService.createExternalAccount(SocialNetworkID.valueOf(networkId), userId, profileId);
+				AccessToken authorizationToken = SocialNetworkService.getInstance().getStoredAuthorizationToken(req.getSession(true), networkId);
+				String profileId = socialNetworkConnector.getUserProfileId(authorizationToken);
+				SocialNetworkService.getInstance().createExternalAccount(networkId, userId, profileId);
 			} catch (AdminException e) {
 			  SilverTrace.error("socialNetwork", "SocialNetworkLoginController.register", "socialNetwork.EX_CANT_REGISTER_USER");
 			  RequestDispatcher dispatcher = req.getRequestDispatcher("/admin/jsp/alreadyRegistered.jsp");
@@ -135,15 +136,17 @@ public class SocialNetworkLoginController extends HttpServlet {
 
 	}
 
-	private String getRedirectURL(String networkId) {
-		StringBuffer redirectURL = new StringBuffer("http://localhost:8000/silverpeas/SocialNetworkLogin?command=backFromSocialNetworkAuthentication&networkId=");
+	private String getRedirectURL(SocialNetworkID networkId, HttpServletRequest request) {
+		StringBuffer redirectURL = new StringBuffer();
+		redirectURL.append(URLManager.getFullApplicationURL(request));
+		redirectURL.append("/SocialNetworkLogin?command=backFromSocialNetworkAuthentication&networkId=");
 		redirectURL.append(networkId);
 
 		return redirectURL.toString();
 	}
 
-	private SocialNetworkService getSocialNetworkService(String networkId) {
-		return SocialNetworkServiceProvider.getInstance().getSocialNetworkService(networkId);
+	private SocialNetworkConnector getSocialNetworkConnector(SocialNetworkID networkId) {
+		return SocialNetworkService.getInstance().getSocialNetworkConnector(networkId);
 	}
 
 	/**
@@ -151,8 +154,8 @@ public class SocialNetworkLoginController extends HttpServlet {
 	 *
 	 * @return
 	 */
-	private String getSocialNetworkAuthenticateURL(String networkId) {
-		return getSocialNetworkService(networkId).buildAuthenticateUrl( getRedirectURL(networkId) );
+	private String getAuthenticateURL(SocialNetworkID networkId, HttpServletRequest request) {
+		return getSocialNetworkConnector(networkId).buildAuthenticateUrl( getRedirectURL(networkId, request) );
 	}
 
 }

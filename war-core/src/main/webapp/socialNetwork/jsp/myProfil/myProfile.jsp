@@ -65,7 +65,29 @@
 <view:looknfeel />
 <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
+
 <script type="text/javascript">
+function statusPublishFailed() {
+	$("#statusPublishFailedDialog").dialog("open");
+}
+
+function statusPublished() {
+	$("#statusPublishedDialog").dialog("open");
+}
+</script>
+
+<script type="text/javascript" src="/silverpeas/socialNetwork/jsp/js/statusFacebook.js"></script>
+<script type="text/javascript" src="/silverpeas/socialNetwork/jsp/js/statusLinkedIn.js"></script>
+
+<script type="text/javascript">
+function statusPublishFailed() {
+	$("#statusPublishFailedDialog").dialog("open");
+}
+
+function statusPublished() {
+	$("#statusPublishedDialog").dialog("open");
+}
+
 function editStatus() {
 	$("#statusDialog").dialog("open");
 }
@@ -88,7 +110,10 @@ $(document).ready(function(){
 						$( "#myProfileFiche .statut").html(status.val());
 
 					    var url = "/silverpeas/RmyProfilJSON?Action=updateStatus";
-						url+='&status='+encodeURIComponent(status.val())+'&IEFix='+Math.round(new Date().getTime());
+						url+='&status='+encodeURIComponent(status.val());
+
+						// prevents from IE amazing cache
+						url+='&IEFix='+Math.round(new Date().getTime());
 				        $.getJSON(url);
 						$( this ).dialog( "close" );
 				},
@@ -118,10 +143,47 @@ $(document).ready(function(){
     };
 
     $("#avatarDialog").dialog(avatarDialogOpts);    //end dialog
+
+    var statusPublishedDialogOpts = {
+    		resizable: false,
+            modal: true,
+            autoOpen: false,
+            height: "auto",
+            width: 300,
+            title: "<fmt:message key="profil.actions.changeStatus" />",
+            buttons: {
+				"<fmt:message key="GML.close"/>": function() {
+					$(this).dialog( "close" );
+				}
+			}
+    };
+    $("#statusPublishedDialog").dialog(statusPublishedDialogOpts);    //end dialog
+
+    var statusPublishFailedDialogOpts = {
+    		resizable: false,
+            modal: true,
+            autoOpen: false,
+            height: "auto",
+            width: 300,
+            title: "<fmt:message key="profil.actions.changeStatus" />",
+            buttons: {
+				"<fmt:message key="GML.close"/>": function() {
+					$(this).dialog( "close" );
+				}
+			}
+    };
+    $("#statusPublishFailedDialog").dialog(statusPublishFailedDialogOpts);    //end dialog
+
 });
 </script>
+
+
 </head>
 <body id="myProfile">
+
+<c:out value="${FB_loadSDK}" escapeXml="false"/>
+<c:out value="${LI_loadSDK}" escapeXml="false"/>
+
 <view:window>
 
 <div id="myProfileFiche" >
@@ -135,6 +197,12 @@ $(document).ready(function(){
         	<a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
             <br />
             <a href="#" class="link updateAvatar" onclick="updateAvatar()"><fmt:message key="profil.actions.changePhoto" /></a>
+            <br/>
+			<a href="#" class="link" onclick="logIntoFB();" id="FBloginButton"><fmt:message key="profil.actions.connectTo" /> FACEBOOK</a>
+			<a href="#" class="link" onclick="publishToFB();" id="FBpublishButton"><fmt:message key="profil.actions.publishStatus"/> FACEBOOK</a>
+            <br/>
+			<a href="#" class="link" onclick="logIntoLinkedIN();" id="LinkedInLoginButton"><fmt:message key="profil.actions.connectTo" /> LINKEDIN</a>
+			<a href="#" class="link" onclick="publishToLinkedIN();" id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" /> LINKEDIN</a>
         </div>
         <div class="profilPhoto">
 			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
@@ -144,7 +212,7 @@ $(document).ready(function(){
 
  	<div id="statusDialog">
 		<form>
-	    	<textarea id="newStatus" cols="49" rows="4"></textarea>
+	    	<textarea id="newStatus" cols="49" rows="4"></textarea><br/>
 		</form>
 	</div>
 
@@ -155,6 +223,14 @@ $(document).ready(function(){
 	          <div><input type="file" name="WAIMGVAR0" size="60"/></div>
 	        </div>
 	      </form>
+	</div>
+
+ 	<div id="statusPublishedDialog">
+ 		<fmt:message key="profil.msg.statusPublished"/>
+	</div>
+
+ 	<div id="statusPublishFailedDialog">
+ 		<fmt:message key="profil.errors.statusPublishFailed"/>
 	</div>
 
 	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
@@ -189,12 +265,14 @@ $(document).ready(function(){
 	<fmt:message key="myProfile.tab.feed" var="feed" />
 	<fmt:message key="myProfile.tab.wall" var="wall" />
 	<fmt:message key="myProfile.tab.profile" var="profile" />
+	<fmt:message key="myProfile.tab.networks" var="networks" />
 	<fmt:message key="myProfile.tab.invitations" var="invitations" />
 	<fmt:message key="myProfile.tab.settings" var="settings" />
 	<view:tabs>
 		<view:tab label="${feed}" action="<%=MyProfileRoutes.MyFeed.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyFeed.toString().equals(view)) %>" />
 		<view:tab label="${wall}" action="<%=MyProfileRoutes.MyWall.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyWall.toString().equals(view)) %>" />
     	<view:tab label="${profile}" action="<%=MyProfileRoutes.MyInfos.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInfos.toString().equals(view)) %>" />
+    	<view:tab label="${networks}" action="<%=MyProfileRoutes.MyNetworks.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyNetworks.toString().equals(view)) %>" />
     	<view:tab label="${invitations}" action="<%=MyProfileRoutes.MyInvitations.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) %>" />
     	<view:tab label="${settings}" action="<%=MyProfileRoutes.MySettings.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MySettings.toString().equals(view)) %>" />
 	</view:tabs>
@@ -203,6 +281,8 @@ $(document).ready(function(){
 		<%@include file="myProfileTabIdentity.jsp" %>
 	<% } else if (MyProfileRoutes.MySettings.toString().equals(view)) { %>
 		<%@include file="myProfileTabSettings.jsp" %>
+	<% } else if (MyProfileRoutes.MyNetworks.toString().equals(view)) { %>
+		<%@include file="myProfileTabNetworks.jsp" %>
 	<% } else if (MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) { %>
 		<%@include file="myProfileTabInvitations.jsp" %>
 	<% } else if (MyProfileRoutes.MyWall.toString().equals(view) || MyProfileRoutes.MyFeed.toString().equals(view)) { %>
