@@ -23,11 +23,6 @@
  */
 package com.silverpeas.templatedesigner.servlets;
 
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
@@ -42,12 +37,15 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.templatedesigner.control.TemplateDesignerSessionController;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.List;
+
+public class TemplateDesignerRequestRouter extends ComponentRequestRouter<TemplateDesignerSessionController> {
 
   private static final long serialVersionUID = 1117593114737219878L;
 
@@ -68,7 +66,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public TemplateDesignerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new TemplateDesignerSessionController(mainSessionCtrl,
         componentContext);
@@ -78,18 +76,17 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialized.
+   * @param templateDesignerSC The component Session Control, build and initialized.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, TemplateDesignerSessionController templateDesignerSC,
       HttpServletRequest request) {
     String destination = "";
     String root = "/templateDesigner/jsp/";
-    TemplateDesignerSessionController templateDesignerSC = (TemplateDesignerSessionController) componentSC;
     SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + templateDesignerSC.getUserId() + " Function=" + function);
     try {
       if (function.startsWith("Main")) {
         List<PublicationTemplate> templates = templateDesignerSC.getTemplates();
@@ -128,11 +125,11 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
         templateDesignerSC.createTemplate(template);
-        destination = getDestination("ViewFields", componentSC, request);
+        destination = getDestination("ViewFields", templateDesignerSC, request);
       } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
         templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", templateDesignerSC, request);
       } else if ("ViewFields".equals(function)) {
         request.setAttribute("Fields", templateDesignerSC.getFields());
         request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
@@ -186,18 +183,18 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
 
         templateDesignerSC.removeField(fieldName);
 
-        destination = getDestination("ViewFields", componentSC, request);
+        destination = getDestination("ViewFields", templateDesignerSC, request);
       } else if (function.equals("MoveField")) {
         String fieldName = request.getParameter("FieldName");
         int direction = Integer.parseInt(request.getParameter("Direction"));
 
         templateDesignerSC.moveField(fieldName, direction);
 
-        destination = getDestination("ViewFields", componentSC, request);
+        destination = getDestination("ViewFields", templateDesignerSC, request);
       } else if (function.equals("SaveTemplate")) {
         templateDesignerSC.saveTemplate();
 
-        destination = getDestination("ViewTemplate", componentSC, request);
+        destination = getDestination("ViewTemplate", templateDesignerSC, request);
       } else {
         destination = root + "welcome.jsp";
       }

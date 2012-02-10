@@ -63,7 +63,7 @@ public class Util {
     return message.getString(msg);
   }
 
-  public static String getJavascriptIncludes() {
+  public static String getJavascriptIncludes(String language) {
     StringBuilder includes = new StringBuilder();
     addSilverpeasScript(includes, "/wysiwyg/jsp/FCKeditor/fckeditor.js");
     addSilverpeasScript(includes, "/util/javaScript/dateUtils.js");
@@ -81,6 +81,8 @@ public class Util {
     addExternalScript(includes, webContext, "/util/yui/animation/animation-min.js");
     addExternalScript(includes, webContext, "/util/yui/datasource/datasource-min.js");
     addExternalScript(includes, webContext, "/util/yui/autocomplete/autocomplete-min.js");
+    addExternalScript(includes, webContext, "/util/javaScript/jquery/jquery.ui.datepicker-"+language+".js");
+    addExternalScript(includes, webContext, "/util/javaScript/silverpeas-defaultDatePicker.js");
     return includes.toString();
 
   }

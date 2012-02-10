@@ -48,3 +48,13 @@ target
 /ejb-core/calendar/.classpath
 /ejb-core/calendar/.project
 /ejb-core/calendar/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/questioncontainer/.classpath
+/ejb-core/questioncontainer/.project
+/ejb-core/questioncontainer/.settings
+/ejb-core/questioncontainer/src/main/resources/META-INF/MANIFEST.MF
+/.project
+/.settings
+/test-core/.classpath
+/test-core/.project
+/test-core/.settings
+web-core/@ErrorDir@/

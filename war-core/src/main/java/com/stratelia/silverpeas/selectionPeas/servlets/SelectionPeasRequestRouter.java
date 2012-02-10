@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
  *
  * @author
  */
-public class SelectionPeasRequestRouter extends ComponentRequestRouter {
+public class SelectionPeasRequestRouter extends ComponentRequestRouter<SelectionPeasSessionController> {
 
   private static final long serialVersionUID = -1531692630305784345L;
 
@@ -62,7 +62,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public SelectionPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SelectionPeasSessionController(mainSessionCtrl, componentContext);
   }
@@ -83,14 +83,13 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
    * destination page
    *
    * @param function    The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param selectionPeasSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, SelectionPeasSessionController selectionPeasSC,
       HttpServletRequest request) {
     String destination;
-    SelectionPeasSessionController selectionPeasSC = (SelectionPeasSessionController) componentSC;
     SilverTrace.info("selectionPeas", "getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
 

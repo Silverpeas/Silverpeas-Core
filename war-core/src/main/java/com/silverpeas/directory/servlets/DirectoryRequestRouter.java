@@ -23,19 +23,11 @@
  */
 package com.silverpeas.directory.servlets;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.control.DirectorySessionController;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -44,10 +36,16 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 /**
  * @author azzedine
  */
-public class DirectoryRequestRouter extends ComponentRequestRouter {
+public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySessionController> {
 
   private static final long serialVersionUID = -1683812983096083815L;
 
@@ -57,22 +55,17 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public DirectorySessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new DirectorySessionController(mainSessionCtrl, componentContext);
   }
 
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, DirectorySessionController directorySC,
       HttpServletRequest request) {
-
     String destination = "";
-
-    DirectorySessionController directorySC = (DirectorySessionController) componentSC;
-
     SilverTrace.info("mytests", "DirectoryRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + directorySC.getUserId() + " Function=" + function);
 
     try {
       List<UserDetail> users = new ArrayList<UserDetail>();
@@ -110,7 +103,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         destination = doPagination(request, users, directorySC);
       } else if (function.equalsIgnoreCase("searchByKey")) {
 
-        users = directorySC.getUsersByQuery(request.getParameter("key").toUpperCase());
+        users = directorySC.getUsersByQuery(request.getParameter("key"));
         destination = doPagination(request, users, directorySC);
 
       } else if (function.equalsIgnoreCase("tous")) {
@@ -159,8 +152,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * tronsform list of UserDetail to list of Membre
-   * @param List<UserDetail>
+   * Transform list of UserDetail to list of Membre
+   * @param uds
    */
   List<Member> toListMember(List<UserDetail> uds) {
     List<Member> listMember = new ArrayList<Member>();
@@ -172,7 +165,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
 
   /**
    * do pagination
-   * @param HttpServletRequest request
+   * @param request
    */
   String doPagination(HttpServletRequest request, List<UserDetail> users,
       DirectorySessionController directorySC) {
@@ -195,6 +188,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
     request.setAttribute("pagination", pagination);
     request.setAttribute("View", directorySC.getCurrentView());
     request.setAttribute("Scope", directorySC.getCurrentDirectory());
+    request.setAttribute("Query", directorySC.getCurrentQuery());
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }

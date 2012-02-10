@@ -24,31 +24,33 @@
 
 package com.silverpeas.jobOrganizationPeas.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.jobOrganizationPeas.control.JobOrganizationPeasSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-/**
- * Class declaration
- * @author Thierry Leroi
- */
-public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
-  private static final long serialVersionUID = -3952939609496239407L;
+import javax.servlet.http.HttpServletRequest;
 
 /**
+ * Class declaration
+ *
+ * @author Thierry Leroi
+ */
+public class JobOrganizationPeasRequestRouter
+    extends ComponentRequestRouter<JobOrganizationPeasSessionController> {
+  private static final long serialVersionUID = -3952939609496239407L;
+
+  /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public JobOrganizationPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new JobOrganizationPeasSessionController(mainSessionCtrl,
         componentContext);
@@ -66,21 +68,18 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   *
+   * @param function          The entering request function (ex : "Main.jsp")
+   * @param jobOrganizationSC The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      JobOrganizationPeasSessionController jobOrganizationSC, HttpServletRequest request) {
     String destination = "";
-    JobOrganizationPeasSessionController jobOrganizationSC =
-        (JobOrganizationPeasSessionController) componentSC;
-    SilverTrace.info("jobOrganizationPeas",
-        "JobOrganizationPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobOrganizationSC.getUserId()
-        + " Function=" + function);
+    SilverTrace.info("jobOrganizationPeas", "JobOrganizationPeasRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE",
+        "User=" + jobOrganizationSC.getUserId() + " Function=" + function);
 
     try {
       if (function.startsWith("ViewUserOrGroup")) {
@@ -91,14 +90,15 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
         destination = jobOrganizationSC.initSelectionPeas();
       }
       if (destination.endsWith("jopUserView.jsp")) {
-    	  if(jobOrganizationSC.getCurrentUserId() != null) { //l'utilisateur a sélectionné un user
-    		  request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
-    		  request.setAttribute("user", jobOrganizationSC.getCurrentUser());
-    		  request.setAttribute("groups", jobOrganizationSC.getCurrentUserGroups());
-    	  } else if(jobOrganizationSC.getCurrentGroupId() != null) {//l'utilisateur a sélectionné un group
-    		  request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
-    		  request.setAttribute("adminController", jobOrganizationSC.getAdminController());
-    	  }
+        if (jobOrganizationSC.getCurrentUserId() != null) { //l'utilisateur a sélectionné un user
+          request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
+          request.setAttribute("user", jobOrganizationSC.getCurrentUser());
+          request.setAttribute("groups", jobOrganizationSC.getCurrentUserGroups());
+        } else if (jobOrganizationSC.getCurrentGroupId() !=
+            null) {//l'utilisateur a sélectionné un group
+          request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
+          request.setAttribute("adminController", jobOrganizationSC.getAdminController());
+        }
         request.setAttribute("spaces", jobOrganizationSC.getCurrentSpaces());
         request.setAttribute("profiles", jobOrganizationSC.getCurrentProfiles());
       }

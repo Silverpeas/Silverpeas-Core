@@ -37,6 +37,10 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,9 +49,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Inject;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -125,14 +126,16 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void deleteUser(String userId) {
-    SPUser user = userDao.findOne(Integer.valueOf(userId));
-    if(user.getGroups() != null) {
-      for(SPGroup group : user.getGroups()) {
-        group.getUsers().remove(user);
-        groupDao.saveAndFlush(group);
+    if(StringUtil.isInteger(userId))    {
+      SPUser user = userDao.findOne(Integer.valueOf(userId));
+      if(user.getGroups() != null) {
+        for(SPGroup group : user.getGroups()) {
+          group.getUsers().remove(user);
+          groupDao.saveAndFlush(group);
+        }
       }
+      userDao.delete(user);
     }
-    userDao.delete(user);
   }
 
   @Override
@@ -153,14 +156,18 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     oldUser.setCellphone(userFull.getValue("cellularPhone"));
     oldUser.setAddress(userFull.getValue("address"));
     oldUser.setLoginmail("");
-    if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
-        && !userFull.getPassword().equals(oldUser.getPassword())) {
-      oldUser.setPassword(UnixMD5Crypt.crypt(userFull.getPassword()));
-    } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)
-        && !userFull.getPassword().equals(oldUser.getPassword())) {
-      oldUser.setPassword(CryptMD5.crypt(userFull.getPassword()));
-    } else {
-      oldUser.setPassword(userFull.getPassword());
+    
+    // Only update password when this field has been filled
+    if (StringUtil.isDefined(userFull.getPassword())) {
+      if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
+          && !userFull.getPassword().equals(oldUser.getPassword())) {
+        oldUser.setPassword(UnixMD5Crypt.crypt(userFull.getPassword()));
+      } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)
+          && !userFull.getPassword().equals(oldUser.getPassword())) {
+        oldUser.setPassword(CryptMD5.crypt(userFull.getPassword()));
+      } else {
+        oldUser.setPassword(userFull.getPassword());
+      }
     }
     oldUser.setPasswordValid(userFull.isPasswordValid());
     this.userDao.saveAndFlush(oldUser);
@@ -171,9 +178,11 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void updateUserDetail(UserDetail ud) {
-    SPUser user = userDao.findOne(Integer.valueOf(ud.getSpecificId()));
-    if (user != null) {
-      userDao.save(convertToSPUser(ud, user));
+    if(StringUtil.isInteger(ud.getSpecificId()))    {
+      SPUser user = userDao.findOne(Integer.valueOf(ud.getSpecificId()));
+      if (user != null) {
+        userDao.save(convertToSPUser(ud, user));
+      }
     }
   }
 
@@ -183,12 +192,18 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public UserDetail getUser(String userId) {
+    if(!StringUtil.isInteger(userId)) {
+      return null;
+    }
     SPUser spUser = userDao.findOne(Integer.parseInt(userId));
     return convertToUser(spUser, new UserDetail());
   }
 
   @Override
   public UserFull getUserFull(String userId) {
+    if(!StringUtil.isInteger(userId)) {
+      return null;
+    }
     SPUser user = userDao.findOne(Integer.valueOf(userId));
     UserFull userFull = new UserFull(this);
     if (user != null) {
@@ -240,19 +255,19 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     List<SPUser> users = new ArrayList<SPUser>();
     if ("title".equalsIgnoreCase(propertyName)) {
       users = userDao.findByTitle(propertyValue);
-    } else if (propertyName.equalsIgnoreCase("company")) {
+    } else if ("company".equalsIgnoreCase(propertyName)) {
       users = userDao.findByCompany(propertyValue);
-    } else if (propertyName.equalsIgnoreCase("position")) {
+    } else if ("position".equalsIgnoreCase(propertyName)) {
       users = userDao.findByPosition(propertyValue);
-    } else if (propertyName.equalsIgnoreCase("phone")) {
+    } else if ("phone".equalsIgnoreCase(propertyName)) {
       users = userDao.findByPhone(propertyValue);
-    } else if (propertyName.equalsIgnoreCase("homePhone")) {
+    } else if ("homePhone".equalsIgnoreCase(propertyName)) {
       users = userDao.findByHomephone(propertyValue);
-    } else if (propertyName.equalsIgnoreCase("fax")) {
+    } else if ("fax".equalsIgnoreCase(propertyName)) {
       users = userDao.findByFax(propertyValue);
-    } else if (propertyName.equalsIgnoreCase("cellularPhone")) {
+    } else if ("cellularPhone".equalsIgnoreCase(propertyName)) {
       users = userDao.findByCellphone(propertyValue);
-    } else if (propertyName.equalsIgnoreCase("address")) {
+    } else if ("address".equalsIgnoreCase(propertyName)) {
       users = userDao.findByAddress(propertyValue);
     }
     List<UserDetail> userDetails = new ArrayList<UserDetail>(users.size());
@@ -294,7 +309,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       group.setId(String.valueOf(id));
       spGroup.setDescription(group.getDescription());
       spGroup.setName(group.getName());
-      if (StringUtil.isDefined(group.getSuperGroupId())) {
+      if (StringUtil.isInteger(group.getSuperGroupId())) {
         SPGroup parent = groupDao.findOne(Integer.valueOf(group.getSuperGroupId()));
         spGroup.setParent(parent);
       }
@@ -433,7 +448,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public void startTransaction(boolean bAutoCommit) throws Exception {
+  public void startTransaction(boolean bAutoCommit) {
   }
 
   @Override

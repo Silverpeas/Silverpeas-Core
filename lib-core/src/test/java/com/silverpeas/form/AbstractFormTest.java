@@ -273,7 +273,7 @@ public class AbstractFormTest {
                 ".js\"></script>\n");
       }
       
-      builder.append(Util.getJavascriptIncludes())
+      builder.append(Util.getJavascriptIncludes(language))
         .append("\n<script type=\"text/javascript\">\n")
         .append("	var errorNb = 0;\n")
         .append("	var errorMsg = \"\";\n")

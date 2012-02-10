@@ -46,7 +46,7 @@ public class FileRepositoryManager {
 
   static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+  final static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath +
       File.separatorChar + "avatar");
   static String tempPath = "";
@@ -55,6 +55,11 @@ public class FileRepositoryManager {
   static final ResourceLocator utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", "");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
+  
+  static final long ko = 1024;
+  static final long mo = ko * 1024;
+  static final long go = mo * 1024;
+  static final long to = go * 1024;
 
   static {
     try {
@@ -281,22 +286,32 @@ public class FileRepositoryManager {
    * Get the file size with the suitable unit
    * @param lSize : size
    * @return String
-   */
+   */  
   static public String formatFileSize(long lSize) {
-    String Mo = utilMessages.getString("mo", "fr");
-    String Ko = utilMessages.getString("ko", "fr");
-    String o = utilMessages.getString("o", "fr");
+    String sTo = utilMessages.getString("to", "Tb");
+    String sGo = utilMessages.getString("go", "Gb");
+    String sMo = utilMessages.getString("mo", "Mb");
+    String sKo = utilMessages.getString("ko", "Kb");
+    String o = utilMessages.getString("o", "bytes");
 
     float size = new Long(lSize).floatValue();
 
-    if (size < 1024) {// inférieur à 1 ko (1024 octets)
+    if (size < ko) {// inférieur à 1 ko (1024 octets)
       return Integer.toString(Math.round(size)).concat(" ").concat(o);
-    } else if (size < 1024 * 1024) {// inférieur à 1 mo (1024 * 1024 octets)
-      return Integer.toString(Math.round(size / 1024)).concat(" ").concat(Ko);
-    } else {// supérieur à 1 mo (1024 * 1024 octets)
+    } else if (size < mo) {// inférieur à 1 mo (1024 * 1024 octets)
+      return Integer.toString(Math.round(size / ko)).concat(" ").concat(sKo);
+    } else if (size < go) {// inférieur à 1 Go
       DecimalFormat format = new DecimalFormat();
       format.setMaximumFractionDigits(2);
-      return format.format(size / (1024 * 1024)).concat(" ").concat(Mo);
+      return format.format(size / mo).concat(" ").concat(sMo);
+    } else if (size < to) {// inférieur à 1 To
+      DecimalFormat format = new DecimalFormat();
+      format.setMaximumFractionDigits(2);
+      return format.format(size / go).concat(" ").concat(sGo);
+    } else {
+      DecimalFormat format = new DecimalFormat();
+      format.setMaximumFractionDigits(2);
+      return format.format(size / to).concat(" ").concat(sTo);
     }
   }
 

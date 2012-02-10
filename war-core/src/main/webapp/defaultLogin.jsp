@@ -103,9 +103,9 @@ function GetCookie (name) {
 
 function checkForm()
 {
-	var form = document.getElementById("EDform");
+	var form = document.getElementById("formLogin");
 	<% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-		if (GetCookie("svpPassword") != document.getElementById("EDform").Password.value)
+		if (GetCookie("svpPassword") != document.getElementById("formLogin").Password.value)
 		{
 			form.cryptedPassword.value = "";
 		}
@@ -121,7 +121,7 @@ function checkForm()
 }
 
 function loginQuestion() {
-	var form = document.getElementById("EDform");
+	var form = document.getElementById("formLogin");
     if (form.elements["Login"].value.length == 0) {
       alert('<fmt:message key="authentication.logon.loginMissing" />');
     } else {
@@ -131,7 +131,7 @@ function loginQuestion() {
 }
 
 function resetPassword() {
-	var form = document.getElementById("EDform");
+	var form = document.getElementById("formLogin");
     if (form.elements["Login"].value.length == 0) {
       alert('<fmt:message key="authentication.logon.loginMissing" />');
     } else {
@@ -152,7 +152,7 @@ function checkSubmit(ev)
 
 </head>
 <body>
-      <form id="EDform" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
+      <form id="formLogin" action="javascript:checkForm();" method="POST" accept-charset="UTF-8">
         <div id="top"></div> <!-- Backgroud fonce -->
         <div class="page"> <!-- Centrage horizontal des elements (960px) -->
           <div class="titre"><fmt:message key="authentication.logon.title"/></div>
@@ -161,47 +161,34 @@ function checkSubmit(ev)
                     <div id="header">
                         <img src="<%=logo%>" class="logo" alt="logo"/>
                         <p class="information">
-								<% if (!errorCode.equals("") && !errorCode.equals("4")) { %>  
-                                <c:set var="erroMessageKey">authentication.logon.<%=errorCode%></c:set>
+                          <c:choose>
+                            <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">                              
+                              <c:set var="erroMessageKey">authentication.logon.<c:out value="${param.ErrorCode}"/></c:set>
                                 <span><fmt:message key="${erroMessageKey}" /></span>
-								<% } else { %>
-                                <fmt:message key="authentication.logon.subtitle" />
-								<% } %>
+                            </c:when><c:otherwise>
+                               <fmt:message key="authentication.logon.subtitle" />
+                            </c:otherwise>
+                          </c:choose>
                         </p>
                         <div class="clear"></div>
                     </div>   
-                                <p><label><span><fmt:message key="authentication.logon.login" /></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
-                                <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
-							  
-					 <% if (listDomains != null && listDomains.size() == 1) { %>
-                            <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
-                     <%	} else { %>
-                          <p><label><span><fmt:message key="authentication.logon.domain" /></span>
+                    <p><label><span><fmt:message key="authentication.logon.login" /></span><input autofocus="autofocus"  type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
+                    <p><label><span><fmt:message key="authentication.logon.password" /></span><input autocomplete="on" type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
+                    <c:choose>
+                      <c:when test="${!pageScope.multipleDomains}">
+                        <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
+                      </c:when>
+                      <c:otherwise>
+                        <p><label><span><fmt:message key="authentication.logon.domain" /></span>
 								<select id="DomainId" name="DomainId" size="1">
-									<% if (listDomains==null ||listDomains.isEmpty()) { %>
-										<option> --- </option>
-									<%  } else {
-										String dId 		= null;
-										String dName 	= null;
-										String selected	= "";
-										for (Domain curDomain : listDomains) {
-                                          dId = curDomain.getId();
-                                          dName = curDomain.getName();
-                                          selected  = "";
-                                          
-                                          if (dId.equals(request.getAttribute("Silverpeas_DomainId"))) {
-                                            selected = "selected=\"selected\"";
-                                          }
-                                      %>
-                                        <option value="<%=dId%>" <%=selected%>><%=dName%></option>
-                                      <%  
-                                      }
-									}
-										%>
+                                  <c:forEach var="domain" items="${pageScope.listDomains}">
+                                      <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if> ><c:out value="${domain.name}"/></option>
+                                  </c:forEach>
 								</select>
-                          </label></p> 									
-                     <% } %>
-                     <p><a href="#" class="submit" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
+                          </label></p> 		
+                      </c:otherwise>
+                    </c:choose>            
+                     <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="submit" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
 						 <p>
 						 <% if (forgottenPwdActive) { %>
@@ -259,17 +246,17 @@ function checkSubmit(ev)
 
 			if (nbCookiesFound==2)
 			{
-				document.getElementById("EDform").cryptedPassword.value = "Yes";
+				document.getElementById("formLogin").cryptedPassword.value = "Yes";
 				<% if (!com.silverpeas.util.StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
-					document.getElementById("EDform").submit();
+					document.getElementById("formLogin").submit();
 				<% } %>
 			}
 			else
 			{
-				document.getElementById("EDform").Password.value = '';
-				document.getElementById("EDform").Login.focus();
+				document.getElementById("formLogin").Password.value = '';
+				document.getElementById("formLogin").Login.focus();
 			}
-			document.getElementById("EDform").Login.focus();
+			document.getElementById("formLogin").Login.focus();
 		</script>
                     
 </body>  

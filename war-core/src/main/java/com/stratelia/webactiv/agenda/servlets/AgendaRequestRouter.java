@@ -24,26 +24,12 @@
 
 package com.stratelia.webactiv.agenda.servlets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-
 import com.silverpeas.ical.ImportIcalManager;
 import com.silverpeas.ical.PasswordEncoder;
 import com.silverpeas.ical.StringUtils;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -55,12 +41,23 @@ import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Class declaration
  * @author
  */
-public class AgendaRequestRouter extends ComponentRequestRouter {
+public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionController> {
 
   private static final long serialVersionUID = -3636409715447616873L;
 
@@ -78,13 +75,9 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public AgendaSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component =
-        (ComponentSessionController) new AgendaSessionController(
-        mainSessionCtrl, context);
-
-    return component;
+    return new AgendaSessionController( mainSessionCtrl, context);
   }
 
   /**
@@ -99,17 +92,15 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request router it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Controller, build and initialised.
+   * @param scc The component Session Controller, build and initialised.
    * @param request The entering request. The request router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-
+      AgendaSessionController scc, HttpServletRequest request) {
     SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD");
-    AgendaSessionController scc = (AgendaSessionController) componentSC;
     String destination = "";
 
     try {
@@ -140,13 +131,11 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("NextYear")) {
         scc.setAgendaUserDetail(scc.getAgendaUserDetail());
         scc.nextYear();
-        destination = getDestination("ToChooseWorkingDays", componentSC,
-            request);
+        destination = getDestination("ToChooseWorkingDays", scc, request);
       } else if (function.startsWith("PreviousYear")) {
         scc.setAgendaUserDetail(scc.getAgendaUserDetail());
         scc.previousYear();
-        destination = getDestination("ToChooseWorkingDays", componentSC,
-            request);
+        destination = getDestination("ToChooseWorkingDays", scc, request);
       } else if (function.startsWith("ViewByDay")) {
         scc.setAgendaUserDetail(scc.getAgendaUserDetail());
         scc.viewByDay();
@@ -246,7 +235,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         String endDate = request.getParameter("EndDate");
         String returnCode = scc.exportIcalAgenda(startDate, endDate);
         request.setAttribute("ExportReturnCode", returnCode);
-        destination = getDestination("ToExportIcal", componentSC, request);
+        destination = getDestination("ToExportIcal", scc, request);
       } else if (function.equals("ImportIcal")) {
         ImportIcalManager.charset = scc.getSettings().getString(
             "defaultCharset");
@@ -257,7 +246,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           fileUploaded.delete();
         }
         request.setAttribute("ImportReturnCode", returnCode);
-        destination = getDestination("ToImportIcal", componentSC, request);
+        destination = getDestination("ToImportIcal", scc, request);
       } else if (function.equals("ToSynchroIcal")) {
         CalendarImportSettings importSettings = scc.getImportSettings();
         String urlIcalendar = null;
@@ -320,7 +309,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         }
 
         request.setAttribute("SynchroReturnCode", returnCode);
-        destination = getDestination("ToSynchroIcal", componentSC, request);
+        destination = getDestination("ToSynchroIcal", scc, request);
       } else if (function.equals("ToChooseWorkingDays")) {
         scc.viewChooseDays();
 
@@ -342,15 +331,13 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         String date = request.getParameter("Date");
         String status = request.getParameter("Status");
         scc.changeDateStatus(date, status);
-        destination = getDestination("ToChooseWorkingDays", componentSC,
-            request);
+        destination = getDestination("ToChooseWorkingDays", scc, request);
       } else if (function.equals("ChangeDayOfWeekStatus")) {
         String year = request.getParameter("Year");
         String month = request.getParameter("Month");
         String day = request.getParameter("DayOfWeek");
         scc.changeDayOfWeekStatus(year, month, day);
-        destination = getDestination("ToChooseWorkingDays", componentSC,
-            request);
+        destination = getDestination("ToChooseWorkingDays", scc, request);
       } else if (function.equals("UpdateEvent")) {
         String journalId = request.getParameter("JournalId");
         request.setAttribute("JournalId", journalId);

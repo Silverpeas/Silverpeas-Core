@@ -55,10 +55,4 @@ public interface ProgressMessage extends SimpleGraphicElement {
   
   public void setMultilang(ResourceLocator resource);
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print();
 }

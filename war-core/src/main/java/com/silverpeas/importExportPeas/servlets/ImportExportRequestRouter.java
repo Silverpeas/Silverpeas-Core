@@ -29,7 +29,6 @@ import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExportPeas.control.ImportExportSessionController;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -41,12 +40,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
 
-public class ImportExportRequestRouter extends ComponentRequestRouter {
+public class ImportExportRequestRouter extends ComponentRequestRouter<ImportExportSessionController> {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public ImportExportSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ImportExportSessionController(mainSessionCtrl, componentContext,
         "com.silverpeas.importExportPeas.multilang.importExportPeasBundle",
@@ -67,15 +66,14 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param importExportSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, ImportExportSessionController importExportSC,
       HttpServletRequest request) {
-    ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC;
     String destination = "";
     try {
       if (function.startsWith("Main")) {
@@ -95,13 +93,23 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
             getAttribute("resources"));
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
+      } else if ("SelectExportMode".equals(function)) {
+        List<WAAttributeValuePair> itemPKs =
+            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
+        String rootId = (String) request.getAttribute("RootId");
+        importExportSC.saveItems(itemPKs, rootId);
+        destination = "/importExportPeas/jsp/selectExportMode.jsp";
+      } else if ("ExportSavedItems".equals(function)) {
+        String mode = request.getParameter("ExportMode");
+        importExportSC.processExportOfSavedItems(mode);
+        destination = "/importExportPeas/jsp/pingExport.jsp";
       } else if ("ExportItems".equals(function)) {
         @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs = (List<WAAttributeValuePair>) request.getAttribute(
             "selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
         if (itemPKs != null && !itemPKs.isEmpty()) {
-          importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
+          importExportSC.processExport(itemPKs, rootId);
           destination = "/importExportPeas/jsp/pingExport.jsp";
         } else {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";

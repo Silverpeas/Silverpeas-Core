@@ -21,22 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialnetwork.myProfil.servlets;
+package com.silverpeas.socialNetwork.myProfil.servlets;
 
 import com.silverpeas.directory.servlets.ImageProfil;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.socialnetwork.SocialNetworkException;
-import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
-import com.silverpeas.socialnetwork.myProfil.control.MyProfilSessionController;
-import com.silverpeas.socialnetwork.service.AccessToken;
-import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
-import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import com.silverpeas.socialnetwork.user.model.SNFullUser;
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
+import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.silverpeas.socialNetwork.myProfil.control.MyProfilSessionController;
+import com.silverpeas.socialNetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -44,10 +37,8 @@ import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -66,12 +57,12 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.*;
 
 /**
  * @author azzedine
  */
-public class MyProfilRequestRouter extends ComponentRequestRouter {
+public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessionController> {
 
   private static final long serialVersionUID = -9194682447286602180L;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
@@ -82,45 +73,39 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public MyProfilSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MyProfilSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * @param function
-   * @param componentSC
+   * @param myProfilSC
    * @param request
    * @return String
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, MyProfilSessionController myProfilSC,
       HttpServletRequest request) {
     String destination = "#";
-
-    MyProfilSessionController myProfilSC = (MyProfilSessionController) componentSC;
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
-
     MyProfileRoutes route = valueOf(function);
-    SocialNetworkHelper socialNetworkHelper = new SocialNetworkHelper();
 
     try {
       if (route == MyInfos) {
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
 
-        boolean updateIsAllowed = domainRW &&
-            (myProfilSC.isPasswordChangeAllowed()
-            || (snUserFull.getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable())
-            || myProfilSC.updatablePropertyExists());
+        boolean updateIsAllowed = domainRW && (myProfilSC.isPasswordChangeAllowed() ||
+            (snUserFull.getUserFull().isPasswordValid() &&
+                snUserFull.getUserFull().isPasswordAvailable()) ||
+            myProfilSC.updatablePropertyExists());
 
         if (updateIsAllowed) {
           request.setAttribute("Action", "userModify");
         } else {
           request.setAttribute("Action", "userMS");
         }
-
-
         request.setAttribute("userObject", snUserFull.getUserFull());
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
         request.setAttribute("isAdmin", myProfilSC.isAdmin());
@@ -128,19 +113,15 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
         request.setAttribute("minLengthPwd", myProfilSC.getMinLengthPwd());
         request.setAttribute("blanksAllowedInPwd", myProfilSC.isBlanksAllowedInPwd());
         request.setAttribute("View", "MyInfos");
-
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.UpdatePhoto) {
         saveAvatar(request, snUserFull.getUserFull().getAvatarFileName());
 
-        return getDestination(MyInfos.toString(), componentSC, request);
+        return getDestination(MyInfos.toString(), myProfilSC, request);
       } else if (route == MyProfileRoutes.UpdateMyInfos) {
-
         updateUserFull(request, myProfilSC);
-
-        return getDestination(MyInfos.toString(), componentSC, request);
+        return getDestination(MyInfos.toString(), myProfilSC, request);
       } else if (route == MySettings) {
-
         request.setAttribute("View", function);
         setUserSettingsIntoRequest(request, myProfilSC);
 
@@ -148,27 +129,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       } else if (route == MyProfileRoutes.UpdateMySettings) {
         updateUserSettings(request, myProfilSC);
 
-        return getDestination(MySettings.toString(), componentSC, request);
-      } else if (route == MyNetworks) {
-        request.setAttribute("View", function);
-        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      } else if (route == UnlinkFromSVP) {
-        socialNetworkHelper.unlinkFromSilverpeas(myProfilSC, request);
-        request.setAttribute("View", MyNetworks.name());
-        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      } else if (route == LinkToSVP) {
-        return socialNetworkHelper.buildAuthenticationURL(request, route);
-      } else if (route == CreateLinkToSVP) {
-        socialNetworkHelper.linkToSilverpeas(myProfilSC, request);
-        request.setAttribute("View", MyNetworks.name());
-        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      } else if (route == PublishStatus) {
-        return socialNetworkHelper.buildAuthenticationURL(request, route);
-      } else if (route == DoPublishStatus) {
-        socialNetworkHelper.publishStatus(myProfilSC, request);
-        request.setAttribute("View", MyNetworks.name());
-        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      }  else if (route == MyInvitations) {
+        return getDestination(MySettings.toString(), myProfilSC, request);
+      } else if (route == MyInvitations) {
         MyInvitationsHelper helper = new MyInvitationsHelper();
         helper.getAllInvitationsReceived(myProfilSC, request);
         request.setAttribute("View", function);
@@ -205,10 +167,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-
-    socialNetworkHelper.getAllMyNetworks(myProfilSC, request);
-    socialNetworkHelper.setupJSAttributes(myProfilSC, request);
-
     request.setAttribute("UserFull", snUserFull.getUserFull());
     List<String> contactIds = myProfilSC.getContactsIdsForUser(myProfilSC.getUserId());
     request.setAttribute("Contacts", getContactsToDisplay(contactIds, myProfilSC));
@@ -280,8 +238,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       SilverTrace.info(getSessionControlBeanName(),
           "PersoPeasRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
-              + " - userLastName=" + userLastName + " userEmail="
-              + userEmail);
+          + " - userLastName=" + userLastName + " userEmail="
+          + userEmail);
 
       String userLoginQuestion = request.getParameter("userLoginQuestion");
       userLoginQuestion = (userLoginQuestion != null
@@ -301,8 +259,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       while (parameters.hasMoreElements()) {
         parameterName = parameters.nextElement();
         if (parameterName.startsWith("prop_")) {
-          property = parameterName.substring(5, parameterName.length()); // remove
-          // "prop_"
+          property = parameterName.substring(5, parameterName.length()); // remove s"prop_"
           properties.put(property, request.getParameter(parameterName));
         }
       }

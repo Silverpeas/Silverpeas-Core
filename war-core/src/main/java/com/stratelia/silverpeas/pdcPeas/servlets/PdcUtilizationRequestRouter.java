@@ -27,11 +27,6 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.templatedesigner.servlets.TemplateDesignerRequestRouter;
@@ -40,16 +35,19 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdcPeas.control.PdcFieldTemplateManager;
 import com.stratelia.silverpeas.pdcPeas.control.PdcUtilizationSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 
-public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.StringTokenizer;
+
+public class PdcUtilizationRequestRouter extends ComponentRequestRouter<PdcUtilizationSessionController> {
 
   private static final long serialVersionUID = 6411411783121021831L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public PdcUtilizationSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcUtilizationSessionController(mainSessionCtrl,
         componentContext,
@@ -71,18 +69,16 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, PdcUtilizationSessionController pdcSC,
       HttpServletRequest request) {
     String destination = "";
-
     // get the session controller to inform the request
-    PdcUtilizationSessionController pdcSC = (PdcUtilizationSessionController) componentSC;
     PdcFieldTemplateManager pdcFTM = pdcSC.getPdcFieldTemplateManager();
 
     try {
@@ -128,7 +124,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
         setBrowseContextInRequest(pdcSC, request);
 
         // create the new destination
-        destination = getDestination("UtilizationViewAxis", componentSC, request);
+        destination = getDestination("UtilizationViewAxis", pdcSC, request);
 
       } else if (function.startsWith("UtilizationViewAxis")) {
         // the user wants to choose an axis
@@ -224,7 +220,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
             destination = "/pdcPeas/jsp/utilizationAdd.jsp";
             break;
           default:
-            destination = getDestination("Main", componentSC, request);
+            destination = getDestination("Main", pdcSC, request);
         }
 
       } else if (function.startsWith("UtilizationEditAxis")) {
@@ -284,7 +280,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
             destination = "/pdcPeas/jsp/utilizationEdit.jsp";
             break;
           default:
-            destination = getDestination("Main", componentSC, request);
+            destination = getDestination("Main", pdcSC, request);
         }
 
       } else if (function.startsWith("UtilizationDeleteAxis")) {
@@ -304,7 +300,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
           pdcFTM.updateUsedAxisIds();
         }
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", pdcSC, request);
 
       } else {
         destination = "/pdcPeas/jsp/" + function;

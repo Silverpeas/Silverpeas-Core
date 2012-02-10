@@ -31,6 +31,7 @@
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:repository.xml" />
     <property name="homeDir" value="${jcr.home.dir.url}" />
+    <property name="jndiName" value="java:jcr/local" />
     <property name="configurationProperties">
       <list>
         <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>

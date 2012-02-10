@@ -28,14 +28,14 @@
           "-//JBoss//DTD JBOSS 4.0//EN"
           "http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd">
 <jboss>
-    <enterprise-beans>
-        <session>
-            <ejb-name>ejb/MyLinks</ejb-name>
-            <jndi-name>ejb/MyLinks</jndi-name>
-	    <resource-ref>
-		<res-ref-name>jdbc/Silverpeas</res-ref-name>
-		<jndi-name>Silverpeas</jndi-name>
-	    </resource-ref>
-        </session>
-    </enterprise-beans>
+  <enterprise-beans>
+    <session>
+      <ejb-name>MyLinks</ejb-name>
+      <jndi-name>ejb/MyLinks</jndi-name>
+      <resource-ref>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <jndi-name>Silverpeas</jndi-name>
+      </resource-ref>
+    </session>
+  </enterprise-beans>
 </jboss>

@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>statistic</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Statistic</name>
+  <name>EJB Statistic - ${project.version}</name>
 	
   <dependencies>
     <dependency>

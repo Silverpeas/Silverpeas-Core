@@ -27,38 +27,37 @@
 
 package com.silverpeas.interestCenterPeas.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.interestCenterPeas.control.InterestCenterSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 /**
  * Class declaration
+ *
  * @author
  */
-public class InterestCenterPeasRequestRouter extends ComponentRequestRouter {
+public class InterestCenterPeasRequestRouter
+    extends ComponentRequestRouter<InterestCenterSessionController> {
 
   private static final long serialVersionUID = -6581146192028464533L;
-  private InterestCenterSessionController icSC = null;
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public InterestCenterSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new InterestCenterSessionController(mainSessionCtrl,
-        componentContext);
+    return new InterestCenterSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
@@ -73,16 +72,15 @@ public class InterestCenterPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * @param icSC     The component Session Control, build and initialised.
+   * @param request  The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, InterestCenterSessionController icSC,
+      HttpServletRequest request) {
     String destination = "";
-    icSC = (InterestCenterSessionController) componentSC;
 
     try {
       if (function.startsWith("newICenter")) {

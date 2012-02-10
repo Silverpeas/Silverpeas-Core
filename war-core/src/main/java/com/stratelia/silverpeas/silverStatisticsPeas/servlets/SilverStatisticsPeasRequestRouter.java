@@ -24,17 +24,8 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.servlets;
 
-import java.util.Calendar;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.jCharts.Chart;
-import org.jCharts.nonAxisChart.PieChart2D;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverStatisticsPeas.control.SilverStatisticsPeasSessionController;
@@ -43,24 +34,33 @@ import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisStatsFilter;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossStatisticVO;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.jCharts.Chart;
+import org.jCharts.nonAxisChart.PieChart2D;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Class declaration
+ *
  * @author
  */
-public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
+public class SilverStatisticsPeasRequestRouter
+    extends ComponentRequestRouter<SilverStatisticsPeasSessionController> {
 
   private static final long serialVersionUID = -7422373100761515806L;
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public SilverStatisticsPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SilverStatisticsPeasSessionController(mainSessionCtrl,
         componentContext);
@@ -78,21 +78,18 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request router it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   *
+   * @param function    The entering request function (ex : "Main.jsp")
+   * @param statsSC The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function,SilverStatisticsPeasSessionController statsSC, HttpServletRequest request) {
     String destination = "";
-    SilverStatisticsPeasSessionController statsSC =
-        (SilverStatisticsPeasSessionController) componentSC;
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + statsSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
 
     String userProfile = statsSC.getUserProfile();
     if ("A".equals(userProfile)
@@ -481,7 +478,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("ViewVolumeServices")) {
         // Onglet Volume
         if (!userProfile.equals("A")) {
-          return getDestination("ViewVolumePublication", componentSC, request);
+          return getDestination("ViewVolumePublication", statsSC, request);
         }
 
         PieChart2D pieChart = statsSC.getVolumeServicesChart();
@@ -723,6 +720,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Set statistics session controller attributes from HttpServletRequest
+   *
    * @param request which contains the parameters
    * @param statsSC the statistics session controller Object
    */
@@ -743,6 +741,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Set connection parameter in request attributes
+   *
    * @param request the HttpServlet
    * @param statsSC the SilverStatisticsPeasSessionController object
    */
@@ -798,7 +797,8 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Format a year and month parameter
-   * @param sYear the year to format
+   *
+   * @param sYear  the year to format
    * @param sMonth the month to format
    * @return a request date string with the following format sYear-sMonth-01
    */
@@ -812,6 +812,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Set silver statistics session controller attributes from request
+   *
    * @param request the current http request
    * @param statsSC the statistics session controller.
    */

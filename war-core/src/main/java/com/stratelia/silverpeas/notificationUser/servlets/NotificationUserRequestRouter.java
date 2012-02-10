@@ -20,24 +20,25 @@
  */
 package com.stratelia.silverpeas.notificationUser.servlets;
 
+import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationUser.control.NotificationUserSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
  * <p/>
  * @author
  */
-public class NotificationUserRequestRouter extends ComponentRequestRouter {
+public class NotificationUserRequestRouter extends ComponentRequestRouter<NotificationUserSessionController> {
 
   private static final long serialVersionUID = -5858231857279380747L;
 
@@ -49,10 +50,9 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public NotificationUserSessionController createComponentSessionController(
           MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new NotificationUserSessionController(mainSessionCtrl,
-            componentContext);
+    return new NotificationUserSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
@@ -69,13 +69,13 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param nuSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, NotificationUserSessionController nuSC,
           HttpServletRequest request) {
     // remarques
     // tous les paramètres des la jsp sont transferé par la request.
@@ -85,7 +85,6 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
     // En effet, la notification peut être utilisée "en même temps" que le
     // client  utilises userPanelPeas. Cela mélange les objets selectionnée.
     String destination = "";
-    NotificationUserSessionController nuSC = (NotificationUserSessionController) componentSC;
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "function=" + function);
 
@@ -188,14 +187,14 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
           nuSC.sendMessage("", notificationId, priorityId, txtTitle, txtMessage,
               selectUserRecipients, selectGroupRecipients);
         }
-        request.setAttribute("SelectedIdUsers", new String[0]);
-        request.setAttribute("SelectedIdGroups", new String[0]);
+        request.setAttribute("SelectedIdUsers", ArrayUtil.EMPTY_STRING_ARRAY);
+        request.setAttribute("SelectedIdGroups", ArrayUtil.EMPTY_STRING_ARRAY);
         destination = "/notificationUser/jsp/notificationSender.jsp?Action=sendNotif&"
                 + "notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
                 + popupMode + "&editTargets=" + editTargets + "&compoId=";
       } else if (function.startsWith("emptyAll")) {
-        request.setAttribute("SelectedIdUsers", new String[0]);
-        request.setAttribute("SelectedIdGroups", new String[0]);
+        request.setAttribute("SelectedIdUsers", ArrayUtil.EMPTY_STRING_ARRAY);
+        request.setAttribute("SelectedIdGroups", ArrayUtil.EMPTY_STRING_ARRAY);
 
         String editTargets = request.getParameter("editTargets");
         String popupMode = request.getParameter("popupMode");

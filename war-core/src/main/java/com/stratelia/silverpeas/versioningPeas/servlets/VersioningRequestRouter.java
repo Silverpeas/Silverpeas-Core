@@ -23,18 +23,6 @@
  */
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -48,7 +36,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
@@ -64,13 +51,23 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.apache.commons.fileupload.FileItem;
 
-public class VersioningRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
+public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSessionController> {
 
   private static final long serialVersionUID = 4808952397898736028L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public VersioningSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new VersioningSessionController(mainSessionCtrl, componentContext);
   }
@@ -82,9 +79,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
   @Override
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      VersioningSessionController versioningSC, HttpServletRequest request) {
     String destination = "";
-    VersioningSessionController versioningSC = (VersioningSessionController) componentSC;
     SilverTrace.info("versioningPeas",
         "VersioningRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "User=" + versioningSC.getUserId() + " Function=" + function);
@@ -367,7 +363,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
             versioningSC.getSpaceId(), versioningSC.getComponentId());
         Document document = versioningSC.getDocument(documentPK);
-        String userId = componentSC.getUserId();
+        String userId = versioningSC.getUserId();
         String radio = FileUploadUtil.getParameter(items, "radio", "", encoding);
         String comments = FileUploadUtil.getParameter(items, "comments", "", encoding);
         boolean force = "true".equalsIgnoreCase(request.getParameter("force_release"));
@@ -389,7 +385,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             saveXMLData(versioningSC, newVersionPK, items);
           }
         } else {
-          if ("admin".equals(componentSC.getUserRoleLevel())) {
+          if ("admin".equals(versioningSC.getUserRoleLevel())) {
             // TODO MANU ecrire la page pour ressoumettre en forcant
             destination = "/versioningPeas/jsp/forceDocumentLocked.jsp";
           } else {
@@ -552,7 +548,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
           String returnURL = FileUploadUtil.getParameter(items, "ReturnURL");
           if (!StringUtil.isDefined(returnURL)) {
-            destination = getDestination("ViewVersions", componentSC, request);
+            destination = getDestination("ViewVersions", versioningSC, request);
           } else {
             request.setAttribute("urlToReload", returnURL);
             destination = rootDestination + "closeWindow.jsp";

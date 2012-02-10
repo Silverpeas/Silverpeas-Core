@@ -10,5 +10,5 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>admin</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Admin</name>
+  <name>EJB Admin - ${project.version}</name>
 </project>

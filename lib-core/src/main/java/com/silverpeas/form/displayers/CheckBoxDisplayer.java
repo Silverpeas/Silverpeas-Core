@@ -122,7 +122,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     StringBuilder html = new StringBuilder();
     int cols = 1;
     String language = PagesContext.getLanguage();
-    String cssClass = null;
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
@@ -139,6 +138,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     if (parameters.containsKey("values")) {
       values = parameters.get("values");
     }
+    String cssClass = null;
     if (parameters.containsKey("class")) {
       cssClass = parameters.get("class");
       if (StringUtil.isDefined(cssClass)) {
@@ -167,8 +167,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
     StringTokenizer stKeys = new StringTokenizer(keys, "##");
     StringTokenizer stValues = new StringTokenizer(values, "##");
-    String optKey = "";
-    String optValue = "";
+
+
     int nbTokens = getNbHtmlObjectsDisplayed(template, PagesContext);
 
     if (stKeys.countTokens() != stValues.countTokens()) {
@@ -184,17 +184,20 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
         col++;
         html.append("<td>");
-        optKey = stKeys.nextToken();
-        optValue = stValues.nextToken();
+        String optKey = stKeys.nextToken();
+        String optValue = stValues.nextToken();
         html.append("<input type=\"checkbox\" id=\"").append(fieldName).append("_").append(i);
         html.append("\" name=\"").append(fieldName).append("\" value=\"").append(optKey).append(
                 "\" ");
+        if(StringUtil.isDefined(cssClass)) {
+          html.append(cssClass);
+        }
         if (template.isDisabled() || template.isReadOnly()) {
           html.append(" disabled=\"disabled\" ");
         }
         if (valuesFromDB.contains(optKey)) {
           html.append(" checked=\"checked\" ");
-        }
+        }        
         html.append("/>&nbsp;").append(optValue);
 
         // last checkBox
@@ -252,7 +255,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
               TextField.TYPE);
     }
-
     String valuesToInsert = values;
 
     if (field.acceptValue(valuesToInsert, PagesContext.getLanguage())) {

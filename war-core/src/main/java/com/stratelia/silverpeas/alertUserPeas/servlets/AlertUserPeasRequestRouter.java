@@ -25,33 +25,35 @@
 package com.stratelia.silverpeas.alertUserPeas.servlets;
 
 import com.silverpeas.util.StringUtil;
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.alertUserPeas.control.AlertUserPeasSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Class declaration
+ *
  * @author
  */
-public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
+public class AlertUserPeasRequestRouter
+    extends ComponentRequestRouter<AlertUserPeasSessionController> {
 
   private static final long serialVersionUID = 5335551355656715989L;
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public AlertUserPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new AlertUserPeasSessionController(mainSessionCtrl, componentContext);
   }
@@ -67,15 +69,14 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @param scc      The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, AlertUserPeasSessionController scc,
+      HttpServletRequest request) {
     String destination = "";
-    AlertUserPeasSessionController scc = (AlertUserPeasSessionController) componentSC;
     SilverTrace.info("alertUserPeas", "getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
     try {

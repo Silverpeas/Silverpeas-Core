@@ -41,15 +41,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
- * IMPORTANT : For the moment, this is a read-only driver (not possible to add, remove or update a
- * group or a user.
- *
+ * IMPORTANT : For the moment, it is not possible to add, remove or update a group neither add or remove an user.
+ * However, it is possible to update an user...
  * @author tleroi
  */
 public class LDAPDriver extends AbstractDomainDriver {
@@ -65,7 +63,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    *
    * @param rs name of resource file
    */
-  public void initFromProperties(ResourceLocator rs) throws Exception {
+  public void initFromProperties(ResourceLocator rs) throws AdminException {
     driverSettings.initFromProperties(rs);
     synchroCache.init(driverSettings);
     userTranslator = driverSettings.newLDAPUser();
@@ -79,37 +77,21 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   public void addPropertiesToImport(List<DomainProperty> props, Map<String, String> descriptions) {
+    props.add(getProperty("lastName", driverSettings.getUsersLastNameField(), descriptions));
+    props.add(getProperty("firstName", driverSettings.getUsersFirstNameField(), descriptions));
+    props.add(getProperty("email", driverSettings.getUsersEmailField(), descriptions));
+    props.add(getProperty("login", driverSettings.getUsersLoginField(), descriptions));
+  }
+  
+  private DomainProperty getProperty(String name, String mapParameter,
+      Map<String, String> descriptions) {
     DomainProperty property = new DomainProperty();
-    property.setName("lastName");
-    property.setMapParameter(driverSettings.getUsersLastNameField());
+    property.setName(name);
+    property.setMapParameter(mapParameter);
     if (descriptions != null) {
-      property.setDescription(descriptions.get("lastName"));
+      property.setDescription(descriptions.get(name));
     }
-    props.add(property);
-
-    property = new DomainProperty();
-    property.setName("firstName");
-    property.setMapParameter(driverSettings.getUsersFirstNameField());
-    if (descriptions != null) {
-      property.setDescription(descriptions.get("firstName"));
-    }
-    props.add(property);
-
-    property = new DomainProperty();
-    property.setName("email");
-    property.setMapParameter(driverSettings.getUsersEmailField());
-    if (descriptions != null) {
-      property.setDescription(descriptions.get("email"));
-    }
-    props.add(property);
-
-    property = new DomainProperty();
-    property.setName("login");
-    property.setMapParameter(driverSettings.getUsersLoginField());
-    if (descriptions != null) {
-      property.setDescription(descriptions.get("login"));
-    }
-    props.add(property);
+    return property;
   }
 
   /**
@@ -163,7 +145,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     return driverSettings.isSynchroThreaded();
   }
 
-  public String getTimeStamp(String minTimeStamp) throws Exception {
+  public String getTimeStamp(String minTimeStamp) throws AdminException {
     if (driverSettings.getTimeStampVar().length() > 0) {
       String ld = LDAPUtility.openConnection(driverSettings);
       AbstractLDAPTimeStamp timeStampU, timeStampG;
@@ -189,7 +171,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
-  public String getTimeStampField() throws Exception {
+  public String getTimeStampField() {
     String timeStampField = driverSettings.getTimeStampVar();
     if (timeStampField != null && timeStampField.trim().length() > 0) {
       return timeStampField;
@@ -199,7 +181,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   public UserDetail[] getAllChangedUsers(String fromTimeStamp,
-      String toTimeStamp) throws Exception {
+      String toTimeStamp) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
     UserDetail[] usersReturned;
 
@@ -220,24 +202,22 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp)
-      throws Exception {
+      throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    Group[] groupsReturned;
-
+    
     SilverTrace.info("admin", "LDAPDriver.getAllChangedGroups",
         "root.MSG_GEN_ENTER_METHOD");
     try {
       if (driverSettings.getTimeStampVar().length() > 0) {
-        groupsReturned = groupTranslator.getAllChangedGroups(ld, "(&("
+        return groupTranslator.getAllChangedGroups(ld, "(&("
             + driverSettings.getTimeStampVar() + ">=" + fromTimeStamp + ")("
             + driverSettings.getTimeStampVar() + "<=" + toTimeStamp + "))");
       } else {
-        groupsReturned = groupTranslator.getAllChangedGroups(ld, "");
+        return groupTranslator.getAllChangedGroups(ld, "");
       }
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupsReturned;
   }
 
   /**
@@ -258,11 +238,11 @@ public class LDAPDriver extends AbstractDomainDriver {
 
     synchroCache.endSynchronization();
     String result = userTranslator.endSynchronization();
-    if ((result != null) && (result.length() > 0)) {
+    if (result != null && result.length() > 0) {
       valret.append("LDAP Domain User specific errors :\n").append(result).append("\n\n");
     }
     result = groupTranslator.endSynchronization();
-    if ((result != null) && (result.length() > 0)) {
+    if (result != null && result.length() > 0) {
       valret.append("LDAP Domain Group specific errors :\n").append(result).append("\n\n");
     }
     synchroInProcess = false;
@@ -275,18 +255,16 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userLogin The User Login to import
    * @return The User object that contain new user information
    */
-  public UserDetail importUser(String userLogin) throws Exception {
+  public UserDetail importUser(String userLogin) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    UserDetail userReturned;
 
     SilverTrace.info("admin", "LDAPDriver.importUser",
         "root.MSG_GEN_ENTER_METHOD", "UserId = " + userLogin);
     try {
-      userReturned = userTranslator.getUserByLogin(ld, userLogin);
+      return userTranslator.getUserByLogin(ld, userLogin);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return userReturned;
   }
 
   /**
@@ -294,7 +272,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    *
    * @param userId The user id To remove synchro
    */
-  public void removeUser(String userId) throws Exception {
+  public void removeUser(String userId) throws AdminException {
     // In this driver, do nothing
   }
 
@@ -321,8 +299,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public void updateUserFull(UserFull user) throws Exception {
-    String userFullDN = null;
+  public void updateUserFull(UserFull user) throws AdminException {
     String ld = null;
 
     try {
@@ -342,16 +319,26 @@ public class LDAPDriver extends AbstractDomainDriver {
             + ";IdField=" + driverSettings.getUsersIdField());
       }
 
-      userFullDN = theEntry.getDN();
+      String userFullDN = theEntry.getDN();
+      
+      List<LDAPModification> modifications = new ArrayList<LDAPModification>();
+      
+      // update basic informations (first name, last name and email)
+      LDAPAttribute attribute = new LDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
+      modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+      
+      attribute = new LDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
+      modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+      
+      attribute = new LDAPAttribute(driverSettings.getUsersEmailField(), user.geteMail());
+      modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
       // prepare properties update
-      List<LDAPModification> modifications = new ArrayList<LDAPModification>();
       for (String propertyName : user.getPropertiesNames()) {
         DomainProperty property = user.getProperty(propertyName);
         if (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser()) {
           LDAPModification modification = new LDAPModification(LDAPModification.REPLACE,
-              new LDAPAttribute(property.getMapParameter(),
-                  user.getValue(propertyName)));
+              new LDAPAttribute(property.getMapParameter(), user.getValue(propertyName)));
           modifications.add(modification);
         }
       }
@@ -389,18 +376,16 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
-  public UserFull getUserFull(String userId) throws Exception {
+  public UserFull getUserFull(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    UserFull userReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getUser",
         "root.MSG_GEN_ENTER_METHOD", "UserId = " + userId);
     try {
-      userReturned = userTranslator.getUserFull(ld, userId);
+      return userTranslator.getUserFull(ld, userId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return userReturned;
   }
 
   /**
@@ -409,18 +394,16 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
-  public UserDetail getUser(String userId) throws Exception {
+  public UserDetail getUser(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    UserDetail userReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getUser",
         "root.MSG_GEN_ENTER_METHOD", "UserId = " + userId);
     try {
-      userReturned = userTranslator.getUser(ld, userId);
+      return userTranslator.getUser(ld, userId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return userReturned;
   }
 
   /**
@@ -428,57 +411,48 @@ public class LDAPDriver extends AbstractDomainDriver {
    *
    * @return User[] An array of User Objects that contain users information
    */
-  public UserDetail[] getAllUsers() throws Exception {
+  public UserDetail[] getAllUsers() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    UserDetail[] usersReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getAllUsers()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      usersReturned = userTranslator.getAllUsers(ld, "");
+      return userTranslator.getAllUsers(ld, "");
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return usersReturned;
   }
 
   public UserDetail[] getUsersBySpecificProperty(String propertyName,
-      String propertyValue) throws Exception {
+      String propertyValue) throws AdminException {
     DomainProperty property = getProperty(propertyName);
     if (property == null) {
       // This property is not defined in this domain
       return null;
     } else {
       String ld = LDAPUtility.openConnection(driverSettings);
-      UserDetail[] usersReturned;
       try {
         String extraFilter = "(" + property.getMapParameter() + "="
             + propertyValue + ")";
-        usersReturned = userTranslator.getAllUsers(ld, extraFilter);
+        return userTranslator.getAllUsers(ld, extraFilter);
       } finally {
         LDAPUtility.closeConnection(ld);
       }
-      return usersReturned;
     }
   }
 
-  public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
     String extraFilter = "";
-    Iterator<String> properties = query.keySet().iterator();
-    String propertyName = null;
-    while (properties.hasNext()) {
-      propertyName = properties.next();
+    for (String propertyName : query.keySet()) {
       extraFilter += "(" + propertyName + "=" + query.get(propertyName) + ")";
     }
 
     String ld = LDAPUtility.openConnection(driverSettings);
-    UserDetail[] usersReturned;
     try {
-      usersReturned = userTranslator.getAllUsers(ld, extraFilter);
+      return userTranslator.getAllUsers(ld, extraFilter);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return usersReturned;
   }
 
   /**
@@ -487,18 +461,16 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userId The user id as stored in the database
    * @return The User's groups specific Ids
    */
-  public String[] getUserMemberGroupIds(String userId) throws Exception {
+  public String[] getUserMemberGroupIds(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    String[] groupsReturned;
-
+    
     SilverTrace.info("admin", "LDAPDriver.getUserMemberGroupIds",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
     try {
-      groupsReturned = groupTranslator.getUserMemberGroupIds(ld, userId);
+      return groupTranslator.getUserMemberGroupIds(ld, userId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupsReturned;
   }
 
   /**
@@ -507,18 +479,15 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupName The group name to import
    * @return The group object that contain new group information
    */
-  public Group importGroup(String groupName) throws Exception {
+  public Group importGroup(String groupName) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    Group groupReturned;
-
     SilverTrace.info("admin", "LDAPDriver.getGroup",
         "root.MSG_GEN_ENTER_METHOD", "GroupName = " + groupName);
     try {
-      groupReturned = groupTranslator.getGroupByName(ld, groupName);
+      return groupTranslator.getGroupByName(ld, groupName);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupReturned;
   }
 
   /**
@@ -526,7 +495,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    *
    * @param groupId The group id To remove synchro
    */
-  public void removeGroup(String groupId) throws Exception {
+  public void removeGroup(String groupId) throws AdminException {
     // In this driver, do nothing
   }
 
@@ -536,24 +505,24 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupId The group Id to synchronize
    * @return The group object that contain new group information
    */
-  public Group synchroGroup(String groupId) throws Exception {
+  public Group synchroGroup(String groupId) throws AdminException {
     SilverTrace.info("admin", "LDAPDriver.importGroup",
         "root.MSG_GEN_ENTER_METHOD", "GroupId = " + groupId);
     return getGroup(groupId);
   }
 
   @Override
-  public String createGroup(Group m_Group) throws Exception {
+  public String createGroup(Group m_Group) throws AdminException {
     return null;
   }
 
   @Override
-  public void deleteGroup(String groupId) throws Exception {
+  public void deleteGroup(String groupId) throws AdminException {
 
   }
 
   @Override
-  public void updateGroup(Group m_Group) throws Exception {
+  public void updateGroup(Group m_Group) throws AdminException {
 
   }
 
@@ -563,22 +532,20 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupId The group id as stored in the database
    * @return The Group object that contains user information
    */
-  public Group getGroup(String groupId) throws Exception {
+  public Group getGroup(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    Group groupReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getGroup",
         "root.MSG_GEN_ENTER_METHOD", "GroupId = " + groupId);
     try {
-      groupReturned = groupTranslator.getGroup(ld, groupId);
+      return groupTranslator.getGroup(ld, groupId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupReturned;
   }
 
   @Override
-  public Group getGroupByName(String groupName) throws Exception {
+  public Group getGroupByName(String groupName) throws AdminException {
     return null;
   }
 
@@ -588,18 +555,16 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
    */
-  public Group[] getGroups(String groupId) throws Exception {
+  public Group[] getGroups(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    Group[] groupsReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getGroups",
         "root.MSG_GEN_ENTER_METHOD", "FatherGroupId = " + groupId);
     try {
-      groupsReturned = groupTranslator.getGroups(ld, groupId, "");
+      return groupTranslator.getGroups(ld, groupId, "");
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupsReturned;
   }
 
   /**
@@ -607,18 +572,16 @@ public class LDAPDriver extends AbstractDomainDriver {
    *
    * @return Group[] An array of Group Objects that contain groups information
    */
-  public Group[] getAllGroups() throws Exception {
+  public Group[] getAllGroups() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    Group[] groupsReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getAllGroups",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      groupsReturned = groupTranslator.getAllGroups(ld, "");
+      return groupTranslator.getAllGroups(ld, "");
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupsReturned;
   }
 
   /**
@@ -626,32 +589,28 @@ public class LDAPDriver extends AbstractDomainDriver {
    *
    * @return Group[] An array of Group Objects that contain root groups information
    */
-  public Group[] getAllRootGroups() throws Exception {
+  public Group[] getAllRootGroups() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    Group[] groupsReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getAllRootGroups",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      groupsReturned = groupTranslator.getGroups(ld, null, "");
+      return groupTranslator.getGroups(ld, null, "");
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupsReturned;
   }
 
-  public String[] getGroupMemberGroupIds(String groupId) throws Exception {
+  public String[] getGroupMemberGroupIds(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    String[] groupsReturned;
 
     SilverTrace.info("admin", "LDAPDriver.getGroupMemberGroupIds",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
     try {
-      groupsReturned = groupTranslator.getGroupMemberGroupIds(ld, groupId);
+      return groupTranslator.getGroupMemberGroupIds(ld, groupId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
-    return groupsReturned;
   }
 
   /**
@@ -660,25 +619,25 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
    *                    'commit' statement)
    */
-  public void startTransaction(boolean bAutoCommit) throws Exception {
+  public void startTransaction(boolean bAutoCommit) {
     // Access in read only -> no need to support transaction mode
   }
 
   /**
    * Commit transaction
    */
-  public void commit() throws Exception {
+  public void commit() throws AdminException {
     // Access in read only -> no need to support transaction mode
   }
 
   /**
    * Rollback transaction
    */
-  public void rollback() throws Exception {
+  public void rollback() throws AdminException {
     // Access in read only -> no need to support transaction mode
   }
 
-  public List<String> getUserAttributes() throws Exception {
+  public List<String> getUserAttributes() throws AdminException {
     return Arrays.asList(userTranslator.getUserAttributes());
   }
 

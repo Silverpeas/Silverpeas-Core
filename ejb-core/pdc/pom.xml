@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>pdc</artifactId>
   <packaging>ejb</packaging>
-  <name>PdC service</name>
+  <name>PdC service - ${project.version}</name>
   <description>
     Provides business beans and services to define a classification plan, to parameterize it for
     a Silverpeas component instance, to classify a content, etc.
@@ -89,41 +89,6 @@
     <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>
-    <!--
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>hibernate3-maven-plugin</artifactId>
-        <version>2.2</version>
-        <executions>
-          <execution>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>hbm2ddl</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <components>
-            <component>
-              <name>hbm2ddl</name>
-              <implementation>jpaconfiguration</implementation>
-            </component>
-          </components>
-          <componentProperties>
-            <persistenceunit>silverpeas-pu</persistenceunit>
-            <outputfilename>schema.ddl</outputfilename>
-            <drop>false</drop>
-            <create>true</create>
-            <export>false</export>
-            <format>true</format>
-          </componentProperties>
-        </configuration>
-      </plugin>
-    </plugins>
-          -->
   </build>
-  <properties>
-    <netbeans.hint.deploy.server>JBoss4</netbeans.hint.deploy.server>
-  </properties>
+
 </project>

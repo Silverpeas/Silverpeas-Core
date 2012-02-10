@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>silverstatistics</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Silver Statistics</name>
+  <name>EJB Silver Statistics - ${project.version}</name>
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
@@ -18,25 +18,9 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner-jdbc</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-    </dependency>    
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <scope>test</scope>
-    </dependency>
-     <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-    </dependency>-->
   </dependencies>
   
-   <build>
+  <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

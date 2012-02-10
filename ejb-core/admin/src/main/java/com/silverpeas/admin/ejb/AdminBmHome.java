@@ -24,9 +24,9 @@
 
 package com.silverpeas.admin.ejb;
 
-import javax.ejb.EJBHome;
-import javax.ejb.CreateException;
 import java.rmi.RemoteException;
+import javax.ejb.CreateException;
+import javax.ejb.EJBHome;
 
 /**
  * Interface declaration

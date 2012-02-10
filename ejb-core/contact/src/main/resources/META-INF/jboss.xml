@@ -28,26 +28,26 @@
           "-//JBoss//DTD JBOSS 4.0//EN"
           "http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd">
 <jboss>
-    <enterprise-beans>
-        <session>
-            <ejb-name>ejb/ContactBm</ejb-name>
-            <jndi-name>ejb/ContactBm</jndi-name>
-	    <ejb-ref>
-		<ejb-ref-name>ejb/Contact</ejb-ref-name>
-		<jndi-name>ejb/Contact</jndi-name>
-	    </ejb-ref>
-	    <resource-ref>
-		<res-ref-name>jdbc/Silverpeas</res-ref-name>
-		<jndi-name>Silverpeas</jndi-name>
-	    </resource-ref>
-        </session>
-	<entity>
-            <ejb-name>ejb/Contact</ejb-name>
-            <jndi-name>ejb/Contact</jndi-name>
-	    <resource-ref>
-		<res-ref-name>jdbc/Silverpeas</res-ref-name>
-		<jndi-name>Silverpeas</jndi-name>
-	    </resource-ref>
-        </entity>
-    </enterprise-beans>
+  <enterprise-beans>
+    <session>
+      <ejb-name>ContactBm</ejb-name>
+      <jndi-name>ejb/ContactBm</jndi-name>
+      <ejb-ref>
+        <ejb-ref-name>Contact</ejb-ref-name>
+        <jndi-name>ejb/Contact</jndi-name>
+      </ejb-ref>
+      <resource-ref>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <jndi-name>Silverpeas</jndi-name>
+      </resource-ref>
+    </session>
+    <entity>
+      <ejb-name>Contact</ejb-name>
+      <jndi-name>ejb/Contact</jndi-name>
+      <resource-ref>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <jndi-name>Silverpeas</jndi-name>
+      </resource-ref>
+    </entity>
+  </enterprise-beans>
 </jboss>

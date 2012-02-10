@@ -28,16 +28,17 @@ import com.silverpeas.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractI18NBean implements I18NBean, Serializable {
 
   private static final long serialVersionUID = 756146888448232764L;
   private String language = null;
   private String translationId = null;
-  private Hashtable<String, Translation> translations = new Hashtable<String, Translation>();
+  private Map<String, Translation> translations = new HashMap<String, Translation>(3);
   private boolean removeTranslation = false;
 
   public String getLanguage() {
@@ -68,11 +69,11 @@ public abstract class AbstractI18NBean implements I18NBean, Serializable {
     return translations.keySet().iterator();
   }
 
-  public Hashtable<String, Translation> getTranslations() {
+  public Map<String, Translation> getTranslations() {
     return translations;
   }
 
-  public void setTranslations(Hashtable<String, Translation> translations) {
+  public void setTranslations(Map<String, Translation> translations) {
     this.translations = translations;
   }
 

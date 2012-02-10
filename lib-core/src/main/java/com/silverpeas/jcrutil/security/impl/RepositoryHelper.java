@@ -25,7 +25,6 @@
 package com.silverpeas.jcrutil.security.impl;
 
 import javax.security.auth.spi.LoginModule;
-
 import org.apache.jackrabbit.core.security.AccessManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +40,7 @@ public class RepositoryHelper implements ApplicationContextAware {
   private RepositoryHelper() {
   }
 
+  @Override
   public void setApplicationContext(ApplicationContext context)
       throws BeansException {
     this.context = context;
@@ -54,13 +54,18 @@ public class RepositoryHelper implements ApplicationContextAware {
     }
     return RepositoryHelper.instance;
   }
+  
+  private  ApplicationContext getContext() {
+    return context;
+  }
+  
 
   public static LoginModule getJcrLoginModule() {
-    return (LoginModule) getInstance().context.getBean(JRC_LOGIN_MODULE);
+    return getInstance().getContext().getBean(JRC_LOGIN_MODULE, LoginModule.class);
   }
 
   public static AccessManager getJcrAccessManager() {
-    return (AccessManager) getInstance().context.getBean(JRC_ACCESS_MANAGER);
+    return getInstance().getContext().getBean(JRC_ACCESS_MANAGER, AccessManager.class);
   }
 
 }

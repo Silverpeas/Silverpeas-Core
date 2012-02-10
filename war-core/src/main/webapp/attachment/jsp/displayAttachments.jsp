@@ -32,6 +32,7 @@
 <%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
 
+<view:includePlugin name="qtip"/>
 <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
 

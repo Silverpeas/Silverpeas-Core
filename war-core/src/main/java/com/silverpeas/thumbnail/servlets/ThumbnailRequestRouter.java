@@ -23,21 +23,12 @@
  */
 package com.silverpeas.thumbnail.servlets;
 
-import java.io.File;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.ThumbnailSessionController;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -47,21 +38,24 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.fileupload.FileItem;
 
-public class ThumbnailRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+
+public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
           "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
   private static final long serialVersionUID = -2685660972761271210L;
 
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      ThumbnailSessionController thumbnailSC, HttpServletRequest request) {
 
     String destination = "";
     if (!function.startsWith("images")) {
-
-      ThumbnailSessionController thumbnailSC = (ThumbnailSessionController) componentSC;
-
       String action = getAction(request);
 
       List<FileItem> parameters = null;
@@ -451,7 +445,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public ThumbnailSessionController createComponentSessionController(
           MainSessionController mainSessionCtrl, ComponentContext context) {
     return new ThumbnailSessionController(mainSessionCtrl, context);
   }

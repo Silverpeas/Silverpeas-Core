@@ -28,7 +28,7 @@
 <%@ include file="check.jsp" %>
 <html>
 <head>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <script language="javascript">
 <!--
 function MM_reloadPage(init) {  //reloads the window if Nav4 resized

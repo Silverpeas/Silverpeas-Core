@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,6 +12,7 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
   <context:annotation-config/>
@@ -24,19 +26,14 @@
   
   <bean id="pdcServiceFactory" class="com.silverpeas.pdc.PdcServiceFactory" factory-method="getFactory"/>
 
-  <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
-        p:entityManagerFactory-ref="entityManagerFactory"/>
+  <jpa:repositories base-package="com.silverpeas.pdc.dao" transaction-manager-ref="jpaTransactionManager"/>
 
-  <bean id="entityManagerFactory"
-        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-        p:dataSource-ref="dataSource"
-        p:persistenceXmlLocation="classpath*:META-INF/persistence-pdc.xml"
-        p:persistenceUnitName="silverpeas-pu">
-    <property name="jpaVendorAdapter">
-      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-            p:showSql="false"
-            p:generateDdl="false"/>
-    </property>
-  </bean>
+  <import resource="spring-jpa.xml"/>
+  
+  <import resource="spring-silverpeas.xml"/>
+  
+  <util:list id="entities">
+    <value>com.silverpeas.pdc.model</value>
+  </util:list>
   
 </beans>

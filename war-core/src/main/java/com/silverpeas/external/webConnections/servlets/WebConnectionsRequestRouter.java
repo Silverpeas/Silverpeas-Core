@@ -24,24 +24,22 @@
 
 package com.silverpeas.external.webConnections.servlets;
 
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.external.webConnections.control.WebConnectionsSessionController;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
-public class WebConnectionsRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.Hashtable;
+import java.util.List;
+
+public class WebConnectionsRequestRouter extends ComponentRequestRouter<WebConnectionsSessionController> {
   private static final long serialVersionUID = 1L;
 
   /**
@@ -59,7 +57,7 @@ public class WebConnectionsRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public WebConnectionsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new WebConnectionsSessionController(mainSessionCtrl, componentContext);
   }
@@ -68,19 +66,16 @@ public class WebConnectionsRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param webConnectionsSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, WebConnectionsSessionController webConnectionsSC,
       HttpServletRequest request) {
     String destination = "";
     String rootDest = "/webConnections/jsp/";
-    WebConnectionsSessionController webConnectionsSC =
-        (WebConnectionsSessionController) componentSC;
-
     SilverTrace.info("webConnections", "WebConnectionsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + webConnectionsSC.getUserId() + " Function=" + function);
 
     try {
       if (function.startsWith("Main")) {

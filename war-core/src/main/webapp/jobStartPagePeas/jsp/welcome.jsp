@@ -26,92 +26,101 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
+<%@page import="com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%
-boolean isUserAdmin 	= ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
-boolean globalMode 		= ((Boolean)request.getAttribute("globalMode")).booleanValue();
-boolean isBackupEnable 	= ((Boolean)request.getAttribute("IsBackupEnable")).booleanValue();
-boolean isBasketEnable 	= ((Boolean)request.getAttribute("IsBasketEnable")).booleanValue();
-boolean	clipboardNotEmpty = new Boolean((String) request.getAttribute("ObjectsSelectedInClipboard")).booleanValue();
 
-	// Space edition
-    if (isUserAdmin)
-    {   	
-        operationPane.addOperation(resource.getIcon("JSPP.spaceAdd"),resource.getString("JSPP.SpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace', 750, 300)");
-        if (clipboardNotEmpty) {
-  			operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onClick=clipboardPaste()");
-  		}
-        // All Silverpeas
-        if (globalMode)
-        {
-            operationPane.addOperation(resource.getIcon("JSPP.spaceUnlock"),resource.getString("JSPP.maintenanceModeToOff"),"DesactivateMaintenance?allIntranet=1");
-        }
-        else
-        {
-            operationPane.addOperation(resource.getIcon("JSPP.spaceLock"),resource.getString("JSPP.maintenanceModeToOn"),"ActivateMaintenance?allIntranet=1");
-        }
-        if (isBackupEnable)
-    	{
-    		operationPane.addLine();
-	    	operationPane.addOperation(resource.getIcon("JSPP.silverpeasBackup"),resource.getString("JSPP.BackupUnlimited"),"javascript:onClick=openPopup('"+m_context+URLManager.getURL(URLManager.CMP_JOBBACKUP)+"Main?spaceToSave=Admin', 750, 550)");
-	    }
-        if (isBasketEnable)
-        {
-        	operationPane.addLine();
-        	operationPane.addOperation(resource.getIcon("JSPP.bin"), resource.getString("JSPP.Bin"), "ViewBin");
-        }
-    }
-%>
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<c:set var="isUserAdmin" value="${requestScope['isUserAdmin']}" />
+<c:set var="globalMode" value="${requestScope['globalMode']}" />
+<c:set var="isBackupEnable" value="${requestScope['IsBackupEnable']}" />
+<c:set var="isBasketEnable" value="${requestScope['IsBasketEnable']}" />
+<c:set var="clipboardNotEmpty" value="${requestScope['ObjectsSelectedInClipboard']}" />
+
+<c:set var="content" value="${requestScope['Content']}" />
+
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <!--
-function openPopup(action, larg, haut) 
-{
-	url = action;
+function openPopup() {
 	windowName = "actionWindow";
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	actionWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+	actionWindow = SP_openWindow("CreateSpace", windowName, 750, 400, windowParams, false);
 }
 function clipboardPaste() {
 	$.progressMessage();
 	location.href="paste";
 }
+
+function recoverRights() {
+	$.progressMessage();
+	location.href = "RecoverSpaceRights";
+}
 -->
 </script>
-</HEAD>
-<BODY>
-<%
-out.println(window.printBefore());
-out.println(frame.printBefore());
-%>
-<center>
-<%
-out.println(board.printBefore());
-%>
-<div align="center" class="txtNav">
-<%
-    if (globalMode) {
-        out.print("<font color=\"#ff0000\">" + resource.getString("JSPP.maintenanceTout") + "</font>");
-    } else {
-        out.print(resource.getString("JSPP.welcome"));
-    }
-%></div>
-<%
-out.println(board.printAfter());
-%>
-</center>
-<% 
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+</head>
+<body>
+<c:if test="${isUserAdmin}">
+<view:operationPane>
+	<fmt:message var="spaceAdd" key="JSPP.SpacePanelCreateTitle" />
+    <view:operation altText="${spaceAdd}" icon="" action="javascript:onClick=openPopup();"></view:operation>
+    
+    <c:if test="${clipboardNotEmpty}">
+    	<fmt:message var="paste" key="GML.paste" />
+    	<view:operation altText="${paste}" icon="" action="javascript:onClick=clipboardPaste();"></view:operation>
+    </c:if>
+    
+    <c:choose>
+		<c:when test="${globalMode}">
+			<fmt:message var="maintenance" key="JSPP.maintenanceModeToOff" />
+			<view:operationSeparator/>
+    		<view:operation altText="${maintenance}" icon="" action="DesactivateMaintenance?allIntranet=1"></view:operation>
+		</c:when>
+		<c:otherwise>
+			<fmt:message var="maintenance" key="JSPP.maintenanceModeToOn" />
+			<view:operationSeparator/>
+    		<view:operation altText="${maintenance}" icon="" action="ActivateMaintenance?allIntranet=1"></view:operation>
+		</c:otherwise>
+	</c:choose>
+	
+	<c:if test="${JobStartPagePeasSettings.recoverRightsEnable}">
+		<view:operationSeparator/>
+    	<fmt:message var="recover" key="JSPP.spaceRecover" />
+    	<view:operation altText="${recover}" icon="" action="javascript:onClick=recoverRights();"></view:operation>
+    </c:if>
+    
+    <c:if test="${isBasketEnable}">
+		<view:operationSeparator/>
+    	<fmt:message var="bin" key="JSPP.Bin" />
+    	<view:operation altText="${bin}" icon="" action="ViewBin"></view:operation>
+    </c:if>
+</view:operationPane>
+</c:if>
+<view:window>
+<view:frame>
+<view:board>
+<div id="spaces-welcome-message">
+<c:choose>
+  <c:when test="${globalMode}">
+    <font color="#ff0000"><fmt:message key="JSPP.maintenanceTout" /></font>
+  </c:when>
+  <c:otherwise>
+    <c:out value="${content}" escapeXml="false" />
+  </c:otherwise>
+</c:choose>
+</div>
+</view:board>
+</view:frame>
+</view:window>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

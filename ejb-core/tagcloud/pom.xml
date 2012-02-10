@@ -10,5 +10,5 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>tagcloud</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Tagcloud</name>
+  <name>EJB Tagcloud - ${project.version}</name>
 </project>

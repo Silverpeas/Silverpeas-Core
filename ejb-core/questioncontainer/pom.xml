@@ -11,7 +11,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>questioncontainer</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Question Container</name>
+  <name>EJB Question Container - ${project.version}</name>
 
   <dependencies>
     <dependency>
@@ -26,5 +26,20 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>    
   </dependencies>
+  
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
 </project>

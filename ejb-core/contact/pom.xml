@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>contact</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Contact</name>
+  <name>EJB Contact - ${project.version}</name>
 
   <dependencies>
     <dependency>

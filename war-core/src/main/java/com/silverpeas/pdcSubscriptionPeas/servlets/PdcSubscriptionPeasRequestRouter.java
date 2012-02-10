@@ -24,27 +24,25 @@
 
 package com.silverpeas.pdcSubscriptionPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
-public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class PdcSubscriptionPeasRequestRouter
+    extends ComponentRequestRouter<PdcSubscriptionSessionController> {
 
   private static final long serialVersionUID = -441269066150311066L;
-  private PdcSubscriptionSessionController pdcSC = null;
 
-  public ComponentSessionController createComponentSessionController(
+  public PdcSubscriptionSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcSubscriptionSessionController(mainSessionCtrl,
         componentContext);
@@ -62,27 +60,26 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * @param pdcSC    The component Session Control, build and initialised.
+   * @param request  The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, PdcSubscriptionSessionController pdcSC,
+      HttpServletRequest request) {
     String destination = "";
-    pdcSC = (PdcSubscriptionSessionController) componentSC;
-    request.setAttribute("language", componentSC.getLanguage());
+    request.setAttribute("language", pdcSC.getLanguage());
     String rootDest = "/pdcSubscriptionPeas/jsp/";
 
     try {
       if (function.startsWith("subscriptionList")) {
-        destination = rootDest + processSubscriptionList(request);
+        destination = rootDest + processSubscriptionList(request, pdcSC);
       } else if (function.startsWith("showUserSubscriptions")) {
         String reqUserId = request.getParameter("userId");
         if (reqUserId != null && !reqUserId.equals("")) {
           int userId = Integer.parseInt(reqUserId);
-          destination = rootDest + processUserSubscriptions(request, userId);
+          destination = rootDest + processUserSubscriptions(request, pdcSC, userId);
         }
       } else if (function.equals("ViewSubscriptionTheme")) {
         String userId = request.getParameter("userId");
@@ -115,7 +112,8 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
   /**
    * Process required operations for showing <b>current</b> user subscription
    */
-  private String processSubscriptionList(HttpServletRequest request)
+  private String processSubscriptionList(HttpServletRequest request,
+      PdcSubscriptionSessionController pdcSC)
       throws Exception {
     request.setAttribute("action", "subscriptionList");
 
@@ -134,28 +132,31 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
     }
     List<PDCSubscription> list = pdcSC.getUserPDCSubscription();
 
-    return doInitSubscrListRequest(request, list);
+    return doInitSubscrListRequest(request, pdcSC, list);
   }
 
   /**
    * Process required operations for showing user subscription
    */
-  private String processUserSubscriptions(HttpServletRequest request, int userId)
+  private String processUserSubscriptions(HttpServletRequest request,
+      PdcSubscriptionSessionController pdcSC, int userId)
       throws Exception {
     request.setAttribute("action", "showUserSubscriptions");
     request.setAttribute("userId", String.valueOf(userId));
     List<PDCSubscription> list = pdcSC.getUserPDCSubscription(userId);
-    return doInitSubscrListRequest(request, list);
+    return doInitSubscrListRequest(request, pdcSC, list);
   }
 
   /**
    * Performs <code>Request</code> initialization for furure use in subscriptionList.jsp
-   * @param request a <code>HttpServletRequest</code> to be forwarded
+   *
+   * @param request       a <code>HttpServletRequest</code> to be forwarded
    * @param subscriptions a list of loaded PDCSubscription to be shown
    * @return jsp name
    */
   private String doInitSubscrListRequest(HttpServletRequest request,
-      List<PDCSubscription> subscriptions) throws Exception {
+      PdcSubscriptionSessionController pdcSC, List<PDCSubscription> subscriptions)
+      throws Exception {
     request.setAttribute("subscriptionList", subscriptions);
     List pathContext = new ArrayList();
     for (PDCSubscription subscription : subscriptions) {

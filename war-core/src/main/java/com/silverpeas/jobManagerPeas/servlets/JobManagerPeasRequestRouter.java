@@ -24,18 +24,20 @@
 
 package com.silverpeas.jobManagerPeas.servlets;
 
-import javax.servlet.http.*;
-import com.stratelia.silverpeas.silvertrace.*;
-import com.stratelia.silverpeas.peasCore.servlets.*;
-import com.stratelia.silverpeas.peasCore.*;
 import com.silverpeas.jobManagerPeas.JobManagerService;
 import com.silverpeas.jobManagerPeas.control.JobManagerPeasSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
  * @author
  */
-public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
+public class JobManagerPeasRequestRouter extends ComponentRequestRouter<JobManagerPeasSessionController> {
 
   private static final long serialVersionUID = -2003485584890163789L;
 
@@ -46,7 +48,7 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public JobManagerPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new JobManagerPeasSessionController(mainSessionCtrl,
         componentContext);
@@ -64,25 +66,20 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param jobManagerSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function,JobManagerPeasSessionController jobManagerSC, HttpServletRequest request) {
     String destination = "";
-    JobManagerPeasSessionController jobManagerSC = (JobManagerPeasSessionController) componentSC;
-    SilverTrace.info("jobManagerPeas",
-        "JobManagerPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobManagerSC.getUserId()
-        + " Function=" + function);
+    SilverTrace.info("jobManagerPeas", "JobManagerPeasRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + jobManagerSC.getUserId() + " Function=" + function);
 
     try {
       if (function.startsWith("Main")) {
         destination = "/jobManagerPeas/jsp/jobManager.jsp";
       } else if (function.startsWith("TopBarManager"))// lors du permier
-      // accès=>
-      // via jobManager.jsp
+      // accès=> via jobManager.jsp
       {
         // set le service actif par le service par defaut; active aussi une
         // opération par défaut pour ce service
@@ -98,7 +95,7 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("ChangeOperation")) {
         String idOperation = request.getParameter("Id");
         if ("15".equals(idOperation)) {
-          Boolean mode = componentSC.isAppInMaintenance();
+          Boolean mode = jobManagerSC.isAppInMaintenance();
           SilverTrace.debug("jobManagerPeas", "ChangeOperation",
               "root.MSG_GEN_PARAM_VALUE", "mode=" + mode.toString());
           request.setAttribute("mode", mode.toString());
@@ -110,11 +107,11 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
       }
 
       else if (function.startsWith("SetMaintenanceMode")) {
-        componentSC.setAppModeMaintenance(Boolean.parseBoolean(request.getParameter("mode")));
+        jobManagerSC.setAppModeMaintenance(Boolean.parseBoolean(request.getParameter("mode")));
         destination = getDestination("ManageMaintenanceMode", jobManagerSC,
             request);
       } else if (function.startsWith("ManageMaintenanceMode")) {
-        Boolean mode = componentSC.isAppInMaintenance();
+        Boolean mode = jobManagerSC.isAppInMaintenance();
         SilverTrace.debug("jobManagerPeas", "getDestination",
             "root.MSG_GEN_PARAM_VALUE", "mode=" + mode.toString());
         request.setAttribute("mode", mode.toString());
@@ -137,20 +134,16 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
 
   private String setAttributes(HttpServletRequest request,
       JobManagerPeasSessionController jmpSC) {
-    // l'objet "Services" est la liste des services disponibles pour
-    // l'administrateur
+    // l'objet "Services" est la liste des services disponibles pour l'administrateur
     request.setAttribute("Services", jmpSC
         .getServices(JobManagerService.LEVEL_SERVICE));
 
-    // l'objet "Operation" est la liste des opérations disponibles pour le
-    // service actif
+    // l'objet "Operation" est la liste des opérations disponibles pour le service actif
     request.setAttribute("Operation", jmpSC.getSubServices(jmpSC
         .getIdServiceActif()));
 
-    // l'objet URL est un string representatnt l'operation actice pour le
-    // service actif
-    request.setAttribute("URL", (jmpSC.getService(jmpSC.getIdOperationActif()))
-        .getUrl());
+    // l'objet URL est un string representatnt l'operation actice pour le service actif
+    request.setAttribute("URL", (jmpSC.getService(jmpSC.getIdOperationActif())).getUrl());
     return "/jobManagerPeas/jsp/topBarManager.jsp";
   }
 }

@@ -10,13 +10,18 @@
   <groupId>com.silverpeas.core</groupId>
   <artifactId>web-core</artifactId>
   <packaging>jar</packaging>
-  <name>Web Core Library</name>
+  <name>Web Core Library - ${project.version}</name>
   <description>A module providing all the basic services of Silverpeas on which can we can build the Web GUI.</description>
   
   <dependencies>
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>

@@ -23,17 +23,13 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.util.ComponentHelper;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
+import javax.servlet.http.HttpServletRequest;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 

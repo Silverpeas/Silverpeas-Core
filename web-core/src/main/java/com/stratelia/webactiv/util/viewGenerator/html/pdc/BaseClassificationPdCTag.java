@@ -194,9 +194,15 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     } else {
       classification.setClass(PDC_CLASSIFICATION_WIDGET_TAG_ID + " skinFieldset");
     }
+    script pluginDependency1 = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-widgets.js");
+    script pluginDependency2 = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc.js");
     script pluginExecution = new script().setType("text/javascript").
             addElement(executePlugin(operation));
-    xhtmlcontainer.addElement(classification).
+    xhtmlcontainer.addElement(pluginDependency1).
+            addElement(pluginDependency2).
+            addElement(classification).
             addElement(pluginExecution);
     return xhtmlcontainer;
   }

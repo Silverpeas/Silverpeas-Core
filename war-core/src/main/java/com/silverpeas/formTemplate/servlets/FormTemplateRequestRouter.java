@@ -24,12 +24,6 @@
 
 package com.silverpeas.formTemplate.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormTemplateSessionController;
@@ -41,23 +35,25 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class FormTemplateRequestRouter extends ComponentRequestRouter {
+public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTemplateSessionController> {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public FormTemplateSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    return ((ComponentSessionController) new FormTemplateSessionController(
-        mainSessionCtrl, context));
+    return new FormTemplateSessionController(mainSessionCtrl, context);
   }
 
   /**
@@ -73,29 +69,22 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request Router it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param controller The component Session Control, build and initialised.
    * @param request The entering request. The request Router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(
-      String function,
-      ComponentSessionController componentSC,
+  public String getDestination( String function, FormTemplateSessionController controller,
       HttpServletRequest request) {
-
     SilverTrace.info("form", "FormTemplateRequestRouter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD", "function = " + function);
-
-    FormTemplateSessionController controller = (FormTemplateSessionController) componentSC;
-
     String destination = "";
 
-    PublicationTemplateManager publicationTemplateManager =
-            PublicationTemplateManager.getInstance();
+    PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.getInstance();
 
     try {
-      if (function.equals("Edit")) {
+      if ("Edit".equals(function)) {
         // display editing form with data
 
         String componentId = request.getParameter("ComponentId");
@@ -144,7 +133,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         request.setAttribute("PagesContext", pageContext);
 
         destination = "/form/jsp/edit.jsp";
-      } else if (function.equals("Update")) {
+      } else if ("Update".equals(function)) {
         // Save changes
         List<FileItem> items = FileUploadUtil.parseRequest(request);
 

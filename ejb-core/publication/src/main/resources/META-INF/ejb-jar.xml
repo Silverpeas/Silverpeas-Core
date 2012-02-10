@@ -24,24 +24,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN'
-    'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>PublicationJar</display-name>
   <enterprise-beans>
     <entity>
       <description>no description</description>
-      <display-name>ejb/Publication</display-name>
-      <ejb-name>ejb/Publication</ejb-name>
+      <display-name>Publication</display-name>
+      <ejb-name>Publication</ejb-name>
       <home>com.stratelia.webactiv.util.publication.ejb.PublicationHome</home>
       <remote>com.stratelia.webactiv.util.publication.ejb.Publication</remote>
       <ejb-class>com.stratelia.webactiv.util.publication.ejb.PublicationEJB</ejb-class>
       <persistence-type>Bean</persistence-type>
       <prim-key-class>com.stratelia.webactiv.util.publication.model.PublicationPK</prim-key-class>
-      <reentrant>False</reentrant>
+      <reentrant>false</reentrant>
       <resource-ref>
         <res-ref-name>jdbc/Silverpeas</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
@@ -50,19 +48,19 @@
     </entity>
     <session>
       <description>no description</description>
-      <display-name>ejb/PublicationBm</display-name>
-      <ejb-name>ejb/PublicationBm</ejb-name>
+      <display-name>PublicationBm</display-name>
+      <ejb-name>PublicationBm</ejb-name>
       <home>com.stratelia.webactiv.util.publication.control.PublicationBmHome</home>
       <remote>com.stratelia.webactiv.util.publication.control.PublicationBm</remote>
       <ejb-class>com.stratelia.webactiv.util.publication.control.PublicationBmEJB</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
       <ejb-ref>
-        <ejb-ref-name>ejb/Publication</ejb-ref-name>
+        <ejb-ref-name>Publication</ejb-ref-name>
         <ejb-ref-type>Entity</ejb-ref-type>
         <home>com.stratelia.webactiv.util.publication.ejb.PublicationHome</home>
         <remote>com.stratelia.webactiv.util.publication.ejb.Publication</remote>
-        <ejb-link>ejb/Publication</ejb-link>
+        <ejb-link>Publication</ejb-link>
       </ejb-ref>
       <resource-ref>
         <res-ref-name>jdbc/Silverpeas</res-ref-name>
@@ -74,14 +72,14 @@
   <assembly-descriptor>
     <container-transaction>
       <method>
-        <ejb-name>ejb/Publication</ejb-name>
+        <ejb-name>Publication</ejb-name>
         <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/Publication</ejb-name>
+        <ejb-name>Publication</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>createInfoModelDetail</method-name>
         <method-params>
@@ -93,7 +91,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/Publication</ejb-name>
+        <ejb-name>Publication</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>updateInfoDetail</method-name>
         <method-params>
@@ -104,7 +102,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/Publication</ejb-name>
+        <ejb-name>Publication</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>createInfoDetail</method-name>
         <method-params>
@@ -116,7 +114,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/Publication</ejb-name>
+        <ejb-name>Publication</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>removeAllFather</method-name>
         <method-params/>
@@ -125,7 +123,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/Publication</ejb-name>
+        <ejb-name>Publication</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>removeFather</method-name>
         <method-params>
@@ -134,10 +132,9 @@
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
-
     <container-transaction>
       <method>
-        <ejb-name>ejb/Publication</ejb-name>
+        <ejb-name>Publication</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>setDetail</method-name>
         <method-params>
@@ -147,31 +144,27 @@
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
-
     <container-transaction>
       <method>
-        <ejb-name>ejb/PublicationBm</ejb-name>
+        <ejb-name>PublicationBm</ejb-name>
         <method-name>createPDCPublication</method-name>
       </method>
       <method>
-        <ejb-name>ejb/PublicationBm</ejb-name>
+        <ejb-name>PublicationBm</ejb-name>
         <method-name>removePDCPublication</method-name>
       </method>
       <method>
-        <ejb-name>ejb/PublicationBm</ejb-name>
+        <ejb-name>PublicationBm</ejb-name>
         <method-name>setPDCDetail</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
-
-
     <container-transaction>
       <method>
-        <ejb-name>ejb/PublicationBm</ejb-name>
+        <ejb-name>PublicationBm</ejb-name>
         <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
-
   </assembly-descriptor>
 </ejb-jar>

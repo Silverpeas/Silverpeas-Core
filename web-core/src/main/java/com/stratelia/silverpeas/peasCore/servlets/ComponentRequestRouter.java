@@ -24,17 +24,6 @@
 
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.util.Date;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -43,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -50,7 +40,17 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
-public abstract class ComponentRequestRouter extends HttpServlet {
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+
+public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends HttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
   private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
@@ -72,16 +72,13 @@ public abstract class ComponentRequestRouter extends HttpServlet {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public abstract String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request);
+  public abstract String getDestination(String function, T componentSC, HttpServletRequest request);
 
-  public abstract ComponentSessionController createComponentSessionController(
+  public abstract T createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext);
 
   @Override
   public void doPost(HttpServletRequest SPrequest, HttpServletResponse response) {
-    // SilverHttpServletRequest SPrequest = new
-    // SilverHttpServletRequest(request);
 
     String destination = computeDestination(SPrequest, response);
     SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE",
@@ -102,7 +99,6 @@ public abstract class ComponentRequestRouter extends HttpServlet {
 
   private String computeDestination(HttpServletRequest request, HttpServletResponse response) {
     String destination = null;
-    request.getParameterNames(); // flush for orion
     // get the main session controller
     HttpSession session = request.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
@@ -118,8 +114,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
     SilverTrace.debug("peasCore","ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
-    if (mainSessionCtrl.isAppInMaintenance()
-        && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
+    if (mainSessionCtrl.isAppInMaintenance()  && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
       return GeneralPropertiesManager.getGeneralResourceLocator().getString("redirectAppInMaintenance");
     }
 
@@ -146,17 +141,14 @@ public abstract class ComponentRequestRouter extends HttpServlet {
       return "/admin/jsp/spaceInMaintenance.jsp";
     }
 
-    ComponentSessionController component = getComponentSessionController(
-        session, componentId);
+    T component = this.getComponentSessionController(session, componentId);
     if (component == null) {
       // check that the user has an acces to this component instance
       boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
       if (!bCompoAllowed) {
-        SilverTrace.warn("peasCore",
-            "ComponentRequestRouter.computeDestination",
-            "peasCore.MSG_USER_NOT_ALLOWED", "User="
-            + mainSessionCtrl.getUserId() + " | componentId=" + componentId
-            + " | spaceId=" + spaceId);
+        SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
+            "peasCore.MSG_USER_NOT_ALLOWED", "User=" + mainSessionCtrl.getUserId()
+            + " | componentId=" + componentId  + " | spaceId=" + spaceId);
         destination = GeneralPropertiesManager.getGeneralResourceLocator()
             .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
         return destination;
@@ -172,9 +164,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         component.getSpaceLabel(), component.getComponentLabel(),
         component.getSpaceId(), component.getComponentId(),
         component.getComponentUrl() });
-    request.setAttribute("myComponentURL", GeneralPropertiesManager
-        .getGeneralResourceLocator().getString("ApplicationURL")
-        + component.getComponentUrl());
+    request.setAttribute("myComponentURL", URLManager.getApplicationURL() + component.getComponentUrl());
 
     if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function) &&
         !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
@@ -305,34 +295,25 @@ public abstract class ComponentRequestRouter extends HttpServlet {
   // 1 - the componentId if component is instanciable
   // 2 - the component bean name if component is not instanciable (Personal
   // space)
-  private ComponentSessionController getComponentSessionController(
-      HttpSession session, String componentId) {
+  private T getComponentSessionController( HttpSession session, String componentId) {
     if (componentId == null) {
-      return (ComponentSessionController) session.getAttribute("Silverpeas_"
-          + getSessionControlBeanName());
+      return (T) session.getAttribute("Silverpeas_" + getSessionControlBeanName());
     }
-    return (ComponentSessionController) session.getAttribute("Silverpeas_"
-        + getSessionControlBeanName() + "_" + componentId);
+    return (T) session.getAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId);
   }
 
-  private ComponentSessionController setComponentSessionController(
-      HttpSession session, MainSessionController mainSessionCtrl,
+  private T setComponentSessionController(HttpSession session, MainSessionController mainSessionCtrl,
       String spaceId, String componentId) {
     // ask to MainSessionController to create the ComponentContext
-    ComponentContext componentContext = mainSessionCtrl.createComponentContext(
-        spaceId, componentId);
+    ComponentContext componentContext = mainSessionCtrl.createComponentContext(spaceId, componentId);
     // instanciate a new CSC
-    ComponentSessionController component = createComponentSessionController(
-        mainSessionCtrl, componentContext);
+    T component = createComponentSessionController(mainSessionCtrl, componentContext);
     if (componentId == null) {
-      session.setAttribute("Silverpeas_" + getSessionControlBeanName(),
-          component);
+      session.setAttribute("Silverpeas_" + getSessionControlBeanName(), component);
     } else {
-      session.setAttribute("Silverpeas_" + getSessionControlBeanName() + "_"
-          + componentId, component);
+      session.setAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId, component);
     }
-    SilverTrace.info("peasCore",
-        "ComponentRequestRouter.setComponentSessionController",
+    SilverTrace.info("peasCore", "ComponentRequestRouter.setComponentSessionController",
         "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED", "spaceId=" + spaceId
         + " | componentId=" + componentId);
     return component;

@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>favorit</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Favorit</name>
+  <name>EJB Favorit - ${project.version}</name>
   
   <dependencies>
     <dependency>

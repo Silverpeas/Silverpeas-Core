@@ -24,11 +24,11 @@
 
 package com.silverpeas.util.i18n;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 public interface I18NBean {
 
-  public Hashtable<String, Translation> getTranslations();
+  public Map<String, Translation> getTranslations();
 
   public Translation getTranslation(String language);
 

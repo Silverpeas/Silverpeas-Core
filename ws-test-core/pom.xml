@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core</groupId>
   <artifactId>ws-test-core</artifactId>
   <packaging>jar</packaging>
-  <name>Web Service Test Core Library</name>
+  <name>Web Service Test Core Library - ${project.version}</name>
   <description>A library that provides the common classes dedicated in the writing of tests on
   the REST web services in Silverpeas
   </description>

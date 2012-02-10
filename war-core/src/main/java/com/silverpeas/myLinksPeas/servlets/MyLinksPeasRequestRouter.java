@@ -24,23 +24,21 @@
 
 package com.silverpeas.myLinksPeas.servlets;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.myLinksPeas.control.MyLinksPeasSessionController;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+
+public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeasSessionController> {
 
   private static final long serialVersionUID = 8154867777629797580L;
 
@@ -59,7 +57,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public MyLinksPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MyLinksPeasSessionController(mainSessionCtrl, componentContext);
   }
@@ -68,17 +66,13 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param myLinksSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-    MyLinksPeasSessionController myLinksSC = (MyLinksPeasSessionController) componentSC;
-    SilverTrace.info("myLinksPeas",
-        "MyLinksPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
-        + " Function=" + function);
+  public String getDestination(String function,MyLinksPeasSessionController myLinksSC, HttpServletRequest request) {
+    SilverTrace.info("myLinksPeas", "MyLinksPeasRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + myLinksSC.getUserId() + " Function=" + function);
 
     String destination = "";
     String rootDest = "/myLinksPeas/jsp/";

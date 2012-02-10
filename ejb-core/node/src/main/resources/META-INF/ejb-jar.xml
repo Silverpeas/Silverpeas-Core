@@ -24,129 +24,128 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>NodeJar</display-name>
   <enterprise-beans>
     <entity>
       <description>no description</description>
-      <display-name>ejb/Node</display-name>
-      <ejb-name>ejb/Node</ejb-name>
+      <display-name>Node</display-name>
+      <ejb-name>Node</ejb-name>
       <home>com.stratelia.webactiv.util.node.ejb.NodeHome</home>
       <remote>com.stratelia.webactiv.util.node.ejb.Node</remote>
       <ejb-class>com.stratelia.webactiv.util.node.ejb.NodeEJB</ejb-class>
       <persistence-type>Bean</persistence-type>
       <prim-key-class>com.stratelia.webactiv.util.node.model.NodePK</prim-key-class>
-      <reentrant>False</reentrant>
+      <reentrant>false</reentrant>
       <resource-ref>
-				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<res-type>javax.sql.DataSource</res-type>
-				<res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </entity>
     <session>
       <description>no description</description>
-      <display-name>ejb/NodeBm</display-name>
-      <ejb-name>ejb/NodeBm</ejb-name>
+      <display-name>NodeBm</display-name>
+      <ejb-name>NodeBm</ejb-name>
       <home>com.stratelia.webactiv.util.node.control.NodeBmHome</home>
       <remote>com.stratelia.webactiv.util.node.control.NodeBm</remote>
       <ejb-class>com.stratelia.webactiv.util.node.control.NodeBmEJB</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
       <ejb-ref>
-				<ejb-ref-name>ejb/Node</ejb-ref-name>
-				<ejb-ref-type>Entity</ejb-ref-type>
-				<home>com.stratelia.webactiv.util.node.ejb.NodeHome</home>
-				<remote>com.stratelia.webactiv.util.node.ejb.Node</remote>
-				<ejb-link>ejb/Node</ejb-link>
+        <ejb-ref-name>Node</ejb-ref-name>
+        <ejb-ref-type>Entity</ejb-ref-type>
+        <home>com.stratelia.webactiv.util.node.ejb.NodeHome</home>
+        <remote>com.stratelia.webactiv.util.node.ejb.Node</remote>
+        <ejb-link>Node</ejb-link>
       </ejb-ref>
       <resource-ref>
-				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<res-type>javax.sql.DataSource</res-type>
-				<res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </session>
     <session>
       <description>no description</description>
-      <display-name>ejb/CoordinatesBm</display-name>
-      <ejb-name>ejb/CoordinatesBm</ejb-name>
+      <display-name>CoordinatesBm</display-name>
+      <ejb-name>CoordinatesBm</ejb-name>
       <home>com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome</home>
       <remote>com.stratelia.webactiv.util.coordinates.control.CoordinatesBm</remote>
       <ejb-class>com.stratelia.webactiv.util.coordinates.control.CoordinatesBmEJB</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
       <resource-ref>
-		<res-ref-name>jdbc/Silverpeas</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
       </resource-ref>
     </session>
   </enterprise-beans>
   <assembly-descriptor>
     <container-transaction>
       <method>
-				<ejb-name>ejb/Node</ejb-name>
-				<method-name>*</method-name>
+        <ejb-name>Node</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-				<ejb-name>ejb/NodeBm</ejb-name>
-				<method-name>*</method-name>
+        <ejb-name>NodeBm</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-				<ejb-name>ejb/NodeBm</ejb-name>
-				<method-intf>Remote</method-intf>
-				<method-name>removeNode</method-name>
-				<method-params>
-					<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
-				</method-params>
+        <ejb-name>NodeBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>removeNode</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-		<ejb-name>ejb/CoordinatesBm</ejb-name>
-		<method-name>*</method-name>
+        <ejb-name>CoordinatesBm</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-		<ejb-name>ejb/CoordinatesBm</ejb-name>
-		<method-intf>Remote</method-intf>
-		<method-name>addCoordinate</method-name>
+        <ejb-name>CoordinatesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>addCoordinate</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-		<ejb-name>ejb/CoordinatesBm</ejb-name>
-		<method-intf>Remote</method-intf>
-		<method-name>deleteCoordinates</method-name>
+        <ejb-name>CoordinatesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>deleteCoordinates</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-		<ejb-name>ejb/CoordinatesBm</ejb-name>
-		<method-intf>Remote</method-intf>
-		<method-name>deleteCoordinatesByPoints</method-name>
+        <ejb-name>CoordinatesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>deleteCoordinatesByPoints</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-		<ejb-name>ejb/CoordinatesBm</ejb-name>
-		<method-intf>Remote</method-intf>
-		<method-name>addPointToAllCoordinates</method-name>
+        <ejb-name>CoordinatesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>addPointToAllCoordinates</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>

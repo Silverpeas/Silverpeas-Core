@@ -30,6 +30,15 @@
 
 package com.stratelia.silverpeas.authentication;
 
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import com.google.common.base.Charsets;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
@@ -43,14 +52,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * This class performs the LDAP authentification
@@ -72,6 +73,7 @@ public class AuthenticationLDAP extends Authentication {
   protected int m_PwdExpirationReminderDelay;
   protected String m_Host;
   protected int m_Port;
+  protected String ldapImpl;
   protected String m_AccessLogin;
   protected String m_AccessPasswd;
   protected String m_UserBaseDN;
@@ -87,6 +89,7 @@ public class AuthenticationLDAP extends Authentication {
     } else {
       m_Port = Integer.parseInt(propFile.getString(authenticationServerName + ".LDAPPort"));
     }
+    ldapImpl = propFile.getString(authenticationServerName + ".LDAPImpl");
     m_AccessLogin = propFile.getString(authenticationServerName + ".LDAPAccessLogin");
     m_AccessPasswd = propFile.getString(authenticationServerName + ".LDAPAccessPasswd");
     m_UserBaseDN = propFile.getString(authenticationServerName + ".LDAPUserBaseDN");
@@ -96,13 +99,12 @@ public class AuthenticationLDAP extends Authentication {
     m_MustAlertPasswordExpiration = getBooleanProperty(propFile, authenticationServerName
         + ".MustAlertPasswordExpiration", false);
     if (m_MustAlertPasswordExpiration) {
-      m_PwdLastSetFieldName = propFile.getString(authenticationServerName
-          + ".LDAPPwdLastSetFieldName");
+      m_PwdLastSetFieldName =
+          propFile.getString(authenticationServerName + ".LDAPPwdLastSetFieldName");
       String propValue = propFile.getString(authenticationServerName + ".LDAPPwdMaxAge");
       m_PwdMaxAge = (propValue == null) ? Integer.MAX_VALUE : Integer.parseInt(propValue);
 
-      propValue = propFile.getString(authenticationServerName
-          + ".LDAPPwdLastSetFieldFormat");
+      propValue = propFile.getString(authenticationServerName + ".LDAPPwdLastSetFieldFormat");
       m_PwdLastSetFieldFormat = ( (propValue == null) || (propValue.equals("nanoseconds")) ) ? 0 : 1;
 
       propValue = propFile.getString(authenticationServerName + ".PwdExpirationReminderDelay");
@@ -146,7 +148,7 @@ public class AuthenticationLDAP extends Authentication {
   protected void closeConnection() throws AuthenticationException {
     // disconnect from the server
     try {
-      if ((m_LDAPConnection != null) && m_LDAPConnection.isConnected()) {
+      if (m_LDAPConnection != null && m_LDAPConnection.isConnected()) {
         m_LDAPConnection.disconnect();
       }
       m_LDAPConnection = null;
@@ -313,14 +315,6 @@ public class AuthenticationLDAP extends Authentication {
   @Override
   protected void internalChangePassword(String login, String oldPassword, String newPassword)
       throws AuthenticationException {
-    // Connection must be secure, checking it...
-    if (!m_IsSecured) {
-      Exception e = new UnsupportedOperationException(
-          "LDAP connection must be secured to allow password update");
-      throw new AuthenticationException("AuthenticationLDAP.changePassword",
-          SilverpeasException.ERROR,
-          "authentication.EX_CANT_CHANGE_USERPASSWORD", e);
-    }
     String userFullDN = null;
     String searchString = m_UserLoginFieldName + "=" + login;
     String[] strAttributes = { "sAMAccountName", "memberOf" };
@@ -344,29 +338,40 @@ public class AuthenticationLDAP extends Authentication {
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
 
-      // re bind with the requested user
+      // re bind with the requested user to verify old password
       m_LDAPConnection.bind(LDAPConnection.LDAP_V3, userFullDN, oldPassword.getBytes(Charsets.UTF_8));
 
-      // Convert password to UTF-16LE
-      String newQuotedPassword = "\"" + newPassword + "\"";
-      byte[] newUnicodePassword = newQuotedPassword.getBytes(Charsets.UTF_16LE);
-      String oldQuotedPassword = "\"" + oldPassword + "\"";
-      byte[] oldUnicodePassword = oldQuotedPassword.getBytes(Charsets.UTF_16LE);
-
-      // prepare password change
-      LDAPModification[] mods = new LDAPModification[2];
-      mods[0] = new LDAPModification(LDAPModification.DELETE, new LDAPAttribute("unicodePwd",
-          oldUnicodePassword));
-      mods[1] = new LDAPModification(LDAPModification.ADD, new LDAPAttribute(
-          "unicodePwd", newUnicodePassword));
-
+      LDAPModification mod = null;
+      if (!StringUtil.isDefined(ldapImpl) || "ad".equalsIgnoreCase(ldapImpl)) {
+        // prepare password change
+        mod = changeActiveDirectoryPassword(newPassword);        
+      } else if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
+        // prepare password change
+        mod = changeOpenDSPassword(newPassword);
+      }
       // Perform the update
-      m_LDAPConnection.modify(userFullDN, mods);
+      m_LDAPConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
       throw new AuthenticationHostException(
           "AuthenticationLDAP.internalAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
     }
+  }
+  
+  private LDAPModification changeActiveDirectoryPassword(String newPassword) {
+    // Convert password to UTF-16LE
+    String newQuotedPassword = "\"" + newPassword + "\"";
+    byte[] newUnicodePassword = newQuotedPassword.getBytes(Charsets.UTF_16LE);
+
+    // prepare password change
+    return new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("unicodePwd",
+        newUnicodePassword));
+  }
+  
+  private LDAPModification changeOpenDSPassword(String newPassword) throws UnsupportedEncodingException {
+    // prepare password change
+    return new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("userPassword",
+        newPassword));
   }
 
   static String[] extractBaseDNs(String baseDN) {
@@ -388,14 +393,6 @@ public class AuthenticationLDAP extends Authentication {
   @Override
   protected void internalResetPassword(String login, String newPassword)
       throws AuthenticationException {
-    // Connection must be secure, checking it...
-    if (!m_IsSecured) {
-      Exception e = new UnsupportedOperationException(
-          "LDAP connection must be secured to allow password update");
-      throw new AuthenticationException("AuthenticationLDAP.changePassword",
-          SilverpeasException.ERROR, "authentication.EX_CANT_CHANGE_USERPASSWORD", e);
-    }
-
     String userFullDN = null;
     String searchString = m_UserLoginFieldName + "=" + login;
     String[] strAttributes = { "sAMAccountName", "memberOf" };
@@ -417,18 +414,18 @@ public class AuthenticationLDAP extends Authentication {
       }
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
-
-      // Convert password to UTF-16LE
-      String newQuotedPassword = "\"" + newPassword + "\"";
-      byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
-
-      // prepare password change
-      LDAPModification[] mods = new LDAPModification[1];
-      mods[0] = new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("unicodePwd",
-          newUnicodePassword));
+      
+      LDAPModification mod = null;
+      if (!StringUtil.isDefined(ldapImpl) || "ad".equalsIgnoreCase(ldapImpl)) {
+        // prepare password change
+        mod = changeActiveDirectoryPassword(newPassword);
+      } else if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
+        // prepare password change
+        mod = changeOpenDSPassword(newPassword);
+      }
 
       // Perform the update
-      m_LDAPConnection.modify(userFullDN, mods);
+      m_LDAPConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
       throw new AuthenticationHostException("AuthenticationLDAP.internalResetPassword()",
           SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);

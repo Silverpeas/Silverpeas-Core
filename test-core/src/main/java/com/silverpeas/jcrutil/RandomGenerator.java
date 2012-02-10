@@ -162,6 +162,7 @@ public class RandomGenerator {
     calendar.set(Calendar.MINUTE, getRandomMinutes());
     calendar.set(Calendar.SECOND, 0);
     calendar.set(Calendar.MILLISECOND, 0);
+    calendar.setLenient(false);
     return calendar;
   }
 

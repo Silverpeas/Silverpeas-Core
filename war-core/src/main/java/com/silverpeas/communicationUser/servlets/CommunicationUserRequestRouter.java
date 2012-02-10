@@ -25,33 +25,36 @@ package com.silverpeas.communicationUser.servlets;
 
 import com.silverpeas.communicationUser.control.CommunicationUserSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
+ *
  * @author
  */
-public class CommunicationUserRequestRouter extends ComponentRequestRouter {
+public class CommunicationUserRequestRouter
+    extends ComponentRequestRouter<CommunicationUserSessionController> {
 
   private static final long serialVersionUID = 3353765477159128428L;
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public CommunicationUserSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new CommunicationUserSessionController(mainSessionCtrl, componentContext);
   }
@@ -69,17 +72,16 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   * "/communicationUser/jsp/communicationUser.jsp?flag=user")
+   *
+   * @param function   The entering request function (ex : "Main.jsp")
+   * @param commUserSC The component Session Control, build and initialised.
+   * @param request    The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex : "/communicationUser/jsp/communicationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, CommunicationUserSessionController commUserSC,
+      HttpServletRequest request) {
     String destination = "";
-    CommunicationUserSessionController commUserSC =(CommunicationUserSessionController) componentSC;
     SilverTrace.info("communicationUser", "CommunicationUserRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function=" + function);
     try {
@@ -115,8 +117,8 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
             fileName = fileDiscussion.getName(); // userId1.userId2.txt
             userId1 = fileName.substring(0, fileName.indexOf('.'));
             userId2 = fileName.substring(fileName.indexOf('.') + 1, fileName.lastIndexOf('.'));
-            trouve =  ((userId.equals(userId1) && currentUserId.equals(userId2))
-                || (userId.equals(userId2) && currentUserId.equals(userId1))) ;
+            trouve = ((userId.equals(userId1) && currentUserId.equals(userId2))
+                || (userId.equals(userId2) && currentUserId.equals(userId1)));
           }
           if (!trouve) {
             throw new IOException("Fichier de discussion non trouvé !!");

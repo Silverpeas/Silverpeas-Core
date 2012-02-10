@@ -10,7 +10,7 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>versioning</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Versioning</name>
+  <name>EJB Versioning - ${project.version}</name>
 
   <build>
     <testResources>
@@ -52,6 +52,11 @@
           <groupId>org.springframework</groupId>
         </exclusion>
       </exclusions>
+    </dependency>    
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

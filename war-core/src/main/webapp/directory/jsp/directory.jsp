@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -45,6 +47,12 @@
     List fragments = (List) request.getAttribute("UserFragments");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
     String breadcrumb = (String) request.getAttribute("BreadCrumb");
+    String query = (String) request.getAttribute("Query");
+    if (!StringUtil.isDefined(query)) {
+      query = "";
+    } else {
+      query = EncodeHelper.javaStringToHtmlString(query);
+    }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
@@ -66,11 +74,55 @@
           $.progressMessage();
           location.href=index;
       }
+      
+      function doPagination(page) {
+    	  $.progressMessage();
+    	  location.href="Pagination?Index="+page;
+      }
+      
+      function isTermOK(term) {
+    	  var firstCharacter = term.substring(0,1);
+    	  // Lucene cannot parse a query starting with '*' or '?'. This characters are not allowed as first character in WildcardQuery.
+    	  return (firstCharacter != "*" && firstCharacter != "?");
+      }
 
       function search() {
-    	  $.progressMessage();
-    	  document.search.submit();
+    	  var query = $("#searchField").val();
+    	  var terms = query.split(" ");
+    	  var queryOK = true;
+    	  for (i=0; queryOK && i<terms.length; i++) {
+    		  queryOK = isTermOK(terms[i]);
+    	  }
+    	  if (!queryOK) {
+    		  $( "#dialog-message" ).dialog( "open" );
+    	  } else {
+    	  	$.progressMessage();
+    	  	document.search.submit();
+    	  }
       }
+      
+      $(function() {
+  		$("#dialog-message" ).dialog({
+  			modal: true,
+  			autoOpen: false,
+  			width: 350,
+  			resizable: false,
+  			buttons: {
+  				Ok: function() {
+  					$( this ).dialog( "close" );
+  				}
+  			}
+  		});
+  		
+  		$("#searchField").keypress(function(e){
+			if(e.which == 13){
+				e.preventDefault();
+  	    		search();
+  	    		return false;
+  	      	}
+  	     });
+
+  	});
     </script>
 
   </head>
@@ -80,16 +132,10 @@
       <view:frame>
         <div id="indexAndSearch">
           <div id="search">
-            <form name="search" action="searchByKey" method="post" onsubmit="$.progressMessage()">
-            	<input type="text" name="key" size="40" maxlength="60" />
-            	<!-- Ajout d'un bouton rechercher -->
-                   <table cellspacing="0" cellpadding="0" border="0">
-                        <tbody><tr>
-                            <td align="left" class="gaucheBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
-                            <td nowrap="nowrap" class="milieuBoutonV5"><a href="javascript:search()"><fmt:message key="GML.search" /></a></td>
-                            <td align="right" class="droiteBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
-                         </tr></tbody>
-                    </table>
+            <form name="search" action="searchByKey" method="post">
+            	<input type="text" name="key" id="searchField" size="40" maxlength="60" value="<%=query%>"/> 
+            	<fmt:message key="GML.search" var="buttonLabel"/>
+            	<view:button label="${buttonLabel}" action="javascript:search()"/>
             </form>
           </div>
           <div id="index">
@@ -140,7 +186,7 @@
             %>
           </ol>
           <div id="pagination">
-            <%=pagination.printIndex()%>
+            <%=pagination.printIndex("doPagination")%>
           </div>
         </div>
       </view:frame>
@@ -151,5 +197,9 @@
 	<%@include file="../../socialNetwork/jsp/invitationDialog.jsp" %>
 	
 	<view:progressMessage/>
+	
+	<div id="dialog-message" title="<fmt:message key="directory.query.error.title"/>">
+		<fmt:message key="directory.query.error.msg"/>
+	</div>
   </body>
 </html>

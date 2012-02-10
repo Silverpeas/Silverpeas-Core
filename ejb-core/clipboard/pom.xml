@@ -10,5 +10,5 @@
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>clipboard</artifactId>
   <packaging>ejb</packaging>
-  <name>EJB Clipboard</name>
+  <name>EJB Clipboard - ${project.version}</name>
 </project>

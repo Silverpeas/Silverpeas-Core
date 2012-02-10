@@ -23,21 +23,6 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-import java.util.Vector;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.PagesContext;
@@ -77,7 +62,6 @@ import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.pdcPeas.vo.ResultFilterVO;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -91,8 +75,21 @@ import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.fileupload.FileItem;
 
-public class PdcSearchRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+import java.util.Vector;
+
+public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
   private static final long serialVersionUID = 1L;
   private ContainerManager containerManager = null;
@@ -106,7 +103,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public PdcSearchSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcSearchSessionController(mainSessionCtrl, componentContext,
         "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
@@ -127,18 +124,17 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex
    * :"/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", " Function=" + function);
     String destination = "";
-    PdcSearchSessionController pdcSC = (PdcSearchSessionController) componentSC; // get the session
     // controller to inform the request
     try {
       PdcSubscriptionHelper.init(pdcSC, request);
@@ -549,8 +545,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
             pdcSC.setSearchType(Integer.parseInt(searchType));
           }
         }
-        // Set component search type
-        pdcSC.setDataType(request.getParameter("dataType"));
 
         pdcSC.setSelectedSilverContents(new ArrayList<GlobalSilverResult>());
         // This is the main function of global search
@@ -716,19 +710,19 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         try {
           String domainId = request.getParameter("searchDomainId");
           if (domainId == null) {
-            destination = getDestination("GlobalView", componentSC, request);
+            destination = getDestination("GlobalView", pdcSC, request);
           } else {
             // request.setAttribute("domains", pdcSC.getDomains());
             PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, domainId);
             destination = getDomainSearchPage(pdcSC.getSearchDomains(), domainId);
             if (destination == null) {
-              destination = getDestination("GlobalView", componentSC, request);
+              destination = getDestination("GlobalView", pdcSC, request);
             }
           }
         } catch (Exception e) {
           SilverTrace.error("pdcPeas", "PdcPeasRequestRouter.getDestination()",
               "root.MSG_ERR_CALCULATE_SEARCHFORM", e);
-          destination = getDestination("GlobalView", componentSC, request);
+          destination = getDestination("GlobalView", pdcSC, request);
         }
       } else if (function.startsWith("ToUserPanel")) {// utilisation de userPanel et userPanelPeas
         try {
@@ -1284,7 +1278,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
    * Cette méthode permet de mettre dans la request et dans le sessionController les données utiles
    * à la navigation. permettra de naviguer à l'aide des boutons précédent et suivant
    * @param request - HttpServletRequest pour donner l'information à la globalResult.jsp
-   * @param len - la taille du tableau/liste résultat
    */
   private void setDefaultDataToNavigation(HttpServletRequest request,
       PdcSearchSessionController pdcSC) throws Exception {

@@ -24,20 +24,19 @@
 
 package com.stratelia.silverpeas.personalizationPeas.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Class declaration
  * @author
  */
-public class PersoPeasRequestRouter extends ComponentRequestRouter {
+public class PersoPeasRequestRouter extends ComponentRequestRouter<PersonalizationSessionController> {
 
   private static final long serialVersionUID = 1L;
 
@@ -49,10 +48,9 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public PersonalizationSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new PersonalizationSessionController(mainSessionCtrl,
-        componentContext);
+    return new PersonalizationSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
@@ -69,19 +67,16 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param personalizationScc The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function,PersonalizationSessionController personalizationScc, HttpServletRequest request) {
     SilverTrace.info(getSessionControlBeanName(),
         "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "function = " + function);
-    PersonalizationSessionController personalizationScc =
-        (PersonalizationSessionController) componentSC;
 
     String destination = "";
 
