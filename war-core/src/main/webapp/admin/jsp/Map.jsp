@@ -38,30 +38,28 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController" %>
-<%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight" %>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
-    <view:timeout />
+<view:timeout />
 <%
-  MainSessionController m_MainSessionCtrl = (MainSessionController) session
+  MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-  OrganizationController m_OrganizationController = m_MainSessionCtrl.getOrganizationController();
-  String language = m_MainSessionCtrl.getFavoriteLanguage();
+  OrganizationController organizationController = mainSessionCtrl.getOrganizationController();
+  String language = mainSessionCtrl.getFavoriteLanguage();
   ResourceLocator message =
       new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
 
   String m_sContext = request.getContextPath();
 
-  String[] m_asPrivateDomainsIds = m_MainSessionCtrl.getUserAvailRootSpaceIds();
+  String[] m_asPrivateDomainsIds = mainSessionCtrl.getUserAvailRootSpaceIds();
   String title = message.getString("MyMap");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><%=title%>
-  </title>
+  <title><%=title%></title>
   <view:looknfeel/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script type="text/javascript">
@@ -180,7 +178,7 @@
               if (m_asPrivateDomainsIds != null) {
                 for (int nK = 0; nK < m_asPrivateDomainsIds.length; nK++) {
                   SpaceInstLight spaceInst =
-                      m_OrganizationController.getSpaceInstLightById(m_asPrivateDomainsIds[nK]);
+                      organizationController.getSpaceInstLightById(m_asPrivateDomainsIds[nK]);
                   if (spaceInst.isRoot()) {
                     pageContext.setAttribute("currentSpaceId", m_asPrivateDomainsIds[nK]);
             %>

@@ -1,5 +1,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.map;
 
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -29,14 +30,16 @@ public class MapTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     try {
-      pageContext.getOut().print(printSpaceAndSubSpaces(spaceId, 0));
+      LookHelper helper = (LookHelper) pageContext.getSession().getAttribute(LookHelper.SESSION_ATT);
+      boolean showHiddenComponents = helper.getSettings("display.all.components", false);
+      pageContext.getOut().print(printSpaceAndSubSpaces(spaceId, 0, showHiddenComponents));
     } catch (IOException e) {
       throw new JspException("Can't display the site map", e);
     }
     return SKIP_BODY;
   }
 
-  private String printSpaceAndSubSpaces(String spaceId, int depth) {
+  private String printSpaceAndSubSpaces(String spaceId, int depth, boolean showHiddenComponents) {
     String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
     MainSessionController sessionController = (MainSessionController) pageContext.getSession().
         getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -59,12 +62,10 @@ public class MapTag extends TagSupport {
         result.append("<td class=\"txttitrecol\">&#8226; ").append(spaceInst.getName(language));
         result.append("</td></tr>\n");
       }
-
       result.append("<tr><td>\n");
-
       List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
       for (ComponentInst componentInst : alCompoInst) {
-        if (!componentInst.isHidden()) {
+        if (!componentInst.isHidden() || showHiddenComponents) {
           boolean bAllowed = organisationController.isComponentAvailable(componentInst.getId(),
               sessionController.getUserId());
           if (bAllowed) {
@@ -83,8 +84,8 @@ public class MapTag extends TagSupport {
                   .append(URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentInst.getId()));
               result.append("\" target=\"_top\">").append(label).append("</a>\n");
             } else {
-              result.append("&nbsp;<img src=\"").append(contextPath)
-                  .append("/util/icons/component/");
+              result.append("&nbsp;<img src=\"").append(contextPath).append(
+                  "/util/icons/component/");
               result.append(componentInst.getName());
               result.append(
                   "Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;<a href=\"");
@@ -101,7 +102,7 @@ public class MapTag extends TagSupport {
       String[] subSpaceIds = organisationController.getAllowedSubSpaceIds(sessionController.
           getUserId(), spaceId);
       for (String subSpaceId : subSpaceIds) {
-        String subSpaceContent = printSpaceAndSubSpaces(subSpaceId, depth + 1);
+        String subSpaceContent = printSpaceAndSubSpaces(subSpaceId, depth + 1, showHiddenComponents);
         if (StringUtil.isDefined(subSpaceContent)) {
           result.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">\n");
           result.append("<tr><td>&nbsp;&nbsp;</td>\n");
