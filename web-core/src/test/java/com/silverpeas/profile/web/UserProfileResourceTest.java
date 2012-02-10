@@ -52,6 +52,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
 
   @Before
   public void prepareTestResources() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     sessionKey = authenticate(aUser());
     getTestResources().allocate();
   }
@@ -262,7 +263,6 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   
   @Test
   public void getAUserInAGivenGroupByTheFirstCharactersOfItsName() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group group;
     List<? extends UserDetail> expectedUsers;
     do {

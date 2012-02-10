@@ -28,9 +28,9 @@ import com.silverpeas.rest.RESTWebService;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,15 +69,18 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUser[] getUsers(@QueryParam("group") String groupId,
+  public SelectableUser[] getUsers(
+          @QueryParam("group") String groupId,
           @QueryParam("name") String name) {
     checkUserAuthentication();
-    List<? extends UserDetail> allUsers = findUsersByGroup(groupId);
-    allUsers = findUsersByName(name, allUsers);
-    if (allUsers == null) {
-      allUsers = getAllUsers();
+    String domainId = null;
+    if (isDefined(groupId)) {
+      Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+      domainId = group.getDomainId();
     }
-    return asWebEntity(allUsers, locatedAt(getUriInfo().getAbsolutePath()));
+    UserDetail[] users = getOrganizationController().searchUsers(null, null, groupId,
+            aFilteringModel(name, domainId));
+    return asWebEntity(Arrays.asList(users), locatedAt(getUriInfo().getAbsolutePath()));
   }
 
   @GET
@@ -99,17 +102,37 @@ public class UserProfileResource extends RESTWebService {
     return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
   }
 
+  @GET
+  @Path("application/{instanceId}")
+  public SelectableUser[] getApplicationUsers(
+          @PathParam("instanceId") String instanceId,
+          @QueryParam("group") String groupId,
+          @QueryParam("roles") String roles,
+          @QueryParam("name") String name) {
+    checkUserAuthentication();
+    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(",")) : null);
+    String domainId = null;
+    if (isDefined(groupId)) {
+      Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+      domainId = group.getDomainId();
+    }
+    UserDetail[] users = getOrganizationController().searchUsers(instanceId, rolesIds, groupId,
+            aFilteringModel(name, domainId));
+    URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
+    return asWebEntity(Arrays.asList(users), locatedAt(usersUri));
+  }
+
   @Override
   protected String getComponentId() {
     throw new UnsupportedOperationException("The UserProfileResource doesn't belong to any component"
             + " instances");
   }
 
-  protected URI locatedAt(final URI uri) {
+  protected static URI locatedAt(final URI uri) {
     return uri;
   }
 
-  protected URI identifiedBy(final URI uri) {
+  protected static URI identifiedBy(final URI uri) {
     return uri;
   }
 
@@ -121,51 +144,18 @@ public class UserProfileResource extends RESTWebService {
     return SelectableUser.fromUser(user).withAsUri(userUri);
   }
 
-  private List<UserDetail> getAllUsers() {
-    List<UserDetail> allUsers;
+  private UserDetail aFilteringModel(String name, String domainId) {
+    UserDetail model = new UserDetail();
     if (getUserDetail().isDomainRestricted()) {
-      allUsers = UserDetail.getAllInDomain(getUserDetail().getDomainId());
-    } else {
-      allUsers = UserDetail.getAll();
+      model.setDomainId(getUserDetail().getDomainId());
+    } else if (isDefined(domainId) && Integer.valueOf(domainId) > 0) {
+      model.setDomainId(domainId);
     }
-    return allUsers;
-  }
-
-  private List<? extends UserDetail> findUsersByName(String name,
-          final List<? extends UserDetail> users) {
     if (isDefined(name)) {
-      List<UserDetail> foundUsers = null;
-      UserDetail model = new UserDetail();
-      if (users != null && !users.isEmpty()) {
-        model.setDomainId(users.get(0).getId());
-      } else if (getUserDetail().isDomainRestricted()) {
-        model.setDomainId(getUserDetail().getDomainId());
-      }
       String filterByName = name.replaceAll("\\*", "%");
       model.setFirstName(filterByName);
       model.setLastName(filterByName);
-      UserDetail[] usersWithExpectedName = getOrganizationController().searchUsers(model, false);
-      if (users == null || users.isEmpty()) {
-        foundUsers = Arrays.asList(usersWithExpectedName);
-      } else {
-        foundUsers = new ArrayList<UserDetail>();
-        for (UserDetail expectedUser : usersWithExpectedName) {
-          if (users.contains(expectedUser)) {
-            foundUsers.add(expectedUser);
-          }
-        }
-      }
-      return foundUsers;
     }
-    return users;
-  }
-
-  private List<? extends UserDetail> findUsersByGroup(String groupId) {
-    List<? extends UserDetail> foundUsers = null;
-    if (isDefined(groupId)) {
-      Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
-      foundUsers = group.getAllUsers();
-    }
-    return foundUsers;
+    return model;
   }
 }

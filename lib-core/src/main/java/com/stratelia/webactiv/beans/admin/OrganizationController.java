@@ -692,16 +692,11 @@ public class OrganizationController implements java.io.Serializable {
   }
 
   /**
-   * Return all root groups of silverpeas
+   * Return all root groups of silverpeas or null if an error occured when getting the root groups.
    */
   public Group[] getAllRootGroups() {
     try {
-      Group[] aGroup = null;
-      String[] asGroupIds = getAdminService().getAllRootGroupIds();
-      if (asGroupIds != null) {
-        aGroup = getAdminService().getGroups(asGroupIds);
-      }
-      return aGroup;
+      return getAdminService().getAllRootGroups();
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllRootGroups",
           "admin.MSG_ERR_GET_ALL_GROUPS", e);
@@ -1090,6 +1085,30 @@ public class OrganizationController implements java.io.Serializable {
           "OrganizationController.getUsersIdsByRoleNames",
           "admin.MSG_ERR_GET_ALL_USERS", e);
       return null;
+    }
+  }
+  
+  /**
+   * Searchs the users that satisfy both one of the three specified filters and the latest one.
+   * If no one of the filters are set (the latest one is empty), then all the users are returned.
+   * @param componentId the unique identifier of the component instance that has to be accessible
+   * to the users to seek. Null means whatever the component instance.
+   * @param rolesIds the unique identifier of the roles the users has to play in one or more
+   * component instances. Null or an empty array of role identifiers means whatever the roles they
+   * play.
+   * @param groupId the unique identifier the users has be part. Null means whatever the group.
+   * @param userFilter some details the users has to be conform to.
+   * @return all the users that satisfy the specified filters. If no users are found, an empty array
+   * is returned.
+   */
+  public UserDetail[] searchUsers(String componentId, String[] roleIds, String groupId,
+          final UserDetail userFilter) {
+    try {
+      return getAdminService().searchUsers(componentId, roleIds, groupId, userFilter);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.searchGroupsIds",
+          "admin.MSG_ERR_GET_ALL_USERS", e);
+      return new UserDetail[0];
     }
   }
 

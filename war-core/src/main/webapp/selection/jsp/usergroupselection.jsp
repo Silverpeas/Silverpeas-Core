@@ -16,8 +16,10 @@
 <fmt:message var="cancelLabel" key="GML.cancel"/>
 <fmt:message var="searchLabel" key="GML.search"/>
 
-<c:set var="selectionType" value="${param.type}"/>
+<c:set var="selectionType"  value="${param.type}"/>
 <c:set var="selectionScope" value="${param.scope}"/>
+<c:set var="instanceId"     value="${param.instanceId}"/>
+<c:set var="roles"          value="${param.roles}"/>
 <c:if test="${selectionScope == null || fn:length(fn:trim(selectionScope)) == 0}">
   <c:set var="selectionScope" value="usergroup"/>
 </c:if>
@@ -49,11 +51,20 @@
       
       function loadUsers(inGroup, withName) {
         $('tr.user').remove();
-        var uriOfUsers = webContext + '/services/profile/users';
-        if (inGroup)
-          uriOfUsers += "?group=" + inGroup.id;
+        var uriOfUsers = webContext + '/services/profile/users', sep = '?';
+    <c:if test="${instanceId != null && fn:length(instanceId) > 0}">
+        uriOfUsers += '<c:out value="/application/${instanceId}"/>';
+    <c:if test="${roles != null && fn:length(roles) > 0}">
+        uriOfUsers += sep + 'roles=<c:out value="${roles}"/>';
+        sep = '&';
+    </c:if>
+    </c:if>
+        if (inGroup) {
+          uriOfUsers += sep + "group=" + inGroup.id;
+          sep = '&';
+        }
         if (withName)
-          uriOfUsers += "?name=" + withName;
+          uriOfUsers += sep + "name=" + withName;
         $.ajax({
           url: uriOfUsers,
           type: 'GET',
@@ -93,6 +104,12 @@
     
     <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
       var rootGroup = { childrenUri: webContext + '/services/profile/groups', name: '<fmt:message key="GML.groupes"/>' };
+      <c:if test="${instanceId != null && fn:length(instanceId) > 0}">
+      rootGroup.childrenUri += '<c:out value="/application/${instanceId}"/>';
+      <c:if test="${roles != null && fn:length(roles) > 0}">
+      rootGroup.childrenUri += '?roles=<c:out value="${roles}"/>';
+      </c:if>
+      </c:if>
     <c:choose>
       <c:when test='${selectionScope == "user" || selectionScope == "usergroup"}'>
       var onGroupChange = function(newGroup) {
@@ -188,10 +205,7 @@
       $(document).ready(function() {
     <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
         loadSubGroups(rootGroup, onGroupChange);
-  </c:if>
-  <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>      
-        loadUsers();
-  </c:if>
+    </c:if>
       });
     </script>
   </head>

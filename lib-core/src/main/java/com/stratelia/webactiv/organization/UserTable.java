@@ -134,7 +134,7 @@ public class UserTable extends Table<UserRow> {
     }
 
     StringBuilder clauseIN = new StringBuilder("(");
-    String specificId = null;
+    String specificId;
     for (int s = 0; s < specificIds.size(); s++) {
       if (s != 0) {
         clauseIN.append(", ");
@@ -413,7 +413,7 @@ public class UserTable extends Table<UserRow> {
 
     // WARNING !!! Ids must all be set before Params !!!!
     boolean manualFiltering = userIds != null && !userIds.isEmpty() && userIds.size() > 100;
-    StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_USERSID);
+    StringBuilder theQuery = new StringBuilder(SELECT_SEARCH_USERSID);
     if (userIds != null && !userIds.isEmpty() && userIds.size() <= 100) {
       theQuery.append(" WHERE (ST_User.id IN (").append(list2String(userIds)).append(") ");
       concatAndOr = true;
@@ -472,7 +472,7 @@ public class UserTable extends Table<UserRow> {
   public UserRow[] searchUsers(UserRow userModel, boolean isAnd) throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr;
-    StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_USERS);
+    StringBuilder theQuery = new StringBuilder(SELECT_SEARCH_USERS);
     List<Integer> ids = new ArrayList<Integer>();
     List<String> params = new ArrayList<String>();
 
@@ -511,6 +511,93 @@ public class UserTable extends Table<UserRow> {
     List<UserRow> rows = getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
     return rows.toArray(new UserRow[rows.size()]);
   }
+  
+  static final private String SELECT_SEARCH_USERS_IN_ROLE =
+          "select ST_User." + USER_COLUMNS + ", UPPER(lastName)"
+          + "from ST_User,ST_UserRole_User_Rel";
+  static final private String SELECT_SEARCH_USERS_IN_COMPONENT =
+          "select ST_User." + USER_COLUMNS + ", UPPER(lastName)"
+          + "from ST_User,ST_UserRole_User_Rel,ST_UserRole";
+  
+  /**
+   * Searchs all the database user rows that match the following specified contrains:
+   * <ul>
+   * <li>On of the roles the users have to play for a given component instance: either one of all the
+   * roles of the specified component instance or one of all the specified roles;</li>
+   * <li>Some details attributes the users has to satisfy. This contraint is mandatory and cannot
+   * be null.</li>
+   * </ul>
+   * If no of theses contrains, all of the user rows in Silverpeas are returned.
+   * @param ddManager the manager of the domain drivers in use in Silverpeas.
+   * @param componentId the unique identifier of the component instance.
+   * All the users with the rights to access this instance are seek; the users has to play one of
+   * the roles supported by the component instance whether it isn't public.
+   * @param roleIds the unique identifiers of roles. They are for one or more specific component
+   * instances. The users have to play at least one of the specified roles.
+   * @param userModel a UserRow object with or not some fields set for filtering the 
+   * results to sent back.
+   * @return an array of database user rows that match the specified above contrains.
+   * @throws AdminException if an error occurs while searching the users.
+   */
+  public UserRow[] searchUsers(int componentId, int[] roles, UserRow userModel)
+          throws AdminPersistenceException {
+    boolean concatAndOr = false;
+    String andOr = ") AND (";
+    StringBuilder theQuery;
+    List<Integer> ids = new ArrayList<Integer>();
+    List<String> params = new ArrayList<String>();
+
+    if ((roles != null) && (roles.length > 0)) {
+      theQuery = new StringBuilder(SELECT_SEARCH_USERS_IN_ROLE);
+      theQuery.append(" WHERE ((ST_User.id = ST_UserRole_User_Rel.userId) AND "
+              + "(ST_UserRole_User_Rel.userRoleId in (");
+      for (int i = 0; i < roles.length - 1; i++) {
+        theQuery.append(roles[i]).append(",");
+      }
+      theQuery.append(roles[roles.length - 1]).append("))");
+      concatAndOr = true;
+    } else if (componentId >= 0) {
+      theQuery = new StringBuilder(SELECT_SEARCH_USERS_IN_COMPONENT);
+      ids.add(componentId);
+      theQuery.append(" WHERE ((ST_UserRole.id = ST_UserRole_User_Rel.userRoleId) AND (");
+      theQuery.append(
+              "ST_User.id = ST_UserRole_User_Rel.userId) AND (ST_UserRole.instanceId = ?)");
+      concatAndOr = true;
+    } else {
+      theQuery = new StringBuilder(SELECT_SEARCH_USERS);
+    }
+
+    concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "id", concatAndOr, andOr);
+    concatAndOr = addIdToQuery(ids, theQuery, userModel.domainId, "domainId", concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.specificId, "specificId", concatAndOr,
+        andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.login, "login", concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.firstName, "firstName", concatAndOr,
+        andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.lastName, "lastName", concatAndOr,
+        andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.eMail, "email", concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.accessLevel, "accessLevel",
+        concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.loginQuestion, "loginQuestion",
+        concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.loginAnswer, "loginAnswer",
+        concatAndOr, andOr);
+    if (concatAndOr) {
+      theQuery.append(") AND (accessLevel <> 'R')");
+    } else {
+      theQuery.append(" WHERE (accessLevel <> 'R')");
+    }
+    theQuery.append(" order by UPPER(lastName)");
+
+    int[] idsArray = new int[ids.size()];
+    for (int i = 0; i < ids.size(); i++) {
+      idsArray[i] = ids.get(i);
+    }
+    List<UserRow> rows = getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
+    return rows.toArray(new UserRow[rows.size()]);
+  }
+  
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS
       + ", UPPER(lastName) from ST_User";
 

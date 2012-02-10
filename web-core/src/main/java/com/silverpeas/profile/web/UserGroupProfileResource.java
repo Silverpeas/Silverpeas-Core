@@ -25,15 +25,14 @@ package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 import com.silverpeas.rest.RESTWebService;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -51,7 +50,7 @@ import org.springframework.stereotype.Service;
 @Scope("request")
 @Path(GROUPS_BASE_URI)
 public class UserGroupProfileResource extends RESTWebService {
-  
+
   @Inject
   private UserProfileService profileService;
 
@@ -77,7 +76,22 @@ public class UserGroupProfileResource extends RESTWebService {
     }
     return asWebEntity(accessibleGroups, locatedAt(getUriInfo().getAbsolutePath()));
   }
-  
+
+  @GET
+  @Path("application/{instanceId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public SelectableUserGroup[] getAllRootGroupsInApplication(
+          @PathParam("instanceId") String instanceId,
+          @QueryParam("roles") String roles) {
+    checkUserAuthentication();
+    String[] roleIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(",")) : null);
+    String[] groupIds = getOrganizationController().searchGroupsIds(true, null, roleIds,
+            aFilteringModel());
+    Group[] groups = getOrganizationController().getGroups(groupIds);
+    URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
+    return asWebEntity(Arrays.asList(groups), locatedAt(groupsUri));
+  }
+
   @GET
   @Path("{path: [0-9]+(/groups/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -88,7 +102,7 @@ public class UserGroupProfileResource extends RESTWebService {
     Group theGroup = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
     return asWebEntity(theGroup, identifiedBy(getUriInfo().getAbsolutePath()));
   }
-  
+
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -99,26 +113,34 @@ public class UserGroupProfileResource extends RESTWebService {
     SelectableUserGroup group = getGroup(groupId);
     return asWebEntity(group.getSubGroups(), locatedAt(getUriInfo().getAbsolutePath()));
   }
-  
+
   @Override
   protected String getComponentId() {
     throw new UnsupportedOperationException("The UserGroupProfileResource doesn't belong to any component"
             + " instances");
   }
-  
-  protected URI locatedAt(final URI uri) {
+
+  protected static URI locatedAt(final URI uri) {
     return uri;
   }
-  
-  protected URI identifiedBy(final URI uri) {
+
+  protected static URI identifiedBy(final URI uri) {
     return uri;
   }
-  
+
   private SelectableUserGroup[] asWebEntity(List<? extends Group> allGroups, URI baseUri) {
     return SelectableUserGroup.fromGroups(allGroups, baseUri);
   }
-  
+
   private SelectableUserGroup asWebEntity(Group group, URI groupUri) {
     return SelectableUserGroup.fromGroup(group).withAsUri(groupUri);
+  }
+
+  private Group aFilteringModel() {
+    Group model = new Group();
+    if (getUserDetail().isDomainRestricted()) {
+      model.setDomainId(getUserDetail().getDomainId());
+    }
+    return model;
   }
 }

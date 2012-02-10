@@ -58,7 +58,9 @@ public class OrganizationControllerMock extends OrganizationController {
     for (UserDetail userDetail : users.values()) {
       allUsers[i++] = userDetail;
     }
-    if (allUsers.length == 0) return null;
+    if (allUsers.length == 0) {
+      return null;
+    }
     return allUsers;
   }
 
@@ -77,8 +79,7 @@ public class OrganizationControllerMock extends OrganizationController {
   }
 
   /**
-   * The behaviour matches the expected one from OrganizationController: if no g, null is
-   * returned.
+   * The behaviour matches the expected one from OrganizationController: if no g, null is returned.
    */
   @Override
   public Group[] getAllRootGroups() {
@@ -89,7 +90,9 @@ public class OrganizationControllerMock extends OrganizationController {
         allGroups.add(group);
       }
     }
-    if (allGroups.isEmpty()) return null;
+    if (allGroups.isEmpty()) {
+      return null;
+    }
     return allGroups.toArray(new Group[allGroups.size()]);
   }
 
@@ -127,7 +130,7 @@ public class OrganizationControllerMock extends OrganizationController {
     }
     return allsubGroups.toArray(new Group[allsubGroups.size()]);
   }
-  
+
   @Override
   public Group getGroup(String sGroupId) {
     return this.groups.get(sGroupId);
@@ -141,20 +144,20 @@ public class OrganizationControllerMock extends OrganizationController {
 
   @Override
   public UserDetail[] getAllUsersOfGroup(String groupId) {
-    List<UserDetail> users = new ArrayList<UserDetail>();
+    List<UserDetail> theUsers = new ArrayList<UserDetail>();
     Group group = getGroup(groupId);
     Group[] subgroups = getAllSubGroups(groupId);
     for (String userId : group.getUserIds()) {
-      users.add(getUserDetail(userId));
+      theUsers.add(getUserDetail(userId));
     }
     for (Group aSubGroup : subgroups) {
       for (String userId : aSubGroup.getUserIds()) {
-        users.add(getUserDetail(userId));
+        theUsers.add(getUserDetail(userId));
       }
     }
-    return users.toArray(new UserDetail[users.size()]);
+    return theUsers.toArray(new UserDetail[theUsers.size()]);
   }
-  
+
   /**
    * Adds a new user for tests.
    *
@@ -163,7 +166,7 @@ public class OrganizationControllerMock extends OrganizationController {
   public void addUserDetail(final UserDetail userDetail) {
     users.put(userDetail.getId(), userDetail);
   }
-  
+
   /**
    * Adds a new user group for tests.
    *
@@ -220,31 +223,53 @@ public class OrganizationControllerMock extends OrganizationController {
   public UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd) {
     List<UserDetail> foundUsers = new ArrayList<UserDetail>();
     for (UserDetail user : users.values()) {
-      if (modelUser.getFirstName() != null && modelUser.getFirstName().endsWith("%")) {
-        String name = modelUser.getFirstName().replace("%", "");
-        if (user.getFirstName().startsWith(name)) {
-          foundUsers.add(user);
-          continue;
+      boolean match = false;
+      if (isDefined(modelUser.getId())) {
+        match = user.getId().equals(modelUser.getId());
+      } else if (isDefined(modelUser.getFirstName()) || isDefined(modelUser.getLastName())) {
+        if (isDefined(modelUser.getFirstName())) {
+          if (modelUser.getFirstName().endsWith("%")) {
+            String name = modelUser.getFirstName().replace("%", "");
+            match = user.getFirstName().startsWith(name);
+          } else {
+            match = user.getFirstName().equals(modelUser.getFirstName());
+          }
+        }
+        if (!match && isDefined(modelUser.getLastName())) {
+          if (modelUser.getLastName().endsWith("%")) {
+            String name = modelUser.getLastName().replace("%", "");
+            match = user.getLastName().startsWith(name);
+          } else {
+            match = user.getLastName().equals(modelUser.getLastName());
+          }
         }
       } else {
-        if (user.getFirstName().equals(modelUser.getFirstName())) {
-          foundUsers.add(user);
-          continue;
-        }
+        match = true;
       }
-      if (modelUser.getLastName() != null && modelUser.getLastName().endsWith("%")) {
-        String name = modelUser.getFirstName().replace("%", "");
-        if (user.getLastName().startsWith(name)) {
-          foundUsers.add(user);
-          continue;
-        }
-      } else {
-        if (user.getLastName().equals(modelUser.getLastName())) {
-          foundUsers.add(user);
-          continue;
-        }
+      if (match && (!isDefined(modelUser.getDomainId()) || modelUser.getDomainId().equals(
+              user.getDomainId()))) {
+        foundUsers.add(user);
       }
     }
     return foundUsers.toArray(new UserDetail[foundUsers.size()]);
+  }
+
+  @Override
+  public UserDetail[] searchUsers(String componentId, String[] roleIds, String groupId,
+          UserDetail userFilter) {
+    UserDetail[] theUsers = searchUsers(userFilter, false);
+    if (isDefined(groupId)) {
+      List<UserDetail> foundUsers = new ArrayList<UserDetail>();
+      Group group = groups.get(groupId);
+      List<? extends UserDetail> usersOfGroup = group.getAllUsers();
+      for (UserDetail userDetail : theUsers) {
+        if (usersOfGroup.contains(userDetail)) {
+          foundUsers.add(userDetail);
+        }
+      }
+      return foundUsers.toArray(new UserDetail[foundUsers.size()]);
+    } else {
+      return theUsers;
+    }
   }
 }

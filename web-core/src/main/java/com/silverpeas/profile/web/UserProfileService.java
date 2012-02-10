@@ -23,10 +23,13 @@
  */
 package com.silverpeas.profile.web;
 
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -38,6 +41,9 @@ import javax.ws.rs.core.Response;
  */
 @Named
 class UserProfileService {
+
+  @Inject
+  private OrganizationController organizationController;
 
   /**
    * Gets the group with the specified unique identifier and that is accessible to the specified
@@ -63,5 +69,30 @@ class UserProfileService {
       }
     }
     return theGroup;
+  }
+
+  /**
+   * Gets the unique identifier of all of the specified role names for a given component instance.
+   *
+   * @param instanceId the unique identifier of the component instance for which the roles are
+   * defined.
+   * @param roleNames the name of the roles for which the identifier is asked.
+   * @return an array of role identifiers.
+   */
+  public String[] getRoleIds(String instanceId, String[] roleNames) {
+    List<String> roleIds = new ArrayList<String>();
+    List<String> listOfRoleNames = Arrays.asList(roleNames);
+    ComponentInst instance = getOrganizationController().getComponentInst(instanceId);
+    List<ProfileInst> profiles = instance.getAllProfilesInst();
+    for (ProfileInst aProfile : profiles) {
+      if (listOfRoleNames.isEmpty() || listOfRoleNames.contains(aProfile.getName())) {
+        roleIds.add(aProfile.getId());
+      }
+    }
+    return roleIds.toArray(new String[roleIds.size()]);
+  }
+
+  private OrganizationController getOrganizationController() {
+    return organizationController;
   }
 }

@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.organization;
 
-import com.silverpeas.util.StringUtil;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.DBUtil;
@@ -33,11 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * A Table object manages a table in a database.
@@ -50,7 +46,7 @@ public abstract class Table<T> {
   }
 
   static String getNotNullString(String sn) {
-    if (!StringUtil.isDefined(sn)) {
+    if (!isDefined(sn)) {
       return "";
     }
     return sn;
@@ -730,7 +726,7 @@ public abstract class Table<T> {
   }
 
   protected T getUniqueRow(ResultSet rs) throws SQLException, AdminPersistenceException {
-    T result = null;
+    T result;
     if (!rs.next()) {// no row found
       return null;
     }
@@ -771,7 +767,7 @@ public abstract class Table<T> {
   }
 
   protected int insertRow(String insertQuery, T row) throws AdminPersistenceException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
     try {
       statement = schema.getStatement(insertQuery);
@@ -788,7 +784,7 @@ public abstract class Table<T> {
   }
 
   protected int updateRow(String updateQuery, T row) throws AdminPersistenceException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
     try {
       statement = schema.getStatement(updateQuery);
@@ -805,7 +801,7 @@ public abstract class Table<T> {
   }
 
   protected int updateRelation(String query) throws AdminPersistenceException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
     try {
       statement = schema.getStatement(query);
@@ -820,7 +816,7 @@ public abstract class Table<T> {
   }
 
   protected int updateRelation(String query, int param) throws AdminPersistenceException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
     try {
       statement = schema.getStatement(query);
@@ -841,7 +837,7 @@ public abstract class Table<T> {
   }
 
   protected int updateRelation(String query, int[] ids) throws AdminPersistenceException {
-    int rowsCount = 0;
+    int rowsCount;
     PreparedStatement statement = null;
     try {
       statement = schema.getStatement(query);
@@ -865,7 +861,7 @@ public abstract class Table<T> {
   private Schema schema = null;
   private String tableName = null;
 
-  protected boolean addParamToQuery(Collection<String> theVect, StringBuffer theQuery, String value,
+  protected boolean addParamToQuery(Collection<String> theVect, StringBuilder theQuery, String value,
           String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
     if ((value != null) && (value.length() > 0)) {
@@ -881,7 +877,7 @@ public abstract class Table<T> {
     return valret;
   }
 
-  protected boolean addIdToQuery(Collection<Integer> theVect, StringBuffer theQuery, int value,
+  protected boolean addIdToQuery(Collection<Integer> theVect, StringBuilder theQuery, int value,
           String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
 
