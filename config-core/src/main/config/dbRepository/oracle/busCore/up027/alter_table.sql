@@ -1,0 +1,1 @@
+ALTER TABLE uniqueid MODIFY maxId NUMBER(19,0);
