@@ -120,9 +120,11 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       out.println("   	}");
       out.println("   } ");
     }
-    
-    Util.includeFileNameLengthChecker(template, pageContext, out);
-    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
+   
+    if (!template.isReadOnly()) { 
+       Util.includeFileNameLengthChecker(template, pageContext, out);
+       Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
+    }
   }
 
   /**

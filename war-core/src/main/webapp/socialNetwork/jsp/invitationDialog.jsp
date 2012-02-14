@@ -10,7 +10,7 @@ $(function() {
 		resizable: false,
 		modal: true,
 		height: "auto",
-		width: 500,
+		width: 550,
 		buttons: {
 			"<fmt:message key="GML.ok"/>": function() {
 				var message = $("#invitation-message").val();

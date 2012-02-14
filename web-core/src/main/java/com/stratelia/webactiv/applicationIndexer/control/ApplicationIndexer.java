@@ -57,10 +57,10 @@ public class ApplicationIndexer extends AbstractIndexer {
   public void indexComponent(String spaceId, ComponentInstLight compoInst) {
     SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexComponent()",
         "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + compoInst.getLabel());
-    
+
     // index component info
     admin.indexComponent(compoInst.getId());
-    
+
     // index component content
     ComponentIndexerInterface componentIndexer = getIndexer(compoInst);
     if (componentIndexer != null) {
@@ -93,7 +93,8 @@ public class ApplicationIndexer extends AbstractIndexer {
       ComponentContext componentContext = mainSessionController.createComponentContext(null, null);
       componentContext.setCurrentComponentId(personalComponent);
       ComponentIndexerInterface componentIndexer = (ComponentIndexerInterface) Class.forName(
-          "com.stratelia.webactiv." + compoName + "." + personalComponent + "Indexer").newInstance();
+          "com.stratelia.webactiv." + compoName + "." + personalComponent + "Indexer")
+          .newInstance();
       componentIndexer.index(mainSessionController, componentContext);
     } catch (ClassNotFoundException ce) {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
@@ -133,27 +134,32 @@ public class ApplicationIndexer extends AbstractIndexer {
     ComponentIndexerInterface componentIndexer;
     String compoName= firstLetterToUpperCase(compoInst.getName());
     String className = getClassName(compoInst);
-    String packageName  = getPackage(compoInst);
+    String packageName = getPackage(compoInst);
     try {
-      componentIndexer = loadIndexer(
-          "com.stratelia.webactiv." + packageName + "." + className + "Indexer");
+      componentIndexer = loadIndexer("com.stratelia.webactiv." + packageName + '.' + className + "Indexer");
       if (componentIndexer == null) {
-        componentIndexer = loadIndexer("com.silverpeas." + packageName + "." + className + "Indexer");
+        componentIndexer = loadIndexer("com.silverpeas." + packageName + '.' + className + "Indexer");
+      }
+      if (componentIndexer == null) {
+        componentIndexer = loadIndexer("org.silverpeas." + packageName + '.' + className + "Indexer");
       }
     } catch (InstantiationException e) {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName,
+          e);
       componentIndexer = new ComponentIndexerAdapter();
     } catch (IllegalAccessException e) {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName,
+          e);
       componentIndexer = new ComponentIndexerAdapter();
     }
     if (componentIndexer == null) {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
           "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
           "component = " + compoName + " with classes com.stratelia.webactiv." + packageName + "."
-          + className + "Indexer and com.silverpeas." + packageName + "." + className + "Indexer");
+              + className + "Indexer and com.silverpeas." + packageName + "." + className +
+              "Indexer");
       return new ComponentIndexerAdapter();
     }
     return componentIndexer;
@@ -189,8 +195,8 @@ public class ApplicationIndexer extends AbstractIndexer {
     return className;
   }
 
-  String getPackage(ComponentInstLight compoInst) {    
-    String packageName  = firstLetterToLowerCase(compoInst.getName());
+  String getPackage(ComponentInstLight compoInst) {
+    String packageName = firstLetterToLowerCase(compoInst.getName());
     if ("toolbox".equalsIgnoreCase(packageName)) {
       return "kmelia";
     }
@@ -215,7 +221,7 @@ public class ApplicationIndexer extends AbstractIndexer {
   public void indexUsers() {
     admin.indexAllUsers();
   }
-  
+
   public void indexGroups() {
     admin.indexAllGroups();
   }

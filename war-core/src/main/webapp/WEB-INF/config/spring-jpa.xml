@@ -18,6 +18,7 @@
   <context:annotation-config/>
 
   <jpa:repositories base-package="com.silverpeas" transaction-manager-ref="jpaTransactionManager"/>
+  <jpa:repositories base-package="org.silverpeas" transaction-manager-ref="jpaTransactionManager"/>
 
   <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
 
@@ -44,5 +45,6 @@
         
   <util:list id="entities">
     <value>com.silverpeas</value>
+    <value>org.silverpeas</value>
   </util:list>
 </beans>
