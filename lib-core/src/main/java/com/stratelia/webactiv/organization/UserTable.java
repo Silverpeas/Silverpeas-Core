@@ -542,7 +542,6 @@ public class UserTable extends Table<UserRow> {
   public UserRow[] searchUsers(int componentId, int[] roles, UserRow userModel)
           throws AdminPersistenceException {
     boolean concatAndOr = false;
-    String andOr = ") AND (";
     StringBuilder theQuery;
     List<Integer> ids = new ArrayList<Integer>();
     List<String> params = new ArrayList<String>();
@@ -567,22 +566,24 @@ public class UserTable extends Table<UserRow> {
       theQuery = new StringBuilder(SELECT_SEARCH_USERS);
     }
 
-    concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "id", concatAndOr, andOr);
-    concatAndOr = addIdToQuery(ids, theQuery, userModel.domainId, "domainId", concatAndOr, andOr);
+    String and = ") AND (";
+    String or = ") OR (";
+    concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "id", concatAndOr, and);
+    concatAndOr = addIdToQuery(ids, theQuery, userModel.domainId, "domainId", concatAndOr, and);
     concatAndOr = addParamToQuery(params, theQuery, userModel.specificId, "specificId", concatAndOr,
-        andOr);
-    concatAndOr = addParamToQuery(params, theQuery, userModel.login, "login", concatAndOr, andOr);
+        and);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.login, "login", concatAndOr, and);
     concatAndOr = addParamToQuery(params, theQuery, userModel.firstName, "firstName", concatAndOr,
-        andOr);
+        and);
     concatAndOr = addParamToQuery(params, theQuery, userModel.lastName, "lastName", concatAndOr,
-        andOr);
-    concatAndOr = addParamToQuery(params, theQuery, userModel.eMail, "email", concatAndOr, andOr);
+        or);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.eMail, "email", concatAndOr, or);
     concatAndOr = addParamToQuery(params, theQuery, userModel.accessLevel, "accessLevel",
-        concatAndOr, andOr);
+        concatAndOr, and);
     concatAndOr = addParamToQuery(params, theQuery, userModel.loginQuestion, "loginQuestion",
-        concatAndOr, andOr);
+        concatAndOr, and);
     concatAndOr = addParamToQuery(params, theQuery, userModel.loginAnswer, "loginAnswer",
-        concatAndOr, andOr);
+        concatAndOr, or);
     if (concatAndOr) {
       theQuery.append(") AND (accessLevel <> 'R')");
     } else {

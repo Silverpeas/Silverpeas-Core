@@ -272,4 +272,41 @@ public class OrganizationControllerMock extends OrganizationController {
       return theUsers;
     }
   }
+
+  @Override
+  public Group[] getGroups(String[] groupsId) {
+    List<Group> theGroups = new ArrayList<Group>(groupsId.length);
+    for (String groupId : groupsId) {
+      theGroups.add(this.groups.get(groupId));
+    }
+    return theGroups.toArray(new Group[theGroups.size()]);
+  }
+
+  @Override
+  public String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
+          Group modelGroup) {
+    List<String> groupIds = new ArrayList<String>();
+    for (Group aGroup : groups.values()) {
+      if (aGroup.isRoot()) {
+        boolean match = true;
+        if (isDefined(modelGroup.getDomainId())) {
+          match = modelGroup.getDomainId().equals(aGroup.getDomainId());
+        }
+        if (isDefined(modelGroup.getName())) {
+          if (modelGroup.getName().endsWith("%")) {
+            String name = modelGroup.getName().replace("%", "");
+            match = aGroup.getName().startsWith(name);
+          } else {
+            match = aGroup.getName().equals(modelGroup.getName());
+          }
+        }
+        if (match) {
+          groupIds.add(aGroup.getId());
+        }
+      }
+    }
+    return groupIds.toArray(new String[groupIds.size()]);
+  }
+  
+  
 }

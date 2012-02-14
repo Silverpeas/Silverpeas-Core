@@ -30,6 +30,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
 import com.sun.jersey.api.client.UniformInterfaceException;
+import java.util.Arrays;
 import java.util.List;
 import javax.ws.rs.core.Response;
 import static org.hamcrest.Matchers.is;
@@ -180,6 +181,25 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
       int forbidden = Response.Status.FORBIDDEN.getStatusCode();
       assertThat(receivedStatus, is(forbidden));
     }
+  }
+  
+  @Test
+  public void getAGroupByItsName() {
+    Group expectedGroup =  getTestResources().anExistingRootGroup();
+    SelectableUserGroup[] actualGroups = getAt(aResourceURI() + "?name=" + expectedGroup.getName(),
+            getWebEntityClass());
+    assertThat(actualGroups.length, is(1));
+    assertThat(actualGroups[0].getId(), is(expectedGroup.getId()));
+  }
+  
+  @Test
+  public void getAGroupByTheFirstCharactersOfItsName() {
+    Group[] expectedGroups =  getTestResources().getAllExistingRootGroups();
+    SelectableUserGroup[] actualGroups = getAt(aResourceURI() + "?name=" + expectedGroups[0].getName().substring(
+            0, 2) + "*",
+            getWebEntityClass());
+    assertThat(actualGroups.length, is(expectedGroups.length));
+    assertThat(actualGroups, contains(expectedGroups));
   }
 
   @Override

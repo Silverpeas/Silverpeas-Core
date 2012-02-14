@@ -65,16 +65,17 @@ public class UserGroupProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUserGroup[] getAllRootGroups() {
+  public SelectableUserGroup[] getAllRootGroups(@QueryParam("name") String name) {
     checkUserAuthentication();
-    List<Group> accessibleGroups = new ArrayList<Group>();
+    List<String> groupIds = new ArrayList<String>();
     if (getUserDetail().isDomainRestricted()) {
-      accessibleGroups.addAll(Group.getAllRootsInDomain("-1"));
-      accessibleGroups.addAll(Group.getAllRootsInDomain(getUserDetail().getDomainId()));
-    } else {
-      accessibleGroups.addAll(Group.getAllRoots());
+      String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(name, "-1"));
+      groupIds.addAll(Arrays.asList(ids));
     }
-    return asWebEntity(accessibleGroups, locatedAt(getUriInfo().getAbsolutePath()));
+    String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(name, null));
+    groupIds.addAll(Arrays.asList(ids));
+    Group[] allGroups = getOrganizationController().getGroups(groupIds.toArray(new String[groupIds.size()]));
+    return asWebEntity(Arrays.asList(allGroups), locatedAt(getUriInfo().getAbsolutePath()));
   }
 
   @GET
@@ -82,11 +83,12 @@ public class UserGroupProfileResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public SelectableUserGroup[] getAllRootGroupsInApplication(
           @PathParam("instanceId") String instanceId,
-          @QueryParam("roles") String roles) {
+          @QueryParam("roles") String roles,
+          @QueryParam("name") String name) {
     checkUserAuthentication();
     String[] roleIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(",")) : null);
     String[] groupIds = getOrganizationController().searchGroupsIds(true, null, roleIds,
-            aFilteringModel());
+            aFilteringModel(name, null));
     Group[] groups = getOrganizationController().getGroups(groupIds);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return asWebEntity(Arrays.asList(groups), locatedAt(groupsUri));
@@ -136,10 +138,16 @@ public class UserGroupProfileResource extends RESTWebService {
     return SelectableUserGroup.fromGroup(group).withAsUri(groupUri);
   }
 
-  private Group aFilteringModel() {
+  private Group aFilteringModel(String name, String domainId) {
     Group model = new Group();
-    if (getUserDetail().isDomainRestricted()) {
+    if (isDefined(domainId)) {
+      model.setDomainId(domainId);
+    } else if (getUserDetail().isDomainRestricted()) {
       model.setDomainId(getUserDetail().getDomainId());
+    }
+    if (isDefined(name)) {
+      String filterByName = name.replaceAll("\\*", "%");
+      model.setName(filterByName);
     }
     return model;
   }

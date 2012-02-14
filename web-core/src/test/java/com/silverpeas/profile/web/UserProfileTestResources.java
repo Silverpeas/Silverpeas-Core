@@ -138,6 +138,14 @@ public class UserProfileTestResources extends TestResources {
     return allGroups[new Random().nextInt(allGroups.length)];
   }
   
+  public Group anExistingRootGroup() {
+    Group group = null;
+    do {
+      group = anExistingGroup();
+    } while(!group.isRoot());
+    return group;
+  }
+  
   /**
    * Gets a group that isn't in an internal domain.
    * @return a group in a domain other than internal one.
