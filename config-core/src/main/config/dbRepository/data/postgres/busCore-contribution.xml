@@ -218,9 +218,12 @@
     </create_table>
   </upgrade>
   
-    <upgrade version="027">
+  <upgrade version="027">
     <create_table>
       <file name="postgres\busCore\up027\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_table>
+    <create_table>
+      <file name="uniqueId2LowerCase.jar" type="javalib" classname="org.silverpeas.migration.uniqueid.FixCaseInUniqueId" methodname="migrate"/>
     </create_table>
   </upgrade>
 
