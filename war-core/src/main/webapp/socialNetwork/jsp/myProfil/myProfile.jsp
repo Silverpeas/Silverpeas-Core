@@ -80,7 +80,7 @@ $(document).ready(function(){
             modal: true,
             autoOpen: false,
             height: "auto",
-            width: 300,
+            width: 400,
             title: "<fmt:message key="profil.actions.changeStatus" />",
             buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
@@ -157,6 +157,7 @@ $(document).ready(function(){
 	      </form>
 	</div>
 	
+	<% if (nbContacts > 0) { %>
 	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
 	<!-- allContact  -->  
 	<div id="allContact">
@@ -178,7 +179,8 @@ $(document).ready(function(){
 	     <a href="<%=m_context %>/Rdirectory/jsp/Main?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
 	     <br clear="all" />  
     <% } %>
-	</div><!-- /allContact  -->  
+	</div><!-- /allContact  -->
+	<% } %>  
       
 </div>
 

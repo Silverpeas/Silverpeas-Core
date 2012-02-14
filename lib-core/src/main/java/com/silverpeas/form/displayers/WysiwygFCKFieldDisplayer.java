@@ -101,22 +101,21 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       SilverTrace.info("form", "WysiwygFCKFieldDisplayer.displayScripts",
               "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
     }
-    out.println("var oEditor;");
-
-    out.println("oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
-
-    out.println("var thecode = oEditor.GetHTML();");
-    if (template.isMandatory() && PagesContext.useMandatory()) {
-      out.println(
+  
+    if (!template.isReadOnly()) {
+      out.println("var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
+      out.println("var thecode = oEditor.GetHTML();");
+      if (template.isMandatory() && PagesContext.useMandatory()) {
+        out.println(
               "	if (isWhitespace(stripInitialWhitespace(thecode)) || thecode == \"<P>&nbsp;</P>\") {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
-              + Util.getString("GML.MustBeFilled",
-              language) + "\\n \";");
-      out.println("		errorNb++;");
-      out.println("	}");
-    }
+        out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
+              + Util.getString("GML.MustBeFilled", language) + "\\n \";");
+        out.println("		errorNb++;");
+        out.println("	}");
+      }
 
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+      Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    }
   }
 
   /**
