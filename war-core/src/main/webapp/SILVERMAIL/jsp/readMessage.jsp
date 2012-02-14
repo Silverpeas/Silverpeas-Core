@@ -63,7 +63,7 @@
 
       function goTo()
       {
-        window.opener.top.location = "<c:out value="${msg.url}" />";
+        window.opener.top.location = "<c:url value="${msg.url}" />";
         window.close();
       }
 
