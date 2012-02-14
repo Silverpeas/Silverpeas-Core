@@ -24,11 +24,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.MultilangMessage;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
-
-import javax.ejb.EJBException;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,6 +31,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ejb.EJBException;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 public class DBUtil {
 
@@ -241,7 +240,7 @@ public class DBUtil {
       String createStatement = "INSERT INTO UniqueId (maxId, tableName) VALUES (?, ?)";
       createStmt = privateConnection.prepareStatement(createStatement);
       createStmt.setInt(1, max);
-      createStmt.setString(2, tableName);
+      createStmt.setString(2, tableName.toLowerCase());
       createStmt.executeUpdate();
       return max;
     } catch (Exception e) {
@@ -257,7 +256,8 @@ public class DBUtil {
     return max;
   }
 
-  private static int updateMaxFromTable(Connection con, String tableName) throws SQLException {
+  private static int updateMaxFromTable(Connection con, String tablename) throws SQLException {
+    String tableName = tablename.toLowerCase();
     int max = 0;
     PreparedStatement prepStmt = null;
     int count = 0;
