@@ -22,6 +22,7 @@
 <c:set var="roles"             value="${selection.extraParams.joinedProfileNames}"/>
 <c:set var="validationURL"     value="${selection.goBackURL}"/>
 <c:set var="cancelationURL"    value="${selection.cancelURL}"/>
+<c:set var="hotSetting"        value="${selection.htmlFormName != null && fn:length(selection.htmlFormName) > 0}"/>
 
 <c:set var="selectionScope"   value=""/>
 <c:if test="${selection.elementSelectable}">
@@ -41,36 +42,119 @@
     <view:looknfeel />
     <title><fmt:message key="GML.selection"/></title>
     <script type="text/javascript" >
-      var path = [];
-      var selectedUsers = '<c:out value="${fn:join(selection.selectedElements, ',')}"/>';
-      if (selectedUsers != null && selectedUsers.length > 0)
-        selectedUsers = selectedUsers.split(',');
-      else
-        selectedUsers = [];
-      var selectedGroups = '<c:out value="${fn:join(selection.selectedSets, ',')}"/>';
-      if (selectedGroups != null && selectedGroups.length > 0)
-        selectedGroups = selectedGroups.split(',');
-      else
-        selectedGroups = [];
-    <c:choose>
-      <c:when test='${multipleSelection}'>
-      var type = 'checkbox';
-      </c:when>
-      <c:otherwise>
-      var type = 'radio';
-      </c:otherwise>
-    </c:choose>
-    
-      function contains(array, elt) {
-        return array.indexOf(elt) > -1;
+      // the path of the current user group from a given root user group
+      var groupPath = [];
+      
+      // prepare the preselection of the users and of the user groups.
+      var preselection = '<c:out value="${fn:join(selection.selectedElements, ',')}"/>';
+      var selectedUsers = [], selectedGroups = [];
+      if (preselection != null && preselection.length > 0)
+        selectedUsers = preselection.split(',');
+        
+      preselection = '<c:out value="${fn:join(selection.selectedSets, ',')}"/>';
+      if (preselection != null && preselection.length > 0)
+        selectedGroups = preselection.split(',');
+      
+      // the selection object.
+      var selection = new function () {
+        this.isMultiple = <c:out value="${multipleSelection}"/>;
+        this.selectedUsers = [];
+        this.selectedGroups = [];
+        
+        function isAUser(item) {
+          return item.type == 'user';
+        }
+      
+        function isAGroup(item) {
+          return item.type == 'group';
+        }
+        
+        this.add = function(item) {
+          if (isAGroup(item) && this.selectedGroups.indexOf(item) < 0)
+            this.selectedGroups.push(item);
+          else if (isAUser(item) && this.selectedUsers.indexOf(item) < 0)
+            this.selectedUsers.push(item);
+        }
+        
+        this.remove = function(item) {
+          if (isAGroup(item)) {
+            var index = this.selectedGroups.indexOf(item);
+            if (index > -1)
+              this.selectedGroups.splice(index, 1);
+          } else if (isAUser(item)) {
+            var index = this.selectedUsers.indexOf(item);
+            if (index > -1)
+              this.selectedUsers.splice(index, 1);
+          }
+        }
+      
+        this.isSelected = function(item) {
+          return (isAUser(item) && this.selectedUsers.indexOf(item) > -1) ||
+            (isAGroup(item) && this.selectedGroups.indexOf(item) > -1);
+        }
+        
+        this.selectedUserIdsToString = function() {
+          var selection = '';
+          for (var i =0; i < this.selectedUsers.length - 1; i++)
+            selection += this.selectedUsers[i].id + ',';
+          if (this.selectedUsers.length > 0)
+            selection += this.selectedUsers[this.selectedUsers.length - 1].id;
+          return selection;
+        }
+        
+        this.selectedGroupIdsToString = function() {
+          var selection = '';
+          for (var i =0; i < this.selectedGroups.length - 1; i++)
+            selection += this.selectedGroups[i].id + ',';
+          if (this.selectedGroups.length > 0)
+            selection += this.selectedGroups[this.selectedGroups.length - 1].id;
+          return selection;
+        }
+      
+        this.selectedUserNamesToString = function() {
+          var selection = '';
+          for (var i =0; i < this.selectedUsers.length - 1; i++)
+            selection += this.selectedUsers[i].fullName + ',';
+          if (this.selectedUsers.length > 0)
+            selection += this.selectedUsers[this.selectedUsers.length - 1].fullName;
+          return selection;
+        }
+        
+        this.selectedGroupNamesToString = function() {
+          var selection = '';
+          for (var i =0; i < this.selectedGroups.length - 1; i++)
+            selection += this.selectedGroups[i].name + '\n';
+          if (this.selectedGroups.length > 0)
+            selection += this.selectedGroups[this.selectedGroups.length - 1].name;
+          return selection;
+        }
+      }
+  
+      // print out the selector widget through which a user or a group can be selected.
+      function selector(name, item) {
+        var type = 'radio', validate = validateSelection;
+        if (selection.isMultiple) {
+          type = 'checkbox';
+          validate = function() {};
+        }
+        return $('<input>', {type: type, name: name, value: item.id, checked: selection.isSelected(item)}).change(function () {
+          if (this.checked)
+            selection.add(item);
+          else
+            selection.remove(item);
+          validate();
+        });
       }
       
+      // searchs all the Silverpeas users whose the name matches the first characters printed by the
+      // user in the search field.
       function searchUsers() {
         var name = $('input#user-search-field').val() + "*";
-        var group = (path.length <= 1 ? null:path[path.length - 1]);
+        var group = (groupPath.length <= 1 ? null:groupPath[groupPath.length - 1]);
         loadUsers(group, name);
       }
       
+      // loads all the users matching the defined filter and print out each of them for a selection.
       function loadUsers(inGroup, withName) {
         $('tr.user').remove();
         var uriOfUsers = webContext + '/services/profile/users', sep = '?';
@@ -95,13 +179,11 @@
           success: function(users) {
             var style = 'even';
             $.each(users, function(i, user) {
+              user.type = 'user';
+              if (selectedUsers.indexOf(user.id) > -1)
+                selection.add(user);
               $('<tr>').addClass('user').addClass(style).
-                append($('<td>').append($('<input>', {type: type, name: 'user', value: user.id, checked: contains(selectedUsers, user.id)}).change(function () {
-                  if (this.checked)
-                    selectedUsers.push(user.id)
-                  else
-                    selectedUsers.splice(selectedUsers.indexOf(user.id), 1);
-                }))).
+                append($('<td>').append(selector('user', user))).
                 append($('<td>').append($('<img>', {src: webContext + user.avatar, alt: user.lastName + ' ' + user.firstName}).addClass('avatar'))).
                 append($('<td>').addClass('name').text(user.lastName)).
                 append($('<td>').addClass('fistname').text(user.firstName)).
@@ -119,23 +201,18 @@
           }
         });
       }
-      
-      function valUsersSelection() {
-        var usersSelection = '';
-        $('#users :' + type + ':checked').each(function() {
-          usersSelection += $(this).val() + ' ';
-        });
-        /*$("input#user-selection").val($.trim(usersSelection));*/
-        $("input#user-selection").val(selectedUsers.join(','));
-      }
  
+      // the root group
       var rootGroup = { childrenUri: webContext + '/services/profile/groups', name: '<fmt:message key="GML.groupes"/>' };
-      <c:if test="${instanceId != null && fn:length(instanceId) > 0}">
+    <c:if test="${instanceId != null && fn:length(instanceId) > 0}">
       rootGroup.childrenUri += '<c:out value="/application/${instanceId}"/>';
-      <c:if test="${roles != null && fn:length(roles) > 0}">
+    <c:if test="${roles != null && fn:length(roles) > 0}">
       rootGroup.childrenUri += '?roles=<c:out value="${roles}"/>';
-      </c:if>
-      </c:if>
+    </c:if>
+    </c:if>
+    
+    // if users should be displayed, they will be loaded with the sub groups of the current group
+    // they are part of.
     <c:choose>
       <c:when test='${selectionScope == "usergroup"}'>
       var onGroupChange = function(newGroup) {
@@ -150,33 +227,39 @@
       </c:otherwise>
     </c:choose>
       
+      // searchs all the user groups whose the name matches the first characters printed by the
+      // user in the search field.
       function searchGroups() {
         var name = $('input#group-search-field').val() + "*";
         loadGroups(rootGroup, name, onGroupChange);
       }
 
+      // update the path to the groups with the new current user group.
       function updateGroupPathWith(group) {
-        for(var i = 0; i < path.length; i++) {
-          if (path[i].id == group.id)
+        for(var i = 0; i < groupPath.length; i++) {
+          if (groupPath[i].id == group.id)
             break;
         }
-        if (i < path.length)
-          path.splice(i + 1);
+        if (i < groupPath.length)
+          groupPath.splice(i + 1);
         else
-          path.push(group);
+          groupPath.push(group);
       }
       
+      // render the group path
       function renderGroupPathAt(elt) {
         elt.text('');
-        for(var i = 0; i < path.length - 1; i++) {
-          var group = path[i];
+        for(var i = 0; i < groupPath.length - 1; i++) {
+          var group = groupPath[i];
           elt.append($('<a>', {href: '#'}).click(function() {
             loadGroups(group, null, onGroupChange);
           }).text(group.name)).append(' :: ');
         }
-        elt.append(path[path.length - 1].name);
+        elt.append(groupPath[groupPath.length - 1].name);
       }
       
+      // loads all the user groups matching the defined filter and print out each of them for a
+      // selection.
       function loadGroups(theGroup, withName, onGroupLoaded) {
         $('tr.group').remove();
         var uriOfGroups = theGroup.childrenUri;
@@ -194,13 +277,11 @@
             updateGroupPathWith(theGroup);
             renderGroupPathAt($('#group-path'));
             $.each(groups, function(i, group) {
+              group.type = 'group';
+              if (selectedGroups.indexOf(group.id) > -1)
+                selection.add(group);
               $('<tr>').addClass('group').addClass(style).
-                append($('<td>').append($('<input>', {type: type, name: 'group', value: group.id, checked: contains(selectedGroups, group.id)}).change(function () {
-                  if (this.checked)
-                    selectedGroups.push(group.id)
-                  else
-                    selectedGroups.splice(selectedGroups.indexOf(group.id), 1);
-                }))).
+                append($('<td>').append(selector('group', group))).
                 append($('<td>').addClass('name').append($('<a>', {href: '#'}).click(function() {
                   loadGroups(group, null, onGroupLoaded);
                 }).text(group.name))).
@@ -222,27 +303,40 @@
         });
       }
       
-      function valGroupsSelection() {
-        var groupsSelection = '';
-        $('#groups :' + type + ':checked').each(function() {
-          groupsSelection += $(this).val() + ' ';
-        });
-        /*$("input#group-selection").val($.trim(groupsSelection));*/
-        $("input#group-selection").val(selectedGroups.join(','));
-      }
-      
+      // validate the selection of users and/or of user groups.
+      // the validation can be performed in two different ways:
+      // - the form with the user and group selections is posted to the caller,
+      // - or the caller form parameters for the selection are set directly, leaving the caller to
+      //   process the selection
       function validateSelection() {
-        valGroupsSelection();
-        valUsersSelection();
+        var selectedGroupIds = selection.selectedGroupIdsToString();
+        var selectedUserIds = selection.selectedUserIdsToString();
+    <c:choose>
+      <c:when test="${hotSetting}">
+        var selectedGroupNames = selection.selectedGroupNamesToString();
+        var selectedUserNames = selection.selectedUserNamesToString();
+        var selectionIdField   = '<c:out value="${selection.htmlFormElementId}"/>';
+        var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
+        window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds:selectedGroupIds));
+        window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames:selectedGroupNames));
+        window.close();
+      </c:when>
+      <c:otherwise>
+        $("input#group-selection").val(selectedGroups);
+        $("input#user-selection").val(selectedUsers);
         $("#selection").submit();
+      </c:otherwise>
+    </c:choose>
       }
       
+      // cancel the selection and go back to the caller.
       function cancelSelection() {
         $('input[name="UserOrGroupSelection"]').val('false');
         $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
         $("#selection").submit();
       }
       
+      // load the users/groups for the selection
       $(document).ready(function() {
     <c:choose>
       <c:when test='${selectionScope == "group" || selectionScope == "usergroup"}'>

@@ -82,11 +82,14 @@ public class SelectableUser extends UserDetail implements Selectable {
   private String avatar;
   @XmlElement
   private String domainName;
+  @XmlElement
+  private String fullName = "";
 
   private SelectableUser(UserDetail user) {
     this.user = user;
     this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
             getName();
+    this.fullName = user.getDisplayedName();
     this.avatar = this.user.getAvatar();
   }
 
@@ -149,11 +152,13 @@ public class SelectableUser extends UserDetail implements Selectable {
   @Override
   public void setFirstName(String sFirstName) {
     this.user.setFirstName(sFirstName);
+    this.fullName = this.user.getDisplayedName();
   }
 
   @Override
   public void setLastName(String sLastName) {
     this.user.setLastName(sLastName);
+    this.fullName = this.user.getDisplayedName();
   }
 
   @Override
