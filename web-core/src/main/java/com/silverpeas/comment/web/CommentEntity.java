@@ -23,31 +23,29 @@
  */
 package com.silverpeas.comment.web;
 
+import com.silverpeas.calendar.Date;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.profile.web.ProfileResourceBaseURIs;
+import com.silverpeas.profile.web.UserProfileEntity;
+import com.silverpeas.rest.Exposable;
 import static com.silverpeas.util.StringUtil.isDefined;
-
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.rest.Exposable;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-
 /**
- * The comment entity is a comment object that is exposed in the web as an entity (web entity).
- * As such, it publishes only some of its attributes
- * It represents a comment in Silverpeas plus some additional information such as the URI for
- * accessing it.
+ * The comment entity is a comment object that is exposed in the web as an entity (web entity). As
+ * such, it publishes only some of its attributes It represents a comment in Silverpeas plus some
+ * additional information such as the URI for accessing it.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -65,7 +63,7 @@ public class CommentEntity implements Exposable {
   @XmlElement(required = true)
   private String text;
   @XmlElement(required = true)
-  private CommentAuthorEntity author;
+  private UserProfileEntity author;
   @XmlElement(required = true, defaultValue = "")
   private String creationDate;
   @XmlElement(required = true, defaultValue = "")
@@ -75,6 +73,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Creates a new comment entity from the specified comment.
+   *
    * @param comment the comment to entitify.
    * @return the entity representing the specified comment.
    */
@@ -84,6 +83,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Creates several new comment entities from the specified comments.
+   *
    * @param comments the comments to entitify.
    * @return a list of entities representing each of then one of the specified comments.
    */
@@ -93,6 +93,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Creates several new comment entities from the specified list of comments.
+   *
    * @param comments the list of comments to entitify.
    * @return a list of entities representing each of then one of the specified comments.
    */
@@ -106,30 +107,36 @@ public class CommentEntity implements Exposable {
 
   /**
    * Gets the comment business objet this entity represent.
+   *
    * @return a comment instance.
    */
   public Comment toComment() {
     Comment comment = new Comment(new CommentPK(id, componentId), new PublicationPK(resourceId,
-        componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
-        decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
-        decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
-    comment.setOwnerDetail(getAuthor().toUser());
+            componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
+            decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
+            decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
+    comment.setOwnerDetail(getAuthor().toUserDetail());
     return comment;
   }
 
   /**
-   * Sets a URI to this entity.
-   * With this URI, it can then be accessed through the Web.
+   * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
+   *
    * @param uri the web entity URI.
    * @return itself.
    */
   public CommentEntity withURI(final URI uri) {
     this.uri = uri;
+    String baseURI = uri.toString();
+    String usersURI = baseURI.toString().substring(0, baseURI.indexOf("comments"))
+            + ProfileResourceBaseURIs.USERS_BASE_URI;
+    this.author = this.author.withAsUri(ProfileResourceBaseURIs.uriOfUser(author, usersURI));
     return this;
   }
 
   /**
    * Gets the URI of this comment entity.
+   *
    * @return the URI with which this entity can be access through the Web.
    */
   @Override
@@ -139,6 +146,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Gets the unique identifier of the comment.
+   *
    * @return the comment identifier.
    */
   public String getId() {
@@ -146,7 +154,9 @@ public class CommentEntity implements Exposable {
   }
 
   /**
-   * Gets the identifier of the Silverpeas component instance to which the commented content belongs.
+   * Gets the identifier of the Silverpeas component instance to which the commented content
+   * belongs.
+   *
    * @return the silverpeas component instance identifier.
    */
   public String getComponentId() {
@@ -155,6 +165,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Gets the identifier of the resource that is commented by this.
+   *
    * @return the commented resource identifier.
    */
   public String getResourceId() {
@@ -163,14 +174,16 @@ public class CommentEntity implements Exposable {
 
   /**
    * Gets the user that has written this comment.
+   *
    * @return the author of the comment.
    */
-  public CommentAuthorEntity getAuthor() {
+  public UserProfileEntity getAuthor() {
     return author;
   }
 
   /**
    * Gets the text of the comment.
+   *
    * @return the text of the comment.
    */
   public String getText() {
@@ -179,6 +192,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Gets the date at which the comment was created.
+   *
    * @return the creation date of the comment.
    */
   public String getCreationDate() {
@@ -187,6 +201,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Gets the date at which the comment was lastly updated.
+   *
    * @return the modification date of the comment.
    */
   public String getModificationDate() {
@@ -194,8 +209,8 @@ public class CommentEntity implements Exposable {
   }
 
   /**
-   * Is this comment indexed?
-   * By default, the comment isn't indexed by the system.
+   * Is this comment indexed? By default, the comment isn't indexed by the system.
+   *
    * @return true if the comment is indexed, false otherwise.
    */
   public boolean isIndexed() {
@@ -204,6 +219,7 @@ public class CommentEntity implements Exposable {
 
   /**
    * Changes the text of this comment by the specified one.
+   *
    * @param aText the new text.
    * @return itself.
    */
@@ -217,7 +233,7 @@ public class CommentEntity implements Exposable {
     this.id = comment.getCommentPK().getId();
     this.resourceId = comment.getForeignKey().getId();
     this.text = comment.getMessage();
-    this.author = CommentAuthorEntity.fromUser(comment.getCreator());
+    this.author = UserProfileEntity.fromUser(comment.getCreator());
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
     this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.
             getLanguage());
@@ -263,8 +279,8 @@ public class CommentEntity implements Exposable {
 
   /**
    * Encodes the specified date into a date to display by taking into account the user prefered
-   * language.
-   * If the specified date isn't defined, then a display date of today is returned.
+   * language. If the specified date isn't defined, then a display date of today is returned.
+   *
    * @param date the date to encode.
    * @param the language to use to encode the display date.
    * @return the resulting display date.
@@ -272,7 +288,7 @@ public class CommentEntity implements Exposable {
   private static String encodeToDisplayDate(java.util.Date date, String language) {
     String displayDate;
     if (date != null) {
-        displayDate = DateUtil.getOutputDate(date, language);
+      displayDate = DateUtil.getOutputDate(date, language);
     } else {
       displayDate = DateUtil.getOutputDate(Date.today(), language);
     }
@@ -280,8 +296,9 @@ public class CommentEntity implements Exposable {
   }
 
   /**
-   * Decodes the specified display date into a date as it is defining in a Comment instance.
-   * If the display date isn't defined, then the today date is returned.
+   * Decodes the specified display date into a date as it is defining in a Comment instance. If the
+   * display date isn't defined, then the today date is returned.
+   *
    * @param displayDate the display date to decode.
    * @param language the language in which the date is encoded.
    * @return the resulting decoded date.

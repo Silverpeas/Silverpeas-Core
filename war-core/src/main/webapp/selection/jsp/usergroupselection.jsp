@@ -184,7 +184,7 @@
                 selection.add(user);
               $('<tr>').addClass('user').addClass(style).
                 append($('<td>').append(selector('user', user))).
-                append($('<td>').append($('<img>', {src: webContext + user.avatar, alt: user.lastName + ' ' + user.firstName}).addClass('avatar'))).
+                append($('<td>').append($('<img>', {src: user.avatar, alt: user.lastName + ' ' + user.firstName}).addClass('avatar'))).
                 append($('<td>').addClass('name').text(user.lastName)).
                 append($('<td>').addClass('fistname').text(user.firstName)).
                 append($('<td>').addClass('email').text(user.eMail)).
@@ -322,8 +322,8 @@
         window.close();
       </c:when>
       <c:otherwise>
-        $("input#group-selection").val(selectedGroups);
-        $("input#user-selection").val(selectedUsers);
+        $("input#group-selection").val(selectedGroupIds);
+        $("input#user-selection").val(selectedUserIds);
         $("#selection").submit();
       </c:otherwise>
     </c:choose>

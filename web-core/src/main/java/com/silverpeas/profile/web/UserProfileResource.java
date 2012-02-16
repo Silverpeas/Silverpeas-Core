@@ -69,7 +69,7 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUser[] getUsers(
+  public UserProfileEntity[] getUsers(
           @QueryParam("group") String groupId,
           @QueryParam("name") String name) {
     checkUserAuthentication();
@@ -86,7 +86,7 @@ public class UserProfileResource extends RESTWebService {
   @GET
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUser getUser(@PathParam("userId") String userId) {
+  public UserProfileEntity getUser(@PathParam("userId") String userId) {
     checkUserAuthentication();
     UserDetail theUser = UserDetail.getById(userId);
     if (theUser == null) {
@@ -104,7 +104,7 @@ public class UserProfileResource extends RESTWebService {
 
   @GET
   @Path("application/{instanceId}")
-  public SelectableUser[] getApplicationUsers(
+  public UserProfileEntity[] getApplicationUsers(
           @PathParam("instanceId") String instanceId,
           @QueryParam("group") String groupId,
           @QueryParam("roles") String roles,
@@ -136,12 +136,12 @@ public class UserProfileResource extends RESTWebService {
     return uri;
   }
 
-  private SelectableUser[] asWebEntity(final List<? extends UserDetail> allUsers, final URI baseUri) {
-    return SelectableUser.fromUsers(allUsers, baseUri);
+  private UserProfileEntity[] asWebEntity(final List<? extends UserDetail> allUsers, final URI baseUri) {
+    return UserProfileEntity.fromUsers(allUsers, baseUri);
   }
 
-  private SelectableUser asWebEntity(final UserDetail user, final URI userUri) {
-    return SelectableUser.fromUser(user).withAsUri(userUri);
+  private UserProfileEntity asWebEntity(final UserDetail user, final URI userUri) {
+    return UserProfileEntity.fromUser(user).withAsUri(userUri);
   }
 
   private UserDetail aFilteringModel(String name, String domainId) {

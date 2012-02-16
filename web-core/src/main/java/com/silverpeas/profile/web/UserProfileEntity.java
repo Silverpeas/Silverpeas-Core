@@ -23,9 +23,11 @@
  */
 package com.silverpeas.profile.web;
 
+import com.silverpeas.personalization.UserPreferences;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
+import com.silverpeas.rest.Exposable;
+import com.silverpeas.ui.DisplayI18NHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
-import com.silverpeas.web.Selectable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
@@ -33,39 +35,40 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
- * A user that is selectable. It is a web entity representing the profile of a user that can be
- * selected among others in order to participate to a given action in the Silverpeas portal. It is a
- * decorator that decorates a UserDetail object with additional properties concerning the selection.
+ * The profile of a user that is exposable in the WEB. It is a web entity representing the profile
+ * of a user that can be serialized into a given media type (JSON, XML). It is a
+ * decorator that decorates a UserDetail object with additional properties concerning its exposition
+ * in the WEB.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class SelectableUser extends UserDetail implements Selectable {
+public class UserProfileEntity extends UserDetail implements Exposable {
 
   private static final long serialVersionUID = -5011846708353591604L;
 
   /**
-   * Decorates the specified user with selectable features. By default, the decorated user isn't
-   * selected.
+   * Decorates the specified user details with the required WEB exposition features.
    *
-   * @param user the user to decorate.
-   * @return a selectable user, not selected by default.
+   * @param user the user details to decorate.
+   * @return a web entity representing the profile of a user.
    */
-  public static SelectableUser fromUser(final UserDetail user) {
-    return new SelectableUser(user);
+  public static UserProfileEntity fromUser(final UserDetail user) {
+    return new UserProfileEntity(user);
   }
 
   /**
-   * Decorates the specified users with selectable features. By default, the decorated users aren't
-   * selected.
+   * Decorates the specified user details with the required WEB exposition features.
    *
-   * @param users a list of users to decorate.
+   * @param users a list of details on some users.
    * @param baseURI the URI at which the specified users are defined.
-   * @return a list of selectable users, not selected by default.
+   * @return a list of web entities representing the profile of the specified users.
    */
-  public static SelectableUser[] fromUsers(final List<? extends UserDetail> users, URI usersUri) {
-    SelectableUser[] selectableUsers = new SelectableUser[users.size()];
+  public static UserProfileEntity[] fromUsers(final List<? extends UserDetail> users, URI usersUri) {
+    UserProfileEntity[] selectableUsers = new UserProfileEntity[users.size()];
     String fromUsersUri = usersUri.toString();
     int i = 0;
     for (UserDetail aUser : users) {
@@ -74,42 +77,39 @@ public class SelectableUser extends UserDetail implements Selectable {
     return selectableUsers;
   }
   private UserDetail user = null;
-  @XmlElement
-  private boolean selected = false;
-  @XmlElement
+  @XmlElement(required=true)
   private URI uri;
-  @XmlElement
+  @XmlElement(required=true)
   private String avatar;
   @XmlElement
   private String domainName;
-  @XmlElement
+  @XmlElement(required=true, defaultValue="")
   private String fullName = "";
+  @XmlElement(defaultValue="")
+  private String language = "";
 
-  private SelectableUser(UserDetail user) {
+  private UserProfileEntity(UserDetail user) {
     this.user = user;
+    UserPreferences prefs = getUserPreferences();
+    if (prefs != null) {
+      this.language = prefs.getLanguage();
+    } else {
+      this.language = DisplayI18NHelper.getDefaultLanguage();
+    }
     this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
             getName();
     this.fullName = user.getDisplayedName();
-    this.avatar = this.user.getAvatar();
+    this.avatar = getAvatarURI();
   }
 
   @Override
-  @XmlElement
+  @XmlElement(required=true)
   public String getId() {
     return user.getId();
   }
 
   @Override
-  public boolean isSelected() {
-    return this.selected;
-  }
-
-  public URI getUri() {
-    return uri;
-  }
-
-  @Override
-  @XmlElement
+  @XmlElement(required=true)
   public String getAccessLevel() {
     return this.user.getAccessLevel();
   }
@@ -121,13 +121,13 @@ public class SelectableUser extends UserDetail implements Selectable {
   }
 
   @Override
-  @XmlElement
+  @XmlElement(required=true)
   public String getFirstName() {
     return this.user.getFirstName();
   }
 
   @Override
-  @XmlElement
+  @XmlElement(required=true)
   public String getLastName() {
     return this.user.getLastName();
   }
@@ -138,6 +138,14 @@ public class SelectableUser extends UserDetail implements Selectable {
     return this.user.geteMail();
   }
 
+  /**
+   * Gets the language used by the user.
+   * @return the code of the language used by the user.
+   */
+  public String getLanguage() {
+    return language;
+  }
+  
   @Override
   public void setAccessLevel(String sAccessLevel) {
     this.user.setAccessLevel(sAccessLevel);
@@ -169,9 +177,17 @@ public class SelectableUser extends UserDetail implements Selectable {
   @Override
   public String getAvatar() {
     if (!isDefined(avatar)) {
-      avatar = this.user.getAvatar();
+      avatar = getAvatarURI();
     }
     return avatar;
+  }
+
+  /**
+   * Gets the full name of the user. The full name is made up of its firstname and of its lastname.
+   * @return the user fullname.
+   */
+  public String getFullName() {
+    return fullName;
   }
 
   @Override
@@ -200,17 +216,7 @@ public class SelectableUser extends UserDetail implements Selectable {
     return this.domainName;
   }
 
-  @Override
-  public void select() {
-    this.selected = true;
-  }
-
-  @Override
-  public void unselect() {
-    this.selected = false;
-  }
-
-  public SelectableUser withAsUri(URI userUri) {
+  public UserProfileEntity withAsUri(URI userUri) {
     this.uri = userUri;
     return this;
   }
@@ -219,7 +225,7 @@ public class SelectableUser extends UserDetail implements Selectable {
     return this.user;
   }
 
-  protected SelectableUser() {
+  protected UserProfileEntity() {
     user = new UserDetail();
   }
 
@@ -230,8 +236,8 @@ public class SelectableUser extends UserDetail implements Selectable {
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof SelectableUser) {
-      return this.user.equals(((SelectableUser) other).user);
+    if (other instanceof UserProfileEntity) {
+      return this.user.equals(((UserProfileEntity) other).user);
     } else {
       return this.user.equals(other);
     }
@@ -240,5 +246,19 @@ public class SelectableUser extends UserDetail implements Selectable {
   @Override
   public int hashCode() {
     return this.user.hashCode();
+  }
+
+  @Override
+  public URI getURI() {
+    return this.uri;
+  }
+  
+  private String getAvatarURI() {
+    String avatarURI = this.user.getAvatar();
+    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
+    if (context != null) {
+      avatarURI =  context.getServletContext().getContextPath() + avatarURI;
+    }
+    return avatarURI;
   }
 }

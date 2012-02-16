@@ -69,7 +69,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   public void gettingAllRootGroupsWhateverTheDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
-    SelectableUserGroup[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
     assertThat(actualGroups, contains(expectedGroups));
   }
@@ -80,7 +80,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
     getTestResources().getWebServiceCaller().setDomainId(domainId);
     Group[] expectedGroups = getTestResources().getAllRootGroupsAccessibleFromDomain(domainId);
-    SelectableUserGroup[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
     assertThat(actualGroups, contains(expectedGroups));
   }
@@ -90,7 +90,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
 
-    SelectableUserGroup[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
     assertThat(actualGroups, contains(expectedGroups));
   }
@@ -102,7 +102,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     getTestResources().getWebServiceCaller().setDomainId(domainId);
     Group[] expectedGroups = getTestResources().getAllRootGroupsAccessibleFromDomain(domainId);
 
-    SelectableUserGroup[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
     assertThat(actualGroups, contains(expectedGroups));
   }
@@ -112,7 +112,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup);
-    SelectableUserGroup expectedGroup = getAt(path, SelectableUserGroup.class);
+    UserGroupProfileEntity expectedGroup = getAt(path, UserGroupProfileEntity.class);
     assertThat(expectedGroup, notNullValue());
     assertThat(expectedGroup.getId(), is(actualGroup.getId()));
   }
@@ -123,7 +123,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
     getTestResources().getWebServiceCaller().setDomainId(actualGroup.getDomainId());
     String path = buildURIPathOf(actualGroup);
-    SelectableUserGroup expectedGroup = getAt(path, SelectableUserGroup.class);
+    UserGroupProfileEntity expectedGroup = getAt(path, UserGroupProfileEntity.class);
     assertThat(expectedGroup, notNullValue());
     assertThat(expectedGroup.getId(), is(actualGroup.getId()));
   }
@@ -135,7 +135,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
       Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
       getTestResources().getWebServiceCaller().setDomainId(actualGroup.getDomainId() + "0");
       String path = buildURIPathOf(actualGroup);
-      getAt(path, SelectableUserGroup.class);
+      getAt(path, UserGroupProfileEntity.class);
       fail("The group shouldn't be get as it is unaccessible");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -150,7 +150,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup) + "/groups";
     List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
-    SelectableUserGroup[] expectedSubGroups = getAt(path, getWebEntityClass());
+    UserGroupProfileEntity[] expectedSubGroups = getAt(path, getWebEntityClass());
     assertThat(actualSubGroups.size(), is(expectedSubGroups.length));
     assertThat(expectedSubGroups, contains(actualSubGroups));
   }
@@ -162,7 +162,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     getTestResources().getWebServiceCaller().setDomainId(actualGroup.getDomainId());
     String path = buildURIPathOf(actualGroup) + "/groups";
     List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
-    SelectableUserGroup[] expectedSubGroups = getAt(path, getWebEntityClass());
+    UserGroupProfileEntity[] expectedSubGroups = getAt(path, getWebEntityClass());
     assertThat(actualSubGroups.size(), is(expectedSubGroups.length));
     assertThat(expectedSubGroups, contains(actualSubGroups));
   }
@@ -186,7 +186,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getAGroupByItsName() {
     Group expectedGroup =  getTestResources().anExistingRootGroup();
-    SelectableUserGroup[] actualGroups = getAt(aResourceURI() + "?name=" + expectedGroup.getName(),
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI() + "?name=" + expectedGroup.getName(),
             getWebEntityClass());
     assertThat(actualGroups.length, is(1));
     assertThat(actualGroups[0].getId(), is(expectedGroup.getId()));
@@ -195,7 +195,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getAGroupByTheFirstCharactersOfItsName() {
     Group[] expectedGroups =  getTestResources().getAllExistingRootGroups();
-    SelectableUserGroup[] actualGroups = getAt(aResourceURI() + "?name=" + expectedGroups[0].getName().substring(
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI() + "?name=" + expectedGroups[0].getName().substring(
             0, 2) + "*",
             getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
@@ -238,8 +238,8 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   }
 
   @Override
-  public Class<SelectableUserGroup[]> getWebEntityClass() {
-    return SelectableUserGroup[].class;
+  public Class<UserGroupProfileEntity[]> getWebEntityClass() {
+    return UserGroupProfileEntity[].class;
   }
 
   private String buildURIPathOf(Group group) {

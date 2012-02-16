@@ -23,7 +23,7 @@
  */
 package com.silverpeas.profile.web.matchers;
 
-import com.silverpeas.profile.web.SelectableUserGroup;
+import com.silverpeas.profile.web.UserGroupProfileEntity;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.util.List;
 import org.hamcrest.Description;
@@ -33,13 +33,13 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * A matcher of one or more user groups.
  */
-public class UserGroupsMatcher extends TypeSafeMatcher<SelectableUserGroup[]> {
+public class UserGroupsMatcher extends TypeSafeMatcher<UserGroupProfileEntity[]> {
 
-  public static Matcher<SelectableUserGroup[]> contains(final Group[] groups) {
+  public static Matcher<UserGroupProfileEntity[]> contains(final Group[] groups) {
     return new UserGroupsMatcher(groups);
   }
   
-  public static Matcher<SelectableUserGroup[]> contains(final List<? extends Group> groups) {
+  public static Matcher<UserGroupProfileEntity[]> contains(final List<? extends Group> groups) {
     return new UserGroupsMatcher((groups.toArray(new Group[groups.size()])));
   }
   
@@ -51,7 +51,7 @@ public class UserGroupsMatcher extends TypeSafeMatcher<SelectableUserGroup[]> {
   }
 
   @Override
-  protected boolean matchesSafely(SelectableUserGroup[] actual) {
+  protected boolean matchesSafely(UserGroupProfileEntity[] actual) {
     boolean match = true;
     if (actual.length != expected.length) {
       match = false;
@@ -59,12 +59,12 @@ public class UserGroupsMatcher extends TypeSafeMatcher<SelectableUserGroup[]> {
     } else {
       for (Group expectedGroup : expected) {
         boolean found = false;
-        for (SelectableUserGroup actualGroup : actual) {
+        for (UserGroupProfileEntity actualGroup : actual) {
           if (actualGroup.getId().equals(expectedGroup.getId())) {
             found = true;
-            if (!actualGroup.getUri().toString().endsWith("/" + actualGroup.getId())) {
+            if (!actualGroup.getURI().toString().endsWith("/" + actualGroup.getId())) {
               match = false;
-              whatIsExpected += "The actual user group URI is incorrect: " + actualGroup.getUri().toString();
+              whatIsExpected += "The actual user group URI is incorrect: " + actualGroup.getURI().toString();
             } else {
               match = actualGroup.getName().equals(expectedGroup.getName()) && actualGroup.
                       getDescription().equals(expectedGroup.getDescription()) && actualGroup.

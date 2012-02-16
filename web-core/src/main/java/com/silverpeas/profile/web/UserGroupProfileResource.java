@@ -65,7 +65,7 @@ public class UserGroupProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUserGroup[] getAllRootGroups(@QueryParam("name") String name) {
+  public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name) {
     checkUserAuthentication();
     List<String> groupIds = new ArrayList<String>();
     if (getUserDetail().isDomainRestricted()) {
@@ -81,7 +81,7 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUserGroup[] getAllRootGroupsInApplication(
+  public UserGroupProfileEntity[] getAllRootGroupsInApplication(
           @PathParam("instanceId") String instanceId,
           @QueryParam("roles") String roles,
           @QueryParam("name") String name) {
@@ -97,7 +97,7 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Path("{path: [0-9]+(/groups/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUserGroup getGroup(@PathParam("path") String groupPath) {
+  public UserGroupProfileEntity getGroup(@PathParam("path") String groupPath) {
     checkUserAuthentication();
     String[] groupIds = groupPath.split("/groups/");
     String groupId = groupIds[groupIds.length - 1];
@@ -108,11 +108,11 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)
-  public SelectableUserGroup[] getSubGroups(@PathParam("path") String groups) {
+  public UserGroupProfileEntity[] getSubGroups(@PathParam("path") String groups) {
     checkUserAuthentication();
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
-    SelectableUserGroup group = getGroup(groupId);
+    UserGroupProfileEntity group = getGroup(groupId);
     return asWebEntity(group.getSubGroups(), locatedAt(getUriInfo().getAbsolutePath()));
   }
 
@@ -130,12 +130,12 @@ public class UserGroupProfileResource extends RESTWebService {
     return uri;
   }
 
-  private SelectableUserGroup[] asWebEntity(List<? extends Group> allGroups, URI baseUri) {
-    return SelectableUserGroup.fromGroups(allGroups, baseUri);
+  private UserGroupProfileEntity[] asWebEntity(List<? extends Group> allGroups, URI baseUri) {
+    return UserGroupProfileEntity.fromGroups(allGroups, baseUri);
   }
 
-  private SelectableUserGroup asWebEntity(Group group, URI groupUri) {
-    return SelectableUserGroup.fromGroup(group).withAsUri(groupUri);
+  private UserGroupProfileEntity asWebEntity(Group group, URI groupUri) {
+    return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
   }
 
   private Group aFilteringModel(String name, String domainId) {

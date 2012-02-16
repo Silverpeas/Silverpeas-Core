@@ -24,8 +24,8 @@
 package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.*;
+import com.silverpeas.rest.Exposable;
 import static com.silverpeas.util.StringUtil.isDefined;
-import com.silverpeas.web.Selectable;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
 import java.util.List;
@@ -35,37 +35,36 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * A user group that is selectable. It is a web entity representing a group of users that can be
- * selected among others in order to participate to a given action in the Silverpeas portal. It is a
- * decorator that decorates a Group object with additional properties concerning the selection.
+ * The profile of the user group exposable in the WEB. It is a web entity representing a group of
+ * users that can be serialized into a given media type (JSON, XML). It is a
+ * decorator that decorates a Group object with additional properties concerning its exposition in
+ * the WEB.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class SelectableUserGroup extends Group implements Selectable {
+public class UserGroupProfileEntity extends Group implements Exposable {
 
   private static final long serialVersionUID = 6383835034479351000L;
 
   /**
-   * Decorates the specified user group with selectable features. By default, the decorated group
-   * isn't selected.
+   * Decorates the specified user group with the required WEB exposition features.
    *
    * @param group the user group to decorate.
-   * @return a selectable user group, not selected by default.
+   * @return a web entity representing the specified group profile.
    */
-  public static SelectableUserGroup fromGroup(final Group group) {
-    return new SelectableUserGroup(group);
+  public static UserGroupProfileEntity fromGroup(final Group group) {
+    return new UserGroupProfileEntity(group);
   }
 
   /**
-   * Decorates the specified user groups with selectable features. By default, the decorated groups
-   * aren't selected.
+   * Decorates the specified user groups with required WEB exposition features.
    *
    * @param users a list of user groups to decorate.
    * @param groupsURI the URI at which the specified groups are defined.
-   * @return a list of selectable user groups, not selected by default.
+   * @return a list of web entities representing the specified group profiles.
    */
-  public static SelectableUserGroup[] fromGroups(final List<? extends Group> groups, URI groupsURI) {
-    SelectableUserGroup[] selectableGroups = new SelectableUserGroup[groups.size()];
+  public static UserGroupProfileEntity[] fromGroups(final List<? extends Group> groups, URI groupsURI) {
+    UserGroupProfileEntity[] selectableGroups = new UserGroupProfileEntity[groups.size()];
     String fromGroupsUri = groupsURI.toString();
     int i = 0;
     for (Group aGroup : groups) {
@@ -73,8 +72,7 @@ public class SelectableUserGroup extends Group implements Selectable {
     }
     return selectableGroups;
   }
-  @XmlElement
-  private boolean selected = false;
+
   @XmlElement
   private URI uri;
   @XmlElement
@@ -89,17 +87,17 @@ public class SelectableUserGroup extends Group implements Selectable {
   private String domainName;
   private final Group group;
 
-  private SelectableUserGroup(Group group) {
+  private UserGroupProfileEntity(Group group) {
     this.group = group;
     this.domainName = Group.getOrganizationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalNbUsers();
   }
 
-  protected SelectableUserGroup() {
+  protected UserGroupProfileEntity() {
     this.group = new Group();
   }
 
-  public SelectableUserGroup withAsUri(URI groupUri) {
+  public UserGroupProfileEntity withAsUri(URI groupUri) {
     this.uri = groupUri;
     this.childrenUri = computeChildrenUriOfGroupByUri(groupUri);
     if (isDefined(getSuperGroupId())) {
@@ -107,15 +105,6 @@ public class SelectableUserGroup extends Group implements Selectable {
     }
     this.usersUri = computeUsersUriOfGroupById(getId());
     return this;
-  }
-
-  /**
-   * Gets the URI of this group in Silverpeas.
-   *
-   * @return the unique resource identifier of this group.
-   */
-  public URI getUri() {
-    return uri;
   }
 
   /**
@@ -138,21 +127,6 @@ public class SelectableUserGroup extends Group implements Selectable {
 
   public URI getUsersUri() {
     return usersUri;
-  }
-
-  @Override
-  public boolean isSelected() {
-    return this.selected;
-  }
-
-  @Override
-  public void select() {
-    this.selected = true;
-  }
-
-  @Override
-  public void unselect() {
-    this.selected = false;
   }
 
   @Override
@@ -291,8 +265,8 @@ public class SelectableUserGroup extends Group implements Selectable {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof SelectableUserGroup) {
-      return this.group.equals(((SelectableUserGroup) obj).group);
+    if (obj instanceof UserGroupProfileEntity) {
+      return this.group.equals(((UserGroupProfileEntity) obj).group);
     } else {
       return this.group.equals(obj);
     }
@@ -301,5 +275,10 @@ public class SelectableUserGroup extends Group implements Selectable {
   @Override
   public int hashCode() {
     return this.group.hashCode();
+  }
+
+  @Override
+  public URI getURI() {
+    return this.uri;
   }
 }

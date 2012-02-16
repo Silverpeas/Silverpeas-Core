@@ -23,20 +23,20 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialNetwork.status.StatusService;
+import static com.silverpeas.util.StringUtil.areStringEquals;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.beanutils.BeanUtils;
-
 import java.io.File;
 import java.io.Serializable;
-
-import static com.silverpeas.util.StringUtil.areStringEquals;
-import static com.silverpeas.util.StringUtil.isDefined;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.beanutils.BeanUtils;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
   private static final long serialVersionUID = -109886153681824159L;
@@ -442,6 +442,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       return status;
     }
     return "";
+  }
+  
+  /**
+   * Gets the preferences of this user.
+   * @return the user preferences.
+   */
+  public final UserPreferences getUserPreferences() {
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getId());
   }
 
   /**

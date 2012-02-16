@@ -23,7 +23,7 @@
  */
 package com.silverpeas.profile.web.matchers;
 
-import com.silverpeas.profile.web.SelectableUser;
+import com.silverpeas.profile.web.UserProfileEntity;
 import static com.silverpeas.profile.web.UserProfileTestResources.USER_PROFILE_PATH;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.List;
@@ -34,12 +34,12 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * A matcher of one or more users details.
  */
-public class UsersMatcher extends TypeSafeMatcher<SelectableUser[]> {
+public class UsersMatcher extends TypeSafeMatcher<UserProfileEntity[]> {
 
-  public static Matcher<SelectableUser[]> contains(final UserDetail[] users) {
+  public static Matcher<UserProfileEntity[]> contains(final UserDetail[] users) {
     return new UsersMatcher(users);
   }
-  public static Matcher<SelectableUser[]> contains(final List<? extends UserDetail> users) {
+  public static Matcher<UserProfileEntity[]> contains(final List<? extends UserDetail> users) {
     return new UsersMatcher(users.toArray(new UserDetail[users.size()]));
   }
   private final UserDetail[] expected;
@@ -50,7 +50,7 @@ public class UsersMatcher extends TypeSafeMatcher<SelectableUser[]> {
   }
 
   @Override
-  protected boolean matchesSafely(SelectableUser[] actual) {
+  protected boolean matchesSafely(UserProfileEntity[] actual) {
     boolean match = true;
     if (actual.length != expected.length) {
       match = false;
@@ -58,12 +58,12 @@ public class UsersMatcher extends TypeSafeMatcher<SelectableUser[]> {
     } else {
       for (UserDetail expectedUser : expected) {
         boolean found = false;
-        for (SelectableUser actualUser : actual) {
+        for (UserProfileEntity actualUser : actual) {
           if (actualUser.getId().equals(expectedUser.getId())) {
             found = true;
-            if (!actualUser.getUri().toString().endsWith(USER_PROFILE_PATH + '/' + actualUser.getId())) {
+            if (!actualUser.getURI().toString().endsWith(USER_PROFILE_PATH + '/' + actualUser.getId())) {
               match = false;
-              whatIsExpected += "The actual user URI is incorrect: " + actualUser.getUri().toString();
+              whatIsExpected += "The actual user URI is incorrect: " + actualUser.getURI().toString();
             } else {
               match = actualUser.equals(expectedUser);
               if (!match) {
