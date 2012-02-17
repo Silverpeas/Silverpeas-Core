@@ -281,6 +281,10 @@
       <sql name="userid" />
       <bind-xml name="userId" />
     </field>
+    <field name="usersRole" type="string">
+      <sql name="usersrole" />
+      <bind-xml name="usersRole" />
+    </field>
     <field name="processInstance" type="com.silverpeas.workflow.engine.instance.ProcessInstanceImpl">
       <sql name="instanceid" />
       <bind-xml name="processInstance" />
