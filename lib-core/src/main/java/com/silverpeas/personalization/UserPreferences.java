@@ -44,11 +44,11 @@ public class UserPreferences implements java.io.Serializable {
   private String look = null;
   @Column(name = "personalwspace")
   private String collaborativeWorkSpaceId;
-  @Column(name = "thesaurusstatus", columnDefinition = "INTEGER")
+  @Column(name = "thesaurusstatus")
   private int thesaurusStatus;
-  @Column(name = "draganddropstatus", columnDefinition = "INTEGER")
+  @Column(name = "draganddropstatus")
   private int dragAndDropStatus;
-  @Column(name = "webdaveditingstatus", columnDefinition = "INTEGER")
+  @Column(name = "webdaveditingstatus")
   private int webdavEditionStatus;
   @Column(name = "menuDisplay")
   private String menuDisplay = UserMenuDisplay.DEFAULT.name();
