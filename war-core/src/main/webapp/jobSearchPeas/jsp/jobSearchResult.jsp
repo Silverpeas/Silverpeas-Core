@@ -174,55 +174,45 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 
-<center>
-<table align="center" border="0" cellspacing="0" cellpadding="5" width="100%" class="intfdcolor4">
-<FORM NAME="SearchResultForm" ACTION="SearchResult" METHOD="POST">
-<tr>
-	<td class="intfdcolor4"><span class="txtlibform"><fmt:message key="JSP.searchField"/>
-    : </span></td>
-    <td class="intfdcolor4"><input type="text" name="SearchField" size="60" maxlength="100" value="<%if(idOrName != null) { out.print(idOrName); }%>">
-	<img border="0" src="<%=m_context+"/util/icons/mandatoryField.gif"%>" width="5" height="5"></td>
-</tr>
-<tr>
-	<td valign="top">
-	<input type="radio" name="Category" value="space" <%if("space".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.space"/>	
-	<BR>
-	<input type="radio" name="Category" value="service" <%if("service".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.service"/>
-	<BR>
-	<input type="radio" name="Category" value="publication" <%if("publication".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.publication"/>
-	<BR>
-	<input type="radio" name="Category" value="group" <%if("group".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.group"/>
-	<BR>
-	<input type="radio" name="Category" value="user" <%if("user".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.user"/>
-	</td>
-    <td valign="top">&nbsp;</td>
-</tr>
-</FORM>
-</table>            
-</center><br/>
+
+<div class="intfdcolor4">
+<form name="SearchResultForm" action="SearchResult" method="post">
+
+	<span class="txtlibform"><fmt:message key="JSP.searchField"/> : </span>
+    <input type="text" name="SearchField" size="60" maxlength="100" value="<%if(idOrName != null) { out.print(idOrName); }%>" />
+	<img border="0" src="<%=m_context+"/util/icons/mandatoryField.gif"%>" width="5" height="5">
+<br/>
+	<input type="radio" name="Category" value="space" <%if("space".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.space"/>	
+<br/>
+	<input type="radio" name="Category" value="service" <%if("service".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.service"/>
+<br/>
+	<input type="radio" name="Category" value="publication" <%if("publication".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.publication"/>
+<br/>
+	<input type="radio" name="Category" value="group" <%if("group".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.group"/>
+<br/>
+	<input type="radio" name="Category" value="user" <%if("user".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.user"/>
+</form>
+</div>        
+<br/>
 
 <%
 out.println(board.printAfter());
 %>
 
-<center>
+<div class="center">
 <fmt:message key="JSP.search" var="search"/>
   <view:buttonPane>
 	<view:button action="javascript:validateSearch();" label="${search}" disabled="false" />
   </view:buttonPane>
-</center>
-<br>
+</div>
+<br />
 
 <%
 if(listResult != null) {
 	if(listResult.size() == 0) {
 %>
 	
-<table border="0" cellspacing="0" cellpadding="0" width="100%">
-<tr valign="middle" class="intfdcolor">
-	<td align="center"><%=resource.getString("JSP.noResult")%></td>
-</tr>
-</table>
+<div class="center"><%=resource.getString("JSP.noResult")%></div>
 <%
 	} else {
 		ArrayPane arrayPane = gef.getArrayPane("searchResultList", "Main", request, session);
