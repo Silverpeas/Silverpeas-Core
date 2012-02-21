@@ -82,4 +82,9 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     return attributes;
   }
 
+  @Override
+  public String applyFileTemplateOnComponent(String componentName, String fileName) {
+    return applyFileTemplate("/"+componentName.toLowerCase()+"/" + fileName);
+  }
+
 }

@@ -116,6 +116,9 @@ public class WindowWeb20V5 extends AbstractWindow {
     result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"");
     result.append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td></tr></table>");
+    
+    result.append(displayWelcomeMessage());
+    
     return result.toString();
   }
 

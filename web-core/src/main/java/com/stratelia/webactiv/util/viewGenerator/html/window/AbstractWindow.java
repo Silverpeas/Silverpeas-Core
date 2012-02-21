@@ -27,8 +27,11 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 import java.util.List;
 
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -122,7 +125,6 @@ public abstract class AbstractWindow implements Window {
     return this.width;
   }
 
-
   /**
    * Method declaration
    * @return
@@ -139,7 +141,7 @@ public abstract class AbstractWindow implements Window {
     }
     return this.operationPane;
   }
-  
+
   private void addOperationToSetupComponent() {
     MainSessionController msc = getGEF().getMainSessionController();
     if (msc.getOrganizationController().isComponentManageable(getGEF().getComponentId(),
@@ -192,12 +194,100 @@ public abstract class AbstractWindow implements Window {
   }
 
   @Override
-  public boolean isBrowseBarVisible(){
+  public boolean isBrowseBarVisible() {
     return this.browserBarDisplayable;
   }
 
   @Override
-  public void setBrowseBarVisibility(boolean browseBarVisible){
+  public void setBrowseBarVisibility(boolean browseBarVisible) {
     this.browserBarDisplayable = browseBarVisible;
+  }
+
+  private String getWelcomeMessage(ComponentInstLight component, String language) {
+    String message = null;
+    String fileName = null;
+    try {
+      fileName = "welcome_" + language;
+      message = getSilverpeasTemplate().applyFileTemplateOnComponent(component.getName(), fileName);
+    } catch (Exception e) {
+      SilverTrace.info("viewgenerator", "AbstractWindow.getWelcomeMessage", "CANT_FIND_TEMPLATE",
+          "fileName = " + fileName + ", component = " + component.getName());
+    }
+    if (!StringUtil.isDefined(message)) {
+      return null;
+    }
+    StringBuilder sb = new StringBuilder(100);
+    String title = getGEF().getMultilang().getString("GEF.welcome.title");
+    sb.append("<div id=\"welcome-message\" title=\"").append(title)
+        .append("\" style=\"display: none;\">\n");
+    sb.append("<p>\n");
+    sb.append(message);
+    sb.append("</p>\n");
+    sb.append("</div>\n");
+    return sb.toString();
+  }
+
+  private SilverpeasTemplate getSilverpeasTemplate() {
+    return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
+  }
+
+  private String getWelcomeMessageScript(ComponentInstLight component) {
+    StringBuilder sb = new StringBuilder(100);
+    sb.append("<script type=\"text/javascript\">\n");
+    sb.append("var welcomeMessageAlreadyShown = false;\n");
+    sb.append("$(function() {\n");
+    sb.append("var welcomeMessageCookieName = \"Silverpeas_").append(component.getName())
+        .append("_WelcomeMessage\";\n");
+    sb.append("if (!welcomeMessageAlreadyShown && \"IKnowIt\" != $.cookie(welcomeMessageCookieName)) {\n");
+    sb.append("if (!welcomeMessageAlreadyShown) {\n");
+    sb.append("welcomeMessageAlreadyShown = true;\n");
+    sb.append("$('#welcome-message').dialog({\n");
+    sb.append("modal: true,\n");
+    sb.append("resizable: false,\n");
+    sb.append("width: 400,\n");
+    sb.append("dialogClass: 'help-modal-message',\n");
+    sb.append("buttons: {\n");
+    sb.append("\"").append(getGEF().getMultilang().getString("GEF.welcome.button.ok"))
+        .append("\": function() {\n");
+    sb.append("$.cookie(welcomeMessageCookieName, \"IKnowIt\", { expires: 3650, path: '/' });\n");
+    sb.append("$(this).dialog(\"close\");\n");
+    sb.append(" }, \n");
+    sb.append("\"").append(getGEF().getMultilang().getString("GEF.welcome.button.reminder"))
+        .append("\": function() {\n");
+    sb.append(" $(this).dialog(\"close\");\n");
+    sb.append(" }\n");
+    sb.append("}\n");
+    sb.append("});\n");
+    sb.append("}\n");
+    sb.append("}\n");
+    sb.append("}\n");
+    sb.append(");\n");
+    sb.append("</script>");
+    return sb.toString();
+  }
+
+  public String displayWelcomeMessage() {
+    if (getGEF().isComponentMainPage()) {
+      String componentId = getGEF().getComponentId();
+      if (StringUtil.isDefined(componentId)) {
+        StringBuilder sb = new StringBuilder(300);
+        ComponentInstLight component =
+            getGEF().getMainSessionController().getOrganizationController()
+                .getComponentInstLight(componentId);
+        String language = getGEF().getMainSessionController().getFavoriteLanguage();
+        if (component != null) {
+          String message = getWelcomeMessage(component, language);
+          if (message == null) {
+            // Welcome message is not yet defined for this application
+            // So, display nothing at all !
+            return "";
+          }
+          sb.append(message);
+          sb.append(getWelcomeMessageScript(component));
+        }
+        return sb.toString();
+      }
+    }
+    return "";
   }
 }

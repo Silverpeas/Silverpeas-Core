@@ -372,6 +372,11 @@ public class GraphicElementFactory {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
     }
+    
+    if (isComponentMainPage()) {
+      code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+          "/util/javaScript/jquery/jquery.cookie.js\"></script>\n");
+    }
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {
