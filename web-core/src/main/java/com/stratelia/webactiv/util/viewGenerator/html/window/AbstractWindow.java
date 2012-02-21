@@ -24,6 +24,8 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
+import java.util.List;
+
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -35,11 +37,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
 
-import java.util.List;
-
 /**
  * @author neysseri
- * @version 1.0
  */
 public abstract class AbstractWindow implements Window {
 
@@ -144,7 +143,7 @@ public abstract class AbstractWindow implements Window {
   private void addOperationToSetupComponent() {
     MainSessionController msc = getGEF().getMainSessionController();
     if (msc.getOrganizationController().isComponentManageable(getGEF().getComponentId(),
-        msc.getUserId())) {
+        msc.getUserId()) && getGEF().isComponentMainPage()) {
       String label =
           GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
               .getString("GML.operations.setupComponent");

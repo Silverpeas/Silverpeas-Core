@@ -172,7 +172,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           (GraphicElementFactory) session
           .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       gef.setComponentId(component.getComponentId());
-      gef.setMainSessionController(mainSessionCtrl);
+      gef.setHttpRequest(request);
     }
 
     // notify silverstatistics

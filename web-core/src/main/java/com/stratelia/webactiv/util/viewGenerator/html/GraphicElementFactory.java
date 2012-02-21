@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -68,6 +70,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -101,6 +104,7 @@ public class GraphicElementFactory {
   private String componentId = null;
   private MainSessionController mainSessionController = null;
   private String spaceId = null;
+  private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
   private static final String JQUERY_JS = "jquery-1.7.1.min.js";
   private static final String JQUERY_INCLUDE_JS = "jquery-include.js";
@@ -916,12 +920,19 @@ public class GraphicElementFactory {
     return componentId;
   }
 
-  public void setMainSessionController(MainSessionController mainSessionController) {
-    this.mainSessionController = mainSessionController;
-  }
-
   public MainSessionController getMainSessionController() {
     return mainSessionController;
+  }
+  
+  public void setHttpRequest(HttpServletRequest request) {
+    HttpSession session = request.getSession(true);
+    mainSessionController =
+        (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+    componentMainPage = request.getRequestURI().endsWith("/Main");
+  }
+  
+  public boolean isComponentMainPage() {
+    return componentMainPage;
   }
 
   /**
