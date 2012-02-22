@@ -70,7 +70,7 @@
     -->
     <PersistenceManager class="${jcr.configuration.persistence.manager}">
       <param name="driver" value="javax.naming.InitialContext"/>
-      <param name="url" value="datasources/DocumentStoreDS"/>
+      <param name="url" value="java:/datasources/DocumentStoreDS"/>
       <param name="schema" value="${schema}" />
       <param name="schemaObjectPrefix" value="JCR_" />
     </PersistenceManager>
@@ -109,7 +109,7 @@
     -->
     <PersistenceManager class="${jcr.configuration.persistence.manager}">
       <param name="driver" value="javax.naming.InitialContext"/>
-      <param name="url" value="datasources/DocumentStoreDS"/>
+      <param name="url" value="java:/datasources/DocumentStoreDS"/>
       <param name="schemaObjectPrefix" value="version_" />
     </PersistenceManager>
   </Versioning>

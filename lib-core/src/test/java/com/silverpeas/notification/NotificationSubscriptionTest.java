@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.annotation.ExpectedException;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.notification.NotificationTopic.*;
@@ -70,8 +69,7 @@ public class NotificationSubscriptionTest extends NotificationServiceTest {
     subscriber.unsubscribeForNotifications(onTopic(JMSTestFacade.DEFAULT_TOPIC));
   }
 
-  @Test
-  @ExpectedException(SubscriptionException.class)
+  @Test(expected=SubscriptionException.class)
   public void theSubscriptionToAnUnexistingTopicShouldFailed() {
     subscriber.subscribeForNotifications(onTopic("unknown"));
   }
