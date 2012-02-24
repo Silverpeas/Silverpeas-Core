@@ -1,3 +1,7 @@
+CREATE TABLE UniqueId (
+	maxId int NOT NULL ,
+	tableName varchar(100) NOT NULL
+);
 
     create table PdcAxisValue (
         axisId bigint not null,

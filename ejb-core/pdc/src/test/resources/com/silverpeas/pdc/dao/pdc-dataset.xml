@@ -73,4 +73,6 @@
   <PdcPosition_PdcAxisValue PdcPosition_id="5" axisValues_valueId="0" axisValues_axisId="1" />
   <PdcPosition_PdcAxisValue PdcPosition_id="5" axisValues_valueId="4" axisValues_axisId="2" />
   
+  <uniqueId maxId="5" tablename="PdcClassification"/>
+  <uniqueId maxId="6" tablename="PdcPosition"/>
 </dataset>
