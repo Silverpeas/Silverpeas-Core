@@ -248,7 +248,7 @@ function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
   if (confirmationMsg != null && confirmationMsg.length > 0)
     confirmed = window.confirm( confirmationMsg );
   if (confirmed) {
-    var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
+    var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
     var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
     $.ajax({
       url: uri_position,
@@ -319,7 +319,7 @@ function postPosition( uri, position, onSuccess, onError ) {
  * }
  */
 function updatePosition( uri, position, onSuccess, onError ) {
-  var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
+  var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
   var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
   $.ajax({
     url: uri_position,
