@@ -564,4 +564,4 @@
   setTimeout("displayWarning();", 500);
 </script>
 <% }%>
-<div id="attachmentModalDialog" style="display: none"/>
+<div id="attachmentModalDialog" style="display: none"></div>
