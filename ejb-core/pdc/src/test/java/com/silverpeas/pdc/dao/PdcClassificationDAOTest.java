@@ -60,7 +60,7 @@ import static com.silverpeas.pdc.model.PdcModelHelper.*;
 public class PdcClassificationDAOTest {
 
   @Inject
-  private PdcClassificationDAO dao;
+  private PdcClassificationRepository dao;
   @Inject
   private DataSource dataSource;
   @Inject

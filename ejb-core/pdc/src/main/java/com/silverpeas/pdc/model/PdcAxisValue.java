@@ -25,24 +25,13 @@ package com.silverpeas.pdc.model;
 
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 
 /**
@@ -60,9 +49,6 @@ import javax.persistence.Transient;
  */
 @Entity
 //@IdClass(PdcAxisValuePk.class) : https://jira.springsource.org/browse/DATAJPA-50
-@NamedQueries({
-  @NamedQuery(name = "PdcAxisValue.findByAxisId", query = "from PdcAxisValue where axisId = ?1")
-})
 public class PdcAxisValue implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 2345886411781136417L;

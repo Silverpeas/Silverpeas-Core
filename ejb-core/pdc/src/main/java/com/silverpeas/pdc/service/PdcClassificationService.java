@@ -23,14 +23,14 @@
  */
 package com.silverpeas.pdc.service;
 
-import com.silverpeas.pdc.model.PdcAxisValue;
-import com.silverpeas.pdc.model.PdcPosition;
-import java.util.ArrayList;
-import com.silverpeas.pdc.dao.PdcAxisValueDAO;
-import java.util.List;
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.pdc.dao.PdcClassificationDAO;
+import com.silverpeas.pdc.dao.PdcAxisValueRepository;
+import com.silverpeas.pdc.dao.PdcClassificationRepository;
+import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import com.silverpeas.pdc.model.PdcPosition;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -43,13 +43,13 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
-import static com.silverpeas.pdc.model.PdcClassification.*;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The service aiming at classifying the contents in Silverpeas on the classification plan (named
@@ -81,9 +81,9 @@ import static com.silverpeas.util.StringUtil.isDefined;
 public class PdcClassificationService {
 
   @Inject
-  private PdcClassificationDAO classificationDao;
+  private PdcClassificationRepository classificationRepository;
   @Inject
-  private PdcAxisValueDAO valueDao;
+  private PdcAxisValueRepository valueRepository;
   private NodeBm nodeBm;
   @Inject
   private PdcBm pdcBm;
@@ -109,7 +109,7 @@ public class PdcClassificationService {
       if (isDefined(nodeId)) {
         NodePK nodeToSeek = new NodePK(nodeId, instanceId);
         while (classification == null && !nodeToSeek.isUndefined()) {
-          classification = classificationDao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
+          classification = classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
                   nodeToSeek.getInstanceId());
           NodeDetail node = getNodeBm().getDetail(nodeToSeek);
           nodeToSeek = node.getFatherPK();
@@ -148,7 +148,7 @@ public class PdcClassificationService {
     }
     NodePK nodeToSeek = new NodePK(nodeId, instanceId);
     PdcClassification classification =
-            classificationDao.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
+            classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
             nodeToSeek.getInstanceId());
     if (classification == null) {
       classification = NONE_CLASSIFICATION;
@@ -168,7 +168,7 @@ public class PdcClassificationService {
    * published within the component instance or an empty classification.
    */
   public PdcClassification getPreDefinedClassification(String instanceId) {
-    PdcClassification classification = classificationDao.
+    PdcClassification classification = classificationRepository.
             findPredefinedClassificationByComponentInstanceId(
             instanceId);
     if (classification == null) {
@@ -194,16 +194,16 @@ public class PdcClassificationService {
       throw new IllegalArgumentException("The classification isn't a predefined one");
     }
     PdcClassification savedClassification = NONE_CLASSIFICATION;
-    if (classification.getId() != null && classificationDao.exists(classification.getId())
+    if (classification.getId() != null && classificationRepository.exists(classification.getId())
             && classification.isEmpty()) {
-      classificationDao.delete(classification);
+      classificationRepository.delete(classification);
     } else {
       List<PdcAxisValue> allValues = new ArrayList<PdcAxisValue>();
       for (PdcPosition aPosition : classification.getPositions()) {
         allValues.addAll(aPosition.getValues());
       }
-      valueDao.save(allValues);
-      savedClassification = classificationDao.saveAndFlush(classification);
+      valueRepository.save(allValues);
+      savedClassification = classificationRepository.saveAndFlush(classification);
     }
     return savedClassification;
   }
@@ -225,7 +225,7 @@ public class PdcClassificationService {
       classification = getPreDefinedClassification(nodeId, instanceId);
     }
     if (classification != NONE_CLASSIFICATION) {
-      classificationDao.delete(classification);
+      classificationRepository.delete(classification);
     }
   }
 
@@ -281,18 +281,18 @@ public class PdcClassificationService {
    * @param deletedValue the value that is removed from a PdC's axis.
    */
   public void axisValuesDeleted(final List<PdcAxisValue> deletedValues) {
-    List<PdcClassification> concernedClassifications = classificationDao.
+    List<PdcClassification> concernedClassifications = classificationRepository.
             findClassificationsByPdcAxisValues(deletedValues);
     for (PdcClassification aClassification : concernedClassifications) {
       aClassification.updateForPdcAxisValuesDeletion(deletedValues);
       savePreDefinedClassification(aClassification);
     }
-    classificationDao.flush(); // apply now all the modifications
+    classificationRepository.flush(); // apply now all the modifications
 
     // for instance, the PdcAxisValue objects are taken in charge by this service as they are only
     // used in the predefined classification. Nevertheless, it is planned they will be used when
     // refactoring the PdC old code on the classification of contents and in the PdC definition.
-    valueDao.delete(deletedValues);
+    valueRepository.delete(deletedValues);
   }
 
   /**
@@ -309,7 +309,7 @@ public class PdcClassificationService {
    * @param axisId the unique identifier of the axis.
    */
   public void axisDeleted(String axisId) {
-    List<PdcAxisValue> valuesToDelete = valueDao.findByAxisId(Long.valueOf(axisId));
+    List<PdcAxisValue> valuesToDelete = valueRepository.findByAxisId(Long.valueOf(axisId));
     if (!valuesToDelete.isEmpty()) {
       axisValuesDeleted(valuesToDelete);
     }

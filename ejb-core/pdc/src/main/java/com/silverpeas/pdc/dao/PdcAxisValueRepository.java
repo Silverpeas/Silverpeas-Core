@@ -27,16 +27,19 @@ import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * DAO that handles the persistence of PdcAxisValue beans.
  */
-public interface PdcAxisValueDAO extends JpaRepository<PdcAxisValue, PdcAxisValuePk> {
+public interface PdcAxisValueRepository extends JpaRepository<PdcAxisValue, PdcAxisValuePk> {
   
   /**
    * Finds all the values of the specified PdC's axis.
    * @param axisId the unique identifier of the axis.
    * @return a list of the values of the specified axis.
    */
-  List<PdcAxisValue> findByAxisId(Long axisId);
+  @Query("from PdcAxisValue where axisId = :axisId")
+  List<PdcAxisValue> findByAxisId(@Param("axisId") Long axisId);
 }
