@@ -31,4 +31,11 @@ public class SilverpeasTemplateFactory {
   public static SilverpeasTemplate createSilverpeasTemplate(Properties configuration) {
     return new SilverpeasStringTemplate(configuration);
   }
+  
+  public static SilverpeasTemplate createSilverpeasTemplateOnComponents() {
+    Properties config = new Properties();
+    config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, SilverpeasStringTemplateUtil.defaultComponentsDir);
+    config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, SilverpeasStringTemplateUtil.customComponentsDir);
+    return new SilverpeasStringTemplate(config);
+  }
 }

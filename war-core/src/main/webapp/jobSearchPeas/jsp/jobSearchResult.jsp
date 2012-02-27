@@ -50,14 +50,12 @@ if(category == null) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <view:looknfeel />
 <title><%=resource.getString("GML.popupTitle")%></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-function isCorrectForm()
-{
+<script type="text/javascript">
+function isCorrectForm() {
 	 var errorMsg = "";
      var errorNb = 0;
      var idOrName = stripInitialWhitespace(document.forms["SearchResultForm"].elements["SearchField"].value);
@@ -67,8 +65,7 @@ function isCorrectForm()
        errorNb++;
      }
 
-     switch(errorNb)
-     {
+     switch(errorNb) {
         case 0 :
             result = true;
             break;
@@ -85,8 +82,7 @@ function isCorrectForm()
      }
      return result;
 }
-function validateSearch()
-{
+function validateSearch() {
 	if (isCorrectForm()) {
 		document.forms["SearchResultForm"].submit();
 	}
@@ -174,55 +170,40 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 
-<center>
-<table align="center" border="0" cellspacing="0" cellpadding="5" width="100%" class="intfdcolor4">
-<FORM NAME="SearchResultForm" ACTION="SearchResult" METHOD="POST">
-<tr>
-	<td class="intfdcolor4"><span class="txtlibform"><fmt:message key="JSP.searchField"/>
-    : </span></td>
-    <td class="intfdcolor4"><input type="text" name="SearchField" size="60" maxlength="100" value="<%if(idOrName != null) { out.print(idOrName); }%>">
-	<img border="0" src="<%=m_context+"/util/icons/mandatoryField.gif"%>" width="5" height="5"></td>
-</tr>
-<tr>
-	<td valign="top">
-	<input type="radio" name="Category" value="space" <%if("space".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.space"/>	
-	<BR>
-	<input type="radio" name="Category" value="service" <%if("service".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.service"/>
-	<BR>
-	<input type="radio" name="Category" value="publication" <%if("publication".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.publication"/>
-	<BR>
-	<input type="radio" name="Category" value="group" <%if("group".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.group"/>
-	<BR>
-	<input type="radio" name="Category" value="user" <%if("user".equals(category)) { out.print("checked"); }%>><fmt:message key="JSP.user"/>
-	</td>
-    <td valign="top">&nbsp;</td>
-</tr>
-</FORM>
-</table>            
-</center><br/>
+<div>
+<form name="SearchResultForm" action="SearchResult" method="post">
 
+	<span class="txtlibform"><fmt:message key="JSP.searchField"/> : </span>
+    <input type="text" name="SearchField" size="60" maxlength="100" value="<%if(idOrName != null) { out.print(idOrName); }%>" />
+	<img border="0" src="<%=m_context+"/util/icons/mandatoryField.gif"%>" width="5" height="5"/>
+<br/>
+	<input type="radio" name="Category" value="space" <%if("space".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.space"/>	
+<br/>
+	<input type="radio" name="Category" value="service" <%if("service".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.service"/>
+<br/>
+	<input type="radio" name="Category" value="publication" <%if("publication".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.publication"/>
+<br/>
+	<input type="radio" name="Category" value="group" <%if("group".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.group"/>
+<br/>
+	<input type="radio" name="Category" value="user" <%if("user".equals(category)) { out.print("checked"); }%> /><fmt:message key="JSP.user"/>
+</form>
+</div>
 <%
 out.println(board.printAfter());
 %>
-
-<center>
+<div class="center">
 <fmt:message key="JSP.search" var="search"/>
   <view:buttonPane>
 	<view:button action="javascript:validateSearch();" label="${search}" disabled="false" />
   </view:buttonPane>
-</center>
-<br>
+</div>
+<br />
 
 <%
 if(listResult != null) {
 	if(listResult.size() == 0) {
 %>
-	
-<table border="0" cellspacing="0" cellpadding="0" width="100%">
-<tr valign="middle" class="intfdcolor">
-	<td align="center"><%=resource.getString("JSP.noResult")%></td>
-</tr>
-</table>
+<div class="inlineMessage"><%=resource.getString("JSP.noResult")%></div>
 <%
 	} else {
 		ArrayPane arrayPane = gef.getArrayPane("searchResultList", "Main", request, session);
@@ -235,24 +216,14 @@ if(listResult != null) {
 			arrayPane.addArrayColumn(resource.getString("JSP.creaName"));
 		}
 		arrayPane.addArrayColumn(resource.getString("JSP.path"));
-    
-		SearchResult searchResult = null;
-		String name = null;
-		String desc = null;
-		String creaDate = null;
-		String creaName = null;
-		List<String> listPath = null;
-		String path = null;
-		String url = null;
-		for(int nI=0; nI < listResult.size(); nI++) {
-			searchResult	= (SearchResult) listResult.get(nI);
-			
-			name			= EncodeHelper.javaStringToHtmlString(searchResult.getName());
-			url				= searchResult.getUrl();
+
+		for(SearchResult searchResult : listResult) {
+			String name = EncodeHelper.javaStringToHtmlString(searchResult.getName());
+			String url	= searchResult.getUrl();
 			ArrayLine arrayLine = arrayPane.addArrayLine();
 			arrayLine.addArrayCellText("<a href=\"#\" onclick=\""+url+"\">"+name+"</a>");
 			
-			desc			= searchResult.getDesc();
+			String desc = searchResult.getDesc();
 			if (desc != null && desc.length() > 200) {
 				desc = desc.substring(0, 200)+"...";
 			}
@@ -260,40 +231,34 @@ if(listResult != null) {
 			
 			if("space".equals(category) || "service".equals(category) || "publication".equals(category)) { 
 				try	{
-					creaDate = resource.getOutputDate(searchResult.getCreaDate());
+					String creaDate = resource.getOutputDate(searchResult.getCreaDate());
 					ArrayCellText cellCreaDate = arrayLine.addArrayCellText(creaDate);
 					cellCreaDate.setCompareOn(searchResult.getCreaDate());
 				} catch (Exception e) {
-					creaDate	= null;
+				  	ArrayCellText cellCreaDate = arrayLine.addArrayCellText("");
 				}
 				
-				creaName		= searchResult.getCreaName();
+				String creaName = searchResult.getCreaName();
 				arrayLine.addArrayCellText(creaName);
 			}
 			
-			listPath			= searchResult.getPath();
-			path = "";
+			List<String> listPath = searchResult.getPath();
+			String path = "";
 			boolean first = true;
-			for(int nJ=0; nJ < listPath.size(); nJ++) {
+			for(String item : listPath) {
 				if(!first) {
-					path += "<BR>";
+					path += "<br/>";
 				}
-				path += (String) listPath.get(nJ);
+				path += item;
 				first = false;
 			}
 			arrayLine.addArrayCellText(path);
 			
 		}
-		
 		out.print(arrayPane.print());
-            
-%>
-
-<%	
 	}
 }
-%>
-<%
+
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>

@@ -291,15 +291,21 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
-   * Is the PdC is used currently by the underlying SIlverpeas component instance.
+   * Is the PdC is used currently by the underlying Silverpeas component instance.
+   * For some components, the use of the PdC can be set per instance. For others, the PdC is
+   * used by default.
    * @return true if the component instance uses the PdC, false otherwise.
    */
   protected boolean isPdcUsed() {
+    boolean pdcUsed = true; // by default the PdC is considered as used for a silverpeas component.
     MainSessionController sessionController = getSessionAttribute(
             MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String parameterValue = sessionController.getComponentParameterValue(getComponentId(),
             USE_PDC_COMPONENT_PARAMETER);
-    return getBooleanValue(parameterValue);
+    if (isDefined(parameterValue)) {
+      pdcUsed = getBooleanValue(parameterValue);
+    }
+    return pdcUsed;
   }
 
   protected <T> T getRequestAttribute(String name) {
