@@ -959,7 +959,7 @@ function removePosition( position, positions ) {
   }
   
   function duplicateAxis( $axisDiv, settings, selectedValues, axis) {
-    //$('.another-value').remove();
+    $axisDiv.children('.another-value').remove();
     renderAxis($axisDiv, settings, selectedValues, axis);
   }
   
