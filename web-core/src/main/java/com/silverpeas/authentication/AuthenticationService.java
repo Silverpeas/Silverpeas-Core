@@ -146,7 +146,7 @@ public class AuthenticationService {
     if (StringUtil.isDefined(personalWs)) {
       gef.setSpaceId(personalWs);
     }
-    gef.setMainSessionController(controller);
+    gef.setHttpRequest(request);
     session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);
 
     String favoriteFrame = gef.getLookFrame();

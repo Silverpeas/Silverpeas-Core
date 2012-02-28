@@ -51,7 +51,6 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
         "com/stratelia/webactiv/general.properties"));
     indexDirectory = props.getProperty("uploadsIndexPath");
     assertEquals(FileRepositoryManager.getIndexUpLoadPath(), indexDirectory + File.separatorChar);
-    super.setUp();
   }
 
   /**
@@ -77,7 +76,7 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * .
    * @throws IOException
    */
-  public final void testIndexPersonalComponents() throws IOException {
+  public void testIndexPersonalComponents() throws IOException {
     String indexSpellcheckerpath =
         indexDirectory + File.separatorChar + "user@0_todo" + File.separatorChar
         + "indexSpell";
@@ -99,7 +98,7 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * {@link com.stratelia.webactiv.applicationIndexer.control.ApplicationDYMIndexer#indexPdc()}.
    * @throws IOException
    */
-  public final void testIndexPdc() throws IOException {
+  public void testIndexPdc() throws IOException {
     String indexSpellcheckerPath = indexDirectory + File.separatorChar + "pdc" + File.separatorChar
         + "indexSpell";
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
@@ -114,7 +113,7 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * .
    * @throws Exception
    */
-  public final void testIndexAllSpaces() throws Exception {
+  public void testIndexAllSpaces() throws Exception {
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
     indexer.organizationController.reloadAdminCache();
     indexer.indexAllSpaces();

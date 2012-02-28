@@ -43,6 +43,7 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
    * The name of the topic created by default for testing purpose.
    */
   public static final String DEFAULT_TOPIC = "toto";
+  public static final String TOPIC_PREFIX = "java:/topic/";
   public static String JMS_FACTORY =
           "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
   private MockTopic topic;
@@ -69,7 +70,7 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
   public Topic newTopic(String topicName) throws Exception {
     Topic newTopic = getDestinationManager().createTopic(topicName);
     Context context = getInitialContext();
-    context.rebind("topic/" + topicName, newTopic);
+    context.rebind(TOPIC_PREFIX + topicName, newTopic);
     return newTopic;
   }
 

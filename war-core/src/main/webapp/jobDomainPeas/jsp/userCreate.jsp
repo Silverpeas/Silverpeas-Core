@@ -97,11 +97,11 @@ function SubmitWithVerif()
       }
     
       if(passwordfld.length < <%=minLengthPwd.intValue()%>) { 
-        errorMsg += "- <fmt:message key='JDP.missingFieldStart'/><%=resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
+        errorMsg += "- <fmt:message key="JDP.missingFieldStart"/><%=resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
       }
   
       if (passwordfld != passwordFldAgain) {
-        errorMsg += '- <fmt:message key="JDP.confirmPwdError"/> \n';
+        errorMsg += "- <fmt:message key="JDP.confirmPwdError"/> \n";
       }
     }
     
@@ -113,11 +113,11 @@ function SubmitWithVerif()
    	}
   
     if(passwordfld.length < <%=minLengthPwd.intValue()%>) { 
-      errorMsg += "- <fmt:message key='JDP.missingFieldStart'/><%=resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
+      errorMsg += "- <fmt:message key="JDP.missingFieldStart"/><%=resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
     }
 
     if (passwordfld != passwordFldAgain) {
-      errorMsg += '- <fmt:message key="JDP.confirmPwdError"/> \n';
+      errorMsg += "- <fmt:message key="JDP.confirmPwdError"/> \n";
     }
     <% } %>
   }
