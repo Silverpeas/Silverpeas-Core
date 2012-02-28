@@ -5,7 +5,7 @@ create table PdcAxisValue (
 );
 
 create table PdcClassification (
-  id numeric(19,0) not null,
+  id numeric(19,0) IDENTITY(1,1) not null,
   contentId varchar(255),
   instanceId varchar(255) not null,
   modifiable numeric(1,0) not null,
@@ -21,7 +21,7 @@ create table PdcClassification_PdcPosition (
  );
 
 create table PdcPosition (
-  id numeric(19,0) not null,
+  id numeric(19,0) IDENTITY(1,1) not null,
   primary key (id)
 );
 
