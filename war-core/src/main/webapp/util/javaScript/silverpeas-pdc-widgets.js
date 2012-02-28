@@ -864,11 +864,11 @@ function removePosition( position, positions ) {
       } else {
         selectedPositions.put(i, anAxis.id, anAxis.values[theValue]);
         if (settings.multiValuation) {
-          // hide the other identical options in duplicate selects (to avoid the position duplication)
+          // disable the other identical options in duplicate selects (to avoid the position duplication)
           var j = 0;
           while(contains($axisDiv, idPrefix + j)) {
             if (j!= i)
-              $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").hide();
+              $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").attr('disabled', true);
             j++;
           }
         }
@@ -919,13 +919,13 @@ function removePosition( position, positions ) {
           option.attr('selected', true);
         }
         
-        // in the case of a duplicate select, hide any options that were previously selected for the
+        // in the case of a duplicate select, disable any options that were previously selected for the
         // same axis
         if (settings.multiValuation && i > 0 && selectedPositions.size() > 0) {
           for(var ipos = 0; ipos < selectedPositions.size(); ipos++) {
             var selectedValue = selectedPositions.at(ipos, anAxis.id);
             if (selectedValue != null && aValue == selectedValue) {
-              option.hide();
+              option.attr('disabled', true);
               break;
             }
           }
