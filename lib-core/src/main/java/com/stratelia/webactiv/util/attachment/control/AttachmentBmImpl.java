@@ -312,14 +312,12 @@ public class AttachmentBmImpl implements AttachmentBm {
 
   public void notifyUser(NotificationMetaData notifMetaData, String senderId,
       String componentId) throws AttachmentException {
-    Connection con = getConnection();
     SilverTrace.info("attachment", "AttachmentBmImpl.notifyUser()",
         "root.MSG_GEN_EXIT_METHOD");
     try {
       SilverTrace.info("attachment", "AttachmentBmImpl.notifyUser()",
           "root.MSG_GEN_EXIT_METHOD", " senderId = " + senderId
           + " componentId = " + componentId);
-      notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null
           || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
@@ -330,8 +328,6 @@ public class AttachmentBmImpl implements AttachmentBm {
       throw new AttachmentException("AttachmentBmImpl.notifyUser()",
           SilverpeasRuntimeException.ERROR,
           "attachment.MSG_ATTACHMENT_NOT_EXIST", e);
-    } finally {
-      closeConnection(con);
     }
   }
 
