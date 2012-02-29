@@ -372,7 +372,6 @@ public class NotificationSender implements java.io.Serializable {
       params.iComponentInstance = extractLastNumber(metaData.getComponentId());
     }
     params.iMediaType = aMediaType;
-    params.connection = metaData.getConnection();
     params.bAnswerAllowed = metaData.isAnswerAllowed();
     String sender = metaData.getSender();
     if (aMediaType == NotificationParameters.ADDRESS_BASIC_POPUP

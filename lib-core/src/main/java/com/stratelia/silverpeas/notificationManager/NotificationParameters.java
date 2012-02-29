@@ -27,7 +27,6 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import java.sql.Connection;
 import java.util.Date;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -95,8 +94,6 @@ public class NotificationParameters {
 
   public Date dDate = new Date();
   public String sLanguage = null;
-
-  public Connection connection = null;
 
   public void traceObject() {
     if (SilverTrace.getTraceLevel("notificationManager", true) <= SilverTrace.TRACE_LEVEL_INFO) {
@@ -211,18 +208,6 @@ public class NotificationParameters {
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Date : "
           + dDate.toString());
-
-      if (connection != null)
-        SilverTrace.info("notificationManager",
-            "NotificationParameters.traceObject",
-            "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-            "connection is not null");
-      else
-        SilverTrace.info("notificationManager",
-            "NotificationParameters.traceObject",
-            "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-            "connection is null");
-
     }
   }
 }
