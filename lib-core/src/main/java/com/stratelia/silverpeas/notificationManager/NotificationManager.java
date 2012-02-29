@@ -781,11 +781,9 @@ public class NotificationManager
    * @throws NotificationManagerException
    * @see
    */
-  public void notifyUsers(NotificationParameters params,
-      String[] aUserIds)
+  public void notifyUsers(NotificationParameters params, String[] aUserIds)
       throws NotificationManagerException {
     NotifSchema schema = null;
-    int i = -1;
     NotificationData[] nds = null;
     NotificationServer ns = new NotificationServer();
 
@@ -817,18 +815,14 @@ public class NotificationManager
     }
 
     try {
-      if (params.connection != null) {
-        schema = new NotifSchema(params.connection);
-      } else {
-        schema = new NotifSchema();
-      }
+      schema = new NotifSchema();
       params.traceObject();
-      for (i = 0; i < aUserIds.length; i++) {
+      for (String userId : aUserIds) {
         try {
           SilverTrace.info("notificationManager",
               "NotificationManager.notifyUsers()", "root.MSG_GEN_PARAM_VALUE",
-              "notifUserId : " + aUserIds[i]);
-          nds = createAllNotificationData(params, aUserIds[i], schema);
+              "notifUserId : " + userId);
+          nds = createAllNotificationData(params, userId, schema);
 
           for (NotificationData nd : nds) {
             ns.addNotification(nd);
@@ -837,12 +831,12 @@ public class NotificationManager
           throw new NotificationManagerException(
               "NotificationManager.notifyUsers()", SilverpeasException.ERROR,
               "notificationManager.EX_CANT_SEND_USER_NOTIFICATION", "UserId="
-              + aUserIds[i], e);
+              + userId, e);
         } catch (Exception ex) {
           SilverTrace.warn("notificationManager",
               "NotificationManager.notifyUsers()",
               "notificationManager.EX_CANT_SEND_USER_NOTIFICATION", "UserId="
-              + aUserIds[i], ex);
+              + userId, ex);
         }
       }
     } catch (UtilException e) {
