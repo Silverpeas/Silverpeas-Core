@@ -63,8 +63,8 @@
 <html>
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function editStatus() {
 	$("#statusDialog").dialog("open");
@@ -84,12 +84,15 @@ $(document).ready(function(){
             title: "<fmt:message key="profil.actions.changeStatus" />",
             buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
-						var status = $("#newStatus");
-						$( "#myProfileFiche .statut").html(status.val());
-
-					    var url = "/silverpeas/RmyProfilJSON?Action=updateStatus";
-						url+='&status='+encodeURIComponent(status.val())+'&IEFix='+Math.round(new Date().getTime());
-				        $.getJSON(url);
+						var status = $("#newStatus").val();
+					    var url = "<%=m_context%>/RmyProfilJSON?Action=updateStatus";
+						url+='&status='+encodeURIComponent(status)+'&IEFix='+Math.round(new Date().getTime());
+				        $.getJSON(url, function(data){
+				        	if(data.status == "silverpeastimeout") {
+				        		alert("<fmt:message key="myProfile.status.timeout" />")
+				        	}
+				        });
+				        $("#myProfileFiche .statut").html(status);
 						$( this ).dialog( "close" );
 				},
 				"<fmt:message key="GML.cancel"/>": function() {
