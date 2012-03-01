@@ -170,20 +170,17 @@
     <p> You may be aware that some licensors who use GPL allow their code 
       to be  licensed under the current version of GPL or “any later version.”
       This  means that the code may be accepted by a licensee under the 
-      current  version (which is now version 2) and any later version released
+      current  version (which is now version 3) and any later version released
       by the  Free Software Foundation, and the licensor may be bound by 
       either sets  of terms, depending on the choice of the licensee. Some 
       other GPL  projects, like the Linux projects, use a single version of 
       GPL. We have  decided to follow the lead of Linux on this point. 
     </p>
-    <p> As of  March, 2007, we expect a final release of GPL version 3 
-      over the next  few months. We are not certain what the final release of 
-      GPL version 3  will include, and the terms of the working drafts have 
-      differed  significantly, so at this time we have chosen to make our code
-      available under GPL version 2 only. When GPL version 3 is finalized 
-      and  released, we may reassess this decision. For the time being, we 
-      have  chosen version 2 only, to avoid forking of our code due to 
-      licensing  issues. 
+    <p> Until the end of 2007, our code was under GPL version 2. As in November
+      2007, the final release of GPL version 3 was finalized and
+      released, we took some time for reviewing the terms of the new version
+      before taking any decision.  
+      Our decision was taken and from that date our code is now under GPL version 3.
     </p>
     <p align="left">
       <a href="#cxcontent2">
@@ -221,34 +218,14 @@
       Enterprise get our software under a Commercial License, so they do not  
       have to worry about this at all. 
     </p>
-    <p> As for Silverpeas Community  (GPL license) and its incorporation 
-      of Apache-licensed software, there  is no definitive decision on 
-      whether, in fact, the GPL is incompatible  with Apache-licensed 
-      software. The Apache Software Foundation believes  that it is 
-      compatible, which view we agree with, while the Free  Software 
-      Foundation believes that it is not. Both groups are in  discussions to 
-      resolve this issue. It is believed that GPLv3 has  provisions that 
-      resolve the apparent incompatibility, as well. 
-    </p>
-    <p> However, as the issue comes down to patents, as the 
-      <a href="http://www.apache.org/licenses/GPL-compatibility.html">Apache Software Foundation </a>notes,
-      and as none of the Apache-licensed code that we incorporate into  
-      Silverpeas has patents on it, this is a non-issue for us. It means that 
-      we can integrate Apache-licensed code without running afoul of the  
-      apparent incompatibility between the two because the software we  
-      incorporate is not patented, which incompatibility apparently arises  
-      from conflicting patent provisions in the two licenses. 
-    </p>
-    <p> If we  were to incorporate Apache-licensed code that has patents 
-      on it,  however, we could still incorporate it into our GPL-licensed 
-      project  provided that we “pass through” those modules under their 
-      Apache  license. In this case, we would simply license Silverpeas 
-      Community under  the GPL (with a FLOSS Exception) and note that some 
-      modules are  separately licensed under Apache licenses. 
-    </p>
-    <p> Regardless of how  we do it, you should feel comfortable using our
-      100% open source  software. We will do whatever necessary to ensure you
-      can use our  software under open source licenses, preferably the GPL. 
+    <p> As for Silverpeas Community  (GPLv3 license) and its incorporation 
+      of Apache-licensed software, there is no incompatibility. The incompatibility
+      exists only for the use both of GPLv2 code and of Apache-licensed code.
+      Any GPLv3 project can include Apache-licensed code. The incompatibility raised only
+      with the inclusion of GPLv3-licenced code into Apache-licenced project.
+      For more information about the compatibility between the two licenses,
+      please consult <a href="http://www.apache.org/licenses/GPL-compatibility.html">
+      this page about the concern</a>.
     </p>
     <p align="left">
       <a href="#cxcontent2">
@@ -516,7 +493,7 @@
       <a name="addinfo" title="faq18" id="addinfo"></a> 16. Where can I get additional information on Silverpeas 5.0 and Silverpeas licensing? 
     </h2>
     Please visit our 
-    <a href="http://www.silverpeas.com/">Products page</a> for information on Silverpeas 5.0 . You can find our licensing information 
+    <a href="http://www.silverpeas.com/">Products page</a> for information on Silverpeas 5.x . You can find our licensing information 
     <a href="licensing_gnu_affero.html">here</a>.
     <p align="left">
       <a href="#cxcontent2">

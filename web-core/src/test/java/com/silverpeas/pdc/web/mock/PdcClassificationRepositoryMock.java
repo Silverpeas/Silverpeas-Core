@@ -23,9 +23,10 @@
  */
 package com.silverpeas.pdc.web.mock;
 
-import com.silverpeas.pdc.dao.PdcClassificationDAO;
+import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.model.PdcClassificationHelper.*;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.IdGenerator;
 import java.util.ArrayList;
@@ -41,13 +42,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import static com.silverpeas.pdc.model.PdcClassificationHelper.*;
-
 /**
  * Mock of the PdcClassification service bean
  */
-@Named("pdcClassificationDAO")
-public class PdcClassificationDAOMock implements PdcClassificationDAO {
+@Named("pdcClassificationRepository")
+public class PdcClassificationRepositoryMock implements PdcClassificationRepository {
 
   private Map<Long, PdcClassification> classifications =
           new ConcurrentHashMap<Long, PdcClassification>();

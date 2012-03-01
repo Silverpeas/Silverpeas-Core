@@ -217,7 +217,8 @@
 		</xsd:sequence>
 		<xsd:attribute name="id" type="xsd:int" use="optional"/>
 		<xsd:attribute name="path" type="xsd:string" use="required"/>
-		<xsd:attribute name="updateRule" type="xsd:string" use="optional"/>		
+		<xsd:attribute name="updateRule" type="xsd:string" use="optional"/>
+		<xsd:attribute name="removeAfterImport" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 	<xsd:complexType name="DocumentType">
 		<xsd:sequence>
@@ -274,9 +275,11 @@
 			<xsd:element name="xmlModel" type="sp:XMLModelType" minOccurs="0"/>
 		</xsd:sequence>
 		<xsd:attribute name="path" type="xsd:string" use="required"/>
+		<xsd:attribute name="removeAfterImport" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 	<xsd:complexType name="TopicPositionType">
-		<xsd:attribute name="topicId" type="xsd:int" use="required"/>
+		<xsd:attribute name="topicId" type="xsd:int" use="optional"/>
+		<xsd:attribute name="explicitPath" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 	<xsd:complexType name="TopicTreeType">
 		<xsd:sequence>

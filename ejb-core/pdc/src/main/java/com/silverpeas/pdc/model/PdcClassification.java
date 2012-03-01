@@ -23,55 +23,34 @@
  */
 package com.silverpeas.pdc.model;
 
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import java.util.*;
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A classification of a content in Silverpeas on the classification plan (named PdC).
- * 
+ *
  * A classification of a content is made up of one or more positions on the axis of the PdC. Each
- * position consists of one or several values on some PdC's axis. A classification cannot have two or
- * more identical positions; each of them must be unique. 
- * 
+ * position consists of one or several values on some PdC's axis. A classification cannot have two
+ * or more identical positions; each of them must be unique.
+ *
  * It can also represent, for a Silverpeas component instance or for a node in a component instance,
  * a predefined classification with which any published contents can be classified on the PdC. In
  * this case, the contentId attribute is null.
- * 
+ *
  * A classification can be or not modifiable; by default, a predefined classification, that is used
- * to classify new contents, is not modifiable whereas a classification of a content can be modified.
+ * to classify new contents, is not modifiable whereas a classification of a content can be
+ * modified.
  */
 @Entity
-@NamedQueries({
-  @NamedQuery(name = "PdcClassification.findPredefinedClassificationByComponentInstanceId",
-  query = "from PdcClassification where instanceId=?1 and contentId is null and nodeId is null"),
-  @NamedQuery(name = "PdcClassification.findPredefinedClassificationByNodeId",
-  query = "from PdcClassification where instanceId=?2 and contentId is null and nodeId=?1)"),
-  @NamedQuery(name = "PdcClassification.findClassificationsByPdcAxisValues",
-  query =
-  "select distinct c from PdcClassification c join c.positions p join p.axisValues v where v in ?1")
-})
 public class PdcClassification implements Serializable, Cloneable {
 
   /**
@@ -80,7 +59,9 @@ public class PdcClassification implements Serializable, Cloneable {
   public static final PdcClassification NONE_CLASSIFICATION = new PdcClassification();
   private static final long serialVersionUID = 4032206628783381447L;
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
+  valueColumnName = "maxId", pkColumnValue = "PdcClassification", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Long id;
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   @NotNull
@@ -97,9 +78,9 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Creates an empty predefined classification for the contents that will published in the
-   * specified component instance.
-   * By default, a predefined classification isn't modifiable and servs to classify automatically 
-   * new contents published in the specied component instance.
+   * specified component instance. By default, a predefined classification isn't modifiable and
+   * servs to classify automatically new contents published in the specied component instance.
+   *
    * @param instanceId the unique identifier of the component instance to which the predefined
    * classification will be attached.
    * @return an empty predefined classification.
@@ -110,8 +91,8 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Creates an empty classification on the PdC of the specified content published in the specified
-   * component instance.
-   * By default, the classification of a content can be updated.
+   * component instance. By default, the classification of a content can be updated.
+   *
    * @param contentId the unique identifier of the content to classify.
    * @param inComponentInstanceId the unique identifier of the component instance in which the
    * content is published.
@@ -124,8 +105,9 @@ public class PdcClassification implements Serializable, Cloneable {
   }
 
   /**
-   * Gets the positions on the PdC's axis with which the content is classified.
-   * Positions on the PdC can be added or removed with the returned set.
+   * Gets the positions on the PdC's axis with which the content is classified. Positions on the PdC
+   * can be added or removed with the returned set.
+   *
    * @return a set of positions of this classification.
    */
   public Set<PdcPosition> getPositions() {
@@ -134,6 +116,7 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Is this classification empty?
+   *
    * @return true if this classification is an empty one, false otherwise.
    */
   public boolean isEmpty() {
@@ -142,6 +125,7 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Is the PdC classifications generated from this template can be changed?
+   *
    * @return false if the content have to be automatically classified, true if the classifications
    * from this template should serv as a proposition of classification.
    */
@@ -151,6 +135,7 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Sets this PdC classification as modifiable.
+   *
    * @return itself.
    */
   public PdcClassification modifiable() {
@@ -160,6 +145,7 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Sets this PdC classification as unmodifiable.
+   *
    * @return itself.
    */
   public PdcClassification unmodifiable() {
@@ -206,10 +192,11 @@ public class PdcClassification implements Serializable, Cloneable {
   /**
    * Is this classification on the PdC is a predefined one to classify any new contents in the given
    * node or for the given whole component instance?
-   * 
+   *
    * If this classification serves as a template for classifying the contents in a whole component
-   * instance or in a node, then true is returned.
-   * If this classification is the one of a given content, then false is returned.
+   * instance or in a node, then true is returned. If this classification is the one of a given
+   * content, then false is returned.
+   *
    * @return true if this classification is a predefined one, false otherwise.
    */
   public boolean isPredefined() {
@@ -219,14 +206,14 @@ public class PdcClassification implements Serializable, Cloneable {
   /**
    * Is this classification on the PdC is a predefined one for the contents published in the given
    * whole component instance?
-   * 
+   *
    * If this classification serves as a template for classifying the contents in a whole component
-   * instance, then true is returned.
-   * If this classification is a predefined one dedicated to classify only the content in a given
-   * node, then false is returned.
-   * If this classification is the one of a given content, then false is returned.
-   * @return true if this classification is a predefined one for the whole component instance,
-   * false otherwise.
+   * instance, then true is returned. If this classification is a predefined one dedicated to
+   * classify only the content in a given node, then false is returned. If this classification is
+   * the one of a given content, then false is returned.
+   *
+   * @return true if this classification is a predefined one for the whole component instance, false
+   * otherwise.
    */
   public boolean isPredefinedForTheWholeComponentInstance() {
     return isPredefined() && nodeId == null;
@@ -235,12 +222,12 @@ public class PdcClassification implements Serializable, Cloneable {
   /**
    * Is this classification on the PdC is a predefined one for the contents published in a given
    * node?
-   * 
+   *
    * If this classification serves to classify the contents published in a single node of the
-   * component instance, then true is returned.
-   * If this classification is the one of a given content, then false is returned.
-   * If this classification is the predefined one for the whole component instance, then false
-   * is returned.
+   * component instance, then true is returned. If this classification is the one of a given
+   * content, then false is returned. If this classification is the predefined one for the whole
+   * component instance, then false is returned.
+   *
    * @return true if this classification is a predefined one for a given node, false otherwise.
    */
   public boolean isPredefinedForANode() {
@@ -250,16 +237,14 @@ public class PdcClassification implements Serializable, Cloneable {
   /**
    * Updates this classification by removing from its positions the specified values because they
    * will be deleted from the PdC's axis.
-   * 
+   *
    * This method is invoked at axis value deletion. Accordingly, it performs an update of this
-   * classification by applying the following algorithm for each deleted value:
-   * <ul>
-   * <li>The value is a base one of the axis: the value is removed from any positions of the
-   * classification. If a position is empty (it has no values) it is then deleted (the classification
-   * can be then found empty).</li>
-   * <li>The value is a leaf in its value hierarchical tree: the value is replaced by its mother
-   * value in any positions of this classification.</li>
-   * </ul>
+   * classification by applying the following algorithm for each deleted value: <ul> <li>The value
+   * is a base one of the axis: the value is removed from any positions of the classification. If a
+   * position is empty (it has no values) it is then deleted (the classification can be then found
+   * empty).</li> <li>The value is a leaf in its value hierarchical tree: the value is replaced by
+   * its mother value in any positions of this classification.</li> </ul>
+   *
    * @param deletedValues the values that are removed from a PdC's axis.
    */
   public void updateForPdcAxisValuesDeletion(final List<PdcAxisValue> deletedValues) {
@@ -295,6 +280,7 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Sets the positions on the PdC for this classification.
+   *
    * @param thePositions the position to set in this classification.
    * @return itself.
    */
@@ -306,6 +292,7 @@ public class PdcClassification implements Serializable, Cloneable {
 
   /**
    * Adds the specified position on the PdC in this classification.
+   *
    * @param aPosition a position on the PdC to add in this classification.
    * @return itself.
    */
@@ -319,12 +306,12 @@ public class PdcClassification implements Serializable, Cloneable {
   }
 
   /**
-   * Gets the unique identifier of this classification on the PdC.
-   * The identifier is set when the classification is persisted over the Silverpeas runtime. If the
-   * content this classification is about were at a time unclassified, then the identifier of the 
-   * classification isn't expected to be not the one of the previous classification as they are
-   * considered distinct objects (the previous classification was removed from the persistence
-   * context in Silverpeas).
+   * Gets the unique identifier of this classification on the PdC. The identifier is set when the
+   * classification is persisted over the Silverpeas runtime. If the content this classification is
+   * about were at a time unclassified, then the identifier of the classification isn't expected to
+   * be not the one of the previous classification as they are considered distinct objects (the
+   * previous classification was removed from the persistence context in Silverpeas).
+   *
    * @return the classification unique identifier.
    */
   public Long getId() {
@@ -357,6 +344,7 @@ public class PdcClassification implements Serializable, Cloneable {
   /**
    * Gets the positions on the PdC of this classification in the form of ClassifyPosition instances.
    * This method is for compatibility with the old way to manage the classification.
+   *
    * @return a list of ClassifyPosition instances, each of them representing a position on the PdC.
    */
   public List<ClassifyPosition> getClassifyPositions() {

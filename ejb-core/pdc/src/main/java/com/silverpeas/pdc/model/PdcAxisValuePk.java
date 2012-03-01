@@ -24,7 +24,6 @@
 package com.silverpeas.pdc.model;
 
 import java.io.Serializable;
-import javax.persistence.Id;
 
 /**
  * The composite primary key used to store values of PdC's axis.

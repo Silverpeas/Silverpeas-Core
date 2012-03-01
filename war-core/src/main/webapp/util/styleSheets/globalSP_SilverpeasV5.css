@@ -4166,7 +4166,12 @@ html:not([lang*=""]) .add_position:hover {
 	border: 0px;
 }
 
-#classification-mo  legend {
+#classification-mo {
+	min-height: 55px;
+	margin-top: 0px;
+}
+
+#classification-mo legend {
 	background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
 }
 

@@ -24,7 +24,7 @@
 package com.silverpeas.pdc.web.mock;
 
 import com.google.common.collect.Lists;
-import com.silverpeas.pdc.dao.PdcAxisValueDAO;
+import com.silverpeas.pdc.dao.PdcAxisValueRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
 import java.util.List;
@@ -37,8 +37,8 @@ import org.springframework.data.domain.Sort;
 /**
  * Mock the PdcAxisValueDAO for tests.
  */
-@Named("pdcAxisValueDAO")
-public class PdcAxisValueDAOMock implements PdcAxisValueDAO {
+@Named("pdcAxisValueRepository")
+public class PdcAxisValueRepositoryMock implements PdcAxisValueRepository {
 
   @Override
   public PdcAxisValue save(PdcAxisValue t) {
