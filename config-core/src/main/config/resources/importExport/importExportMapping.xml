@@ -171,6 +171,9 @@
         <castor:field name="xMLModelContentType" type="com.silverpeas.form.importExport.XMLModelContentType">
             <castor:bind-xml name="sp:xmlModel" node="element"/>
         </castor:field>
+		<castor:field name="removeAfterImport" type="boolean">
+            <castor:bind-xml name="removeAfterImport" node="attribute"/>
+        </castor:field>
     </castor:class>
     <!-- Versioning -->
     <castor:class name="com.silverpeas.versioning.importExport.DocumentsType">
@@ -225,6 +228,9 @@
         </castor:field>
         <castor:field name="xMLModelContentType" type="com.silverpeas.form.importExport.XMLModelContentType">
             <castor:bind-xml name="sp:xmlModel" node="element"/>
+        </castor:field>
+		<castor:field name="removeAfterImport" type="boolean">
+            <castor:bind-xml name="removeAfterImport" node="attribute"/>
         </castor:field>
     </castor:class>
     <castor:class name="com.silverpeas.node.importexport.NodePositionsType">
