@@ -15,6 +15,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -49,9 +50,10 @@ public class PublicationResource extends RESTWebService {
   }
   
   @GET
-  @Path("node/{nodeId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public PublicationEntity[] getPublications(@PathParam("nodeId") String nodeId) {
+  public PublicationEntity[] getPublications(@QueryParam("node") String nodeId,
+      @QueryParam("withAttachments") boolean withAttachments) {
+    
     Collection<PublicationDetail> publications;
     try {
       publications = getPublicationBm().getDetailsByFatherPK(getNodePK(nodeId), null, true);
@@ -59,25 +61,31 @@ public class PublicationResource extends RESTWebService {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
     
-    String requestUri = getUriInfo().getRequestUri().toString();
-    String baseUri = requestUri.substring(0, requestUri.indexOf("/node"));
+    String baseUri = getUriInfo().getAbsolutePath().toString();
     
     List<PublicationEntity> entities = new ArrayList<PublicationEntity>();
     for (PublicationDetail publication : publications) {
-      URI uri;
-      try {
-        uri = new URI(baseUri+"/publication/"+publication.getPK().getId());
-      } catch (URISyntaxException e) {
-        Logger.getLogger(PublicationResource.class.getName()).log(Level.SEVERE, null, e);
-        throw new RuntimeException(e.getMessage(), e);
-      }
+      URI uri = getURI(publication, baseUri);
       PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
-      Collection<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(publication.
-          getPK(), "Images");
-      entity.withAttachments(attachments);
+      if (withAttachments) {
+        Collection<AttachmentDetail> attachments =
+            AttachmentController.searchAttachmentByPKAndContext(publication.getPK(), "Images");
+        entity.withAttachments(attachments, getUriInfo().getBaseUri().toString());
+      }
       entities.add(entity);
     }
     return entities.toArray(new PublicationEntity[0]);
+  }
+  
+  private URI getURI(PublicationDetail publication, String baseUri) {
+    URI uri;
+    try {
+      uri = new URI(baseUri+"/publication/"+publication.getPK().getId());
+    } catch (URISyntaxException e) {
+      Logger.getLogger(PublicationResource.class.getName()).log(Level.SEVERE, null, e);
+      throw new RuntimeException(e.getMessage(), e);
+    }
+    return uri;
   }
   
   private NodePK getNodePK(String nodeId) {

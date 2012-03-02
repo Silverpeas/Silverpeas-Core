@@ -27,6 +27,8 @@ public class NodeEntity implements Exposable {
   private NodeAttrEntity attr;
   @XmlElements({@XmlElement})
   private NodeEntity[] children;
+  @XmlElement(defaultValue = "")
+  private URI childrenURI;
   @XmlElement(required = true)
   private String state = "closed";
   
@@ -55,12 +57,15 @@ public class NodeEntity implements Exposable {
   private NodeEntity(final NodeDetail node, URI uri) {
     this.setData(node.getName());
     this.uri = uri;
+    this.childrenURI = getChildrenURI(uri);
     this.setAttr(NodeAttrEntity.fromNodeDetail(node, uri));
     if (node.getChildrenDetails() != null) {
       List<NodeEntity> entities = new ArrayList<NodeEntity>();
       for (NodeDetail child : node.getChildrenDetails()) {
         URI childURI = getChildURI(uri, child.getNodePK().getId());
-        entities.add(fromNodeDetail(child, childURI));
+        NodeEntity childEntity = fromNodeDetail(child, childURI);
+        childEntity.childrenURI = getChildrenURI(childURI);
+        entities.add(childEntity);
       }
       children = entities.toArray(new NodeEntity[0]);
     }
@@ -114,6 +119,19 @@ public class NodeEntity implements Exposable {
 
   public String getState() {
     return state;
+  }
+
+  public URI getChildrenURI(URI uri) {
+    try {
+      return new URI(uri + "/children");
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+  }
+  
+  public URI getChildrenURI() {
+    return childrenURI;
   }
 
 }

@@ -1,12 +1,17 @@
 package org.silverpeas.publication.web;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.annotation.XmlElement;
+
+import org.silverpeas.node.web.NodeEntity;
 
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.rest.Exposable;
@@ -49,16 +54,32 @@ public class PublicationEntity implements Exposable {
     this.setUpdateDate(publication.getUpdateDate());
   }
   
-  public PublicationEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails) {
+  public PublicationEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails, String baseURI) {
     if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
       for(AttachmentDetail attachment : attachmentDetails) {
-        entities.add(AttachmentEntity.fromAttachment(attachment));
+        AttachmentEntity entity = AttachmentEntity.fromAttachment(attachment);
+        URI sharedUri = getAttachmentSharedURI(attachment, baseURI);
+        entity.setSharedUri(sharedUri);
+        entities.add(entity);
       }
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
     }
     return this;
-  } 
+  }
+  
+  private URI getAttachmentSharedURI(AttachmentDetail attachment, String baseURI) {
+    URI sharedUri;
+    try {
+      sharedUri =
+          new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" +
+              attachment.getPK().getId() + "/" + attachment.getLogicalName());
+    } catch (URISyntaxException e) {
+      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, e);
+      throw new RuntimeException(e.getMessage(), e);
+    }
+    return sharedUri;
+  }
 
   public void setUri(URI uri) {
     this.uri = uri;
