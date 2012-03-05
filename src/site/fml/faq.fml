@@ -51,6 +51,26 @@
         <p>Jboss should be listening on every IP address.</p>
       </answer>
     </faq>
+        <faq id="macosx">
+      <question>
+        On my Mac OS X I can't access a local Silverpeas installation.
+      </question>
+      <answer>
+        <p>Symptoms: </p>        
+        <ul>
+          <li>Muy Mac doesn't resolve <i>localhost</i> or <i>127.0.0.1</i> when offline.</li>         
+        </ul>
+        <ol>
+          <li>Stop Silverpeas.</li>
+          <li>Execute the foloowing command:      
+            <source>sudo ifconfig en0 alias 127.0.0.1</source>.
+          </li>
+          <li>Restart Silverpeas </li>
+        </ol>                
+        <p>You should be able to resolve <b>localhost</b> on your Mac now.</p>
+        <p>Thanks to Galder Zamarreño for the answer (<a href="http://stackoverflow.com/questions/7892609/inetaddress-getlocalhost-resolution-on-osx-lion-when-offline">InetAddress.getLocalHost() resolution on OSX Lion when offline</a>)</p>
+      </answer>
+    </faq>
     <faq id="hornetq">
       <question>
         JBoss Hornet Q won't start with AIO library ?
