@@ -67,8 +67,11 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   private long size;
   private String instanceId;
   private String xmlForm = null;
-  private String creatorName; // used by import/export XML
+  //following attributes are used by import/export XML
+  private String creatorName; 
   private XMLModelContentType xmlModelContentType = null;
+  private boolean removeAfterImport = false;
+  private String originalPath;
 
   public DocumentVersion() {
   }
@@ -352,5 +355,21 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
       icon = FileRepositoryManager.getFileIcon("");
     }
     return icon;
+  }
+  
+  public boolean isRemoveAfterImport() {
+    return removeAfterImport;
+  }
+
+  public void setRemoveAfterImport(boolean removeAfterImport) {
+    this.removeAfterImport = removeAfterImport;
+  }
+
+  public void setOriginalPath(String originalPath) {
+    this.originalPath = originalPath;
+  }
+
+  public String getOriginalPath() {
+    return originalPath;
   }
 }

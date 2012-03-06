@@ -34,6 +34,7 @@ import java.util.Vector;
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -124,6 +125,15 @@ public class AttachmentImportExport {
             "AttachmentImportExport.importAttachments()",
             "root.MSG_GEN_PARAM_VALUE", e);
       }
+      
+      if (attDetail.isRemoveAfterImport()) {
+        boolean removed = FileUtils.deleteQuietly(new File(attDetail.getOriginalPath()));
+        if (!removed) {
+          SilverTrace.error("attachment",
+              "AttachmentImportExport.importAttachments()",
+              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attDetail.getOriginalPath());
+        }
+      }
     }
     return copiedAttachments;
   }
@@ -171,12 +181,12 @@ public class AttachmentImportExport {
     return copyFile(componentId, a_Detail, path, true);
   }
 
-  public AttachmentDetail copyFile(String componentId,
-      AttachmentDetail a_Detail, String path, boolean updateLogicalName) {
+  public AttachmentDetail copyFile(String componentId, AttachmentDetail a_Detail, String path,
+      boolean updateLogicalName) {
 
     String fileToUpload = a_Detail.getPhysicalName();
 
-    // Preparation des parametres du fichier e creer
+    // Get parameters of file to create
     String logicalName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
     String type = logicalName.substring(logicalName.lastIndexOf('.') + 1, logicalName.length());
     String mimeType = AttachmentController.getMimeType(logicalName);
@@ -210,6 +220,7 @@ public class AttachmentImportExport {
     if (updateLogicalName) {
       a_Detail.setLogicalName(logicalName);
     }
+    a_Detail.setOriginalPath(fileToUpload);
 
     AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
     a_Detail.setPK(pk);

@@ -47,6 +47,13 @@ public class JSONServlet extends HttpServlet {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    if (m_MainSessionCtrl == null) {
+      JSONObject jsonStatus = new JSONObject();
+      jsonStatus.put("status", "silverpeastimeout");
+      PrintWriter out = response.getWriter();
+      out.println(jsonStatus);
+      return;
+    }
     String userId = m_MainSessionCtrl.getUserId();
     String action = request.getParameter("Action");
     if ("updateStatus".equalsIgnoreCase(action)) {

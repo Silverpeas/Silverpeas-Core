@@ -27,37 +27,50 @@ import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * DAO that handles the persistence of PdcClassification beans.
  */
-public interface PdcClassificationDAO extends JpaRepository<PdcClassification, Long> {
+public interface PdcClassificationRepository extends JpaRepository<PdcClassification, Long> {
 
   /**
    * Finds the predefined classification on the PdC that is set for the whole specified component
    * instance.
+   *
    * @param instanceId the unique identifier of the component instance.
    * @return the predefined classification that is set to the component instance, or null if no
    * predefined classification was set for the component instance.
    */
-  PdcClassification findPredefinedClassificationByComponentInstanceId(String instanceId);
-  
+  @Query(
+  "from PdcClassification where instanceId=:instanceId and contentId is null and nodeId is null")
+  PdcClassification findPredefinedClassificationByComponentInstanceId(
+          @Param("instanceId") String instanceId);
+
   /**
    * Finds the predefined classification on the PdC that is set for the contents in the specified
    * node of the specified component instance.
+   *
    * @param nodeId the unique identifier of the node.
    * @param instanceId the unique identifier of the component instance to which the node belongs.
-   * @return either the predefined classification associated with the node or null if no predefined 
+   * @return either the predefined classification associated with the node or null if no predefined
    * classification exists for that node.
    */
-  PdcClassification findPredefinedClassificationByNodeId(String nodeId, String instanceId);
-  
+  @Query(
+  "from PdcClassification where instanceId=:instanceId and contentId is null and nodeId=:nodeId)")
+  PdcClassification findPredefinedClassificationByNodeId(@Param("nodeId") String nodeId, @Param(
+          "instanceId") String instanceId);
+
   /**
    * Finds all classifications on the PdC that have at least one position with the one or more of
    * the specified axis values. If no such values exist, then an empty list is returned.
+   *
    * @param values a list of PdC's axis values.
    * @return a list of classifications having at least one of the specified values or an empty list.
    */
-  List<PdcClassification> findClassificationsByPdcAxisValues(final List<PdcAxisValue> values);
-  
+  @Query(
+  "select distinct c from PdcClassification c join c.positions p join p.axisValues v where v in :values")
+  List<PdcClassification> findClassificationsByPdcAxisValues(
+          @Param("values") final List<PdcAxisValue> values);
 }
