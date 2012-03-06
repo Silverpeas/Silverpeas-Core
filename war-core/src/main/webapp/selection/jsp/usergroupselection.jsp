@@ -40,6 +40,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
+    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/smartpaginator.js'/>"></script>
+    <link type="text/css" rel="stylesheet" href="<c:url value='/util/styleSheets/jquery/smartpaginator.css'/>"/>
     <title><fmt:message key="GML.selection"/></title>
     <script type="text/javascript" >
       // the path of the current user group from a given root user group
@@ -195,6 +197,19 @@
               else
                 style = 'even';
             });
+            $('#user_list_pagination').smartpaginator({
+              totalrecords: users.length,
+              recordsperpage: 6,
+              length: 6,
+              datacontainer: 'user_list', 
+              dataelement: 'tr',
+              next: '>>',
+              prev: '<<',
+              first: 'Première page',
+              last: 'Dernière page',
+              go: 'Aller',
+              theme: 'green'
+            });
           },
           error: function(jqXHR, textStatus, errorThrown) {
             alert(errorThrown);
@@ -294,6 +309,19 @@
               else
                 style = 'even';
             });
+            $('#group_list_pagination').smartpaginator({
+              totalrecords: groups.length,
+              recordsperpage: 6,
+              length: 6,
+              datacontainer: 'group_list', 
+              dataelement: 'tr',
+              next: '>>',
+              prev: '<<',
+              first: 'Première page',
+              last: 'Dernière page',
+              go: 'Aller',
+              theme: 'green'
+            });
             if (onGroupLoaded && !withName)
               onGroupLoaded(theGroup);
           },
@@ -370,6 +398,7 @@
               <th><fmt:message key="GML.domain"/></th>
             </tr>
           </table>
+          <div id="group_list_pagination"></div>
         </div>
       </c:if>
       <c:if test='${selectionScope == "usergroup"}'>
@@ -392,6 +421,7 @@
               <th><fmt:message key="GML.domain"/></th>
             </tr>
           </table>
+          <div id="user_list_pagination"></div>
         </div>
       </c:if>
         <br clear="all"/>

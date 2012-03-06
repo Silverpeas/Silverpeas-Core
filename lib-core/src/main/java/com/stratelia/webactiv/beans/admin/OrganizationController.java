@@ -1096,7 +1096,8 @@ public class OrganizationController implements java.io.Serializable {
    * @param rolesIds the unique identifier of the roles the users has to play in one or more
    * component instances. Null or an empty array of role identifiers means whatever the roles they
    * play.
-   * @param groupId the unique identifier the users has be part. Null means whatever the group.
+   * @param groupId the unique identifier the users has be part. Null means whatever the group. All
+   * subgroups are taken into account as parts of the specified group.
    * @param userFilter some details the users has to be conform to.
    * @return all the users that satisfy the specified filters. If no users are found, an empty array
    * is returned.

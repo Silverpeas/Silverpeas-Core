@@ -44,7 +44,7 @@ public class UserAndGroupSelectionProcessor {
   private static final String GROUP_SELECTION_PARAMETER = "GroupSelection";
   
   // URI of the selection form
-  private static final String SELECTION_FORM_PATH = "/selection/jsp/usergroupselection.jsp";
+  private static final String SELECTION_FORM_PATH = Selection.USER_SELECTION_PANEL_PATH;
   
   public void prepareSelection(final Selection selection, final HttpServletRequest request) {
     request.setAttribute(SELECTION_PARAMETER, selection);

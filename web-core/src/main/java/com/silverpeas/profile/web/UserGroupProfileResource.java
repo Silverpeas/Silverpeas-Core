@@ -69,12 +69,15 @@ public class UserGroupProfileResource extends RESTWebService {
     checkUserAuthentication();
     List<String> groupIds = new ArrayList<String>();
     if (getUserDetail().isDomainRestricted()) {
-      String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(name, "-1"));
+      String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
+              name, "-1"));
       groupIds.addAll(Arrays.asList(ids));
     }
-    String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(name, null));
+    String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
+            name, null));
     groupIds.addAll(Arrays.asList(ids));
-    Group[] allGroups = getOrganizationController().getGroups(groupIds.toArray(new String[groupIds.size()]));
+    Group[] allGroups = getOrganizationController().getGroups(groupIds.toArray(new String[groupIds.
+            size()]));
     return asWebEntity(Arrays.asList(allGroups), locatedAt(getUriInfo().getAbsolutePath()));
   }
 
@@ -86,7 +89,8 @@ public class UserGroupProfileResource extends RESTWebService {
           @QueryParam("roles") String roles,
           @QueryParam("name") String name) {
     checkUserAuthentication();
-    String[] roleIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(",")) : null);
+    String[] roleIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
+            : null);
     String[] groupIds = getOrganizationController().searchGroupsIds(true, null, roleIds,
             aFilteringModel(name, null));
     Group[] groups = getOrganizationController().getGroups(groupIds);
@@ -108,12 +112,17 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getSubGroups(@PathParam("path") String groups) {
+  public UserGroupProfileEntity[] getSubGroups(@PathParam("path") String groups,
+          @QueryParam("name") String name) {
     checkUserAuthentication();
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
-    UserGroupProfileEntity group = getGroup(groupId);
-    return asWebEntity(group.getSubGroups(), locatedAt(getUriInfo().getAbsolutePath()));
+    profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+    Group model = aFilteringModel(name, null);
+    model.setSuperGroupId(groupId);
+    String[] subgroupIds = getOrganizationController().searchGroupsIds(false, null, null, model);
+    Group[] subgroups = getOrganizationController().getGroups(subgroupIds);
+    return asWebEntity(Arrays.asList(subgroups), locatedAt(getUriInfo().getAbsolutePath()));
   }
 
   @Override

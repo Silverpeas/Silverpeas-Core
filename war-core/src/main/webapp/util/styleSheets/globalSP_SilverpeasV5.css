@@ -25,7 +25,7 @@
 /*************************************
 Redefinition des style de balises HTML
 *************************************/
-body {
+BODY {
 	scrollbar-face-color: #FFFFFF;
 	scrollbar-shadow-color: #FFFFFF;
 	scrollbar-highlight-color: #FFFFFF;
@@ -38,19 +38,19 @@ body {
 	margin: 0px;
 }
 
-td,div {
+TD,div {
 	font-family: "Verdana", "Arial", sans-serif;
 	font-size: 10px
 }
 
-a {
+A {
 	font-family: "Verdana", "Arial", sans-serif;
 	font-size: 10px;
 	text-decoration: none;
 	color: #000000
 }
 
-a:hover {
+A:hover {
 	color: #666699;
 }
 
@@ -60,11 +60,6 @@ input {
 	font-size: 10px;
 	color: #000000;
 	border: 1px solid #999999;
-}
-
-input[type=radio],
-input[type=checkbox]{
-	border:0px;
 }
 
 .invisible {
@@ -94,15 +89,15 @@ Label,legend {
 	font-weight: bold
 }
 
-table.frame {
+TABLE.frame {
 	background-color: #CCCCCC
 }
 
-tr.frame {
+TR.frame {
 	background-color: #CCCCCC
 }
 
-td.frame {
+TD.frame {
 	background-color: #CCCCCC;
 	color: #FFFFFF;
 	text-align: left;
@@ -110,15 +105,15 @@ td.frame {
 	font-weight: bold
 }
 
-table.title {
+TABLE.title {
 	background-color: #CCCCCC
 }
 
-tr.title {
+TR.title {
 	background-color: #CCCCCC
 }
 
-td.title {
+TD.title {
 	background-color: #CCCCCC;
 	font-style: normal;
 	font-size: 11pt;
@@ -126,28 +121,19 @@ td.title {
 	color: #000000
 }
 
-td.sommaireTitle {
+TD.sommaireTitle {
 	font-size: 20pt;
 	font-weight: bold
 }
 
-td.sommaireDescription {
+TD.sommaireDescription {
 	font-size: 8pt;
 	color: #000000
 }
 
-td.sommaire {
+TD.sommaire {
 	font-size: 12pt;
 	font-weight: bold
-}
-
-.center {
-	text-align:center;
-}
-.center table {
-	margin-right:auto;
-	margin-left:auto;
-	
 }
 
 /***************************************
@@ -1712,12 +1698,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 .pageNav {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
 	white-space: nowrap;
 	margin: 0 auto;
 	display: table;
+	color:#444;
 }
 
 .pageNavContent {
@@ -1725,46 +1709,69 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .pageNav .pageIndex {
 	vertical-align: top;
-	background-color:#CCCCCC;
 	text-align:center;
 	vertical-align:top;
-	width:100px;
+	width:auto;
 	float: left;
-	padding: 3px;
-	margin-right: 20px;
+	padding: 2px 3px;
+	margin-right: 0.5em;
+	font-size:95%;    
+	line-height: 1.6em;
 }
 
 .pageNav .pageOff {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
-	background-color: transparent;
-	font-size: 10px;
-	font-weight: bold;
+	float: left;
+}
+
+.pageNav .pageOff a{
+	font-size:100%;
+	background-color:#FFF;
+	border:1px solid #d4d4d4;
 	color: #000000;
 	text-decoration: none;
 	vertical-align: top;
-	float: left;
-	padding: 3px;
+	padding: 2px 5px;
+	margin-right:2px;
+	display:block;
+	height:1.3em;
+	font-weight:100;
+}
+
+.pageNav .pageOff a:hover, .pageNav .pageOff a:focus{
+	background-color:#d4d4d4;
+	color: #fff;
 }
 
 .pageNav .pageOn {
-	background-color: #666666;
-	font-size: 10px;
-	font-weight: bolder;
+	float: left;
+	background-color: #9d9d9d;
+	border:1px solid #9d9d9d;
+	font-size: 100%;
+	font-weight:100;
 	color: #FFFFFF;
 	text-decoration: none;
 	vertical-align: top;
-	float: left;
-	padding: 3px;
+	padding: 2px 5px;
+	margin-right:2px;
+	height:1.3em;
 }
 
-.pageJumper {
+.pageNav .pageOn a{
+	
+}
+.pageNav .pageJumper {
 	float: left;
 	padding: 2px;
+	background-color:#444;
+	border:1px solid #444;
+	margin-left:0.5em;
+	height:1.3em;
+}
+.pageNav .pageJumper  a {
+	color:#FFF;
 }
 
-.pageJumper .jumper {
+.pageNav .pageJumper .jumper {
 	visibility: hidden;
 }
 
@@ -4513,3 +4520,267 @@ li.application  .applicationName {
 .admin.stats.volume #total .number {
 	color: #F1790F;
 }
+
+
+
+
+/*************************************/
+/** BackEnd & FrontEnd User Panel   */
+/***********************************/
+
+
+.userPanel, .userPanel * {
+	padding:0;
+	margin:0;
+	list-style-type:none;
+}
+
+.container_userPanel {
+	min-width:970px;
+	height:100%;
+	}
+
+
+#results_userPanel, #selected_userPanel, #filter_userPanel {height:100%; overflow:auto;}
+
+#filter_userPanel {
+	height:100%;
+	overflow:hidden;
+}
+
+
+
+
+#filter_userPanel {
+	width:22%;
+	height:100%;
+	float:left;
+	background-color:#333333;
+	background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=333333&vertical=0&horizontal=100);
+		-moz-background-size: 100%;
+	-pie-background: linear-gradient(#CCCCCC, #333333);
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+	color:#FFF;
+}
+.userPanel .users_results_userPanel, 
+.userPanel .groups_results_userPanel,
+.userPanel .users_selected_userPanel, 
+.userPanel .groups_selected_userPanel  {
+	margin:8px 3% 16px;
+	clear:both;
+	position:relative;
+}
+
+.userPanel .users_selected_userPanel, 
+.userPanel .groups_selected_userPanel  {
+	margin:2px 3% 16px 3%;
+}
+.userPanel .users_results_userPanel, 
+.userPanel .users_selected_userPanel  {
+	margin:2px 3% 0 3%;
+}
+#results_userPanel, #selected_userPanel{
+	width:39%;
+	*width:38.9%;
+	height:100%;
+	float:left;
+	
+}
+
+#filter_userPanel a {
+	color:#FFF;
+	line-height:140%;
+	font-size:105%;
+}
+#filter_userPanel .filter {
+	background:transparent url(../icons/treeview/folder_close.gif) 9px 5px no-repeat;
+	padding:7px 0 6px 33px;
+	display:block;
+}
+
+#filter_userPanel .listing_filter ul .filter{	
+	background-position:33px 5px;
+	padding:7px 0 6px 59px;
+}
+
+#filter_userPanel .listing_filter ul {
+	overflow:auto;
+	border-top:1px solid #868686;
+	background-color:#444444;
+	background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=444444&vertical=0&horizontal=100);
+		-moz-background-size: 100%;
+	-pie-background: linear-gradient(#CCCCCC, #333333);
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+#filter_userPanel .filter a {
+	color:#444;
+}
+
+#filter_userPanel .filter:hover, 
+#filter_userPanel .filter:focus , 
+#filter_userPanel .filter.select{
+	background-color:#eaeaea;
+	color:#444444;
+	font-size:105%;
+}
+#filter_userPanel .filter.select {
+	background-image:url(../icons/treeview/folder_open.gif);
+}
+
+#filter_userPanel .title,
+#selected_userPanel .title{
+	background-color:#353535;
+	color:#FFF;
+	font-size:120%;
+	line-height:28px;
+	padding-left:9px;
+}
+
+#results_userPanel {
+	background-color:#eaeaea;
+}
+
+.container_input_search {
+	background:#FFF;
+	border-radius: 10px;
+		moz-border-radius: 10px;
+		webkit-border-radius: 10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+	position:relative;
+    height:2em;
+    font-size: 1em;
+    line-height: 1em;
+	width:100%;
+}
+
+input.search {
+	background:transparent  url(../icons/magnifying-glass.png) 12px 4px no-repeat;
+	*background-position: 0px 2px;
+	border:0;
+    color: #939393;
+    height:1em;
+    font-size: 1em;
+    line-height: 1em;
+    padding:0.5em 1em 0.5em 3em;
+	width:90%;
+}
+
+input.search:focus {
+    color: #444444;
+}
+.userPanel .listing_users, .userPanel .listing_groups  {
+	position:relative;
+}
+
+.userPanel .listing_groups {
+	margin-bottom:1em;
+}
+
+.listing_users .add_all, .listing_groups .add_all,
+.listing_users .remove_all, .listing_groups .remove_all
+ {
+	position:absolute;
+	line-height:2em;
+	padding-top:0.5em;
+	top:0;
+	right:12px;
+	padding-right:24px;
+	color:#a1a1a1;
+	background:transparent url(../icons/addFiche.png) right 0.5em no-repeat;
+}
+.listing_users .remove_all, .listing_groups .remove_all
+ {
+	background:transparent url(../icons/deleteFiche.png) right 0.5em no-repeat;
+}
+.listing_users .add_all:hover, .listing_users .add_all:focus,
+.listing_groups .add_all:hover, .listing_groups .add_all:focus,
+.listing_users .remove_all:hover, .listing_users .remove_all:focus,
+.listing_groups .remove_all:hover, .listing_groups .remove_all:focus
+{
+	color:#444;
+}
+
+.listing_users .nb_results,
+.listing_groups .nb_results
+{
+	line-height:2em;
+	padding-top:0.5em;
+	font-weight:bold;
+}
+
+.userPanel .listing_users ul,
+.userPanel .listing_groups ul
+{
+	border:1px solid #d4d4d4;
+}
+
+.userPanel .listing_users li,
+.userPanel .listing_groups li
+ {
+	position:relative;
+	height:30px;
+	padding:4px 45px
+}
+.userPanel .odd {
+	background-color:#FFF;
+}
+
+.userPanel .even {
+	background-color:#f5f5f5;
+}
+
+.userPanel .focus{
+	background-color:#E0E0E0;
+}
+
+.userPanel .line {
+	color:#717171;
+}
+
+.userPanel .listing_users .name_user,
+.userPanel .listing_groups .name_group {
+	display:block;
+	color:#000;
+}
+.userPanel .add ,
+.userPanel .remove  {
+	text-indent:-3000px;
+	width:16px;
+	height:16px;
+	background:transparent url(../icons/addFiche.png) top left;
+	position:absolute;
+	top:12px;
+	right:12px;
+}
+.userPanel .remove  {
+	background:transparent url(../icons/deleteFiche.png) top left;
+}
+.userPanel  .avatar {
+	width:30px;
+	height:30px;
+	border:1px solid #bcbcbc;
+	overflow:hidden;
+	position:absolute;
+	top:4px;
+	left:6px;
+}
+
+.userPanel  .avatar img{
+	width:30px;
+	height:auto;
+}
+
+.pageNav_results_userPanel {
+	text-align:center;
+}
+
+.pageNav_results_userPanel .pageNav {
+	margin:0.5em auto;
+}
+
+#selected_userPanel .container{
+	height:100%;
+	background-color:#fdfcfc;
+	border-left:1px solid #c9c9c9;
+	}

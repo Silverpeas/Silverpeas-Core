@@ -287,12 +287,15 @@ public class OrganizationControllerMock extends OrganizationController {
           Group modelGroup) {
     List<String> groupIds = new ArrayList<String>();
     for (Group aGroup : groups.values()) {
-      if (aGroup.isRoot()) {
+      if (aGroup.isRoot() == isRootGroup) {
         boolean match = true;
         if (isDefined(modelGroup.getDomainId())) {
           match = modelGroup.getDomainId().equals(aGroup.getDomainId());
         }
-        if (isDefined(modelGroup.getName())) {
+        if (match && isDefined(modelGroup.getSuperGroupId())) {
+          match = modelGroup.getSuperGroupId().equals(aGroup.getSuperGroupId());
+        }
+        if (match && isDefined(modelGroup.getName())) {
           if (modelGroup.getName().endsWith("%")) {
             String name = modelGroup.getName().replace("%", "");
             match = aGroup.getName().startsWith(name);

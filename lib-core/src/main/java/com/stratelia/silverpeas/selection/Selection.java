@@ -37,6 +37,7 @@ public final class Selection {
   final public static String FIRST_PAGE_SEARCH_ELEMENT = "DisplaySearchElement";
   final public static String FIRST_PAGE_SEARCH_SET = "DisplaySearchSet";
   final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
+  public static final String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
 
   protected String goBackURL;
   protected String cancelURL;
@@ -88,7 +89,7 @@ public final class Selection {
 
   static public String getSelectionURL(String selectionType) {
     if (Selection.TYPE_USERS_GROUPS.equals(selectionType)) {
-      return "/selection/jsp/usergroupselection.jsp";
+      return USER_SELECTION_PANEL_PATH;
     }
     return "/RselectionPeas/jsp/Main?SelectionType=" + selectionType;
   }

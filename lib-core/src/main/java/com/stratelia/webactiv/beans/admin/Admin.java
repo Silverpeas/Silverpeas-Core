@@ -2813,10 +2813,11 @@ public final class Admin {
             DomainDriverManagerFactory.getCurrentDomainDriverManager();
     return groupManager.getAllRootGroupIds(domainDriverManager);
   }
-  
+
   /**
-   * Gets all root user groups in Silverpeas.
-   * A root group is the group of users without any other parent group.
+   * Gets all root user groups in Silverpeas. A root group is the group of users without any other
+   * parent group.
+   *
    * @return an array of user groups.
    * @throws AdminException if an error occurs whil getting the root user groups.
    */
@@ -6407,28 +6408,26 @@ public final class Admin {
   }
 
   /**
-   * Searchs all the users that match the following specified contrains:
-   * <ul>
-   * <li>On of the roles the users have to play for a given component instance: either one of all the
-   * roles of the specified component instance or one of all the specified roles;</li>
-   * <li>A user group the users has to be part of;</li>
-   * <li>Some details attributes the users has to satisfy. This contraint is mandatory and cannot
-   * be null.</li>
-   * </ul>
-   * If no of theses contrains, all of the users in Silverpeas are returned.
+   * Searchs all the users that match the following specified contrains: <ul> <li>On of the roles
+   * the users have to play for a given component instance: either one of all the roles of the
+   * specified component instance or one of all the specified roles;</li> <li>A user group the users
+   * has to be part of;</li> <li>Some details attributes the users has to satisfy. This contraint is
+   * mandatory and cannot be null.</li> </ul> If no of theses contrains, all of the users in
+   * Silverpeas are returned.
+   *
    * @param componentId the unique identifier of the component instance. All the users with the
    * rights to access this instance are seek; the users has to play one of the roles supported by
    * the component instance whether it isn't public.
    * @param roleIds the unique identifiers of roles. They are for one or more specific component
    * instances. The users have to play at least one of the specified roles.
    * @param groupId the unique identifier of the group the users must be part of.
-   * @param userFiler a UserDetail object with or not some attributes set for filtering the 
-   * users to sent back.
+   * @param userFilter a UserDetail object with or not some attributes set for filtering the users
+   * to sent back.
    * @return an array of details on the users that match the specified above contrains.
    * @throws AdminException if an error occurs while searching the users.
    */
   public UserDetail[] searchUsers(String componentId, String[] roleIds, String groupId,
-          UserDetail userFiler)
+          UserDetail userFilter)
           throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
             getCurrentDomainDriverManager();
@@ -6436,8 +6435,9 @@ public final class Admin {
 
       @Override
       public int compare(UserDetail o1, UserDetail o2) {
-        return (o1.getId().equals(o2.getId()) ? 0 : o1.getLastName().compareToIgnoreCase(
-                o2.getLastName()));
+        int comp = o1.getLastName().compareToIgnoreCase(o2.getLastName());
+        return (o1.getId().equals(o2.getId()) ? 0 : (comp == 0 ? o2.getFirstName().
+                compareToIgnoreCase(o1.getFirstName()) : comp));
       }
     });
     try {
@@ -6451,31 +6451,41 @@ public final class Admin {
         }
       }
 
-      // all users matching the contrains
-      UserDetail[] someUsers = userManager.searchUsers(domainDriverManager, getDriverComponentId(
-              componentId), roleIds, userFiler);
-
-      // filter the users according to the group they must be part of (if any)
-      Group model = new Group();
+      UserDetail[] usersInGroup = null;
       if (StringUtil.isDefined(groupId)) {
+        // gets all the users that are part of the specified group
+        Group model = new Group();
         model.setId(groupId);
-        List<UserDetail> groupUsers = Arrays.asList(getAllUsersOfGroup(groupId));
-        for (UserDetail userDetail : someUsers) {
-          if (groupUsers.contains(userDetail)) {
+        usersInGroup = getAllUsersOfGroup(groupId);
+      }
+
+      UserDetail[] usersMatchingContraints = null;
+      if (StringUtil.isDefined(componentId) || (roleIds != null && roleIds.length > 0) || isDefined(
+              userFilter) || usersInGroup == null) {
+        // gets all the users that matches the specified contraints
+        usersMatchingContraints = userManager.searchUsers(domainDriverManager, getDriverComponentId(
+                componentId),
+                roleIds, userFilter);
+      }
+
+      // filters the users in the group that matches the specified contraints
+      if (usersInGroup != null && usersMatchingContraints != null) {
+        List<UserDetail> listOfUsersInGroup = Arrays.asList(usersInGroup);
+        for (UserDetail userDetail : usersMatchingContraints) {
+          if (listOfUsersInGroup.contains(userDetail)) {
             foundUsers.add(userDetail);
           }
         }
-      } else {
-        foundUsers.addAll(Arrays.asList(someUsers));
       }
 
-      // all users of the groups that match also the contrains (if the contraints are set)
-      if (StringUtil.isDefined(componentId) || (roleIds != null && roleIds.length > 0)) {
-        String[] groupIds = searchGroupsIds(true, componentId, roleIds, model);
-        for (String aGroupId : groupIds) {
-          foundUsers.addAll(Arrays.asList(getAllUsersOfGroup(aGroupId)));
+      if (foundUsers.isEmpty()) {
+        if (usersMatchingContraints != null) {
+          return usersMatchingContraints;
+        } else if (usersInGroup != null) {
+          return usersInGroup;
         }
       }
+
       return foundUsers.toArray(new UserDetail[foundUsers.size()]);
     } catch (Exception e) {
       throw new AdminException("Admin.searchUsers",
@@ -6702,5 +6712,14 @@ public final class Admin {
       }
     }
     return newSpaceLabel;
+  }
+
+  private boolean isDefined(final UserDetail filter) {
+    return StringUtil.isDefined(filter.getId()) && StringUtil.isDefined(filter.getSpecificId())
+            && StringUtil.isDefined(filter.getDomainId()) && StringUtil.isDefined(filter.getLogin())
+            && StringUtil.isDefined(filter.getFirstName()) && StringUtil.isDefined(filter.
+            getLastName()) && StringUtil.isDefined(filter.geteMail())
+            && StringUtil.isDefined(filter.getAccessLevel()) && StringUtil.isDefined(filter.
+            getLoginQuestion()) && StringUtil.isDefined(filter.getLoginAnswer());
   }
 }
