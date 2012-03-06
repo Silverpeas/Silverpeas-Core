@@ -36,14 +36,6 @@ public class DownloadDetail implements Serializable {
   private String userIP;
 
   public DownloadDetail() {
-
-  }
-
-  public DownloadDetail(int id, String keyFile, Date downloadDate, String userIP) {
-    setId(id);
-    setKeyFile(keyFile);
-    setDownloadDate(downloadDate);
-    setUserIP(userIP);
   }
 
   public DownloadDetail(String keyFile, Date downloadDate, String userIP) {
