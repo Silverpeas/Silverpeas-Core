@@ -42,7 +42,7 @@
     <init>
       <file name="oracle\busCore\028\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
       <file name="oracle\busCore\028\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
-      <file name="java\dbBuilder_ep.jar" type="javalib" classname="org.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
+      <file name="java\dbBuilder_ep.jar" type="javalib" classname="com.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
     </init>
     <create_index>
       <file name="oracle\busCore\028\create_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>

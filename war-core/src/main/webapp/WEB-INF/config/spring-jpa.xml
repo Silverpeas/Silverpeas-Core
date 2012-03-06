@@ -15,7 +15,7 @@
 
   <context:annotation-config/>
 
-  <hades:dao-config base-package="com.silverpeas" transaction-manager-ref="silverpeasTransactionManager"/>
+  <hades:dao-config base-package="*.silverpeas" transaction-manager-ref="silverpeasTransactionManager"/>
 
   <tx:annotation-driven transaction-manager="silverpeasTransactionManager"/>
 

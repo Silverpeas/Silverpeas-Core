@@ -1,7 +1,4 @@
-CREATE TABLE UniqueId (
-	maxId BIGINT NOT NULL, 
-	tableName varchar(100) NOT NULL
-);
+CREATE TABLE UniqueId (maxId BIGINT NOT NULL,  tableName varchar(100) NOT NULL);
 
 CREATE TABLE Personalization (
 	id varchar(100) NOT NULL ,
