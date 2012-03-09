@@ -40,7 +40,7 @@ public class DownloadDetail implements Serializable {
   valueColumnName = "maxId", pkColumnValue = "sb_filesharing_history", allocationSize = 1)
   private long id;
   @ManyToOne
-  @JoinColumn(name = "keyFile", columnDefinition="char(64)")
+  @JoinColumn(name = "keyFile", columnDefinition="varchar(255)")
   private Ticket ticket;
   @Column(name = "downloaddate", columnDefinition="char(13)", length=13)
   private String downloadDate;  

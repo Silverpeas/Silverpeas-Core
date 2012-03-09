@@ -29,57 +29,59 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.util.UuidPk;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "shared_object_type")
 @Table(name = "sb_filesharing_ticket")
-@IdClass(value = org.silverpeas.util.UuidPk.class)
 public class Ticket implements Serializable {
 
   private static final long serialVersionUID = -612174156104966079L;
   @Column(name = "shared_object_type", nullable = false, insertable = false, updatable = false)
-  private String type;
+  protected String type;
   @Column(name = "shared_object")
-  private long sharedObjectId;
+  protected long sharedObjectId;
   @Column(name = "componentid")
-  private String componentId;
+  protected String componentId;
   @Column(name = "creatorid")
-  private String creatorId;
-  @Column(name = "creationdate", columnDefinition="char(13)", length=13)
-  private String creationDate;
+  protected String creatorId;
+  @Column(name = "creationdate", columnDefinition = "char(13)", length = 13)
+  protected String creationDate;
   @Column(name = "updateid")
-  private String updaterId;
-  @Column(name = "updatedate", columnDefinition="char(13)", length=13)
-  private String updateDate;
-  @Column(name = "enddate", columnDefinition="char(13)", length=13)
-  private String endDate;
+  protected String updaterId;
+  @Column(name = "updatedate", columnDefinition = "char(13)", length = 13)
+  protected String updateDate;
+  @Column(name = "enddate", columnDefinition = "char(13)", length = 13)
+  protected String endDate;
   @Column(name = "nbaccessmax")
-  private int nbAccessMax;
+  protected int nbAccessMax;
   @Column(name = "nbaccess")
-  private int nbAccess;
-  @Id
-  @Column(name = "keyfile", columnDefinition = "char(64)", length = 64)
-  private String uuid;
+  protected int nbAccess;
+  @AttributeOverride(name = "uuid", column =
+  @Column(name = "keyfile", columnDefinition = "varchar(255)", length = 255))
+  @EmbeddedId
+  protected UuidPk token;
   @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "ticket")
-  private List<DownloadDetail> downloads = new ArrayList<DownloadDetail>();
+  protected List<DownloadDetail> downloads = new ArrayList<DownloadDetail>();
 
   protected Ticket() {
   }
 
   protected Ticket(int sharedObjectId, String componentId, UserDetail creator,
       Date creationDate, Date endDate, int nbAccessMax) {
+    this.token = new UuidPk();
     this.sharedObjectId = sharedObjectId;
     this.componentId = componentId;
     this.creatorId = creator.getId();
@@ -166,11 +168,15 @@ public class Ticket implements Serializable {
   }
 
   public String getToken() {
-    return uuid;
+    return token.getUuid();
   }
 
-  public Collection<DownloadDetail> getDownloads() {
-    return Collections.unmodifiableCollection(downloads);
+  public void setToken(String uuid) {
+    this.token = new UuidPk(uuid);
+  }
+
+  public List<DownloadDetail> getDownloads() {
+    return Collections.unmodifiableList(downloads);
   }
 
   public void setDownloads(Collection<DownloadDetail> downloads) {
@@ -229,5 +235,32 @@ public class Ticket implements Serializable {
   public void setContinuous() {
     this.endDate = null;
     this.nbAccessMax = -1;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 97 * hash + (this.token != null ? this.token.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Ticket other = (Ticket) obj;
+    if (this.token != other.token && (this.token == null || !this.token.equals(other.token))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "Ticket{" + "type=" + type + ", sharedObjectId=" + sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" + updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" + nbAccess + ", token=" + token + ", downloads=" + downloads + '}';
   }
 }

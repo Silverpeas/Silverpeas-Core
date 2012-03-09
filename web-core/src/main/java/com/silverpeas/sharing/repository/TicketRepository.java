@@ -41,6 +41,6 @@ public interface TicketRepository extends JpaRepository<Ticket, UuidPk> {
   public void deleteTicketForSharedObjectId( @Param("sharedObjectId") Long sharedObjectId, @Param("type") String type);
   
   
-  @Query("SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorid = :userId")
+  @Query("SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId")
   public List<Ticket> findAllReservationsForUser( @Param("userId") String userId);
 }

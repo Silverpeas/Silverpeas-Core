@@ -17,9 +17,7 @@
   
   <import resource="spring-jpa.xml"/>
   <context:annotation-config/>
-  <context:component-scan base-package="org.silverpeas.resourcemanager.repository"/>
-  <context:component-scan base-package="org.silverpeas.resourcemanager.services"/>
-   <context:component-scan base-package="org.silverpeas.resourcemanager.control"/>
+   <context:component-scan base-package="com.silverpeas.sharing"/>
   
   <bean name="sharingServiceFactory"
          class="com.silverpeas.sharing.SharingServiceFactory" factory-method="getFactory"/>

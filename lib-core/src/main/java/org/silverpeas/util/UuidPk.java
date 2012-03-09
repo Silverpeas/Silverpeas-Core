@@ -37,7 +37,7 @@ public class UuidPk implements Serializable {
   private final String uuid;
 
   public UuidPk() {
-    this.uuid = UUID.randomUUID().toString().substring(0, 64);
+    this.uuid = UUID.randomUUID().toString();
   }
 
   public UuidPk(String uuid) {

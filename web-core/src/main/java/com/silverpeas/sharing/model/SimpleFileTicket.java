@@ -23,11 +23,14 @@
  */
 package com.silverpeas.sharing.model;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.util.Date;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import org.silverpeas.util.UuidPk;
 
 /**
  * Ticket for attached files.
@@ -36,6 +39,20 @@ import javax.persistence.Entity;
 @DiscriminatorValue("Attachment")
 public class SimpleFileTicket extends Ticket {
   private static final long serialVersionUID = 1L;
+
+  protected SimpleFileTicket() {
+  }
+  
+  public SimpleFileTicket(int sharedObjectId, String componentId, UserDetail creator,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
+  }
+  
+   public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
+    this.token = new UuidPk(key);
+  }
 
   public AttachmentDetail getAttachmentDetail() {
     return AttachmentController.searchAttachmentByPK(new AttachmentPK("" + getSharedObjectId()));

@@ -25,10 +25,13 @@ package com.silverpeas.sharing.services;
 
 import com.silverpeas.sharing.SharingTicketService;
 import com.silverpeas.sharing.model.DownloadDetail;
+import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,6 +49,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -57,24 +61,27 @@ import static org.junit.Assert.*;
 @Transactional
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class JpaSharingTicketServiceTest {
-  
+
   public JpaSharingTicketServiceTest() {
   }
-
   private static ReplacementDataSet dataSet;
 
   @BeforeClass
   public static void prepareDataSet() throws Exception {
     FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
     dataSet = new ReplacementDataSet(builder.build(JpaSharingTicketService.class.getClassLoader().
-            getResourceAsStream("com/silverpeas/sharing/services/sharing_dataset.xml")));
+        getResourceAsStream("com/silverpeas/sharing/services/sharing_dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
+
+    creator = new UserDetail();
+    creator.setId("0");
   }
   @Inject
   private SharingTicketService service;
   @Inject
   @Named("jpaDataSource")
   private DataSource dataSource;
+  private static UserDetail creator;
 
   public Connection getConnection() throws SQLException {
     return this.dataSource.getConnection();
@@ -97,7 +104,7 @@ public class JpaSharingTicketServiceTest {
     JpaSharingTicketService instance = new JpaSharingTicketService();
     List expResult = null;
     List result = instance.getTicketsByUser(userId);
-    assertEquals(expResult, result);
+    assertEquals(result, expResult);
     // TODO review the generated test code and remove the default call to fail.
     fail("The test case is a prototype.");
   }
@@ -107,13 +114,18 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testDeleteTicketsByFile() {
-    System.out.println("deleteTicketsByFile");
-    Long sharedObjectId = null;
-    String type = "";
-    JpaSharingTicketService instance = new JpaSharingTicketService();
-    instance.deleteTicketsByFile(sharedObjectId, type);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
+        new Date(1330988399000L), -1);
+    expResult.setNbAccess(1);
+    Ticket result = service.getTicket(key);
+    assertThat(result, is(expResult));
+    assertThat(result.getDownloads(), hasSize(1));
+    service.deleteTicketsByFile(5L, "Attachment");
+    result = service.getTicket(key);
+    assertThat(result, is(nullValue()));
+    result = service.getTicket("9da7a83a-9c05-4692-8e46-a9c1234a9da7a83a-9c05-4692-8e46-a9c1234a");    
+    assertThat(result, is(nullValue()));
   }
 
   /**
@@ -121,14 +133,18 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testGetTicket() {
-    System.out.println("getTicket");
-    String key = "";
-    JpaSharingTicketService instance = new JpaSharingTicketService();
-    Ticket expResult = null;
-    Ticket result = instance.getTicket(key);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
+        new Date(1330988399000L), -1);
+    expResult.setNbAccess(1);
+    Ticket result = service.getTicket(key);
+    assertThat(result, is(expResult));
+    assertThat(result.getDownloads(), hasSize(1));
+    DownloadDetail download = result.getDownloads().get(0);
+    assertThat(download, is(notNullValue()));
+    assertThat(download.getKeyFile(), is(key));
+    assertThat(download.getUserIP(), is("127.0.0.1"));
+    assertThat(download.getDownloadDate(), is(new Date(1330972518889L)));
   }
 
   /**
@@ -136,14 +152,13 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testCreateTicket() {
-    System.out.println("createTicket");
-    Ticket ticket = null;
-    JpaSharingTicketService instance = new JpaSharingTicketService();
-    String expResult = "";
-    String result = instance.createTicket(ticket);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    Ticket ticket = new SimpleFileTicket(5, "kmelia2", creator, new Date(1330972778622L),
+        new Date(1330988399000L), -1);
+    String key = service.createTicket(ticket);
+    assertThat(key, is(notNullValue()));
+    ticket.setToken(key);
+    Ticket result = service.getTicket(key);
+    assertThat(result, is(ticket));
   }
 
   /**
@@ -151,12 +166,19 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testAddDownload() {
-    System.out.println("addDownload");
-    DownloadDetail download = null;
-    JpaSharingTicketService instance = new JpaSharingTicketService();
-    instance.addDownload(download);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
+        new Date(1330988399000L), -1);
+    expResult.setNbAccess(1);
+    Ticket result = service.getTicket(key);
+    assertThat(result, is(expResult));
+    assertThat(result.getDownloads(), hasSize(1));
+    Date now = new Date();
+    DownloadDetail download = new DownloadDetail(result, now, "192.168.0.1");
+    service.addDownload(download);
+    result = service.getTicket(key);
+    assertThat(result, is(expResult));
+    assertThat(result.getDownloads(), hasSize(2));
   }
 
   /**
@@ -164,12 +186,20 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testUpdateTicket() {
-    System.out.println("updateTicket");
-    Ticket ticket = null;
-    JpaSharingTicketService instance = new JpaSharingTicketService();
-    instance.updateTicket(ticket);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
+        new Date(1330988399000L), -1);
+    expResult.setNbAccess(1);
+    Ticket result = service.getTicket(key);
+    assertThat(result, is(expResult));
+    result.setNbAccess(5);
+    result.setEndDate(null);
+    result.setUpdateDate(new Date());
+    result.setLastModifier(creator);
+    result.setNbAccessMax(10);
+    service.updateTicket(result);
+    expResult = service.getTicket(key);
+    assertThat(result, is(expResult));
   }
 
   /**
@@ -177,11 +207,14 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testDeleteTicket() {
-    System.out.println("deleteTicket");
-    String key = "";
-    JpaSharingTicketService instance = new JpaSharingTicketService();
-    instance.deleteTicket(key);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
+        new Date(1330988399000L), -1);
+    expResult.setNbAccess(1);
+    Ticket result = service.getTicket(key);
+    assertThat(result, is(expResult));
+    service.deleteTicket(key);
+    result = service.getTicket(key);
+    assertThat(result, is(nullValue()));
   }
 }
