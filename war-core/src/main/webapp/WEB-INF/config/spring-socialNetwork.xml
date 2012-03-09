@@ -25,8 +25,13 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+  <ctx:annotation-config/>
+  <ctx:component-scan base-package="com.silverpeas.socialNetwork.relationShip"/>
 
   <bean id="providerSwitch" class="com.silverpeas.socialNetwork.provider.ProviderSwitch">
     <property name="socialEventsInterface">

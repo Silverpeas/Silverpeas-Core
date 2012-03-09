@@ -25,10 +25,14 @@ package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.socialNetwork.relationShip.RelationShip;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -63,6 +67,8 @@ public class UserProfileResource extends RESTWebService {
   public static final String RESPONSE_HEADER_USERSIZE = "X-Silverpeas-UserSize";
   @Inject
   private UserProfileService profileService;
+  @Inject
+  private RelationShipService relationShipService;
 
   /**
    * Creates a new instance of UserProfileResource
@@ -121,17 +127,7 @@ public class UserProfileResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity getUser(@PathParam("userId") String userId) {
     checkUserAuthentication();
-    UserDetail theUser = UserDetail.getById(userId);
-    if (theUser == null) {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
-    if (getUserDetail().isDomainRestricted() && !theUser.getDomainId().equals(getUserDetail().
-            getDomainId())) {
-      Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
-              + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
-                userId});
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    }
+    UserDetail theUser = getUserDetailById(userId);
     return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
   }
 
@@ -184,6 +180,63 @@ public class UserProfileResource extends RESTWebService {
             header(RESPONSE_HEADER_USERSIZE, users.length).build();
   }
 
+  /**
+   * Gets the profile on the user that is identified by the unique identifier refered by the URI.
+   *
+   * @param userId the unique identifier of the user.
+   * @return the profile of the user in a JSON representation.
+   */
+  @GET
+  @Path("{userId}/contacts")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getUserContacts(@PathParam("userId") String userId,
+          @QueryParam("application") String instanceId,
+          @QueryParam("roles") String roles,
+          @QueryParam("name") String name,
+          @QueryParam("page") String page) {
+    checkUserAuthentication();
+    UserDetail theUser = getUserDetailById(userId);
+    int theUserId = Integer.valueOf(theUser.getId());
+    List<RelationShip> relationships;
+    try {
+      relationships = relationShipService.getAllMyRelationShips(theUserId);
+    } catch (SQLException ex) {
+      Logger.getLogger(UserProfileResource.class.getName()).log(Level.SEVERE, null, ex);
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+    List<UserDetail> contacts = new ArrayList<UserDetail>(relationships.size());
+    for (RelationShip relationShip : relationships) {
+      UserDetail model = aFilteringModel(null, null);
+      if (theUserId == relationShip.getUser1Id()) {
+        model.setId(String.valueOf(relationShip.getUser2Id()));
+      } else {
+        model.setId(String.valueOf(relationShip.getUser1Id()));
+      }
+      String[] rolesIds = (isDefined(roles)
+              ? profileService.getRoleIds(instanceId, roles.split(","))
+              : null);
+      UserDetail[] users = getOrganizationController().searchUsers(instanceId, rolesIds, null,
+              model);
+      if (users.length == 1) {
+        UserDetail contact = users[0];
+        if (isDefined(name)) {
+          String pattern = name.replaceAll("\\*", "\\\\w*").toLowerCase();
+          if (contact.getFirstName().toLowerCase().matches(pattern) || contact.getLastName().
+                  toLowerCase().matches(pattern)) {
+            contacts.add(contact);
+          }
+        } else {
+          contacts.add(contact);
+        }
+      }
+    }
+    UserDetail[] paginatedUsers = paginate(contacts, page);
+    URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
+    return Response.ok(
+            asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
+            header(RESPONSE_HEADER_USERSIZE, contacts.size()).build();
+  }
+
   @Override
   protected String getComponentId() {
     throw new UnsupportedOperationException("The UserProfileResource doesn't belong to any component"
@@ -207,6 +260,21 @@ public class UserProfileResource extends RESTWebService {
     return UserProfileEntity.fromUser(user).withAsUri(userUri);
   }
 
+  private UserDetail getUserDetailById(String userId) {
+    UserDetail theUser = UserDetail.getById(userId);
+    if (theUser == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+    if (getUserDetail().isDomainRestricted() && !theUser.getDomainId().equals(getUserDetail().
+            getDomainId())) {
+      Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
+              + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
+                userId});
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+    return theUser;
+  }
+
   private UserDetail aFilteringModel(String name, String domainId) {
     UserDetail model = new UserDetail();
     if (getUserDetail().isDomainRestricted()) {
@@ -220,6 +288,10 @@ public class UserProfileResource extends RESTWebService {
       model.setLastName(filterByName);
     }
     return model;
+  }
+
+  private UserDetail[] paginate(List<UserDetail> users, String pagination) {
+    return paginate(users.toArray(new UserDetail[users.size()]), pagination);
   }
 
   private UserDetail[] paginate(UserDetail[] users, String pagination) {
