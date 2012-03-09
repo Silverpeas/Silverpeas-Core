@@ -24,7 +24,7 @@
 package com.silverpeas.sharing.servlets;
 
 import com.silverpeas.sharing.control.FileSharingSessionController;
-import com.silverpeas.sharing.model.TicketDetail;
+import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -86,7 +86,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         destination = getDestination("ViewTickets", fileSharingSC, request);
       } else if ("ViewTickets".equals(function)) {
         // liste des tickets visibles pour l'utilisateur
-        List<TicketDetail> tickets = fileSharingSC.getTicketsByUser();
+        List<Ticket> tickets = fileSharingSC.getTicketsByUser();
         request.setAttribute("Tickets", tickets);
         destination = rootDest + "viewTickets.jsp";
       } else if ("DeleteTicket".equals(function)) {
@@ -101,7 +101,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         String type = request.getParameter("Type"); // versioning or not
         boolean versioned = StringUtil.isDefined(type) && "version".equalsIgnoreCase(type);
         UserDetail creator = fileSharingSC.getUserDetail();
-        TicketDetail newTicket = TicketDetail.aTicket(Integer.parseInt(fileId), componentId,
+        Ticket newTicket = Ticket.aTicket(Integer.parseInt(fileId), componentId,
             versioned, creator, new Date(), new Date(), 1);
 
         // passage des paramètres
@@ -111,17 +111,17 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         destination = rootDest + "ticketManager.jsp";
       } else if ("CreateTicket".equals(function)) {
         // récupération des paramètres venus de l'écran de saisie et création de l'objet
-        // TicketDetail
-        TicketDetail ticket = generateTicket(fileSharingSC, request);
+        // Ticket
+        Ticket ticket = generateTicket(fileSharingSC, request);
         String keyFile = fileSharingSC.createTicket(ticket);
         // mettre à jour l'objet ticket
-        ticket.setKeyFile(keyFile);
+        ticket.setToken(keyFile);
         request.setAttribute("Url", ticket.getUrl(request));
 
         destination = rootDest + "confirmTicket.jsp";
       } else if ("EditTicket".equals(function)) {
         String keyFile = request.getParameter("KeyFile");
-        TicketDetail ticket = fileSharingSC.getTicket(keyFile);
+        Ticket ticket = fileSharingSC.getTicket(keyFile);
         request.setAttribute("Ticket", ticket);
         request.setAttribute("Url", ticket.getUrl(request));
         request.setAttribute("Action", "UpdateTicket");
@@ -130,8 +130,8 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       } else if ("UpdateTicket".equals(function)) {
         // récupération des paramètres venus de l'écran de saisie
         String keyFile = request.getParameter("KeyFile");
-        TicketDetail ticket = updateTicket(keyFile, fileSharingSC, request);
-        ticket.setKeyFile(keyFile);
+        Ticket ticket = updateTicket(keyFile, fileSharingSC, request);
+        ticket.setToken(keyFile);
         // modification du lien
         fileSharingSC.updateTicket(ticket);
         // retour sur le liste des tickets
@@ -152,10 +152,10 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
 
   }
 
-  private TicketDetail generateTicket(
+  private Ticket generateTicket(
       FileSharingSessionController fileSharingSC, HttpServletRequest request)
       throws ParseException {
-    TicketDetail ticket;
+    Ticket ticket;
     UserDetail creator = fileSharingSC.getUserDetail();
     int fileId = Integer.parseInt(request.getParameter("FileId"));
     String componentId = request.getParameter("ComponentId");
@@ -167,17 +167,17 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       String date = request.getParameter("EndDate");
       Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
       int maxAccessNb = Integer.parseInt(request.getParameter("NbAccessMax"));
-      ticket = TicketDetail.aTicket(fileId, componentId, versioning, creator, new Date(), endDate,
+      ticket = Ticket.aTicket(fileId, componentId, versioning, creator, new Date(), endDate,
           maxAccessNb);
     } else {
-      ticket = TicketDetail.continuousTicket(fileId, componentId, versioning, creator, new Date());
+      ticket = Ticket.continuousTicket(fileId, componentId, versioning, creator, new Date());
     }
     return ticket;
   }
 
-  private TicketDetail updateTicket(String keyFile, FileSharingSessionController fileSharingSC, HttpServletRequest request)
+  private Ticket updateTicket(String keyFile, FileSharingSessionController fileSharingSC, HttpServletRequest request)
       throws ParseException, RemoteException {
-    TicketDetail ticket = fileSharingSC.getTicket(keyFile);
+    Ticket ticket = fileSharingSC.getTicket(keyFile);
     if (!StringUtil.isDefined(request.getParameter("Continuous"))) {
       String date = request.getParameter("EndDate");
       Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());

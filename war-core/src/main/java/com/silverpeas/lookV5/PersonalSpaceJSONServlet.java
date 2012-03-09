@@ -28,8 +28,8 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.sharing.model.SharingTicketService;
-import com.silverpeas.sharing.model.FileSharingServiceFactory;
+import com.silverpeas.sharing.SharingTicketService;
+import com.silverpeas.sharing.SharingServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
@@ -277,7 +277,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     // mes tickets
     if (helper.getSettings("fileSharingVisible", true)) {
       SharingTicketService sharingTicket =
-          FileSharingServiceFactory.getFactory().getSharingTicketService();
+          SharingServiceFactory.getFactory().getSharingTicketService();
       try {
         if (!sharingTicket.getTicketsByUser(helper.getUserId()).isEmpty()) {
           addTool(jsonArray, helper, "fileSharingVisible", "sharingTicket",

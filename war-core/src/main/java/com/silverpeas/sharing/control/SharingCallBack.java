@@ -23,9 +23,9 @@
  */
 package com.silverpeas.sharing.control;
 
-import com.silverpeas.sharing.model.SharingTicketService;
-import com.silverpeas.sharing.model.FileSharingRuntimeException;
-import com.silverpeas.sharing.model.FileSharingServiceFactory;
+import com.silverpeas.sharing.SharingTicketService;
+import com.silverpeas.sharing.FileSharingRuntimeException;
+import com.silverpeas.sharing.SharingServiceFactory;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -102,6 +102,6 @@ public class SharingCallBack implements CallBack {
   }
 
   private SharingTicketService getFileSharingService() {
-    return FileSharingServiceFactory.getFactory().getSharingTicketService();
+    return SharingServiceFactory.getFactory().getSharingTicketService();
   }
 }

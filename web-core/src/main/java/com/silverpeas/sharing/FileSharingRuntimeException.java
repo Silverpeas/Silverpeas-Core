@@ -22,58 +22,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.sharing.model;
+package com.silverpeas.sharing;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class DownloadDetail implements Serializable {
+public class FileSharingRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -3552579238204831286L;
-  private int id;
-  private String keyFile;
-  private Date downloadDate;
-  private String userIP;
+  private static final long serialVersionUID = -461008369601745045L;
 
-  public DownloadDetail() {
+  public FileSharingRuntimeException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
   }
 
-  public DownloadDetail(String keyFile, Date downloadDate, String userIP) {
-    setKeyFile(keyFile);
-    setDownloadDate(downloadDate);
-    setUserIP(userIP);
+  public FileSharingRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  public int getId() {
-    return id;
+  public FileSharingRuntimeException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public FileSharingRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  public String getKeyFile() {
-    return keyFile;
-  }
-
-  public void setKeyFile(String keyFile) {
-    this.keyFile = keyFile;
-  }
-
-  public Date getDownloadDate() {
-    return downloadDate;
-  }
-
-  public void setDownloadDate(Date downloadDate) {
-    this.downloadDate = downloadDate;
-  }
-
-  public String getUserIP() {
-    return userIP;
-  }
-
-  public void setUserIP(String userIP) {
-    this.userIP = userIP;
+  @Override
+  public String getModule() {
+    return "FileSharing";
   }
 
 }

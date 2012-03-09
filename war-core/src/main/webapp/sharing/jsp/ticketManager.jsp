@@ -176,7 +176,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
               </tr>
               <tr>
                 <c:if test="${action eq 'UpdateTicket'}">
-                  <td class="txtlibform"><fmt:message key="sharing.keyFile"/> :</td>
+                  <td class="txtlibform"><fmt:message key="sharing.token"/> :</td>
                   <td><a href="<c:out value='${ticketURL}'/>"><c:out value="${ticket.keyFile}"/></a></td>
                 </c:if>
               </tr>

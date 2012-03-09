@@ -23,10 +23,10 @@
  */
 package com.silverpeas.lookV5;
 
-import com.silverpeas.sharing.model.FileSharingServiceFactory;
+import com.silverpeas.sharing.SharingServiceFactory;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.sharing.model.SharingTicketService;
+import com.silverpeas.sharing.SharingTicketService;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -769,7 +769,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + "Main\"/>");
       }
       if (settings.getBoolean("fileSharingVisible", true)) {
-        SharingTicketService sharingTicket = FileSharingServiceFactory.getFactory().
+        SharingTicketService sharingTicket = SharingServiceFactory.getFactory().
             getSharingTicketService();
         if (!sharingTicket.getTicketsByUser(userId).isEmpty()) {
           writer.write("<item id=\"sharingTicket\" name=\""

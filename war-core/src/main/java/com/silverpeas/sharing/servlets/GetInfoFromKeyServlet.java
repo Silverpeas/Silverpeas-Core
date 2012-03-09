@@ -24,8 +24,8 @@
 package com.silverpeas.sharing.servlets;
 
 import com.silverpeas.look.SilverpeasLook;
-import com.silverpeas.sharing.model.FileSharingServiceFactory;
-import com.silverpeas.sharing.model.TicketDetail;
+import com.silverpeas.sharing.SharingServiceFactory;
+import com.silverpeas.sharing.model.Ticket;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
@@ -49,7 +49,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
   protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     String keyFile = request.getParameter(PARAM_KEYFILE);
-    TicketDetail ticket = FileSharingServiceFactory.getFactory().getSharingTicketService().getTicket(
+    Ticket ticket = SharingServiceFactory.getFactory().getSharingTicketService().getTicket(
         keyFile);
     request.setAttribute(ATT_TICKET, ticket);
     if (!ticket.isValid()) {
@@ -57,8 +57,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
           request, response);
     } else {
       if (!ticket.isVersioned()) {
-        request.setAttribute(ATT_ATTACHMENT,
-            ticket.getAttachmentDetail());
+        request.setAttribute(ATT_ATTACHMENT, ticket.getAttachmentDetail());
       } else {
         Document document = ticket.getDocument();
         DocumentVersion version = new VersioningUtil().getLastPublicVersion(document.getPk());
@@ -78,7 +77,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
    * that have a specific wallpapers.
    * @return the URL of the wallpaper.
    */
-  private String getWallpaperFor(final TicketDetail ticket) {
+  private String getWallpaperFor(final Ticket ticket) {
     ComponentInstLight component = getOrganizationController().getComponentInstLight(ticket.
         getComponentId());
     return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpaceOrDefaultOne(component.

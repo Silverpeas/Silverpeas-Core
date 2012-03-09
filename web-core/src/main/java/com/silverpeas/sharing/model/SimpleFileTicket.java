@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,38 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.sharing.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-public class FileSharingRuntimeException extends SilverpeasRuntimeException {
+/**
+ * Ticket for attached files.
+ */
+@Entity
+@DiscriminatorValue("Attachment")
+public class SimpleFileTicket extends Ticket {
+  private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = -461008369601745045L;
-
-  public FileSharingRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public AttachmentDetail getAttachmentDetail() {
+    return AttachmentController.searchAttachmentByPK(new AttachmentPK("" + getSharedObjectId()));
   }
-
-  public FileSharingRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public FileSharingRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public FileSharingRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  @Override
-  public String getModule() {
-    return "FileSharing";
-  }
-
 }

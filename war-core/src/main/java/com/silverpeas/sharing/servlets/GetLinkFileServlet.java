@@ -37,12 +37,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.silverpeas.sharing.model.Ticket;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.silverpeas.sharing.model.DownloadDetail;
-import com.silverpeas.sharing.model.FileSharingServiceFactory;
-import com.silverpeas.sharing.model.TicketDetail;
+import com.silverpeas.sharing.SharingServiceFactory;
 import com.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
@@ -61,7 +61,7 @@ public class GetLinkFileServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest rest = new RestRequest(request, "myFile");
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
-    TicketDetail ticket = FileSharingServiceFactory.getFactory().getSharingTicketService().getTicket(
+    Ticket ticket = SharingServiceFactory.getFactory().getSharingTicketService().getTicket(
         keyFile);
     if (ticket.isValid()) {
       // recherche des infos sur le fichier...
@@ -71,7 +71,7 @@ public class GetLinkFileServlet extends HttpServlet {
       long fileSize = 0;
       if (!ticket.isVersioned()) {
         AttachmentDetail attachment =
-            AttachmentController.searchAttachmentByPK(new AttachmentPK("" + ticket.getFileId()));
+            AttachmentController.searchAttachmentByPK(new AttachmentPK("" + ticket.getSharedObjectId()));
         filePath =
             FileRepositoryManager.getAbsolutePath(attachment.getInstanceId() +
             File.separator
@@ -85,7 +85,7 @@ public class GetLinkFileServlet extends HttpServlet {
         fileSize = attachment.getSize();
       } else {
         DocumentVersion version =
-            new VersioningUtil().getLastPublicVersion(new DocumentPK(ticket.getFileId(), ticket
+            new VersioningUtil().getLastPublicVersion(new DocumentPK(ticket.getSharedObjectId(), ticket
             .getComponentId()));
         filePath = FileRepositoryManager.getAbsolutePath(ticket.getComponentId()) + File.separator
             + "Versioning" + File.separator
@@ -104,7 +104,7 @@ public class GetLinkFileServlet extends HttpServlet {
         input = new BufferedInputStream(FileUtils.openInputStream(realFile));
         IOUtils.copy(input, out);
         DownloadDetail download = new DownloadDetail(keyFile, new Date(), request.getRemoteAddr());
-        FileSharingServiceFactory.getFactory().getSharingTicketService().addDownload(download);
+        SharingServiceFactory.getFactory().getSharingTicketService().addDownload(download);
         return;
       } catch (Exception ex) {
       } finally {

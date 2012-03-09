@@ -23,9 +23,9 @@
  */
 package com.silverpeas.sharing.control;
 
-import com.silverpeas.sharing.model.SharingTicketService;
-import com.silverpeas.sharing.model.FileSharingServiceFactory;
-import com.silverpeas.sharing.model.TicketDetail;
+import com.silverpeas.sharing.SharingTicketService;
+import com.silverpeas.sharing.SharingServiceFactory;
+import com.silverpeas.sharing.model.Ticket;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -50,20 +50,20 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
         "com.silverpeas.sharing.settings.fileSharingIcons");
   }
 
-  public List<TicketDetail> getTicketsByUser() throws RemoteException {
+  public List<Ticket> getTicketsByUser() throws RemoteException {
     return getFileSharingService().getTicketsByUser(getUserId());
   }
 
-  public String createTicket(TicketDetail ticket) {
-    TicketDetail newTicket = ticket;
+  public String createTicket(Ticket ticket) {
+    Ticket newTicket = ticket;
     if (newTicket.getCreator() == null) {
       newTicket.setCreator(getUserDetail());
     }
     return getFileSharingService().createTicket(newTicket);
   }
 
-  public void updateTicket(TicketDetail ticket) {
-    TicketDetail newTicket = ticket;
+  public void updateTicket(Ticket ticket) {
+    Ticket newTicket = ticket;
     UserDetail user = getUserDetail();
     newTicket.setLastModifier(user);
     newTicket.setUpdateDate(new Date());
@@ -74,11 +74,11 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
     getFileSharingService().deleteTicket(key);
   }
 
-  public TicketDetail getTicket(String key) throws RemoteException {
+  public Ticket getTicket(String key) throws RemoteException {
     return getFileSharingService().getTicket(key);
   }
 
   private SharingTicketService getFileSharingService() {
-    return FileSharingServiceFactory.getFactory().getSharingTicketService();
+    return SharingServiceFactory.getFactory().getSharingTicketService();
   }
 }

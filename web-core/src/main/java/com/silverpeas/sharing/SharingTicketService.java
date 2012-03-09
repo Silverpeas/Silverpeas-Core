@@ -22,8 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.sharing.model;
+package com.silverpeas.sharing;
 
+import com.silverpeas.sharing.model.DownloadDetail;
+import com.silverpeas.sharing.model.Ticket;
 import java.util.List;
 
 /**
@@ -40,29 +42,28 @@ public interface SharingTicketService {
    * @param userId the identifier of the user that has emitted the tickets.
    * @return the tickets of this user.
    */
-  public List<TicketDetail> getTicketsByUser(String userId);
+  public List<Ticket> getTicketsByUser(String userId);
 
   /**
    * Deletes all the tickets about the specified file.
-   * @param fileId the identifier of the file.
-   * @param versioning is this file is versionned.
-   * specified file.
+   * @param sharedObjectId the identifier of the shared object.
+   * @param type is this shared object type.
    */
-  public void deleteTicketsByFile(String fileId, boolean versioning);
+  public void deleteTicketsByFile(Long sharedObjectId, String type);
 
   /**
    * Gets the ticket identified by the specified key.
    * @param key the key identifying the ticket.
    * @return the ticket.
    */
-  public TicketDetail getTicket(String key);
+  public Ticket getTicket(String key);
 
   /**
    * Creates a new ticket in the system.
    * @param ticket the ticket to save.
    * @return the key identifying the saved ticket.
    */
-  public String createTicket(TicketDetail ticket);
+  public String createTicket(Ticket ticket);
 
   /**
    * Updates the list of downloads that were done for a specified ticket.
@@ -74,7 +75,7 @@ public interface SharingTicketService {
    * Updates the information of the specified ticket.
    * @param ticket the ticket with updated information.
    */
-  public void updateTicket(TicketDetail ticket);
+  public void updateTicket(Ticket ticket);
 
   /**
    * Deletes the ticket identified by the specified key.

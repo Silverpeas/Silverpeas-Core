@@ -62,7 +62,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
-<%@ page import="com.silverpeas.sharing.model.TicketDetail"%>
+<%@ page import="com.silverpeas.sharing.model.Ticket"%>
 <%@ page import="com.silverpeas.sharing.model.DownloadDetail"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>

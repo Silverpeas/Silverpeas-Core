@@ -22,22 +22,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.sharing.model;
+package com.silverpeas.sharing;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * A factory of SharingTicketService instances.
  * This factory wraps the concrete implementation of the SharingTicketService and the way the
  * life-cycle of theses instances are managed.
  */
-public class FileSharingServiceFactory {
-  private static final FileSharingServiceFactory instance = new FileSharingServiceFactory();
-  private SharingTicketService sharingTicketService = new SharingTicketServiceImpl();
+public class SharingServiceFactory {
+  private static final SharingServiceFactory instance = new SharingServiceFactory();
+  @Inject
+  @Named("jpaSharingTicketService")
+  private SharingTicketService sharingTicketService;
 
   /**
    * Gets a factory of a file sharing service.
    * @return an instance of the FileSharingServiceFactory.
    */
-  public static FileSharingServiceFactory getFactory() {
+  public static SharingServiceFactory getFactory() {
     return instance;
   }
 

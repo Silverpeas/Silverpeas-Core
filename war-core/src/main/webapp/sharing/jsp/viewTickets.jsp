@@ -102,7 +102,7 @@
                IconPane iconPane = gef.getIconPane();
               Icon keyIcon = iconPane.addIcon();
               keyIcon.setProperties(resource.getIcon("sharing.ticket"),
-                  resource.getString("sharing.ticket"), ((TicketDetail)pageContext.getAttribute("ticket")).getUrl(request));
+                  resource.getString("sharing.ticket"), ((Ticket)pageContext.getAttribute("ticket")).getUrl(request));
               pageContext.setAttribute("ticketIcon", keyIcon.print());
               %>
               <view:arrayCellText text="${ticketIcon}"/>
@@ -119,13 +119,13 @@
               IconPane iconPane = gef.getIconPane();
               Icon updateIcon = iconPane.addIcon();
               Icon deleteIcon = iconPane.addIcon();
-              String keyFile = ((TicketDetail)pageContext.getAttribute("ticket")).getKeyFile();
+              String token = ((Ticket)pageContext.getAttribute("ticket")).getToken();
               updateIcon.setProperties(resource.getIcon("sharing.update"),
                   resource.getString("sharing.updateTicket"),
-                  "javaScript:onClick=editTicket('" + keyFile + "')");
+                  "javaScript:onClick=editTicket('" + token + "')");
               deleteIcon.setProperties(resource.getIcon("sharing.delete"),
                   resource.getString("sharing.deleteTicket"),
-                  "javaScript:onClick=deleteTicket('" + keyFile + "')");
+                  "javaScript:onClick=deleteTicket('" + token + "')");
               pageContext.setAttribute("ticketUpdateDeleteIcons", updateIcon.print() + "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
             %>
             <view:arrayCellText text="${ticketUpdateDeleteIcons}" />
