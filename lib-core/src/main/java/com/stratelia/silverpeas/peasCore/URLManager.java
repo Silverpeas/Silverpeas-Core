@@ -128,8 +128,7 @@ public class URLManager {
       return specialString;
     }
     // Build the standard path : /RcompName/CompId/
-    // Workaround for Container/Content !!!!!!!!!!!
-    return buildStandardURL(sureCompName, sComponentId, false);
+    return buildStandardURL(sureCompName, sComponentId);
   }
 
   @Deprecated
@@ -150,18 +149,7 @@ public class URLManager {
    */
   public static String getNewComponentURL(String spaceId, String componentId) {
     String sureCompName = getComponentNameFromComponentId(componentId);
-    return buildStandardURL(sureCompName, componentId, true);
-  }
-
-  /**
-   * Construit une chaine que l'on concatène à la fin de la nouvelle URL
-   *
-   * @param spaceId     - l'id de l'espace (WA151)
-   * @param componentId - l'id de l'instance de composant (trucsAstuces1042)
-   * @return la chaine de caractères à concaténer
-   */
-  public static String getEndURL(String spaceId, String componentId) {
-    return "&componentId=" + componentId + "&spaceId=" + spaceId;
+    return buildStandardURL(sureCompName, componentId);
   }
 
   /**
@@ -171,23 +159,9 @@ public class URLManager {
    * @param sComponentId   - l'id de l'instance de composant (trucsAstuces1042)
    * @param isGlobalSearch - boolean (vrai si nous sommes en recherche Globale)
    */
-  private static String buildStandardURL(String componentName, String sComponentId,
-      boolean isGlobalSearch) {
-    String standardURL = '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/' + sComponentId + '/';
-
-    if (isGlobalSearch) {
-      if ("sources".equals(componentName) || "whitePages".equals(componentName)
-          || "expertLocator".equals(componentName) || "infoTracker".equals(componentName)
-          || "documentation".equals(componentName)) {
-        standardURL = "/RpdcSearch/" + sComponentId + "/GlobalContentForward?contentURL=Consult?";
-      }
-    } else {
-      if ("sources".equals(componentName)  || "expertLocator".equals(componentName)
-          || "infoTracker".equals(componentName) || "documentation".equals(componentName)) {
-        standardURL = "/RpdcSearch/" + sComponentId + "/";
-      }
-    }
-    return standardURL;
+  private static String buildStandardURL(String componentName, String sComponentId) {
+    return '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/' +
+        sComponentId + '/';
   }
 
   /**
