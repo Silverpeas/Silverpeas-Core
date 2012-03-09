@@ -89,8 +89,8 @@ public class UserGroupProfileResource extends RESTWebService {
           @QueryParam("roles") String roles,
           @QueryParam("name") String name) {
     checkUserAuthentication();
-    String[] roleIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-            : null);
+    String[] roleNames = (isDefined(roles) ? roles.split(","):new String[0]);
+    String[] roleIds = profileService.getRoleIds(instanceId, roleNames);
     String[] groupIds = getOrganizationController().searchGroupsIds(true, null, roleIds,
             aFilteringModel(name, null));
     Group[] groups = getOrganizationController().getGroups(groupIds);

@@ -519,6 +519,55 @@ public class UserTable extends Table<UserRow> {
           "select ST_User." + USER_COLUMNS + ", UPPER(lastName)"
           + "from ST_User,ST_UserRole_User_Rel,ST_UserRole";
   
+  public UserRow[] searchUsers(List<String> userIds, UserRow userModel, boolean and) throws AdminPersistenceException {
+    boolean concatAndOr = false;
+    String andOr = (and ? ") AND (" : ") OR (");
+    List<Integer> ids = new ArrayList<Integer>();
+    List<String> params = new ArrayList<String>();
+
+    StringBuilder theQuery = new StringBuilder(SELECT_SEARCH_USERS);
+    if (!userIds.isEmpty()) {
+      theQuery.append(" WHERE (ST_User.id IN (").append(list2String(userIds)).append(") ");
+      concatAndOr = true;
+    }
+    concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "ST_User.id", concatAndOr, andOr);
+    if (userModel.domainId >= 0) { // users are not bound to "domaine mixte"
+      concatAndOr = addIdToQuery(ids, theQuery, userModel.domainId,
+          "ST_User.domainId", concatAndOr, andOr);
+    }
+    concatAndOr = addParamToQuery(params, theQuery, userModel.specificId, "ST_User.specificId",
+        concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.login, "ST_User.login", concatAndOr,
+        andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.firstName, "ST_User.firstName",
+        concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.lastName, "ST_User.lastName",
+        concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.eMail, "ST_User.email", concatAndOr,
+        andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.accessLevel, "ST_User.accessLevel",
+        concatAndOr, andOr);
+    concatAndOr =
+        addParamToQuery(params, theQuery, userModel.loginQuestion, "ST_User.loginQuestion",
+        concatAndOr, andOr);
+    concatAndOr =
+        addParamToQuery(params, theQuery, userModel.loginAnswer, "ST_User.loginAnswer",
+        concatAndOr, andOr);
+    if (concatAndOr) {
+      theQuery.append(") AND (accessLevel <> 'R')");
+    } else {
+      theQuery.append(" WHERE (accessLevel <> 'R')");
+    }
+    theQuery.append(" order by UPPER(ST_User.lastName)");
+
+    int[] idsArray = new int[ids.size()];
+    for (int i = 0; i < ids.size(); i++) {
+      idsArray[i] = ids.get(i);
+    }
+    List<UserRow> rows = getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
+    return rows.toArray(new UserRow[rows.size()]);
+  }
+  
   /**
    * Searchs all the database user rows that match the following specified contrains:
    * <ul>

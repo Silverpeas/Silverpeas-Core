@@ -25,8 +25,7 @@
 userRootURL = webContext + '/services/profile/users';
 groupRootURL = webContext + '/services/profile/groups';
 
-var UserGroupType = 'UserGroup';
-var UserProfileType = 'UserProfile';
+var CountPerPage = 6; // number of items in a pagination page
 
 function isAUserProfile(object) {
   return object.type && object.type == UserProfileType;
@@ -38,6 +37,7 @@ function isAUserGroup(object) {
 
 /**
  * A user group object built from its specified JSON representation.
+ * It provides additional methods.
  */
 function UserGroup(group) {
   
@@ -48,11 +48,6 @@ function UserGroup(group) {
   if (group != null)
     for (var prop in group)
       this[prop] = group[prop];
-
-  /**
-   * The type of the object (UserGroup)
-   */
-  this.type = UserGroupType;
   
   /**
    * Sets this user group as belonging to the specified component instance (the unique identifier
@@ -76,7 +71,9 @@ function UserGroup(group) {
   /**
    * Loads the children (subgroups) of this user group, and calls the specified callback operation
    * by passing it the fetched subgroups.
-   * It accepts as a first optional argument a pattern on the name the users should match.
+   * It accepts as arguments:
+   * - optionally a pattern on the name the users should match.
+   * - the callback function to call once the subgroups loaded.
    */
   this.onChildren = function() {
     var arg = 0, name = null;
@@ -93,20 +90,55 @@ function UserGroup(group) {
   }
   
   /**
-   * Loads the users that belong to this group (and its subgroups), and calls the specified
-   * callback operation by passing it the fetched users.
-   * It accepts as a first optional argument a pattern on the name the users should match.
+   * Loads the nth page of the users that belong to this group (and its subgroups), and calls the
+   * specified callback operation by passing it the fetched users.
+   * If no page is specified, load all the users.
+   * It accepts as arguments:
+   * - optionally a pattern on the name the users should match (by default set at null: all users),
+   * - optionally the page number or null if all the users must be fetched (by default set at null)
+   * - optionally the page size in users count (by default it is set at CountPerPage). The page size
+   *   cannot be set without passing the page number.
+   * - the callback operation to call once the users loaded.
    */
   this.onUsers = function() {
-    var arg = 0, name = null;
-    if (arguments.length == 2)
+    var arg = 0, name = null, page = null, pagesize = CountPerPage, toload = false;
+    if (typeof arguments[arg] == 'string' || arguments[arg] == null)
       name = arguments[arg++];
+    if (typeof arguments[arg] == 'number' || arguments[arg] == null) {
+      page = arguments[arg++];
+      if (typeof arguments[arg] == 'number')
+        pagesize = arguments[arg++];
+    }
+    if (arg == arguments.length || arguments[arg] == null) {
+      alert('Error in arguments: the callback is mandtory');
+      return self;
+    }
     var callback = arguments[arg];
-    if (usermgt.filter.name != name || usermgt.users == null) {
-      usermgt.filter.name = name;
+    if (usermgt.users == null) {
       usermgt.filter.group = self.id;
+      toload = true;
+    } 
+    if (usermgt.filter.name != name) {
+      usermgt.filter.name = name;
+      toload = true;
+    }
+    if (page != null) {
+      if (usermgt.filter.pagination == null || usermgt.filter.pagination.page != page ||
+        usermgt.filter.pagination.count != pagesize) {
+        usermgt.filter.pagination = {
+          page: page, 
+          count: pagesize
+        };
+        toload = true;
+      }
+    }
+    if (page == null && usermgt.filter.pagination != null) {
+      usermgt.filter.pagination = null;
+      toload = true;
+    }
+    if (toload)
       usermgt.get(callback);
-    } else 
+    else 
       callback(usermgt.users);
     return self;
   }
@@ -131,7 +163,7 @@ function UserGroup(group) {
  * in Silverpeas can be fetched.
  */
 var rootUserGroup = new UserGroup({
-  childrenUri: groupRootURL,
+  childrenUri: null,
   name: 'Groupes'
 });
 
@@ -150,22 +182,21 @@ function UserProfileManagement(params) {
    * Decorates the user profiles with usefull method to improve the usability.
    */
   function decorate(users) {
-    for (var i = 0; i < users.length; i++) {
-      users[i].type = UserProfileType;
-    }
     return users;
   }
-  
+
   /**
    * The filtering parameters about the user profiles to get.
    */
   if (!params)
     params = {};
-  this.filter = $.extend({}, {
+  this.filter = $.extend(true, {}, {
     group: null, // a user group unique identifier
     name: null, // a pattern about a user name (* is a wildcard)
     component: null, // a component instance identifier
-    roles: null // a string with a comma-separated role names
+    roles: null, // a string with a comma-separated role names
+    pagination: null // pagination data in the form of 
+  // { page: <number of the page>, count: <count of users to fetch> }
   }, params);
   
   // the users it manages
@@ -177,7 +208,7 @@ function UserProfileManagement(params) {
    * The method returns the object itself.
    */
   this.get = function(loaded) {
-    var urlOfUsers = userRootURL, separator = '?';
+    var urlOfUsers = userRootURL, separator = '?', indexInCache = 0;
     if (self.filter.component) {
       urlOfUsers += '/application/' + self.filter.component;
       if (self.filter.roles) {
@@ -189,16 +220,21 @@ function UserProfileManagement(params) {
       urlOfUsers += separator + 'group=' + self.filter.group;
       separator = '&';
     }
-    if (self.filter.name) {
+    if (self.filter.name && self.filter.name != '*') {
       urlOfUsers += separator + 'name=' + self.filter.name;
+      separator = '&';
+    }
+    if (self.filter.pagination) {
+      urlOfUsers += separator + 'page=' + self.filter.pagination.page + ';' + self.filter.pagination.count;
     } 
     $.ajax({
       url: urlOfUsers,
       type: 'GET',
       dataType: 'json',
       cache: false,
-      success: function(users) {
+      success: function(users, status, jqXHR) {
         self.users = decorate(users);
+        self.users.maxlength = jqXHR.getResponseHeader('X-Silverpeas-UserSize');
         loaded(self.users);
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -266,7 +302,7 @@ function UserGroupManagement(params) {
         separator = '&';
       }
     }
-    if (this.filter.name) {
+    if (this.filter.name && self.filter.name != '*') {
       urlOfGroups += separator + "name=" + this.filter.name;
     }
     $.ajax({

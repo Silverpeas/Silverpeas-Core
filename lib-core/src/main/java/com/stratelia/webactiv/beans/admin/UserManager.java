@@ -169,7 +169,7 @@ public class UserManager {
    */
   public String[] getUserIdsOfDomain(DomainDriverManager ddManager, String sDomainId) throws
           AdminException {
-    String[] uids = null;
+    String[] uids;
     try {
       // Get users from Silverpeas
       ddManager.getOrganizationSchema();
@@ -190,7 +190,7 @@ public class UserManager {
 
   public String[] getUserIdsOfDomainAndAccessLevel(DomainDriverManager ddManager, String sDomainId,
           String accessLevel) throws AdminException {
-    String[] uids = null;
+    String[] uids;
 
     try {
       // Get users from Silverpeas
@@ -371,8 +371,8 @@ public class UserManager {
 
   public UserDetail[] searchUsers(DomainDriverManager ddManager,
           UserDetail modelUser, boolean isAnd) throws AdminException {
-    UserRow[] urs = null;
-    UserDetail[] aus = null;
+    UserRow[] urs;
+    UserDetail[] aus;
     UserRow model;
 
     try {
@@ -428,6 +428,39 @@ public class UserManager {
       ddManager.releaseOrganizationSchema();
     }
   }
+  
+  public UserDetail[] searchUsers(DomainDriverManager ddManager, List<String> userIds,
+          UserDetail modelUser, boolean and) throws AdminException {
+    UserRow model;
+
+    try {
+      // Get users from Silverpeas
+      ddManager.getOrganizationSchema();
+
+      model = userDetail2UserRow(modelUser);
+      if (!StringUtil.isDefined(modelUser.getId())) {
+        model.id = -2;
+      }
+      if (!StringUtil.isDefined(modelUser.getDomainId())) {
+        model.domainId = -2;
+      }
+
+      // Get users of domain from Silverpeas database
+      UserRow[] rows = ddManager.getOrganization().user.searchUsers(userIds, model, and);
+      // Convert UserRow objects in UserDetail Object
+      UserDetail[] details = new UserDetail[rows.length];
+      for (int nI = 0; nI < rows.length; nI++) {
+        details[nI] = userRow2UserDetail(rows[nI]);
+      }
+
+      return details;
+    } catch (Exception e) {
+      throw new AdminException("UserManager.searchUsers",
+              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
 
   /**
    * Add the given user in Silverpeas and specific domain
@@ -440,7 +473,7 @@ public class UserManager {
    */
   public String addUser(DomainDriverManager ddManager, UserDetail userDetail,
           boolean addOnlyInSilverpeas) throws AdminException {
-    String specificId = null;
+    String specificId;
 
     if (userDetail == null || !StringUtil.isDefined(userDetail.getLastName())
             || !StringUtil.isDefined(userDetail.getLogin())

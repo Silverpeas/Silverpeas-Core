@@ -24,19 +24,33 @@
 
 /**
  * A selection of items.
+ * It accepts at initialization a boolean indicating if the selection is multiple or single and a
+ * table with two callbacks:
+ * {
+ *   itemsAdded:   callback called at addition of items into the selection, it must accept as argument
+ *                 the items that are added,
+ *   itemsRemoved: callback called at removing of items from the selection, it must accept as argument
+ *                 the items that are removed.
+ * }
  */
-function Selection() {
+function Selection(multiple, callbacks) {
   var self = this;
   
-  /**
-   * Is a multiple selection?
-   */
-  this.isMultiple = true;
+  var ismultiple = multiple;
+  var itemsAdded = callbacks.itemsAdded;
+  var itemsRemoved = callbacks.itemsRemoved;
   
   /**
    * Array of selected items.
    */
   this.items = [];
+  
+  /**
+   * Is this selection a multiple one?
+   */
+  this.isMultiple = function() {
+    return ismultiple;
+  }
   
   /**
    * Adds the specified item to the selection.
@@ -47,11 +61,20 @@ function Selection() {
       var all = item;
     else
       var all = [item];
-    for (var i = 0; i < all.length; i++)
-      if (self.items.indexOf(all[i]) < 0) {
-        self.items.push(all[i]);
-      }
-    self.onAdded(all);
+    if (ismultiple) {
+      for (var i = 0; i < all.length; i++)
+        if (!self.isSelected(all[i])) {
+          self.items.push(all[i]);
+        }
+    } else {
+      all.splice(0, all.length - 1);
+      if (itemsRemoved)
+        itemsRemoved(self.items);
+      self.items[0] = all[0];
+    }
+    if (itemsAdded) {
+      itemsAdded(all);
+    }
   }
   
   /**
@@ -64,12 +87,22 @@ function Selection() {
     else
       var all = [item];
     for (var i = 0; i < all.length; i++) {
-      var index = self.items.indexOf(all[i]);
+      var index = -1;
+      for (var j in self.items)
+        if (self.items[j].id == all[i].id) {
+          index = j;
+          break;
+        }
       if (index > -1) {
         self.items.splice(index, 1);
+        if (!ismultiple)
+          break;
       }
     }
-    self.onRemoved(all);
+    if (!ismultiple)
+      all = [all[index]];
+    if (itemsRemoved)
+      itemsRemoved(all);
   }
   
   /**
@@ -78,14 +111,18 @@ function Selection() {
   this.clear = function() {
     var tmp = self.items.slice();
     self.items = [];
-    self.onRemoved(tmp);
+    if (itemsRemoved)
+      itemsRemoved(tmp);
   }
   
   /**
    * Is the specified item is selected?
    */
   this.isSelected = function(item) {
-    return self.items.indexOf(item) > -1;
+    for (var index in self.items)
+      if (self.items[index].id == item.id)
+        return true;
+    return false;
   }
        
   /**
@@ -99,19 +136,5 @@ function Selection() {
       selection += self.items[self.items.length - 1].id;
     return selection;
   }
-       
-  /**
-   * Callback to call when one or more items are added to the selection.
-   * Additional computing can performed here (rendering for example).
-   * The callback accepts as parameter an array of added items.
-   */
-  this.onAdded = function(items) {}
-  
-  /**
-   * Callback to call when one or more items are removed from the selection.
-   * Additional computing can performed here (rendering for example).
-   * The callback accepts as parameter an array of removed items.
-   */
-  this.onRemoved = function(items) {}
 }
 

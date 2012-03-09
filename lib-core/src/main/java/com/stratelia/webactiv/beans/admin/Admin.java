@@ -6459,17 +6459,42 @@ public final class Admin {
         usersInGroup = getAllUsersOfGroup(groupId);
       }
 
+      List<String> userIds = null;
+      if (roleIds != null && roleIds.length > 0) {
+        userIds = new ArrayList<String>();
+        for (String roleId : roleIds) {
+          ProfileInst profile = profileManager.getProfileInst(domainDriverManager, roleId, null);
+          // add users directly attach to profile
+          userIds.addAll(profile.getAllUsers());
+
+          // add users indirectly attach to profile (groups attached to profile)
+          List<String> groupIds = profile.getAllGroups();
+          List<String> allGroupIds = new ArrayList<String>();
+          for (String aGroupId : groupIds) {
+            allGroupIds.add(aGroupId);
+            allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+          }
+          userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
+        }
+      } else if (StringUtil.isDefined(componentId)) {
+        userIds = getUserIdsForComponent(componentId);
+      }
+
       UserDetail[] usersMatchingContraints = null;
-      if (StringUtil.isDefined(componentId) || (roleIds != null && roleIds.length > 0) || isDefined(
-              userFilter) || usersInGroup == null) {
-        // gets all the users that matches the specified contraints
-        usersMatchingContraints = userManager.searchUsers(domainDriverManager, getDriverComponentId(
-                componentId),
-                roleIds, userFilter);
+      if (userIds == null && usersInGroup == null) {
+        usersMatchingContraints = userManager.searchUsers(domainDriverManager, userFilter, false);
+      } else if (userIds != null) {
+        if (userIds.isEmpty()) {
+          usersMatchingContraints = new UserDetail[0];
+        } else {
+          usersMatchingContraints =
+                  userManager.searchUsers(domainDriverManager, userIds, userFilter, false);
+        }
       }
 
       // filters the users in the group that matches the specified contraints
-      if (usersInGroup != null && usersMatchingContraints != null) {
+      if (usersInGroup != null && usersMatchingContraints != null &&
+              usersMatchingContraints.length > 0) {
         List<UserDetail> listOfUsersInGroup = Arrays.asList(usersInGroup);
         for (UserDetail userDetail : usersMatchingContraints) {
           if (listOfUsersInGroup.contains(userDetail)) {

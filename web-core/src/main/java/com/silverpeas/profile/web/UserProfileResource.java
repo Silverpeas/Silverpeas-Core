@@ -30,7 +30,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +37,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +55,12 @@ import org.springframework.stereotype.Service;
 @Path(USERS_BASE_URI)
 public class UserProfileResource extends RESTWebService {
 
+  /**
+   * The HTTP header parameter that provides the real size of the user profiles that match a query.
+   * This parameter is usefull for clients that use the pagination to filter the count of user
+   * profiles to sent back.
+   */
+  public static final String RESPONSE_HEADER_USERSIZE = "X-Silverpeas-UserSize";
   @Inject
   private UserProfileService profileService;
 
@@ -65,13 +71,31 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets all the users defined in Silverpeas.
+   * Gets the users defined in Silverpeas and that matches the specified optional query parameters.
+   * If no query parameters are set, then all the users in Silverpeas are sent back.
+   *
+   * The users to sent back can be filtered by a pattern their name has to satisfy, by the group
+   * they must belong to, and by some pagination parameters.
+   *
+   * In the response is indicated as an HTTP header (named X-Silverpeas-UserSize) the real size of
+   * the users that matches the query. This is usefull for clients that use the pagination to filter
+   * the count of the answered users.
+   *
+   * @param groupId the unique identifier of the group the users must belong to.
+   * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
+   * string of characters.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of users to sent back: those between ((page number - 1) *
+   * item count in the page) and ((page number - 1) * item count in the page + item count in the
+   * page).
+   * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public UserProfileEntity[] getUsers(
+  public Response getUsers(
           @QueryParam("group") String groupId,
-          @QueryParam("name") String name) {
+          @QueryParam("name") String name,
+          @QueryParam("page") String page) {
     checkUserAuthentication();
     String domainId = null;
     if (isDefined(groupId)) {
@@ -80,9 +104,18 @@ public class UserProfileResource extends RESTWebService {
     }
     UserDetail[] users = getOrganizationController().searchUsers(null, null, groupId,
             aFilteringModel(name, domainId));
-    return asWebEntity(Arrays.asList(users), locatedAt(getUriInfo().getAbsolutePath()));
+    UserDetail[] paginatedUsers = paginate(users, page);
+    return Response.ok(
+            asWebEntity(Arrays.asList(paginatedUsers), locatedAt(getUriInfo().getAbsolutePath()))).
+            header(RESPONSE_HEADER_USERSIZE, users.length).build();
   }
 
+  /**
+   * Gets the profile on the user that is identified by the unique identifier refered by the URI.
+   *
+   * @param userId the unique identifier of the user.
+   * @return the profile of the user in a JSON representation.
+   */
   @GET
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -102,15 +135,41 @@ public class UserProfileResource extends RESTWebService {
     return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
   }
 
+  /**
+   * Gets the profiles of the users that have access to the specified Silverpeas component instance
+   * and that matches the specified optional query parameters. If no query parameters are set, then
+   * all the users with the rights to access the component instance are sent back.
+   *
+   * The users to sent back can be filtered by a pattern their name has to satisfy, by the group
+   * they must belong to, and by some pagination parameters.
+   *
+   * In the response is indicated as an HTTP header (named X-Silverpeas-UserSize) the real size of
+   * the users that matches the query. This is usefull for clients that use the pagination to filter
+   * the count of the answered users.
+   *
+   * @param instanceId the unique identifier of the component instance the users should have access
+   * to.
+   * @param groupId the unique identifier of the group the users must belong to.
+   * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
+   * string of characters.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of users to sent back: those between ((page number - 1) *
+   * item count in the page) and ((page number - 1) * item count in the page + item count in the
+   * page).
+   * @return the JSON serialization of the array with the user profiles that can access the
+   * Silverpeas component and that matches the query.
+   */
   @GET
   @Path("application/{instanceId}")
-  public UserProfileEntity[] getApplicationUsers(
+  public Response getApplicationUsers(
           @PathParam("instanceId") String instanceId,
           @QueryParam("group") String groupId,
           @QueryParam("roles") String roles,
-          @QueryParam("name") String name) {
+          @QueryParam("name") String name,
+          @QueryParam("page") String page) {
     checkUserAuthentication();
-    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(",")) : null);
+    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
+            : null);
     String domainId = null;
     if (isDefined(groupId)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -118,8 +177,11 @@ public class UserProfileResource extends RESTWebService {
     }
     UserDetail[] users = getOrganizationController().searchUsers(instanceId, rolesIds, groupId,
             aFilteringModel(name, domainId));
+    UserDetail[] paginatedUsers = paginate(users, page);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
-    return asWebEntity(Arrays.asList(users), locatedAt(usersUri));
+    return Response.ok(
+            asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
+            header(RESPONSE_HEADER_USERSIZE, users.length).build();
   }
 
   @Override
@@ -136,7 +198,8 @@ public class UserProfileResource extends RESTWebService {
     return uri;
   }
 
-  private UserProfileEntity[] asWebEntity(final List<? extends UserDetail> allUsers, final URI baseUri) {
+  private UserProfileEntity[] asWebEntity(final List<? extends UserDetail> allUsers,
+          final URI baseUri) {
     return UserProfileEntity.fromUsers(allUsers, baseUri);
   }
 
@@ -157,5 +220,30 @@ public class UserProfileResource extends RESTWebService {
       model.setLastName(filterByName);
     }
     return model;
+  }
+
+  private UserDetail[] paginate(UserDetail[] users, String pagination) {
+    try {
+      UserDetail[] paginatedUsers;
+      if (pagination != null && !pagination.isEmpty()) {
+        String[] page = pagination.split(";");
+        int nth = Integer.valueOf(page[0]);
+        int count = Integer.valueOf(page[1]);
+        int begin = (nth - 1) * count;
+        int end = begin + count;
+        if (end > users.length) {
+          end = users.length;
+        }
+        paginatedUsers = new UserDetail[end - begin];
+        for (int i = begin, j = 0; i < end; i++, j++) {
+          paginatedUsers[j] = users[i];
+        }
+      } else {
+        paginatedUsers = users;
+      }
+      return paginatedUsers;
+    } catch (Exception ex) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
   }
 }
