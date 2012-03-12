@@ -5349,8 +5349,10 @@ public final class Admin {
     }
 
     List<String> specificIds = new ArrayList<String>();
-    for (UserDetail user : users) {
-      specificIds.add(user.getSpecificId());
+    if (users != null) {
+      for (UserDetail user : users) {
+        specificIds.add(user.getSpecificId());
+      }
     }
 
     // We have to find users according to theirs specificIds
