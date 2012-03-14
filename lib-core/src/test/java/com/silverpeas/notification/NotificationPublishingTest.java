@@ -23,17 +23,18 @@
  */
 package com.silverpeas.notification;
 
-import com.silverpeas.jms.JMSTestFacade;
 import com.mockrunner.mock.jms.MockMessage;
 import com.mockrunner.mock.jms.MockObjectMessage;
-import javax.inject.Inject;
+import com.silverpeas.jms.JMSTestFacade;
 import com.silverpeas.notification.jms.JMSPublishingService;
+import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.annotation.ExpectedException;
-import static org.junit.Assert.*;
-import static com.silverpeas.notification.NotificationTopic.*;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test on the publishing of a notification.
@@ -76,8 +77,7 @@ public class NotificationPublishingTest extends NotificationServiceTest {
     getJMSTestFacade().verifyReceivedTopicMessageEquals(JMSTestFacade.DEFAULT_TOPIC, 0, msg);
   }
 
-  @Test
-  @ExpectedException(PublishingException.class)
+  @Test(expected=PublishingException.class)
   public void publishAnEventToAnUnexistingTopicShouldSucceed() throws Exception {
     NotificationSource source = new NotificationSource().withUserId("simpson").
       withComponentInstanceId("toto1");

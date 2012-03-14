@@ -23,7 +23,6 @@
  */
 package com.silverpeas.notification;
 
-import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -39,9 +38,8 @@ public class MyNotificationSubscriber implements NotificationSubscriber {
   private SilverpeasNotification notification;
 
   @Override
-  @SuppressWarnings("unchecked")
   public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
-    this.notification = (SilverpeasNotification) notification;
+    this.notification = notification;
   }
 
   public SilverpeasNotification getReceivedNotification() {

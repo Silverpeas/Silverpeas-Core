@@ -2353,27 +2353,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public String getUrl(String urlBase, String componentId, String params,
       String pageAndParams) {
-    if (isNewComposant(componentId)) {
-      ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
-          componentId);
-      return urlBase +
-           URLManager.getNewComponentURL(componentInst.getDomainFatherId(),
-          componentId) +
-           params +
-           URLManager.getEndURL(componentInst.getDomainFatherId(), componentId);
-    } else {
-      return urlBase + URLManager.getURL(null, componentId) + pageAndParams;
-    }
-  }
-
-  private boolean isNewComposant(String componentId) {
-    if (componentId.startsWith("whitePages") ||
-         componentId.startsWith("trucsAstuc") ||
-         componentId.startsWith("incidents") ||
-         componentId.startsWith("documentation")) {
-      return true;
-    }
-    return false;
+    return urlBase + URLManager.getURL(null, componentId) + pageAndParams;
   }
 
   private boolean isExportLicenseOK() {

@@ -27,15 +27,17 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
-  <bean id="myDataSource" name="myDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="jdbc/Silverpeas" />
-  </bean>
-  
-  <bean id="jpaDataSource" name="jpaDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="jpa/Silverpeas" />
-  </bean>
+
+  <jee:jndi-lookup id="silverpeasDataSource" jndi-name="java:/datasources/silverpeas" />
+
+  <jee:jndi-lookup id="myDataSource" jndi-name="java:/datasources/silverpeas-jdbc" />
+
+  <jee:jndi-lookup id="jpaDataSource" jndi-name="java:/datasources/silverpeas" />
 
   <bean id="dataSource" name="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close">

@@ -61,6 +61,11 @@
           <a href="http://localhost:8000/silverpeas">http://localhost:8000/silverpeas</a> an login using the account 
           <i>SilverAdmin/SilverAdmin</i>
         </li>
+        <li>For 
+          <b>Mac Users</b>, there seems to be a problem when trying Silverpeas offline, Mac OS X Lion doesn't resolve 
+          <i>localhost</i>.  If you encounter this issue, use the following command:
+          <source>sudo ifconfig en0 alias 127.0.0.1</source>.
+        </li> 
       </ol>
     </section> 
   </body>

@@ -29,7 +29,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +49,6 @@ public class NotificationMetaData implements java.io.Serializable {
   private String sessionId;
   private Collection<UserRecipient> userRecipients;
   private Collection<GroupRecipient> groupRecipients;
-  private Connection connection; // usefull to send notification from ejb part
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
@@ -100,7 +98,6 @@ public class NotificationMetaData implements java.io.Serializable {
     sessionId = "";
     userRecipients = new ArrayList<UserRecipient>();
     groupRecipients = new ArrayList<GroupRecipient>();
-    connection = null;
     componentId = "";
     isAnswerAllowed = false;
     fileName = null;
@@ -398,14 +395,6 @@ public class NotificationMetaData implements java.io.Serializable {
     if (groups != null) {
       groupRecipients.addAll(groups);
     }
-  }
-
-  public void setConnection(Connection con) {
-    this.connection = con;
-  }
-
-  public Connection getConnection() {
-    return this.connection;
   }
 
   public String getComponentId() {

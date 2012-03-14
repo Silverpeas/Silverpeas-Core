@@ -147,6 +147,7 @@
   <st_instance_data id="97" componentid="18" name="XMLFormName" label="Formulaire XML" value=""/>
   <st_instance_data id="98" componentid="18" name="searchFields2" label="Champs recherche 2" value=""/>
   <st_instance_data id="99" componentid="18" name="searchFields1" label="Champs recherche 1" value=""/>
+  <!--
   <st_userrole id="1" instanceid="1" name="" rolename="admin" description="" isinherited="1"/>
   <st_userrole id="2" instanceid="1" name="" rolename="user" description="" isinherited="1"/>
   <st_userrole id="3" instanceid="2" name="" rolename="admin" description="" isinherited="1"/>
@@ -219,4 +220,5 @@
   <st_spaceuserrole_user_rel spaceuserroleid="6" userid="1"/>
   <sb_pdc_axis id="1" rootid="1" name="java" axistype="P" axisorder="0" creationdate="2010/02/03" creatorid="0" description="" lang="fr"/>
   <st_notifdefaultaddress />
+  -->
 </dataset>

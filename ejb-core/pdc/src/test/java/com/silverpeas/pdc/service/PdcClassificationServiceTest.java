@@ -34,7 +34,7 @@ import org.dbunit.operation.DatabaseOperation;
 import java.util.Set;
 import java.util.List;
 import com.silverpeas.pdc.TestResources;
-import com.silverpeas.pdc.dao.PdcClassificationDAO;
+import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,7 +69,7 @@ public class PdcClassificationServiceTest {
   @Inject
   private DataSource dataSource;
   @Inject
-  PdcClassificationDAO dao;
+  PdcClassificationRepository dao;
 
   public PdcClassificationServiceTest() {
   }

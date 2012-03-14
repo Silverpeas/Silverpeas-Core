@@ -73,11 +73,12 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   private String cloneId = null;
   public static final String IMPORT_UPDATE_RULE_ADD = "add";
   public static final String IMPORT_UPDATE_RULE_REPLACE = "replace";
-  private String importUpdateRule = IMPORT_UPDATE_RULE_ADD; // used by the
-  // import engine
+  private String importUpdateRule = IMPORT_UPDATE_RULE_ADD; // used by the import engine
+  private boolean removeAfterImport = false;
+  private String originalPath;
+
   private Date reservationDate = null; // date de réservation
-  private Date alertDate = null; // date d'alerte pour la notification
-  // intermédiaire
+  private Date alertDate = null; // date d'alerte pour la notification intermédiaire
   private Date expiryDate = null; // date d'expiration
   private String xmlForm = null;
   private XMLModelContentType xmlModelContentType = null;
@@ -1041,5 +1042,21 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
     this.xmlModelContentType = xmlModelContentType;
+  }
+  
+  public boolean isRemoveAfterImport() {
+    return removeAfterImport;
+  }
+
+  public void setRemoveAfterImport(boolean removeAfterImport) {
+    this.removeAfterImport = removeAfterImport;
+  }
+
+  public void setOriginalPath(String originalPath) {
+    this.originalPath = originalPath;
+  }
+
+  public String getOriginalPath() {
+    return originalPath;
   }
 }

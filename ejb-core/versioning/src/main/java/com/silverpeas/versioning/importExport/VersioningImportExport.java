@@ -61,6 +61,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * @author neysseri
  */
@@ -172,6 +174,15 @@ public class VersioningImportExport {
         versioningUtil.setFileRights(document);
         getVersioningBm().updateWorkList(document);
         getVersioningBm().updateDocument(document);
+      }
+      
+      if (attachment.isRemoveAfterImport()) {
+        boolean removed = FileUtils.deleteQuietly(new File(attachment.getOriginalPath()));
+        if (!removed) {
+          SilverTrace.error("versioning",
+              "VersioningImportExport.importDocuments()",
+              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attachment.getOriginalPath());
+        }
       }
 
       nbFilesProcessed++;

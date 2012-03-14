@@ -55,7 +55,7 @@ import static com.silverpeas.pdc.matchers.PdcAxisValueMatcher.*;
 public class PdcAxisValueDAOTest {
 
   @Inject
-  private PdcAxisValueDAO dao;
+  private PdcAxisValueRepository dao;
   @Inject
   private DataSource dataSource;
 

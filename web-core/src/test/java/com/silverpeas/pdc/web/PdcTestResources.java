@@ -23,33 +23,34 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.dao.PdcClassificationDAO;
-import java.util.ArrayList;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import javax.inject.Named;
-import java.util.List;
-import com.silverpeas.pdc.web.mock.PdcBmMock;
+import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
+import static com.silverpeas.pdc.web.TestConstants.*;
+import static com.silverpeas.pdc.web.UserThesaurusHolder.forUser;
 import com.silverpeas.pdc.web.mock.ContentManagerMock;
+import com.silverpeas.pdc.web.mock.PdcBmMock;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.rest.TestResources;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.springframework.test.util.ReflectionTestUtils;
-import static org.mockito.Mockito.*;
-import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
-import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Resources required by the unit tests on the PdC web resources.
@@ -73,7 +74,7 @@ public class PdcTestResources extends TestResources {
   @Inject
   ContentManagerMock contentManager;
   @Inject
-  PdcClassificationDAO classificationDAO;
+  PdcClassificationRepository classificationRepository;
   @Inject
   PdcClassificationService classificationService;
   private NodeBm nodeBmMock = mock(NodeBm.class);
@@ -121,23 +122,23 @@ public class PdcTestResources extends TestResources {
   }
 
   public void savePredefined(final PdcClassification classification) {
-    classificationDAO.saveAndFlush(classification);
+    classificationRepository.saveAndFlush(classification);
   }
   
   public PdcClassification getPredefinedClassification(String nodeId, String componentId) {
     if (isDefined(nodeId)) {
-      return classificationDAO.findPredefinedClassificationByNodeId(nodeId, componentId);
+      return classificationRepository.findPredefinedClassificationByNodeId(nodeId, componentId);
     } else {
-      return classificationDAO.findPredefinedClassificationByComponentInstanceId(componentId);
+      return classificationRepository.findPredefinedClassificationByComponentInstanceId(componentId);
     }
   }
 
   public void getPredefinedPdcClassificationForWholeComponent() {
-    classificationDAO.findPredefinedClassificationByComponentInstanceId(COMPONENT_INSTANCE_ID);
+    classificationRepository.findPredefinedClassificationByComponentInstanceId(COMPONENT_INSTANCE_ID);
   }
 
   public void getPredefinedPdcClassificationForNode() {
-    classificationDAO.findPredefinedClassificationByNodeId(NODE_ID, COMPONENT_INSTANCE_ID);
+    classificationRepository.findPredefinedClassificationByNodeId(NODE_ID, COMPONENT_INSTANCE_ID);
   }
 
   /**
