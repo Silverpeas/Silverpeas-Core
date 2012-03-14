@@ -21,15 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialNetwork.myProfil.servlets;
+package com.silverpeas.socialnetwork.myProfil.servlets;
 
 import com.silverpeas.directory.servlets.ImageProfil;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
-import com.silverpeas.socialNetwork.myProfil.control.MyProfilSessionController;
-import com.silverpeas.socialNetwork.user.model.SNFullUser;
+import com.silverpeas.socialnetwork.model.SocialInformationType;
+import com.silverpeas.socialnetwork.myProfil.control.MyProfilSessionController;
+import com.silverpeas.socialnetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -57,7 +57,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.*;
+import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
 
 /**
  * @author azzedine

@@ -176,8 +176,6 @@ $(document).ready(function(){
 
 });
 </script>
-
-
 </head>
 <body id="myProfile">
 
@@ -187,12 +185,12 @@ $(document).ready(function(){
 <view:window>
 
 <div id="myProfileFiche" >
-
+  
 	<div class="info tableBoard">
  		<h2 class="userName"><%=userFull.getFirstName() %> <br /><%=userFull.getLastName() %></h2>
        	<p class="statut">
 			<%=userFull.getStatus() %>
-        </p>
+        </p>  
 	    <div class="action">
         	<a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
             <br />
@@ -206,10 +204,10 @@ $(document).ready(function(){
         </div>
         <div class="profilPhoto">
 			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
-        </div>
+        </div>  
         <br clear="all" />
  	</div>
-
+ 	
  	<div id="statusDialog">
 		<form>
 	    	<textarea id="newStatus" cols="49" rows="4"></textarea><br/>
@@ -234,13 +232,13 @@ $(document).ready(function(){
 	</div>
 
 	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
-	<!-- allContact  -->
+	<!-- allContact  -->  
 	<div id="allContact">
-  	<%
+  	<% 
   		for (int i=0; i<contacts.size(); i++) {
   		  UserDetail contact = (UserDetail) contacts.get(i);
   	%>
-		<!-- unContact  -->
+		<!-- unContact  -->  
      	<div class="unContact">
         	<div class="profilPhotoContact">
         		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
@@ -248,11 +246,11 @@ $(document).ready(function(){
 	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
 	   	</div> <!-- /unContact  -->
   	<% } %>
-
+    
     <% if (showAllContactLink) { %>
 	     <br clear="all" />
 	     <a href="<%=m_context %>/Rdirectory/jsp/Main?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
-	     <br clear="all" />
+	     <br clear="all" />  
     <% } %>
 	</div><!-- /allContact  -->
 
@@ -288,9 +286,9 @@ $(document).ready(function(){
 	<% } else if (MyProfileRoutes.MyWall.toString().equals(view) || MyProfileRoutes.MyFeed.toString().equals(view)) { %>
 		<%@include file="myProfileTabWall.jsp" %>
 	<% } %>
-
-</div>
+              
+</div>   
 </view:window>
-
+    
 </body>
 </html>

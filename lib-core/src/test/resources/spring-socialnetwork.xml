@@ -25,7 +25,7 @@
 		<value>com.silverpeas.socialnetwork.model</value>
 	</util:list>
 
-	<jdbc:embedded-database id="dataSource" type="H2">
+	<jdbc:embedded-database id="jpaDataSource" type="H2">
 		<jdbc:script
 			location="classpath:/com/silverpeas/socialnetwork/dao/create-database.sql" />
 	</jdbc:embedded-database>

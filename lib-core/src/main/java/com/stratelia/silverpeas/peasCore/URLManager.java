@@ -114,8 +114,7 @@ public class URLManager {
    * @param sComponentId   - the componentId (ie kmelia12, bookmark578...)
    * @return an String like '/RcomponentName/componentId/'
    */
-  public static String getURL(String sComponentName, String sSpace,
-      String sComponentId) {
+  public static String getURL(String sComponentName, String sSpace, String sComponentId) {
     String sureCompName = sComponentName;
 
     if (!isDefined(sComponentName) && !isDefined(sComponentId)) {

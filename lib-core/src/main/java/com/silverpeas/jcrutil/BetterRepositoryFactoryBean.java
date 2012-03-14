@@ -26,13 +26,11 @@ package com.silverpeas.jcrutil;
  * $Id: BetterRepositoryFactoryBean.java,v 1.2 2009/04/01 14:10:07 ehugonnet Exp $ $Revision: 1.2 $
  */
 import com.silverpeas.util.StringUtil;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
