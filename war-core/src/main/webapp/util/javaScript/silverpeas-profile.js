@@ -61,6 +61,7 @@ function UserProfile(user) {
           ': several users match the parameters!');
       usermgt.users = null;
     });
+    return self;
   }
   
   /**
@@ -270,10 +271,11 @@ function UserGroup(group) {
 }
 
 /**
- * The root user group. It is a factice user group from which all the users or all the root groups
- * in Silverpeas can be fetched.
+ * The root user group. It is a factice user group from which all the users in all groups or all
+ * the root groups in Silverpeas can be fetched.
  */
 var rootUserGroup = new UserGroup({
+  id: 'all',
   childrenUri: null,
   name: 'Groupes'
 });
@@ -312,8 +314,12 @@ function UserProfileManagement(params) {
    */
   function decorate(users) {
     var decoratedUsers = [];
-    for (var i = 0; i < users.length; i++)
-      decoratedUsers.push(new UserProfile(users[i]));
+    if (users instanceof Array) {
+      for (var i = 0; i < users.length; i++)
+        decoratedUsers.push(new UserProfile(users[i]));
+    } else {
+      decoratedUsers.push(users);
+    }
     return decoratedUsers;
   }
   
@@ -328,7 +334,7 @@ function UserProfileManagement(params) {
    * The method returns the object itself.
    */
   this.get = function(filter, loaded) {
-    var urlOfUsers = userRootURL, separator = '?', indexInCache = 0, application = '/application/';
+    var urlOfUsers = userRootURL, separator = '?', application = '/application/';
     if (arguments.length == 1) {
       loaded = arguments[0];
       filter = null;

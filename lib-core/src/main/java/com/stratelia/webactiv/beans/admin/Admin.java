@@ -5837,7 +5837,7 @@ public final class Admin {
     boolean bFound;
     String specificId;
     String sReport = "User synchronization : \n";
-    String message = "";
+    String message;
     DomainDriverManager domainDriverManager =
             DomainDriverManagerFactory.getCurrentDomainDriverManager();
     Collection<UserDetail> addedUsers = new ArrayList<UserDetail>();
@@ -5915,10 +5915,6 @@ public final class Admin {
           }
         }
       }
-
-      //noinspection UnusedAssignment
-      distantUDs = null;
-      silverpeasUDs = null;
 
       // traitement spécifique des users selon l'interface implémentée
       processSpecificSynchronization(domainId, addedUsers, updateUsers, removedUsers);
@@ -6409,115 +6405,70 @@ public final class Admin {
     return userIds;
   }
 
-  /**
-   * Searchs all the users that match the following specified contrains: <ul> <li>On of the roles
-   * the users have to play for a given component instance: either one of all the roles of the
-   * specified component instance or one of all the specified roles;</li> <li>A user group the users
-   * has to be part of;</li> <li>Some details attributes the users has to satisfy. This contraint is
-   * mandatory and cannot be null.</li> </ul> If no of theses contrains, all of the users in
-   * Silverpeas are returned.
-   *
-   * @param componentId the unique identifier of the component instance. All the users with the
-   * rights to access this instance are seek; the users has to play one of the roles supported by
-   * the component instance whether it isn't public.
-   * @param roleIds the unique identifiers of roles. They are for one or more specific component
-   * instances. The users have to play at least one of the specified roles.
-   * @param groupId the unique identifier of the group the users must be part of.
-   * @param userFilter a UserDetail object with or not some attributes set for filtering the users
-   * to sent back.
-   * @return an array of details on the users that match the specified above contrains.
-   * @throws AdminException if an error occurs while searching the users.
-   */
-  public UserDetail[] searchUsers(String componentId, String[] roleIds, String groupId,
-          UserDetail userFilter)
-          throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-            getCurrentDomainDriverManager();
-    Set<UserDetail> foundUsers = new TreeSet<UserDetail>(new Comparator<UserDetail>() {
+  public UserDetail[] searchUsers(final SearchCriteria searchCriteria) throws AdminException {
+    List<String> userIds = null;
+    if (searchCriteria.isCriterionOnRoleIdsSet()) {
+      userIds = new ArrayList<String>();
+      DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
+              getCurrentDomainDriverManager();
+      for (String roleId : searchCriteria.getCriterionOnRoleIds()) {
+        ProfileInst profile = profileManager.getProfileInst(domainDriverManager, roleId, null);
+        // add users directly attach to profile
+        userIds.addAll(profile.getAllUsers());
 
-      @Override
-      public int compare(UserDetail o1, UserDetail o2) {
-        int comp = o1.getLastName().compareToIgnoreCase(o2.getLastName());
-        return (o1.getId().equals(o2.getId()) ? 0 : (comp == 0 ? o2.getFirstName().
-                compareToIgnoreCase(o1.getFirstName()) : comp));
-      }
-    });
-    try {
-      if (StringUtil.isDefined(componentId)) {
-        ComponentInst component = getComponentInst(componentId);
-        if (component != null) {
-          if (component.isPublic()) {
-            // component is public, all users are allowed to access it
-            componentId = null;
-          }
+        // add users indirectly attach to profile (groups attached to profile)
+        List<String> groupIds = profile.getAllGroups();
+        List<String> allGroupIds = new ArrayList<String>();
+        for (String aGroupId : groupIds) {
+          allGroupIds.add(aGroupId);
+          allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
         }
+        userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
       }
-
-      UserDetail[] usersInGroup = null;
-      if (StringUtil.isDefined(groupId)) {
-        // gets all the users that are part of the specified group
-        Group model = new Group();
-        model.setId(groupId);
-        usersInGroup = getAllUsersOfGroup(groupId);
+    } else if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
+      String instanceId = searchCriteria.getCriterionOnComponentInstanceId();
+      ComponentInst component = getComponentInst(instanceId);
+      if (component != null && !component.isPublic()) {
+        userIds = getUserIdsForComponent(instanceId);
       }
-
-      List<String> userIds = null;
-      if (roleIds != null && roleIds.length > 0) {
-        userIds = new ArrayList<String>();
-        for (String roleId : roleIds) {
-          ProfileInst profile = profileManager.getProfileInst(domainDriverManager, roleId, null);
-          // add users directly attach to profile
-          userIds.addAll(profile.getAllUsers());
-
-          // add users indirectly attach to profile (groups attached to profile)
-          List<String> groupIds = profile.getAllGroups();
-          List<String> allGroupIds = new ArrayList<String>();
-          for (String aGroupId : groupIds) {
-            allGroupIds.add(aGroupId);
-            allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
-          }
-          userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
-        }
-      } else if (StringUtil.isDefined(componentId)) {
-        userIds = getUserIdsForComponent(componentId);
-      }
-
-      UserDetail[] usersMatchingContraints = null;
-      if (userIds == null && usersInGroup == null) {
-        usersMatchingContraints = userManager.searchUsers(domainDriverManager, userFilter, false);
-      } else if (userIds != null) {
-        if (userIds.isEmpty()) {
-          usersMatchingContraints = new UserDetail[0];
-        } else {
-          usersMatchingContraints =
-                  userManager.searchUsers(domainDriverManager, userIds, userFilter, false);
-        }
-      }
-
-      // filters the users in the group that matches the specified contraints
-      if (usersInGroup != null && usersMatchingContraints != null &&
-              usersMatchingContraints.length > 0) {
-        List<UserDetail> listOfUsersInGroup = Arrays.asList(usersInGroup);
-        for (UserDetail userDetail : usersMatchingContraints) {
-          if (listOfUsersInGroup.contains(userDetail)) {
-            foundUsers.add(userDetail);
-          }
-        }
-      }
-
-      if (foundUsers.isEmpty()) {
-        if (usersMatchingContraints != null) {
-          return usersMatchingContraints;
-        } else if (usersInGroup != null) {
-          return usersInGroup;
-        }
-      }
-
-      return foundUsers.toArray(new UserDetail[foundUsers.size()]);
-    } catch (Exception e) {
-      throw new AdminException("Admin.searchUsers",
-              SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND", e);
     }
+
+    if (searchCriteria.isCriterionOnUserIdsSet()) {
+      if (userIds == null) {
+        userIds = Arrays.asList(searchCriteria.getCriterionOnUserIds());
+      } else {
+        List<String> userIdsInCriterion = Arrays.asList(searchCriteria.getCriterionOnUserIds());
+        List<String> userIdsToTake = new ArrayList<String>();
+        for (String userId : userIds) {
+          if (userIdsInCriterion.contains(userId)) {
+            userIdsToTake.add(userId);
+          }
+        }
+        userIds = userIdsToTake;
+      }
+    }
+    
+    UserSearchCriteriaFactory factory = UserSearchCriteriaFactory.getFactory();
+    UserSearchCriteria criteria = factory.getUserSearchCriteria();
+    if (userIds != null) {
+      criteria.onUserIds(userIds.toArray(new String[userIds.size()]));
+    }
+    if (searchCriteria.isCriterionOnGroupIdSet()) {
+      String groupId = searchCriteria.getCriterionOnGroupId();
+      if (groupId.equals(SearchCriteria.ANY_GROUP)) {
+        criteria.and().onGroupIds(UserSearchCriteria.ANY);
+      } else {
+        criteria.and().onGroupIds(groupId);
+      }
+    }
+    if (searchCriteria.isCriterionOnDomainIdSet()) {
+      criteria.and().onDomainId(searchCriteria.getCriterionOnDomainId());
+    }
+    if (searchCriteria.isCriterionOnNameSet()) {
+      criteria.and().onName(searchCriteria.getCriterionOnName());
+    }
+    
+    return userManager.getUsersMatchingCriteria(criteria);
   }
 
   public String[] searchGroupsIds(boolean isRootGroup, String componentId,

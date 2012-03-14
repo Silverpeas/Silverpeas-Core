@@ -473,6 +473,22 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
   
+   /**
+   * Searches the users that match the specified criteria.
+   * @param criteria the criteria in searching of user details.
+   * @return an array of user details matching the criteria or an empty array of no ones are found.
+   * @throws AdminException if an error occurs while getting the user details.
+   */
+  public UserDetail[] searchUsers(final SearchCriteria criteria) {
+    try {
+      return getAdminService().searchUsers(criteria);
+    } catch(AdminException ex) {
+      SilverTrace.error("admin", "OrganizationController.getUsersMatchingCriteria",
+          "admin.EX_ERR_GET_USER_DETAILS", "criteria: '" + criteria.toString(), ex);
+    }
+    return null;
+  }
+  
   /**
    * Gets all the user groups that belong to the specified domain.
    * @param domainId the unique identifier of the domain.
@@ -621,6 +637,17 @@ public class OrganizationController implements java.io.Serializable {
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId = " +
            userId + ", componentId = " + componentId + ", objectId = " +
            objectId, e);
+      return null;
+    }
+  }
+  
+  public ProfileInst getUserProfile(String profileId) {
+    try {
+      return getAdminService().getProfileInst(profileId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getUserProfile",
+          "admin.MSG_ERR_GET_PROFILE", "profileId: '" +
+           profileId, e);
       return null;
     }
   }
@@ -1085,31 +1112,6 @@ public class OrganizationController implements java.io.Serializable {
           "OrganizationController.getUsersIdsByRoleNames",
           "admin.MSG_ERR_GET_ALL_USERS", e);
       return null;
-    }
-  }
-  
-  /**
-   * Searchs the users that satisfy both one of the three specified filters and the latest one.
-   * If no one of the filters are set (the latest one is empty), then all the users are returned.
-   * @param componentId the unique identifier of the component instance that has to be accessible
-   * to the users to seek. Null means whatever the component instance.
-   * @param rolesIds the unique identifier of the roles the users has to play in one or more
-   * component instances. Null or an empty array of role identifiers means whatever the roles they
-   * play.
-   * @param groupId the unique identifier the users has be part. Null means whatever the group. All
-   * subgroups are taken into account as parts of the specified group.
-   * @param userFilter some details the users has to be conform to.
-   * @return all the users that satisfy the specified filters. If no users are found, an empty array
-   * is returned.
-   */
-  public UserDetail[] searchUsers(String componentId, String[] roleIds, String groupId,
-          final UserDetail userFilter) {
-    try {
-      return getAdminService().searchUsers(componentId, roleIds, groupId, userFilter);
-    } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.searchGroupsIds",
-          "admin.MSG_ERR_GET_ALL_USERS", e);
-      return new UserDetail[0];
     }
   }
 

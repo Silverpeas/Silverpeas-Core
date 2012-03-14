@@ -30,6 +30,8 @@ import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserSearchCriteriaFactory;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,6 +46,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import static com.silverpeas.profile.web.SearchCriteriaBuilder.aSearchCriteria;
+import com.stratelia.webactiv.beans.admin.*;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -65,10 +69,16 @@ public class UserProfileResource extends RESTWebService {
    * profiles to sent back.
    */
   public static final String RESPONSE_HEADER_USERSIZE = "X-Silverpeas-UserSize";
+  /**
+   * Specific identifier of a user group meaning all the user groups in Silverpeas. In that case,
+   * only the users part of a user group will be fetched.
+   */
+  public static final String QUERY_ALL_GROUP = "all";
   @Inject
   private UserProfileService profileService;
   @Inject
   private RelationShipService relationShipService;
+  private UserSearchCriteriaFactory criteriaFactory = UserSearchCriteriaFactory.getFactory();
 
   /**
    * Creates a new instance of UserProfileResource
@@ -87,7 +97,8 @@ public class UserProfileResource extends RESTWebService {
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
    *
-   * @param groupId the unique identifier of the group the users must belong to.
+   * @param groupId the unique identifier of the group the users must belong to. The particular
+   * identifier "all" means all user groups.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
    * string of characters.
    * @param page the pagination parameters formatted as "page number;item count in the page". From
@@ -104,12 +115,15 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("page") String page) {
     checkUserAuthentication();
     String domainId = null;
-    if (isDefined(groupId)) {
+    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
     }
-    UserDetail[] users = getOrganizationController().searchUsers(null, null, groupId,
-            aFilteringModel(name, domainId));
+    SearchCriteria criteria = aSearchCriteria().withDomainId(domainId, getUserDetail()).
+            withGroupId(groupId).
+            withName(name).
+            build();
+    UserDetail[] users = getOrganizationController().searchUsers(criteria);
     UserDetail[] paginatedUsers = paginate(users, page);
     return Response.ok(
             asWebEntity(Arrays.asList(paginatedUsers), locatedAt(getUriInfo().getAbsolutePath()))).
@@ -145,7 +159,8 @@ public class UserProfileResource extends RESTWebService {
    *
    * @param instanceId the unique identifier of the component instance the users should have access
    * to.
-   * @param groupId the unique identifier of the group the users must belong to.
+   * @param groupId the unique identifier of the group the users must belong to. The particular
+   * identifier "all" means all user groups.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
    * string of characters.
    * @param page the pagination parameters formatted as "page number;item count in the page". From
@@ -167,12 +182,17 @@ public class UserProfileResource extends RESTWebService {
     String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
             : null);
     String domainId = null;
-    if (isDefined(groupId)) {
+    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
     }
-    UserDetail[] users = getOrganizationController().searchUsers(instanceId, rolesIds, groupId,
-            aFilteringModel(name, domainId));
+    SearchCriteria criteria = aSearchCriteria().withDomainId(domainId, getUserDetail()).
+            withComponentInstanceId(instanceId).
+            withRoles(rolesIds).
+            withGroupId(groupId).
+            withName(name).
+            build();
+    UserDetail[] users = getOrganizationController().searchUsers(criteria);
     UserDetail[] paginatedUsers = paginate(users, page);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
@@ -196,45 +216,21 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("page") String page) {
     checkUserAuthentication();
     UserDetail theUser = getUserDetailById(userId);
-    int theUserId = Integer.valueOf(theUser.getId());
-    List<RelationShip> relationships;
-    try {
-      relationships = relationShipService.getAllMyRelationShips(theUserId);
-    } catch (SQLException ex) {
-      Logger.getLogger(UserProfileResource.class.getName()).log(Level.SEVERE, null, ex);
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }
-    List<UserDetail> contacts = new ArrayList<UserDetail>(relationships.size());
-    for (RelationShip relationShip : relationships) {
-      UserDetail model = aFilteringModel(null, null);
-      if (theUserId == relationShip.getUser1Id()) {
-        model.setId(String.valueOf(relationShip.getUser2Id()));
-      } else {
-        model.setId(String.valueOf(relationShip.getUser1Id()));
-      }
-      String[] rolesIds = (isDefined(roles)
-              ? profileService.getRoleIds(instanceId, roles.split(","))
-              : null);
-      UserDetail[] users = getOrganizationController().searchUsers(instanceId, rolesIds, null,
-              model);
-      if (users.length == 1) {
-        UserDetail contact = users[0];
-        if (isDefined(name)) {
-          String pattern = name.replaceAll("\\*", "\\\\w*").toLowerCase();
-          if (contact.getFirstName().toLowerCase().matches(pattern) || contact.getLastName().
-                  toLowerCase().matches(pattern)) {
-            contacts.add(contact);
-          }
-        } else {
-          contacts.add(contact);
-        }
-      }
-    }
+    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
+            : null);
+    String[] contactIds = getContactIds(theUser.getId());
+    SearchCriteria criteria = aSearchCriteria().withDomainId(null, getUserDetail()).
+            withComponentInstanceId(instanceId).
+            withRoles(rolesIds).
+            withUserIds(contactIds).
+            withName(name).
+            build();
+    UserDetail[] contacts = getOrganizationController().searchUsers(criteria);
     UserDetail[] paginatedUsers = paginate(contacts, page);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
             asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
-            header(RESPONSE_HEADER_USERSIZE, contacts.size()).build();
+            header(RESPONSE_HEADER_USERSIZE, contacts.length).build();
   }
 
   @Override
@@ -275,23 +271,24 @@ public class UserProfileResource extends RESTWebService {
     return theUser;
   }
 
-  private UserDetail aFilteringModel(String name, String domainId) {
-    UserDetail model = new UserDetail();
-    if (getUserDetail().isDomainRestricted()) {
-      model.setDomainId(getUserDetail().getDomainId());
-    } else if (isDefined(domainId) && Integer.valueOf(domainId) > 0) {
-      model.setDomainId(domainId);
+  private String[] getContactIds(String userId) {
+    try {
+      int myId = Integer.valueOf(userId);
+      List<RelationShip> relationShips = relationShipService.getAllMyRelationShips(myId);
+      String[] userIds = new String[relationShips.size()];
+      for (int i = 0; i < relationShips.size(); i++) {
+        RelationShip relationShip = relationShips.get(i);
+        if (relationShip.getUser1Id() != myId) {
+          userIds[i] = String.valueOf(relationShip.getUser1Id());
+        } else {
+          userIds[i] = String.valueOf(relationShip.getUser2Id());
+        }
+      }
+      return userIds;
+    } catch (SQLException ex) {
+      Logger.getLogger(UserProfileResource.class.getName()).log(Level.SEVERE, null, ex);
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
-    if (isDefined(name)) {
-      String filterByName = name.replaceAll("\\*", "%");
-      model.setFirstName(filterByName);
-      model.setLastName(filterByName);
-    }
-    return model;
-  }
-
-  private UserDetail[] paginate(List<UserDetail> users, String pagination) {
-    return paginate(users.toArray(new UserDetail[users.size()]), pagination);
   }
 
   private UserDetail[] paginate(UserDetail[] users, String pagination) {

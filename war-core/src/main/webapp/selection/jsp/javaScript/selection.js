@@ -53,6 +53,13 @@ function Selection(multiple, callbacks) {
   }
   
   /**
+   * How many items are selected?
+   */
+  this.size = function() {
+    return self.items.length;
+  }
+  
+  /**
    * Adds the specified item to the selection.
    * The item to add can be an array of several objects to select.
    */

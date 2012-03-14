@@ -20,120 +20,120 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 /*************************************
 Redefinition des style de balises HTML
 *************************************/
 BODY {
-	scrollbar-face-color: #FFFFFF;
-	scrollbar-shadow-color: #FFFFFF;
-	scrollbar-highlight-color: #FFFFFF;
-	scrollbar-3dlight-color: #EDEDED;
-	scrollbar-darkshadow-color: #949FB2;
-	scrollbar-track-color: #EDEDED;
-	scrollbar-arrow-color: #AFB8C9;
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	margin: 0px;
+  scrollbar-face-color: #FFFFFF;
+  scrollbar-shadow-color: #FFFFFF;
+  scrollbar-highlight-color: #FFFFFF;
+  scrollbar-3dlight-color: #EDEDED;
+  scrollbar-darkshadow-color: #949FB2;
+  scrollbar-track-color: #EDEDED;
+  scrollbar-arrow-color: #AFB8C9;
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px;
+  margin: 0px;
 }
 
 TD,div {
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px
 }
 
 A {
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	text-decoration: none;
-	color: #000000
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px;
+  text-decoration: none;
+  color: #000000
 }
 
 A:hover {
-	color: #666699;
+  color: #666699;
 }
 
 input {
-	background-color: #FFFFFF;
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	color: #000000;
-	border: 1px solid #999999;
+  background-color: #FFFFFF;
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px;
+  color: #000000;
+  border: 1px solid #999999;
 }
 
 .invisible {
-	background: transparent;
-	border: 0;
+  background: transparent;
+  border: 0;
 }
 
 select {
-	background-color: #FFFFFF;
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	color: #000000;
-	border: 1px solid #999999;
+  background-color: #FFFFFF;
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px;
+  color: #000000;
+  border: 1px solid #999999;
 }
 
 textarea {
-	background-color: #FFFFFF;
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	color: #000000;
-	border: 1px solid #999999;
+  background-color: #FFFFFF;
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px;
+  color: #000000;
+  border: 1px solid #999999;
 }
 
 Label,legend {
-	font-size: 11px;
-	color: #666666;
-	font-weight: bold
+  font-size: 11px;
+  color: #666666;
+  font-weight: bold
 }
 
 TABLE.frame {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 
 TR.frame {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 
 TD.frame {
-	background-color: #CCCCCC;
-	color: #FFFFFF;
-	text-align: left;
-	font-style: normal;
-	font-weight: bold
+  background-color: #CCCCCC;
+  color: #FFFFFF;
+  text-align: left;
+  font-style: normal;
+  font-weight: bold
 }
 
 TABLE.title {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 
 TR.title {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 
 TD.title {
-	background-color: #CCCCCC;
-	font-style: normal;
-	font-size: 11pt;
-	font-weight: bold;
-	color: #000000
+  background-color: #CCCCCC;
+  font-style: normal;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #000000
 }
 
 TD.sommaireTitle {
-	font-size: 20pt;
-	font-weight: bold
+  font-size: 20pt;
+  font-weight: bold
 }
 
 TD.sommaireDescription {
-	font-size: 8pt;
-	color: #000000
+  font-size: 8pt;
+  color: #000000
 }
 
 TD.sommaire {
-	font-size: 12pt;
-	font-weight: bold
+  font-size: 12pt;
+  font-weight: bold
 }
 
 /***************************************
@@ -141,28 +141,28 @@ Definition des class de style Silverpeas
 ***************************************/
 
 .clean {
-	padding:0;
-	margin:0;
+  padding:0;
+  margin:0;
 }
 
 .peer {
-	color: #033111
+  color: #033111
 }
 
 .odd {
-	color: #000000
+  color: #000000
 }
 
 .couleurCadreExterieur {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 
 .couleurCadreInterieur {
-	background-color: #D1E5FF
+  background-color: #D1E5FF
 }
 
 .couleurFondCadre {
-	background-color: #FFFFFF
+  background-color: #FFFFFF
 }
 
 .couleurFondOperation {
@@ -170,278 +170,278 @@ Definition des class de style Silverpeas
 }
 
 .bgDegradeGris {
-	border:1px solid #cdcdcd;
-	color:#333;
-	margin-bottom:10px;
-		background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
-		background: -moz-linear-gradient(top, #fff, #e5e5e5);
-		-pie-background: linear-gradient(#ffffff, #e5e5e5);
-		behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-		min-height:14px;
-	}
+  border:1px solid #cdcdcd;
+  color:#333;
+  margin-bottom:10px;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
+  background: -moz-linear-gradient(top, #fff, #e5e5e5);
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  min-height:14px;
+}
 
 .bgDegradeGris.header, .bgDegradeGris .header {
-    border-bottom:1px solid #cdcdcd;
-	border-top:0;
-	border-right:0;
-	border-left:0;
-	margin:0;
-	padding:5px;
-    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
-	background: -moz-linear-gradient(top, #fff, #e5e5e5);
-	-pie-background: linear-gradient(#ffffff, #e5e5e5);
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-	min-height:14px;
+  border-bottom:1px solid #cdcdcd;
+  border-top:0;
+  border-right:0;
+  border-left:0;
+  margin:0;
+  padding:5px;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
+  background: -moz-linear-gradient(top, #fff, #e5e5e5);
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  min-height:14px;
 }
 
 .header h4{
-	font-size:110%;
-	min-width:300px;
+  font-size:110%;
+  min-width:300px;
 }
 
 * html 	.bgDegradeGris {
-	background-color:#e9e9e9;
+  background-color:#e9e9e9;
 }
 * html 	.bgDegradeGris.header {
-	background-color:#efefef;
+  background-color:#efefef;
 }
-	
+
 .bgDegradeGris p, .bgDegradeGris .paragraphe {
-	padding:11px 17px 0 17px;
-	margin:0;
-	font-size:100%;
-	line-height:140%;
-	color:#666;
-	position:relative;
+  padding:11px 17px 0 17px;
+  margin:0;
+  font-size:100%;
+  line-height:140%;
+  color:#666;
+  position:relative;
 }
 
 .bgDegradeGris p b, .bgDegradeGris .paragraphe b {
-	color:#333;
-	font-weight:100;
+  color:#333;
+  font-weight:100;
 }
 
 .principalContent{
-	margin-right:320px;
-	margin-top:10px;
+  margin-right:320px;
+  margin-top:10px;
 }
 .rightContent{
-	width:310px;
-	clear:right;
-	float:right;
-	margin-top:10px;
+  width:310px;
+  clear:right;
+  float:right;
+  margin-top:10px;
 }
 
 .clearAll {
-	clear:both;
+  clear:both;
 }
 
 .linkUser {
-	color: #3A5998;
+  color: #3A5998;
 }
 .linkUser:hover {
-	color: #666699;
+  color: #666699;
 }
 
 .inputPermalink {
-	border: 1px solid #CACACA;
-    color: #333333;
-    width: 90%;
+  border: 1px solid #CACACA;
+  color: #333333;
+  width: 90%;
 }
 
 .profilPhoto {
- 	border:1px solid #CCCCCC;
-	overflow:hidden;
+  border:1px solid #CCCCCC;
+  overflow:hidden;
 }
 
 .bgDegradeGris .profilPhoto {
-	position:absolute;
-	width:30px;
-	height:30px;
-	top:10px;
-	right:10px;
-	text-align: center;
+  position:absolute;
+  width:30px;
+  height:30px;
+  top:10px;
+  right:10px;
+  text-align: center;
 }
 
 .bgDegradeGris .profilPhoto img{
-	height:30px;
+  height:30px;
 }
 /* Couleur de l'interface : Frame */
 .couleurCadre {
-	background-color: #DEDEDE
+  background-color: #DEDEDE
 }
 
 .couleurFenetre {
-	background-color: #D1E5FF
+  background-color: #D1E5FF
 }
 
 /* Couleur de l'interface : TopBar et DomainsBar */
 .couleurInterface {
-	background-color: #003311
+  background-color: #003311
 }
 
 .winScreen {
-	background-color: #F0F8FF;
+  background-color: #F0F8FF;
 }
 
 .titremodule {
-	font-size: 13pt;
-	font-weight: bold;
-	color: #000000
+  font-size: 13pt;
+  font-weight: bold;
+  color: #000000
 }
 
 .txtnote {
-	font-size: 11px;
-	color: #000000;
-	text-decoration: none
+  font-size: 11px;
+  color: #000000;
+  text-decoration: none
 }
 
 .txttitrecol {
-	font-size: 11px;
-	color: #000000;
-	font-weight: bold
+  font-size: 11px;
+  color: #000000;
+  font-weight: bold
 }
 
 .txtnav {
-	font-size: 10pt;
-	font-weight: bold;
-	color: #000000
+  font-size: 10pt;
+  font-weight: bold;
+  color: #000000
 }
 
 .textePetitBold {
-	font-size: 11px;
-	font-weight: bold;
-	color: #000000
+  font-size: 11px;
+  font-weight: bold;
+  color: #000000
 }
 
 .textePetitBoldVert {
-	font-size: 11px;
-	font-weight: bold;
-	color: #661666
+  font-size: 11px;
+  font-weight: bold;
+  color: #661666
 }
 
 .textePetitBold2 {
-	font-size: 11px;
-	font-weight: bold;
-	color: #666666
+  font-size: 11px;
+  font-weight: bold;
+  color: #666666
 }
 
 .txtPetitBlanc, .txtpetitblanc {
-	font-size: 11px;
-	font-weight: bold;
-	color: #FFFFFF
+  font-size: 11px;
+  font-weight: bold;
+  color: #FFFFFF
 }
 
 .txtGrandBlanc {
-	font-size: 13pt;
-	font-weight: bold;
-	color: #FFFFFF
+  font-size: 13pt;
+  font-weight: bold;
+  color: #FFFFFF
 }
 
 .txtlibform {
-	font-size: 8pt;
-	font-weight: bold;
-	color: #111111;
-	padding-right: 50px;
-	vertical-align: top;
-	text-align: left;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #111111;
+  padding-right: 50px;
+  vertical-align: top;
+  text-align: left;
 }
 
 .txtsublibform {
-	font-size:8pt;
+  font-size:8pt;
   font-weight:bold;
   color:#111111;
   padding-right:0px;
 }
 
 .txtlibform_underline {
-	font-size: 8pt;
-	font-weight: bold;
-	color: #111111;
-	text-decoration: underline
+  font-size: 8pt;
+  font-weight: bold;
+  color: #111111;
+  text-decoration: underline
 }
 
 .txtlibform_resa {
-	font-size: 8pt;
-	font-weight: bold;
-	color: #5181F6;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #5181F6;
 }
 
 .texteNombreBigBold {
-	font-size: 24pt;
-	font-weight: bold;
-	color: #607090
+  font-size: 24pt;
+  font-weight: bold;
+  color: #607090
 }
 
 .texteLabelForm {
-	font-size: 11px;
-	color: #666666;
-	font-weight: bold
+  font-size: 11px;
+  color: #666666;
+  font-weight: bold
 }
 
 /* Agenda */
 #agenda .intfdcolor {
-	background-color: #FFFFFF;
+  background-color: #FFFFFF;
 }
 
 #agenda .grille {
-	background-color: #CCCCCC;
+  background-color: #CCCCCC;
 }
 
 #agenda .txtlibform {
-	padding-right: 50px;
-	vertical-align: top;
+  padding-right: 50px;
+  vertical-align: top;
 }
 
 #agenda #agendaView {
-	float: left;
-	width: 100%;
-	margin-left: 10px;
+  float: left;
+  width: 100%;
+  margin-left: 10px;
 }
 
 #agenda #navigation {
-	float: left;
-	margin-left: 10px;
-	margin-bottom: 10px;
+  float: left;
+  margin-left: 10px;
+  margin-bottom: 10px;
 }
 
 #agenda #currentScope,
 #agenda #jump,
 #agenda #today {
-	float: left;
-	border: 1px solid;
-	margin-right: 10px;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
-	white-space: nowrap;
-	padding: 5px;
+  float: left;
+  border: 1px solid;
+  margin-right: 10px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+  background-repeat: repeat-x;
+  white-space: nowrap;
+  padding: 5px;
 }
 
 #agenda #currentScope {
-	display: inline;
-	text-align: center;
+  display: inline;
+  text-align: center;
 }
 
 #agenda #currentScope img {
-	margin-top: 2px;
+  margin-top: 2px;
 }
 
 #agenda #jump form,
 #agenda #footer form
 {
-	margin: 0px;
-	padding: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 #agenda #others {
-	float: left;
-	padding: 7px;
+  float: left;
+  padding: 7px;
 }
 
 #agenda #footer {
-	float: left;
-	margin-left: 10px;
-	margin-top: 10px;
+  float: left;
+  margin-left: 10px;
+  margin-top: 10px;
 }
 
 #agenda #categories,
@@ -449,731 +449,731 @@ Definition des class de style Silverpeas
 #agenda #alert,
 #agenda #caption,
 #agenda #rss {
-	float: left;
-	border: 1px solid;
-	margin-right: 10px;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
-	white-space: nowrap;
-	padding: 5px;
-	white-space: nowrap;
+  float: left;
+  border: 1px solid;
+  margin-right: 10px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+  background-repeat: repeat-x;
+  white-space: nowrap;
+  padding: 5px;
+  white-space: nowrap;
 }
 
 #agenda #rss img {
-	border:0;
+  border:0;
 }
 
 #agenda #today a {
-	font-size: 10pt;
-	font-weight: bold;
-	color: #000000
+  font-size: 10pt;
+  font-weight: bold;
+  color: #000000
 }
 
 #agenda #today a:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 
 .txtbigdate {
-	font-size: 25pt;
-	font-weight: bold;
-	color: #666666
+  font-size: 25pt;
+  font-weight: bold;
+  color: #666666
 }
 
 .txtnav2 {
-	font-size: 10pt;
-	font-weight: bold;
-	color: #FFFFFF
+  font-size: 10pt;
+  font-weight: bold;
+  color: #FFFFFF
 }
 
 .txtnav21 {
-	font-size: 10pt;
-	font-weight: bold;
-	color: #AFB8C1
+  font-size: 10pt;
+  font-weight: bold;
+  color: #AFB8C1
 }
 
 .txtnav3 {
-	font-size: 11px;
-	color: #666666;
-	text-decoration: none
+  font-size: 11px;
+  color: #666666;
+  text-decoration: none
 }
 
 .txtnav4 {
-	font-size: 11px;
-	font-weight: bold;
-	color: #000000
+  font-size: 11px;
+  font-weight: bold;
+  color: #000000
 }
 
 .txtBaseline {
-	font-size: 10px;
-	color: #666666
+  font-size: 10px;
+  color: #666666
 }
 
 .labelFormulaire {
-	font-size: 11px;
-	font-weight: bold;
-	color: #333333
+  font-size: 11px;
+  font-weight: bold;
+  color: #333333
 }
 
 .txtdayoff1 {
-	font-size: 10px;
-	font-weight: normal;
-	color: #AFB8C1
+  font-size: 10px;
+  font-weight: normal;
+  color: #AFB8C1
 }
 
 .txtdayoff2 {
-	font-size: 12px;
-	font-weight: bold;
-	color: #AFB8C1;
+  font-size: 12px;
+  font-weight: bold;
+  color: #AFB8C1;
 }
 
 .txtdayoff3 {
-	font-size: 10px;
-	font-weight: normal;
-	color: #D4D4D4;
+  font-size: 10px;
+  font-weight: normal;
+  color: #D4D4D4;
 }
 
 .date {
-	font-size: 11pt;
-	color: black
+  font-size: 11pt;
+  color: black
 }
 
 .intfdcolor {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
-	white-space: nowrap;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+  background-repeat: repeat-x;
+  white-space: nowrap;
 }
 
 #outilsAdmin {
-	position: absolute;
-	left: 200px;
-	height: 15px;
-	width: 100%;
-	top: 6px;
-	color: #999999;
-	background-color:#FFF;
-	border:1px solid #333;
-	width:auto;
-	padding: 2px 15px 7px
+  position: absolute;
+  left: 200px;
+  height: 15px;
+  width: 100%;
+  top: 6px;
+  color: #999999;
+  background-color:#FFF;
+  border:1px solid #333;
+  width:auto;
+  padding: 2px 15px 7px
 }
 
 #outilsAdmin a {
-	color: #999999;
+  color: #999999;
 }
 
 .ongletAdminOff {
-	background-color: #333
+  background-color: #333
 }
 
 .ongletAdminOn {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 .ongletAdminOn span.textePetitBold, .ongletAdminOff span.txtPetitBlanc {
-	font-size:12px;
+  font-size:12px;
 }
 
 .intfdcolor1 {
-	background-color: #666666
+  background-color: #666666
 }
 
 .intfdcolor2 {
-	background-color: #EDEDED
+  background-color: #EDEDED
 }
 
 .intfdcolor3 {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 
 .intfdcolor4 {
-	background-color: #FFFFFF
+  background-color: #FFFFFF
 }
 
 .intfdcolor5 {
-	background-color: #FFFFFF
+  background-color: #FFFFFF
 }
 
 .intfdcolor51 {
-	background-color: #EDEDED
+  background-color: #EDEDED
 }
 
 .intfdcolor52 {
-	background-color: #F0F8FF
+  background-color: #F0F8FF
 }
 
 .intfdcolor6 {
-	background-color: #CDCDCD
+  background-color: #CDCDCD
 }
 
 .intfdcolor6outline {
-	background-color: #CDCDCD;
-	border: 1px solid #AFB8C9;
+  background-color: #CDCDCD;
+  border: 1px solid #AFB8C9;
 }
 
 .publicEvent {
-	background-color: #DDF1CF;
-	border: 0px solid;
+  background-color: #DDF1CF;
+  border: 0px solid;
 }
 
 .privateEvent {
-	background-color: #FFF1CF;
-	border: 0px solid;
+  background-color: #FFF1CF;
+  border: 0px solid;
 }
 
 .publicEventOutline {
-	background-color: #DDF1CF;
-	border: 1px solid #AFB8C9;
+  background-color: #DDF1CF;
+  border: 1px solid #AFB8C9;
 }
 
 .privateEventOutline {
-	background-color: #FFF1CF;
-	border: 1px solid #AFB8C9;
+  background-color: #FFF1CF;
+  border: 1px solid #AFB8C9;
 }
 
 .fondCartouche {
-	background-color: #E5E5E5
+  background-color: #E5E5E5
 }
 
 .line {
-	background-color: #000000
+  background-color: #000000
 }
 
 /*News*/
 .headline {
-	font-size: 14pt;
-	font-weight: bold;
-	color: #000000;
-	font-family: Times New Roman, Times, serif;
-	text-decoration: underline
+  font-size: 14pt;
+  font-weight: bold;
+  color: #000000;
+  font-family: Times New Roman, Times, serif;
+  text-decoration: underline
 }
 
 .headline:hover {
-	font-size: 14pt;
-	font-weight: bold;
-	color: #666666;
-	font-family: Times New Roman, Times, serif;
-	text-decoration: underline overline
+  font-size: 14pt;
+  font-weight: bold;
+  color: #666666;
+  font-family: Times New Roman, Times, serif;
+  text-decoration: underline overline
 }
 
 .healineBody {
-	font-size: 11pt;
-	color: #000000
+  font-size: 11pt;
+  color: #000000
 }
 
 /*********************************
 Style Utilise par le ViewGenerator
 *********************************/ /* OBJETS : ButtonWA - ButtonWA2 */
 .buttonStyle {
-	background-image:
-		url(/silverpeas/util/viewGenerator/icons/fondButton.gif);
-	background-repeat: repeat-x;
-	font-weight: normal;
+  background-image:
+    url(/silverpeas/util/viewGenerator/icons/fondButton.gif);
+  background-repeat: repeat-x;
+  font-weight: normal;
 }
 
 .buttonColorLight {
-	background-color: 00a11bc
+  background-color: 00a11bc
 }
 
 .buttonColorDark {
-	background-color: #111111
+  background-color: #111111
 }
 
 /* OBJETS : BrowseBarWA - BrowseBarWA2 */
 .hrefComponentName {
-	font-size: 10pt;
-	font-weight: bold;
-	color: #000000
+  font-size: 10pt;
+  font-weight: bold;
+  color: #000000
 }
 
 .componentName {
-	font-size: 13pt;
-	font-weight: bold
+  font-size: 13pt;
+  font-weight: bold
 }
 
 .navigationBarLink:hover {
-	font-size: 11px;
-	font-weight: bold;
-	color: #666666;
-	text-decoration: underline overline
+  font-size: 11px;
+  font-weight: bold;
+  color: #666666;
+  text-decoration: underline overline
 }
 
 .hrefComponentName:hover {
-	font-size: 11pt;
-	font-weight: bold;
-	color: #666666;
-	text-decoration: underline overline
+  font-size: 11pt;
+  font-weight: bold;
+  color: #666666;
+  text-decoration: underline overline
 }
 
 .hrefComponentNameOff {
-	font-size: 11pt;
-	font-weight: bold;
-	color: #666666;
-	text-decoration: underline overline
+  font-size: 11pt;
+  font-weight: bold;
+  color: #666666;
+  text-decoration: underline overline
 }
 
 .hrefTreeManager:hover {
-	font: 11px;
-	background-color: Navy;
-	color: White;
-	text-decoration: none;
+  font: 11px;
+  background-color: Navy;
+  color: White;
+  text-decoration: none;
 }
 
 .hrefTreeManager:link {
-	font: 11px;
-	background-color: White;
-	color: Navy;
-	text-decoration: none;
+  font: 11px;
+  background-color: White;
+  color: Navy;
+  text-decoration: none;
 }
 
 .hrefTreeManager:vlink {
-	font: 11px;
-	background-color: Navy;
-	color: White;
-	text-decoration: none;
+  font: 11px;
+  background-color: Navy;
+  color: White;
+  text-decoration: none;
 }
 
 .componentNav {
-	font-size: 12px
+  font-size: 12px
 }
 
 .domainName {
-	font-size: 13pt;
-	font-weight: bold
+  font-size: 13pt;
+  font-weight: bold
 }
 
 /* OBJETS : TabbedPaneWA - TabbedPaneWA2 */
 .ongletOn {
-	background-image: url(/silverpeas/util/viewGenerator/icons/ongletOn.gif)
-		;
-	background-repeat: repeat-x;
-	font-weight: bold;
+  background-image: url(/silverpeas/util/viewGenerator/icons/ongletOn.gif)
+    ;
+  background-repeat: repeat-x;
+  font-weight: bold;
 }
 
 .ongletOff {
-	background-image:
-		url(/silverpeas/util/viewGenerator/icons/ongletOff.gif);
-	background-repeat: repeat-x;
-	font-weight: normal;
-	color: #999999;
+  background-image:
+    url(/silverpeas/util/viewGenerator/icons/ongletOff.gif);
+  background-repeat: repeat-x;
+  font-weight: normal;
+  color: #999999;
 }
 
 .ongletDark {
-	background-color: #666666
+  background-color: #666666
 }
 
 .ongletColorLight {
-	background-color: 00a11bc
+  background-color: 00a11bc
 }
 
 .ongletColorDark {
-	background-color: #7D7D7D
+  background-color: #7D7D7D
 }
 
 /* OBJETS : TabbedPaneWA - TabbedPaneWA3 */
 .titreFenetre {
-	font-size: 13pt;
-	font-weight: bold;
-	color: #666666
+  font-size: 13pt;
+  font-weight: bold;
+  color: #666666
 }
 
 .legalInformation {
-	color: #111111
+  color: #111111
 }
 
 .titreFenetre2 {
-	font-size: 13pt;
-	font-weight: bold;
-	color: #FFFFFF
+  font-size: 13pt;
+  font-weight: bold;
+  color: #FFFFFF
 }
 
 .sousTitreFenetre {
-	font-size: 11pt;
-	font-weight: bold;
-	color: #666666
+  font-size: 11pt;
+  font-weight: bold;
+  color: #666666
 }
 
 .styleOngletOn {
-	background-color: 00a11bc;
-	font-size: 11px;
-	font-weight: bold;
-	color: #000000;
-	text-decoration: none
+  background-color: 00a11bc;
+  font-size: 11px;
+  font-weight: bold;
+  color: #000000;
+  text-decoration: none
 }
 
 .styleOngletOff {
-	background-color: #5A5A5A;
-	font-size: 11px;
-	color: #FFFFFF;
-	text-decoration: none
+  background-color: #5A5A5A;
+  font-size: 11px;
+  color: #FFFFFF;
+  text-decoration: none
 }
 
 /************************************
 Definition des class de style Portlet
 ************************************/
 .borderLineColorPortlet {
-	background-color: #003366
+  background-color: #003366
 }
 
 .interfaceColorPortlet {
-	background-color: #003311
+  background-color: #003311
 }
 
 .windowColorPortlet {
-	background-color: #EDEDED
+  background-color: #EDEDED
 }
 
 .intfdcolor11 {
-	background-color: #000000
+  background-color: #000000
 }
 
 .intfdcolor12 {
-	background-color: #111111
+  background-color: #111111
 }
 
 .intfdcolor13 {
-	background-color: #CCCCCC
+  background-color: #CCCCCC
 }
 
 /** mailservice status highlight display */
 .MessageNotRead {
-	COLOR: #000000;
-	FONT-SIZE: 8pt;
-	FONT-WEIGHT: bold
+  COLOR: #000000;
+  FONT-SIZE: 8pt;
+  FONT-WEIGHT: bold
 }
 
 .MessageNotReadAndHighPriority {
-	COLOR: #FF0000;
-	FONT-SIZE: 8pt;
-	FONT-WEIGHT: bold
+  COLOR: #FF0000;
+  FONT-SIZE: 8pt;
+  FONT-WEIGHT: bold
 }
 
 .MessageReadHighPriority {
-	COLOR: #FF0000;
-	FONT-SIZE: 8pt;
-	FONT-WEIGHT: bold
+  COLOR: #FF0000;
+  FONT-SIZE: 8pt;
+  FONT-WEIGHT: bold
 }
 
 .contourintfdcolor {
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #CCCCCC;
-	background-color: #ffffff;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-color: #CCCCCC;
+  background-color: #ffffff;
 }
 
 .eventCells {
-	background: #FFFFFF;
+  background: #FFFFFF;
 }
 
 .contourt3 {
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #CCCCCC;
-	background-color: #ffffff;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-color: #CCCCCC;
+  background-color: #ffffff;
 }
 
 .contourbleufondblanc {
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #CCCCCC;
-	background-color: #ffffff;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-color: #CCCCCC;
+  background-color: #ffffff;
 }
 
 .quizzscore {
-	background-color: #CCCCCC;
-	font-size: 11pt;
-	font-weight: bold;
-	color: #607090;
-	text-decoration: none
+  background-color: #CCCCCC;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #607090;
+  text-decoration: none
 }
 
 .Titre {
-	font: bold xx-small Verdana, Geneva, Arial, Helvetica, sans-serif;
-	color: Gray;
-	line-height: 12px;
+  font: bold xx-small Verdana, Geneva, Arial, Helvetica, sans-serif;
+  color: Gray;
+  line-height: 12px;
 }
 
 /** SOGREAH2 *********************************************/
 .txtPersoSpace {
-	font-size: 10pt;
-	font-weight: bold;
-	color: #607090;
+  font-size: 10pt;
+  font-weight: bold;
+  color: #607090;
 }
 
 td.browsebar {
-	font-family: Verdana, Arial, sans-serif;
-	color: #000000;
-	font-size: 11px;
-	text-decoration: none;
-	font-weight: bold;
+  font-family: Verdana, Arial, sans-serif;
+  color: #000000;
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 td.browsebar a:link {
-	font-family: verdana, Arial, sans-serif;
-	color: #000000;
-	font-size: 11px;
-	text-decoration: none;
-	font-weight: bold;
+  font-family: verdana, Arial, sans-serif;
+  color: #000000;
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 td.browsebar a:visited {
-	color: #000000;
-	font-size: 11px;
-	text-decoration: none;
-	font-weight: bold;
+  color: #000000;
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 td.browsebar a:active {
-	color: #000000;
-	font-size: 11px;
-	text-decoration: none;
-	font-weight: bold;
+  color: #000000;
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 td.browsebar a:hover {
-	color: #666699;
-	font-size: 11px;
-	text-decoration: none;
-	font-weight: bold;
+  color: #666699;
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .viewGeneratorLines {
-	background-color: #CCCCCC;
+  background-color: #CCCCCC;
 }
 
 .selectNS {
-	background-color: #FFFFFF;
-	font-size: 10px;
-	color: #000000;
+  background-color: #FFFFFF;
+  font-size: 10px;
+  color: #000000;
 }
 
 .tableNavigationList {
-	border-style: solid;
-	border-width: 0px 1px 1px 1px;
-	border-color: #CCCCCC;
-	background-color: #FFFFFF;
+  border-style: solid;
+  border-width: 0px 1px 1px 1px;
+  border-color: #CCCCCC;
+  background-color: #FFFFFF;
 }
 
 .navigationListTitle {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
-	background-repeat: repeat-x;
-	font-size: 11px;
-	font-weight: bold;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
+  background-repeat: repeat-x;
+  font-size: 11px;
+  font-weight: bold;
 }
 
 .tableArrayPane {
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #CCCCCC;
-	background-color: #FFFFFF;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-color: #CCCCCC;
+  background-color: #FFFFFF;
 }
 
 .arrayPane {
-	margin-left: auto;
-	margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .operationStyle {
-	background-image:
-		url(/silverpeas/util/viewGenerator/icons/fondOperation.gif);
-	background-repeat: no-repeat;
+  background-image:
+    url(/silverpeas/util/viewGenerator/icons/fondOperation.gif);
+  background-repeat: no-repeat;
 }
 
 .highlight {
-	background-color: #F7C752;
-	padding-bottom: 2px;
-	padding-left: 3px;
-	padding-right: 3px;
-	padding-top: 2px;
+  background-color: #F7C752;
+  padding-bottom: 2px;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-top: 2px;
 }
 
 .fondPhoto {
-	background-color: #CCCCCC;
+  background-color: #CCCCCC;
 }
 
 .fondPhotoNotVisible {
-	background-color: #FF9933;
+  background-color: #FF9933;
 }
 
 .fondCadre {
-	background-color: #666666;
+  background-color: #666666;
 }
 
 /****************************************/
 /****** Look V5 - TopBar ****************/
 /****************************************/
 #backHome {
-	float: left;
-	position: absolute;
-	left: 0px;
-	height: 85px;
-	width: 175px;
-	top: 20px;
+  float: left;
+  position: absolute;
+  left: 0px;
+  height: 85px;
+  width: 175px;
+  top: 20px;
 }
 
 #outils {
-	position: absolute;
-	right: 5px;
-	height: 15px;
-	width: 100%;
-	bottom: 6px;
-	text-align: right;
-	color: #999999;
-	font-size: 10px
+  position: absolute;
+  right: 5px;
+  height: 15px;
+  width: 100%;
+  bottom: 6px;
+  text-align: right;
+  color: #999999;
+  font-size: 10px
 }
 
 #outils a {
-	color: #999999;
+  color: #999999;
 }
 
 #shortcuts a {
-	color: #FFFFFF;
+  color: #FFFFFF;
 }
 
 #shortcuts td {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
-	border-width: 1px;
-	border-top-style: solid;
-	border-color: #FFFFFF;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+  border-width: 1px;
+  border-top-style: solid;
+  border-color: #FFFFFF;
 }
 
 #shortcuts td.gaucheShortcuts {
-	border-style: none;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheTop.gif);
-	width: 5px;
-	height: 20px;
-	background-repeat: no-repeat;
-	background-position: left top;
+  border-style: none;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheTop.gif);
+  width: 5px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-position: left top;
 }
 
 #shortcuts td.droiteShortcuts {
-	width: 5px;
+  width: 5px;
 }
 
 #shortcuts td.activeShortcut {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
-	border-width: 1px;
-	border-top-style: solid;
-	border-color: #FFFFFF;
-	padding-left: 10px;
-	padding-right: 10px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
+  border-width: 1px;
+  border-top-style: solid;
+  border-color: #FFFFFF;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 #administration {
-	bottom: 25px;
-	position: absolute;
-	right: 0px;
+  bottom: 25px;
+  position: absolute;
+  right: 0px;
 }
 
 #administration a {
-	color: #FFFFFF;
-	font-weight: bold;
+  color: #FFFFFF;
+  font-weight: bold;
 }
 
 #administration td {
-	height: 20px;
-	width: 120px;
-	text-align: center;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
-	background-repeat: repeat-x;
-	border-width: 1px;
-	border-top-style: solid;
-	border-left-style: solid;
-	border-color: #FFFFFF;
+  height: 20px;
+  width: 120px;
+  text-align: center;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
+  background-repeat: repeat-x;
+  border-width: 1px;
+  border-top-style: solid;
+  border-left-style: solid;
+  border-color: #FFFFFF;
 }
 
 #ticker {
-	position: absolute;
-	right: 5px;
-	height: 15px;
-	width: 100%;
-	bottom: 6px;
-	text-align: center;
-	color: #000000;
-	font-family: Verdana, Arial, sans-serif;
-	font-size: 10px
+  position: absolute;
+  right: 5px;
+  height: 15px;
+  width: 100%;
+  bottom: 6px;
+  text-align: center;
+  color: #000000;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px
 }
 
 #ticker div {
-	/*IE6 bug fix when text is bold and fade effect (alpha filter) is enabled. Style inner DIV with same color as outer DIV*/
-	/*background-color: #FFFFFF;*/
-	width: 500px;
+  /*IE6 bug fix when text is bold and fade effect (alpha filter) is enabled. Style inner DIV with same color as outer DIV*/
+  /*background-color: #FFFFFF;*/
+  width: 500px;
 }
 
 #topBar #outils div.avatarName {
-    display: inline;
-    font-weight: bold;
-    padding-right: 10px;
+  display: inline;
+  font-weight: bold;
+  padding-right: 10px;
 }
 
 #topBar #outils div.avatarName a {
-	color: #000000;
+  color: #000000;
 }
 
 #topBar #outils div.avatarName img {
-    border: 1px solid #BFBFBF;
-    margin-right: 0px;
-    margin-top: -2px;
-    vertical-align: middle;
+  border: 1px solid #BFBFBF;
+  margin-right: 0px;
+  margin-top: -2px;
+  vertical-align: middle;
 }
 
 #topBar #outils div.userNav {
-	display: inline;
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
+  display: inline;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
 }
 
 /****************************************/
-	/****** Look V5 - DomainsBar ************/
-	/****************************************/
+/****** Look V5 - DomainsBar ************/
+/****************************************/
 #domainsBar {
-	margin: 10px;
-	margin-top: 0px;
+  margin: 10px;
+  margin-top: 0px;
 }
 
 #domainsBar a {
-	font-size: 11px;
-	color: #000000;
+  font-size: 11px;
+  color: #000000;
 }
 
 #redExp {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	z-index:100;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index:100;
 }
 
 #recherche {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/recherche.jpg);
-	background-repeat: no-repeat;
-	margin-bottom: 10px;
-	height: 60px;
-	width: 220px;
-	font-size: 10px;
-	color: #666666;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/recherche.jpg);
+  background-repeat: no-repeat;
+  margin-bottom: 10px;
+  height: 60px;
+  width: 220px;
+  font-size: 10px;
+  color: #666666;
 }
 
 #recherche #submitRecherche {
-	margin: 0px;
-	height: 60px;
+  margin: 0px;
+  height: 60px;
 }
 
 #recherche #submitRecherche input {
-	margin: 0px;
-	margin-left: 15px;
-	margin-right: 5px;
-	margin-top: 7px;
-	font-size: 10px;
-	color: #666666;
-	background-color: transparent;
-	border: none;
+  margin: 0px;
+  margin-left: 15px;
+  margin-right: 5px;
+  margin-top: 7px;
+  font-size: 10px;
+  color: #666666;
+  background-color: transparent;
+  border: none;
 }
 
 #recherche #submitRecherche form { /*height: 0px;*/
@@ -1181,20 +1181,20 @@ td.browsebar a:hover {
 }
 
 #recherche #submitRecherche a {
-	margin-left: 15px;
+  margin-left: 15px;
 }
 
 #recherche #bodyRecherche {
-	background-color: transparent;
-	text-align: center;
-	margin-top: -25px;
-	font-size: 10px;
-	color: #666666;
+  background-color: transparent;
+  text-align: center;
+  margin-top: -25px;
+  font-size: 10px;
+  color: #666666;
 }
 
 #recherche #bodyRecherche a {
-	font-size: 10px;
-	color: #666666;
+  font-size: 10px;
+  color: #666666;
 }
 
 #tabDivId {
@@ -1204,22 +1204,22 @@ td.browsebar a:hover {
 
 #spaces {
   background-color: #C5ED95;
-	background-image:
-		url("/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg");
-	background-repeat: repeat-x;
-	/*background-position: top;*/
-	position:relative;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #C9C9C9;
-	border-bottom-width: none;
-	z-index:0;
-	.width:100%;
-	_width:100%;
+  background-image:
+    url("/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg");
+  background-repeat: repeat-x;
+  /*background-position: top;*/
+  position:relative;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #C9C9C9;
+  border-bottom-width: none;
+  z-index:0;
+  .width:100%;
+  _width:100%;
 }
 
 .tabSpace {
-	padding:3px;
+  padding:3px;
   /* IE hack */
   _width:100%;
 }
@@ -1228,14 +1228,14 @@ td.browsebar a:hover {
   position:relative;
   float:right;
   padding-right:1px;
-	/position:absolute;
-	/right:0px;
+  /position:absolute;
+  /right:0px;
   _position:absolute;
   _right:0px;
 }
 
 #domainsBar #spaces #favdiv img {
-	border: 0px;
+  border: 0px;
 }
 
 .favorite {
@@ -1260,201 +1260,201 @@ td.browsebar a:hover {
 }
 
 #domainsBar .sousOnglets {
-	display: none;
+  display: none;
 }
 
 #spaceTransverse {
-	/*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
-	background-repeat: repeat-x;
-	background-position: top;*/
-	background-color: #8BD039;
-	border-width: 0px;
-	border-style: solid;
-	border-color: #C9C9C9;
-	border-bottom-width: none;
+  /*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
+  background-repeat: repeat-x;
+  background-position: top;*/
+  background-color: #8BD039;
+  border-width: 0px;
+  border-style: solid;
+  border-color: #C9C9C9;
+  border-bottom-width: none;
 }
 
 #spaceTransverse .spaceLevel1On {
-	border-bottom-width: 0px;
+  border-bottom-width: 0px;
 }
 
 #basSpaceTransverse .basSpacesGauche {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
-	background-repeat: no-repeat;
-	background-position: left bottom;
-	background-color: #8BD039;
-	width: 8px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-color: #8BD039;
+  width: 8px;
 }
 
 #basSpaceTransverse .basSpacesMilieu {
-	background-color: #8BD039;
+  background-color: #8BD039;
 }
 
 #basSpaceTransverse .basSpacesDroite {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
-	background-repeat: no-repeat;
-	background-position: right bottom;
-	background-color: #8BD039;
-	width: 8px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-color: #8BD039;
+  width: 8px;
 }
 
 .spaceURL {
-	color: #FFFFFF;
+  color: #FFFFFF;
 }
 
 .spaceURLOn {
-	color: #000000;
+  color: #000000;
 }
 
 #pdc {
-	margin-top: 10px;
-	background-color: #EEEEEE;
-	padding: 3px;
-	border: 1px solid #666666;
+  margin-top: 10px;
+  background-color: #EEEEEE;
+  padding: 3px;
+  border: 1px solid #666666;
 }
 
 #pdcLabel {
-	margin-left: 2px;
-	font-size: 11px;
-	font-family: Verdana, Arial, sans-serif;
+  margin-left: 2px;
+  font-size: 11px;
+  font-family: Verdana, Arial, sans-serif;
 }
 
 #pdc a {
-	font-weight: normal;
+  font-weight: normal;
 }
 
 #spacePerso { /*color:#FFFFFF;*/
-	background-color: #C5ED95;
-	border-right-width: 1px;
-	border-left-width: 1px;
-	border-right-style: solid;
-	border-left-style: solid;
-	border-right-color: #C9C9C9;
-	border-left-color: #C9C9C9;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
-	background-repeat: repeat-x;
-	border-width: 1px;
+  background-color: #C5ED95;
+  border-right-width: 1px;
+  border-left-width: 1px;
+  border-right-style: solid;
+  border-left-style: solid;
+  border-right-color: #C9C9C9;
+  border-left-color: #C9C9C9;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+  background-repeat: repeat-x;
+  border-width: 1px;
 }
 
 #spacePerso .spaceURL {
-	color: #FFF;
+  color: #FFF;
 }
 
 #spacePerso  a img {
-	border:0;
+  border:0;
 }
 
 #spacePerso .contentSpace {
-	margin-top: 7px;
-	margin-left: 10px;
+  margin-top: 7px;
+  margin-left: 10px;
 }
 
 #spacePerso #addComponent {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 #spacePerso #addComponent #availables {
-	font-weight: normal;
+  font-weight: normal;
 }
 
 #loginBox {
-	padding-top: 10px;
-	width: 100%;
+  padding-top: 10px;
+  width: 100%;
 }
 
 #basSpaces {
-	width: 100%;
+  width: 100%;
 }
 
 #basSpaceTransverse {
-	width: 100%;
-	margin-bottom: 10px;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .basSpacesGauche {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
-	background-repeat: no-repeat;
-	background-position: left bottom;
-	background-color: #C5ED95;
-	width: 8px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-color: #C5ED95;
+  width: 8px;
 }
 
 .basSpacesMilieu {
-	background-color: #C5ED95;
+  background-color: #C5ED95;
 }
 
 .basSpacesDroite {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
-	background-repeat: no-repeat;
-	background-position: right bottom;
-	background-color: #C5ED95;
-	width: 8px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-color: #C5ED95;
+  width: 8px;
 }
 
 .spaceLevel1 {
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: #FFFFFF;
-	font-weight: bold;
-	padding: 3px;
-	position:relative;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #FFFFFF;
+  font-weight: bold;
+  padding: 3px;
+  position:relative;
 }
 
 .spaceLevel1On {
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: #FFFFFF;
-	font-weight: bold;
-	padding: 3px;
-	position:relative;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #FFFFFF;
+  font-weight: bold;
+  padding: 3px;
+  position:relative;
 }
 
 .spaceLevelPerso {
-	font-weight: bold;
-	padding: 3px;
+  font-weight: bold;
+  padding: 3px;
 }
 
 .browseSpace {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .browseComponent {
-	font-weight: normal;
+  font-weight: normal;
 }
 
 .browseComponent a {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 
 .browseComponentActiv {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .browseIconComponent {
-	margin: 2px;
-	margin-right: 4px;
+  margin: 2px;
+  margin-right: 4px;
 }
 
 .contentSpace {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .contentSpace a {
-	color: #000000;
+  color: #000000;
 }
 
 #domainsBar #loginBox .forgottenPwd a {
-	font-size: 10px;
-	color: #666666;
+  font-size: 10px;
+  color: #666666;
 }
 
 #domainsBar #loginBox #userNav {
-	display: none;
+  display: none;
 }
 
 /****************************************/
@@ -1462,159 +1462,159 @@ td.browsebar a:hover {
 /****************************************/ 
 /* objet window */
 .cellBrowseBar {
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: #CCCCCC;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #CCCCCC;
 }
 
 .cellOperation {
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: #CCCCCC;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #CCCCCC;
 }
 
 .cellBodyWindows {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeCellBody.jpg);
-	background-repeat: repeat-x;
-	background-position: top;
-	border-width: 1px;
-	border-left-style: solid;
-	border-right-style: solid;
-	border-color: #DEDEDE;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeCellBody.jpg);
+  background-repeat: repeat-x;
+  background-position: top;
+  border-width: 1px;
+  border-left-style: solid;
+  border-right-style: solid;
+  border-color: #DEDEDE;
 }
 
 .basGaucheWindow {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/basGaucheFrame.gif);
-	background-repeat: no-repeat;
-	background-position: left;
-	width: 15px;
-	height: 15px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/basGaucheFrame.gif);
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 15px;
+  height: 15px;
 }
 
 .basMilieuWindow {
-	border-width: 1px;
-	border-bottom-style: solid;
-	border-color: #DEDEDE;
-	height: 15px;
+  border-width: 1px;
+  border-bottom-style: solid;
+  border-color: #DEDEDE;
+  height: 15px;
 }
 
 .basDroiteWindow {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/basDroiteFrame.gif);
-	background-repeat: no-repeat;
-	background-position: right;
-	width: 15px;
-	height: 15px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/basDroiteFrame.gif);
+  background-repeat: no-repeat;
+  background-position: right;
+  width: 15px;
+  height: 15px;
 }
 
 /* Objet Button */
 .gaucheBoutonV5 {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheBouton.gif);
-	background-repeat: no-repeat;
-	background-position: left;
-	width: 5px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheBouton.gif);
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 5px;
 }
 
 .milieuBoutonV5 {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
-	background-repeat: repeat-x;
-	color: #FFFFFF;
-	height: 20px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+  background-repeat: repeat-x;
+  color: #FFFFFF;
+  height: 20px;
 }
 
 a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
-	color: #FFFFFF;
+  color: #FFFFFF;
 }
 
 .droiteBoutonV5 {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteBouton.gif);
-	background-repeat: no-repeat;
-	background-position: right;
-	width: 5px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteBouton.gif);
+  background-repeat: no-repeat;
+  background-position: right;
+  width: 5px;
 }
 
 /* Objet Tabs */
 #gef-tabs img {
-	width: 5px;
+  width: 5px;
 }
 
 .gaucheOngletOn {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOn.gif);
-	background-repeat: no-repeat;
-	background-position: left;
-	width: 5px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOn.gif);
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 5px;
 }
 
 .milieuOngletOn {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
-	background-repeat: repeat-x;
-	color: #FFFFFF;
-	height: 20px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+  background-repeat: repeat-x;
+  color: #FFFFFF;
+  height: 20px;
 }
 
 .milieuOngletOn a {
-	color: #FFFFFF;
+  color: #FFFFFF;
 }
 
 .droiteOngletOn {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOn.gif);
-	background-repeat: no-repeat;
-	background-position: right;
-	width: 5px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOn.gif);
+  background-repeat: no-repeat;
+  background-position: right;
+  width: 5px;
 }
 
 .gaucheOngletOff {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOff.gif);
-	background-repeat: no-repeat;
-	background-position: left;
-	width: 5px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOff.gif);
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 5px;
 }
 
 .milieuOngletOff {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
-	background-repeat: repeat-x;
-	color: #FFFFFF;
-	height: 20px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+  background-repeat: repeat-x;
+  color: #FFFFFF;
+  height: 20px;
 }
 
 .milieuOngletOff a {
-	color: #999999;
+  color: #999999;
 }
 
 .droiteOngletOff {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOff.gif);
-	background-repeat: no-repeat;
-	background-position: right;
-	width: 5px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOff.gif);
+  background-repeat: no-repeat;
+  background-position: right;
+  width: 5px;
 }
 
 .sousOnglets {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/sousOnglets.jpg);
-	background-repeat: repeat-x;
-	height: 10px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/sousOnglets.jpg);
+  background-repeat: repeat-x;
+  height: 10px;
 }
 
 /* Objet frame */
 .tableFrame {
-	border-style: none;
-	background-color: transparent;
-    position:relative;
+  border-style: none;
+  background-color: transparent;
+  position:relative;
 }
 
 .hautFrame {
-	padding-top: 10px;
+  padding-top: 10px;
 }
 
 .milieuFrame {
@@ -1635,599 +1635,599 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /* Objet board */
 .tableBoard {
-	border-style: solid;
-	border-width: 1px;
-	border-color: #CCCCCC;
-	background-color: #FFFFFF;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-	background-repeat: no-repeat;
-	background-position: right top;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #CCCCCC;
+  background-color: #FFFFFF;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-repeat: no-repeat;
+  background-position: right top;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
 }
 
 .tableBoard > td {
-	text-align: left;
+  text-align: left;
 }
 
 /* Objet ArrayPane */
 .ArrayColumn {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
-	background-repeat: repeat-x;
-	font-size: 11px;
-	font-weight: bold;
-	color: #FFFFFF;
-	height: 20px;
-	text-align: left;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+  background-repeat: repeat-x;
+  font-size: 11px;
+  font-weight: bold;
+  color: #FFFFFF;
+  height: 20px;
+  text-align: left;
 }
 
 .ArrayColumn a {
-	color: #FFFFFF;
-	background-image: none;
-	background-color: transparent;
+  color: #FFFFFF;
+  background-image: none;
+  background-color: transparent;
 }
 
 .ArrayCell {
-	text-align: left;
+  text-align: left;
 }
 
 .ArrayCell img {
-	border: 0;
+  border: 0;
 }
 
 .ArrayNavigation {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
-	background-color: transparent;
-	font-size: 10px;
-	font-weight: bold;
-	color: #000000;
-	text-decoration: none;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+  background-repeat: repeat-x;
+  background-color: transparent;
+  font-size: 10px;
+  font-weight: bold;
+  color: #000000;
+  text-decoration: none;
 }
 
 .ArrayNavigationOn {
-	background-color: #666666;
-	font-size: 10px;
-	font-weight: bolder;
-	color: #FFFFFF;
-	text-decoration: none;
+  background-color: #666666;
+  font-size: 10px;
+  font-weight: bolder;
+  color: #FFFFFF;
+  text-decoration: none;
 }
 
 .pageNav {
-	white-space: nowrap;
-	margin: 0 auto;
-	display: table;
-	color:#444;
+  white-space: nowrap;
+  margin: 0 auto;
+  display: table;
+  color:#444;
 }
 
 .pageNavContent {
 }
 
 .pageNav .pageIndex {
-	vertical-align: top;
-	text-align:center;
-	vertical-align:top;
-	width:auto;
-	float: left;
-	padding: 2px 3px;
-	margin-right: 0.5em;
-	font-size:95%;    
-	line-height: 1.6em;
+  vertical-align: top;
+  text-align:center;
+  vertical-align:top;
+  width:auto;
+  float: left;
+  padding: 2px 3px;
+  margin-right: 0.5em;
+  font-size:95%;    
+  line-height: 1.6em;
 }
 
 .pageNav .pageOff {
-	float: left;
+  float: left;
 }
 
 .pageNav .pageOff a{
-	font-size:100%;
-	background-color:#FFF;
-	border:1px solid #d4d4d4;
-	color: #000000;
-	text-decoration: none;
-	vertical-align: top;
-	padding: 2px 5px;
-	margin-right:2px;
-	display:block;
-	height:1.3em;
-	font-weight:100;
+  font-size:100%;
+  background-color:#FFF;
+  border:1px solid #d4d4d4;
+  color: #000000;
+  text-decoration: none;
+  vertical-align: top;
+  padding: 2px 5px;
+  margin-right:2px;
+  display:block;
+  height:1.3em;
+  font-weight:100;
 }
 
 .pageNav .pageOff a:hover, .pageNav .pageOff a:focus{
-	background-color:#d4d4d4;
-	color: #fff;
+  background-color:#d4d4d4;
+  color: #fff;
 }
 
 .pageNav .pageOn {
-	float: left;
-	background-color: #9d9d9d;
-	border:1px solid #9d9d9d;
-	font-size: 100%;
-	font-weight:100;
-	color: #FFFFFF;
-	text-decoration: none;
-	vertical-align: top;
-	padding: 2px 5px;
-	margin-right:2px;
-	height:1.3em;
+  float: left;
+  background-color: #9d9d9d;
+  border:1px solid #9d9d9d;
+  font-size: 100%;
+  font-weight:100;
+  color: #FFFFFF;
+  text-decoration: none;
+  vertical-align: top;
+  padding: 2px 5px;
+  margin-right:2px;
+  height:1.3em;
 }
 
 .pageNav .pageOn a{
-	
+
 }
 .pageNav .pageJumper {
-	float: left;
-	padding: 2px;
-	background-color:#444;
-	border:1px solid #444;
-	margin-left:0.5em;
-	height:1.3em;
+  float: left;
+  padding: 2px;
+  background-color:#444;
+  border:1px solid #444;
+  margin-left:0.5em;
+  height:1.3em;
 }
 .pageNav .pageJumper  a {
-	color:#FFF;
+  color:#FFF;
 }
 
 .pageNav .pageJumper .jumper {
-	visibility: hidden;
+  visibility: hidden;
 }
 
 /*- [ general ] --------------------------- */
 #portletPages img {
-	border: 0;
+  border: 0;
 }
 
 #portletPages form {
-	margin: 0;
-	padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /*- [ portal-page ] --------------------------- */
 #portal-page {
-	font-size: 95%;
+  font-size: 95%;
 }
 
 /*- [ portal-header ] --------------------------- */
 #portletPages div#portal-header {
-	float: left;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	border-top: 8px solid #902;
-	background: #EFE6CE;
+  float: left;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-top: 8px solid #902;
+  background: #EFE6CE;
 }
 
 #portletPages div#portal-header h1 {
-	margin: 0;
-	float: left;
-	padding: 5px 10px;
+  margin: 0;
+  float: left;
+  padding: 5px 10px;
 }
 
 #portletPages div#portal-header ul#portal-options {
-	float: right;
-	margin: 10px;
-	padding: 0;
-	list-style: none;
+  float: right;
+  margin: 10px;
+  padding: 0;
+  list-style: none;
 }
 
 #portletPages div#portal-header ul#portal-options li {
-	display: inline;
-	margin: 0;
-	padding: 0;
+  display: inline;
+  margin: 0;
+  padding: 0;
 }
 
 #portletPages div#portal-header ul#portal-options li a {
-	padding: 0 4px 0 6px;
-	border-left: 1px solid #e2c2b5;
+  padding: 0 4px 0 6px;
+  border-left: 1px solid #e2c2b5;
 }
 
 #portletPages div#portal-header ul#portal-options li a.first-child {
-	border-left: none;
+  border-left: none;
 }
 
 /*- [ admin ] --------------------------- */
 #admin-treeview  img{ 
-	border:none;
+  border:none;
 }
 
 #portletPages h2 {
-	font-size: 12px;
+  font-size: 12px;
 }
 
 #portletPages h2#deploy-failed {
-	font-weight: bold;
-	color: red;
+  font-weight: bold;
+  color: red;
 }
 
 #portletPages h2#deploy-success {
-	font-weight: bold;
-	color: blue;
+  font-weight: bold;
+  color: blue;
 }
 
 #portletPages h2#undeploy-failed {
-	font-weight: bold;
-	color: red;
+  font-weight: bold;
+  color: red;
 }
 
 #portletPages h2#undeploy-success {
-	font-weight: bold;
-	color: blue;
+  font-weight: bold;
+  color: blue;
 }
 
 #portletPages h2#create-failed {
-	font-weight: bold;
-	color: red;
+  font-weight: bold;
+  color: red;
 }
 
 #portletPages h2#create-success {
-	font-weight: bold;
-	color: blue;
+  font-weight: bold;
+  color: blue;
 }
 
 #portletPages h2#modify-failed {
-	font-weight: bold;
-	color: red;
+  font-weight: bold;
+  color: red;
 }
 
 #portletPages h2#modify-success {
-	font-weight: bold;
-	color: blue;
+  font-weight: bold;
+  color: blue;
 }
 
 #portletPages h1#undeploy-portlet-content {
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 #portletPages h1#create-portlet-content {
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 #portletPages h1#modify-window-content {
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 #portletPages form#portal-login fieldset,#portletPages form#deploy-portlet fieldset,#portletPages form#undeploy-portlet fieldset,#portletPages form#modify-window fieldset,#portletPages form#create-portlet fieldset
-	{
-	border: none;
-	margin: 10px;
-	padding: 0;
+{
+  border: none;
+  margin: 10px;
+  padding: 0;
 }
 
 #portletPages form#portal-login label,#portletPages form#deploy-portlet label,#portletPages form#undeploy-portlet label,#portletPages form#modify-window label,#portletPages form#create-portlet label
-	{
-	display: block;
-	margin-bottom: 2px;
+{
+  display: block;
+  margin-bottom: 2px;
 }
 
 #portletPages form#portal-login input#submit,#portletPages form#portal-login input#reset
-	{
-	display: inline;
-	margin: 0;
+{
+  display: inline;
+  margin: 0;
 }
 
 /*- [ portal-content ] --------------------------- */
 #portletPages #portal-content {
-	clear: both;
-	margin: 0;
-	padding: 0px;
+  clear: both;
+  margin: 0;
+  padding: 0px;
 }
 
 #portletPages h1.portal-content-header {
-	font-size: 12px;
-	margin: 0;
-	margin-bottom: 10px;
-	padding: 0;
-	padding-bottom: 5px;
-	border-bottom: 1px solid #902;
+  font-size: 12px;
+  margin: 0;
+  margin-bottom: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #902;
 }
 
 /*- [ portlet-content-layout ] --------------------------- */
-	/* Layout = 1, THICK/THIN */
+/* Layout = 1, THICK/THIN */
 #portletPages #portal-content-layout #layout-1-thin {
-	align: top;
-	float: left;
-	width: 30%;
-	margin-right: 5%;
-	/* background: #B5CCE3; */
+  align: top;
+  float: left;
+  width: 30%;
+  margin-right: 5%;
+  /* background: #B5CCE3; */
 }
 
 #portletPages #portal-content-layout #layout-1-thick {
-	float: right;
-	width: 63%;
-	/* background: #EDF2F8; */
+  float: right;
+  width: 63%;
+  /* background: #EDF2F8; */
 }
 
 /* Layout = 2, THICK/THIN */
 #portletPages #portal-content-layout #layout-2-thick {
-	float: left;
-	width: 48%;
-	margin-right: 2%;
-	/* background: #EDF2F8; */
+  float: left;
+  width: 48%;
+  margin-right: 2%;
+  /* background: #EDF2F8; */
 }
 
 #portletPages #portal-content-layout #layout-2-thin {
-	margin-top: 0;
-	float: right;
-	width: 45%;
-	/* background: #B5CCE3; */
+  margin-top: 0;
+  float: right;
+  width: 45%;
+  /* background: #B5CCE3; */
 }
 
 /* Layout = 3, THIN/THICK/THIN */
 #portletPages #portal-content-layout #layout-3-left {
-	float: left;
-	width: 68%;
+  float: left;
+  width: 68%;
 }
 
 #portletPages #portal-content-layout #layout-3-left-thin {
-	float: left;
-	width: 30%;
-	margin-right: 5%;
-	/* background: #B5CCE3; */
+  float: left;
+  width: 30%;
+  margin-right: 5%;
+  /* background: #B5CCE3; */
 }
 
 #portletPages #portal-content-layout #layout-3-left-thick {
-	float: right;
-	width: 58%;
-	margin-right: 5%;
-	/* background: #EDF2F8; */
+  float: right;
+  width: 58%;
+  margin-right: 5%;
+  /* background: #EDF2F8; */
 }
 
 #portletPages #portal-content-layout #layout-3-right-thin {
-	float: right;
-	width: 30%;
-	/* background: #B5CCE3; */
+  float: right;
+  width: 30%;
+  /* background: #B5CCE3; */
 }
 
 #portletPages a {
-	color: #000;
+  color: #000;
 }
 
 #portletPages .clear {
-	clear: both;
-	font-size: 1px;
-	line-height: 1px;
+  clear: both;
+  font-size: 1px;
+  line-height: 1px;
 }
 
 #portletPages #overlay {
-	background: #666;
-	height: 100%;
-	left: 0;
-	position: absolute;
-	top: 0;
-	width: 100%;
-	z-index: 2000;
+  background: #666;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 2000;
 }
 
 #portletPages #overlay #preloader {
-	background: url(loader_bg.gif) no-repeat;
-	height: 50px;
-	left: 50%;
-	line-height: 50px;
-	margin: -25px 0 0 -25px;
-	position: absolute;
-	text-align: center;
-	top: 50%;
-	width: 50px;
+  background: url(loader_bg.gif) no-repeat;
+  height: 50px;
+  left: 50%;
+  line-height: 50px;
+  margin: -25px 0 0 -25px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  width: 50px;
 }
 
 #portletPages #overlay #preloader img {
-	margin: 11px 0 0 0;
-	vertical-align: middle;
+  margin: 11px 0 0 0;
+  vertical-align: middle;
 }
 
 #portletPages .ui-sortable {
-	background-color: #FFF;
-	border: 0px solid #DDD;
-	color: #222;
-	/*margin:0 15px 15px 0;
-	padding:0 10px 10px;*/
-	margin: 0;
-	padding: 0;
-	width: 175px;
+  background-color: #FFF;
+  border: 0px solid #DDD;
+  color: #222;
+  /*margin:0 15px 15px 0;
+  padding:0 10px 10px;*/
+  margin: 0;
+  padding: 0;
+  width: 175px;
 }
 
 #portletPages dl.sort {
-	color: #222;
-	margin: 5px 0;
+  color: #222;
+  margin: 5px 0;
 }
 
 #portletPages dl.sort dt { /*background-color:#B3BFD1;
-	color:#000000; */
-	cursor: move;
-	/*height:2em;
-	line-height:2;
-	padding:0 6px;
-	position:relative;*/
-	float: left;
-	/*height: 2em;*/
-	line-height: 2;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
-	background-repeat: repeat-y;
-	background-position: right;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #DEDEDE;
-	border-right-style: none;
-	/*padding-left: 10px;*/
-	clear: both;
+    color:#000000; */
+  cursor: move;
+  /*height:2em;
+  line-height:2;
+  padding:0 6px;
+  position:relative;*/
+  float: left;
+  /*height: 2em;*/
+  line-height: 2;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
+  background-repeat: repeat-y;
+  background-position: right;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #DEDEDE;
+  border-right-style: none;
+  /*padding-left: 10px;*/
+  clear: both;
 }
 
 #portletPages dl.sort dd {
-	background-color: #FFF;
-	margin: 0;
-	padding: 0 0px;
+  background-color: #FFF;
+  margin: 0;
+  padding: 0 0px;
 }
 
 #portletPages .ui-sortable-helper {
-	width: 175px;
+  width: 175px;
 }
 
 #portletPages .placeholder {
-	border: 1px dashed #AAA;
+  border: 1px dashed #AAA;
 }
 
 #portletPages span.options {
-	cursor: default;
-	font-size: 1px;
-	line-height: 1px;
-	position: absolute;
+  cursor: default;
+  font-size: 1px;
+  line-height: 1px;
+  position: absolute;
 }
 
 #portletPages span.options a {
-	cursor: pointer;
-	display: block;
-	float: left;
-	text-indent: -9000px;
+  cursor: pointer;
+  display: block;
+  float: left;
+  text-indent: -9000px;
 }
 
 #portletPages dl.sort dt span.options {
-	right: 5px;
-	width: 60px;
+  right: 5px;
+  width: 60px;
 }
 
 #portletPages dl.sort dt span.options a {
-	height: 15px;
-	width: 15px;
+  height: 15px;
+  width: 15px;
 }
 
 #portletPages dl.sort dt span.options a.up {
-	margin-top: 2px;
-	margin-right: 3px;
-	background-image: url(/silverpeas/admin/jsp/icons/fo_flechehaut.gif);
-	background-repeat: no-repeat;
+  margin-top: 2px;
+  margin-right: 3px;
+  background-image: url(/silverpeas/admin/jsp/icons/fo_flechehaut.gif);
+  background-repeat: no-repeat;
 }
 
 #portletPages dl.sort dt span.options a.down {
-	margin-top: 2px;
-	margin-right: 3px;
-	background-image: url(/silverpeas/admin/jsp/icons/fo_flechebas.gif);
-	background-repeat: no-repeat;
+  margin-top: 2px;
+  margin-right: 3px;
+  background-image: url(/silverpeas/admin/jsp/icons/fo_flechebas.gif);
+  background-repeat: no-repeat;
 }
 
 #portletPages dl.sort dt span.options a.remove {
-	margin-right: 3px;
-	background-image: url(/silverpeas/util/icons/delete.gif);
-	background-repeat: no-repeat;
+  margin-right: 3px;
+  background-image: url(/silverpeas/util/icons/delete.gif);
+  background-repeat: no-repeat;
 }
 
 #portletPages dl.sort dt span.options a.disabled {
-	cursor: default;
+  cursor: default;
 }
 
 #portletPages #container {
-	float: left;
+  float: left;
 }
 
 #portletPages #thick {
-	float: left;
-	width: 49%;
-	padding-bottom: 100px;
+  float: left;
+  width: 49%;
+  padding-bottom: 100px;
 }
 
 #portletPages #thin {
-	float: right;
-	width: 49%;
-	padding-bottom: 100px;
+  float: right;
+  width: 49%;
+  padding-bottom: 100px;
 }
 
 /*- [ portlet ] --------------------------- */
 #portletPages div.portlet-header {
-	float: left;
-	height: 2em;
-	line-height: 2;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
-	background-repeat: repeat-y;
-	background-position: right;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #DEDEDE;
-	border-right-style: none;
-	padding-left: 10px;
+  float: left;
+  height: 2em;
+  line-height: 2;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
+  background-repeat: repeat-y;
+  background-position: right;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #DEDEDE;
+  border-right-style: none;
+  padding-left: 10px;
 }
 
 #portletPages h2.portlet-title {
-	float: left;
-	margin: 0;
-	margin-left: 4px;
-	font-variant: small-caps;
-	color: #5889BB;
-	font-size: 12px;
-	font-weight: bold;
+  float: left;
+  margin: 0;
+  margin-left: 4px;
+  font-variant: small-caps;
+  color: #5889BB;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 #portletPages ul.portlet-options {
-	float: right;
-	margin: 0;
-	margin-right: 4px;
-	padding: 0;
-	list-style: none;
+  float: right;
+  margin: 0;
+  margin-right: 4px;
+  padding: 0;
+  list-style: none;
 }
 
 #portletPages ul.portlet-options li {
-	display: inline;
-	margin: 0;
-	padding: 0;
+  display: inline;
+  margin: 0;
+  padding: 0;
 }
 
 #portletPages ul.portlet-options li a {
-	float: left;
-	display: block;
-	height: 16px;
-	width: 16px;
-	margin: 4px 2px 4px 0;
-	padding: 0;
-	font-size: 83%;
+  float: left;
+  display: block;
+  height: 16px;
+  width: 16px;
+  margin: 4px 2px 4px 0;
+  padding: 0;
+  font-size: 83%;
 }
 
 #portletPages div.portlet-content {
-	text-align: left;
-	clear: both;
-	padding: 4px;
-	border: 1px solid #FAEFEB;
-	border-top: none;
-	color: #000;
-	cursor: default;
-	font-size: 10px;
+  text-align: left;
+  clear: both;
+  padding: 4px;
+  border: 1px solid #FAEFEB;
+  border-top: none;
+  color: #000;
+  cursor: default;
+  font-size: 10px;
 }
 
 #portletPages div.portlet-content .rss_link{
-	display:block;
-	text-align:right;
+  display:block;
+  text-align:right;
 }
 
 #portletPages div.portlet-content-minimized {
-	clear: both;
+  clear: both;
 }
 
 /*- [ portlet END ] --------------------------- */
 
 #browseBar {
-	float:left;
-	width: 100%;
+  float:left;
+  width: 100%;
 }
 
 #browseBar #breadCrumb {
-	float:left;
-	font-weight: bold;
+  float:left;
+  font-weight: bold;
 }
 
 #browseBar #breadCrumb .connector {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 #browseBar #i18n {
-	float:right;
+  float:right;
 }
 
 #browseBar #breadCrumb a:visited,
@@ -2244,243 +2244,243 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /* class used to mark as read the link of results page  */
 .markedkAsRead {
-	font-size: 11px;
-	font-weight: bold;
-	color: #006600;
-	text-decoration: none;
+  font-size: 11px;
+  font-weight: bold;
+  color: #006600;
+  text-decoration: none;
 }
 .markedkAsReadDisableVisited a:visited {
-	display:none;
+  display:none;
 }
 
 /* class for spelling word */
 .spellWord {
-	font-size: 11px;
-	font-weight: bold;
-	color: #006600;
+  font-size: 11px;
+  font-weight: bold;
+  color: #006600;
 }
 
 .spellText{
-	font-size: 11px;
-	font-weight: bold;
-	color: #000000
+  font-size: 11px;
+  font-weight: bold;
+  color: #000000
 }
 
 /* Class for search group facet */
 .lineResult .pertinence, .lineResult .selection, .lineResult .content {
-	padding-top: 5px;
-	padding-left: 5px;
-	vertical-align: top;
+  padding-top: 5px;
+  padding-left: 5px;
+  vertical-align: top;
 }
 
 .lineResult .selection {
-	padding-top: 2px;
+  padding-top: 2px;
 }
 
 .lineResult .content {
-	padding-top: 4px;
-	padding-bottom: 14px;
+  padding-top: 4px;
+  padding-bottom: 14px;
 }
 
 #globalResultFrame {
-	width:80%;
-	float:left;
+  width:80%;
+  float:left;
 }
 
 #globalResultList {
-	padding-top: 10px;
+  padding-top: 10px;
 }
 
 #globalResultList .fileIcon {
-	vertical-align: middle;
-	margin-right: 5px;
+  vertical-align: middle;
+  margin-right: 5px;
 }
 
 #globalResultList .fileDownload {
-	vertical-align: middle;
-	margin-left: 3px;
+  vertical-align: middle;
+  margin-left: 3px;
 }
 
 #globalResultHelp {
-	padding-top: 10px;
+  padding-top: 10px;
 }
 
 #globalResultQueryLabel {
-	font-size: 8pt;
-	font-weight: bold;
-	color: #111111;
-	vertical-align: top;
-	text-align: left;
-	width: 30%;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #111111;
+  vertical-align: top;
+  text-align: left;
+  width: 30%;
 }
 
 #globalResultParamDisplayLabel {
-	font-size: 8pt;
-	font-weight: bold;
-	color: #111111;
-	vertical-align: top;
-	text-align: left;
-	width: 30%;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #111111;
+  vertical-align: top;
+  text-align: left;
+  width: 30%;
 }
 
 #globalResultParamDisplayOptions {
-	font-size: 8pt;
-	font-weight: bold;
-	color: #111111;
-	vertical-align: top;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #111111;
+  vertical-align: top;
 }
 
 #globalResultGroupDivId {
-	margin:0;
-	font-size:12px;
-	float:right;
-	padding-top:10px;
-	padding-right: 5px;
-	width:19%
+  margin:0;
+  font-size:12px;
+  float:right;
+  padding-top:10px;
+  padding-right: 5px;
+  width:19%
 }
 
 #globalResult .avatar {
-	width: 30px;
-	border: 1px solid #AAAAAA;
+  width: 30px;
+  border: 1px solid #AAAAAA;
 }
 
 #facetSearchDivId {
-	position:relative;
-	float:right;
-	border: 1px solid #CCCCCC;
-	width:100%;
-	height:auto;
+  position:relative;
+  float:right;
+  border: 1px solid #CCCCCC;
+  width:100%;
+  height:auto;
 }
 
 #searchGroupTitle {
-	font-weight: bold;
-	padding-left: 1em;
-	height:16px;
-	line-height:16px;
-	white-space: nowrap;
-	text-align: center;
-	background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
-	background-repeat: repeat-x;
+  font-weight: bold;
+  padding-left: 1em;
+  height:16px;
+  line-height:16px;
+  white-space: nowrap;
+  text-align: center;
+  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+  background-repeat: repeat-x;
 }
 
 #searchGroupTitle span.author {
-	background:url("/silverpeas/util/icons/user.gif") no-repeat scroll left top transparent;
-	color: #FFFFFF;
-	display:block;
-	font-weight:bold;
-	height:16px;
-	line-height:16px;
-	white-space:nowrap;
+  background:url("/silverpeas/util/icons/user.gif") no-repeat scroll left top transparent;
+  color: #FFFFFF;
+  display:block;
+  font-weight:bold;
+  height:16px;
+  line-height:16px;
+  white-space:nowrap;
 }
 
 #searchGroupTitle span.file {
-	background:url("/silverpeas/util/icons/file-icon.gif") no-repeat scroll left top transparent;
-	color: #FFFFFF;
-	display:block;
-	font-weight:bold;
-	height:16px;
-	line-height:16px;
-	white-space:nowrap;
+  background:url("/silverpeas/util/icons/file-icon.gif") no-repeat scroll left top transparent;
+  color: #FFFFFF;
+  display:block;
+  font-weight:bold;
+  height:16px;
+  line-height:16px;
+  white-space:nowrap;
 }
 
 #searchGroupTitle span.component {
-	background:url("/silverpeas/util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
-	color: #FFFFFF;
-	display:block;
-	font-weight:bold;
-	height:16px;
-	line-height:16px;
-	white-space:nowrap;
+  background:url("/silverpeas/util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
+  color: #FFFFFF;
+  display:block;
+  font-weight:bold;
+  height:16px;
+  line-height:16px;
+  white-space:nowrap;
 }
 
 
 #searchGroupValues {
-	text-align: left;
-	padding-bottom: 7px;
-	padding-top: 7px;
+  text-align: left;
+  padding-bottom: 7px;
+  padding-top: 7px;
 }
 
 #searchGroupValues ul {
-	padding-left: 0px;
-	margin:0;
+  padding-left: 0px;
+  margin:0;
 }
 
 #searchGroupValues ul li {
-	list-style: none outside none;
-	padding:2px;
+  list-style: none outside none;
+  padding:2px;
 }
 
 #searchGroupValues ul li.selected {
-	background-color: #7fd0ff; /* #399bff, */
-	color:white;
+  background-color: #7fd0ff; /* #399bff, */
+  color:white;
 }
 
 #searchGroupValues ul li.selected a {
-	color:white;
+  color:white;
 }
 
 #searchGroupValues ul li.selected a:hover {
-	text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 .attachments {
-	min-width: 310px;
-	position:relative;
-	z-index:10
+  min-width: 310px;
+  position:relative;
+  z-index:10
 
 }
 
 .attachments h4 {
-	background:transparent url(/silverpeas/util/icons/attachedFiles.gif)  top right no-repeat;
-	height:16px;
+  background:transparent url(/silverpeas/util/icons/attachedFiles.gif)  top right no-repeat;
+  height:16px;
 }
 
 .attachments .dragNdrop {
-	text-align: right;
+  text-align: right;
 }
 
 #gef-progressMessage {
-	text-align: center;
-	/*min-height: 70px;*/
-	background-color: #FFFFFF;
+  text-align: center;
+  /*min-height: 70px;*/
+  background-color: #FFFFFF;
 }
 
 #gef-progressMessage img {
-	margin-top: 25px;
+  margin-top: 25px;
 }
 
 #gef-progress-message1 {
-	display: none;
+  display: none;
 }
 
 #gef-progress-message2 {
-	margin-top: 15px;
-	font-color: gray;
+  margin-top: 15px;
+  font-color: gray;
 }
 
 .ui-widget-header {
-	background: none;
-	background-color:#9BD94A;
-	border:1px solid #9BD94A;
+  background: none;
+  background-color:#9BD94A;
+  border:1px solid #9BD94A;
 }
 
 .ui-datepicker-trigger {
-	margin-left: 5px;
-	cursor: pointer;
-	vertical-align: bottom;
+  margin-left: 5px;
+  cursor: pointer;
+  vertical-align: bottom;
 }
 
 caption {
-	font-size: 11px;
-	font-weight: bold;
-	text-align: left;
-	padding: 5px;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: left;
+  padding: 5px;
 }
 
 .help-modal-message .ui-widget-header {
-	background: none;
-	background-color:#F1790F;
-	border:1px solid #F1790F;
+  background: none;
+  background-color:#F1790F;
+  border:1px solid #F1790F;
 }
 
 /*- [ directory BEGIN ] --------------------------- */
@@ -2502,24 +2502,24 @@ caption {
 /*
 -- Pour affichage 1 seule colonne
 #directory .aff_colonnes li {
-	width:100%;
+    width:100%;
 }
 */
 
 /* Par défaut, 2 colonnes */
 #directory .aff_colonnes li {
-	float:left;
-	margin-right:1%;
-	margin-right:0.5%;
-	width:48.8%;
+  float:left;
+  margin-right:1%;
+  margin-right:0.5%;
+  width:48.8%;
 }
 
 /*
 -- Pour affichage 3 colonnes
 #directory .aff_colonnes li {
-	float:left;
-	margin-right:0.4%;
-	width:32.6%;
+    float:left;
+    margin-right:0.4%;
+    width:32.6%;
 }
 */
 
@@ -2544,7 +2544,7 @@ caption {
 }
 
 #directory .action .invitation {
-	/*display: none;*/
+  /*display: none;*/
 }
 
 #directory .NameLink {
@@ -2562,56 +2562,56 @@ caption {
 }
 
 #directory #indexAndSearch #index a {
-	border:1px solid #CECECE;
-	padding:2px 4px;
-	margin-right:3px;
-	background-color:#FFF;
-	color:#AFAFAF;
-	font-size: 12px;
-	text-decoration: none;
-	line-height:220%;
+  border:1px solid #CECECE;
+  padding:2px 4px;
+  margin-right:3px;
+  background-color:#FFF;
+  color:#AFAFAF;
+  font-size: 12px;
+  text-decoration: none;
+  line-height:220%;
 }
 #directory #indexAndSearch #index a.active {
-	background-color:#B5B5B5;
-	color:#FFF;
+  background-color:#B5B5B5;
+  color:#FFF;
 }
 
 #directory #indexAndSearch #index a:hover, #directory #indexAndSearch #index a:focus {
-	background-color:#BFBFBF;
-	color:#FFF;
+  background-color:#BFBFBF;
+  color:#FFF;
 }
 
 #directory #indexAndSearch #search {
-	margin:5px 10px 10px auto;
-	padding:5px;
-	text-align:left;
-	width:100%;
-	background:transparent url(images_annuaire/sep-2-tiraits.gif)  15% bottom no-repeat;
-	height:25px;
+  margin:5px 10px 10px auto;
+  padding:5px;
+  text-align:left;
+  width:100%;
+  background:transparent url(images_annuaire/sep-2-tiraits.gif)  15% bottom no-repeat;
+  height:25px;
 }
 #directory #indexAndSearch #search input, #indexAndSearch #search table {
-	display:inline;
-	float:left;
+  display:inline;
+  float:left;
 }
 
 #directory #indexAndSearch #search input{
-	height:16px;
-	width:30%;
+  height:16px;
+  width:30%;
 }
 
 #directory #indexAndSearch .gaucheBoutonV5 , #directory #indexAndSearch .droiteBoutonV5{
-	display:none;
+  display:none;
 }
 
 #directory #indexAndSearch .milieuBoutonV5 {
-	padding:0 5px;
-	border-right:1px solid #588ABB;
+  padding:0 5px;
+  border-right:1px solid #588ABB;
 }
 
 #directory #indexAndSearch{
-	background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
-	padding:5px 5px 14px;
- 	width: 98%;
+  background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
+  padding:5px 5px 14px;
+  width: 98%;
 }
 
 #directory #users {
@@ -2620,26 +2620,26 @@ caption {
 }
 
 #directory #users .profilPhoto {
-	float:left;
-	height:113px;
-	margin:7px;
-	width:87px;
+  float:left;
+  height:113px;
+  margin:7px;
+  width:87px;
 }
 #directory #users .profilPhoto img {
-	height:113px;
+  height:113px;
 }
 
 #directory #users .action {
-	width:132px;
-	height:40px;
-	position:absolute;
-	bottom:10px;
-	right:10px;
+  width:132px;
+  height:40px;
+  position:absolute;
+  bottom:10px;
+  right:10px;
 }
 
 #directory #users #pagination {
-  	clear:both;
-	text-align:center;
+  clear:both;
+  text-align:center;
 }
 
 #directory .info ul {
@@ -2654,22 +2654,22 @@ caption {
 }
 
 #directory .info ul {
-	padding:10px 0px 4px 5px;
-	float:left;
-	color:#909090; font-size:11px;
-	width:60%;
+  padding:10px 0px 4px 5px;
+  float:left;
+  color:#909090; font-size:11px;
+  width:60%;
 }
 #directory .info ul a {color:#909090; font-size:11px;}
 #directory .info ul a:hover {color:#000}
 
 #directory .info ul li.userName a {
-  	font-size:14px;
-  	color:#000;
-  	font-weight:bold;
+  font-size:14px;
+  color:#000;
+  font-weight:bold;
 }
 
 #directory .info ul li.userName a:hover {
-	color:#444444;
+  color:#444444;
 }
 
 #directory .info ul li.infoConnection img{
@@ -2707,225 +2707,225 @@ caption {
 }
 
 #invitation #navigation .box {
-	background-color:#FFFFFF;
-    background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-    background-position:right top;
-    background-repeat:no-repeat;
-    margin-left:auto;
-    margin-right:auto;
-    margin-bottom: 15px;
+  background-color:#FFFFFF;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom: 15px;
 }
 
 #invitation #navigation .box img {
-	width: 70px;
-   	height: 80px;
-	border: 1px solid #AAAAAA;
+  width: 70px;
+  height: 80px;
+  border: 1px solid #AAAAAA;
 }
 
 #invitation #navigation ul {
-   margin: 0;
-   padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 #invitation #navigation li{
-	display:list-item;
-    list-style-type:none;
-    padding: 5px;
+  display:list-item;
+  list-style-type:none;
+  padding: 5px;
 }
 
 #invitation #navigation li A:hover {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 #invitation #listBody {
-	list-style:none outside none;
-	padding-left:0;
+  list-style:none outside none;
+  padding-left:0;
 }
 
 #invitation #listBody #photo{
-    float: left;
-    margin-right:4px;
+  float: left;
+  margin-right:4px;
 }
 
 #invitation #listBody #information a{
-    color: blue;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 3px;
+  color: blue;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 3px;
 }
 
 #invitation #listBody #information {
-    vertical-align: top;
-    float :left;
+  vertical-align: top;
+  float :left;
 }
 
 #invitation #listBody #button {
-    float:right;
-    margin-top:10px;
+  float:right;
+  margin-top:10px;
 }
 
 #invitation #listBody #button #message{
-    /*width: 40%;*/
-    text-align: right;
+  /*width: 40%;*/
+  text-align: right;
 }
 
 #invitation .avatar {
-	width: 60px;
-	border: 1px solid #AAAAAA;
+  width: 60px;
+  border: 1px solid #AAAAAA;
 }
 /*- [ invitations END ] --------------------------- */
 
 /*- [ newsFeed BEGIN ] ---------------------------- */
 #newsFeed .message_list {
-	list-style: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 #newsFeed .message_list li {
-	padding: 0px;
-    margin: 3px;
+  padding: 0px;
+  margin: 3px;
 }
 
 #newsFeed #navigation {
-	float: left;
-    width: 200px;
-    margin: 2px;
-    padding: 2px;
+  float: left;
+  width: 200px;
+  margin: 2px;
+  padding: 2px;
 }
 
 #newsFeed #navigation #myInfo{
-	float: right;
+  float: right;
 }
 
 #newsFeed #navigation .box {
-  	background-color:#FFFFFF;
-  	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-	background-position:right top;
-	background-repeat:no-repeat;
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom: 15px;
-	border:1px solid #CCCCCC;
+  background-color:#FFFFFF;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom: 15px;
+  border:1px solid #CCCCCC;
 }
 
 #newsFeed #relationshipActionNewsFeed {
-	display: none;
+  display: none;
 }
 
 #newsFeed #content {
-	float: left;
-	width: 75%;
-	margin: 2px;
-	padding: 2px;
+  float: left;
+  width: 75%;
+  margin: 2px;
+  padding: 2px;
 }
 #newsFeed * ul {
-	margin: 0;
-	padding: 0;
+  margin: 0;
+  padding: 0;
 }
 #newsFeed .ItemOn{
-	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
-	background-repeat:repeat-x;
-	color:#FFFFFF;
-	font-size:11px;
-	font-weight:bold;
-	text-align:left;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+  background-repeat:repeat-x;
+  color:#FFFFFF;
+  font-size:11px;
+  font-weight:bold;
+  text-align:left;
 }
 #newsFeed * li{
-	display:list-item;
-	list-style-type:none;
-	padding: 3px;
+  display:list-item;
+  list-style-type:none;
+  padding: 3px;
 }
 #newsFeed .newsFeedBodyTitle li {
-	text-align:center;
+  text-align:center;
 }
 #newsFeed .newsFeedBodyTitle li a{
-	font-size: 15px;
-	font-weight: bold;
-	text-align:center;
+  font-size: 15px;
+  font-weight: bold;
+  text-align:center;
 }
 #newsFeed .SocialInformations a{
-	color: blue;
-	font-weight: bold;
+  color: blue;
+  font-weight: bold;
 }
 /*- [ newsFeed END ] ---------------------------- */
 
 .SocialInformations .socialIcon img {
-	width: 15px;
-	margin-left: 3px;
-	margin-right: 3px;
+  width: 15px;
+  margin-left: 3px;
+  margin-right: 3px;
 }
 .SocialInformations .socialTitle a {
-	color: #5889BB;
-	font-size: 11px;
-	font-weight: bold;
+  color: #5889BB;
+  font-size: 11px;
+  font-weight: bold;
 }
 
 .SocialInformations .socialTitle {
-	float:left;
-	font-weight:bold;
-	margin:5px;
-	margin-top:0px;
-	width:100%;
-	color:#333333;
+  float:left;
+  font-weight:bold;
+  margin:5px;
+  margin-top:0px;
+  width:100%;
+  color:#333333;
 }
 
 .SocialInformations .socialDescription {
-	float: left;
-	margin-left:12px;
-	margin-top: -4px;
-	width:90%;
-	text-align: justify;
+  float: left;
+  margin-left:12px;
+  margin-top: -4px;
+  width:90%;
+  text-align: justify;
 }
 
 #getNext {
-	float: left;
-	width: 100%;
-	margin: 2px;
-	padding: 2px;
+  float: left;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
 }
 
 .SocialInformations .profilPhoto {
-	float: left;
-	width:  45px;
+  float: left;
+  width:  45px;
 }
 
 .SocialInformations .profilPhoto img {
-	width: 40px;
-	border: 1px solid #AAAAAA;
+  width: 40px;
+  border: 1px solid #AAAAAA;
 }
 
 .SocialInformations .titleAndDes{
-	float: left;
-	width: 90%;
-	white-space: normal;
+  float: left;
+  width: 90%;
+  white-space: normal;
 }
 
 .SocialInformations .socialTable {
-	clear: left;
-	float: left;
-	width: 98%;
-	margin: 2px;
+  clear: left;
+  float: left;
+  width: 98%;
+  margin: 2px;
 }
 
 .SocialInformations .socialActivity {
-	font-size: 11px;
-	font-weight: bold;
+  font-size: 11px;
+  font-weight: bold;
 }
 
 .SocialInformations .socialHour {
-	font-size: 10px;
-	color: #999999;
+  font-size: 10px;
+  color: #999999;
 }
 
 .SocialInformations .socialDate {
-	font-size: 17px;
-	font-weight: normal;
-	color: #666666;
-	clear: right;
-	margin-bottom: 5px;
-	font-family: "Trebuchet MS",Verdana,sans-serif;
+  font-size: 17px;
+  font-weight: normal;
+  color: #666666;
+  clear: right;
+  margin-bottom: 5px;
+  font-family: "Trebuchet MS",Verdana,sans-serif;
 }
 
 /* message display page */
@@ -3097,10 +3097,10 @@ caption {
 #myProfileFiche p{ margin:0; padding:0;}
 
 #myProfile #myProfileFiche {
-	width:180px;
-	padding:8px;
-	float:left;
-	position:relative;
+  width:180px;
+  padding:8px;
+  float:left;
+  position:relative;
 }
 
 #myProfile .mail {
@@ -3110,8 +3110,8 @@ caption {
 
 
 #myProfileFiche  .action {
-	margin-top:5px;
-	}
+  margin-top:5px;
+}
 
 #myProfileFiche  .action .link ,   #contactCommun .link,   #allContact .link{
   color:#333366;
@@ -3129,10 +3129,10 @@ caption {
 
 }
 #myProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
-	clear:both;
-	float:right;
-	margin-top:10px;
-	display:block;
+  clear:both;
+  float:right;
+  margin-top:10px;
+  display:block;
 }
 
 #myProfile .NameLink {
@@ -3141,32 +3141,32 @@ caption {
 }
 
 #myProfile #indexAndSearch #index a {
-	border:1px solid #CECECE;
-	padding:2px 4px;
-	margin-right:3px;
-	background-color:#FFF;
-	color:#AFAFAF;
-	font-size: 12px;
-	text-decoration: none;
-	line-height:220%;
+  border:1px solid #CECECE;
+  padding:2px 4px;
+  margin-right:3px;
+  background-color:#FFF;
+  color:#AFAFAF;
+  font-size: 12px;
+  text-decoration: none;
+  line-height:220%;
 }
 #myProfile #indexAndSearch #index a.active {
-	background-color:#B5B5B5;
-	color:#FFF;
+  background-color:#B5B5B5;
+  color:#FFF;
 }
 
 #myProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus {
-	background-color:#BFBFBF;
-	color:#FFF;
+  background-color:#BFBFBF;
+  color:#FFF;
 }
 
 #myProfile .profilPhoto {
-	height:140px;
-	margin:7px 6px;
-	width:108px;
+  height:140px;
+  margin:7px 6px;
+  width:108px;
 }
 #myProfile .profilPhoto img {
-	height:140px;
+  height:140px;
 }
 
 #myProfileFiche {color:#909090; font-size:11px;}
@@ -3188,8 +3188,8 @@ caption {
   right:10px;
 }
 #myProfileFiche .info {
-	padding:8px;
-	height:100%;
+  padding:8px;
+  height:100%;
 }
 #myProfileFiche .info .userType {
   color:#333333;
@@ -3199,56 +3199,56 @@ caption {
 }
 
 #myProfileFiche .statut {
-	background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
-	color:#333333; font-size:10px;
-	padding:10px 0 0;
-	margin:0;
+  background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
+  color:#333333; font-size:10px;
+  padding:10px 0 0;
+  margin:0;
 }
 
 #myProfileFiche .action .invitation {
-	/*display: none;*/
+  /*display: none;*/
 }
 
 #myProfileContenu {
-	width:78%;
-	margin-left:15px;
-	float:left;
+  width:78%;
+  margin-left:15px;
+  float:left;
 }
 #myProfileContenu  address { font-style:normal;}
 
 #myProfileFiche #allContact, #myProfileFiche #contactCommun {
-	background-color:#E9E9E9;
-	clear:both;
-	height:100%;
-	padding:8px;
+  background-color:#E9E9E9;
+  clear:both;
+  height:100%;
+  padding:8px;
 }
 
 #myProfile #myProfileFiche .unContact {
-	height:100%;
-	margin-left:6px;
-	clear:both;
+  height:100%;
+  margin-left:6px;
+  clear:both;
 }
 
 #myProfile #myProfileFiche .unContact .contactName{
-	color:#5F5F5F;
-	float:left;
-	padding-top:20px;
-	width:50px;
-	display:inline;
+  color:#5F5F5F;
+  float:left;
+  padding-top:20px;
+  width:50px;
+  display:inline;
 }
 #myProfile #myProfileFiche .profilPhotoContact {
- 	border:1px solid #CCCCCC;
-	height:62px;
-	margin:7px 6px;
-	overflow:hidden;
-	width:54px;
-	float:left;
-	background-color:#FFF;
-	text-align:center;
+  border:1px solid #CCCCCC;
+  height:62px;
+  margin:7px 6px;
+  overflow:hidden;
+  width:54px;
+  float:left;
+  background-color:#FFF;
+  text-align:center;
 }
 #myProfile #myProfileFiche .profilPhotoContact img {
-	height:62px;
-	border: 0px;
+  height:62px;
+  border: 0px;
 }
 /*- [ myProfile END ] --------------------------- */
 
@@ -3258,10 +3258,10 @@ caption {
 #publicProfileFiche p{ margin:0; padding:0;}
 
 #publicProfile #publicProfileFiche {
-	width:180px;
-	padding:8px;
-	float:left;
-	position:relative;
+  width:180px;
+  padding:8px;
+  float:left;
+  position:relative;
 
 }
 #publicProfile .mail {
@@ -3270,8 +3270,8 @@ caption {
 }
 
 #publicProfileFiche  .action {
-	margin-top:5px;
-	}
+  margin-top:5px;
+}
 
 #publicProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
   color:#333366;
@@ -3289,10 +3289,10 @@ caption {
 
 }
 #publicProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
-	clear:both;
-	float:right;
-	margin-top:10px;
-	display:block;
+  clear:both;
+  float:right;
+  margin-top:10px;
+  display:block;
 }
 
 #publicProfile .NameLink {
@@ -3301,36 +3301,36 @@ caption {
 }
 
 #publicProfile #indexAndSearch #index a {
-	border:1px solid #CECECE;
-	padding:2px 4px;
-	margin-right:3px;
-	background-color:#FFF;
-	color:#AFAFAF;
-	font-size: 12px;
-	text-decoration: none;
-	line-height:220%;
+  border:1px solid #CECECE;
+  padding:2px 4px;
+  margin-right:3px;
+  background-color:#FFF;
+  color:#AFAFAF;
+  font-size: 12px;
+  text-decoration: none;
+  line-height:220%;
 }
 #publicProfile #indexAndSearch #index a.active {
-	background-color:#B5B5B5;
-	color:#FFF;
+  background-color:#B5B5B5;
+  color:#FFF;
 }
 
 #publicProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus {
-	background-color:#BFBFBF;
-	color:#FFF;
+  background-color:#BFBFBF;
+  color:#FFF;
 }
 
 #publicProfile .profilPhoto {
-	height:140px;
-	margin:7px 6px;
-	width:108px;
+  height:140px;
+  margin:7px 6px;
+  width:108px;
 }
 #publicProfile .profilPhoto img {
-	height:140px;
+  height:140px;
 }
 
 .profilPhoto img {
-	border:0;
+  border:0;
 }
 
 #publicProfileFiche {color:#909090; font-size:11px;}
@@ -3352,8 +3352,8 @@ caption {
   right:10px;
 }
 #publicProfileFiche .info {
-	padding:8px;
-	height:100%;
+  padding:8px;
+  height:100%;
 }
 #publicProfileFiche .info .userType {
   color:#333333;
@@ -3363,14 +3363,14 @@ caption {
 }
 
 #publicProfileFiche .statut {
-	background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
-	color:#333333; font-size:10px;
-	padding:10px 0 0;
-	margin:0;
+  background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
+  color:#333333; font-size:10px;
+  padding:10px 0 0;
+  margin:0;
 }
 
 #publicProfileContenu {
-	margin-left:210px;
+  margin-left:210px;
 }
 
 #publicProfileContenu #gef-tabs,
@@ -3380,207 +3380,207 @@ caption {
 #contactProfil,
 #newsFeedProfil,
 #invitationProfil {
-	float:left;
-	width:100%;}
+  float:left;
+  width:100%;}
 
 #publicProfileContenu  address { font-style:normal;}
 
 /* IMAGE  bg_tri.png à chercher dans corps dans fleche */
 .sousNavBulle {
-	background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
- 	float:left;
-  	margin:0 auto;
-  	text-align:left;
-  	width:100%;
-  	color:#26334A;
-  	font-size:11px;
-  	padding:5px 0 14px;
-	}
+  background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
+  float:left;
+  margin:0 auto;
+  text-align:left;
+  width:100%;
+  color:#26334A;
+  font-size:11px;
+  padding:5px 0 14px;
+}
 .sousNavBulle p { 
-	margin:0; 
-  	padding:0 5px 0;
-	}
+  margin:0; 
+  padding:0 5px 0;
+}
 
 
 .sousNavBulle a {
-	border:1px solid #CECECE;
-	padding:2px 4px;
-	margin-right:3px;
-	background-color:#FFF;
-	color:#AFAFAF;
-	font-size: 11px;
-	text-decoration: none;
-	line-height:220%;
+  border:1px solid #CECECE;
+  padding:2px 4px;
+  margin-right:3px;
+  background-color:#FFF;
+  color:#AFAFAF;
+  font-size: 11px;
+  text-decoration: none;
+  line-height:220%;
 }
 .sousNavBulle a.active {
-	background-color:#B5B5B5;
-	color:#FFF;
+  background-color:#B5B5B5;
+  color:#FFF;
 }
 
 .sousNavBulle a:hover, .sousNavBulle a:focus {
-	background-color:#BFBFBF;
-	color:#FFF;
+  background-color:#BFBFBF;
+  color:#FFF;
 }
 
 #publicProfile #publicProfileFiche #allContact, #publicProfile #publicProfileFiche #contactCommun {
-	background-color:#E9E9E9;
-	clear:both;
-	height:100%;
+  background-color:#E9E9E9;
+  clear:both;
+  height:100%;
 }
 
 #publicProfile #publicProfileFiche .unContact {
-	width:126px; float:left; height:100%;
+  width:126px; float:left; height:100%;
 }
 
 #publicProfile #publicProfileFiche .unContact .contactName{
-	color:#5F5F5F;
-	float:left;
-	padding-top:20px;
-	width:50px;
-	display:inline;
+  color:#5F5F5F;
+  float:left;
+  padding-top:20px;
+  width:50px;
+  display:inline;
 }
 #publicProfile #publicProfileFiche .profilPhotoContact {
- 	border:1px solid #CCCCCC;
-	height:62px;
-	margin:7px 6px;
-	overflow:hidden;
-	width:54px;
-	float:left;
-	background-color:#FFF;
-	text-align:center;
+  border:1px solid #CCCCCC;
+  height:62px;
+  margin:7px 6px;
+  overflow:hidden;
+  width:54px;
+  float:left;
+  background-color:#FFF;
+  text-align:center;
 }
 #publicProfile #publicProfileFiche  .profilPhotoContact img {
-	height:62px;
+  height:62px;
 }
 
 /* News feed  */
 #publicProfileContenu p {
-	margin:0;
-	padding:0;}
+  margin:0;
+  padding:0;}
 
 .newsFeed {
-	padding-top:10px;
-	float:left;
-	width:100%;
-	}
+  padding-top:10px;
+  float:left;
+  width:100%;
+}
 
 #newsFeedProfil .profilPhoto {
-	width:50px;
-	height:50px;
-	display: inline;
-	border:0;
-	float:left;
-	clear:both;
-	margin:0px 6px
-	}
+  width:50px;
+  height:50px;
+  display: inline;
+  border:0;
+  float:left;
+  clear:both;
+  margin:0px 6px
+}
 #newsFeedProfil .profilPhoto img {
-	width:50px;
-	height:auto;
-	}
+  width:50px;
+  height:auto;
+}
 #newsFeedProfil .txt {
-	margin-left:70px;
-	color:#727272;
-	}
+  margin-left:70px;
+  color:#727272;
+}
 
 #newsFeedProfil .txt .detail  {
-	color:#333;
-	line-height:16px;
-	background-color:transparent;
-	background-position:top left;
-	background-repeat:no-repeat;
+  color:#333;
+  line-height:16px;
+  background-color:transparent;
+  background-position:top left;
+  background-repeat:no-repeat;
 }
 
 #newsFeedProfil .txt .detail .profilPhoto {
-	width:25px;
-	height:25px;
-	border:0;
-	float:inherit;
-	clear:none;
-	margin:0;
-	display:inline-block;
-	}
+  width:25px;
+  height:25px;
+  border:0;
+  float:inherit;
+  clear:none;
+  margin:0;
+  display:inline-block;
+}
 #newsFeedProfil .txt .detail .profilPhoto img{
-	width:25px;
-	}
+  width:25px;
+}
 
 #newsFeedProfil .txt .decoration-status {
-	background-image:url(../icons/newsFeed_statut.gif);
-	padding-left:20px;
-	}
+  background-image:url(../icons/newsFeed_statut.gif);
+  padding-left:20px;
+}
 
 #newsFeedProfil .txt .decoration-publication {
-	background-image:url(../icons/newsFeed_publication.gif);
-	padding-left:20px;
-	}
+  background-image:url(../icons/newsFeed_publication.gif);
+  padding-left:20px;
+}
 
 #newsFeedProfil .txt .decoration-event,
 #newsFeedProfil .txt .decoration-lastevent {
-	background-image:url(../icons/newsFeed_event.gif);
-	padding-left:20px;
-	}
+  background-image:url(../icons/newsFeed_event.gif);
+  padding-left:20px;
+}
 
 #newsFeedProfil .txt .decoration-photo {
-	background-image:url(../icons/newsFeed_picture.gif);
-	padding-left:20px;
-	}
+  background-image:url(../icons/newsFeed_picture.gif);
+  padding-left:20px;
+}
 
 #newsFeedProfil .name {
-	color:#26334A;
-	}
+  color:#26334A;
+}
 
 #newsFeedProfil	.a_new {
-	height:50px;
-	}
+  height:50px;
+}
 html > body #newsFeedProfil	.a_new {
-	min-height:50px;
-	height:auto;
-	}
+  min-height:50px;
+  height:auto;
+}
 
 .newsFeed .linkMore {
-	background-image: none;
+  background-image: none;
 }
 
 .newsFeed .linkMore span {
-    background: transparent url("../icons/arrow/arrowDown.gif") no-repeat scroll right center;
-	padding-right: 30px;
+  background: transparent url("../icons/arrow/arrowDown.gif") no-repeat scroll right center;
+  padding-right: 30px;
 }
 
 .newsFeed .inprogress {
-    background-color: #EAEAEA;
-    border-bottom: 1px solid #CCCCCC;
-    border-top: 1px solid #CCCCCC;
-    clear: both;
-    color: #4C4C4C;
-    display: block;
-    font-size: 11px;
-    line-height: 30px;
+  background-color: #EAEAEA;
+  border-bottom: 1px solid #CCCCCC;
+  border-top: 1px solid #CCCCCC;
+  clear: both;
+  color: #4C4C4C;
+  display: block;
+  font-size: 11px;
+  line-height: 30px;
 }
 
 .newsFeed .inprogress span {
-	background: #EAEAEA url("../icons/inProgress-horizontal.gif") no-repeat scroll right center;
-	padding-right: 30px;
-	margin: 0px 15px;
+  background: #EAEAEA url("../icons/inProgress-horizontal.gif") no-repeat scroll right center;
+  padding-right: 30px;
+  margin: 0px 15px;
 }
 
 /* Invitation  et contact*/
 #ReceiveInvitation, #SendInvitation , #contactProfil{
-	float:left;
-	width:100%;
-	}
+  float:left;
+  width:100%;
+}
 
 #invitationProfil .a_invitation , #contactProfil .a_contact{
-	border:1px solid #CFCFCF;
-	padding:8px;
-	margin:8px 8px 0 0;
-	height:84px;
-	position:relative;
+  border:1px solid #CFCFCF;
+  padding:8px;
+  margin:8px 8px 0 0;
+  height:84px;
+  position:relative;
 
-	}
+}
 
 html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_contact{
-	min-height:84px;
-	height:auto;
-	}
+  min-height:84px;
+  height:auto;
+}
 
 /* Par défaut 1 colonne */
 .aff_colonnes .a_contact {
@@ -3592,326 +3592,326 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 /*
 -- Pour affichage2 colonnes
 #contactProfil .aff_colonnes .a_contact {
-	width:46%;
-	float:right;
+    width:46%;
+    float:right;
 }*/
 
 /*
 -- Pour affichage 3 colonnes
 .aff_colonnes .a_contact {
 
-	width:30%;
-	float:right;
+    width:30%;
+    float:right;
 }
 */
 
 #invitationProfil .profilPhoto, #contactProfil  .profilPhoto{
-    float: left;
-    height: auto;
-    margin: 7px;
-    width: 64px;
-	float:left;
-	clear:both;
-	margin:0px
+  float: left;
+  height: auto;
+  margin: 7px;
+  width: 64px;
+  float:left;
+  clear:both;
+  margin:0px
 }
 
 #invitationProfil .profilPhoto img , #contactProfil .profilPhoto img{
-	width: 64px;
-	height:auto;
-	}
+  width: 64px;
+  height:auto;
+}
 
 #invitationProfil a.name, #contactProfil .userName a{
-	font-size:14px;
-	color:#000;
-	font-weight:bold;
-	}
+  font-size:14px;
+  color:#000;
+  font-weight:bold;
+}
 #invitationProfil a.name:hover,  #contactProfil .userName a:hover {
-	color:#333;
-	}
+  color:#333;
+}
 #invitationProfil .txt, #contactProfil .txt{
-	color:#727272;
-	margin:0 140px 0 74px;
-	}
+  color:#727272;
+  margin:0 140px 0 74px;
+}
 #invitationProfil .message {
-	color:#3A3A3A;
-	padding:8px 0 0;
-	}
+  color:#3A3A3A;
+  padding:8px 0 0;
+}
 
 #invitationProfil .action, #contactProfil .action{
-	float:right;
-	width:135px;
-	margin-top:14px;
+  float:right;
+  width:135px;
+  margin-top:14px;
 }
- #contactProfil .action{
-	 margin-top:31px;
+#contactProfil .action{
+  margin-top:31px;
 }
 
 
 .action .link {
-    border-bottom: 1px solid #9E9ECF;
-    clear: right;
-    color: #333366;
-    float: right;
-    font-size: 11px;
-    margin-bottom: 8px;
-    padding: 0 0 3px;
-    width: 132px;
+  border-bottom: 1px solid #9E9ECF;
+  clear: right;
+  color: #333366;
+  float: right;
+  font-size: 11px;
+  margin-bottom: 8px;
+  padding: 0 0 3px;
+  width: 132px;
 }
 
 .action .link:hover {
-	  color:#000;
-	  border-bottom:1px solid #000;
-  }
+  color:#000;
+  border-bottom:1px solid #000;
+}
 
 #contactProfil ul.info , #contactProfil ul.info li{
-	margin: 0;
-	padding: 0;
-	list-style-type:none
-	}
+  margin: 0;
+  padding: 0;
+  list-style-type:none
+}
 
 #contactProfil ul li.infoConnection img {
-    position: absolute;
-    right: 10px;
-    top: 10px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 #contactProfil .info li.userType {
-    color: #333333;
-    font-size: 12px;
-    font-weight: bold;
-    padding-top: 10px;
+  color: #333333;
+  font-size: 12px;
+  font-weight: bold;
+  padding-top: 10px;
 }
 
 /* general Style */
 hr.sep  {
-	clear:both;
-	height:0px;
-	line-height:0px;
-	width:100%;
-	border-style:solid;
-	border-color:#E5E5E5;
-	border-width:0px;
-	background-color:#E5E5E5;
-	margin:10px 0;
-	padding:0;
-	border-bottom:1px solid #E5E5E5;
-	}
+  clear:both;
+  height:0px;
+  line-height:0px;
+  width:100%;
+  border-style:solid;
+  border-color:#E5E5E5;
+  border-width:0px;
+  background-color:#E5E5E5;
+  margin:10px 0;
+  padding:0;
+  border-bottom:1px solid #E5E5E5;
+}
 
 .txtColor {
-	color:#3A5998;
-	}
+  color:#3A5998;
+}
 
 /* class actuellement utilisée dans l'annuaire expert à généraliser */
 .linkMore {
-    background: url("../icons/arrow/arrowDown.gif") no-repeat scroll right center #EFF9E3;
-    border-bottom: 1px solid #CCCCCC;
-    border-top: 1px solid #CCCCCC;
-    clear: both;
-    color: #4C4C4C;
-    display: block;
-    font-size: 11px;
-    line-height: 30px;
-    margin: 10px 0;
-    padding: 0 15px;
+  background: url("../icons/arrow/arrowDown.gif") no-repeat scroll right center #EFF9E3;
+  border-bottom: 1px solid #CCCCCC;
+  border-top: 1px solid #CCCCCC;
+  clear: both;
+  color: #4C4C4C;
+  display: block;
+  font-size: 11px;
+  line-height: 30px;
+  margin: 10px 0;
+  padding: 0 15px;
 }
 
 .linkMore:hover, .linkMore:focus  {
-	background-color:#E9F7D7;
-	}
+  background-color:#E9F7D7;
+}
 
 
 /*- [ publicProfile END ] --------------------------- */
 
 /*- [ attachments BEGIN ] ------------------------- */
 a.yuimenuitemlabel-disabled:hover {
-	color: #B9B9B9;
+  color: #B9B9B9;
 }
 
 ul#attachmentList.ui-sortable {
-	/*cursor:default;*/
-	position:relative;
-	margin:0;
-	padding:0;
+  /*cursor:default;*/
+  position:relative;
+  margin:0;
+  padding:0;
 }
 
 ul#attachmentList {
-    list-style-type: none;
-    margin-left: 0px;
-    padding-left: 0px;
+  list-style-type: none;
+  margin-left: 0px;
+  padding-left: 0px;
 }
 
 ul#attachmentList li.attachmentListItem {
-	margin:0;
-    padding: 10px 5px 10px 10px;
+  margin:0;
+  padding: 10px 5px 10px 10px;
 }
 
 ul#attachmentList li.ui-state-highlight {
-	border: 1px dashed #BFBFBF;
-	border-width: 1px;
-	padding:10px;
-	background-image: none;
-	background-color: #EAEAEA;
+  border: 1px dashed #BFBFBF;
+  border-width: 1px;
+  padding:10px;
+  background-image: none;
+  background-color: #EAEAEA;
 }
 
 ul#attachmentList li.attachmentListItem .lineSize,
 ul#attachmentList li.attachmentListItem .lineMain {
-    display: block;
-    padding: 1px 0 2px 0;
-	line-height:16px;
+  display: block;
+  padding: 1px 0 2px 0;
+  line-height:16px;
 }
 
 
 ul#attachmentList li.attachmentListItem .lineSize img {
-	float:left;
-	margin-right:10px
+  float:left;
+  margin-right:10px
 }
 
 ul#attachmentList li.attachmentListItem .lineMain .icon {
-	float:left;
-	width: 16px;
-	height: 16px;
-	margin-right:10px
+  float:left;
+  width: 16px;
+  height: 16px;
+  margin-right:10px
 }
 
 ul#attachmentList li.attachmentListItem .moreActions {
-    cursor: pointer;
-	float:right;
-    opacity: 0.65;
+  cursor: pointer;
+  float:right;
+  opacity: 0.65;
 }
 
 
 ul#attachmentList li.attachmentListItem .moreActions:HOVER {
-    opacity: 1;
+  opacity: 1;
 }
 
 ul#attachmentList li.attachmentListItem .workerInfo {
-    margin-left: 24px;
-    padding-left: 5px;
-    margin-top: 2px;
-    border-left: 3px solid #F79992;
-    color: #CE6F6F;
+  margin-left: 24px;
+  padding-left: 5px;
+  margin-top: 2px;
+  border-left: 3px solid #F79992;
+  color: #CE6F6F;
 }
 
 ul#attachmentList li.attachmentListItem .fileName {
-    margin-left: 24px;
-    padding-left: 5px;
-    border-left: 3px solid #9BD94A;
-    display: block;
-    color: #666;
+  margin-left: 24px;
+  padding-left: 5px;
+  border-left: 3px solid #9BD94A;
+  display: block;
+  color: #666;
 }
 
 ul#attachmentList li.attachmentListItem .description {
-    margin-left: 24px;
-    padding-left: 5px;
-    margin-top: 2px;
-    border-left: 3px solid #9BD94A;
-    display: block;
-    color: #666;
+  margin-left: 24px;
+  padding-left: 5px;
+  margin-top: 2px;
+  border-left: 3px solid #9BD94A;
+  display: block;
+  color: #666;
 }
 
 ul#attachmentList li.attachmentListItem .lineMain .version-number {
-	color: #666;
+  color: #666;
 }
 
 ul#attachmentList li.attachmentListItem .linkAllVersions {
-    margin-left: 22px;
-    padding-left: 0px;
-    margin-top: 2px;
-    border-left: 0px solid #EAEAEA;
-    display: block;
-    color: #666;
+  margin-left: 22px;
+  padding-left: 0px;
+  margin-top: 2px;
+  border-left: 0px solid #EAEAEA;
+  display: block;
+  color: #666;
 }
 
 ul#attachmentList li.attachmentListItem .linkAllVersions a {
-    color: #666;
+  color: #666;
 }
 
 /*- [ attachments END ] ------------------------- */
 
 #admin-component .componentIcon {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 
 #admin-component .parameterInfo {
-	width: 12px;
+  width: 12px;
 }
 
 #admin-component #parameters-header {
-	border: 2px solid #CCCCCC;
-	background-color: #EDEDED;
-	text-align: center;
-	margin-top:10px;
-	padding:5px;
+  border: 2px solid #CCCCCC;
+  background-color: #EDEDED;
+  text-align: center;
+  margin-top:10px;
+  padding:5px;
 }
 
 #admin-role .group-icon,
 #admin-role .user-icon {
-	margin: 1px;
+  margin: 1px;
 }
 
 .inline_message_ok {
-	background-color: #C8ED99;
-	border: 2px solid #9BD94A;
-	padding: 5px;
-	margin: 10px;
-	text-align: center;
+  background-color: #C8ED99;
+  border: 2px solid #9BD94A;
+  padding: 5px;
+  margin: 10px;
+  text-align: center;
 }
 
 /*- [ comment BEGIN ] ------------------------- */
 
 .commentaires hr{
-	clear:both;
-	margin-bottom:20px;
-	background-color:#CECECE;
-	border:0;
-	height:1px;
-	color:#CECECE;
+  clear:both;
+  margin-bottom:20px;
+  background-color:#CECECE;
+  border:0;
+  height:1px;
+  color:#CECECE;
 
 }
 .commentaires .oneComment, .commentaires #edition-box {
-	background-color:#F0F0F0;
-	border:1px solid #CECECE;
-	border-radius:10px;
-		moz-border-radius:10px;
-		webkit-border-radius:10px;
-	padding:10px;
-	position:relative;
-	margin:70px 2em 0;    
+  background-color:#F0F0F0;
+  border:1px solid #CECECE;
+  border-radius:10px;
+  moz-border-radius:10px;
+  webkit-border-radius:10px;
+  padding:10px;
+  position:relative;
+  margin:70px 2em 0;    
 }
 
 .commentaires #edition-box {
-    padding-top: 24px;
+  padding-top: 24px;
 }
 
- /* slt pour ie8 bug sous ie7*/
+/* slt pour ie8 bug sous ie7*/
 html>/**/body .commentaires #edition-box ,
 html>/**/body .commentaires .oneComment{
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .commentaires div.avatar {
-	position:absolute;
-	top:0;
-	left:0;
-	border:1px solid #CECECE;
-	padding:1px;
-	background-color:#FFF;
-	top:-50px;
-	left:-1em;
-	}
+  position:absolute;
+  top:0;
+  left:0;
+  border:1px solid #CECECE;
+  padding:1px;
+  background-color:#FFF;
+  top:-50px;
+  left:-1em;
+}
 .commentaires div.avatar img {
-	width:50px;
-	height:auto;
-	}
+  width:50px;
+  height:auto;
+}
 
 .commentaires .oneComment .action {
-	bottom: 10px;
-    position: absolute;
-    right: 9px;
+  bottom: 10px;
+  position: absolute;
+  right: 9px;
 }
 .commentaires .oneComment .action img {
-	width:13px;
-	height: 13px;
+  width:13px;
+  height: 13px;
 }
 
 .commentaires #edition-box .title , .commentaires .oneComment p.author{
@@ -3927,23 +3927,23 @@ html>/**/body .commentaires .oneComment{
   background:transparent url(../icons/commentStartBubble.gif) 50px bottom no-repeat;
 }
 .commentaires .oneComment p.author {
-	color:#26334A;
-	}
+  color:#26334A;
+}
 .commentaires .oneComment .date {
-	color:#999;
-	font-size:11px;
+  color:#999;
+  font-size:11px;
 }
 
 .commentaires .oneComment .text {      
-	color: #888888;
-    font-family: Arial;
-    font-size: 13px;
-    line-height: 120%;
-    margin: 0;
-    padding: 0;
-    text-align: justify;
-    text-indent: 41px;
-    white-space: normal;
+  color: #888888;
+  font-family: Arial;
+  font-size: 13px;
+  line-height: 120%;
+  margin: 0;
+  padding: 0;
+  text-align: justify;
+  text-indent: 41px;
+  white-space: normal;
 }
 .commentaires .oneComment .text a { font-size: 13px;}
 
@@ -3960,12 +3960,12 @@ html>/**/body .commentaires .oneComment{
 
 #comments-update-box .text,
 .commentaires #edition-box .text {
-	width: 95%;
-	height: 3em;
-	color: #888888;
-    font-family: Arial;
-    font-size: 13px;
-    line-height: 120%;
+  width: 95%;
+  height: 3em;
+  color: #888888;
+  font-family: Arial;
+  font-size: 13px;
+  line-height: 120%;
 }
 
 .commentaires .buttons {
@@ -4000,23 +4000,23 @@ select.mandatoryField option.emphasis {
 
 /*- [ statictics BEGIN ] -------------------- */
 #stats_viewConnectionButton {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 /*- [Specific export BEGIN ] ---------------- */
 .exportlinks {
-	width: 165px;
+  width: 165px;
 }
 .exportlinks div {
-	float:right;
-	font-weight:bold;
-	margin-right:8px;
-	padding-left:10px;
-	line-height:19px;
-	padding-top: 3px;
+  float:right;
+  font-weight:bold;
+  margin-right:8px;
+  padding-left:10px;
+  line-height:19px;
+  padding-top: 3px;
 }
 .exportlinks a:hover {
-	color:#5E9F09;
+  color:#5E9F09;
 }
 span.export {
   padding: 0 4px 1px 20px;
@@ -4034,125 +4034,125 @@ span.csv {
 .inlineMessage,
 .inlineMessage-ok,
 .inlineMessage-nok {
-	padding: 5px;
-	margin: 10px;
-	text-align: center;
-	border: 2px solid;
-	float: left;
-	width: 95%;
+  padding: 5px;
+  margin: 10px;
+  text-align: center;
+  border: 2px solid;
+  float: left;
+  width: 95%;
 }
 
 .inlineMessage {
-	background-color: #FBF7AA;
-	border-color: #F9E98E;
+  background-color: #FBF7AA;
+  border-color: #F9E98E;
 }
 
 .inlineMessage-ok {
-	background-color: #B5DF7D;
-	border-color: #9BD94A;
+  background-color: #B5DF7D;
+  border-color: #9BD94A;
 }
 
 .inlineMessage-nok {
-	background-color: #F79992;
-	border-color: #CE6F6F;
+  background-color: #F79992;
+  border-color: #CE6F6F;
 }
 
 table.pdcPositionsField {
-	border-spacing: 0;
-    padding: 0;
-    width: 100%;
+  border-spacing: 0;
+  padding: 0;
+  width: 100%;
 }
 
 button {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
-	background-repeat: repeat-x;
-	color: #FFFFFF;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+  background-repeat: repeat-x;
+  color: #FFFFFF;
 }
 
 /** Css pour présentation pdc dans formsOnline **/
 .pdc_position {
-	display:block;
-	background-color:#e9e9e9;
-	border-bottom:1px solid #c6cdbf;
-	height:20px;
-	line-height:20px;
-	padding:0 10px;
-	position:relative
+  display:block;
+  background-color:#e9e9e9;
+  border-bottom:1px solid #c6cdbf;
+  height:20px;
+  line-height:20px;
+  padding:0 10px;
+  position:relative
 }
 
 .pdc_position img {
-	height:12px;
+  height:12px;
 }
 
 .pdc_position .edit,
 .pdc_position .delete {
-	position:absolute;
-	right:10px;
-	top:4px;
+  position:absolute;
+  right:10px;
+  top:4px;
 }
 
 .pdc_position .edit {
-	right:30px;
+  right:30px;
 }
 
 .list_pdc_position {
-	list-style-type:none;
-	padding:0;
-	margin:0 0 10px 0;
+  list-style-type:none;
+  padding:0;
+  margin:0 0 10px 0;
 }
 
 .list_pdc_position ul {
-	list-style-type:none;
-	padding:0;
-	margin:0 0 0 1px;
-	color:#4d4d4d;
-	border-bottom:1px solid #e9e9e9;
+  list-style-type:none;
+  padding:0;
+  margin:0 0 0 1px;
+  color:#4d4d4d;
+  border-bottom:1px solid #e9e9e9;
 }
 
 
 .list_pdc_position ul li {
-	background:transparent url(../icons/list-puce-green.gif) 20px 8px no-repeat;
-	text-indent:32px;
-	line-height:14px;
-	padding:2px 0;
+  background:transparent url(../icons/list-puce-green.gif) 20px 8px no-repeat;
+  text-indent:32px;
+  line-height:14px;
+  padding:2px 0;
 }
 
 .add_position {
-	background:url(/silverpeas/util/icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
-	padding:1px 8px 0 22px;
-	margin:0;
-	cursor:pointer;
-	background-color:#ece9d8;
-	border:1px solid #999999;
-	height:17px;
-	line-height:18px;
-	display:inline-block;
+  background:url(/silverpeas/util/icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
+  padding:1px 8px 0 22px;
+  margin:0;
+  cursor:pointer;
+  background-color:#ece9d8;
+  border:1px solid #999999;
+  height:17px;
+  line-height:18px;
+  display:inline-block;
 }
 .add_position:hover {
-	color:#000;
+  color:#000;
 }
 
 html:not([lang*=""]) .add_position {
-	-moz-border-radius:4px;
-    border:1px solid #003c74;
-	background-color:#F2F2ED;
+  -moz-border-radius:4px;
+  border:1px solid #003c74;
+  background-color:#F2F2ED;
 }
 html:not([lang*=""]) .add_position:hover {
-	-moz-box-shadow:0 -1px 2px 1px #FFD37F inset;
-	color:#000;
+  -moz-box-shadow:0 -1px 2px 1px #FFD37F inset;
+  color:#000;
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-	.add_position{
-		-webkit-border-radius:4px;
-		border:1px solid #003C74;
-		background-color:#F2F2ED;
-	}
-	.add_position:hover{
-		-webkit-box-shadow:0 -1px 2px 1px #FFD37F inset;
-		color:#000;
-	}
+  .add_position{
+    -webkit-border-radius:4px;
+    border:1px solid #003C74;
+    background-color:#F2F2ED;
+  }
+  .add_position:hover{
+    -webkit-box-shadow:0 -1px 2px 1px #FFD37F inset;
+    color:#000;
+  }
 }
 
 .disabled {
@@ -4161,122 +4161,122 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 .classification legend {
-	background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
+  background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
 .classification .another-value img,
 .pdc-edition-box .another-value img {
-	margin-left: 3px;
-	width: 14px;
-	height: 14px;
-	vertical-align: middle;
-	border: 0px;
+  margin-left: 3px;
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  border: 0px;
 }
 
 #classification-mo {
-	min-height: 55px;
-	margin-top: 0px;
+  min-height: 55px;
+  margin-top: 0px;
 }
 
 #classification-mo legend {
-	background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
+  background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
 }
 
 #classification-modification  legend {
-	background:transparent url('/silverpeas/util/icons/update.gif') 11px 0px no-repeat;
+  background:transparent url('/silverpeas/util/icons/update.gif') 11px 0px no-repeat;
 }
 
 .classification .pdc-edition-box .field,
 .pdc-edition-box.ui-dialog-content .field {
-	width:80%;
+  width:80%;
 }
 
 .pdc-edition-box .inlineMessage {
-	position:absolute;
-	top:-5px;
-	right:-5px;
-	width:28%;
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  width:28%;
 }
 
 * html .pdc-edition-box .inlineMessage {
-	top:-35px;
-	right:5px;
+  top:-35px;
+  right:5px;
 }
 
 .pdc-edition-box .valid_position {
-	margin:10px 10px 10px  180px;
-    line-height: 20px;
-	float:left;
+  margin:10px 10px 10px  180px;
+  line-height: 20px;
+  float:left;
 }
 .classification .legende { 
-	margin:10px 0 0;
-	float:left;
-	line-height:18px
+  margin:10px 0 0;
+  float:left;
+  line-height:18px
 }
 
 .classification .list_pdc_position {
-	border:1px solid #C6CDBF;
-	width:94%;
+  border:1px solid #C6CDBF;
+  width:94%;
 }
 
 .classification .field {
-	width: 98%;
-	clear:both;
-	display:block;
-	float:none;
+  width: 98%;
+  clear:both;
+  display:block;
+  float:none;
 }
 
 .classification .field img {
-	border: 0px;
+  border: 0px;
 }
 
 .classification.preview .list_pdc_position {
-	border:0;
-	width:100%;
+  border:0;
+  width:100%;
 }
 
 .classification.preview .header h4 {
-    background:transparent url("/silverpeas/util/icons/component/pdcPeasSmall.gif") right top no-repeat;
-    height: 16px;
+  background:transparent url("/silverpeas/util/icons/component/pdcPeasSmall.gif") right top no-repeat;
+  height: 16px;
 }
 
 #validation {
-	background-color:#E9F0E0;
-	border:1px solid #CDCDCD;
-	border-left:0;
-	border-right:0;
-	padding-left:180px;
-	margin:0 12px;
-	width:auto;
-	line-height:220%;
+  background-color:#E9F0E0;
+  border:1px solid #CDCDCD;
+  border-left:0;
+  border-right:0;
+  padding-left:180px;
+  margin:0 12px;
+  width:auto;
+  line-height:220%;
 }
 #validation  input, #modification input{
-	vertical-align:text-bottom;
-	vertical-align:middle\9;
-	border:0;
-	background-color:transparent;
-	padding-top:0;
-	padding-bottom:0;
+  vertical-align:text-bottom;
+  vertical-align:middle\9;
+  border:0;
+  background-color:transparent;
+  padding-top:0;
+  padding-bottom:0;
 }
 
 #classification-modification span.header {
-	display:block;  
-	background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
-	background-color:#F0F0F0;
-	border:1px solid #CDCDCD;
-	border-left:0;
-	border-right:0;	
-	line-height:100%;
-	padding:8px 0 6px 26px;
-	margin:10px 12px 0;
+  display:block;  
+  background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
+  background-color:#F0F0F0;
+  border:1px solid #CDCDCD;
+  border-left:0;
+  border-right:0;	
+  line-height:100%;
+  padding:8px 0 6px 26px;
+  margin:10px 12px 0;
 }
 
 #okForAll, #modifyForAll, #modifyForEach {
-	background:transparent url("/silverpeas/util/icons/update.gif") right 0 no-repeat ;
-	padding:2px 20px 2px 0;
+  background:transparent url("/silverpeas/util/icons/update.gif") right 0 no-repeat ;
+  padding:2px 20px 2px 0;
 }
 #okForAll {
-	background-image:url("/silverpeas/util/icons/ok.gif") ;
+  background-image:url("/silverpeas/util/icons/ok.gif") ;
 }
 
 
@@ -4284,35 +4284,35 @@ html:not([lang*=""]) .add_position:hover {
   vertical-align:middle;
 }
 #spaces-welcome-message h2 {
-	margin:0 0 20px;
+  margin:0 0 20px;
 }
 #spaces-welcome-message a {
-	text-decoration: underline;
-	font-size:12px;
+  text-decoration: underline;
+  font-size:12px;
 }
 #spaces-welcome-message ul {
-	font-size:12px;
-	color:#333;
+  font-size:12px;
+  color:#333;
 }
 #spaces-welcome-message  p {
-	font-size:12px;
-	line-height:140%;
-	margin:10px 0 20px;
-	color:#333;
+  font-size:12px;
+  line-height:140%;
+  margin:10px 0 20px;
+  color:#333;
 }
 
 #spaces-welcome-message .accroche {
-	line-height:150%;
+  line-height:150%;
 }
 #topPage #spaces-welcome-message .yuimenu {
-	padding:1px 7px;
-	margin:0 5px;
+  padding:1px 7px;
+  margin:0 5px;
 }
 #spaces-welcome-message h3 {
-	color:#000;
-	font-size: 13px;
-	padding: 0px;
-	margin: 15px 0px 5px 0px;
+  color:#000;
+  font-size: 13px;
+  padding: 0px;
+  margin: 15px 0px 5px 0px;
 }
 
 /********************************/
@@ -4320,176 +4320,176 @@ html:not([lang*=""]) .add_position:hover {
 /*******************************/
 
 ul.applicationsTypeList *{
-	padding:0;
-	margin:0;
-	list-style-type: none;
+  padding:0;
+  margin:0;
+  list-style-type: none;
 }
 ul.applicationsTypeList {
-	padding:0;
-	margin:0;
-	width:206px;
-	height:100%;
-	border-left: 1px solid #333;
-	
-	background-color:#333333;
-	background-image: url(../icons/gradientSVG.jsp?from=CCCCCC&to=333333&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-	
-	-pie-background: linear-gradient(#CCCCCC, #333333);
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  padding:0;
+  margin:0;
+  width:206px;
+  height:100%;
+  border-left: 1px solid #333;
+
+  background-color:#333333;
+  background-image: url(../icons/gradientSVG.jsp?from=CCCCCC&to=333333&vertical=0&horizontal=100);
+  -moz-background-size: 100%;
+
+  -pie-background: linear-gradient(#CCCCCC, #333333);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 li.applicationsType{
-	width:206px;
-	height:60px;
+  width:206px;
+  height:60px;
 }
 
 li.applicationsType a.linkSee{
-	cursor:pointer;
-	line-height:14px;
-	font-size:12px;
-	color:#FFF;
-	display:block;
-	height:60px;
-	background:transparent url(../icons/arrow/type_fleche.png) 180px 0px no-repeat;
+  cursor:pointer;
+  line-height:14px;
+  font-size:12px;
+  color:#FFF;
+  display:block;
+  height:60px;
+  background:transparent url(../icons/arrow/type_fleche.png) 180px 0px no-repeat;
 }
 li.applicationsType a span{
-	padding:20px 20px 0 82px;
-	display:block;
-	height:40px;
+  padding:20px 20px 0 82px;
+  display:block;
+  height:40px;
 }
 
 li.applicationsType a.linkSee:hover {
-	background-color:#333;
-	background-position:180px -63px
+  background-color:#333;
+  background-position:180px -63px
 }
 li.applicationsType a.linkSee.select {
-	background-color:#fff;
-	color:#353535;
-	background-position:180px -63px
+  background-color:#fff;
+  color:#353535;
+  background-position:180px -63px
 }
 
 ul.applicationList {
-	position:absolute; 
-	top:0;
-	left:0;
-	background-color:#FFF;
-	width:auto;
-	height:100%;
-	margin-left:206px;
-	margin-top: 30px;
-	display:none;
+  position:absolute; 
+  top:0;
+  left:0;
+  background-color:#FFF;
+  width:auto;
+  height:100%;
+  margin-left:206px;
+  margin-top: 30px;
+  display:none;
 }
 
 li.application {
-	position:relative;
-	display:block;
-	margin:5px 0 5px 12px;
-	padding:0;
-	width:400px;
-	height:72px;
-	float:left;
-	overflow:hidden;
-	border:1px solid #dfdfdf;
-	
-	border-radius:20px;
-		moz-border-radius:20px;
-		webkit-border-radius:20px;
-	background-color:#eaeaea;
-	
-	background-image: url(../icons/gradientSVG.jsp?from=ffffff&to=eaeaea&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
+  position:relative;
+  display:block;
+  margin:5px 0 5px 12px;
+  padding:0;
+  width:400px;
+  height:72px;
+  float:left;
+  overflow:hidden;
+  border:1px solid #dfdfdf;
+
+  border-radius:20px;
+  moz-border-radius:20px;
+  webkit-border-radius:20px;
+  background-color:#eaeaea;
+
+  background-image: url(../icons/gradientSVG.jsp?from=ffffff&to=eaeaea&vertical=0&horizontal=100);
+  -moz-background-size: 100%;
 }
 
 /* pour ie8 je veux mettre le pie et virer le bord qui déconne*/
 li.application {
-		-pie-background: linear-gradient(#f5f5f5, #EAEAEA);
-		behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-	border:0px;
+  -pie-background: linear-gradient(#f5f5f5, #EAEAEA);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  border:0px;
 }
 
 /* pour tout le monde sauf ie 6 à 8*/
 :root *> li.application {
-	border:1px solid #dfdfdf;
-	behavior: url();
+  border:1px solid #dfdfdf;
+  behavior: url();
 }
 
 li.application  a {
-	padding:2px 10px 2px 72px;
-	width:318px;
-	height:68px;
-	display:table-cell;
-	vertical-align:middle;
+  padding:2px 10px 2px 72px;
+  width:318px;
+  height:68px;
+  display:table-cell;
+  vertical-align:middle;
 }
 
 li.application  a:hover{
-	background:transparent url(../icons/arrow/type_fleche.png) 380px -63px no-repeat;
-	}
+  background:transparent url(../icons/arrow/type_fleche.png) 380px -63px no-repeat;
+}
 
 li.application  img {
-	position:absolute;
-	bottom:7px;
-	right:332px;
-	border:0;
+  position:absolute;
+  bottom:7px;
+  right:332px;
+  border:0;
 }
 
 
 li.application  .applicationDescription {
-	font-size:11px;
-	color:#666666;
-	line-height:14px;
-	display:none;
-	text-align:justify;
-	padding-right:15px;
+  font-size:11px;
+  color:#666666;
+  line-height:14px;
+  display:none;
+  text-align:justify;
+  padding-right:15px;
 }
 
 li.application  .applicationName {
-	font-size:14px;
-	font-weight:100;
-	color:#444444;
-	padding-left:12px
+  font-size:14px;
+  font-weight:100;
+  color:#444444;
+  padding-left:12px
 }
 
 .type_01 li.application {
-	height:134px;
+  height:134px;
 }
 
 .type_01 li.application  a {
-	height:130px;
+  height:130px;
 }
 
 .type_01 li.application  img {
-	position:absolute;
-	bottom:35px;
-	right:332px;
+  position:absolute;
+  bottom:35px;
+  right:332px;
 }
 
 .type_01 li.application  .applicationName {
-	font-size:14px;
-	font-weight:100;
-	color:#444444;
-	padding-left:12px
+  font-size:14px;
+  font-weight:100;
+  color:#444444;
+  padding-left:12px
 }
 
 .type_01 li.application  .applicationDescription {
-	line-height:13px;
-	display:none;
-	text-align:justify;
-	padding-right:15px;
+  line-height:13px;
+  display:none;
+  text-align:justify;
+  padding-right:15px;
 }
 
 .type_01  li.application  a:hover{
-	background:transparent url(../icons/arrow/type_fleche.png) 380px -40px no-repeat;
+  background:transparent url(../icons/arrow/type_fleche.png) 380px -40px no-repeat;
 }
 
 /** pour ie7 qui ne comprend pas le vertical-align **/
 li.application  a {
-	display:block !zonecss;
+  display:block !zonecss;
 }
 li.application  .applicationName {
-	line-height:72px !zonecss;
+  line-height:72px !zonecss;
 }
 .type_01 li.application  .applicationName {
-	line-height:130px !zonecss;
+  line-height:130px !zonecss;
 }
 /** end pour ie 7 **/
 
@@ -4505,25 +4505,25 @@ li.application  .applicationName {
 /***********************************/
 
 .admin.stats.volume #chart {
-	float: left;
-	width: 75%;
+  float: left;
+  width: 75%;
 }
 
 .admin.stats.volume #total {
-	float: left;
-	font-size: 16px;
-	font-weight: bold;
-	display: table;
-	height: 350px;
+  float: left;
+  font-size: 16px;
+  font-weight: bold;
+  display: table;
+  height: 350px;
 }
 
 .admin.stats.volume #total>span {
-	display: table-cell;
-	vertical-align: middle;
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .admin.stats.volume #total .number {
-	color: #F1790F;
+  color: #F1790F;
 }
 
 
@@ -4535,257 +4535,268 @@ li.application  .applicationName {
 
 
 .userPanel, .userPanel * {
-	padding:0;
-	margin:0;
-	list-style-type:none;
+  padding:0;
+  margin:0;
+  list-style-type:none;
 }
 
 .container_userPanel {
-	min-width:970px;
-	height:100%;
-	}
+  min-width:970px;
+  height:100%;
+}
 
 
 #results_userPanel, #selected_userPanel, #filter_userPanel {height:100%; overflow:auto;}
 
 #filter_userPanel {
-	height:100%;
-	overflow:hidden;
+  height:100%;
+  overflow:hidden;
 }
 
 
 
 
 #filter_userPanel {
-	width:22%;
-	height:100%;
-	float:left;
-	background-color:#333333;
-	background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=333333&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-	-pie-background: linear-gradient(#CCCCCC, #333333);
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-	color:#FFF;
+  width:22%;
+  height:100%;
+  float:left;
+  background-color:#333333;
+  background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=333333&vertical=0&horizontal=100);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#CCCCCC, #333333);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  color:#FFF;
 }
 .userPanel .users_results_userPanel, 
 .userPanel .groups_results_userPanel,
 .userPanel .users_selected_userPanel, 
 .userPanel .groups_selected_userPanel  {
-	margin:8px 3% 16px;
-	clear:both;
-	position:relative;
+  margin:8px 3% 16px;
+  clear:both;
+  position:relative;
 }
 
 .userPanel .users_selected_userPanel, 
 .userPanel .groups_selected_userPanel  {
-	margin:2px 3% 16px 3%;
+  margin:2px 3% 16px 3%;
 }
 .userPanel .users_results_userPanel, 
 .userPanel .users_selected_userPanel  {
-	margin:2px 3% 0 3%;
+  margin:2px 3% 0 3%;
 }
 #results_userPanel, #selected_userPanel{
-	width:39%;
-	*width:38.9%;
-	height:100%;
-	float:left;
-	
+  width:39%;
+  *width:38.9%;
+  height:100%;
+  float:left;
+
 }
 
 #filter_userPanel a {
-	color:#FFF;
-	line-height:140%;
-	font-size:105%;
+  color:#FFF;
+  line-height:140%;
+  font-size:105%;
 }
 #filter_userPanel .filter {
-	background:transparent url(../icons/treeview/folder_close.gif) 9px 5px no-repeat;
-	padding:7px 0 6px 33px;
-	display:block;
+  background:transparent url(../icons/treeview/folder_close.gif) 9px 5px no-repeat;
+  padding:7px 0 6px 33px;
+  display:block;
 }
 
 #filter_userPanel .listing_filter ul .filter{	
-	background-position:33px 5px;
-	padding:7px 0 6px 59px;
+  background-position:33px 5px;
+  padding:7px 0 6px 59px;
 }
 
 #filter_userPanel .listing_filter ul {
-	overflow:auto;
-	border-top:1px solid #868686;
-	background-color:#444444;
-	background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=444444&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-	-pie-background: linear-gradient(#CCCCCC, #333333);
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  overflow:auto;
+  border-top:1px solid #868686;
+  background-color:#444444;
+  background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=444444&vertical=0&horizontal=100);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#CCCCCC, #333333);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
-#filter_userPanel .filter a {
-	color:#444;
+#filter_userPanel .filter.select a,
+#filter_userPanel .filter a:hover,
+#filter_userPanel .filter a:focus {
+  color:#444;
 }
 
 #filter_userPanel .filter:hover, 
 #filter_userPanel .filter:focus , 
 #filter_userPanel .filter.select{
-	background-color:#eaeaea;
-	color:#444444;
-	font-size:105%;
+  background-color:#eaeaea;
+  color:#444444;
+  font-size:105%;
 }
 #filter_userPanel .filter.select {
-	background-image:url(../icons/treeview/folder_open.gif);
+  background-image:url(../icons/treeview/folder_open.gif);
 }
 
 #filter_userPanel .title,
 #selected_userPanel .title{
-	background-color:#353535;
-	color:#FFF;
-	font-size:120%;
-	line-height:28px;
-	padding-left:9px;
+  background-color:#353535;
+  color:#FFF;
+  font-size:120%;
+  line-height:28px;
+  padding-left:9px;
 }
 
 #results_userPanel {
-	background-color:#eaeaea;
+  background-color:#eaeaea;
 }
 
 .container_input_search {
-	background:#FFF;
-	border-radius: 10px;
-		moz-border-radius: 10px;
-		webkit-border-radius: 10px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-	position:relative;
-    height:2em;
-    font-size: 1em;
-    line-height: 1em;
-	width:100%;
+  background:#FFF;
+  border-radius: 10px;
+  moz-border-radius: 10px;
+  webkit-border-radius: 10px;
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  position:relative;
+  height:2em;
+  font-size: 1em;
+  line-height: 1em;
+  width:100%;
 }
 
 input.search {
-	background:transparent  url(../icons/magnifying-glass.png) 12px 4px no-repeat;
-	*background-position: 0px 2px;
-	border:0;
-    color: #939393;
-    height:1em;
-    font-size: 1em;
-    line-height: 1em;
-    padding:0.5em 1em 0.5em 3em;
-	width:90%;
+  background:transparent  url(../icons/magnifying-glass.png) 12px 4px no-repeat;
+  *background-position: 0px 2px;
+  border:0;
+  color: #939393;
+  height:1em;
+  font-size: 1em;
+  line-height: 1em;
+  padding:0.5em 1em 0.5em 3em;
+  width:90%;
 }
 
 input.search:focus {
-    color: #444444;
+  color: #444444;
 }
 .userPanel .listing_users, .userPanel .listing_groups  {
-	position:relative;
+  position:relative;
 }
 
 .userPanel .listing_groups {
-	margin-bottom:1em;
+  margin-bottom:1em;
 }
 
 .listing_users .add_all, .listing_groups .add_all,
 .listing_users .remove_all, .listing_groups .remove_all
- {
-	position:absolute;
-	line-height:2em;
-	padding-top:0.5em;
-	top:0;
-	right:12px;
-	padding-right:24px;
-	color:#a1a1a1;
-	background:transparent url(../icons/addFiche.png) right 0.5em no-repeat;
+{
+  position:absolute;
+  line-height:2em;
+  padding-top:0.5em;
+  top:0;
+  right:12px;
+  padding-right:24px;
+  color:#a1a1a1;
+  background:transparent url(../icons/addFiche.png) right 0.5em no-repeat;
 }
 .listing_users .remove_all, .listing_groups .remove_all
- {
-	background:transparent url(../icons/deleteFiche.png) right 0.5em no-repeat;
+{
+  background:transparent url(../icons/deleteFiche.png) right 0.5em no-repeat;
 }
 .listing_users .add_all:hover, .listing_users .add_all:focus,
 .listing_groups .add_all:hover, .listing_groups .add_all:focus,
 .listing_users .remove_all:hover, .listing_users .remove_all:focus,
 .listing_groups .remove_all:hover, .listing_groups .remove_all:focus
 {
-	color:#444;
+  color:#444;
 }
 
 .listing_users .nb_results,
 .listing_groups .nb_results
 {
-	line-height:2em;
-	padding-top:0.5em;
-	font-weight:bold;
+  line-height:2em;
+  padding-top:0.5em;
+  font-weight:bold;
 }
 
 .userPanel .listing_users ul,
 .userPanel .listing_groups ul
 {
-	border:1px solid #d4d4d4;
+  border:1px solid #d4d4d4;
 }
 
 .userPanel .listing_users li,
 .userPanel .listing_groups li
- {
-	position:relative;
-	height:30px;
-	padding:4px 45px
+{
+  position:relative;
+  height:30px;
+  padding:4px 45px
 }
 .userPanel .odd {
-	background-color:#FFF;
+  background-color:#FFF;
 }
 
 .userPanel .even {
-	background-color:#f5f5f5;
+  background-color:#f5f5f5;
 }
 
 .userPanel .focus{
-	background-color:#E0E0E0;
+  background-color:#E0E0E0;
 }
 
 .userPanel .line {
-	color:#717171;
+  color:#717171;
 }
 
 .userPanel .listing_users .name_user,
 .userPanel .listing_groups .name_group {
-	display:block;
-	color:#000;
+  display:block;
+  color:#000;
 }
 .userPanel .add ,
 .userPanel .remove  {
-	text-indent:-3000px;
-	width:16px;
-	height:16px;
-	background:transparent url(../icons/addFiche.png) top left;
-	position:absolute;
-	top:12px;
-	right:12px;
+  text-indent:-3000px;
+  width:16px;
+  height:16px;
+  background:transparent url(../icons/addFiche.png) top left;
+  position:absolute;
+  top:12px;
+  right:12px;
 }
 .userPanel .remove  {
-	background:transparent url(../icons/deleteFiche.png) top left;
+  background:transparent url(../icons/deleteFiche.png) top left;
 }
 .userPanel  .avatar {
-	width:30px;
-	height:30px;
-	border:1px solid #bcbcbc;
-	overflow:hidden;
-	position:absolute;
-	top:4px;
-	left:6px;
+  width:30px;
+  height:30px;
+  border:1px solid #bcbcbc;
+  overflow:hidden;
+  position:absolute;
+  top:4px;
+  left:6px;
 }
 
 .userPanel  .avatar img{
-	width:30px;
-	height:auto;
+  width:30px;
+  height:auto;
 }
 
 .pageNav_results_userPanel {
-	text-align:center;
+  text-align:center;
 }
 
 .pageNav_results_userPanel .pageNav {
-	margin:0.5em auto;
+  margin:0.5em auto;
 }
 
 #selected_userPanel .container{
-	height:100%;
-	background-color:#fdfcfc;
-	border-left:1px solid #c9c9c9;
-	}
+  height:100%;
+  background-color:#fdfcfc;
+  border-left:1px solid #c9c9c9;
+}
+
+#selected_userPanel #validate {
+  text-align: center;
+
+}
+
+#selected_userPanel #validate table {
+  margin: 0 auto;
+}

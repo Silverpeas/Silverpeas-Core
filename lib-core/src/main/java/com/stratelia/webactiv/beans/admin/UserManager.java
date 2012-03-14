@@ -25,6 +25,7 @@ import com.silverpeas.util.security.X509Factory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
+import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -34,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserManager {
+
+  private UserDAO userDAO = new UserDAO();
 
   /**
    * Constructor
@@ -85,7 +88,7 @@ public class UserManager {
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      List<UserDetail> users = UserDAO.getUsersOfGroups(con, groupIds);
+      List<UserDetail> users = userDAO.getUsersOfGroups(con, groupIds);
 
       return users.toArray(new UserDetail[users.size()]);
     } catch (Exception e) {
@@ -93,6 +96,29 @@ public class UserManager {
               SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
     } finally {
       DBUtil.close(con);
+    }
+  }
+
+  /**
+   * Gets the users that match the specified criteria.
+   * @param criteria the criteria in searching of user details.
+   * @return an array of user details matching the criteria or an empty array of no ones are found.
+   * @throws AdminException if an error occurs while getting the user details.
+   */
+  public UserDetail[] getUsersMatchingCriteria(final UserSearchCriteria criteria) throws
+          AdminException {
+    Connection connection = null;
+    try {
+      connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<UserDetail> users = userDAO.getUsersByCriteria(connection,
+              (UserSearchCriteriaForDAO) criteria);
+      return users.toArray(new UserDetail[users.size()]);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getAllUsersMatching",
+              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+    } finally {
+      DBUtil.close(connection);
     }
   }
 
@@ -111,7 +137,7 @@ public class UserManager {
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      return UserDAO.getUserIdsOfGroups(con, groupIds);
+      return userDAO.getUserIdsOfGroups(con, groupIds);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersOfGroups",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
@@ -428,39 +454,6 @@ public class UserManager {
       ddManager.releaseOrganizationSchema();
     }
   }
-  
-  public UserDetail[] searchUsers(DomainDriverManager ddManager, List<String> userIds,
-          UserDetail modelUser, boolean and) throws AdminException {
-    UserRow model;
-
-    try {
-      // Get users from Silverpeas
-      ddManager.getOrganizationSchema();
-
-      model = userDetail2UserRow(modelUser);
-      if (!StringUtil.isDefined(modelUser.getId())) {
-        model.id = -2;
-      }
-      if (!StringUtil.isDefined(modelUser.getDomainId())) {
-        model.domainId = -2;
-      }
-
-      // Get users of domain from Silverpeas database
-      UserRow[] rows = ddManager.getOrganization().user.searchUsers(userIds, model, and);
-      // Convert UserRow objects in UserDetail Object
-      UserDetail[] details = new UserDetail[rows.length];
-      for (int nI = 0; nI < rows.length; nI++) {
-        details[nI] = userRow2UserDetail(rows[nI]);
-      }
-
-      return details;
-    } catch (Exception e) {
-      throw new AdminException("UserManager.searchUsers",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
 
   /**
    * Add the given user in Silverpeas and specific domain
@@ -710,61 +703,5 @@ public class UserManager {
    */
   private String idAsString(int id) {
     return java.lang.Integer.toString(id);
-  }
-  
-  /**
-   * Searchs all the users that match the following specified contrains:
-   * <ul>
-   * <li>On of the roles the users have to play for a given component instance: either one of all the
-   * roles of the specified component instance or one of all the specified roles;</li>
-   * <li>Some details attributes the users has to satisfy. This contraint is mandatory and cannot
-   * be null.</li>
-   * </ul>
-   * If no of theses contrains, all of the users in Silverpeas are returned.
-   * @param ddManager the manager of the domain drivers in use in Silverpeas.
-   * @param driverComponentId the unique identifier of the component instance in a domain driver.
-   * All the users with the rights to access this instance are seek; the users has to play one of
-   * the roles supported by the component instance whether it isn't public.
-   * @param roleIds the unique identifiers of roles. They are for one or more specific component
-   * instances. The users have to play at least one of the specified roles.
-   * @param userFiler a UserDetail object with or not some attributes set for filtering the 
-   * users to sent back.
-   * @return an array of details on the users that match the specified above contrains.
-   * @throws AdminException if an error occurs while searching the users.
-   */
-  public UserDetail[] searchUsers(DomainDriverManager ddManager, String driverComponentId,
-          String[] roleIds, UserDetail userFiler) throws AdminException {
-    try {
-      // Get users from Silverpeas
-      ddManager.getOrganizationSchema();
-      UserRow model = userDetail2UserRow(userFiler);
-      if (!StringUtil.isDefined(userFiler.getId())) {
-        model.id = -2;
-      }
-      if (!StringUtil.isDefined(userFiler.getDomainId())) {
-        model.domainId = -2;
-      }
-
-      int[] roles = null;
-      if (roleIds != null && roleIds.length > 0) {
-        roles = new int[roleIds.length];
-        for (int i = 0; i < roleIds.length; i++) {
-          roles[i] = idAsInt(roleIds[i]);
-        }
-      }
-      // Get users
-      UserRow[] rows = ddManager.getOrganization().user.searchUsers(idAsInt(driverComponentId),
-              roles, model);
-      UserDetail[] users = new UserDetail[rows.length];
-      for(int i = 0; i < rows.length; i++) {
-        users[i] = userRow2UserDetail(rows[i]);
-      }
-      return users;
-    } catch (Exception e) {
-      throw new AdminException("UserManager.searchUsers",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
   }
 }

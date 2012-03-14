@@ -24,10 +24,7 @@
 package com.silverpeas.rest.mock;
 
 import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import java.util.*;
 import javax.inject.Named;
 
@@ -255,7 +252,16 @@ public class OrganizationControllerMock extends OrganizationController {
   }
 
   @Override
-  public UserDetail[] searchUsers(String componentId, String[] roleIds, String groupId,
+  public UserDetail[] searchUsers(SearchCriteria criteria) {
+    UserDetail model = new UserDetail();
+    model.setFirstName(criteria.getCriterionOnName());
+    model.setLastName(criteria.getCriterionOnName());
+    model.setDomainId(criteria.getCriterionOnDomainId());
+    return searchUsers(criteria.getCriterionOnComponentInstanceId(),
+            criteria.getCriterionOnRoleIds(), criteria.getCriterionOnGroupId(), model);
+  }
+
+  private UserDetail[] searchUsers(String componentId, String[] roleIds, String groupId,
           UserDetail userFilter) {
     UserDetail[] theUsers = searchUsers(userFilter, false);
     if (isDefined(groupId)) {
@@ -310,6 +316,4 @@ public class OrganizationControllerMock extends OrganizationController {
     }
     return groupIds.toArray(new String[groupIds.size()]);
   }
-  
-  
 }

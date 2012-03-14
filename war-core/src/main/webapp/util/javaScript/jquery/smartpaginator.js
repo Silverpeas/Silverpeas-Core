@@ -1,4 +1,8 @@
-﻿(function ($) {
+/**
+ * WARNING: This file is improved.
+ */
+
+(function ($) {
     $.fn.extend({
         smartpaginator: function (options) {
             var settings = $.extend({
@@ -10,6 +14,7 @@
                 first: 'First',
                 last: 'Last',
                 go: 'Go',
+                of: 'of',
                 theme: 'green',
                 display: 'double',
                 initval: 1,
@@ -34,10 +39,10 @@
                     dataElements = $('' + settings.dataelement + '', dataContainer);
                 }
                 var list = $('<ul/>');
-                var btnPrev = $('<div/>').text(settings.prev).click(function () { currentPage = parseInt(list.find('li a.active').text()) - 1; navigate(--currentPage); }).addClass('btn');
-                var btnNext = $('<div/>').text(settings.next).click(function () { currentPage = parseInt(list.find('li a.active').text()); navigate(currentPage); }).addClass('btn');
-                var btnFirst = $('<div/>').text(settings.first).click(function () { currentPage = 0; navigate(0); }).addClass('btn');
-                var btnLast = $('<div/>').text(settings.last).click(function () { currentPage = totalpages - 1; navigate(currentPage); }).addClass('btn');
+                var btnPrev = $('<div/>').append(settings.prev).click(function () { currentPage = parseInt(list.find('li a.active').text()) - 1; navigate(--currentPage); }).addClass('btn');
+                var btnNext = $('<div/>').append(settings.next).click(function () { currentPage = parseInt(list.find('li a.active').text()); navigate(currentPage); }).addClass('btn');
+                var btnFirst = $('<div/>').append(settings.first).click(function () { currentPage = 0; navigate(0); }).addClass('btn');
+                var btnLast = $('<div/>').append(settings.last).click(function () { currentPage = totalpages - 1; navigate(currentPage); }).addClass('btn');
                 var inputPage = $('<input/>').attr('type', 'text').keydown(function (e) {
                     if (isTextSelected(inputPage)) inputPage.val('');
                     if (e.which >= 48 && e.which < 58) {
@@ -60,11 +65,12 @@
                     container.find('span').remove();
                     var upper = (pageIndex + 1) * settings.recordsperpage;
                     if (upper > settings.totalrecords) upper = settings.totalrecords;
-                    container.append($('<span/>').append($('<b/>').text(pageIndex * settings.recordsperpage + 1)))
+                    container.append($('<div/>').addClass('pages_indication')
+                                             .append($('<span/>').append($('<b/>').text(pageIndex * settings.recordsperpage + 1)))
                                              .append($('<span/>').text('-'))
                                              .append($('<span/>').append($('<b/>').text(upper)))
-                                             .append($('<span/>').text('of'))
-                                             .append($('<span/>').append($('<b/>').text(settings.totalrecords)));
+                                             .append($('<span/>').text(settings.of))
+                                             .append($('<span/>').append($('<b/>').text(settings.totalrecords))));
                 }
                 function buildNavigation(startPage) {
                     list.find('li').remove();

@@ -23,19 +23,17 @@
  */
 package com.silverpeas.rest;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.personalization.service.PersonalizationService;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.personalization.service.MockablePersonalizationService;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.rest.mock.AccessControllerMock;
 import com.silverpeas.rest.mock.OrganizationControllerMock;
-import com.silverpeas.session.SessionManagement;
+import com.silverpeas.rest.mock.SessionManagerMock;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Inject;
+import static org.junit.Assert.assertNotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import static org.junit.Assert.*;
 
 /**
  * It is a wrapper of the resources that have to be used in the RESTWebServiceTest test cases.
@@ -68,7 +66,7 @@ public abstract class TestResources implements ApplicationContextAware {
    */
   public static final String DEFAULT_DOMAIN = "0";
   @Inject
-  private SessionManagement sessionManager;
+  private SessionManagerMock sessionManager;
   @Inject
   private AccessControllerMock accessController;
   @Inject
@@ -85,10 +83,10 @@ public abstract class TestResources implements ApplicationContextAware {
   public static TestResources getTestResources() {
     assertNotNull(context);
     TestResources resources = context.getBean(TEST_RESOURCES_NAME, TestResources.class);
-    assertNotNull(resources.getMockedAccessController());
-    assertNotNull(resources.getMockedOrganizationController());
-    assertNotNull(resources.getMockedPersonalizationService());
-    assertNotNull(resources.getMockedSessionManager());
+    assertNotNull(resources.getAccessControllerMock());
+    assertNotNull(resources.getOrganizationControllerMock());
+    assertNotNull(resources.getPersonalizationServiceMock());
+    assertNotNull(resources.getSessionManagerMock());
     return resources;
   }
 
@@ -105,7 +103,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * according to the test fixture.
    * @return mock of the access controller used in the test case.
    */
-  public AccessController getMockedAccessController() {
+  public AccessControllerMock getAccessControllerMock() {
     return accessController;
   }
 
@@ -113,8 +111,8 @@ public abstract class TestResources implements ApplicationContextAware {
    * Gets a mock of the organization controller. This mock is to be used in tests.
    * Currently, the mock is used to specify the detail of the authenticated users to return.
    * If the business service used by the web service requires some of the OrganizationController
-   * operations,then mocks or stubs the business service so that it calls the operations to
-   * the mock of the OrganizationController instead of a real OrganizationController instance.
+   * operations, then mocks theses operations by using the mocked OrganizationController instance
+   * wrapped by the mock.
    * This method should be called if the organization controller isn't injected by the IoC container
    * in the objects that requires it.
    * Actually the mock is managed by the IoC container under the name 'organizationController'. If
@@ -123,7 +121,7 @@ public abstract class TestResources implements ApplicationContextAware {
    *
    * @return a mock of the OrganizationController.
    */
-  public OrganizationController getMockedOrganizationController() {
+  public OrganizationControllerMock getOrganizationControllerMock() {
     return organizationController;
   }
 
@@ -134,7 +132,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * user with as prefered language the french (fr).
    * @return a mock of the PersonalizationService.
    */
-  public PersonalizationService getMockedPersonalizationService() {
+  public PersonalizationService getPersonalizationServiceMock() {
     return personalizationService;
   }
 
@@ -143,7 +141,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * This mock is used to manage the sessions of the user(s) used in tests.
    * @return a mock of the SessionManagement.
    */
-  public SessionManagement getMockedSessionManager() {
+  public SessionManagerMock getSessionManagerMock() {
     return sessionManager;
   }
 

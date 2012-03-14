@@ -33,6 +33,9 @@
   <c:set var="selectionScope" value="usergroup"/>
 </c:if>
 <c:choose>
+  <c:when test='${!multipleSelection}'>
+    <fmt:message key="selection.SelectedUserOrGroup" var="selectionTitle"/>
+  </c:when>
   <c:when test='${selectionScope == "user"}'>
     <fmt:message key="selection.SelectedUsers" var="selectionTitle"/>
   </c:when>
@@ -54,7 +57,7 @@
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
     <style  type="text/css" >
       html, body {height:100%; overflow:hidden; margin:0px; padding:0px}
-      div.pageNav div.short {display: none}
+      div.pageNav .pages_indication {display: none}
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-profile.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/selection/jsp/javaScript/selection.js'/>"></script>
@@ -70,15 +73,19 @@
       var itemToSelect        = "<c:out value='${selectionScope}'/>";
       
       var language            = '<c:out value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>';
-      var MaximizedPageSize   = 18;
+      var MaximizedPageSize   = 10;
       
       rootUserGroup.name      = '<fmt:message key="selection.RootUserGroups"/>';
       rootUserGroup.inComponent('<c:out value="${instanceId}"/>').withRoles('<c:out value="${roles}"/>');
       
+      var allUsers = new UserProfileManagement({
+        component: '<c:out value="${instanceId}"/>',
+        roles: '<c:out value="${roles}"/>'
+      });
+      
       var me = new UserProfile({id: '<c:out value="${currentUserId}"/>'}).
         inComponent('<c:out value="${instanceId}"/>').
-        withRoles('<c:out value="${roles}"/>');
-      
+        withRoles('<c:out value="${roles}"/>');      
       var nameInUserSearch = null; // required for the pagination with the results of a search (as at each page, the users are loaded for that page, so
       // we have to remind the name on which users are filtered if any)
       
@@ -109,16 +116,20 @@
       }
       
       <c:choose>
-          <c:when test="${selection.selectedElements != null && fn:length(fn:trim(selection.selectedElements)) > 0}">
-          var preselectedUsers = '<c:out value="${fn:join(fn:trim(selection.selectedElements), ',')}"/>'.split(',');  
+          <c:when test="${selection.selectedElements != null && fn:length(selection.selectedElements) > 0}">
+            var preselectedUsers = '<c:out value="${fn:join(selection.selectedElements, ',')}"/>'.split(',');
+            if (preselectedUsers[0] == "")
+              preselectedUsers = [];
         </c:when>
         <c:otherwise>
           var preselectedUsers = [];
         </c:otherwise>
       </c:choose>
       <c:choose>
-          <c:when test="${selection.selectedSets != null && fn:length(fn:trim(selection.selectedSets)) > 0}">
-          var preselectedUserGroups = '<c:out value="${fn:join(fn:trim(selection.selectedSets), ',')}"/>'.split(',');  
+          <c:when test="${selection.selectedSets != null && fn:length(selection.selectedSets) > 0}">
+            var preselectedUserGroups = '<c:out value="${fn:join(selection.selectedSets, ',')}"/>'.split(',');
+            if (preselectedUserGroups[0] == "")
+              preselectedUserGroups = [];
         </c:when>
         <c:otherwise>
           var preselectedUserGroups = [];
@@ -178,10 +189,10 @@
         }
         
         function resetSearchText() {
-        <c:if test='${fn:startsWith(selectionScope, "user")}'>
+      <c:if test='${fn:startsWith(selectionScope, "user")}'>
             $('#user_search').val('<fmt:message key="selection.searchUsers"/>');      
       </c:if>
-        <c:if test='${fn:endsWith(selectionScope, "group")}'>
+      <c:if test='${fn:endsWith(selectionScope, "group")}'>
             $('#group_search').val('<fmt:message key="selection.searchUserGroups"/>');
       </c:if>
         }
@@ -196,6 +207,48 @@
           $('.listing_groups_filter').css('height',new_height_listing_groups+'px');
         }
       
+        function renderSearchBox($container) {
+          var keyEnter = 13;
+          if ($container.attr('id') == 'group_search') {
+            var defaultText = "<fmt:message key='selection.searchUserGroups'/>";
+            var search = function() {
+              var name = $container.val();
+              $('#breadcrumb').breadcrumb('current', function(group) {
+                group.onChildren(name + '*', renderFilteredUserGroups);
+              });
+            }
+          } else if ($container.attr('id') == 'user_search') {
+            var defaultText = "<fmt:message key='selection.searchUsers'/>";
+            var search = function() {
+              nameInUserSearch = $container.val() + '*';
+              if (userListingPanelStatus.contactsToRender)
+                me.onRelationships(nameInUserSearch, 1, pageSize(), updateFilteredUsers);
+              else
+                $('#breadcrumb').breadcrumb('current', function(group) {
+                  group.onUsers(nameInUserSearch, 1, pageSize(), renderFilteredUsers);
+                });
+            }
+          }
+          $container.focus(function() {
+            var currentVal = $(this).val();
+            if (currentVal == defaultText)
+            $(this).val('');
+          }).blur(function() {
+            var currentVal = $(this).val();
+            if (currentVal.length == 0)
+              $(this).val(defaultText);
+          }).autocomplete({
+            minLength: 3,
+            source: [],
+            search: function() {
+              search();
+            } 
+          }).keypress(function(event) {
+            if (event.which == keyEnter)
+              search();
+          });
+        }
+      
         function renderPaginationFor(size, dataContainer) {
           var pagination, changedPage = null, pagesize = CountPerPage;
           if (dataContainer == 'group_list')
@@ -204,10 +257,16 @@
             pagination = $('#selected_group_list_pagination');
           else if (dataContainer == 'user_list') {
             pagination = $('#user_list_pagination');
-            pagesize = pageSize();
             changedPage = function(page) {
               if (userListingPanelStatus.contactsToRender)
                 me.onRelationships(nameInUserSearch, page, pageSize(), updateFilteredUsers);
+              else if (userListingPanelStatus.maximized)
+                allUsers.get({
+                  pagination: {
+                    page: page,
+                    count: MaximizedPageSize
+                  }
+                }, updateFilteredUsers);
               else
                 $('#breadcrumb').breadcrumb('current', function(group) {
                   group.onUsers(nameInUserSearch, page, pageSize(), updateFilteredUsers);
@@ -219,16 +278,16 @@
           if (size > 0) {
             pagination.show();
             pagination.smartpaginator({
+              display: 'single',
               totalrecords: size,
-              recordsperpage: pagesize,
+              recordsperpage: pageSize(),
               length: 6,
               datacontainer: dataContainer, 
               dataelement: 'li',
-              next: '<fmt:message key="GML.pagination.ScrollNextPages"/>',
-              prev: '<fmt:message key="GML.pagination.ScrollPreviousPages"/>',
-              first: '<fmt:message key="GML.pagination.FirstPage"/>',
-              last: '<fmt:message key="GML.pagination.LastPage"/>',
-              go: '',
+              next: $('<img>', {src: '<c:url value="/util/viewGenerator/icons/arrows/arrowRight.gif"/>'}),
+              prev: $('<img>', {src: '<c:url value="/util/viewGenerator/icons/arrows/arrowLeft.gif"/>'}),
+              first: $('<img>', {src: '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleLeft.gif"/>'}),
+              last: $('<img>', {src: '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleRight.gif"/>'}),
               theme: 'pageNav',
               onchange: changedPage
             });
@@ -240,6 +299,12 @@
         function renderUserGroupSelection() {
           var text = (groupSelection.items.length <= 1 ? selectedGroupLabel: selectedGroupsLabel);
           $('#group_selected_count').text(groupSelection.items.length + ' ' + text);
+          if (groupSelection.isMultiple()) {
+            if (groupSelection.items.length == 0)
+              $('.listing_groups a.remove_all').hide();
+            else
+              $('.listing_groups a.remove_all').show();
+          }
           $('#selected_group_list').slideUp('fast', function() {
             $('#selected_group_list').children().remove();
             for(var i = 0; i < groupSelection.items.length; i++) {
@@ -253,6 +318,12 @@
         function renderUserSelection() {
           var text = (userSelection.items.length <= 1 ? selectedUserLabel: selectedUsersLabel);
           $('#user_selected_count').text(userSelection.items.length + ' ' + text);
+          if (userSelection.isMultiple()) {
+            if (userSelection.items.length == 0)
+              $('.listing_users a.remove_all').hide();
+            else
+              $('.listing_users a.remove_all').show();
+          }
           $('#selected_user_list').slideUp('fast', function() {
             $('#selected_user_list').children().remove();
             for(var i = 0; i < userSelection.items.length; i++) {
@@ -292,7 +363,7 @@
             append($('<span>').addClass('name_group').text(theGroup.name)).
             append($('<span>').addClass('nb_user_group').text(theGroup.userCount + ' ' + '<fmt:message key="GML.user_s"/>')).
             append($('<span>').addClass('sep_nb_user_group').text(' - ')).
-            append($('<span>').addClass('domain_group').text(theGroup.domainId)).
+            append($('<span>').addClass('domain_group').text(theGroup.domainName)).
             append($operation).appendTo($container);
         }
         
@@ -333,6 +404,18 @@
           else
             renderFilteredUserGroups(groups, renderUserGroupFilter);
         }
+        
+        function loadPreselectionOfUsers() {
+          if (preselectedUsers && preselectedUsers.length > 0) {
+            for(var i in preselectedUsers) {
+              var aPreselectedUser = new UserProfile({id: preselectedUsers[i]}).load();
+              userSelection.add(aPreselectedUser);
+            }
+          }
+          if (userSelection.size() == 0) {
+            renderUserSelection();
+          }
+        }
       
         function renderUser($container, order, theUser) {
           var style = (order % 2 == 0 ? 'odd':'even'), $operation = null;
@@ -344,12 +427,6 @@
             });
             if (userSelection.isSelected(theUser))
               $operation.hide();
-            
-            var index = preselectedUsers.indexOf(theUser.id);
-            if (index > -1) {
-              userSelection.add(theUser);
-              preselectedUsers.splice(index, 1);
-            }
           } else {
             var id = 'selected_user_' + theUser.id;
             $operation = $('<a>', {title: '<fmt:message key="selection.RemoveFromSelection"/>', href: '#'}).
@@ -420,6 +497,11 @@
           $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
           $("#selection").submit();
         }
+        
+        function highlightFilter($this) {
+           $('.filter').removeClass('select');
+           $this.addClass('select');
+        }
       
         $(document).ready(function() {
         
@@ -444,12 +526,20 @@
               if (itemToSelect.indexOf('user') > -1) {
                 if (userListingPanelStatus.contactsToRender) {
                   me.onRelationships(1, pageSize(), renderFilteredUsers)
+                } else if (userListingPanelStatus.maximized) {
+                  allUsers.get({
+                    pagination: {
+                      page: 1,
+                      count: MaximizedPageSize
+                    }
+                  }, renderFilteredUsers);
                 } else {
                   group.onUsers(1, pageSize(), renderFilteredUsers);
                 }
               }
+              highlightFilter($('#breadcrumb'));
             }
-          });    
+          });
       
       <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
           if (groupSelection.isMultiple()) {
@@ -463,70 +553,34 @@
             $('.listing_groups a.remove_all').remove();
           }
           
-          $('#group_search').focus(function() {
-            var currentVal = $(this).val();
-            if (currentVal == '<fmt:message key="selection.searchUserGroups"/>')
-            $(this).val('');
-          }).blur(function() {
-            var currentVal = $(this).val();
-            if (currentVal.length == 0)
-              $(this).val('<fmt:message key="selection.searchUserGroups"/>');
-          }).autocomplete({
-            minLength: 0,
-            source: [],
-            search: function() {
-              var name = $(this).val();
-              $('#breadcrumb').breadcrumb('current', function(group) {
-                group.onChildren(name + '*', renderFilteredUserGroups);
-              });
-            } 
-          });
-          
+          renderSearchBox($('#group_search'));
           renderUserGroupSelection();
       </c:if>
     
-        <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
+      <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
             $('<li>').append($('<a>', {href: '#'}).addClass('filter').text('<fmt:message key="selection.AllUsers"/>').click(function() {
               userListingPanelStatus.maximizationTriggered = true;
               userListingPanelStatus.contactsToRender = false;
               $('#breadcrumb').breadcrumb('set', rootUserGroup);
+              highlightFilter($(this));
             })).prependTo($('ul.listing_filter'));
             
             $('<li>').append($('<a>', {href: '#'}).addClass('filter').text('<fmt:message key="selection.MyContacts"/>').click(function() {
               userListingPanelStatus.maximizationTriggered = true;
               userListingPanelStatus.contactsToRender = true;
               $('#breadcrumb').breadcrumb('set', rootUserGroup);
+              highlightFilter($(this));
             })).prependTo($('ul.listing_filter'));
         
-            $('#user_search').focus(function() {
-              var currentVal = $(this).val();
-              if (currentVal == '<fmt:message key="selection.searchUsers"/>')
-              $(this).val('');
-            }).blur(function() {
-              var currentVal = $(this).val();
-              if (currentVal.length == 0)
-                $(this).val('<fmt:message key="selection.searchUsers"/>');
-            }).autocomplete({
-              minLength: 0,
-              source: [],
-              search: function() {
-                nameInUserSearch = $(this).val() + '*';
-                if (userListingPanelStatus.contactsToRender)
-                  me.onRelationships(nameInUserSearch, 1, pageSize(), updateFilteredUsers);
-                else
-                  $('#breadcrumb').breadcrumb('current', function(group) {
-                    group.onUsers(nameInUserSearch, 1, pageSize(), renderFilteredUsers);
-                  });
-              } 
-            });
+            renderSearchBox($('#user_search'));
           
             if (userSelection.isMultiple()) {
               $('.listing_users a.add_all').click(function() {
                 if (userListingPanelStatus.contactsToRender)
-                  me.onRelationships(userSelection.add);
+                  me.onRelationships(nameInUserSearch, userSelection.add);
                 else
                   $('#breadcrumb').breadcrumb('current', function(group) {
-                    group.onUsers(userSelection.add);
+                    group.onUsers(nameInUserSearch, userSelection.add);
                   });
               });
             } else {
@@ -534,7 +588,7 @@
               $('.listing_users a.remove_all').remove();
             }    
  
-            renderUserSelection();
+            loadPreselectionOfUsers();
       </c:if>
 				
           $(window).resize(function() {

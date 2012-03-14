@@ -117,7 +117,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   public String authenticate(final UserDetail theUser) {
     getMockedOrganizationController().addUserDetail(theUser);
     SessionInfo session = new SessionInfo(UUID.randomUUID().toString(), theUser);
-    return getTestResources().getMockedSessionManager().openSession(session);
+    return getTestResources().getSessionManagerMock().openSession(session);
   }
 
   /**
@@ -153,15 +153,15 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   }
 
   protected OrganizationControllerMock getMockedOrganizationController() {
-    return (OrganizationControllerMock) getTestResources().getMockedOrganizationController();
+    return (OrganizationControllerMock) getTestResources().getOrganizationControllerMock();
   }
 
   protected AccessControllerMock getMockedAccessController() {
-    return (AccessControllerMock) getTestResources().getMockedAccessController();
+    return (AccessControllerMock) getTestResources().getAccessControllerMock();
   }
 
   protected MockablePersonalizationService getMockedPersonalizationService() {
-    return (MockablePersonalizationService) getTestResources().getMockedPersonalizationService();
+    return (MockablePersonalizationService) getTestResources().getPersonalizationServiceMock();
   }
   
   protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
