@@ -32,28 +32,28 @@
 
     <current version="003">
         <create_table>
-            <file name="oracle\fileSharing\003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\sharing\003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
         <create_constraint>
-            <file name="oracle\fileSharing\003\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\sharing\003\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
         <create_index>
-            <file name="oracle\fileSharing\003\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\sharing\003\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_index>
         <drop_table>
-            <file name="oracle\fileSharing\003\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\sharing\003\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_table>
         <drop_constraint>
-            <file name="oracle\fileSharing\003\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\sharing\003\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_constraint>
         <drop_index>
-            <file name="oracle\fileSharing\003\drop_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\sharing\003\drop_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_index>
     </current>
 
     <upgrade version="002">
       <create_table>
-        <file name="oracle\fileSharing\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        <file name="mssql\sharing\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
       </create_table>
     </upgrade>
 

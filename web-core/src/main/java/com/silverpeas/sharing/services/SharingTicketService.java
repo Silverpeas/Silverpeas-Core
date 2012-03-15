@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.sharing;
+package com.silverpeas.sharing.services;
 
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
@@ -49,7 +49,7 @@ public interface SharingTicketService {
    * @param sharedObjectId the identifier of the shared object.
    * @param type is this shared object type.
    */
-  public void deleteTicketsByFile(Long sharedObjectId, String type);
+  public void deleteTicketsForSharedObject(Long sharedObjectId, String type);
 
   /**
    * Gets the ticket identified by the specified key.

@@ -24,23 +24,23 @@
 package com.silverpeas.sharing.repository;
 
 import com.silverpeas.sharing.model.Ticket;
-import java.util.List;
 import org.silverpeas.util.UuidPk;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  *
  * @author ehugonnet
  */
 public interface TicketRepository extends JpaRepository<Ticket, UuidPk> {
-  @Modifying
-  @Query("DELETE Ticket ticket WHERE ticket.sharedObjectId = :sharedObjectId AND ticket.type = :type")
-  public void deleteTicketForSharedObjectId( @Param("sharedObjectId") Long sharedObjectId, @Param("type") String type);
-  
-  
+
+  @Query("SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t.sharedObjectType = :ticketType")
+  public List<Ticket> findAllTicketForSharedObjectId(@Param("sharedObjectId") Long sharedObjectId,
+      @Param("ticketType") String ticketType);
+
   @Query("SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId")
-  public List<Ticket> findAllReservationsForUser( @Param("userId") String userId);
+  public List<Ticket> findAllReservationsForUser(@Param("userId") String userId);
 }

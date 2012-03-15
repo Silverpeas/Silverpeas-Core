@@ -23,14 +23,14 @@
  */
 package com.silverpeas.sharing.control;
 
-import com.silverpeas.sharing.SharingTicketService;
-import com.silverpeas.sharing.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingTicketService;
 import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +56,7 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
 
   public String createTicket(Ticket ticket) {
     Ticket newTicket = ticket;
-    if (newTicket.getCreator() == null) {
+    if (!StringUtil.isDefined(newTicket.getCreatorId())) {
       newTicket.setCreator(getUserDetail());
     }
     return getFileSharingService().createTicket(newTicket);

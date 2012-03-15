@@ -1,35 +1,34 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.sharing.servlets;
 
 import com.silverpeas.sharing.control.FileSharingSessionController;
 import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.model.TicketFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
@@ -54,6 +53,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -61,13 +61,14 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
    */
   @Override
   public FileSharingSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new FileSharingSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param fileSharingSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
@@ -75,11 +76,12 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
    */
   @Override
   public String getDestination(String function, FileSharingSessionController fileSharingSC,
-      HttpServletRequest request) {
+          HttpServletRequest request) {
     String destination = "";
     String rootDest = "/sharing/jsp/";
     SilverTrace.info("fileSharing", "FileSharingRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + fileSharingSC.getUserId() + " Function=" + function);
+            "root.MSG_GEN_PARAM_VALUE",
+            "User=" + fileSharingSC.getUserId() + " Function=" + function);
 
     try {
       if ("Main".equals(function)) {
@@ -91,21 +93,20 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         destination = rootDest + "viewTickets.jsp";
       } else if ("DeleteTicket".equals(function)) {
         // Suppression d'un ticket
-        String keyFile = request.getParameter("KeyFile");
-        fileSharingSC.deleteTicket(keyFile);
+        String token = request.getParameter("token");
+        fileSharingSC.deleteTicket(token);
         destination = getDestination("ViewTickets", fileSharingSC, request);
       } else if ("NewTicket".equals(function)) {
         // récupération des données venant de attachment ou versioning
-        String fileId = request.getParameter("FileId");
-        String componentId = request.getParameter("ComponentId");
-        String type = request.getParameter("Type"); // versioning or not
-        boolean versioned = StringUtil.isDefined(type) && "version".equalsIgnoreCase(type);
+        String objectId = request.getParameter("objectId");
+        String componentId = request.getParameter("componentId");
+        String type = request.getParameter("type");
         UserDetail creator = fileSharingSC.getUserDetail();
-        Ticket newTicket = Ticket.aTicket(Integer.parseInt(fileId), componentId,
-            versioned, creator, new Date(), new Date(), 1);
-
+        Ticket newTicket = TicketFactory.aTicket(Integer.parseInt(objectId), componentId, creator.
+                getId(), new Date(), new Date(), 1, type);
         // passage des paramètres
         request.setAttribute("Ticket", newTicket);
+        request.setAttribute("Creator", creator.getDisplayedName());
         request.setAttribute("Url", newTicket.getUrl(request));
         request.setAttribute("Action", "CreateTicket");
         destination = rootDest + "ticketManager.jsp";
@@ -120,8 +121,17 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
 
         destination = rootDest + "confirmTicket.jsp";
       } else if ("EditTicket".equals(function)) {
-        String keyFile = request.getParameter("KeyFile");
-        Ticket ticket = fileSharingSC.getTicket(keyFile);
+        String token = request.getParameter("token");
+        Ticket ticket = fileSharingSC.getTicket(token);
+        request.setAttribute("Creator", AdminReference.getAdminService().getUserDetail(ticket.
+                getCreatorId()).getDisplayedName());
+        if (StringUtil.isDefined(ticket.getLastModifier())) {
+          UserDetail updater = AdminReference.getAdminService().getUserDetail(
+                  ticket.getLastModifier());
+          if (updater != null) {
+            request.setAttribute("Updater", updater.getDisplayedName());
+          }
+        }
         request.setAttribute("Ticket", ticket);
         request.setAttribute("Url", ticket.getUrl(request));
         request.setAttribute("Action", "UpdateTicket");
@@ -129,7 +139,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
         destination = rootDest + "ticketManager.jsp";
       } else if ("UpdateTicket".equals(function)) {
         // récupération des paramètres venus de l'écran de saisie
-        String keyFile = request.getParameter("KeyFile");
+        String keyFile = request.getParameter("token");
         Ticket ticket = updateTicket(keyFile, fileSharingSC, request);
         ticket.setToken(keyFile);
         // modification du lien
@@ -147,41 +157,39 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
     }
 
     SilverTrace.info("fileSharing", "FileSharingRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+            "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
 
   }
 
-  private Ticket generateTicket(
-      FileSharingSessionController fileSharingSC, HttpServletRequest request)
-      throws ParseException {
+  private Ticket generateTicket(FileSharingSessionController fileSharingSC,
+          HttpServletRequest request)
+          throws ParseException {
     Ticket ticket;
     UserDetail creator = fileSharingSC.getUserDetail();
-    int fileId = Integer.parseInt(request.getParameter("FileId"));
-    String componentId = request.getParameter("ComponentId");
-    boolean versioning = false;
-    if ("true".equals(request.getParameter("Versioning"))) {
-      versioning = true;
-    }
-    if (!StringUtil.isDefined(request.getParameter("Continuous"))) {
-      String date = request.getParameter("EndDate");
+    int fileId = Integer.parseInt(request.getParameter("objectId"));
+    String componentId = request.getParameter("componentId");
+    String type = request.getParameter("type");
+    if (!StringUtil.isDefined(request.getParameter("continuous"))) {
+      String date = request.getParameter("endDate");
       Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
-      int maxAccessNb = Integer.parseInt(request.getParameter("NbAccessMax"));
-      ticket = Ticket.aTicket(fileId, componentId, versioning, creator, new Date(), endDate,
-          maxAccessNb);
+      int maxAccessNb = Integer.parseInt(request.getParameter("nbAccessMax"));
+      ticket = TicketFactory.aTicket(fileId, componentId, creator.getId(), new Date(), endDate,
+              maxAccessNb, type);
     } else {
-      ticket = Ticket.continuousTicket(fileId, componentId, versioning, creator, new Date());
+      ticket = TicketFactory.continuousTicket(fileId, componentId, creator.getId(), new Date(), type);
     }
     return ticket;
   }
 
-  private Ticket updateTicket(String keyFile, FileSharingSessionController fileSharingSC, HttpServletRequest request)
-      throws ParseException, RemoteException {
-    Ticket ticket = fileSharingSC.getTicket(keyFile);
-    if (!StringUtil.isDefined(request.getParameter("Continuous"))) {
-      String date = request.getParameter("EndDate");
+  private Ticket updateTicket(String token, FileSharingSessionController fileSharingSC,
+          HttpServletRequest request)
+          throws ParseException, RemoteException {
+    Ticket ticket = fileSharingSC.getTicket(token);
+    if (!StringUtil.isDefined(request.getParameter("continuous"))) {
+      String date = request.getParameter("endDate");
       Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
-      int maxAccessNb = Integer.parseInt(request.getParameter("NbAccessMax"));
+      int maxAccessNb = Integer.parseInt(request.getParameter("nbAccessMax"));
       ticket.setEndDate(endDate);
       ticket.setNbAccessMax(maxAccessNb);
     } else {

@@ -20,16 +20,15 @@
  */
 package com.silverpeas.sharing.model;
 
+import com.silverpeas.sharing.security.ShareableAccessControl;
+import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import org.silverpeas.util.UuidPk;
+
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.EmbeddedId;
@@ -40,31 +39,39 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
-import org.silverpeas.util.UuidPk;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "shared_object_type")
 @Table(name = "sb_filesharing_ticket")
-public class Ticket implements Serializable {
+public abstract class Ticket implements Serializable {
 
+  public static final String FILE_TYPE = "Attachment";
+  public static final String VERSION_TYPE = "Versionned";
+  public static final String NODE_TYPE = "Node";
   private static final long serialVersionUID = -612174156104966079L;
   @Column(name = "shared_object_type", nullable = false, insertable = false, updatable = false)
-  protected String type;
+  protected String sharedObjectType;
   @Column(name = "shared_object")
   protected long sharedObjectId;
   @Column(name = "componentid")
   protected String componentId;
   @Column(name = "creatorid")
   protected String creatorId;
-  @Column(name = "creationdate", columnDefinition = "char(13)", length = 13)
-  protected String creationDate;
+  @Column(name = "creationdate", nullable = false)
+  protected Long creationDate;
   @Column(name = "updateid")
   protected String updaterId;
-  @Column(name = "updatedate", columnDefinition = "char(13)", length = 13)
-  protected String updateDate;
-  @Column(name = "enddate", columnDefinition = "char(13)", length = 13)
-  protected String endDate;
+  @Column(name = "updatedate", nullable = true)
+  protected Long updateDate = null;
+  @Column(name = "enddate", nullable = true)
+  protected Long endDate = null;
   @Column(name = "nbaccessmax")
   protected int nbAccessMax;
   @Column(name = "nbaccess")
@@ -73,21 +80,27 @@ public class Ticket implements Serializable {
   @Column(name = "keyfile", columnDefinition = "varchar(255)", length = 255))
   @EmbeddedId
   protected UuidPk token;
-  @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "ticket")
+  @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "ticket",
+  cascade = CascadeType.REMOVE)
   protected List<DownloadDetail> downloads = new ArrayList<DownloadDetail>();
 
   protected Ticket() {
   }
 
   protected Ticket(int sharedObjectId, String componentId, UserDetail creator,
-      Date creationDate, Date endDate, int nbAccessMax) {
+          Date creationDate, Date endDate, int nbAccessMax) {
+    this(sharedObjectId, componentId, creator.getId(), creationDate, endDate, nbAccessMax);
+  }
+
+  protected Ticket(int sharedObjectId, String componentId, String creatorId,
+          Date creationDate, Date endDate, int nbAccessMax) {
     this.token = new UuidPk();
     this.sharedObjectId = sharedObjectId;
     this.componentId = componentId;
-    this.creatorId = creator.getId();
-    this.creationDate = String.valueOf(creationDate.getTime());
+    this.creatorId = creatorId;
+    this.creationDate = creationDate.getTime();
     if (endDate != null) {
-      this.endDate = String.valueOf(endDate.getTime());
+      this.endDate = endDate.getTime();
     }
     this.nbAccessMax = nbAccessMax;
   }
@@ -109,7 +122,7 @@ public class Ticket implements Serializable {
   }
 
   public Date getCreationDate() {
-    return new Date(Long.parseLong(creationDate));
+    return new Date(creationDate);
   }
 
   public void setLastModifier(UserDetail modifier) {
@@ -121,15 +134,15 @@ public class Ticket implements Serializable {
   }
 
   public Date getUpdateDate() {
-    if (StringUtil.isDefined(updateDate)) {
-      return new Date(Long.parseLong(updateDate));
+    if (updateDate != null) {
+      return new Date(updateDate);
     }
     return null;
   }
 
   public void setUpdateDate(Date updateDate) {
     if (updateDate != null) {
-      this.updateDate = String.valueOf(updateDate.getTime());
+      this.updateDate = updateDate.getTime();
     } else {
       this.updateDate = null;
     }
@@ -137,15 +150,15 @@ public class Ticket implements Serializable {
 
   public Date getEndDate() {
     Date date = null;
-    if (StringUtil.isDefined(endDate)) {
-      date = new Date(Long.parseLong(endDate));
+    if (endDate != null) {
+      date = new Date(endDate);
     }
     return date;
   }
 
   public void setEndDate(Date endDate) {
     if (endDate != null) {
-      this.endDate = String.valueOf(endDate.getTime());
+      this.endDate = endDate.getTime();
     } else {
       this.endDate = null;
     }
@@ -237,6 +250,10 @@ public class Ticket implements Serializable {
     this.nbAccessMax = -1;
   }
 
+  public String getSharedObjectType() {
+    return sharedObjectType;
+  }
+
   @Override
   public int hashCode() {
     int hash = 7;
@@ -261,6 +278,10 @@ public class Ticket implements Serializable {
 
   @Override
   public String toString() {
-    return "Ticket{" + "type=" + type + ", sharedObjectId=" + sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" + updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" + nbAccess + ", token=" + token + ", downloads=" + downloads + '}';
+    return "Ticket{" + "sharedObjectType=" + sharedObjectType + ", sharedObjectId=" + sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" + updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" + nbAccess + ", token=" + token + ", downloads=" + downloads + '}';
   }
+
+  public abstract ShareableAccessControl getAccessControl();
+
+  public abstract ShareableResource getResource();
 }

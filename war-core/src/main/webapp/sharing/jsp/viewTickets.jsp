@@ -88,16 +88,8 @@
           <c:set var="endDate" value=""/>
           <c:set var="accessCount" value="${ticket.nbAccess}"/>
           <view:arrayLine>
-            <c:if test="${ticket.attachmentDetail != null || ticket.document != null}">
-              <c:url var="lien" value="/File/${ticket.fileId}"/>
-              <c:choose>
-                <c:when test="${not ticket.versioned}">
-                   <view:arrayCellText text="${ticket.attachmentDetail.logicalName}"/>
-                </c:when>
-                <c:otherwise>
-                  <view:arrayCellText text="${ticket.document.name}"/>
-                </c:otherwise>
-              </c:choose>
+              <c:url var="lien" value="${ticket.resource.URL}"/>
+              <view:arrayCellText text="<a href=\'${lien}\'>${ticket.resource.name}</a>" />
               <%
                IconPane iconPane = gef.getIconPane();
               Icon keyIcon = iconPane.addIcon();
@@ -106,7 +98,6 @@
               pageContext.setAttribute("ticketIcon", keyIcon.print());
               %>
               <view:arrayCellText text="${ticketIcon}"/>
-            </c:if>
             <c:if test="${ticket.endDate ne null}">
               <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
             </c:if>
@@ -116,7 +107,7 @@
             <view:arrayCellText text="${endDate}" />
             <view:arrayCellText text="${accessCount}" />
             <%
-              IconPane iconPane = gef.getIconPane();
+              iconPane = gef.getIconPane();
               Icon updateIcon = iconPane.addIcon();
               Icon deleteIcon = iconPane.addIcon();
               String token = ((Ticket)pageContext.getAttribute("ticket")).getToken();

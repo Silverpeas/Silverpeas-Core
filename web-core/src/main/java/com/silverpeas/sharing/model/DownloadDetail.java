@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -36,14 +37,15 @@ public class DownloadDetail implements Serializable {
 
   private static final long serialVersionUID = -3552579238204831286L;
   @Id
+  @GeneratedValue(generator="UNIQUE_ID_GEN")
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
   valueColumnName = "maxId", pkColumnValue = "sb_filesharing_history", allocationSize = 1)
   private long id;
   @ManyToOne
   @JoinColumn(name = "keyFile", columnDefinition="varchar(255)")
   private Ticket ticket;
-  @Column(name = "downloaddate", columnDefinition="char(13)", length=13)
-  private String downloadDate;  
+  @Column(name = "downloaddate", nullable=false)
+  private Long downloadDate;  
   @Column(name = "downloadIp")
   private String userIP;
 
@@ -52,7 +54,7 @@ public class DownloadDetail implements Serializable {
 
   public DownloadDetail(Ticket ticket, Date downloadDate, String userIP) {
     this.ticket = ticket;
-    this.downloadDate = String.valueOf(downloadDate.getTime());
+    this.downloadDate = downloadDate.getTime();
     this.userIP = userIP;
   }
 
@@ -69,11 +71,11 @@ public class DownloadDetail implements Serializable {
   }
 
   public Date getDownloadDate() {
-    return new Date(Long.parseLong(downloadDate));
+    return new Date(downloadDate);
   }
 
   public void setDownloadDate(Date downloadDate) {
-    this.downloadDate = String.valueOf(downloadDate.getTime());
+    this.downloadDate = downloadDate.getTime();
   }
 
   public String getUserIP() {

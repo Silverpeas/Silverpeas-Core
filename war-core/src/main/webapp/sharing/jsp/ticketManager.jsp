@@ -53,10 +53,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
   <c:set var="validation" value="javascript:onClick=sendData();"/>
   <fmt:message var="currentOp" key="sharing.updateTicket"/>
 </c:if>
-<c:set var="fileName" value="${ticket.attachmentDetail.logicalName}"/>
-<c:if test="${fileName eq null}">
-  <c:set var="fileName" value="${ticket.document.name}"/>
-</c:if>
+<c:set var="fileName" value="${ticket.resource.name}"/>
 <c:set var="continuousChecked" value=""/>
 <c:if test="${ticket.continuous}">
   <c:set var="continuousChecked" value="checked='checked'"/>
@@ -86,12 +83,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
         if (isCorrectForm())
         {
           window.opener.document.ticketForm.action = "<c:out value='${action}'/>";
-          window.opener.document.ticketForm.KeyFile.value = document.ticketForm.KeyFile.value;
-          window.opener.document.ticketForm.EndDate.value = document.ticketForm.EndDate.value;
-          window.opener.document.ticketForm.NbAccessMax.value = document.ticketForm.NbAccessMax.value;
+          window.opener.document.ticketForm.token.value = document.ticketForm.token.value;
+          window.opener.document.ticketForm.endDate.value = document.ticketForm.endDate.value;
+          window.opener.document.ticketForm.nbAccessMax.value = document.ticketForm.nbAccessMax.value;
           if (continuousTicket)
           {
-            window.opener.document.ticketForm.Continuous.value = document.ticketForm.Continuous.value;
+            window.opener.document.ticketForm.continuous.value = document.ticketForm.continuous.value;
           }
           window.opener.document.ticketForm.submit();
           window.close();
@@ -109,25 +106,27 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
       function isCorrectForm() {
 
-        var errorMsg 			= "";
-        var errorNb 			= 0;
-        var nb 				= document.ticketForm.NbAccessMax.value;
+        var errorMsg = "";
+        var errorNb = 0;
+        var nb  = document.ticketForm.nbAccessMax.value;
         var nbMin = <c:out value="${maxAccessNb}"/>;
-        var endDate 			= document.ticketForm.EndDate.value;
-
-        if (nb > 100 || nb < nbMin) {
-          errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax'/>' <fmt:message key='sharing.maxValue'/> " +
-            nbMin + " <fmt:message key='GML.and'/> 100\n";
-          errorNb++;
-        }
-        if (isWhitespace(endDate)) {
-          errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-          errorNb++;
-        } else {
-          if (!isDateOK(endDate, '<c:out value="${language}"/>'))
-          {
-            errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
+        var endDate = document.ticketForm.endDate.value;
+        if(!continuousTicket)
+        {
+          if (nb > 100 || nb < nbMin) {
+            errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax'/>' <fmt:message key='sharing.maxValue'/> " +
+              nbMin + " <fmt:message key='GML.and'/> 100\n";
             errorNb++;
+          }
+          if (isWhitespace(endDate)) {
+            errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+            errorNb++;
+          } else {
+            if (!isDateOK(endDate, '<c:out value="${language}"/>'))
+            {
+              errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
+              errorNb++;
+            }
           }
         }
         switch(errorNb) {
@@ -177,38 +176,38 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
               <tr>
                 <c:if test="${action eq 'UpdateTicket'}">
                   <td class="txtlibform"><fmt:message key="sharing.token"/> :</td>
-                  <td><a href="<c:out value='${ticketURL}'/>"><c:out value="${ticket.keyFile}"/></a></td>
+                  <td><a href="<c:out value='${ticketURL}'/>"><c:out value="${ticket.token}"/></a></td>
                 </c:if>
               </tr>
-              <input type="hidden" name="ComponentId" value="<c:out value='${ticket.componentId}'/>">
-              <input type="hidden" name="KeyFile" value="<c:out value='${ticket.keyFile}'/>">
-              <input type="hidden" name="FileId" size="60" maxlength="150" value="<c:out value='${ticket.fileId}'/>">
-              <input type="hidden" name="Versioning" value="<c:out value='${ticket.versioned}'/>">
+              <input type="hidden" name="componentId" value="<c:out value='${ticket.componentId}'/>">
+              <input type="hidden" name="token" value="<c:out value='${ticket.token}'/>">
+              <input type="hidden" name="objectId" size="60" maxlength="150" value="<c:out value='${ticket.sharedObjectId}'/>">
+              <input type="hidden" name="type" value="<c:out value='${ticket.sharedObjectType}'/>">
 
               <tr>
                 <td class="txtlibform"><fmt:message key="sharing.creationDate"/> :</td>
-                <TD><view:formatDate value="${ticket.creationDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${ticket.creator.displayedName}"/></TD>
+                <TD><view:formatDate value="${ticket.creationDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${requestScope.Creator}"/></TD>
               </tr>
               <c:if test="${ticket.modified}">
                 <tr>
                   <td class="txtlibform"><fmt:message key="sharing.updateDate"/> :</td>
-                  <TD><view:formatDate value="${ticket.updateDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${ticket.lastModifier.displayedName}"/></TD>
+                  <TD><view:formatDate value="${ticket.updateDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${requestScope.Updater}"/></TD>
                 </tr>
               </c:if>
               <tr>
                 <td class="txtlibform"><fmt:message key="sharing.continuous"/> :</td>
-                <td><input type="checkbox" name="Continuous" <c:out value="${continuousChecked}"/> onClick="javascript:toggleContinuous('slow');"/></td>
+                <td><input type="checkbox" name="continuous" <c:out value="${continuousChecked}"/> onClick="javascript:toggleContinuous('slow');"/></td>
               </tr>
               <tr class="threshold">
                 <td class="txtlibform"><fmt:message key="sharing.endDate"/> :</td>
-                <TD><input type="text" class="dateToPick" name="EndDate" size="12" maxlength="10" value="<view:formatDate value='${endDate}' language='${language}'/>"/><span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)
+                <TD><input type="text" class="dateToPick" name="endDate" size="12" maxlength="10" value="<view:formatDate value='${endDate}' language='${language}'/>"/><span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)
                     <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
                 </TD>
               </tr>
               <tr class="threshold">
                 <td class="txtlibform"><fmt:message key="sharing.nbAccessMax"/> :</td>
                 <TD>
-                  <input type="text" name="NbAccessMax" size="3" maxlength="3" value="<c:out value='${maxAccessNb}'/>" >
+                  <input type="text" name="nbAccessMax" size="3" maxlength="3" value="<c:out value='${maxAccessNb}'/>" >
                   <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
                 </TD>
               </tr>

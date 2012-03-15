@@ -23,37 +23,41 @@
  */
 package com.silverpeas.sharing.services;
 
-import com.silverpeas.sharing.SharingTicketService;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.repository.TicketRepository;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.silverpeas.util.UuidPk;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author ehugonnet
  */
-@Named
+@Named("sharingTicketService")
 @Service
 @Transactional
 public class JpaSharingTicketService implements SharingTicketService {
+
   @Inject
   TicketRepository repository;
 
   @Override
   public List<Ticket> getTicketsByUser(String userId) {
-    return repository.findAllReservationsForUser(userId);
+    List<Ticket> tickets =  repository.findAllReservationsForUser(userId);
+    return tickets;
   }
 
   @Override
-  public void deleteTicketsByFile(Long sharedObjectId, String type) {
-   repository.deleteTicketForSharedObjectId(sharedObjectId, type);
+  public void deleteTicketsForSharedObject(Long sharedObjectId, String type) {
+    List<Ticket> tickets = repository.findAllTicketForSharedObjectId(sharedObjectId, type);
+    repository.delete(tickets);
+    repository.flush();
   }
 
   @Override
@@ -70,7 +74,7 @@ public class JpaSharingTicketService implements SharingTicketService {
   @Override
   public void addDownload(DownloadDetail download) {
     Ticket ticket = repository.findOne(new UuidPk(download.getKeyFile()));
-    if(ticket != null) {
+    if (ticket != null) {
       List<DownloadDetail> downloads = new ArrayList<DownloadDetail>(ticket.getDownloads());
       downloads.add(download);
       ticket.setDownloads(downloads);
@@ -87,5 +91,4 @@ public class JpaSharingTicketService implements SharingTicketService {
   public void deleteTicket(String key) {
     repository.delete(new UuidPk(key));
   }
-  
 }

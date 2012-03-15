@@ -60,5 +60,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           nbAccess="1"
                           keyfile="2da7a83a-9c05-4692-8e46-a9c1234a9da7a83a-9c05-4692-8e46-a9c1234a" 
                           shared_object_type="Node" />
+                          
+ <sb_attachment_attachment attachmentid="5" attachmentphysicalname="1209989258187.odp" attachmentlogicalname="FrenchScrum.odp"
+    attachmentdescription="" attachmenttype="application/vnd.oasis.opendocument.presentation" attachmentsize="966237"
+    attachmentcontext="Images" attachmentforeignkey="1" instanceid="kmelia2" attachmentcreationdate="2008/05/05"
+    attachmentauthor="7" attachmenttitle="Test" attachmentinfo=" c est un test " attachmentordernum="0" workerid="7"
+    cloneid="" lang="" />
+  <sb_attachment_attachmenti18n />
 
 </dataset>

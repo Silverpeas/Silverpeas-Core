@@ -35,7 +35,7 @@
 <html>
 <head>
   <view:looknfeel/>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+  <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js' />" ></script>
   <script language="javascript">
   </script>
 </head>

@@ -23,7 +23,6 @@
  */
 package com.silverpeas.sharing.services;
 
-import com.silverpeas.sharing.SharingTicketService;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
@@ -61,18 +60,18 @@ import static org.junit.Assert.*;
 @Transactional
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class JpaSharingTicketServiceTest {
-
+  
   public JpaSharingTicketServiceTest() {
   }
   private static ReplacementDataSet dataSet;
-
+  
   @BeforeClass
   public static void prepareDataSet() throws Exception {
     FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
     dataSet = new ReplacementDataSet(builder.build(JpaSharingTicketService.class.getClassLoader().
         getResourceAsStream("com/silverpeas/sharing/services/sharing_dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
-
+    
     creator = new UserDetail();
     creator.setId("0");
   }
@@ -82,11 +81,11 @@ public class JpaSharingTicketServiceTest {
   @Named("jpaDataSource")
   private DataSource dataSource;
   private static UserDetail creator;
-
+  
   public Connection getConnection() throws SQLException {
     return this.dataSource.getConnection();
   }
-
+  
   @Before
   public void generalSetUp() throws Exception {
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
@@ -99,21 +98,25 @@ public class JpaSharingTicketServiceTest {
    */
   @Test
   public void testGetTicketsByUser() {
-    System.out.println("getTicketsByUser");
-    String userId = "";
-    JpaSharingTicketService instance = new JpaSharingTicketService();
-    List expResult = null;
-    List result = instance.getTicketsByUser(userId);
-    assertEquals(result, expResult);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    String userId = "0";
+    List<Ticket> result = service.getTicketsByUser(userId);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(2));
+    userId = "10";
+    result = service.getTicketsByUser(userId);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(1));
+    userId = "5";
+    result = service.getTicketsByUser(userId);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(0));
   }
 
   /**
    * Test of deleteTicketsByFile method, of class JpaSharingTicketService.
    */
   @Test
-  public void testDeleteTicketsByFile() {
+  public void testDeleteTicketsForSharedObject() {
     String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
         new Date(1330988399000L), -1);
@@ -121,11 +124,13 @@ public class JpaSharingTicketServiceTest {
     Ticket result = service.getTicket(key);
     assertThat(result, is(expResult));
     assertThat(result.getDownloads(), hasSize(1));
-    service.deleteTicketsByFile(5L, "Attachment");
+    service.deleteTicketsForSharedObject(5L, "Attachment");
     result = service.getTicket(key);
     assertThat(result, is(nullValue()));
     result = service.getTicket("9da7a83a-9c05-4692-8e46-a9c1234a9da7a83a-9c05-4692-8e46-a9c1234a");    
     assertThat(result, is(nullValue()));
+    result = service.getTicket("2da7a83a-9c05-4692-8e46-a9c1234a9da7a83a-9c05-4692-8e46-a9c1234a");    
+    assertThat(result, is(notNullValue()));
   }
 
   /**

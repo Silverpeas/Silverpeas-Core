@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,36 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.sharing;
-
-import javax.inject.Inject;
-import javax.inject.Named;
+package com.silverpeas.sharing.security;
 
 /**
- * A factory of SharingTicketService instances.
- * This factory wraps the concrete implementation of the SharingTicketService and the way the
- * life-cycle of theses instances are managed.
+ * Resource being accessed through some shared object. May be the shared object itself or an object
+ * whose access is controlled by the shared object (for example node).
+ *
  */
-public class SharingServiceFactory {
-  private static final SharingServiceFactory instance = new SharingServiceFactory();
-  @Inject
-  @Named("jpaSharingTicketService")
-  private SharingTicketService sharingTicketService;
+public abstract class ShareableResource<T> {
 
-  /**
-   * Gets a factory of a file sharing service.
-   * @return an instance of the FileSharingServiceFactory.
-   */
-  public static SharingServiceFactory getFactory() {
-    return instance;
+  protected final String token;
+  protected final T accessedObject;
+
+  public ShareableResource(String token, T accessedObject) {
+    this.token = token;
+    this.accessedObject = accessedObject;
   }
 
-  /**
-   * Gets an instance of the file sharing service.
-   * @return a SharingTicketService instance.
-   */
-  public SharingTicketService getSharingTicketService() {
-    return sharingTicketService;
+  public String getToken() {
+    return token;
   }
+
+  public T getAccessedObject() {
+    return accessedObject;
+  }
+  
+  public abstract String getName();
+
+  public abstract String getURL();
 }
