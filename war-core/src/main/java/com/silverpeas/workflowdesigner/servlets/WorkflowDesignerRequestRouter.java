@@ -25,6 +25,7 @@
 package com.silverpeas.workflowdesigner.servlets;
 
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.Action;
@@ -56,9 +57,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -73,7 +72,8 @@ import java.util.StringTokenizer;
 public class WorkflowDesignerRequestRouter
     extends ComponentRequestRouter<WorkflowDesignerSessionController> {
 
-  static private Map mapHandler; // mapping of functions to their handlers
+  private static final long serialVersionUID = -6747786008527861783L;
+  static private Map<String, FunctionHandler> mapHandler; // mapping of functions to their handlers
   static final private String root = "/workflowDesigner/jsp/"; // the root
 
   // directory for
@@ -180,7 +180,7 @@ public class WorkflowDesignerRequestRouter
       return;
     }
 
-    mapHandler = new HashMap();
+    mapHandler = new HashMap<String, FunctionHandler>();
 
     mapHandler.put("Main", hndlListWorkflow);
     mapHandler.put("AddWorkflow", hndlEditWorkflow);
@@ -190,9 +190,7 @@ public class WorkflowDesignerRequestRouter
     mapHandler.put("ModifyWorkflow", hndlEditWorkflow);
     mapHandler.put("UpdateWorkflow", hndlUpdateWorkflow);
     mapHandler.put("RemoveWorkflow", hndlRemoveWorkflow);
-    mapHandler.put("EditComponentDescription", hndlEditComponentDescription);
-    mapHandler.put("GenerateComponentDescription",
-        hndlGenerateComponentDescription);
+    mapHandler.put("GenerateComponentDescription", hndlGenerateComponentDescription);
     mapHandler.put("ViewRoles", hndlViewRoles);
     mapHandler.put("AddRole", hndlEditRole);
     mapHandler.put("ModifyRole", hndlEditRole);
@@ -334,31 +332,19 @@ public class WorkflowDesignerRequestRouter
         WorkflowDesignerSessionController workflowDesignerSC,
         HttpServletRequest request) throws WorkflowDesignerException,
         WorkflowException {
-      String strProcessFileName = null;
-
       if ("ImportWorkflow".equals(function)) {
         return root + "importWorkflow.jsp";
       } else if ("DoImportWorkflow".equals(function)) {
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+
         /*
-         * récupération des données saisies dans le formulaire.
+         * Une seule donnée le fichier à uploader.
          */
-        try {
-          List items = getRequestItems(request);
-
-          /*
-           * Une seule donnée le fichier à uploader.
-           */
-          if (items.size() == 1) {
-            FileItem item = (FileItem) items.get(0);
-
-            workflowDesignerSC.uploadProcessModel(item);
-
-          }
-
-        } catch (FileUploadException e) {
-          throw new WorkflowException(
-              "WorkflowDesignerRequestRouter.hndlImportWorkflow",
-              SilverpeasException.ERROR, "workflowEngine.EX_ROLE_NOT_FOUND", e);
+        if (items.size() == 1) {
+          FileItem item = items.get(0);
+    
+          workflowDesignerSC.uploadProcessModel(item);
+    
         }
 
         return hndlListWorkflow.getDestination("Main", workflowDesignerSC,
@@ -415,24 +401,7 @@ public class WorkflowDesignerRequestRouter
       return root + "redirect.jsp";
     }
   };
-  /**
-   * Handles the "EditComponentDescription" function
-   */
-  private static FunctionHandler hndlEditComponentDescription = new FunctionHandler() {
 
-    public String getDestination(String function,
-        WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
-      request.setAttribute("RoleNames", workflowDesignerSC.retrieveRoleNames(
-          false, true));
-      request.setAttribute("LanguageNames", workflowDesignerSC
-          .retrieveLanguageNames(true));
-      request.setAttribute("LanguageCodes", workflowDesignerSC
-          .retrieveLanguageCodes(true));
-
-      return root + "editComponentDescriptor.jsp";
-    }
-  };
   /**
    * Handles the "GenerateComponentDescription" function and lists the workflows
    */
@@ -442,10 +411,7 @@ public class WorkflowDesignerRequestRouter
         WorkflowDesignerSessionController workflowDesignerSC,
         HttpServletRequest request) throws WorkflowDesignerException {
       // Generate the component descriptor
-      //
-      workflowDesignerSC.generateComponentDescriptor(request
-          .getParameter("label"), request.getParameter("description"), request
-          .getParameter("role"), request.getParameter("language"));
+      workflowDesignerSC.generateComponentDescriptor();
 
       request.setAttribute("redirectTo", "ModifyWorkflow");
       return root + "redirect.jsp";
@@ -1120,7 +1086,7 @@ public class WorkflowDesignerRequestRouter
       Action action = workflowDesignerSC.findAction(strContext);
       Consequences consequences = action.getConsequences();
       Consequence consequence;
-      Iterator iterState = workflowDesignerSC.getProcessModel().getStatesEx()
+      Iterator<State> iterState = workflowDesignerSC.getProcessModel().getStatesEx()
           .iterateState();
       State state;
 
@@ -1287,10 +1253,6 @@ public class WorkflowDesignerRequestRouter
         }
       }
 
-      if (form == null) {
-        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditForm", //$NON-NLS-1$
-            SilverpeasException.ERROR, "workflowEngine.EX_FORM_NOT_FOUND"); //$NON-NLS-1$
-      }
       request.setAttribute("Form", form);
       request.setAttribute("context", strContext);
       request.setAttribute("type", strFormType);
@@ -2163,12 +2125,5 @@ public class WorkflowDesignerRequestRouter
       // do nothing, just return null...
     }
     return strParentScreen;
-  }
-
-  private static List getRequestItems(HttpServletRequest request)
-      throws FileUploadException {
-    DiskFileUpload dfu = new DiskFileUpload();
-    List items = dfu.parseRequest(request);
-    return items;
   }
 }
