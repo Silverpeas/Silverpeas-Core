@@ -77,6 +77,9 @@ public class ProfileDescription {
    *     
    */
   public HashMap<String, String> getLabel() {
+    if (label == null) {
+      label = new HashMap<String, String>();
+    }
     return label;
   }
 
@@ -101,6 +104,9 @@ public class ProfileDescription {
    *     
    */
   public HashMap<String, String> getHelp() {
+    if (help == null) {
+      help = new HashMap<String, String>();
+    }
     return help;
   }
 
