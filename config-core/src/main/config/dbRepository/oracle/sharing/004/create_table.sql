@@ -20,5 +20,4 @@ CREATE TABLE SB_fileSharing_history
 	keyFile VARCHAR2(255)	NOT NULL,
 	downloadDate NUMBER(19, 0)	NOT NULL,
 	downloadIp VARCHAR2(50)	NOT NULL
-)
-;
+);
