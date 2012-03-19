@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>Adding a LDAP domain to Silverpeas</title>
+  </properties>
+  <head>
+    <title>Adding a LDAP domain to Silverpeas</title>
+  </head>
+  <body>
+    <section name="Installing and configuring OpenDJ">
+      <subsection name="Downloading OpenDJ">
+        <p>First you have to download and install OpenDJ from <a href="http://opendj.forgerock.org/">Forgerock</a>.</p>
+        <p>For this tutorial we have downloaded and installed version 2.4.5 using the <i>QuickSetup</i> format from <a href="http://www.forgerock.org/opendj.html">http://www.forgerock.org/opendj.html</a></p>
+      </subsection>
+      <subsection name="Installation">
+        <p>For a complete documentation on how-to install OpenDJ on your server, please refer to the  <a href="http://opendj.forgerock.org/doc/install-guide/index.html">Installation guide</a>.</p>
+        <p>Using the <b>QuickSetup</b> you have a graphical front-end to configure your LDAP server.</p>
+        <p><img src="../images/configuration/installing_opendj.png" alt="OpenDJ Quicksetup"/></p>
+        <p>We leave all the default settings.</p>
+        <p><img src="../images/configuration/opendj_configuration.png" alt="OpenDJ Configuration Summary"/></p>
+      </subsection>
+      <subsection name="Adding some data">
+        <p>Let's create some users in the OpenDJ server using OpenDJ's console. If you haven't launch it after the installation process, go to OpenDJ's installation directory. You'll find all the scripts under the bin directroy.
+          To launch the administration console, launch the <i>control-panel</i> script.</p>
+        <p>Now click the <i>Manage Entries</i> menu item on the left. And create a <i>Silverpeas</i> organizationnal unit.<br/> 
+        Add some users to it so we will synchronize some data. We provide a <a src="../opendj-silverpeas.ldif">ldiff file</a> to facilitate these operations.</p>
+        <p><img src="../images/configuration/opendj_data.png" alt="Users in OpenDJ"/></p>
+      </subsection>
+    </section>
+    <section name="Configuring Silverpeas">
+      <subsection name="What is a Domain ?">
+        <p>Silverpeas users and groups management is based on <b>Domains</b>. You can create as much domains as you want, each with is own storage type or configuration.</p>
+        <p>Each domain is configured using properties files, let's look at them on the next section.</p>
+      </subsection>
+      <subsubsection name="Configuring the domain">
+        <p>First we need a configuration file to define how to connect to te LDAP server and how to synchronize it with Silverpeas.</p>
+        <p>You would have to create a new  <i>domainOpenDJTutorial.properties</i> into <i>$SILVERPEAS_HOME/properties/com/stratelia/silverpeas/domains</i>.</p>
+        <p>As it happens, you don't have to write this configuration file as it is provided with a default Silverpeas installation.</p>
+        <p>The first section is the configuration of the connection. You'll find the ports and the address of the server, the user account used to open connections to the LDAP server and the Base DN.</p>
+        <p>
+          <code><pre>
+database.LDAPHost=localhost
+database.LDAPImpl=openldap
+database.LDAPPort=1389
+database.LDAPProtocolVer=3
+database.LDAPAccessLoginDN=cn=Directory Manager,cn=Root DNs,cn=config
+database.LDAPAccessPasswd=password
+database.LDAPUserBaseDN=ou=silverpeas,dc=silverpeas,dc=com
+database.LDAPSecured=false
+database.LDAPPortSecured=636
+# !!! Client Time in MS !!!
+database.LDAPMaxMsClientTimeLimit=0
+# !!! Server Time in Seconds !!!
+database.LDAPMaxSecServerTimeLimit=0
+database.LDAPMaxNbEntryReturned=5000
+database.LDAPMaxNbReferrals=0
+database.LDAPBatchSize=5000
+database.LDAPSearchRecurs=true
+#To be able to use operational attributes
+database.LDAPOpAttributesUsed=true
+                </pre></code>
+        </p>
+        <p>The second section configures the synchronization.</p>
+        <p>The parameter <b>synchro.Threaded</b> indicates if the synchronization is manual or if it is automatic, launched regularly. The delay between each synchronization is defined in the file <i>com/stratelia/webactiv/beans/admin/admin.properties</i> in the property <b>AdminThreadedSynchroDelay</b>.</p>
+        <p>The parameter <b>synchro.timeStampVar</b> indicates which attribute on the LDAP entries is used to check for modificationon the LDAP side.</p>
+        <p>
+        <p>
+          <code><pre>
+# Synchro parameters
+# ------------------
+Ldap server attribute to check if the entry has been modified in the ldap.
+synchro.timeStampVar=modifyTimestamp
+#Set to true for a periodic synchronization
+synchro.Threaded=false
+                </pre></code>
+        </p>
+        <p>Next
+          
+        </p>
+        <p>
+          <code><pre>          
+# Users data synchronization settings
+# ---------------
+users.ClassName=person
+# Note : the filter MUST be put between parentheses.
+#        there MUSTN'T have dummy parentheses levels ex : (&((Condition1))(Condition2)) will NOT works, (&(Condition1)(Condition2)) will works
+# (&(mail=*)(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=TSTEXCHANGE))
+users.Filter=
+# Note : To make domains easiest to change, the Id must be set to the login field
+#        It's not an obligation but it's very strongly advised
+users.IdField=entryUUID
+users.LoginField=uid
+users.FirstNameField=givenName
+users.LastNameField=sn
+#Not mandatory
+users.EmailField=mail
+          </pre></code>
+        </p>
+      </subsubsection>
+    </section>
+  </body>
+</document>
