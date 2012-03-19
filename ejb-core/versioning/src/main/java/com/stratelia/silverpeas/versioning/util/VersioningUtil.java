@@ -458,7 +458,7 @@ public class VersioningUtil {
       newDocumentVersion.setSize(newSize);
       newDocumentVersion.setAuthorId(Integer.parseInt(userId));
       newDocumentVersion.setCreationDate(new Date());
-      newDocumentVersion = addNewDocumentVersion(newDocumentVersion, versionType, comment);
+      addNewDocumentVersion(newDocumentVersion, versionType, comment);
       return true;
     } catch (Exception e) {
       throw new VersioningRuntimeException("VersioningUtil.checkinOfficeFile()",
