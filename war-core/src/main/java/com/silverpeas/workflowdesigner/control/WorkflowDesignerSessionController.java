@@ -134,7 +134,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return A list of Strings containing relative paths to process model file names.
    * @throws WorkflowDesignerException
    */
-  public List listProcessModels() throws WorkflowDesignerException {
+  public List<String> listProcessModels() throws WorkflowDesignerException {
     try {
       return Workflow.getProcessModelManager().listProcessModels();
     } catch (WorkflowException e) {
@@ -203,7 +203,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
           && NEW_ELEMENT_NAME.equals(processModelFileName)) {
         // Make sure that you are not overwriting sth.
         //
-        List processList = Workflow.getProcessModelManager().listProcessModels();
+        List<String> processList = Workflow.getProcessModelManager().listProcessModels();
 
         strProcessModelFileName = strProcessModelFileName.replace('\\',
             File.separatorChar);
@@ -423,8 +423,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @throws WorkflowDesignerException if the role cannot be found or is referenced elsewhere.
    */
   public void removeRole(String strRoleName) throws WorkflowDesignerException {
-    Map mapDesignations = collectContextualDesignations(), mapQualifiedUsers;
-    Iterator iterKeys = mapDesignations.keySet().iterator(), iterDesignation, iterRelatedUser;
+    Map<ContextualDesignations, String> mapDesignations = collectContextualDesignations();
+    Iterator<ContextualDesignations> iterKeys = mapDesignations.keySet().iterator();
+    Iterator<ContextualDesignation> iterDesignation;
+    Iterator<RelatedUser> iterRelatedUser;
     ContextualDesignations designations;
     ContextualDesignation designation;
     QualifiedUsers qualifiedUsers;
@@ -439,11 +441,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // ... in Contextual Designation ( labels, descriptions, titles, activities)
     //
     while (iterKeys.hasNext()) {
-      designations = (ContextualDesignations) iterKeys.next();
+      designations = iterKeys.next();
       iterDesignation = designations.iterateContextualDesignation();
 
       while (iterDesignation.hasNext()) {
-        designation = (ContextualDesignation) iterDesignation.next();
+        designation = iterDesignation.next();
 
         if (strRoleName.equals(designation.getRole())) {
           throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole",
@@ -483,11 +485,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
     // ... in Qualified users ( role, userInRole, relatedUsers )
     //
-    mapQualifiedUsers = collectQualifiedUsers();
-    iterKeys = mapQualifiedUsers.keySet().iterator();
+    Map<QualifiedUsers, String> mapQualifiedUsers = collectQualifiedUsers();
+    Iterator<QualifiedUsers> iterQualifiedUsers = mapQualifiedUsers.keySet().iterator();
 
-    while (iterKeys.hasNext()) {
-      qualifiedUsers = (QualifiedUsers) iterKeys.next();
+    while (iterQualifiedUsers.hasNext()) {
+      qualifiedUsers = iterQualifiedUsers.next();
 
       if (strRoleName.equals(qualifiedUsers.getRole())) {
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole",
@@ -617,11 +619,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     //
     // ... in Qualified users ( relatedUsers )
     //
-    Map mapQualifiedUsers = collectQualifiedUsers();
-    Iterator iterKeys = mapQualifiedUsers.keySet().iterator();
+    Map<QualifiedUsers, String> mapQualifiedUsers = collectQualifiedUsers();
+    Iterator<QualifiedUsers> iterKeys = mapQualifiedUsers.keySet().iterator();
 
     while (iterKeys.hasNext()) {
-      QualifiedUsers qualifiedUsers = (QualifiedUsers) iterKeys.next();
+      QualifiedUsers qualifiedUsers = iterKeys.next();
 
       // in Related Users
       Iterator<RelatedUser> iterRelatedUser = qualifiedUsers.iterateRelatedUser();
@@ -1340,11 +1342,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
           // Check if the form is no referenced in actions
           //
           if (processModel.getActionsEx() != null) {
-            Action action;
-            Iterator iterAction = processModel.getActionsEx().iterateAction();
+            Iterator<Action> iterAction = processModel.getActionsEx().iterateAction();
 
             while (iterAction.hasNext()) {
-              action = (Action) iterAction.next();
+              Action action = iterAction.next();
 
               if (action.getForm() != null
                   && astrElements[1].equals(action.getForm().getName())) {
@@ -2004,24 +2005,19 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    */
   public void removeItem(String strContext) throws WorkflowException,
       WorkflowDesignerException {
-    StringTokenizer strtok;
-    String strElement, strItemName = null;
+    String strItemName = null;
     DataFolder items;
-    Map mapQualifiedUsers;
-    Iterator iterKeys, iterRelatedUser;
-    QualifiedUsers qualifiedUsers;
-    RelatedUser relatedUser;
 
     if (strContext == null) {
       throw new WorkflowException("WorkflowDesignerSessionController.removeItem()",
           "workflowEngine.EX_ITEM_NOT_FOUND"); // $NON-NLS-1$
     }
-    strtok = new StringTokenizer(strContext, CONTEXT_DELIMS);
+    StringTokenizer strtok = new StringTokenizer(strContext, CONTEXT_DELIMS);
 
     // Determine the item name and the collection to remove from
     //
     try {
-      strElement = strtok.nextToken();
+      String strElement = strtok.nextToken();
 
       if (DATA_FOLDER.equals(strElement)) {
         strItemName = strtok.nextToken();
@@ -2048,11 +2044,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // ... in UserInfos
       //
       if (processModel.getUserInfos() != null) {
-        Item item;
-        Iterator iterItem = processModel.getUserInfos().iterateItem();
+        Iterator<Item> iterItem = processModel.getUserInfos().iterateItem();
 
         while (iterItem.hasNext()) {
-          item = (Item) iterItem.next();
+          Item item = iterItem.next();
 
           if (strItemName.equals(item.getMapTo())
               && !strItemName.equals(item.getName())) {
@@ -2066,11 +2061,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // ... in DataFolder
       //
       if (processModel.getDataFolder() != null) {
-        Item item;
-        Iterator iterItem = processModel.getDataFolder().iterateItem();
+        Iterator<Item> iterItem = processModel.getDataFolder().iterateItem();
 
         while (iterItem.hasNext()) {
-          item = (Item) iterItem.next();
+          Item item = iterItem.next();
 
           if (strItemName.equals(item.getMapTo())) {
             throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem()",
@@ -2085,11 +2079,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // ... in Columns
       //
       if (processModel.getPresentation() != null) {
-        Iterator iterColumns = processModel.getPresentation().iterateColumns();
-        Columns columns;
+        Iterator<Columns> iterColumns = processModel.getPresentation().iterateColumns();
 
         while (iterColumns.hasNext()) {
-          columns = (Columns) iterColumns.next();
+          Columns columns = iterColumns.next();
 
           if (columns.getColumn(strItemName) != null) {
             throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem()",
@@ -2104,21 +2097,19 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // Check if this state is not referenced in Actions' consequences
       //
       if (processModel.getActionsEx() != null) {
-        Action action;
         Consequences consequences;
-        Iterator iterAction = processModel.getActionsEx().iterateAction();
+        Iterator<Action> iterAction = processModel.getActionsEx().iterateAction();
 
         while (iterAction.hasNext()) {
-          action = (Action) iterAction.next();
+          Action action = iterAction.next();
 
           consequences = action.getConsequences();
 
           if (consequences != null) {
-            Consequence consequence;
-            Iterator iterConsequence = consequences.iterateConsequence();
+            Iterator<Consequence> iterConsequence = consequences.iterateConsequence();
 
             while (iterConsequence.hasNext()) {
-              consequence = (Consequence) iterConsequence.next();
+              Consequence consequence = iterConsequence.next();
 
               if (strItemName.equals(consequence.getItem())) {
                 throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem",
@@ -2134,13 +2125,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // ... in Input (in Forms)
       //
       if (processModel.getForms() != null) {
-        Iterator iterForm = processModel.getForms().iterateForm(), iterInput;
-        Form form;
-        Input input;
+        Iterator<Form> iterForm = processModel.getForms().iterateForm();
         String strFormId;
 
         while (iterForm.hasNext()) {
-          form = (Form) iterForm.next();
+          Form form = iterForm.next();
           if (form.getRole() == null) {
             strFormId = "form: '" + form.getName() + "'";
           } else {
@@ -2150,10 +2139,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
           // Inputs
           //
-          iterInput = form.iterateInput();
-
+          Iterator<Input> iterInput = form.iterateInput();
+          
           while (iterInput.hasNext()) {
-            input = (Input) iterInput.next();
+            Input input = iterInput.next();
 
             if (input.getItem() != null
                 && strItemName.equals(input.getItem().getName())) {
@@ -2169,18 +2158,17 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
     // ... and in both cases in relatedUsers ( in Qualified users )
     //
-    mapQualifiedUsers = collectQualifiedUsers();
-    iterKeys = mapQualifiedUsers.keySet().iterator();
+    Map<QualifiedUsers, String> mapQualifiedUsers = collectQualifiedUsers();
+    Iterator<QualifiedUsers> iterKeys = mapQualifiedUsers.keySet().iterator();
 
     while (iterKeys.hasNext()) {
-      qualifiedUsers = (QualifiedUsers) iterKeys.next();
+      QualifiedUsers qualifiedUsers = iterKeys.next();
 
       // in Related Users
-      //
-      iterRelatedUser = qualifiedUsers.iterateRelatedUser();
+      Iterator<RelatedUser> iterRelatedUser = qualifiedUsers.iterateRelatedUser();
 
       while (iterRelatedUser.hasNext()) {
-        relatedUser = (RelatedUser) iterRelatedUser.next();
+        RelatedUser relatedUser = iterRelatedUser.next();
 
         // if it is a dataFolder item check relatedUsers' folder Item
         // If it is a userInfos item check relatedUsers' relation
@@ -2435,17 +2423,13 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return a map, where the key is the reference to the object and the value is a textual
    * description of the object location
    */
-  private Map collectQualifiedUsers() {
-    Map map = new IdentityHashMap();
+  private Map<QualifiedUsers, String> collectQualifiedUsers() {
+    Map<QualifiedUsers, String> map = new IdentityHashMap<QualifiedUsers, String>();
 
     // States
     //
     if (processModel.getStatesEx() != null) {
-      Iterator iterState = processModel.getStatesEx().iterateState();
-      State state;
-
-      while (iterState.hasNext()) {
-        state = (State) iterState.next();
+      for (State state : processModel.getStatesEx().getStates()) {
 
         if (state.getWorkingUsersEx() != null) {
           map.put(state.getWorkingUsersEx(), "state: '" + state.getName()
@@ -2463,10 +2447,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     //
     if (processModel.getActionsEx() != null) {
       Action action;
-      Iterator iterAction = processModel.getActionsEx().iterateAction(), iterConsequence;
+      Iterator<Action> iterAction = processModel.getActionsEx().iterateAction();
 
       while (iterAction.hasNext()) {
-        action = (Action) iterAction.next();
+        action = iterAction.next();
 
         if (action.getAllowedUsers() != null) {
           map.put(action.getAllowedUsers(), "action: '" + action.getName()
@@ -2474,10 +2458,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         }
 
         if (action.getConsequences() != null) {
-          iterConsequence = action.getConsequences().iterateConsequence();
+          Iterator<Consequence> iterConsequence = action.getConsequences().iterateConsequence();
 
           while (iterConsequence.hasNext()) {
-            Consequence consequence = (Consequence) iterConsequence.next();
+            Consequence consequence = iterConsequence.next();
 
             List<QualifiedUsers> qualifiedUsersList = consequence.getNotifiedUsers();
             if (qualifiedUsersList!=null && !qualifiedUsersList.isEmpty()) {
@@ -2573,7 +2557,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public String[] retrieveLanguageCodes(boolean fDefault) {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString(
         "languages"), ",");
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
 
     if (fDefault) {
       list.add("default");
@@ -2583,7 +2567,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       list.add(strtok.nextToken());
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2596,7 +2580,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     StringTokenizer strtok = new StringTokenizer(getSettings().getString(
         "languages"), ",");
     Locale locale = new Locale(getLanguage());
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
 
     if (fDefault) {
       list.add(getString("workflowDesigner.default"));
@@ -2608,7 +2592,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       list.add(inLocale.getDisplayLanguage(locale));
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2619,7 +2603,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public String[] retrieveItemTypeCodes(boolean fNone) {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString(
         "itemTypes"), ",");
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
 
     if (fNone) {
       list.add("");
@@ -2629,7 +2613,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       list.add(strtok.nextToken());
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2640,7 +2624,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public String[] retrieveOperators(boolean fNone) {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString(
         "operators"), ",");
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
 
     if (fNone) {
       list.add("");
@@ -2650,7 +2634,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       list.add(strtok.nextToken());
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2660,13 +2644,13 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public String[] retrieveActionKindCodes() {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString(
         "actionKinds"), ",");
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
 
     while (strtok.hasMoreTokens()) {
       list.add(strtok.nextToken());
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2676,14 +2660,14 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public String[] retrieveDisplayerNames() {
     StringTokenizer strtok = new StringTokenizer(getSettings().getString(
         "displayerNames"), ",");
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
 
     list.add("");
     while (strtok.hasMoreTokens()) {
       list.add(strtok.nextToken());
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2692,7 +2676,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveActionNames(boolean fNone) {
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
     Actions actions = getProcessModel().getActionsEx();
 
     if (fNone) {
@@ -2700,14 +2684,14 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     if (actions != null) {
-      Iterator iterAction = actions.iterateAction();
+      Iterator<Action> iterAction = actions.iterateAction();
 
       while (iterAction.hasNext()) {
-        list.add(((Action) iterAction.next()).getName());
+        list.add(iterAction.next().getName());
       }
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2717,7 +2701,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveRoleNames(boolean fNone, boolean fDefault) {
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
     Roles roles = getProcessModel().getRolesEx();
 
     if (fNone) {
@@ -2729,14 +2713,14 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     if (roles != null) {
-      Iterator iterRole = roles.iterateRole();
+      Iterator<Role> iterRole = roles.iterateRole();
 
       while (iterRole.hasNext()) {
-        list.add(((Role) iterRole.next()).getName());
+        list.add(iterRole.next().getName());
       }
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2745,7 +2729,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveStateNames(boolean fNone) {
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
     States states = getProcessModel().getStatesEx();
 
     if (fNone) {
@@ -2753,13 +2737,13 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     if (states != null) {
-      Iterator iterState = states.iterateState();
+      Iterator<State> iterState = states.iterateState();
 
       while (iterState.hasNext()) {
-        list.add(((State) iterState.next()).getName());
+        list.add(iterState.next().getName());
       }
     }
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2768,7 +2752,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveParticipantNames(boolean fNone) {
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
     Participants participants = getProcessModel().getParticipantsEx();
 
     if (fNone) {
@@ -2776,14 +2760,14 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     if (participants != null) {
-      Iterator iterParticipant = participants.iterateParticipant();
+      Iterator<Participant> iterParticipant = participants.iterateParticipant();
 
       while (iterParticipant.hasNext()) {
-        list.add(((Participant) iterParticipant.next()).getName());
+        list.add(iterParticipant.next().getName());
       }
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2793,7 +2777,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveUserInfoItemNames(boolean fNone, boolean fUsersOnly) {
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
     DataFolder userInfos = getProcessModel().getUserInfos();
 
     if (fNone) {
@@ -2801,18 +2785,18 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     if (userInfos != null) {
-      Iterator iterInfosItem = userInfos.iterateItem();
+      Iterator<Item> iterInfosItem = userInfos.iterateItem();
       Item item;
 
       while (iterInfosItem.hasNext()) {
-        item = (Item) iterInfosItem.next();
+        item = iterInfosItem.next();
         if (!fUsersOnly || TYPE_USER.equals(item.getType())) {
           list.add(item.getName());
         }
       }
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2822,7 +2806,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveFolderItemNames(boolean fNone, boolean fUsersOnly) {
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
     DataFolder dataFolder = getProcessModel().getDataFolder();
 
     if (fNone) {
@@ -2830,18 +2814,18 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     if (dataFolder != null) {
-      Iterator iterFolderItem = dataFolder.iterateItem();
+      Iterator<Item> iterFolderItem = dataFolder.iterateItem();
       Item item;
 
       while (iterFolderItem.hasNext()) {
-        item = (Item) iterFolderItem.next();
+        item = iterFolderItem.next();
         if (!fUsersOnly || TYPE_USER.equals(item.getType())) {
           list.add(item.getName());
         }
       }
     }
 
-    return (String[]) list.toArray(new String[0]);
+    return list.toArray(new String[0]);
   }
 
   /**
@@ -2850,7 +2834,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveFormNames(boolean fNone) {
-    ArrayList list = new ArrayList();
+    List<String> list = new ArrayList<String>();
     Forms forms = getProcessModel().getForms();
     String strName;
 
@@ -2859,10 +2843,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     if (forms != null) {
-      Iterator iterForm = forms.iterateForm();
+      Iterator<Form> iterForm = forms.iterateForm();
 
       while (iterForm.hasNext()) {
-        strName = ((Form) iterForm.next()).getName();
+        strName = iterForm.next().getName();
 
         if (!(FORM_TYPE_PRINT.equals(strName) || FORM_TYPE_PRESENTATION.equals(strName))) {
           list.add(strName);
@@ -2876,71 +2860,76 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   /**
    * Generates component descriptor file in the appropriate directory, reloads the cache to take the
    * new file into account, stores the new descriptor's name to be able to access it later
-   * @param strLabel the label that will be put in the descriptor
-   * @param strDescription the description that will be put in the descriptor
-   * @param strRole the role name to select role labels (for profiles)
-   * @param strLanguage the language code to select role labels (for profiles)
    * @throws WorkflowDesignerException when something goes wrong
    */
-  public void generateComponentDescriptor(String strLabel,
-      String strDescription, String strRole, String strLanguage)
+  public void generateComponentDescriptor()
       throws WorkflowDesignerException {
     List<Profile> listSPProfile = new ArrayList<Profile>();
-    WAComponent waComponent;
-    Role role;
     List<com.silverpeas.admin.components.Parameter> spParameters = new ArrayList<com.silverpeas.admin.components.Parameter>();
     com.silverpeas.admin.components.Parameter spParameter = new com.silverpeas.admin.components.Parameter();
     spParameter.setName(ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
     spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
         "componentDescriptor.parameterLabel"));
+    spParameter.getHelp().put(I18NHelper.defaultLanguage, "");
     spParameter.setValue(processModelFileName.replaceAll("\\\\", "/"));
     spParameter.setMandatory(true);
-    // Create the list of roles, to be placed as profiles in the component
-    // descriptor
-    //
+    spParameter.setUpdatable("always");
+    spParameter.setType("text");
+    // Create the list of roles, to be placed as profiles in the component descriptor
     if (processModel.getRolesEx() != null) {
-      Iterator<Role> iterRole = processModel.getRolesEx().iterateRole();
-
       // 'supervisor' must be present in the list
       if (processModel.getRolesEx().getRole("supervisor") == null) {
-        Profile profile = new Profile();
-        profile.setName("supervisor");
-        profile.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
-            "componentDescriptor.supervisor"));
-        listSPProfile.add(profile);
+        listSPProfile.add(getSupervisorProfile());
       }
 
-      while (iterRole.hasNext()) {
-        role = iterRole.next();
+      for (Role role : processModel.getRolesEx().getRoles()) {
         Profile profile = new Profile();
         profile.setName(role.getName());
-        profile.getLabel().put(strLanguage, role.getLabel(strRole, strLanguage));
+        Iterator<ContextualDesignation> labels = role.getLabels().iterateContextualDesignation();
+        while (labels.hasNext()) {
+          ContextualDesignation label = labels.next();
+          profile.getLabel().put(getSureLanguage(label.getLanguage()), label.getContent());
+          profile.getHelp().put(getSureLanguage(label.getLanguage()), label.getContent());
+        }
         listSPProfile.add(profile);
       }
     } else {
-      Profile profile = new Profile();
-      profile.setName("supervisor");
-      profile.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
-          "componentDescriptor.supervisor"));
-      listSPProfile.add(profile);
+      listSPProfile.add(getSupervisorProfile());
     }
 
-    waComponent = new WAComponent();
+    WAComponent waComponent = new WAComponent();
     waComponent.setName(processModel.getName());
-    waComponent.getLabel().put(I18NHelper.defaultLanguage, strLabel);
-    waComponent.getDescription().put(I18NHelper.defaultLanguage, getSettings().getString(
-        "componentDescriptor.suite"));
+    Iterator<ContextualDesignation> labels = processModel.getLabels().iterateContextualDesignation();
+    while (labels.hasNext()) {
+      ContextualDesignation label = labels.next();
+      waComponent.getLabel().put(getSureLanguage(label.getLanguage()), label.getContent());
+    }
+    if (waComponent.getLabel().isEmpty()) {
+      // no explicit labels, use name of process
+      waComponent.getLabel().put(I18NHelper.defaultLanguage, processModel.getName());
+    }
+    Iterator<ContextualDesignation> descriptions = processModel.getDescriptions().iterateContextualDesignation();
+    while (descriptions.hasNext()) {
+      ContextualDesignation description = descriptions.next();
+      waComponent.getDescription().put(getSureLanguage(description.getLanguage()), description.getContent());
+    }
+    if (waComponent.getDescription().isEmpty()) {
+      // no explicit description, use name of process
+      waComponent.getDescription().put(I18NHelper.defaultLanguage, processModel.getName());
+    }
     waComponent.setVisible(true);
     waComponent.setPortlet(false);
     waComponent.setInstanceClassName(getSettings().getString(
         "componentDescriptor.managerInstanciator"));
+    waComponent.getSuite().put(I18NHelper.defaultLanguage,
+        getSettings().getString("componentDescriptor.suite"));
     waComponent.setProfiles(listSPProfile);
     waComponent.setRouter(getSettings().getString("componentDescriptor.managerRequestRouter"));
     spParameters.add(spParameter);
     waComponent.setParameters(spParameters);
 
     try {
-      Instanciateur.saveComponent(waComponent, waComponent.getName() + ".xml");
+      Instanciateur.saveComponent(waComponent, waComponent.getName() + ".xml", true);
       referencedInComponent = processModel.getName();
     } catch (JAXBException e) {
       throw new WorkflowDesignerException(
@@ -2950,8 +2939,24 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     // Clear the descriptor cache and load it again
-    //
     rebuildComponentDescriptorCache();
+  }
+  
+  private String getSureLanguage(String language) {
+    if (language.equalsIgnoreCase("default")) {
+      return I18NHelper.defaultLanguage;
+    }
+    return language;
+  }
+  
+  private Profile getSupervisorProfile() {
+    Profile profile = new Profile();
+    profile.setName("supervisor");
+    profile.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
+        "componentDescriptor.supervisor"));
+    profile.getHelp().put(I18NHelper.defaultLanguage, getSettings().getString(
+        "componentDescriptor.supervisor"));
+    return profile;
   }
 
   /**
@@ -3033,7 +3038,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
       // on charge le modele pour vérifier qu'il est valide
       try {
-        ProcessModel processModel = manager.loadProcessModel(name, false);
+        manager.loadProcessModel(name, false);
       } catch (Exception e) {
         // le modèle est invalide, on le supprime
         modelFile.delete();
