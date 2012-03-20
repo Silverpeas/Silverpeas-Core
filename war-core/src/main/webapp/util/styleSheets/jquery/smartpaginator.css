@@ -6,11 +6,13 @@
 	margin: 0;
 	padding-top: 10px;
 	padding-left: 10px;
+	margin:0 auto;
 	/*border-radius: 8px;
 	-moz-border-radius: 8px;*/
 }
 .pager div.short
 {
+	display:none;
 	float: right;
 	margin: 0;
 	padding: 0;
@@ -53,6 +55,7 @@
     height: 1.3em;
 	margin: 0 2px 0 0;
     padding: 2px 5px;
+	width:16px;
     text-decoration: none;
     vertical-align: top;
 }
@@ -81,6 +84,7 @@
     font-weight: 100;
     height: 1.3em;
     padding: 2px 5px;
+	width:16px;
     text-decoration: none;
     vertical-align: top;
 }
@@ -97,6 +101,7 @@
     height: 1.3em;
 	margin: 0 2px 0 0;
     padding: 2px 5px;
+	width:16px;
     text-decoration: none;
     vertical-align: top;
 }

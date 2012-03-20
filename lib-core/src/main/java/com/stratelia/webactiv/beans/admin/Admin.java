@@ -6413,10 +6413,10 @@ public final class Admin {
               getCurrentDomainDriverManager();
       for (String roleId : searchCriteria.getCriterionOnRoleIds()) {
         ProfileInst profile = profileManager.getProfileInst(domainDriverManager, roleId, null);
-        // add users directly attach to profile
+        // users playing the role
         userIds.addAll(profile.getAllUsers());
 
-        // add users indirectly attach to profile (groups attached to profile)
+        // users of the groups (and recursively of their subgroups) playing the role
         List<String> groupIds = profile.getAllGroups();
         List<String> allGroupIds = new ArrayList<String>();
         for (String aGroupId : groupIds) {
@@ -6458,7 +6458,9 @@ public final class Admin {
       if (groupId.equals(SearchCriteria.ANY_GROUP)) {
         criteria.and().onGroupIds(UserSearchCriteria.ANY);
       } else {
-        criteria.and().onGroupIds(groupId);
+        List<String> groupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
+        groupIds.add(groupId);
+        criteria.and().onGroupIds(groupIds.toArray(new String[groupIds.size()]));
       }
     }
     if (searchCriteria.isCriterionOnDomainIdSet()) {

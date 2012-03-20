@@ -48,15 +48,19 @@ function UserProfile(user) {
   
   /**
    * Loads the attributes of the profile of this user.
+   * Whether a callback is passed as argument, invokes the callback with this user profile once its
+   * attributes loaded successfully.
    */
-  this.load = function() {
+  this.load = function(callback) {
     usermgt.get({
       contacts: false
     }, function(users) {
-      if (users.length == 1)
+      if (users.length == 1) {
         for (var prop in users[0])
           self[prop] = users[0][prop];
-      else
+        if (callback)
+          callback(self);
+      } else
         alert('Error loading the user of id ' + usermgt.filter.id +
           ': several users match the parameters!');
       usermgt.users = null;

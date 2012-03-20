@@ -4557,7 +4557,7 @@ li.application  .applicationName {
 
 
 #filter_userPanel {
-  width:22%;
+  width:24%;
   height:100%;
   float:left;
   background-color:#333333;
@@ -4585,8 +4585,8 @@ li.application  .applicationName {
   margin:2px 3% 0 3%;
 }
 #results_userPanel, #selected_userPanel{
-  width:39%;
-  *width:38.9%;
+  width:38%;
+  *width:37.9%;
   height:100%;
   float:left;
 
@@ -4603,9 +4603,23 @@ li.application  .applicationName {
   display:block;
 }
 
-#filter_userPanel .listing_filter ul .filter{	
-  background-position:33px 5px;
-  padding:7px 0 6px 59px;
+#filter_userPanel #filter_contact.filter {
+  background-image:url(../icons/contacts.png);
+  background-position:9px 6px;
+}
+#filter_userPanel #filter_users.filter{
+  background-image:url(../icons/user.png);
+}
+#filter_userPanel #filter_groups #breadcrumb.filter {
+  background-image:url(../icons/groups.png);
+  background-position:5px 5px;
+}
+
+
+#filter_userPanel .listing_filter ul .filter{	    
+	background-image: url("../icons/puce-group.png");
+    background-position: 26px 11px;
+    padding: 6px 0 1px 43px;
 }
 
 #filter_userPanel .listing_filter ul {

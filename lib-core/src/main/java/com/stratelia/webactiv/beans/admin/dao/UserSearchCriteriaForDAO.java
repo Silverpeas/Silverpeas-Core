@@ -121,7 +121,11 @@ public class UserSearchCriteriaForDAO implements UserSearchCriteria {
     for (String anItem : items) {
       list.append(anItem).append(",");
     }
-    list.setCharAt(list.length() - 1, ')');
+    if (list.toString().endsWith(",")) {
+      list.setCharAt(list.length() - 1, ')');
+    } else {
+      list.append("null").append(")");
+    }
     return list.toString();
   }
 }

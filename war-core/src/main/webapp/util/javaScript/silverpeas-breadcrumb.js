@@ -26,7 +26,7 @@
  * A JQuery plugin to render a breadcrumb trail in Silverpeas web pages.
  * The trail renders each of the nodes in the trail upto the current one. A node in the breadcrumb
  * must be an object with as least the attribute name.
- * It accpets as options:
+ * It accepts as options:
  * {
  *   root     : the root node at which the breadcrumb trail starts. If not set, the breadcrumb is
  *              not rendered until a root node is passed (through the set method).
@@ -34,6 +34,8 @@
  *   separator: a separator to use between each nodes in the breadcrumb.
  *   onchange : a function waiting as parameter the current selected node that is called at each
  *              change in the breadcrumb trail (change of the current node in the trail).
+ *   oninit   : a function invoked at setup of the breadcrumb. It can be used to perform some
+ *              specific tasks with the initialization of the breadcrumb.
  * }
  * 
  */
@@ -51,6 +53,8 @@
         root: null,
         css: '',
         separator: ' > ',
+        oninit: function() {          
+        },
         onchange: function(node) {}
       }, options);
       
@@ -60,8 +64,8 @@
         $this.data('breadcrumb-trail', path);
         if (settings.root) {
           renderNode($this, settings.root);
-          settings.onchange(settings.root);
         }
+        settings.oninit();
       });
     },
     

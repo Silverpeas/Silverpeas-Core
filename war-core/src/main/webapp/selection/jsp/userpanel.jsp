@@ -71,7 +71,6 @@
       var foundGroupsLabel    = "<fmt:message key='selection.groupsFound'/>";
       var foundGroupLabel     = "<fmt:message key='selection.groupFound'/>";
       var itemToSelect        = "<c:out value='${selectionScope}'/>";
-      
       var language            = '<c:out value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>';
       var MaximizedPageSize   = 10;
       
@@ -94,20 +93,22 @@
       // are printed out.
       var userListingPanelStatus = {
         maximized: false,
-        maximizationTriggered: false,
-        contactsToRender: false
+        renderedItems: null
       };
       
+      // maximize the area within which the user profiles are rendered
+      // the area hides the one within which the user groups are rendered
       function maximizeUserListingPanel() {
         $('.groups_results_userPanel').hide();
         userListingPanelStatus.maximized = true;
-        userListingPanelStatus.maximizationTriggered = false;
       }
       
+      // unmaximize the area with which the user profiles are rendered
+      // the area within which the user groups are rendered is yet showed
       function unmaximizeUserListingPanel() {
         $('.groups_results_userPanel').show();
         userListingPanelStatus.maximized = false;
-        userListingPanelStatus.contactsToRender = false;
+        userListingPanelStatus.renderedItems = null;
       }
     
       // the size of items to render within a pagination page
@@ -115,6 +116,7 @@
         return (itemToSelect == 'usergroup' && !userListingPanelStatus.maximized ? CountPerPage: MaximizedPageSize);
       }
       
+      // what are the preselected user profiles and user groups (get at web page build)
       <c:choose>
           <c:when test="${selection.selectedElements != null && fn:length(selection.selectedElements) > 0}">
             var preselectedUsers = '<c:out value="${fn:join(selection.selectedElements, ',')}"/>'.split(',');
@@ -136,6 +138,7 @@
         </c:otherwise>
       </c:choose>
      
+        // the selection of user profiles
         var userSelection = new Selection(<c:out value="${multipleSelection}"/>, {
           itemsAdded: function(users) {
             for (var i = 0; i < users.length; i++) {
@@ -153,6 +156,7 @@
           }
         });
         
+        // the selection of user groups
         var groupSelection = new Selection(<c:out value="${multipleSelection}"/>, {
           itemsAdded: function(groups) {
             for (var i = 0; i < groups.length; i++) {
@@ -169,6 +173,117 @@
             renderUserGroupSelection();
           }
         });
+        
+        // loads the profile of the preselected users so that they can be displayed in the user
+        // selection panel
+        function loadPreselectionOfUsers() {
+          if (preselectedUsers && preselectedUsers.length > 0) {
+            for(var i in preselectedUsers) {
+              new UserProfile({id: preselectedUsers[i]}).load(userSelection.add);
+            }
+          }
+          if (userSelection.size() == 0) {
+            renderUserSelection();
+          }
+        }
+        
+        // the ui event processing in the user panel
+        // each event is sent by an action of the user with an ui element and drives to a computation
+        // into which different others ui elements can be updated
+        var eventProcessing = new function() {
+          
+          var self = this;
+          
+          function renderUsersOfGroup(group) {
+            if (itemToSelect.indexOf('user') > -1)
+              group.onUsers(1, pageSize(), renderFilteredUsers);
+          }
+          
+          function onEvent(event, processor, args) {
+            self.event = event;
+            processor(args);
+            self.event = null;
+          }
+          
+          this.event = null;
+          
+          // initializes the user panel content
+          this.onInit = function() {
+            onEvent('init', function() {
+              rootUserGroup.onChildren(function(groups) {
+                if (groups.length == 0) {
+                  itemToSelect = 'user';
+                  $('#filter_groups').remove();
+                  $('.groups_results_userPanel').remove();
+                  $('.groups_selected_userPanel').remove();
+                  self.onAllUsers();
+                } else {
+                  renderUserGroups(groups);
+                  renderUsersOfGroup(rootUserGroup);
+                }
+              });
+            });
+          }
+          
+          // a user group is selected by the user (a group in the breadcrumb trail or among the
+          // subgroups of the current user group)
+          this.onGroupChange = function() {
+            onEvent('groupChange', function() {
+              resetSearchText();
+              if (userListingPanelStatus.maximized)
+                unmaximizeUserListingPanel();
+              $('#breadcrumb').breadcrumb('current', function(group) {
+                group.onChildren(renderUserGroups);
+                renderUsersOfGroup(group);
+              });
+            });
+          }
+          
+          // all users in Silverpeas are asked by the user
+          this.onAllUsers = function() {
+            onEvent('allUsers', function() {
+              resetSearchText();
+              maximizeUserListingPanel();
+              userListingPanelStatus.renderedItems = self.event;
+              $('#breadcrumb').breadcrumb('set', rootUserGroup);
+              allUsers.get({
+                pagination: {
+                  page: 1,
+                  count: MaximizedPageSize
+                },
+                name: null}, renderFilteredUsers);
+            });
+          }
+          
+          // the contacts of the user are asked
+          this.onMyContacts = function() {
+            onEvent('myContacts', function() {
+              resetSearchText();
+              maximizeUserListingPanel();
+              userListingPanelStatus.renderedItems = self.event;
+              $('#breadcrumb').breadcrumb('set', rootUserGroup);
+              me.onRelationships(1, pageSize(), renderFilteredUsers);
+            });
+          }
+          
+          // a search on the user profiles by their name
+          this.onUserSearch = function(pattern) {
+            onEvent('search', function() {
+              nameInUserSearch = arguments[0];
+              renderUsersInPage(1);
+            }, pattern);
+          }
+          
+          // a search on the user groups by their name
+          this.onGroupSearch = function(pattern) {
+            onEvent('search', function() {
+              var name = arguments[0];
+              $('#breadcrumb').breadcrumb('current', function(group) {
+                group.onChildren(name, renderFilteredUserGroups);
+              });
+            }, pattern);
+          }
+        }
       
         function selectedUserNamesToString() {
           var selection = '';
@@ -190,7 +305,8 @@
         
         function resetSearchText() {
       <c:if test='${fn:startsWith(selectionScope, "user")}'>
-            $('#user_search').val('<fmt:message key="selection.searchUsers"/>');      
+            $('#user_search').val('<fmt:message key="selection.searchUsers"/>');
+            nameInUserSearch = null;
       </c:if>
       <c:if test='${fn:endsWith(selectionScope, "group")}'>
             $('#group_search').val('<fmt:message key="selection.searchUserGroups"/>');
@@ -207,26 +323,42 @@
           $('.listing_groups_filter').css('height',new_height_listing_groups+'px');
         }
       
+        function renderUsersInPage(page, renderUsers) {
+          if (renderUsers == null)
+            renderUsers = function(users) {
+              renderFilteredUsers(users, page > 1);
+            }
+          if (userListingPanelStatus.renderedItems == 'myContacts')
+            me.onRelationships(nameInUserSearch, page, pageSize(), renderUsers);
+          else if (userListingPanelStatus.renderedItems == 'allUsers') {
+            var pagination = (page == null ? null: {
+              page: page,
+              count: pageSize()
+            });
+            allUsers.get({
+              pagination: pagination,
+              name: nameInUserSearch
+            }, renderUsers);
+          }    
+          else
+            $('#breadcrumb').breadcrumb('current', function(group) {
+              group.onUsers(nameInUserSearch, page, pageSize(), renderUsers);
+            });
+        }
+      
         function renderSearchBox($container) {
           var keyEnter = 13;
           if ($container.attr('id') == 'group_search') {
             var defaultText = "<fmt:message key='selection.searchUserGroups'/>";
             var search = function() {
-              var name = $container.val();
-              $('#breadcrumb').breadcrumb('current', function(group) {
-                group.onChildren(name + '*', renderFilteredUserGroups);
-              });
+              var name = $container.val() + '*';
+              eventProcessing.onGroupSearch(name);
             }
           } else if ($container.attr('id') == 'user_search') {
             var defaultText = "<fmt:message key='selection.searchUsers'/>";
             var search = function() {
-              nameInUserSearch = $container.val() + '*';
-              if (userListingPanelStatus.contactsToRender)
-                me.onRelationships(nameInUserSearch, 1, pageSize(), updateFilteredUsers);
-              else
-                $('#breadcrumb').breadcrumb('current', function(group) {
-                  group.onUsers(nameInUserSearch, 1, pageSize(), renderFilteredUsers);
-                });
+              var name = $container.val() + '*';
+              eventProcessing.onUserSearch(name);
             }
           }
           $container.focus(function() {
@@ -258,19 +390,7 @@
           else if (dataContainer == 'user_list') {
             pagination = $('#user_list_pagination');
             changedPage = function(page) {
-              if (userListingPanelStatus.contactsToRender)
-                me.onRelationships(nameInUserSearch, page, pageSize(), updateFilteredUsers);
-              else if (userListingPanelStatus.maximized)
-                allUsers.get({
-                  pagination: {
-                    page: page,
-                    count: MaximizedPageSize
-                  }
-                }, updateFilteredUsers);
-              else
-                $('#breadcrumb').breadcrumb('current', function(group) {
-                  group.onUsers(nameInUserSearch, page, pageSize(), updateFilteredUsers);
-                });
+              renderUsersInPage(page);
             }
           } else if (dataContainer == 'selected_user_list')
             pagination = $('#selected_user_list_pagination');
@@ -305,14 +425,13 @@
             else
               $('.listing_groups a.remove_all').show();
           }
-          $('#selected_group_list').slideUp('fast', function() {
+          $('#selected_group_list').hide();
             $('#selected_group_list').children().remove();
             for(var i = 0; i < groupSelection.items.length; i++) {
               renderUserGroup($('#selected_group_list'), i, groupSelection.items[i]);
             }
-            $('#selected_group_list').slideDown('fast');
+            $('#selected_group_list').show();
             renderPaginationFor(groupSelection.items.length, 'selected_group_list');
-          });
         }
       
         function renderUserSelection() {
@@ -324,14 +443,13 @@
             else
               $('.listing_users a.remove_all').show();
           }
-          $('#selected_user_list').slideUp('fast', function() {
+          $('#selected_user_list').hide();
             $('#selected_user_list').children().remove();
             for(var i = 0; i < userSelection.items.length; i++) {
               renderUser($('#selected_user_list'), i, userSelection.items[i]);
             }
-            $('#selected_user_list').slideDown('fast');
+            $('#selected_user_list').show();
             renderPaginationFor(userSelection.items.length, 'selected_user_list');
-          });
         }
       
         function renderUserGroup($container, order, theGroup) {
@@ -357,20 +475,21 @@
               groupSelection.remove(theGroup);
             });
           }
+          var domainName = (theGroup.domainName == 'internal' ? "<fmt:message key='GML.internalDomain'/>":theGroup.domainName);
           
           $('<li>', {id: id}).addClass('line').addClass(style).
             append($('<div>').addClass('avatar').append($('<img>', {alt: '', src: webContext + '/util/icons/component/groupe_Type_gestionCollaborative.png'}))).
             append($('<span>').addClass('name_group').text(theGroup.name)).
             append($('<span>').addClass('nb_user_group').text(theGroup.userCount + ' ' + '<fmt:message key="GML.user_s"/>')).
             append($('<span>').addClass('sep_nb_user_group').text(' - ')).
-            append($('<span>').addClass('domain_group').text(theGroup.domainName)).
+            append($('<span>').addClass('domain_group').text(domainName)).
             append($operation).appendTo($container);
         }
         
         function renderUserGroupFilter(group) {
           $('<li>').append($('<a>', { href: '#' }).addClass('filter').
             append(group.name).
-            append($('<span>').addClass('nb_results_by_filter').append('(' + group.userCount + ')')).click(function() {
+            append($('<span>').addClass('nb_results_by_filter').append(' (' + group.userCount + ')')).click(function() {
             $('#breadcrumb').breadcrumb('set', group);
           })).
             appendTo($('ul.listing_groups_filter'));
@@ -385,36 +504,29 @@
               $('.listing_groups a.add_all').show();
           }
           $('#group_result_count').text(groups.length + ' ' + text);
-          $('#group_list').slideUp('fast', function() {
+          $('#group_list').hide();
             $('#group_list').children().remove();
             for(var i = 0; i < groups.length; i++) {
               renderUserGroup($('#group_list'), i, groups[i]);
               if (additionalRendering)
                 additionalRendering(groups[i]);
             }
-            $('#group_list').slideDown('fast');
+            $('#group_list').show();
             renderPaginationFor(groups.length, 'group_list');
-          });
         }
         
         function renderUserGroups(groups) {
-          if (itemToSelect == 'user')
+          var $container = $('ul.listing_groups_filter');
+          $container.hide();
+          $container.children().remove();
+          if (itemToSelect == 'user' || eventProcessing.event == 'myContacts' ||
+              eventProcessing.event == 'allUsers')
             for(var i = 0; i < groups.length; i++)
               renderUserGroupFilter(groups[i]);
           else
             renderFilteredUserGroups(groups, renderUserGroupFilter);
-        }
-        
-        function loadPreselectionOfUsers() {
-          if (preselectedUsers && preselectedUsers.length > 0) {
-            for(var i in preselectedUsers) {
-              var aPreselectedUser = new UserProfile({id: preselectedUsers[i]}).load();
-              userSelection.add(aPreselectedUser);
-            }
-          }
-          if (userSelection.size() == 0) {
-            renderUserSelection();
-          }
+          $container.show();
+          autoresizeUserGroupFilters();
         }
       
         function renderUser($container, order, theUser) {
@@ -441,7 +553,7 @@
             append($operation).appendTo($container);
         }
       
-        function renderFilteredUsers(users, paginationChange) {
+        function renderFilteredUsers(users, inSamePagination) {
           var text = (users.length <= 1 ? foundUserLabel: foundUsersLabel);
           if (userSelection.isMultiple()) {
             if (users.length == 0)
@@ -450,19 +562,14 @@
               $('.listing_users a.add_all').show();
           }
           $('#user_result_count').text(users.maxlength + ' ' + text);
-          $('#user_list').slideUp('fast', function() {
-            $('#user_list').children().remove();
-            for(var i = 0; i < users.length; i++) {
-              renderUser($('#user_list'), i, users[i]);
-            }
-            $('#user_list').slideDown('fast');
-            if (!paginationChange)
-              renderPaginationFor(users.maxlength, 'user_list');
-          });
-        }
-        
-        function updateFilteredUsers(users) {
-          renderFilteredUsers(users, true);
+          $('#user_list').hide();
+          $('#user_list').children().remove();
+          for(var i = 0; i < users.length; i++) {
+            renderUser($('#user_list'), i, users[i]);
+          }
+          $('#user_list').show();
+          if (!inSamePagination)
+            renderPaginationFor(users.maxlength, 'user_list');
         }
       
         // validate the selection of users and/or of user groups.
@@ -502,41 +609,21 @@
            $('.filter').removeClass('select');
            $this.addClass('select');
         }
-      
+           
         $(document).ready(function() {
         
           // the rendering of the content within both the group listing panel and the user listing
           // panel is triggered by the breadcrumb through user actions
           $('#breadcrumb').breadcrumb( {
             root: rootUserGroup,
+            oninit: function() {
+              eventProcessing.onInit();
+            },
             onchange: function(group) {
-              resetSearchText();
-              if (userListingPanelStatus.maximizationTriggered)
-                maximizeUserListingPanel();
-              else if (userListingPanelStatus.maximized)
-                unmaximizeUserListingPanel();
-              var $container = $('ul.listing_groups_filter');
-              $container.slideUp('fast', function() {
-                $container.children().remove();
+              if (eventProcessing.event != null)
                 group.onChildren(renderUserGroups);
-              });
-              $container.slideDown('fast', function() {
-                autoresizeUserGroupFilters();
-              });
-              if (itemToSelect.indexOf('user') > -1) {
-                if (userListingPanelStatus.contactsToRender) {
-                  me.onRelationships(1, pageSize(), renderFilteredUsers)
-                } else if (userListingPanelStatus.maximized) {
-                  allUsers.get({
-                    pagination: {
-                      page: 1,
-                      count: MaximizedPageSize
-                    }
-                  }, renderFilteredUsers);
-                } else {
-                  group.onUsers(1, pageSize(), renderFilteredUsers);
-                }
-              }
+              else
+                eventProcessing.onGroupChange(group);
               highlightFilter($('#breadcrumb'));
             }
           });
@@ -558,17 +645,13 @@
       </c:if>
     
       <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-            $('<li>').append($('<a>', {href: '#'}).addClass('filter').text('<fmt:message key="selection.AllUsers"/>').click(function() {
-              userListingPanelStatus.maximizationTriggered = true;
-              userListingPanelStatus.contactsToRender = false;
-              $('#breadcrumb').breadcrumb('set', rootUserGroup);
+            $('<li>').append($('<a>', {href: '#', id: 'filter_users'}).addClass('filter').text('<fmt:message key="selection.AllUsers"/>').click(function() {
+              eventProcessing.onAllUsers();
               highlightFilter($(this));
             })).prependTo($('ul.listing_filter'));
             
-            $('<li>').append($('<a>', {href: '#'}).addClass('filter').text('<fmt:message key="selection.MyContacts"/>').click(function() {
-              userListingPanelStatus.maximizationTriggered = true;
-              userListingPanelStatus.contactsToRender = true;
-              $('#breadcrumb').breadcrumb('set', rootUserGroup);
+            $('<li>').append($('<a>', {href: '#', id: 'filter_contact'}).addClass('filter').text('<fmt:message key="selection.MyContacts"/>').click(function() {
+              eventProcessing.onMyContacts();
               highlightFilter($(this));
             })).prependTo($('ul.listing_filter'));
         
@@ -576,12 +659,7 @@
           
             if (userSelection.isMultiple()) {
               $('.listing_users a.add_all').click(function() {
-                if (userListingPanelStatus.contactsToRender)
-                  me.onRelationships(nameInUserSearch, userSelection.add);
-                else
-                  $('#breadcrumb').breadcrumb('current', function(group) {
-                    group.onUsers(nameInUserSearch, userSelection.add);
-                  });
+                renderUsersInPage(null, userSelection.add);
               });
             } else {
               $('.listing_users a.add_all').remove();
@@ -620,7 +698,7 @@
       <div id="filter_userPanel">
         <h4 class="title"><fmt:message key="selection.Filter"/></h4>
         <ul class="listing_filter">
-          <li><div id="breadcrumb" class="select filter"></div>
+          <li id="filter_groups"><div id="breadcrumb" class="select filter"></div>
             <ul class="listing_groups_filter">
             </ul>
           </li>
