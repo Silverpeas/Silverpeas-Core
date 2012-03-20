@@ -41,15 +41,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -177,8 +169,9 @@ public class WAIndexSearcher {
     try {
       TopDocs topDocs = null;
       BooleanQuery booleanQuery = new BooleanQuery();
-      booleanQuery.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
-      booleanQuery.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
+      BooleanQuery rangeClauses = new BooleanQuery();
+      rangeClauses.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
+      rangeClauses.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
 
       if (query.getXmlQuery() != null) {
         booleanQuery.add(getXMLQuery(query, searcher), BooleanClause.Occur.MUST);
@@ -199,11 +192,11 @@ public class WAIndexSearcher {
             rangeQuery = new RangeQuery(lowerTerm, upperTerm, true);
           }
           if (rangeQuery != null) {
-            booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
+            rangeClauses.add(rangeQuery, BooleanClause.Occur.MUST);
           }
           RangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
           if (rangeQueryOnLastUpdateDate != null) {
-            booleanQuery.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
+            rangeClauses.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
           }
           TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
           if (termQueryOnAuthor != null) {
@@ -222,7 +215,10 @@ public class WAIndexSearcher {
       }
       SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
               "Query = " + booleanQuery.toString());
-      topDocs = searcher.search(booleanQuery, maxNumberResult);
+
+      QueryWrapperFilter wrappedFilter = new QueryWrapperFilter(rangeClauses);
+
+      topDocs = searcher.search(booleanQuery, wrappedFilter, maxNumberResult);
 
       results = makeList(topDocs, query, searcher);
     } catch (IOException ioe) {
