@@ -341,7 +341,9 @@ public class VersioningUtil {
     for (Document currentDocument : documents) {
       DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(
           currentDocument.getPk());
-      createIndex(currentDocument, version, startOfVisibilityPeriod, endOfVisibilityPeriod);
+      if(version != null) {
+        createIndex(currentDocument, version, startOfVisibilityPeriod, endOfVisibilityPeriod);
+      }
     }
   }
   
@@ -351,14 +353,15 @@ public class VersioningUtil {
       try {
         List<Document> documents = getVersioningBm().getDocuments(pk);
         for (Document currentDocument : documents) {
-          DocumentVersion version =
-              getVersioningBm().getLastPublicDocumentVersion(currentDocument.getPk());
-          indexEntry.addFileContent(version.getDocumentPath(), null, version.getMimeType(), null);
+          DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(currentDocument.getPk());
+          if(version != null) {
+            indexEntry.addFileContent(version.getDocumentPath(), null, version.getMimeType(), null);
+          }
         }
       } catch (RemoteException e) {
         SilverTrace.error("versioning", "VersioningUtil.updateIndexEntryWithDocuments",
-            "versioning.CANT_INDEX_DOCUMENTS",
-            "objectId = " + pk.getId() + ", component = " + pk.getInstanceId(), e);
+            "versioning.CANT_INDEX_DOCUMENTS", "objectId = " + pk.getId() + ", component = " 
+            + pk.getInstanceId(), e);
       }
     }
   }
