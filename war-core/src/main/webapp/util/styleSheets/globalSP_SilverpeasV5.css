@@ -558,6 +558,9 @@ Definition des class de style Silverpeas
 	background-repeat: repeat-x;
 	white-space: nowrap;
 }
+.portlet-content .intfdcolor {
+	white-space: normal;
+}
 
 #outilsAdmin {
 	position: absolute;
