@@ -2644,6 +2644,9 @@ caption {
   display:list-item;
   list-style-type:none;
   width:100%;
+  white-space:normal;
+  max-height:26px;
+  overflow:hidden;
 }
 
 #directory .info ul {
@@ -2669,6 +2672,7 @@ caption {
   position:absolute;
   top:10px;
   right:10px;
+  border:0;
 }
 
 #directory .info ul li.userType {
@@ -3666,6 +3670,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
     position: absolute;
     right: 10px;
     top: 10px;
+	border:0;
 }
 
 #contactProfil .info li.userType {
