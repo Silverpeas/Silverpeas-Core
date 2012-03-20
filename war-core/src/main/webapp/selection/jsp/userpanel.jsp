@@ -611,7 +611,7 @@
         }
            
         $(document).ready(function() {
-        
+          
           // the rendering of the content within both the group listing panel and the user listing
           // panel is triggered by the breadcrumb through user actions
           $('#breadcrumb').breadcrumb( {
@@ -667,6 +667,10 @@
             }    
  
             loadPreselectionOfUsers();
+            
+            if ($(window).width() < $(document).width()) {
+              window.resizeTo ($(document).width(),758) ; 
+            }
       </c:if>
 				
           $(window).resize(function() {
