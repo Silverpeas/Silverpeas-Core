@@ -1768,7 +1768,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   height:1.3em;
 }
 .pageNav .pageJumper  a {
-  color:#FFF;
+  color:#FFF !important;
 }
 
 .pageNav .pageJumper .jumper {
@@ -4640,10 +4640,11 @@ li.application  .applicationName {
 
 #filter_userPanel .filter:hover, 
 #filter_userPanel .filter:focus , 
-#filter_userPanel .filter.select{
+#filter_userPanel .filter.select,
+#filter_userPanel .filter:hover a,
+#filter_userPanel .filter:focus a{
   background-color:#eaeaea;
   color:#444444;
-  font-size:105%;
 }
 #filter_userPanel .filter.select {
   background-image:url(../icons/treeview/folder_open.gif);
