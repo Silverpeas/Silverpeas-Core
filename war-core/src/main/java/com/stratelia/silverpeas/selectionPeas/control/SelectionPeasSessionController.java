@@ -34,21 +34,11 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
-import com.stratelia.silverpeas.selectionPeas.BrowsePanelProvider;
-import com.stratelia.silverpeas.selectionPeas.CacheManager;
-import com.stratelia.silverpeas.selectionPeas.CacheManagerJdbcConnector;
-import com.stratelia.silverpeas.selectionPeas.CacheManagerUsersGroups;
-import com.stratelia.silverpeas.selectionPeas.CacheType;
-import com.stratelia.silverpeas.selectionPeas.SelectionPeasSettings;
+import com.stratelia.silverpeas.selectionPeas.*;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class declaration
@@ -62,10 +52,10 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   protected GenericPanel searchElementPanel = null;
   protected CacheManager cacheManager = null;
   protected List<PanelLine> panelLineList = new ArrayList<PanelLine>();
-  protected Map<CacheType, BrowsePanelProvider> m_NavBrowse = new HashMap<CacheType, BrowsePanelProvider>(
-      CacheType.CM_NBTOT.getValue());
-  protected Map<CacheType, PanelProvider> m_NavCart = new HashMap<CacheType, PanelProvider>(
-      CacheType.CM_NBTOT.getValue());
+  protected Map<CacheType, BrowsePanelProvider> m_NavBrowse = new EnumMap<CacheType, BrowsePanelProvider>(
+      CacheType.class);
+  protected Map<CacheType, PanelProvider> m_NavCart = new EnumMap<CacheType, PanelProvider>(
+      CacheType.class);
   protected String selectionType = "";
 
   /**

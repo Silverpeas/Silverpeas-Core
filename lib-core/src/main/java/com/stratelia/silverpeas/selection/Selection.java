@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.selection;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.PairObject;
 
-public class Selection {
+public final class Selection {
   final public static String TYPE_USERS_GROUPS = "UsersGroups";
   final public static String TYPE_SPACES_COMPONENTS = "SpacesComponents";
   final public static String TYPE_JDBC_CONNECTOR = "JdbcConnector";
@@ -37,10 +37,11 @@ public class Selection {
   final public static String FIRST_PAGE_SEARCH_ELEMENT = "DisplaySearchElement";
   final public static String FIRST_PAGE_SEARCH_SET = "DisplaySearchSet";
   final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
+  public static final String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
 
   protected String goBackURL;
   protected String cancelURL;
-
+  
   protected String htmlFormName;
   protected String htmlFormElementName;
   protected String htmlFormElementId;
@@ -87,9 +88,12 @@ public class Selection {
   }
 
   static public String getSelectionURL(String selectionType) {
+    if (Selection.TYPE_USERS_GROUPS.equals(selectionType)) {
+      return USER_SELECTION_PANEL_PATH;
+    }
     return "/RselectionPeas/jsp/Main?SelectionType=" + selectionType;
   }
-
+  
   public void setHostSpaceName(String hostSpaceName) {
     if (hostSpaceName != null) {
       this.hostSpaceName = hostSpaceName;

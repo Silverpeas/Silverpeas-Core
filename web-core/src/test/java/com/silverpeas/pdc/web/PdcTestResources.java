@@ -227,7 +227,7 @@ public class PdcTestResources extends TestResources {
    * value of the PdC axis will be fetched from the users thesaurus.
    */
   public void enableThesaurus() {
-    UserPreferences preferences = getMockedPersonalizationService().getUserSettings(
+    UserPreferences preferences = getPersonalizationServiceMock().getUserSettings(
             USER_ID);
     preferences.enableThesaurus(true);
   }
