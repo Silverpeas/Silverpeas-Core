@@ -667,11 +667,11 @@
             }    
  
             loadPreselectionOfUsers();
-            
-            if ($(window).width() < $(document).width()) {
-              window.resizeTo ($(document).width(),758) ; 
-            }
       </c:if>
+      
+          if ($(window).width() < $(document).width()) {
+            window.resizeTo ($(document).width(),758) ; 
+          }
 				
           $(window).resize(function() {
             autoresizeUserGroupFilters();
