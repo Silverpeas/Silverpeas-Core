@@ -62,3 +62,5 @@ ALTER TABLE sb_filesharing_history DROP keyFile;
 ALTER TABLE sb_filesharing_history ADD keyFile VARCHAR2(255) NOT NULL;
 UPDATE sb_filesharing_history SET keyFile = keyFile_temp;
 ALTER TABLE sb_filesharing_history DROP keyFile_temp;
+
+UPDATE sb_filesharing_ticket SET nbaccess = 0 WHERE nbaccess IS NULL;

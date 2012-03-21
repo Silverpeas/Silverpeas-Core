@@ -60,3 +60,5 @@ ALTER TABLE sb_filesharing_history ADD downloadDate BIGINT ;
 UPDATE sb_filesharing_history SET downloadDate = downloadDate_temp;
 ALTER TABLE sb_filesharing_history ALTER COLUMN downloadDate BIGINT NOT NULL;
 ALTER TABLE sb_filesharing_history DROP COLUMN downloadDate_temp;
+
+UPDATE sb_filesharing_ticket SET nbaccess = 0 WHERE nbaccess IS NULL;
