@@ -11,7 +11,8 @@
 
   <tag>
     <description>Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
-    in charge by the tag.</description>
+    in charge by the tag. If the javascript requires a stylesheet, it is also included with
+    the script.</description>
     <name>includePlugin</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.IncludeJSPluginTag</tag-class>
     <body-content>empty</body-content>
