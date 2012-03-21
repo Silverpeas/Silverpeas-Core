@@ -24,27 +24,12 @@
 
 package com.silverpeas.lookV5;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.external.filesharing.model.FileSharingService;
-import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.sharing.services.SharingTicketService;
+import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
@@ -57,6 +42,19 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
   private static final long serialVersionUID = 8565616592829678418L;
@@ -278,11 +276,11 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   private void addFileSharingAsTool(JSONArray jsonArray, LookHelper helper, ResourceLocator message) {
     // mes tickets
     if (helper.getSettings("fileSharingVisible", true)) {
-      FileSharingService fileSharing =
-          FileSharingServiceFactory.getFactory().getFileSharingService();
+      SharingTicketService sharingTicket =
+          SharingServiceFactory.getSharingTicketService();
       try {
-        if (!fileSharing.getTicketsByUser(helper.getUserId()).isEmpty()) {
-          addTool(jsonArray, helper, "fileSharingVisible", "fileSharing",
+        if (!sharingTicket.getTicketsByUser(helper.getUserId()).isEmpty()) {
+          addTool(jsonArray, helper, "fileSharingVisible", "sharingTicket",
               message.getString("FileSharing"), URLManager.getURL(URLManager.CMP_FILESHARING) +
                   "Main");
         }
