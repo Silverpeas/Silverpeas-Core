@@ -2,17 +2,17 @@
 <%
 FieldTemplate 	field 		= (FieldTemplate) request.getAttribute("Field");
 String			displayer 	= (String) request.getAttribute("Displayer");
-Iterator		languages	= ((List) request.getAttribute("Languages")).iterator();
+List<String>	languages	= (List<String>) request.getAttribute("Languages");
 
 String name = "";
 String mandatoryChecked = "";
 String searchable = "";
+String usedAsFacet = "";
 boolean nameDisabled = false;
 String actionForm = "AddField";
-Map parameters = null;
+Map<String, String> parameters = null;
 
-if (field != null)
-{
+if (field != null) {
 	name 			= field.getFieldName();
 	actionForm 		= "UpdateField";
 	
@@ -28,11 +28,15 @@ if (field != null)
 	parameters = field.getParameters("fr");
 		
 	if (field.isMandatory()) {
-		mandatoryChecked = "checked";
+		mandatoryChecked = "checked=\"checked\"";
 	}
 		
 	if (field.isSearchable()) {
-		searchable = "checked";
+		searchable = "checked=\"checked\"";
+	}
+	
+	if (field.isUsedAsFacet()) {
+		usedAsFacet = "checked=\"checked\"";
 	}
 }
 %>

@@ -361,15 +361,14 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, TextField field,
-          String language) {
+          String language, boolean store) {
     String fieldValue = field.getValue();
     String fieldValueIndex = "";
     if (fieldValue != null && fieldValue.trim().length() > 0) {
       if (fieldValue.startsWith(dbKey)) {
         String file =
                 WysiwygFCKFieldDisplayer.getFile(indexEntry.getComponent(), indexEntry.getObjectId(),
-                fieldName,
-                language);
+                fieldName, language);
         try {
           Source source = new Source(new FileInputStream(file));
           if (source != null) {
@@ -384,7 +383,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         indexEntry.addTextContent(fieldValue.trim(), language);
         fieldValueIndex = fieldValue.trim().replaceAll("##", " ");
       }
-      indexEntry.addField(key, fieldValueIndex, language);
+      indexEntry.addField(key, fieldValueIndex, language, false);
 
       // index embedded linked attachment (links presents in wysiwyg content)
       try {
