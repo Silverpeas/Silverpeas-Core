@@ -223,7 +223,7 @@ public abstract class RESTWebService {
    * WebApplicationException exception is thrown with as HTTP status code UNAUTHORIZED (401).</li>
    * </ul>
    */
-  private void checkUserAuthentication() {
+  protected void checkUserAuthentication() {
     String sessionId = getUserSessionKey();
     if (sessionId.isEmpty()) {
       this.userDetail = authenticateUser(credentials);

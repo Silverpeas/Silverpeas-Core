@@ -23,16 +23,16 @@
  */
 package com.silverpeas.rest;
 
-import javax.ws.rs.core.MultivaluedMap;
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import java.util.UUID;
-import com.sun.jersey.api.client.ClientResponse;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Unit tests on the creation of a new resource in Silverpeas through a REST web service.
