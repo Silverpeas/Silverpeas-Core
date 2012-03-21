@@ -743,7 +743,23 @@ function removePosition( position, positions ) {
     
     this.all = function() {
       var positions = [];
-      positions[0] = { values: [] };
+      
+      function contains(position) {
+        for (var ipos in positions)
+          if (position.values.length == positions[ipos].values.length) {
+            var ok = true;
+            for (var ival = 0; ival < position.values.length && ok; ival++) {
+              if (position.values[ival].axisId != positions[ipos].values[ival].axisId ||
+                  position.values[ival].id != positions[ipos].values[ival].id)
+                ok = false;
+            }
+            if (ok)
+              return true;
+          }
+        return false;
+      }
+
+      positions[0] = {values: []};
       for (var axisId in this.matrix[0]) {
         if (this.matrix[0][axisId] != null)
           positions[0].values.push(aPositionValueFrom(this.matrix[0][axisId]))
@@ -754,13 +770,13 @@ function removePosition( position, positions ) {
           if (this.matrix[i][axisId] != null) {
             var lastpos = positions.length;
             for (var pos = 0; pos < lastpos; pos++) {
-              var newPosition = { values: [ aPositionValueFrom(this.matrix[i][axisId]) ] };
+              var newPosition = {values: [ aPositionValueFrom(this.matrix[i][axisId]) ]};
               for (var val = 0; val < positions[pos].values.length; val++) {
                 if (positions[pos].values[val].axisId != axisId.substring(axisprefix.length))
                   newPosition.values.push(positions[pos].values[val]);
               }
               sortValues(newPosition.values);
-              if (positions.indexOf(newPosition) < 0) {
+              if (!contains(newPosition)) {
                 positions.push(newPosition);
               }
             }
@@ -862,13 +878,20 @@ function removePosition( position, positions ) {
       if (theValue == 0) {
         selectedPositions.remove(i, anAxis.id);
       } else {
+        var previousValue = selectedPositions.at(i, anAxis.id);
         selectedPositions.put(i, anAxis.id, anAxis.values[theValue]);
         if (settings.multiValuation) {
+          // enable the other identical previous values in duplicate selects and
           // disable the other identical options in duplicate selects (to avoid the position duplication)
           var j = 0;
           while(contains($axisDiv, idPrefix + j)) {
-            if (j!= i)
+            if (j!= i) {
+              if (previousValue != null) {
+                var index = anAxis.values.indexOf(previousValue);
+                $("select[id=" + idPrefix + j + "] option[value='" + index + "']").attr('disabled', false);
+              }
               $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").attr('disabled', true);
+            }
             j++;
           }
         }
