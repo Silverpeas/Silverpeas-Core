@@ -19,7 +19,7 @@
         $endif$
      </li>
      $if(user.status)$
-     	<li>
+     	<li class="status">
      	  "$user.status$"
      	</li>
      $endif$
@@ -29,7 +29,7 @@
      <li class="userMail">
 	<a href="#" onclick="OpenPopup($user.id$,'$user.lastName$ $user.firstName$')">$user.mail$</a>
      </li>
-     <li>
+     <li class="extra">
      	$if(extra.title)$
      	  $extra.title$<br/>
      	$endif$
