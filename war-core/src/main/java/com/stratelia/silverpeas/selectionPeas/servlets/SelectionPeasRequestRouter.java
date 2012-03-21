@@ -35,14 +35,13 @@ import com.stratelia.silverpeas.selectionPeas.control.SelectionPeasSessionContro
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration

@@ -23,19 +23,29 @@
  */
 package com.stratelia.webactiv.util.publication.model;
 
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.base.Objects;
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
@@ -43,6 +53,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -787,15 +798,15 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   /****************************************************************************************/
   /** FormTemplate exposition for taglibs */
   /****************************************************************************************/
-  /**
-   * 
-   * @return 
-   */
   public List<XMLField> getXmlFields() {
     return getXmlFields(null);
   }
 
   public List<XMLField> getXmlFields(String language) {
+    if ("0".equals(getInfoId())) {
+      // this publication does not use a form 
+      return new ArrayList<XMLField>();
+    }
     if (xmlFields == null) {
       try {
         xmlFields = getFormTemplateBm().getXMLFieldsForExport(
@@ -808,6 +819,52 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       }
     }
     return xmlFields;
+  }
+  
+  public HashMap<String, String> getFormValues(String language) {
+    HashMap<String, String> formValues = new HashMap<String, String>();
+    if ("0".equals(getInfoId())) {
+      // this publication does not use a form
+      return formValues;
+    }
+
+    DataRecord data = null;
+    PublicationTemplate pub = null;
+    try {
+      pub =
+          PublicationTemplateManager.getInstance().getPublicationTemplate(
+              getPK().getInstanceId() + ":" + getInfoId());
+      data = pub.getRecordSet().getRecord(pk.getId());
+    } catch (Exception e) {
+      SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FORM_RECORD",
+          "pubId = " + getPK().getId() + "infoId = " + getInfoId());
+    }
+
+    if (data == null) {
+      return formValues;
+    }
+
+    String fieldNames[] = data.getFieldNames();
+    PagesContext pageContext = new PagesContext();
+    pageContext.setLanguage(language);
+    for (String fieldName : fieldNames) {
+      try {
+        Field field = data.getField(fieldName);
+        GenericFieldTemplate fieldTemplate =
+            (GenericFieldTemplate) pub.getRecordTemplate().getFieldTemplate(fieldName);
+        FieldDisplayer fieldDisplayer =
+            TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
+        fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+        formValues.put(fieldName, sw.toString());
+      } catch (Exception e) {
+        SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FIELD_VALUE",
+            "pubId = " + getPK().getId() + "fieldName = " + fieldName, e);
+      }
+
+    }
+    return formValues;
   }
 
   public String getFieldValue(String fieldNameAndLanguage) {
@@ -825,74 +882,64 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
     String fieldValue = "";
 
-    try {
-      List<XMLField> theXmlFields = getXmlFields(language);
-      XMLField xmlField = null;
-      for (int x = 0; x < theXmlFields.size(); x++) {
-        xmlField = theXmlFields.get(x);
-        if (fieldName.equals(xmlField.getName())) {
-          fieldValue = xmlField.getValue();
-          if (fieldValue == null) {
-            fieldValue = "";
-          } else {
-            if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
-              String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
-                  length());
-              if (StringUtil.isDefined(attachmentId)) {
-                if (attachmentId.startsWith("/")) {
-                  // case of an image provided by a gallery
-                  fieldValue = attachmentId;
-                } else {
-                  AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
-                      new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
-                  if (attachment != null) {
-                    attachment.setLogicalName(attachment.getLogicalName(language));
-                    attachment.setPhysicalName(attachment.getPhysicalName(language));
-                    attachment.setType(attachment.getType(language));
-                    fieldValue = attachment.getWebURL();
-                  }
-                }
-              } else {
-                fieldValue = "";
-              }
-            } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
-              fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
-                  getId(), fieldName, language);
-            } else {
-              fieldValue = EncodeHelper.javaStringToHtmlParagraphe(fieldValue);
-            }
-          }
-        }
+    List<XMLField> xmlFields = getXmlFields(language);
+    for (XMLField xmlField : xmlFields) {
+      if (fieldName.equals(xmlField.getName())) {
+        fieldValue = getValueOfField(xmlField, language);
       }
-    } catch (Exception e) {
-      throw new PublicationRuntimeException(
-          "PublicationDetail.getModelContent('" + fieldName + "')",
-          SilverpeasRuntimeException.ERROR,
-          "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
     }
 
     SilverTrace.info("publication", "PublicationDetail.getModelContent('" + fieldName + "')",
         "root.MSG_GEN_EXIT_METHOD", "fieldValue = " + fieldValue);
     return fieldValue;
   }
-
-  private FormTemplateBm getFormTemplateBm() {
-    FormTemplateBm formTemplateBm = null;
-
-
-    if (formTemplateBm == null) {
-      try {
-        FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
-        formTemplateBm = formTemplateBmHome.create();
-      } catch (Exception e) {
-        throw new PublicationRuntimeException(
-            "PublicationDetail.getFormTemplateBm()",
-            SilverpeasRuntimeException.ERROR,
-            "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
+  
+  private String getValueOfField(XMLField xmlField, String language) {
+    String fieldValue = xmlField.getValue();
+    if (fieldValue == null) {
+      fieldValue = "";
+    } else {
+      if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
+        String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
+            length());
+        if (StringUtil.isDefined(attachmentId)) {
+          if (attachmentId.startsWith("/")) {
+            // case of an image provided by a gallery
+            fieldValue = attachmentId;
+          } else {
+            AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
+                new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
+            if (attachment != null) {
+              attachment.setLogicalName(attachment.getLogicalName(language));
+              attachment.setPhysicalName(attachment.getPhysicalName(language));
+              attachment.setType(attachment.getType(language));
+              fieldValue = attachment.getWebURL();
+            }
+          }
+        } else {
+          fieldValue = "";
+        }
+      } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+        fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
+            getId(), xmlField.getName(), language);
+      } else {
+        fieldValue = EncodeHelper.javaStringToHtmlParagraphe(fieldValue);
       }
     }
-    return formTemplateBm;
+    return fieldValue;
+  }
+
+  private FormTemplateBm getFormTemplateBm() {
+    try {
+      FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
+      return formTemplateBmHome.create();
+    } catch (Exception e) {
+      throw new PublicationRuntimeException(
+          "PublicationDetail.getFormTemplateBm()",
+          SilverpeasRuntimeException.ERROR,
+          "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
+    }
   }
 
   /****************************************************************************************/
