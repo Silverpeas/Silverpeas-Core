@@ -219,13 +219,18 @@ public class UserProfileResource extends RESTWebService {
     String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
             : null);
     String[] contactIds = getContactIds(theUser.getId());
-    SearchCriteria criteria = aSearchCriteria().withDomainId(null, getUserDetail()).
-            withComponentInstanceId(instanceId).
-            withRoles(rolesIds).
-            withUserIds(contactIds).
-            withName(name).
-            build();
-    UserDetail[] contacts = getOrganizationController().searchUsers(criteria);
+    UserDetail[] contacts;
+    if (contactIds.length > 0) {
+      SearchCriteria criteria = aSearchCriteria().withDomainId(null, getUserDetail()).
+              withComponentInstanceId(instanceId).
+              withRoles(rolesIds).
+              withUserIds(contactIds).
+              withName(name).
+              build();
+      contacts = getOrganizationController().searchUsers(criteria);
+    } else {
+      contacts = new UserDetail[0];
+    }
     UserDetail[] paginatedUsers = paginate(contacts, page);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
