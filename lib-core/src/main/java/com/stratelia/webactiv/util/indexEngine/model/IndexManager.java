@@ -23,17 +23,20 @@
  */
 package com.stratelia.webactiv.util.indexEngine.model;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.indexEngine.parser.Parser;
+import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.MissingResourceException;
-import java.util.Set;
-
+import java.util.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -44,16 +47,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.index.Term;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.indexEngine.parser.Parser;
-import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -311,7 +304,7 @@ public class IndexManager {
     IndexWriter writer = indexWriters.get(path);
     if (writer == null) {
       try {
-        boolean createIndex = false;
+        boolean createIndex;
         File file = new File(path);
         if (!file.exists()) {
           file.mkdirs();
@@ -519,7 +512,7 @@ public class IndexManager {
     }
 
     List<FieldDescription> list3 = indexEntry.getFields();
-    Store storeAction = null;
+    Store storeAction;
     for (FieldDescription field : list3) {
       if (StringUtil.isDefined(field.getContent())) {
         // if a field is used for the sort it's stored in the lucene index

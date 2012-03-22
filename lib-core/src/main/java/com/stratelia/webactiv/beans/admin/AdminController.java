@@ -33,14 +33,8 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+import java.util.*;
 /*
 This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
 It provides access functions to query and modify the domains as well as the company organization

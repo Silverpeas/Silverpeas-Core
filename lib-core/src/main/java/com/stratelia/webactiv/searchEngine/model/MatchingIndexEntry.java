@@ -24,6 +24,9 @@
 
 package com.stratelia.webactiv.searchEngine.model;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -31,10 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 
 /**
  * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.

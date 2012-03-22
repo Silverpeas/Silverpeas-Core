@@ -23,19 +23,18 @@
  */
 package com.stratelia.webactiv.organization;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroGroupReport;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.Arrays;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -204,7 +203,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_ALL_ROOT_GROUPS = "select "
-          + GROUP_COLUMNS + " from ST_Group where superGroupId is null";
+          + GROUP_COLUMNS + ", UPPER(name) from ST_Group where superGroupId is null order by UPPER(name)";
 
   /**
    * Returns all the Groups without a superGroup.
@@ -216,7 +215,7 @@ public class GroupTable extends Table<GroupRow> {
     return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_ALL_ROOT_GROUP_IDS =
-          "select id from ST_Group where superGroupId is null";
+          "select id, UPPER(name) from ST_Group where superGroupId is null order by UPPER(name)";
 
   /**
    * Returns all the Groups having a given superGroup.
@@ -431,12 +430,12 @@ public class GroupTable extends Table<GroupRow> {
           GroupRow groupModel) throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr = ") AND (";
-    StringBuffer theQuery;
+    StringBuilder theQuery;
     List<Integer> ids = new ArrayList<Integer>();
     List<String> params = new ArrayList<String>();
 
     if ((aRoleId != null) && (aRoleId.length > 0)) {
-      theQuery = new StringBuffer(SELECT_SEARCH_GROUPSID_IN_ROLE);
+      theQuery = new StringBuilder(SELECT_SEARCH_GROUPSID_IN_ROLE);
       theQuery.append(" WHERE ((ST_Group.id = ST_UserRole_Group_Rel.groupId) AND ");
       if (aRoleId.length > 1) {
         theQuery.append("(");
@@ -453,14 +452,14 @@ public class GroupTable extends Table<GroupRow> {
       }
       concatAndOr = true;
     } else if (componentId >= 0) {
-      theQuery = new StringBuffer(SELECT_SEARCH_GROUPSID_IN_COMPONENT);
+      theQuery = new StringBuilder(SELECT_SEARCH_GROUPSID_IN_COMPONENT);
       ids.add(componentId);
       theQuery.append(" WHERE ((ST_UserRole.id = ST_UserRole_Group_Rel.userRoleId) AND (");
       theQuery.append(
               "ST_Group.id = ST_UserRole_Group_Rel.groupId) AND (ST_UserRole.instanceId = ?)");
       concatAndOr = true;
     } else {
-      theQuery = new StringBuffer(SELECT_SEARCH_GROUPSID);
+      theQuery = new StringBuilder(SELECT_SEARCH_GROUPSID);
     }
 
     if (isRootGroup) {
@@ -517,7 +516,7 @@ public class GroupTable extends Table<GroupRow> {
           AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr;
-    StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_GROUPS);
+    StringBuilder theQuery = new StringBuilder(SELECT_SEARCH_GROUPS);
     List<Integer> ids = new ArrayList<Integer>();
     List<String> params = new ArrayList<String>();
 
