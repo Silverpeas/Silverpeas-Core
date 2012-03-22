@@ -47,6 +47,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:set var="action" value="${requestScope.Action}"/>
 <c:set var="validation" value="javascript:onClick=sendDataCreate();"/>
 <c:set var="endDate" value="${ticket.endDate}"/>
+<c:set var="sharedObjectType" value="${ticket.sharedObjectType}"/>
 <c:set var="maxAccessNb" value="${ticket.nbAccessMax}"/>
 <fmt:message var="currentOp" key="sharing.createTicket"/>
 <c:if test="${action eq 'UpdateTicket'}">
@@ -64,9 +65,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
   </c:if>
 </c:if>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-
+	<title></title>
     <view:looknfeel/>
     <view:includePlugin name="datepicker"/>
     
@@ -149,17 +151,21 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
         function toggleContinuous(effect) {
           continuousTicket = !continuousTicket;
+          var isNodeSharing = <c:out value="${sharedObjectType eq 'Node'}" />;
           if (continuousTicket) {
             $('.threshold').hide(effect);
           } else {
             $('.threshold').show(effect);
+            if (isNodeSharing) {
+            	$("#nbAccessMax").hide();
+            }
           }
         }
     </script>
   </head>
   <body>
     <fmt:message var="componentId" key="sharing.tickets"/>
-    <view:browseBar componentId="${ticket.componentId}">
+    <view:browseBar componentId="${ticket.componentId}" >
       <view:browseBarElt id="${currentOp}" label="${currentOp}" link=""/>
     </view:browseBar>
 
@@ -167,10 +173,15 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
       <view:frame>
         <view:board>
 
-          <FORM Name="ticketForm" method="post" action="">
-            <table CELLPADDING=5 WIDTH="100%">
+          <form name="ticketForm" method="post" action="">
+            <table cellpadding="5" width="100%">
               <tr>
-                <td class="txtlibform"><fmt:message key="sharing.nameFile"/> :</td>
+              	<td class="txtlibform">
+              	<c:choose>
+              		<c:when test="${sharedObjectType eq 'Node'}"><fmt:message key="sharing.nodeName"/> :</c:when>
+              		<c:otherwise><fmt:message key="sharing.nameFile"/> :</c:otherwise>
+              	</c:choose>
+              	</td>
                 <td><c:out value="${fileName}"/></td>
               </tr>
               <tr>
@@ -179,47 +190,47 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
                   <td><a href="<c:out value='${ticketURL}'/>"><c:out value="${ticket.token}"/></a></td>
                 </c:if>
               </tr>
-              <input type="hidden" name="componentId" value="<c:out value='${ticket.componentId}'/>">
-              <input type="hidden" name="token" value="<c:out value='${ticket.token}'/>">
-              <input type="hidden" name="objectId" size="60" maxlength="150" value="<c:out value='${ticket.sharedObjectId}'/>">
-              <input type="hidden" name="type" value="<c:out value='${ticket.sharedObjectType}'/>">
+              <input type="hidden" name="componentId" value="<c:out value='${ticket.componentId}'/>"/>
+              <input type="hidden" name="token" value="<c:out value='${ticket.token}'/>"/>
+              <input type="hidden" name="objectId" size="60" maxlength="150" value="<c:out value='${ticket.sharedObjectId}'/>"/>
+              <input type="hidden" name="type" value="<c:out value='${ticket.sharedObjectType}'/>"/>
 
               <tr>
                 <td class="txtlibform"><fmt:message key="sharing.creationDate"/> :</td>
-                <TD><view:formatDate value="${ticket.creationDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${requestScope.Creator}"/></TD>
+                <td><view:formatDate value="${ticket.creationDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${requestScope.Creator}"/></td>
               </tr>
               <c:if test="${ticket.modified}">
                 <tr>
                   <td class="txtlibform"><fmt:message key="sharing.updateDate"/> :</td>
-                  <TD><view:formatDate value="${ticket.updateDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${requestScope.Updater}"/></TD>
+                  <td><view:formatDate value="${ticket.updateDate}" language="${language}"/>&nbsp;<span class="txtlibform"><fmt:message key="sharing.by"/></span>&nbsp;<c:out value="${requestScope.Updater}"/></td>
                 </tr>
               </c:if>
               <tr>
                 <td class="txtlibform"><fmt:message key="sharing.continuous"/> :</td>
-                <td><input type="checkbox" name="continuous" <c:out value="${continuousChecked}"/> onClick="javascript:toggleContinuous('slow');"/></td>
+                <td><input type="checkbox" name="continuous" <c:out value="${continuousChecked}"/> onclick="javascript:toggleContinuous('slow');"/></td>
               </tr>
               <tr class="threshold">
                 <td class="txtlibform"><fmt:message key="sharing.endDate"/> :</td>
-                <TD><input type="text" class="dateToPick" name="endDate" size="12" maxlength="10" value="<view:formatDate value='${endDate}' language='${language}'/>"/><span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)
+                <td><input type="text" class="dateToPick" name="endDate" size="12" maxlength="10" value="<view:formatDate value='${endDate}' language='${language}'/>"/><span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
                     <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
-                </TD>
+                </td>
               </tr>
-              <tr class="threshold">
+              <tr class="threshold" id="nbAccessMax">
                 <td class="txtlibform"><fmt:message key="sharing.nbAccessMax"/> :</td>
-                <TD>
-                  <input type="text" name="nbAccessMax" size="3" maxlength="3" value="<c:out value='${maxAccessNb}'/>" >
+                <td>
+                  <input type="text" name="nbAccessMax" size="3" maxlength="3" value="<c:out value='${maxAccessNb}'/>"/>
                   <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
-                </TD>
+                </td>
               </tr>
               <tr>
                 <td colspan="2">( <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/> : <fmt:message key="GML.mandatory"/> )</td>
               </tr>
 
-              <c:if test="${action eq 'UpdateTicket'}">
+              <c:if test="${action == 'UpdateTicket' && sharedObjectType != 'Node'}">
                 <tr><td colspan="2">
                     <fmt:message var="downloadDate" key="sharing.downloadDate"/>
                     <fmt:message var="downloadIP" key="sharing.IP"/>
-                    <view:arrayPane var="downloadList" routingAddress="EditTicket?KeyFile=${ticket.keyFile}">
+                    <view:arrayPane var="downloadList" routingAddress="EditTicket?token=${ticket.token}">
                       <view:arrayColumn title="${downloadDate}" />
                       <view:arrayColumn title="${downloadIP}" />
                       <c:forEach items="${ticket.downloads}" var="download">
@@ -236,14 +247,14 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
           </form>
 
         </view:board>
-      <BR/><center>
+      <br/><center>
         <fmt:message var="cancel" key="GML.cancel"/>
         <fmt:message var="validate" key="GML.validate"/>
         <view:buttonPane>
           <view:button action="${validation}" label="${validate}" disabled="false"/>
           <view:button action="javascript:window.close();" label="${cancel}" disabled="false"/>
         </view:buttonPane>
-      </center><BR/>
+      </center>
     </view:frame>
   </view:window>
 </body>

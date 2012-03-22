@@ -24,16 +24,22 @@
 package com.silverpeas.sharing.servlets;
 
 import com.silverpeas.look.SilverpeasLook;
+import com.silverpeas.sharing.model.NodeTicket;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,30 +53,33 @@ public class GetInfoFromKeyServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
   private OrganizationController organizationController = new OrganizationController();
+  private static final ResourceLocator settings = new ResourceLocator("com.silverpeas.sharing.settings.sharing", "");
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    String keyFile = request.getParameter(PARAM_KEYFILE);
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(keyFile);
+    String token = request.getParameter(PARAM_KEYFILE);
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
     request.setAttribute(ATT_TICKET, ticket);
     if (ticket == null || !ticket.isValid()) {
       getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp").forward(
           request, response);
+    } else if (ticket instanceof NodeTicket) {
+      String url = getURLForFolderSharing(request, token);
+      response.sendRedirect(url);
     } else {
-
       if (ticket instanceof SimpleFileTicket) {
         AttachmentDetail attachment = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
         request.setAttribute("fileIcon", attachment.getAttachmentIcon());
-        request.setAttribute("fileSize", attachment.getSize());
+        request.setAttribute("fileSize", FileRepositoryManager.formatFileSize(attachment.getSize()));
       } else if (ticket instanceof VersionFileTicket) {
         Document document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
         DocumentVersion version = new VersioningUtil().getLastPublicVersion(document.getPk());
         request.setAttribute("fileIcon", version.getDocumentIcon());
-        request.setAttribute("fileSize", version.getSize());
+        request.setAttribute("fileSize", FileRepositoryManager.formatFileSize(version.getSize()));
       }
       request.setAttribute(ATT_WALLPAPER, getWallpaperFor(ticket));
-      request.setAttribute(ATT_KEYFILE, keyFile);
+      request.setAttribute(ATT_KEYFILE, token);
       getServletContext().getRequestDispatcher("/sharing/jsp/displayTicketInfo.jsp").forward(
           request, response);
     }
@@ -92,5 +101,13 @@ public class GetInfoFromKeyServlet extends HttpServlet {
 
   private OrganizationController getOrganizationController() {
     return organizationController;
+  }
+  
+  private String getURLForFolderSharing(HttpServletRequest request, String token) {
+    String url = settings.getString("sharing.folder.webapp");
+    if (!url.startsWith("http")) {
+      url = URLManager.getServerURL(request) + url;
+    }
+    return url + "?" + token;
   }
 }

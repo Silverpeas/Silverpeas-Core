@@ -206,7 +206,7 @@ public abstract class Ticket implements Serializable {
    *
    * @return the relative path of the URL of this ticket.
    */
-  public String getRelativeUrl() {
+  private String getRelativeUrl() {
     return "/Ticket?Key=" + getToken();
   }
 

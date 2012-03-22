@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -39,12 +40,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.silverpeas.rest.RESTWebService;
-import com.stratelia.webactiv.util.DateUtil;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.services.SharingServiceFactory;
 
 @Service
 @Scope("request")
-@Path("sharing/{ticket}")
+@Path("sharing/{token}")
 public class SharingResource extends RESTWebService {
+  
+  @PathParam("token")
+  private String token;
 
   @Override
   protected String getComponentId() {
@@ -55,17 +60,16 @@ public class SharingResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public SharingEntity getSharing() {
     String baseUri = getUriInfo().getBaseUri().toString();
-    String componentId = "kmelia3061";
-    String nodeId = "0";
-    URI webApplicationRootUri = getWebApplicationRootUri(baseUri, componentId, nodeId);
-    Date expiration = DateUtil.getEndDateOfMonth(new Date());
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    URI webApplicationRootUri = getWebApplicationRootUri(baseUri, ticket.getComponentId(), String.valueOf(ticket.getSharedObjectId()));
+    Date expiration = ticket.getEndDate();
     return new SharingEntity(getUriInfo().getRequestUri(), webApplicationRootUri, expiration);
   }
   
   private URI getWebApplicationRootUri(String baseUri, String componentId, String nodeId) {
     URI uri;
     try {
-      uri = new URI(baseUri+"nodes/"+componentId+"/"+nodeId);
+      uri = new URI(baseUri+"nodes/"+componentId+"/"+token+"/"+nodeId);
     } catch (URISyntaxException e) {
       Logger.getLogger(PublicationResource.class.getName()).log(Level.SEVERE, null, e);
       throw new RuntimeException(e.getMessage(), e);

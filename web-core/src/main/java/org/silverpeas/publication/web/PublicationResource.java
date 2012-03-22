@@ -23,6 +23,7 @@
  */
 package org.silverpeas.publication.web;
 
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
 
 import java.net.URI;
@@ -47,9 +48,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableNode;
+import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
@@ -61,11 +68,14 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  */
 @Service
 @Scope("request")
-@Path("publications/{componentId}")
+@Path("publications/{componentId}/{token}")
 public class PublicationResource extends RESTWebService {
   
   @PathParam("componentId")
   private String componentId;
+  
+  @PathParam("token")
+  private String token;
 
   @Override
   protected String getComponentId() {
@@ -77,9 +87,14 @@ public class PublicationResource extends RESTWebService {
   public PublicationEntity[] getPublications(@QueryParam("node") String nodeId,
       @QueryParam("withAttachments") boolean withAttachments) {
     
+    NodePK nodePK = getNodePK(nodeId);
+    if (!isNodeReadable(nodePK)) {
+      throw new WebApplicationException(Status.UNAUTHORIZED);
+    }
+    
     Collection<PublicationDetail> publications;
     try {
-      publications = getPublicationBm().getDetailsByFatherPK(getNodePK(nodeId), null, true);
+      publications = getPublicationBm().getDetailsByFatherPK(nodePK, null, true);
     } catch (RemoteException e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
@@ -93,7 +108,7 @@ public class PublicationResource extends RESTWebService {
       if (withAttachments) {
         Collection<AttachmentDetail> attachments =
             AttachmentController.searchAttachmentByPKAndContext(publication.getPK(), "Images");
-        entity.withAttachments(attachments, getUriInfo().getBaseUri().toString());
+        entity.withAttachments(attachments, getUriInfo().getBaseUri().toString(), token);
       }
       entities.add(entity);
     }
@@ -113,6 +128,30 @@ public class PublicationResource extends RESTWebService {
   
   private NodePK getNodePK(String nodeId) {
     return new NodePK(nodeId, getComponentId());
+  }
+  
+  @SuppressWarnings("unchecked")
+  private boolean isNodeReadable(NodePK nodePK) {
+    NodeDetail node;
+    try {
+      node = getNodeBm().getDetail(nodePK);
+    } catch (RemoteException e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+    ShareableNode nodeResource = new ShareableNode(token, node);
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
+  }
+  
+  private NodeBm getNodeBm() {
+    NodeBm nodeBm = null;
+    try {
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
+      nodeBm = nodeBmHome.create();
+    } catch (Exception e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+    return nodeBm;
   }
   
   private PublicationBm getPublicationBm() {

@@ -24,7 +24,7 @@
 package org.silverpeas.publication.web;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -37,7 +37,9 @@ import javax.xml.bind.annotation.XmlElement;
 import org.silverpeas.node.web.NodeEntity;
 
 import com.silverpeas.attachment.web.AttachmentEntity;
+import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.rest.Exposable;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
@@ -55,7 +57,10 @@ public class PublicationEntity implements Exposable {
   private Date updateDate;
   @XmlElement
   private AttachmentEntity[] attachments;
-
+  @XmlElement
+  private UserProfileEntity creator;
+  @XmlElement
+  private UserProfileEntity lastUpdater;
   @Override
   public URI getURI() {
     return uri;
@@ -75,14 +80,17 @@ public class PublicationEntity implements Exposable {
     this.setDescription(publication.getDescription());
     this.setUri(uri);
     this.setUpdateDate(publication.getUpdateDate());
+    this.creator = UserProfileEntity.fromUser(publication.getCreator());
+    this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
   }
   
-  public PublicationEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails, String baseURI) {
+  public PublicationEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails,
+      String baseURI, String token) {
     if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
       for(AttachmentDetail attachment : attachmentDetails) {
         AttachmentEntity entity = AttachmentEntity.fromAttachment(attachment);
-        URI sharedUri = getAttachmentSharedURI(attachment, baseURI);
+        URI sharedUri = getAttachmentSharedURI(attachment, baseURI, token);
         entity.setSharedUri(sharedUri);
         entities.add(entity);
       }
@@ -91,13 +99,13 @@ public class PublicationEntity implements Exposable {
     return this;
   }
   
-  private URI getAttachmentSharedURI(AttachmentDetail attachment, String baseURI) {
+  private URI getAttachmentSharedURI(AttachmentDetail attachment, String baseURI, String token) {
     URI sharedUri;
     try {
       sharedUri =
           new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" +
-              attachment.getPK().getId() + "/" + attachment.getLogicalName());
-    } catch (URISyntaxException e) {
+              token + "/" + attachment.getPK().getId() + "/" + URLEncoder.encode(attachment.getLogicalName(), "utf-8"));
+    } catch (Exception e) {
       Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, e);
       throw new RuntimeException(e.getMessage(), e);
     }

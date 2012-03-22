@@ -40,8 +40,8 @@
   <script type="text/javascript">
     var ticketWindow = window;
 
-    function editTicket(keyFile) {
-      urlWindows = "EditTicket?KeyFile=" + keyFile;
+    function editTicket(token) {
+      urlWindows = "EditTicket?token=" + token;
       windowName = "ticketWindow";
       larg = "700";
       haut = "400";
@@ -54,15 +54,15 @@
       }
     }
 
-    function deleteTicket(keyFile) {
+    function deleteTicket(token) {
       if (window.confirm("<%=resource.getString("sharing.confirmDeleteTicket")%> ?")) {
-        document.deleteForm.KeyFile.value = keyFile;
+        document.deleteForm.token.value = token;
         document.deleteForm.submit();
       }
     }
   </script>
 </head>
-<body>
+<body id="sharing-overview">
 <fmt:message key="sharing.tickets" var="browseBar"/>
 <form name="readForm" action="" method="post">
   <input type="hidden" name="mode"/>
@@ -89,7 +89,7 @@
           <c:set var="accessCount" value="${ticket.nbAccess}"/>
           <view:arrayLine>
               <c:url var="lien" value="${ticket.resource.URL}"/>
-              <view:arrayCellText text="<a href=\'${lien}\'>${ticket.resource.name}</a>" />
+              <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\'>${ticket.resource.name}</a>" />
               <%
                IconPane iconPane = gef.getIconPane();
               Icon keyIcon = iconPane.addIcon();
@@ -103,6 +103,9 @@
             </c:if>
             <c:if test="${ticket.nbAccessMax gt 0}">
               <c:set var="accessCount" value="${ticket.nbAccess}/${ticket.nbAccessMax}"/>
+            </c:if>
+            <c:if test="${ticket.sharedObjectType eq 'Node'}">
+              <c:set var="accessCount" value="n/a"/>
             </c:if>
             <view:arrayCellText text="${endDate}" />
             <view:arrayCellText text="${accessCount}" />
@@ -129,17 +132,14 @@
 </form>
 
 <form name="ticketForm" action="" method="post">
-  <input type="hidden" name="KeyFile"/>
-  <input type="hidden" name="FileId"/>
-  <input type="hidden" name="ComponentId"/>
-  <input type="hidden" name="Versioning"/>
-  <input type="hidden" name="EndDate"/>
-  <input type="hidden" name="NbAccessMax"/>
-  <input type="hidden" name="Continuous"/>
+  <input type="hidden" name="token"/>
+  <input type="hidden" name="endDate"/>
+  <input type="hidden" name="nbAccessMax"/>
+  <input type="hidden" name="continuous"/>
 </form>
 
 <form name="deleteForm" action="DeleteTicket" method="post">
-  <input type="hidden" name="KeyFile"/>
+  <input type="hidden" name="token"/>
 </form>
 
 </body>

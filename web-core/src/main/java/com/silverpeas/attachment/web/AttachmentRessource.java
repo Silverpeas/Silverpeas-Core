@@ -45,6 +45,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -54,11 +57,14 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 @Service
 @Scope("request")
-@Path("attachments/{componentId}")
+@Path("attachments/{componentId}/{token}")
 public class AttachmentRessource extends RESTWebService {
 
   @PathParam("componentId")
   private String componentId;
+  
+  @PathParam("token")
+  private String token;
   
   @Override
   protected String getComponentId() {
@@ -71,6 +77,9 @@ public class AttachmentRessource extends RESTWebService {
   public Response getFileContent(@PathParam("id") String attachmentId) {
     AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
         attachmentId));
+    if (!isFileReadable(attachment)) {
+      throw new WebApplicationException(Status.UNAUTHORIZED);
+    }
     File realFile = getFile(attachment);
     if (!realFile.exists() && !realFile.isFile()) {
       return Response.ok().build();
@@ -97,6 +106,9 @@ public class AttachmentRessource extends RESTWebService {
     while (tokenizer.hasMoreTokens()) {
       AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
           tokenizer.nextToken()));
+      if (!isFileReadable(attachment)) {
+        throw new WebApplicationException(Status.UNAUTHORIZED);
+      }
       File file = getFile(attachment);
       File destFile = new File(exportDir+File.separator+attachment.getLogicalName());
       try {
@@ -108,7 +120,7 @@ public class AttachmentRessource extends RESTWebService {
     try {
       URI downloadUri =
           getUriInfo().getBaseUriBuilder().path("attachments").path(componentId)
-              .path("zipcontent/" + zipFileName).build();
+              .path(token).path("zipcontent/" + zipFileName).build();
       long size = ZipManager.compressPathToZip(exportDir, exportDir+".zip");
       zip = new ZipEntity(getUriInfo().getRequestUri(), downloadUri.toString(), size);
     } catch (Exception e) {
@@ -140,8 +152,14 @@ public class AttachmentRessource extends RESTWebService {
     String filePath = FileRepositoryManager.getAbsolutePath(componentId)
     + FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(
         attachment.getContext())) + File.separator + attachment.getPhysicalName();
-    File realFile = new File(filePath);
-    return realFile;
+    return new File(filePath);
+  }
+  
+  @SuppressWarnings("unchecked")
+  private boolean isFileReadable(AttachmentDetail attachment) {
+    ShareableAttachment attachmentResource = new ShareableAttachment(token, attachment);
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    return ticket != null && ticket.getAccessControl().isReadable(attachmentResource);    
   }
 
 }

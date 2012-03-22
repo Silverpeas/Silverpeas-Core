@@ -42,6 +42,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableNode;
+import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
@@ -54,11 +57,14 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  */
 @Service
 @Scope("request")
-@Path("nodes/{componentId}")
+@Path("nodes/{componentId}/{token}")
 public class NodeResource extends RESTWebService {
   
   @PathParam("componentId")
   private String componentId;
+  
+  @PathParam("token")
+  private String token;
   
   /**
    * Get the root of the application and its children. As this service works only in non
@@ -69,6 +75,9 @@ public class NodeResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getRoot() {
     NodeDetail node = getNodeDetail(NodePK.ROOT_NODE_ID);
+    if (!isNodeReadable(node)) {
+      throw new WebApplicationException(Status.UNAUTHORIZED); 
+    }
     URI uri = getUriInfo().getRequestUriBuilder().path(node.getNodePK().getId()).build();
     if (getUriInfo().getRequestUri().toString().endsWith("/"+NodePK.ROOT_NODE_ID)) {
       uri = getUriInfo().getRequestUri();
@@ -93,8 +102,11 @@ public class NodeResource extends RESTWebService {
       return getRoot();
     } else {
       NodeDetail node = getNodeDetail(nodeId);
+      if (!isNodeReadable(node)) {
+        throw new WebApplicationException(Status.UNAUTHORIZED);
+      }
       URI uri = getUriInfo().getRequestUri();
-      return NodeEntity.fromNodeDetail(node, uri);      
+      return NodeEntity.fromNodeDetail(node, uri);
     }
   }
   
@@ -109,6 +121,9 @@ public class NodeResource extends RESTWebService {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     NodeDetail node = getNodeDetail(nodeId);
+    if (!isNodeReadable(node)) {
+      throw new WebApplicationException(Status.UNAUTHORIZED);
+    }
     String requestUri = getUriInfo().getRequestUri().toString();
     String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
     NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
@@ -149,6 +164,13 @@ public class NodeResource extends RESTWebService {
   
   private NodePK getNodePK(String id) {
     return new NodePK(id, getComponentId());
+  }
+  
+  @SuppressWarnings("unchecked")
+  private boolean isNodeReadable(NodeDetail node) {
+    ShareableNode nodeResource = new ShareableNode(token, node);
+    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
   }
   
   private NodeBm getNodeBm() {
