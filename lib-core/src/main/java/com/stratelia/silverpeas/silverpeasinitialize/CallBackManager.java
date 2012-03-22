@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverpeasinitialize;
 
 import java.util.List;
@@ -28,15 +29,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The CallBackManager centralizes and dispatches the notification events coming from the different
- * actions performed within Silverpeas components.
- *
- * The CallBackManager is a way to loosly couply the differents components between them. In effect,
- * some components can be interested by some kind of events, whatever their origin, in order to
- * perform some useful computation. For doing, they have just to subscribe a callback function for
- * the kind of event they are interested. The callback function will be invoked by a CallBackManager
- * at the firing of a such event.
- * The callback function is represented by an object implementing the CallBack interface.
- *
+ * actions performed within Silverpeas components. The CallBackManager is a way to loosly couply the
+ * differents components between them. In effect, some components can be interested by some kind of
+ * events, whatever their origin, in order to perform some useful computation. For doing, they have
+ * just to subscribe a callback function for the kind of event they are interested. The callback
+ * function will be invoked by a CallBackManager at the firing of a such event. The callback
+ * function is represented by an object implementing the CallBack interface.
  * @deprecated Please use the Silverpeas Notification API defined in the package
  * com.silverpeas.notification
  */
@@ -68,7 +66,7 @@ public class CallBackManager {
   public final static int ACTION_XMLCONTENT_DELETE = 20;
   public final static int ACTION_HEADER_PUBLICATION_UPDATE = 21;
   public final static int ACTION_PUBLICATION_REMOVE = 22;
-  
+
   public final static int ACTION_LAST = 23;
 
   private static final CallBackManager instance = new CallBackManager();
@@ -128,7 +126,7 @@ public class CallBackManager {
    * @param action the event fired and matching a specific context of an action.
    * @param iParam a parameter as integer.
    * @param sParam another parameter as string.
-   * @param extraParam  an extra parameter as an object.
+   * @param extraParam an extra parameter as an object.
    */
   synchronized public void invoke(final int action, final int iParam, final String sParam,
       final Object extraParam) {
@@ -143,7 +141,7 @@ public class CallBackManager {
    * @param action the event matching a specific context of an action.
    * @param iParam a parameter as integer.
    * @param sParam another parameter as string.
-   * @param extraParam  an extra parameter as an object.
+   * @param extraParam an extra parameter as an object.
    * @return a String representation of the invocation.
    */
   public String getInvokeString(int action, int iParam, String sParam,
@@ -215,7 +213,7 @@ public class CallBackManager {
         break;
       case ACTION_HEADER_PUBLICATION_UPDATE:
         sb.append("ACTION_HEADER_PUBLICATION_UPDATE");
-        break;  
+        break;
       default:
         sb.append("ACTION_UNKNOWN");
     }

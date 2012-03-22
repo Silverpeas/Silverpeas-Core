@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,7 +44,7 @@ public class CSVReader {
   protected String[] m_colTypes;
   protected String[] m_colDefaultValues;
   protected String[] m_colMandatory;
-  
+
   protected String m_separator;
   protected ResourceLocator m_utilMessages;
 
@@ -54,10 +54,10 @@ public class CSVReader {
   protected String[] m_specificColTypes;
   protected String[] m_specificColMandatory;
   protected String[] m_specificParameterNames;
-  
-  //Active control file columns/object columns
+
+  // Active control file columns/object columns
   private boolean columnNumberControlEnabled = true;
-  //Active control file extra columns/object columns
+  // Active control file extra columns/object columns
   private boolean extraColumnsControlEnabled = true;
 
   public boolean isExtraColumnsControlEnabled() {
@@ -78,12 +78,12 @@ public class CSVReader {
 
   /**
    * Constructeur
-   * @param language 
+   * @param language
    */
   public CSVReader(String language) {
     m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", language);
   }
-  
+
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator) {
     ResourceLocator rs = new ResourceLocator(propertiesFile, "");
@@ -97,7 +97,7 @@ public class CSVReader {
         m_nbCols);
     m_separator = separator;
   }
-  
+
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator, String specificPropertiesFile,
       String specificRootPropertyName) {
@@ -123,10 +123,10 @@ public class CSVReader {
         m_specificColTypes[i] = Variant.TYPE_STRING;
       }
     }
-    
+
     m_specificColMandatory = specificRs.getStringArray(specificRootPropertyName, ".Mandatory",
         m_specificNbCols);
-    
+
     m_specificParameterNames = m_specificColNames;
   }
 
@@ -139,8 +139,8 @@ public class CSVReader {
       String theLine = rb.readLine();
       if (theLine != null && !isExtraColumnsControlEnabled()) {
         StringTokenizer st = new StringTokenizer(theLine, m_separator);
-        setM_specificNbCols(st.countTokens()-m_nbCols);
-      }        
+        setM_specificNbCols(st.countTokens() - m_nbCols);
+      }
       while (theLine != null) {
         SilverTrace.info("util", "CSVReader.parseStream()",
             "root.MSG_PARAM_VALUE", "Line=" + lineNumber);
@@ -155,12 +155,12 @@ public class CSVReader {
         theLine = rb.readLine();
       }
       if (listErrors.length() > 0) {
-        throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR, 
+        throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR,
             "util.EX_PARSING_CSV_VALUE", listErrors.toString());
       }
       return valret.toArray(new Variant[0][0]);
     } catch (IOException e) {
-      throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR, 
+      throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR,
           "util.EX_TRANSMITING_CSV", m_utilMessages.getString("util.ligne") + " = "
           + Integer.toString(lineNumber) + "\n" + listErrors.toString(), e);
     }
@@ -184,18 +184,17 @@ public class CSVReader {
       }
       try {
         if ((theValue == null) || (theValue.length() <= 0)) {
-          if (Boolean.parseBoolean(m_colMandatory[i]))
-          {
+          if (Boolean.parseBoolean(m_colMandatory[i])) {
             listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
                 Integer.toString(lineNumber)).append(", ");
             listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
                 Integer.toString(i + 1)).append(", ");
             listErrors.append(m_utilMessages.getString("util.errorMandatory")).append(
-                m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(", ");
+                m_utilMessages.getString("util.valeur")).append(" = ").append(theValue)
+                .append(", ");
             listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
                 m_colTypes[i]).append("<br/>");
-          }
-          else {
+          } else {
             theValue = m_colDefaultValues[i];
           }
         }
@@ -237,7 +236,8 @@ public class CSVReader {
       } else {
         end = theLine.indexOf(m_separator, start);
       }
-      if (isColumnNumberControlEnabled() && (i < m_nbCols - 2) && (end == -1)) { // Not enough columns
+      if (isColumnNumberControlEnabled() && (i < m_nbCols - 2) && (end == -1)) { // Not enough
+        // columns
         listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
             Integer.toString(lineNumber)).append(", ");
         listErrors.append(Integer.toString(i + 2)).append(" ").append(
@@ -259,8 +259,7 @@ public class CSVReader {
       } else {
         theValue = theLine.substring(start, end).trim();
       }
-      if (isExtraColumnsControlEnabled())
-      {
+      if (isExtraColumnsControlEnabled()) {
         try {
           valret[j] = new Variant(theValue, m_specificColTypes[i]);
           SilverTrace.info("util", "CSVReader.parseLine()",
@@ -288,13 +287,12 @@ public class CSVReader {
           listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
               m_specificColTypes[i]).append("<br/>");
         }
-      }
-      else {
+      } else {
         try {
           valret[j] = new Variant(theValue, "STRING");
         } catch (UtilException e) {
-      SilverTrace.info("util", "CSVReader.parseLine()",
-          "root.MSG_PARAM_VALUE", "Token=" + theValue);
+          SilverTrace.info("util", "CSVReader.parseLine()",
+              "root.MSG_PARAM_VALUE", "Token=" + theValue);
         }
       }
       start = end + 1;
@@ -312,7 +310,9 @@ public class CSVReader {
       } else {
         end = theLine.indexOf(m_separator, start);
       }
-      if (isColumnNumberControlEnabled() && (i < m_specificNbCols - 2) && (end == -1)) { // Not enough columns
+      if (isColumnNumberControlEnabled() && (i < m_specificNbCols - 2) && (end == -1)) { // Not
+        // enough
+        // columns
         listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
             Integer.toString(lineNumber)).append(", ");
         listErrors.append(Integer.toString(i + 2 + m_nbCols)).append(" ").append(

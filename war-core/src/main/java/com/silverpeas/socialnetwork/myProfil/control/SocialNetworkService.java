@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.socialnetwork.myProfil.control;
 
 import java.sql.SQLException;
@@ -41,7 +42,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class SocialNetworkService {
@@ -53,10 +53,11 @@ public class SocialNetworkService {
   }
 
   /**
-   * get the List of social Information of my  according the type of social information
-   * and the UserId
+   * get the List of social Information of my according the type of social information and the
+   * UserId
    * @return: Map<Date, List<SocialInformation>
-   * @param:SocialInformationType socialInformationType, String userId,String classification, int limit  ,int offset
+   * @param:SocialInformationType socialInformationType, String userId,String classification, int
+   * limit ,int offset
    */
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
       Date begin, Date end) {
@@ -64,7 +65,8 @@ public class SocialNetworkService {
     com.silverpeas.calendar.Date dBegin = new com.silverpeas.calendar.Date(begin);
     com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
 
-    List<SocialInformation> socialInformationsFull = new ProviderService().getSocialInformationsList(type, myId,
+    List<SocialInformation> socialInformationsFull =
+        new ProviderService().getSocialInformationsList(type, myId,
         null, dEnd, dBegin);
 
     if (SocialInformationType.ALL.equals(type)) {
@@ -74,7 +76,8 @@ public class SocialNetworkService {
     return processResults(socialInformationsFull);
   }
 
-  private Map<Date, List<SocialInformation>> processResults(List<SocialInformation> socialInformationsFull) {
+  private Map<Date, List<SocialInformation>> processResults(
+      List<SocialInformation> socialInformationsFull) {
     String date = null;
     LinkedHashMap<Date, List<SocialInformation>> hashtable =
         new LinkedHashMap<Date, List<SocialInformation>>();
@@ -94,10 +97,11 @@ public class SocialNetworkService {
   }
 
   /**
-   * get the List of social Information of my contatc according the type of social information
-   * and the UserId
+   * get the List of social Information of my contatc according the type of social information and
+   * the UserId
    * @return: Map<Date, List<SocialInformation>
-   * @param:SocialInformationType socialInformationType, String userId,String classification, int limit  ,int offset
+   * @param:SocialInformationType socialInformationType, String userId,String classification, int
+   * limit ,int offset
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
       SocialInformationType type, Date begin, Date end) {
@@ -110,7 +114,7 @@ public class SocialNetworkService {
 
     List<SocialInformation> socialInformationsFull =
         new ProviderService().getSocialInformationsListOfMyContact(type, myId,
-            myContactIds, dEnd, dBegin);
+        myContactIds, dEnd, dBegin);
 
     if (SocialInformationType.ALL.equals(type)) {
       Collections.sort(socialInformationsFull);
@@ -130,7 +134,7 @@ public class SocialNetworkService {
 
     List<SocialInformation> socialInformationsFull =
         new ProviderService().getSocialInformationsListOfMyContact(type, myId,
-            myContactIds, dEnd, dBegin);
+        myContactIds, dEnd, dBegin);
 
     if (SocialInformationType.ALL.equals(type)) {
       Collections.sort(socialInformationsFull);

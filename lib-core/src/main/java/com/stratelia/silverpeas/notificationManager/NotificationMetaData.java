@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,7 +54,7 @@ public class NotificationMetaData implements java.io.Serializable {
   private String fileName;
 
   private Map<String, String> titles = new HashMap<String, String>();
-  private Map<String, String> contents = new HashMap<String, String>(); 
+  private Map<String, String> contents = new HashMap<String, String>();
 
   private Map<String, SilverpeasTemplate> templates;
 
@@ -316,9 +316,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param users the user ids that must receive this message
    */
   public void setUserRecipients(Collection<UserRecipient> users) {
-    if(users != null) {
-    this.userRecipients =  new ArrayList<UserRecipient>(users);
-    }else {
+    if (users != null) {
+      this.userRecipients = new ArrayList<UserRecipient>(users);
+    } else {
       this.userRecipients = new ArrayList<UserRecipient>();
     }
   }
@@ -348,8 +348,8 @@ public class NotificationMetaData implements java.io.Serializable {
       this.userRecipients.addAll(Arrays.asList(users));
     }
   }
-  
-   /**
+
+  /**
    * Add a user recipient to user recipients
    * @param users users to be added
    */
@@ -364,9 +364,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param groups the groups that must receive this message
    */
   public void setGroupRecipients(Collection<GroupRecipient> groups) {
-    if(groups != null) {
-    this.groupRecipients = new ArrayList<GroupRecipient>(groups);
-    }else {
+    if (groups != null) {
+      this.groupRecipients = new ArrayList<GroupRecipient>(groups);
+    } else {
       this.groupRecipients = new ArrayList<GroupRecipient>();
     }
   }
@@ -416,7 +416,7 @@ public class NotificationMetaData implements java.io.Serializable {
       }
     }
   }
-  
+
   public String getFileName() {
     return fileName;
   }

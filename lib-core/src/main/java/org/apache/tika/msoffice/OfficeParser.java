@@ -1,19 +1,27 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.apache.tika.msoffice;
 
 import java.io.IOException;
@@ -45,200 +53,200 @@ import org.xml.sax.SAXException;
  * Defines a Microsoft document content extractor.
  */
 public class OfficeParser implements Parser {
-   private static final long serialVersionUID = 7393462244028653479L;
-   
-   private static final Set<MediaType> SUPPORTED_TYPES =
-        Collections.unmodifiableSet(new HashSet<MediaType>(Arrays.asList(
-        	POIFSDocumentType.WORKBOOK.type,
-        	POIFSDocumentType.OLE10_NATIVE.type,
-        	POIFSDocumentType.WORDDOCUMENT.type,
-        	POIFSDocumentType.UNKNOWN.type,
-        	POIFSDocumentType.ENCRYPTED.type,
-        	POIFSDocumentType.POWERPOINT.type,
-        	POIFSDocumentType.PUBLISHER.type,
-        	POIFSDocumentType.VISIO.type,
-        	POIFSDocumentType.OUTLOOK.type,
-                MediaType.application("vnd.ms-excel.sheet.binary.macroenabled.12")
-         )));
-    
-    public enum POIFSDocumentType {
-        WORKBOOK("xls", MediaType.application("vnd.ms-excel")),
-        OLE10_NATIVE("ole", MediaType.application("x-tika-msoffice")),
-        WORDDOCUMENT("doc", MediaType.application("msword")),
-        UNKNOWN("unknown", MediaType.application("x-tika-msoffice")),
-        ENCRYPTED("ole", MediaType.application("x-tika-msoffice")),
-        POWERPOINT("ppt", MediaType.application("vnd.ms-powerpoint")),
-        PUBLISHER("pub", MediaType.application("x-mspublisher")),
-        VISIO("vsd", MediaType.application("vnd.visio")),
-        WORKS("wps", MediaType.application("vnd.ms-works")),
-        OUTLOOK("msg", MediaType.application("vnd.ms-outlook"));
+  private static final long serialVersionUID = 7393462244028653479L;
 
-        private final String extension;
-        private final MediaType type;
+  private static final Set<MediaType> SUPPORTED_TYPES =
+      Collections.unmodifiableSet(new HashSet<MediaType>(Arrays.asList(
+      POIFSDocumentType.WORKBOOK.type,
+      POIFSDocumentType.OLE10_NATIVE.type,
+      POIFSDocumentType.WORDDOCUMENT.type,
+      POIFSDocumentType.UNKNOWN.type,
+      POIFSDocumentType.ENCRYPTED.type,
+      POIFSDocumentType.POWERPOINT.type,
+      POIFSDocumentType.PUBLISHER.type,
+      POIFSDocumentType.VISIO.type,
+      POIFSDocumentType.OUTLOOK.type,
+      MediaType.application("vnd.ms-excel.sheet.binary.macroenabled.12")
+      )));
 
-        POIFSDocumentType(String extension, MediaType type) {
-            this.extension = extension;
-            this.type = type;
-        }
+  public enum POIFSDocumentType {
+    WORKBOOK("xls", MediaType.application("vnd.ms-excel")),
+    OLE10_NATIVE("ole", MediaType.application("x-tika-msoffice")),
+    WORDDOCUMENT("doc", MediaType.application("msword")),
+    UNKNOWN("unknown", MediaType.application("x-tika-msoffice")),
+    ENCRYPTED("ole", MediaType.application("x-tika-msoffice")),
+    POWERPOINT("ppt", MediaType.application("vnd.ms-powerpoint")),
+    PUBLISHER("pub", MediaType.application("x-mspublisher")),
+    VISIO("vsd", MediaType.application("vnd.visio")),
+    WORKS("wps", MediaType.application("vnd.ms-works")),
+    OUTLOOK("msg", MediaType.application("vnd.ms-outlook"));
 
-        public String getExtension() {
-            return extension;
-        }
+    private final String extension;
+    private final MediaType type;
 
-        public MediaType getType() {
-            return type;
-        }
-
-        public static POIFSDocumentType detectType(POIFSFileSystem fs) {
-            return detectType(fs.getRoot());
-        }
-
-        public static POIFSDocumentType detectType(DirectoryEntry node) {
-            for (Entry entry : node) {
-                POIFSDocumentType type = detectType(entry);
-                if (type!=UNKNOWN) {
-                    return type;
-                }
-            }
-            return UNKNOWN;
-        }
-
-        public static POIFSDocumentType detectType(Entry entry) {
-            String name = entry.getName();
-
-            if ("Workbook".equals(name)) {
-                return WORKBOOK;
-            }
-            if ("EncryptedPackage".equals(name)) {
-                return ENCRYPTED;
-            }
-            if ("WordDocument".equals(name)) {
-                return WORDDOCUMENT;
-            }
-            if ("Quill".equals(name)) {
-                return PUBLISHER;
-            }
-            if ("PowerPoint Document".equals(entry.getName())) {
-                return POWERPOINT;
-            }
-            if ("VisioDocument".equals(entry.getName())) {
-                return VISIO;
-            }
-            if ("CONTENTS".equals(entry.getName())) {
-               return WORKS;
-           }
-            if (entry.getName().startsWith("__substg1.0_")) {
-                return OUTLOOK;
-            }
-            if ("\u0001Ole10Native".equals(name)) {
-              return POIFSDocumentType.OLE10_NATIVE;
-            }
-
-            return UNKNOWN;
-        }
+    POIFSDocumentType(String extension, MediaType type) {
+      this.extension = extension;
+      this.type = type;
     }
 
-    public Set<MediaType> getSupportedTypes(ParseContext context) {
-        return SUPPORTED_TYPES;
+    public String getExtension() {
+      return extension;
     }
 
-    /**
-     * Extracts properties and text from an MS Document input stream
-     */
-    public void parse(
-            InputStream stream, ContentHandler handler,
-            Metadata metadata, ParseContext context)
-            throws IOException, SAXException, TikaException {
-        XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
-        xhtml.startDocument();
+    public MediaType getType() {
+      return type;
+    }
 
-        POIFSFileSystem filesystem;
-        if(stream instanceof TikaInputStream && 
-        	((TikaInputStream)stream).getOpenContainer() != null) {
-            filesystem = (POIFSFileSystem)((TikaInputStream)stream).getOpenContainer();
-        } else {
-            filesystem = new POIFSFileSystem(stream);
+    public static POIFSDocumentType detectType(POIFSFileSystem fs) {
+      return detectType(fs.getRoot());
+    }
+
+    public static POIFSDocumentType detectType(DirectoryEntry node) {
+      for (Entry entry : node) {
+        POIFSDocumentType type = detectType(entry);
+        if (type != UNKNOWN) {
+          return type;
         }
+      }
+      return UNKNOWN;
+    }
 
-        // Parse summary entries first, to make metadata available early
-        new SummaryExtractor(metadata).parseSummaries(filesystem);
+    public static POIFSDocumentType detectType(Entry entry) {
+      String name = entry.getName();
 
-        // Parse remaining document entries
-        boolean outlookExtracted = false;
-        for (Entry entry : filesystem.getRoot()) {
-            POIFSDocumentType type = POIFSDocumentType.detectType(entry);
+      if ("Workbook".equals(name)) {
+        return WORKBOOK;
+      }
+      if ("EncryptedPackage".equals(name)) {
+        return ENCRYPTED;
+      }
+      if ("WordDocument".equals(name)) {
+        return WORDDOCUMENT;
+      }
+      if ("Quill".equals(name)) {
+        return PUBLISHER;
+      }
+      if ("PowerPoint Document".equals(entry.getName())) {
+        return POWERPOINT;
+      }
+      if ("VisioDocument".equals(entry.getName())) {
+        return VISIO;
+      }
+      if ("CONTENTS".equals(entry.getName())) {
+        return WORKS;
+      }
+      if (entry.getName().startsWith("__substg1.0_")) {
+        return OUTLOOK;
+      }
+      if ("\u0001Ole10Native".equals(name)) {
+        return POIFSDocumentType.OLE10_NATIVE;
+      }
 
-            if (type!=POIFSDocumentType.UNKNOWN) {
-                setType(metadata, type.getType());
+      return UNKNOWN;
+    }
+  }
+
+  public Set<MediaType> getSupportedTypes(ParseContext context) {
+    return SUPPORTED_TYPES;
+  }
+
+  /**
+   * Extracts properties and text from an MS Document input stream
+   */
+  public void parse(
+      InputStream stream, ContentHandler handler,
+      Metadata metadata, ParseContext context)
+      throws IOException, SAXException, TikaException {
+    XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
+    xhtml.startDocument();
+
+    POIFSFileSystem filesystem;
+    if (stream instanceof TikaInputStream &&
+        ((TikaInputStream) stream).getOpenContainer() != null) {
+      filesystem = (POIFSFileSystem) ((TikaInputStream) stream).getOpenContainer();
+    } else {
+      filesystem = new POIFSFileSystem(stream);
+    }
+
+    // Parse summary entries first, to make metadata available early
+    new SummaryExtractor(metadata).parseSummaries(filesystem);
+
+    // Parse remaining document entries
+    boolean outlookExtracted = false;
+    for (Entry entry : filesystem.getRoot()) {
+      POIFSDocumentType type = POIFSDocumentType.detectType(entry);
+
+      if (type != POIFSDocumentType.UNKNOWN) {
+        setType(metadata, type.getType());
+      }
+
+      switch (type) {
+        case PUBLISHER:
+          PublisherTextExtractor publisherTextExtractor =
+              new PublisherTextExtractor(filesystem);
+          xhtml.element("p", publisherTextExtractor.getText());
+          break;
+        case WORDDOCUMENT:
+          new WordExtractor(context).parse(filesystem, xhtml);
+          break;
+        case POWERPOINT:
+          new HSLFExtractor(context).parse(filesystem, xhtml);
+          break;
+        case WORKBOOK:
+          Locale locale = context.get(Locale.class, Locale.getDefault());
+          new ExcelExtractor(context).parse(filesystem, xhtml, locale);
+          break;
+        case VISIO:
+          VisioTextExtractor visioTextExtractor =
+              new VisioTextExtractor(filesystem);
+          for (String text : visioTextExtractor.getAllText()) {
+            xhtml.element("p", text);
+          }
+          break;
+        case OUTLOOK:
+          if (!outlookExtracted) {
+            outlookExtracted = true;
+
+            OutlookExtractor extractor =
+                new OutlookExtractor(filesystem, context);
+
+            extractor.parse(xhtml, metadata);
+          }
+          break;
+        case ENCRYPTED:
+          EncryptionInfo info = new EncryptionInfo(filesystem);
+          Decryptor d = new Decryptor(info);
+
+          try {
+            if (!d.verifyPassword(Decryptor.DEFAULT_PASSWORD)) {
+              throw new TikaException("Unable to process: document is encrypted");
             }
 
-            switch (type) {
-                case PUBLISHER:
-                    PublisherTextExtractor publisherTextExtractor =
-                        new PublisherTextExtractor(filesystem);
-                    xhtml.element("p", publisherTextExtractor.getText());
-                    break;
-                case WORDDOCUMENT:
-                    new WordExtractor(context).parse(filesystem, xhtml);
-                    break;
-                case POWERPOINT:
-                    new HSLFExtractor(context).parse(filesystem, xhtml);
-                    break;
-                case WORKBOOK:
-                    Locale locale = context.get(Locale.class, Locale.getDefault());
-                    new ExcelExtractor(context).parse(filesystem, xhtml, locale);
-                    break;
-                case VISIO:
-                    VisioTextExtractor visioTextExtractor =
-                        new VisioTextExtractor(filesystem);
-                    for (String text : visioTextExtractor.getAllText()) {
-                        xhtml.element("p", text);
-                    }
-                    break;
-                case OUTLOOK:
-                    if (!outlookExtracted) {
-                        outlookExtracted = true;
+            OOXMLParser parser = new OOXMLParser();
 
-                        OutlookExtractor extractor =
-                            new OutlookExtractor(filesystem, context);
-
-                        extractor.parse(xhtml, metadata);
-                    }
-                    break;
-                case ENCRYPTED:
-                    EncryptionInfo info = new EncryptionInfo(filesystem);
-                    Decryptor d = new Decryptor(info);
-
-                    try {
-                        if (!d.verifyPassword(Decryptor.DEFAULT_PASSWORD)) {
-                            throw new TikaException("Unable to process: document is encrypted");
-                        }
-
-                        OOXMLParser parser = new OOXMLParser();
-
-                        parser.parse(d.getDataStream(filesystem), new EmbeddedContentHandler(
-                                        new BodyContentHandler(xhtml)),
-                                        metadata, context);
-                    } catch (GeneralSecurityException ex) {
-                        throw new TikaException("Unable to process encrypted document", ex);
-                    }
-            }
-        }
-
-        xhtml.endDocument();
+            parser.parse(d.getDataStream(filesystem), new EmbeddedContentHandler(
+                new BodyContentHandler(xhtml)),
+                metadata, context);
+          } catch (GeneralSecurityException ex) {
+            throw new TikaException("Unable to process encrypted document", ex);
+          }
+      }
     }
 
-    /**
-     * @deprecated This method will be removed in Apache Tika 1.0.
-     */
-    public void parse(
-            InputStream stream, ContentHandler handler, Metadata metadata)
-            throws IOException, SAXException, TikaException {
-        parse(stream, handler, metadata, new ParseContext());
-    }
+    xhtml.endDocument();
+  }
 
-    private void setType(Metadata metadata, MediaType type) {
-        metadata.set(Metadata.CONTENT_TYPE, type.toString());
-    }
+  /**
+   * @deprecated This method will be removed in Apache Tika 1.0.
+   */
+  public void parse(
+      InputStream stream, ContentHandler handler, Metadata metadata)
+      throws IOException, SAXException, TikaException {
+    parse(stream, handler, metadata, new ParseContext());
+  }
+
+  private void setType(Metadata metadata, MediaType type) {
+    metadata.set(Metadata.CONTENT_TYPE, type.toString());
+  }
 
 }

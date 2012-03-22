@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.util;
 
 import java.io.File;
@@ -92,11 +93,11 @@ public class FileUtil implements MimeTypes {
    * Create the array of strings this array represents the repertories where the files must be
    * stored.
    * @param context
-   * @return 
+   * @return
    */
   public static String[] getAttachmentContext(String context) {
     if (!StringUtil.isDefined(context)) {
-      return new String[]{BASE_CONTEXT};
+      return new String[] { BASE_CONTEXT };
     }
     StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
     List<String> folders = new ArrayList<String>(10);
@@ -184,7 +185,8 @@ public class FileUtil implements MimeTypes {
    */
   public static boolean isArchive(String filename) {
     String mimeType = getMimeType(filename);
-    return ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
+    return ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) ||
+        SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
         mimeType) || JAVA_ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType);
   }
 

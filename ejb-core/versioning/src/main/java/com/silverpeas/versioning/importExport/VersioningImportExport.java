@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.versioning.importExport;
 
 import com.silverpeas.form.importExport.FormTemplateImportExport;
@@ -175,7 +176,7 @@ public class VersioningImportExport {
         getVersioningBm().updateWorkList(document);
         getVersioningBm().updateDocument(document);
       }
-      
+
       if (attachment.isRemoveAfterImport()) {
         boolean removed = FileUtils.deleteQuietly(new File(attachment.getOriginalPath()));
         if (!removed) {
@@ -217,7 +218,7 @@ public class VersioningImportExport {
         AttachmentDetail attachment = getAttachmentDetail(document, version);
         if (extensionFilter == null || attachment.getExtension().equalsIgnoreCase(extensionFilter)) {
           attachments.add(copyAttachment(attachment, exportPath, relativeExportPath, componentId));
-          //attachments.add(attachment);
+          // attachments.add(attachment);
         }
       }
     }
@@ -286,9 +287,11 @@ public class VersioningImportExport {
   private AttachmentDetail getAttachmentDetail(Document document,
       DocumentVersion version) {
     AttachmentPK pk = new AttachmentPK("useless", "useless", version.getPk().getInstanceId());
-    AttachmentDetail attachment = new AttachmentDetail(pk, version.getPhysicalName(), version.
+    AttachmentDetail attachment =
+        new AttachmentDetail(pk, version.getPhysicalName(), version.
         getLogicalName(), version.getComments(),
-        version.getMimeType(), version.getSize(), "Versioning", version.getCreationDate(), document.
+        version.getMimeType(), version.getSize(), "Versioning", version.getCreationDate(),
+        document.
         getForeignKey());
     attachment.setTitle(document.getName());
 
@@ -318,7 +321,6 @@ public class VersioningImportExport {
 
     // get existing documents of object
     List<Document> existingDocuments = getVersioningBm().getDocuments(objectPK);
-
 
     // DocumentVersion version = null;
     XMLModelContentType xmlContent = null;
@@ -474,7 +476,8 @@ public class VersioningImportExport {
               if (xmlIE == null) {
                 xmlIE = new FormTemplateImportExport();
               }
-              ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
+              ForeignPK pk =
+                  new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
               xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
                   Integer.toString(version.getAuthorId()));
             }

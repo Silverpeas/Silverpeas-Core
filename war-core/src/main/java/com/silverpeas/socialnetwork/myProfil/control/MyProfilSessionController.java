@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.socialnetwork.myProfil.control;
 
 import java.sql.SQLException;
@@ -165,7 +166,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       throw new SocialNetworkException(
           "MyProfilSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-              + idUser);
+          + idUser);
     }
 
   }
@@ -175,7 +176,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isAdmin() {
-    return ( getUserDetail().isAccessAdmin() );
+    return (getUserDetail().isAccessAdmin());
   }
 
   public long getDomainActions() {
@@ -199,8 +200,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       throws AuthenticationException {
     SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName
-            + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
-            + userAccessLevel);
+        + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
+        + userAccessLevel);
 
     UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
 
@@ -294,7 +295,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public void sendInvitation(String receiverId, String message) {
     Invitation invitation =
         new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message,
-            new Date());
+        new Date());
     if (invitationService.invite(invitation) >= 0) {
       notifyUser(receiverId, message);
     }
@@ -315,7 +316,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-              "sendInvitation");
+          "sendInvitation");
 
       UserDetail senderUser = getUserDetail();
       notifMetaData.setSource(senderUser.getDisplayedName());
@@ -391,7 +392,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-              "acceptInvitation");
+          "acceptInvitation");
 
       notifMetaData.setSource(displayedName);
 
@@ -431,18 +432,20 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public boolean updatablePropertyExists() {
     UserFull userFull = getUserFul(getUserId());
-    return ( (userFull.isAtLeastOnePropertyUpdatableByUser()) || (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()) );
+    return ((userFull.isAtLeastOnePropertyUpdatableByUser()) || (isAdmin() && userFull
+        .isAtLeastOnePropertyUpdatableByAdmin()));
   }
 
   /**
    * Get all social networks linked to current user account
-   *
    * @return
    */
   public Map<SocialNetworkID, ExternalAccount> getAllMyNetworks() {
-    Map<SocialNetworkID, ExternalAccount> networks = new HashMap<SocialNetworkID, ExternalAccount>();
+    Map<SocialNetworkID, ExternalAccount> networks =
+        new HashMap<SocialNetworkID, ExternalAccount>();
 
-    List<ExternalAccount> externalAccounts = SocialNetworkService.getInstance().getUserExternalAccounts(getUserId());
+    List<ExternalAccount> externalAccounts =
+        SocialNetworkService.getInstance().getUserExternalAccounts(getUserId());
     for (ExternalAccount account : externalAccounts) {
       networks.put(account.getNetworkId(), account);
     }

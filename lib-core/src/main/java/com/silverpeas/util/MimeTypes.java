@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.util;
 
 import com.google.common.collect.Sets;
@@ -46,15 +47,18 @@ public interface MimeTypes {
   public final String JAVA_ARCHIVE_MIME_TYPE = "application/java-archive";
   public final String WORD_2007_MIME_TYPE =
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  public final String WORD_2007_TEMPLATE_MIME_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
+  public final String WORD_2007_TEMPLATE_MIME_TYPE =
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
   public final String WORD_2007_EXTENSION = "application/vnd.ms-word";
   public final String EXCEL_2007_MIME_TYPE =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-  public final String EXCEL_2007_TEMPLATE_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
+  public final String EXCEL_2007_TEMPLATE_MIME_TYPE =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
   public final String EXCEL_2007_EXTENSION = "application/vnd.ms-excel";
   public final String POWERPOINT_2007_MIME_TYPE =
       "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-  public final String POWERPOINT_2007_TEMPLATE_MIME_TYPE = "application/vnd.openxmlformats-officedocument.presentationml.template";
+  public final String POWERPOINT_2007_TEMPLATE_MIME_TYPE =
+      "application/vnd.openxmlformats-officedocument.presentationml.template";
   public final String POWERPOINT_2007_EXTENSION = "application/vnd.ms-powerpoint";
   public final String RSS_MIME_TYPE = "application/rss+xml";
   public final String JAR_EXTENSION = "jar";
@@ -79,16 +83,18 @@ public interface MimeTypes {
   public final String MIME_TYPE_OO_IMAGE = "application/vnd.oasis.opendocument.image";
   // Extension .odm (Document principal)
   public final String MIME_TYPE_OO_MASTER = "application/vnd.oasis.opendocument.text-master";
-  public static final Set<String> MS_OFFICE_MIME_TYPES = Sets.newHashSet(
-        WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2);
+  public static final Set<String> MS_OFFICE_MIME_TYPES =
+      Sets.newHashSet(
+      WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1,
+      POWERPOINT_MIME_TYPE2);
   public static final Set<String> OPEN_OFFICE_MIME_TYPES = Sets.newHashSet(
-        WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
-        EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
-        POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
-        POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
-        MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA,
-        MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER);
+      WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
+      EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
+      POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
+      POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
+      MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA,
+      MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER);
   public static final Set<String> IMAGE_EXTENTIONS = Sets.newHashSet(
-        "gif", "GIF", "jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP", "pcd", "PCD", "tga",
-        "TGA", "tif", "TIF");
+      "gif", "GIF", "jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP", "pcd", "PCD", "tga",
+      "TGA", "tif", "TIF");
 }

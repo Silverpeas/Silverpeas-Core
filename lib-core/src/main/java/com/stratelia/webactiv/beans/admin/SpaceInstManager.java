@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.ArrayUtil;
@@ -141,7 +142,6 @@ public class SpaceInstManager {
 
   /**
    * Get the space instance with the given space id
-   *
    * @param spaceInstId driver space id
    * @return Space information as SpaceInst object
    */
@@ -168,7 +168,7 @@ public class SpaceInstManager {
       // Get the components
       String[] asCompoIds =
           ddManager.getOrganization().instance.getAllComponentInstanceIdsInSpace(idAsInt(
-              spaceInstId));
+          spaceInstId));
 
       // Insert the componentsInst in the spaceInst
       if (asCompoIds != null) {
@@ -182,7 +182,7 @@ public class SpaceInstManager {
       // Get the space profiles
       String[] asProfIds =
           ddManager.getOrganization().spaceUserRole.getAllSpaceUserRoleIdsOfSpace(idAsInt(
-              spaceInstId));
+          spaceInstId));
 
       // Insert the spaceProfilesInst in the spaceInst
       if (asProfIds != null) {
@@ -200,7 +200,8 @@ public class SpaceInstManager {
           space.description);
       spaceInst.addTranslation(translation);
 
-      List<SpaceI18NRow> translations = ddManager.getOrganization().spaceI18N.getTranslations(idAsInt(
+      List<SpaceI18NRow> translations =
+          ddManager.getOrganization().spaceI18N.getTranslations(idAsInt(
           spaceInstId));
       for (int t = 0; translations != null && t < translations.size(); t++) {
         SpaceI18NRow row = translations.get(t);
@@ -229,8 +230,9 @@ public class SpaceInstManager {
 
         // Get the components
         String[] asCompoIds =
-            ddManager.getOrganization().instance.getAllComponentInstanceIdsInSpace(idAsInt(spaceInst.
-                getId()));
+            ddManager.getOrganization().instance
+            .getAllComponentInstanceIdsInSpace(idAsInt(spaceInst.
+            getId()));
 
         // Insert the componentsInst in the spaceInst
         for (int nI = 0; asCompoIds != null && nI < asCompoIds.length; nI++) {
@@ -296,7 +298,6 @@ public class SpaceInstManager {
 
   /**
    * Get the space instance with the given space id
-   *
    * @param spaceId driver space id
    * @return Space information as SpaceInst object
    */
@@ -409,7 +410,6 @@ public class SpaceInstManager {
 
   /**
    * Return subspaces of a space
-   *
    * @return a List of SpaceInstLight
    */
   public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
@@ -450,7 +450,8 @@ public class SpaceInstManager {
       space.addTranslation(translation);
 
       if (I18NHelper.isI18N) {
-        List<SpaceI18NRow> translations = ddManager.getOrganization().spaceI18N.getTranslations(row.id);
+        List<SpaceI18NRow> translations =
+            ddManager.getOrganization().spaceI18N.getTranslations(row.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           SpaceI18NRow i18nRow = translations.get(t);
           space.addTranslation(new SpaceI18N(i18nRow));
@@ -658,7 +659,6 @@ public class SpaceInstManager {
 
   /**
    * Tests if a space with given space id exists
-   *
    * @param ddManager
    * @param sSpaceInstId
    * @return true if the given space instance name is an existing space.

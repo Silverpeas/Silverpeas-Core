@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import com.silverpeas.util.StringUtil;
@@ -382,7 +383,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
     url.append(ACTION_PARAMETER_NAME).append("=ChangePage").append(sep).
         append(TARGET_PARAMETER_NAME).append("=").append(getName()).append(sep).append(
-            INDEX_PARAMETER_NAME).append("=");
+        INDEX_PARAMETER_NAME).append("=");
     pagination.setBaseURL(url.toString());
 
     int columnsCount = columns.size();
@@ -437,7 +438,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
           printArrayPaneLine(result, curLine);
         }
       } else {
-        //Paginate ArrayPane result
+        // Paginate ArrayPane result
         state.setFirstVisibleLine(pagination.getIndexForCurrentPage());
         int first = pagination.getIndexForCurrentPage();
         int lastIndex;
@@ -450,13 +451,13 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
           printArrayPaneLine(result, lines.get(i));
         }
       }
-      
+
     }
     result.append("</tbody>\n");
     result.append("</table>\n");
-    
+
     boolean paginationVisible =
-      -1 != state.getMaximumVisibleLine() && lines.size() > state.getMaximumVisibleLine();
+        -1 != state.getMaximumVisibleLine() && lines.size() > state.getMaximumVisibleLine();
 
     if (paginationVisible || exportData) {
       result.append(

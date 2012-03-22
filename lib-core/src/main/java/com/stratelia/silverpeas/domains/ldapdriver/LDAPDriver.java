@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,8 +46,8 @@ import java.util.Map;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
- * IMPORTANT : For the moment, it is not possible to add, remove or update a group neither add or remove an user.
- * However, it is possible to update an user...
+ * IMPORTANT : For the moment, it is not possible to add, remove or update a group neither add or
+ * remove an user. However, it is possible to update an user...
  * @author tleroi
  */
 public class LDAPDriver extends AbstractDomainDriver {
@@ -60,7 +60,6 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the
    * class who need it.
-   *
    * @param rs name of resource file
    */
   public void initFromProperties(ResourceLocator rs) throws AdminException {
@@ -82,7 +81,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     props.add(getProperty("email", driverSettings.getUsersEmailField(), descriptions));
     props.add(getProperty("login", driverSettings.getUsersLoginField(), descriptions));
   }
-  
+
   private DomainProperty getProperty(String name, String mapParameter,
       Map<String, String> descriptions) {
     DomainProperty property = new DomainProperty();
@@ -204,7 +203,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp)
       throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    
+
     SilverTrace.info("admin", "LDAPDriver.getAllChangedGroups",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -251,7 +250,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given user in Database from the reference
-   *
    * @param userLogin The User Login to import
    * @return The User object that contain new user information
    */
@@ -269,7 +267,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given user from database
-   *
    * @param userId The user id To remove synchro
    */
   public void removeUser(String userId) throws AdminException {
@@ -278,7 +275,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update user information in database
-   *
    * @param userId The User Id to synchronize
    * @return The User object that contain new user information
    */
@@ -311,7 +307,6 @@ public class LDAPDriver extends AbstractDomainDriver {
           .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
           .getUsersIdFilter(user.getSpecificId()), driverSettings.getUserAttributes());
 
-
       if (theEntry == null) {
         throw new AuthenticationBadCredentialException(
             "LDAPDriver.updateUserFull()", SilverpeasException.ERROR,
@@ -320,16 +315,17 @@ public class LDAPDriver extends AbstractDomainDriver {
       }
 
       String userFullDN = theEntry.getDN();
-      
+
       List<LDAPModification> modifications = new ArrayList<LDAPModification>();
-      
+
       // update basic informations (first name, last name and email)
-      LDAPAttribute attribute = new LDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
+      LDAPAttribute attribute =
+          new LDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
-      
+
       attribute = new LDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
-      
+
       attribute = new LDAPAttribute(driverSettings.getUsersEmailField(), user.geteMail());
       modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
 
@@ -372,7 +368,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
-   *
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
@@ -390,7 +385,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
-   *
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
@@ -408,7 +402,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all users from the database
-   *
    * @return User[] An array of User Objects that contain users information
    */
   public UserDetail[] getAllUsers() throws AdminException {
@@ -457,13 +450,12 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user's groups
-   *
    * @param userId The user id as stored in the database
    * @return The User's groups specific Ids
    */
   public String[] getUserMemberGroupIds(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
-    
+
     SilverTrace.info("admin", "LDAPDriver.getUserMemberGroupIds",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
     try {
@@ -475,7 +467,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given group in Database from the reference
-   *
    * @param groupName The group name to import
    * @return The group object that contain new group information
    */
@@ -492,7 +483,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given group from database
-   *
    * @param groupId The group id To remove synchro
    */
   public void removeGroup(String groupId) throws AdminException {
@@ -501,7 +491,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update group information in database
-   *
    * @param groupId The group Id to synchronize
    * @return The group object that contain new group information
    */
@@ -528,7 +517,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve group information from database
-   *
    * @param groupId The group id as stored in the database
    * @return The Group object that contains user information
    */
@@ -551,7 +539,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups contained in the given group
-   *
    * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
    */
@@ -569,7 +556,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups from the database
-   *
    * @return Group[] An array of Group Objects that contain groups information
    */
   public Group[] getAllGroups() throws AdminException {
@@ -586,7 +572,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all root groups from the database
-   *
    * @return Group[] An array of Group Objects that contain root groups information
    */
   public Group[] getAllRootGroups() throws AdminException {
@@ -615,9 +600,8 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Start a new transaction
-   *
    * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
-   *                    'commit' statement)
+   * 'commit' statement)
    */
   public void startTransaction(boolean bAutoCommit) {
     // Access in read only -> no need to support transaction mode

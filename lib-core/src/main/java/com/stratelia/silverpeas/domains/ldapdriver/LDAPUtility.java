@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.google.common.base.Charsets;
@@ -171,7 +172,8 @@ public class LDAPUtility {
       if (StringUtil.isDefined(driverSettings.getLDAPAccessPasswd())) {
         passwd = driverSettings.getLDAPAccessPasswd().getBytes(Charsets.UTF_8);
       }
-      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), passwd);
+      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
+          passwd);
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -518,9 +520,9 @@ public class LDAPUtility {
               + Integer.toString(scope) + " Filter=" + theFullFilter);
           SynchroReport.debug("LDAPUtility.search1000Plus()",
               "Requête sur le domaine LDAP distant (protocole v"
-                  + ld.getProtocolVersion() + "), BaseDN=" + baseDN1
-                  + " scope=" + Integer.toString(scope) + " Filter="
-                  + theFullFilter, null);
+              + ld.getProtocolVersion() + "), BaseDN=" + baseDN1
+              + " scope=" + Integer.toString(scope) + " Filter="
+              + theFullFilter, null);
 
           try {
             LDAPSearchResults res = ld.search(baseDN1, scope, theFullFilter, args, false, cons);

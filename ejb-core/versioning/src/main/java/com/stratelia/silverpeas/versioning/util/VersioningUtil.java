@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.versioning.util;
 
 import static com.stratelia.webactiv.SilverpeasRole.admin;
@@ -87,7 +88,7 @@ public class VersioningUtil {
   public static final String PUBLISHER = publisher.toString();
   public static final String READER = user.toString();
   public static final String WRITER = writer.toString();
-  
+
   private final static ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
 
@@ -218,7 +219,8 @@ public class VersioningUtil {
 
   public HashMap<String, Reader> getAllUsersForProfile(Document document, String nameProfile) {
     OrganizationController orgCntr = new OrganizationController();
-    ComponentInst componentInst = orgCntr.getComponentInst(document.getForeignKey().getComponentName());
+    ComponentInst componentInst =
+        orgCntr.getComponentInst(document.getForeignKey().getComponentName());
 
     HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
     // Get profile instance for given profile
@@ -334,7 +336,7 @@ public class VersioningUtil {
   public void indexDocumentsByForeignKey(ForeignPK foreignPK) throws RemoteException {
     indexDocumentsByForeignKey(foreignPK, null, null);
   }
-  
+
   public void indexDocumentsByForeignKey(ForeignPK foreignPK, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) throws RemoteException {
     List<Document> documents = getVersioningBm().getDocuments(foreignPK);
@@ -344,7 +346,7 @@ public class VersioningUtil {
       createIndex(currentDocument, version, startOfVisibilityPeriod, endOfVisibilityPeriod);
     }
   }
-  
+
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     if (resources.getBoolean("attachment.index.incorporated", true)) {
       ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
@@ -376,7 +378,7 @@ public class VersioningUtil {
       throws RemoteException {
     createIndex(documentToIndex, lastVersion, null, null);
   }
-  
+
   public void createIndex(Document documentToIndex, DocumentVersion lastVersion,
       Date startOfVisibilityPeriod, Date endOfVisibilityPeriod) throws RemoteException {
     if (resources.getBoolean("attachment.index.separately", true)) {
@@ -432,12 +434,15 @@ public class VersioningUtil {
     return checkinFile(documentId, versionType, comment, null, physicalFileName);
   }
 
-  public boolean checkinFile(String documentId, int versionType, String comment, String userId, 
+  public boolean checkinFile(String documentId, int versionType, String comment, String userId,
       String physicalFileName) throws VersioningRuntimeException {
     try {
-      SilverTrace.debug("versioning", "VersioningUtil.checkinFile()",
-          "root.MSG_GEN_ENTER_METHOD", "documentId = " + documentId + "Type version=" + versionType);
-      DocumentVersion documentVersion = getLastVersion(new DocumentPK(Integer.parseInt(documentId)));
+      SilverTrace
+          .debug("versioning", "VersioningUtil.checkinFile()",
+          "root.MSG_GEN_ENTER_METHOD", "documentId = " + documentId + "Type version=" +
+          versionType);
+      DocumentVersion documentVersion =
+          getLastVersion(new DocumentPK(Integer.parseInt(documentId)));
       if (RepositoryHelper.getJcrDocumentService().isNodeLocked(documentVersion)) {
         return false;
       }
@@ -471,7 +476,7 @@ public class VersioningUtil {
    * @return void
    * @exception RemoteException
    */
-  public boolean checkDocumentOut(DocumentPK documentPK, int ownerID, Date checkOutDate) 
+  public boolean checkDocumentOut(DocumentPK documentPK, int ownerID, Date checkOutDate)
       throws RemoteException {
     return getVersioningBm().checkDocumentOut(documentPK, ownerID, checkOutDate);
   }
@@ -498,7 +503,7 @@ public class VersioningUtil {
    * @return DocumentVersion
    * @exception RemoteException
    */
-  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion, int versionType) 
+  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion, int versionType)
       throws RemoteException {
     return addNewDocumentVersion(newVersion, versionType, "");
   }
@@ -508,7 +513,7 @@ public class VersioningUtil {
    * @return DocumentVersion
    * @exception RemoteException
    */
-  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion, int versionType, 
+  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion, int versionType,
       String comment) throws RemoteException {
     DocumentVersion version = null;
 
@@ -554,7 +559,7 @@ public class VersioningUtil {
 
     File fromFile = null;
     File toFile = null;
-    for (Document aDocument : documents){
+    for (Document aDocument : documents) {
       List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(aDocument.getPk());
       for (DocumentVersion version : versions) {
         // move file on disk
@@ -672,7 +677,7 @@ public class VersioningUtil {
       profile.setName(role);
     } else if (profile == null && inheritedProfile != null) {
       profile = inheritedProfile;
-    } else if(profile != null && inheritedProfile != null) {
+    } else if (profile != null && inheritedProfile != null) {
       profile.addGroups(inheritedProfile.getAllGroups());
       profile.addUsers(inheritedProfile.getAllUsers());
     }
@@ -694,7 +699,8 @@ public class VersioningUtil {
   public ProfileInst getDocumentProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     String documentId = getDocument().getPk().getId();
-    List<ProfileInst> profiles = getAdmin().getProfilesByObject(documentId, ObjectType.DOCUMENT.getCode(),
+    List<ProfileInst> profiles =
+        getAdmin().getProfilesByObject(documentId, ObjectType.DOCUMENT.getCode(),
         getDocument().getInstanceId());
     if (profiles != null && !profiles.isEmpty()) {
       if (!profiles.isEmpty()) {
@@ -734,15 +740,15 @@ public class VersioningUtil {
   private List<String> getReadersAccessListUsers() throws RemoteException {
     return getVersioningBm().getReadersAccessListUsers(getComponentId());
   }
-  
+
   private List<Worker> getWorkersAccessListUsers() throws RemoteException {
     return getVersioningBm().getWorkersAccessListUsers(getComponentId());
   }
-  
+
   private List<String> getReadersAccessListGroups() throws RemoteException {
     return getVersioningBm().getReadersAccessListGroups(getComponentId());
   }
-  
+
   private List<Worker> getWorkersAccessListGroups() throws RemoteException {
     return getVersioningBm().getWorkersAccessListGroups(getComponentId());
   }

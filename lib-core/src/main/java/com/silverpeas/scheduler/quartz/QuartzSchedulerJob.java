@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -35,13 +35,11 @@ import java.util.Date;
 import static com.silverpeas.scheduler.SchedulerFactory.*;
 
 /**
- * The QuartzSchedulerJob is, as its name implies, a job that will be scheduled within the
- * Quartz scheduler.
- *
- * For each job to schedule by the Scheduler API, a corresponding QuartzSchedulerJob instance is
- * created and registered into the Quartz scheduler. This instance will wrap the actual job, so that
- * when the Quartz scheduler will fire it, it will delegate the job execution to the wrapped
- * job.
+ * The QuartzSchedulerJob is, as its name implies, a job that will be scheduled within the Quartz
+ * scheduler. For each job to schedule by the Scheduler API, a corresponding QuartzSchedulerJob
+ * instance is created and registered into the Quartz scheduler. This instance will wrap the actual
+ * job, so that when the Quartz scheduler will fire it, it will delegate the job execution to the
+ * wrapped job.
  */
 public class QuartzSchedulerJob implements ScheduledJob, Serializable {
 
@@ -82,7 +80,7 @@ public class QuartzSchedulerJob implements ScheduledJob, Serializable {
   /**
    * Specifies a scheduler event listener that will recieve all of the events concerning this job.
    * @param listener a scheduler event listener.
-   * @return  itself.
+   * @return itself.
    */
   protected QuartzSchedulerJob withSchedulerEventListener(final SchedulerEventListener listener) {
     this.listener = listener;

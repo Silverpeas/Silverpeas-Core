@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,34 +51,35 @@ public class JobDomainPeasComponentPathServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    
-	  HttpSession session = req.getSession(true);
 
-	  JobDomainPeasSessionController sc = (JobDomainPeasSessionController) session.getAttribute("Silverpeas_" + "jobDomainPeas");
-	  
-	  String componentId = getComponentId(req);
-	  String result = getComponentPath(sc, componentId);
-    
-	  Writer writer = resp.getWriter();
-	  writer.write(result);
+    HttpSession session = req.getSession(true);
+
+    JobDomainPeasSessionController sc =
+        (JobDomainPeasSessionController) session.getAttribute("Silverpeas_" + "jobDomainPeas");
+
+    String componentId = getComponentId(req);
+    String result = getComponentPath(sc, componentId);
+
+    Writer writer = resp.getWriter();
+    writer.write(result);
   }
-  
+
   private String getComponentId(HttpServletRequest req) {
-	  return req.getParameter("ComponentId");
+    return req.getParameter("ComponentId");
   }
 
   private String getComponentPath(JobDomainPeasSessionController sc, String componentId) {
-	  String componentPath = "";
-	  
-	  OrganizationController orgaController = sc.getOrganizationController();
-	  
-	  //Espace > Sous-espaces
-	  List<SpaceInst> spaceList = orgaController.getSpacePathToComponent(componentId);
-	  for (SpaceInst space : spaceList) {
-		  componentPath += space.getName(sc.getLanguage()) + " > ";
-	  }
-	  //Composant
-	  componentPath += orgaController.getComponentInstLight(componentId).getLabel(sc.getLanguage());
-	  return componentPath;
+    String componentPath = "";
+
+    OrganizationController orgaController = sc.getOrganizationController();
+
+    // Espace > Sous-espaces
+    List<SpaceInst> spaceList = orgaController.getSpacePathToComponent(componentId);
+    for (SpaceInst space : spaceList) {
+      componentPath += space.getName(sc.getLanguage()) + " > ";
+    }
+    // Composant
+    componentPath += orgaController.getComponentInstLight(componentId).getLabel(sc.getLanguage());
+    return componentPath;
   }
 }

@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -67,6 +71,7 @@ public class DBUtil {
   public static int getTextFieldLength() {
     return getInstance().textFieldLength;
   }
+
   private Connection connectionForTest;
 
   private DBUtil(Connection connectionForTest) {
@@ -96,6 +101,7 @@ public class DBUtil {
       instance = new DBUtil(null);
     }
   }
+
   /**
    * TextFieldLength is the maximum length to store an html textfield input in db.
    */
@@ -120,7 +126,6 @@ public class DBUtil {
 
   /**
    * fabrique une nouvelle connection
-   *
    * @param dbName le nom de la base de donnée
    * @return a new connection to the database.
    * @throws UtilException
@@ -147,20 +152,19 @@ public class DBUtil {
       }
     } catch (NamingException e) {
       throw new UtilException("DBUtil.makeConnection", new MultilangMessage(
-              "util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
+          "util.MSG_BDD_REF_NOT_FOUND", dbName).toString(), e);
     }
 
     try {
       return ds.getConnection();
     } catch (SQLException e) {
       throw new UtilException("DBUtil.makeConnection", new MultilangMessage(
-              "util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
+          "util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
     }
   }
 
   /**
    * Return a new unique Id for a table.
-   *
    * @param tableName the name of the table.
    * @param idName the name of the column.
    * @return a unique id.
@@ -171,7 +175,7 @@ public class DBUtil {
     boolean testingMode = false;
     try {
       // On ne peux pas utiliser une simple connection du pool
-      // on utilise une connection extérieure au contexte transactionnel des ejb     
+      // on utilise une connection extérieure au contexte transactionnel des ejb
       synchronized (DBUtil.class) {
         if (getInstance().connectionForTest != null) {
           privateConnection = getInstance().connectionForTest;
@@ -192,7 +196,7 @@ public class DBUtil {
         }
       }
       throw new UtilException("DBUtil.getNextId", new MultilangMessage(
-              "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), exe);
+          "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), exe);
     } finally {
       try {
         if (privateConnection != null && !testingMode) {
@@ -206,7 +210,6 @@ public class DBUtil {
 
   /**
    * Return a new unique Id for a table.
-   *
    * @param connection the JDBC connection.
    * @param tableName the name of the table.
    * @param idName the name of the column.
@@ -214,12 +217,12 @@ public class DBUtil {
    * @throws SQLException
    */
   public static int getNextId(Connection connection, String tableName, String idName) throws
-          SQLException {
+      SQLException {
     return getMaxId(connection, tableName, idName);
   }
 
   protected static int getMaxId(Connection privateConnection, String tableName, String idName)
-          throws SQLException {
+      throws SQLException {
     int max = 0;
     // tentative d'update
     SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
@@ -231,7 +234,7 @@ public class DBUtil {
       // l'update n'a rien fait, il faut recuperer une valeur par defaut.
       // on recupere le max (depuis la table existante du composant)
       SilverTrace.debug("util", "DBUtil.getNextId",
-              "impossible d'updater, if faut recuperer la valeur initiale", e);
+          "impossible d'updater, if faut recuperer la valeur initiale", e);
     }
     max = getMaxFromTable(privateConnection, tableName, idName);
     PreparedStatement createStmt = null;
@@ -246,7 +249,7 @@ public class DBUtil {
     } catch (Exception e) {
       // impossible de creer, on est en concurence, on reessaye l'update.
       SilverTrace.debug("util", "DBUtil.getNextId",
-              "impossible de creer, if faut reessayer l'update", e);
+          "impossible de creer, if faut reessayer l'update", e);
     } finally {
       close(createStmt);
       privateConnection.commit();
@@ -293,7 +296,7 @@ public class DBUtil {
   }
 
   public static int getMaxFromTable(Connection con, String tableName, String idName)
-          throws SQLException {
+      throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {

@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.socialnetwork.service;
 
 import java.util.ArrayList;
@@ -20,71 +44,70 @@ public class SocialNetworkService {
   static private String AUTHORIZATION_TOKEN_SESSION_ATTR = "socialnetwork_authorization_token_";
   static private String SOCIALNETWORK_ID_SESSION_ATTR = "socialnetwork_id";
 
-	@Inject @Named("facebookConnector")
-	private SocialNetworkConnector facebook = null;
+  @Inject
+  @Named("facebookConnector")
+  private SocialNetworkConnector facebook = null;
 
-	@Inject @Named("linkedInConnector")
-	private SocialNetworkConnector linkedIn = null;
+  @Inject
+  @Named("linkedInConnector")
+  private SocialNetworkConnector linkedIn = null;
 
-	@Inject
+  @Inject
   private ExternalAccountDao dao = null;
 
-	private static SocialNetworkService instance = null;
+  private static SocialNetworkService instance = null;
 
-  public SocialNetworkService() {}
+  public SocialNetworkService() {
+  }
 
-	static public SocialNetworkService getInstance() {
-		if (instance == null) {
-			instance = new SocialNetworkService();
-		}
-		return instance;
-	}
+  static public SocialNetworkService getInstance() {
+    if (instance == null) {
+      instance = new SocialNetworkService();
+    }
+    return instance;
+  }
 
-	/**
-	 * Get social network service implementation specific to given social network
-	 *
-	 * @param networkid		enum representing network id
-	 *
-	 * @return
-	 */
-	public SocialNetworkConnector getSocialNetworkConnector(SocialNetworkID networkId) {
-		switch(networkId) {
-		case FACEBOOK:
-			return facebook;
+  /**
+   * Get social network service implementation specific to given social network
+   * @param networkid enum representing network id
+   * @return
+   */
+  public SocialNetworkConnector getSocialNetworkConnector(SocialNetworkID networkId) {
+    switch (networkId) {
+      case FACEBOOK:
+        return facebook;
 
-		case LINKEDIN:
-			return linkedIn;
-		}
+      case LINKEDIN:
+        return linkedIn;
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/**
-	 * Get social network service implementation specific to given social network
-	 *
-	 * @param networkIdAsString		network id as String
-	 *
-	 * @return
-	 */
-	public SocialNetworkConnector getSocialNetworkConnector(String networkIdAsString) {
-		SocialNetworkID networkId = SocialNetworkID.valueOf(networkIdAsString);
-		switch(networkId) {
-		case FACEBOOK:
-			return facebook;
+  /**
+   * Get social network service implementation specific to given social network
+   * @param networkIdAsString network id as String
+   * @return
+   */
+  public SocialNetworkConnector getSocialNetworkConnector(String networkIdAsString) {
+    SocialNetworkID networkId = SocialNetworkID.valueOf(networkIdAsString);
+    switch (networkId) {
+      case FACEBOOK:
+        return facebook;
 
-		case LINKEDIN:
-			return linkedIn;
-		}
+      case LINKEDIN:
+        return linkedIn;
+    }
 
-		return null;
-	}
+    return null;
+  }
 
   public ExternalAccount getExternalAccount(SocialNetworkID networkId,
       String profileId) {
     return dao.findOne(new AccountId(networkId, profileId));
   }
 
-  @Transactional(propagation=Propagation.REQUIRES_NEW)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void createExternalAccount(SocialNetworkID networkId, String userId, String profileId) {
     ExternalAccount account = new ExternalAccount();
     account.setNetworkId(networkId);
@@ -104,18 +127,21 @@ public class SocialNetworkService {
     return accounts;
   }
 
-  public void storeAuthorizationToken(HttpSession session, SocialNetworkID networkId, AccessToken authorizationToken) {
-    session.setAttribute(AUTHORIZATION_TOKEN_SESSION_ATTR+networkId, authorizationToken);
+  public void storeAuthorizationToken(HttpSession session, SocialNetworkID networkId,
+      AccessToken authorizationToken) {
+    session.setAttribute(AUTHORIZATION_TOKEN_SESSION_ATTR + networkId, authorizationToken);
     session.setAttribute(SOCIALNETWORK_ID_SESSION_ATTR, networkId);
   }
 
   public AccessToken getStoredAuthorizationToken(HttpSession session, SocialNetworkID networkId) {
-    AccessToken token = (AccessToken) session.getAttribute(AUTHORIZATION_TOKEN_SESSION_ATTR+networkId);
+    AccessToken token =
+        (AccessToken) session.getAttribute(AUTHORIZATION_TOKEN_SESSION_ATTR + networkId);
     return token;
   }
 
   public SocialNetworkID getSocialNetworkIDUsedForLogin(HttpSession session) {
-    SocialNetworkID networkId = (SocialNetworkID) session.getAttribute(SOCIALNETWORK_ID_SESSION_ATTR);
+    SocialNetworkID networkId =
+        (SocialNetworkID) session.getAttribute(SOCIALNETWORK_ID_SESSION_ATTR);
     return networkId;
   }
 

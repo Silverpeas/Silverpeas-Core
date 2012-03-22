@@ -1,19 +1,27 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.apache.tika.msoffice.ooxml;
 
 import java.io.IOException;
@@ -50,159 +58,161 @@ import org.xml.sax.SAXException;
 
 public class XSSFExcelExtractorDecorator extends AbstractOOXMLExtractor {
 
-    /**
-     * Internal <code>DataFormatter</code> for formatting Numbers.
-     */
-    private final DataFormatter formatter;
+  /**
+   * Internal <code>DataFormatter</code> for formatting Numbers.
+   */
+  private final DataFormatter formatter;
 
-    private final XSSFExcelExtractor extractor;
-    private static final String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  private final XSSFExcelExtractor extractor;
+  private static final String TYPE =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-    public XSSFExcelExtractorDecorator(
-            ParseContext context, XSSFExcelExtractor extractor, Locale locale) {
-        super(context, extractor, TYPE);
+  public XSSFExcelExtractorDecorator(
+      ParseContext context, XSSFExcelExtractor extractor, Locale locale) {
+    super(context, extractor, TYPE);
 
-        this.extractor = extractor;
-        formatter = new DataFormatter(locale);
+    this.extractor = extractor;
+    formatter = new DataFormatter(locale);
+  }
+
+  /**
+   * @see org.apache.poi.xssf.extractor.XSSFExcelExtractor#getText()
+   */
+  @Override
+  protected void buildXHTML(XHTMLContentHandler xhtml) throws SAXException,
+      XmlException, IOException {
+    XSSFWorkbook document = (XSSFWorkbook) extractor.getDocument();
+
+    for (int i = 0; i < document.getNumberOfSheets(); i++) {
+      xhtml.startElement("div");
+      XSSFSheet sheet = (XSSFSheet) document.getSheetAt(i);
+      xhtml.element("h1", document.getSheetName(i));
+
+      // Header(s), if present
+      extractHeaderFooter(sheet.getFirstHeader(), xhtml);
+      extractHeaderFooter(sheet.getOddHeader(), xhtml);
+      extractHeaderFooter(sheet.getEvenHeader(), xhtml);
+
+      xhtml.startElement("table");
+      xhtml.startElement("tbody");
+
+      // Rows and cells
+      for (Object rawR : sheet) {
+        xhtml.startElement("tr");
+        Row row = (Row) rawR;
+        for (Iterator<Cell> ri = row.cellIterator(); ri.hasNext();) {
+          xhtml.startElement("td");
+          Cell cell = ri.next();
+
+          int type = cell.getCellType();
+          if (type == Cell.CELL_TYPE_FORMULA) {
+            type = cell.getCachedFormulaResultType();
+          }
+          if (type == Cell.CELL_TYPE_STRING) {
+            xhtml.characters(cell.getRichStringCellValue()
+                .getString());
+          } else if (type == Cell.CELL_TYPE_NUMERIC) {
+            CellStyle style = cell.getCellStyle();
+            xhtml.characters(
+                formatter.formatRawCellContents(cell.getNumericCellValue(),
+                style.getDataFormat(),
+                style.getDataFormatString()));
+          } else {
+            XSSFCell xc = (XSSFCell) cell;
+            String rawValue = xc.getRawValue();
+            if (rawValue != null) {
+              xhtml.characters(rawValue);
+            }
+
+          }
+
+          // Output the comment in the same cell as the content
+          Comment comment = cell.getCellComment();
+          if (comment != null) {
+            xhtml.characters(comment.getString().getString());
+          }
+
+          xhtml.endElement("td");
+        }
+        xhtml.endElement("tr");
+      }
+
+      xhtml.endElement("tbody");
+      xhtml.endElement("table");
+
+      // Finally footer(s), if present
+      extractHeaderFooter(sheet.getFirstFooter(), xhtml);
+      extractHeaderFooter(sheet.getOddFooter(), xhtml);
+      extractHeaderFooter(sheet.getEvenFooter(), xhtml);
+
+      xhtml.endElement("div");
+    }
+  }
+
+  private void extractHeaderFooter(HeaderFooter hf, XHTMLContentHandler xhtml)
+      throws SAXException {
+    String content = ExcelExtractor._extractHeaderFooter(hf);
+    if (content.length() > 0) {
+      xhtml.element("p", content);
+    }
+  }
+
+  /**
+   * In Excel files, sheets have things embedded in them, and sheet drawings which have the images
+   */
+  @Override
+  protected List<PackagePart> getMainDocumentParts() throws TikaException {
+    List<PackagePart> parts = new ArrayList<PackagePart>();
+    XSSFWorkbook document = (XSSFWorkbook) extractor.getDocument();
+    for (XSSFSheet sheet : document) {
+      PackagePart part = sheet.getPackagePart();
+
+      // Add the sheet
+      parts.add(part);
+
+      // If it has drawings, return those too
+      try {
+        for (PackageRelationship rel : part.getRelationshipsByType(XSSFRelation.DRAWINGS
+            .getRelation())) {
+          if (rel.getTargetMode() == TargetMode.INTERNAL) {
+            PackagePartName relName = PackagingURIHelper.createPartName(rel.getTargetURI());
+            parts.add(rel.getPackage().getPart(relName));
+          }
+        }
+        for (PackageRelationship rel : part.getRelationshipsByType(XSSFRelation.VML_DRAWINGS
+            .getRelation())) {
+          if (rel.getTargetMode() == TargetMode.INTERNAL) {
+            PackagePartName relName = PackagingURIHelper.createPartName(rel.getTargetURI());
+            parts.add(rel.getPackage().getPart(relName));
+          }
+        }
+      } catch (InvalidFormatException e) {
+        throw new TikaException("Broken OOXML file", e);
+      }
     }
 
-    /**
-     * @see org.apache.poi.xssf.extractor.XSSFExcelExtractor#getText()
-     */
-    @Override
-    protected void buildXHTML(XHTMLContentHandler xhtml) throws SAXException,
-            XmlException, IOException {
+    return parts;
+  }
+
+  @Override
+  public MetadataExtractor getMetadataExtractor() {
+    return new MetadataExtractor(extractor, TYPE) {
+      @Override
+      public void extract(Metadata metadata) throws TikaException {
+        super.extract(metadata);
+
+        metadata.set(TikaMetadataKeys.PROTECTED, "false");
+
         XSSFWorkbook document = (XSSFWorkbook) extractor.getDocument();
 
         for (int i = 0; i < document.getNumberOfSheets(); i++) {
-            xhtml.startElement("div");
-            XSSFSheet sheet = (XSSFSheet) document.getSheetAt(i);
-            xhtml.element("h1", document.getSheetName(i));
+          XSSFSheet sheet = document.getSheetAt(i);
 
-            // Header(s), if present
-            extractHeaderFooter(sheet.getFirstHeader(), xhtml);
-            extractHeaderFooter(sheet.getOddHeader(), xhtml);
-            extractHeaderFooter(sheet.getEvenHeader(), xhtml);
-
-            xhtml.startElement("table");
-            xhtml.startElement("tbody");
-
-            // Rows and cells
-            for (Object rawR : sheet) {
-                xhtml.startElement("tr");
-                Row row = (Row) rawR;
-                for (Iterator<Cell> ri = row.cellIterator(); ri.hasNext();) {
-                    xhtml.startElement("td");
-                    Cell cell = ri.next();
-
-                    int type = cell.getCellType();
-                    if (type == Cell.CELL_TYPE_FORMULA) {
-                        type = cell.getCachedFormulaResultType();
-                    }
-                    if (type == Cell.CELL_TYPE_STRING) {
-                        xhtml.characters(cell.getRichStringCellValue()
-                                .getString());
-                    } else if (type == Cell.CELL_TYPE_NUMERIC) {
-                        CellStyle style = cell.getCellStyle();
-                        xhtml.characters(
-                            formatter.formatRawCellContents(cell.getNumericCellValue(),
-                                                            style.getDataFormat(),
-                                                            style.getDataFormatString()));
-                    } else {
-                        XSSFCell xc = (XSSFCell) cell;
-                        String rawValue = xc.getRawValue();
-                        if (rawValue != null) {
-                            xhtml.characters(rawValue);
-                        }
-
-                    }
-
-                    // Output the comment in the same cell as the content
-                    Comment comment = cell.getCellComment();
-                    if (comment != null) {
-                        xhtml.characters(comment.getString().getString());
-                    }
-
-                    xhtml.endElement("td");
-                }
-                xhtml.endElement("tr");
-            }
-
-            xhtml.endElement("tbody");
-            xhtml.endElement("table");
-
-            // Finally footer(s), if present
-            extractHeaderFooter(sheet.getFirstFooter(), xhtml);
-            extractHeaderFooter(sheet.getOddFooter(), xhtml);
-            extractHeaderFooter(sheet.getEvenFooter(), xhtml);
-
-            xhtml.endElement("div");
-        }
-    }
-
-    private void extractHeaderFooter(HeaderFooter hf, XHTMLContentHandler xhtml)
-            throws SAXException {
-        String content = ExcelExtractor._extractHeaderFooter(hf);
-        if (content.length() > 0) {
-            xhtml.element("p", content);
-        }
-    }
-    
-    /**
-     * In Excel files, sheets have things embedded in them,
-     *  and sheet drawings which have the images
-     */
-    @Override
-    protected List<PackagePart> getMainDocumentParts() throws TikaException {
-       List<PackagePart> parts = new ArrayList<PackagePart>();
-       XSSFWorkbook document = (XSSFWorkbook) extractor.getDocument();
-       for(XSSFSheet sheet : document) {
-          PackagePart part = sheet.getPackagePart();
-          
-          // Add the sheet
-          parts.add(part);
-          
-          // If it has drawings, return those too
-          try {
-             for(PackageRelationship rel : part.getRelationshipsByType(XSSFRelation.DRAWINGS.getRelation())) {
-                if(rel.getTargetMode() == TargetMode.INTERNAL) {
-                   PackagePartName relName = PackagingURIHelper.createPartName(rel.getTargetURI());
-                   parts.add( rel.getPackage().getPart(relName) );
-                }
-             }
-             for(PackageRelationship rel : part.getRelationshipsByType(XSSFRelation.VML_DRAWINGS.getRelation())) {
-                if(rel.getTargetMode() == TargetMode.INTERNAL) {
-                   PackagePartName relName = PackagingURIHelper.createPartName(rel.getTargetURI());
-                   parts.add( rel.getPackage().getPart(relName) );
-                }
-             }
-          } catch(InvalidFormatException e) {
-             throw new TikaException("Broken OOXML file", e);
+          if (sheet.getProtect()) {
+            metadata.set(TikaMetadataKeys.PROTECTED, "true");
           }
-       }
-
-       return parts;
-    }
-
-    @Override
-    public MetadataExtractor getMetadataExtractor() {
-        return new MetadataExtractor(extractor, TYPE) {
-            @Override
-            public void extract(Metadata metadata) throws TikaException {
-                super.extract(metadata);
-
-                metadata.set(TikaMetadataKeys.PROTECTED, "false");
-
-                XSSFWorkbook document = (XSSFWorkbook) extractor.getDocument();
-
-                for (int i = 0; i < document.getNumberOfSheets(); i++) {
-                    XSSFSheet sheet = document.getSheetAt(i);
-
-                    if (sheet.getProtect()) {
-                        metadata.set(TikaMetadataKeys.PROTECTED, "true");
-                    }
-                }
-            }
-        };
-    }
+        }
+      }
+    };
+  }
 }

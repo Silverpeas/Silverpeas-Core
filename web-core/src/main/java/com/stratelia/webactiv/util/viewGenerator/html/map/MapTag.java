@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.stratelia.webactiv.util.viewGenerator.html.map;
 
 import com.silverpeas.look.LookHelper;
@@ -30,7 +54,8 @@ public class MapTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     try {
-      LookHelper helper = (LookHelper) pageContext.getSession().getAttribute(LookHelper.SESSION_ATT);
+      LookHelper helper =
+          (LookHelper) pageContext.getSession().getAttribute(LookHelper.SESSION_ATT);
       boolean showHiddenComponents = helper.getSettings("display.all.components", false);
       pageContext.getOut().print(printSpaceAndSubSpaces(spaceId, 0, showHiddenComponents));
     } catch (IOException e) {
@@ -102,7 +127,8 @@ public class MapTag extends TagSupport {
       String[] subSpaceIds = organisationController.getAllowedSubSpaceIds(sessionController.
           getUserId(), spaceId);
       for (String subSpaceId : subSpaceIds) {
-        String subSpaceContent = printSpaceAndSubSpaces(subSpaceId, depth + 1, showHiddenComponents);
+        String subSpaceContent =
+            printSpaceAndSubSpaces(subSpaceId, depth + 1, showHiddenComponents);
         if (StringUtil.isDefined(subSpaceContent)) {
           result.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">\n");
           result.append("<tr><td>&nbsp;&nbsp;</td>\n");

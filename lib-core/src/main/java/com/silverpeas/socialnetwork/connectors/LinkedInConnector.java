@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.socialnetwork.connectors;
 
 import java.util.HashMap;
@@ -18,67 +42,74 @@ import org.springframework.social.oauth1.OAuthToken;
 import com.silverpeas.socialnetwork.service.AccessToken;
 
 @Named("linkedInConnector")
-public class LinkedInConnector extends AbstractSocialNetworkConnector  {
-	private Map<String,OAuthToken> requestTokens = new HashMap<String, OAuthToken>();
-	private LinkedInConnectionFactory connectionFactory = null;
+public class LinkedInConnector extends AbstractSocialNetworkConnector {
+  private Map<String, OAuthToken> requestTokens = new HashMap<String, OAuthToken>();
+  private LinkedInConnectionFactory connectionFactory = null;
   private String consumerKey = null;
   private String secretKey = null;
 
-	 public LinkedInConnector() { }
+  public LinkedInConnector() {
+  }
 
-	@PostConstruct
-	void init() {
-	  super.init();
-		consumerKey = getSettings().getString("linkedIn.consumerKey");
+  @PostConstruct
+  void init() {
+    super.init();
+    consumerKey = getSettings().getString("linkedIn.consumerKey");
     secretKey = getSettings().getString("linkedIn.secretKey");
     connectionFactory = new LinkedInConnectionFactory(consumerKey, secretKey);
-	}
+  }
 
-	@Override
-	public String buildAuthenticateUrl(String callBackURL) {
-		OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-		OAuth1Parameters params = new OAuth1Parameters();
+  @Override
+  public String buildAuthenticateUrl(String callBackURL) {
+    OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
+    OAuth1Parameters params = new OAuth1Parameters();
 
-		// Build Request token and store it for future use
-		OAuthToken requestToken = oauthOperations.fetchRequestToken(callBackURL, null);
-		requestTokens.put(requestToken.getValue(), requestToken);
+    // Build Request token and store it for future use
+    OAuthToken requestToken = oauthOperations.fetchRequestToken(callBackURL, null);
+    requestTokens.put(requestToken.getValue(), requestToken);
 
-		return oauthOperations.buildAuthenticateUrl(requestToken.getValue(), params);
-	}
+    return oauthOperations.buildAuthenticateUrl(requestToken.getValue(), params);
+  }
 
-	@Override
-	public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL) {
-		String authVerifier = request.getParameter("oauth_verifier");
-		String oauthToken = request.getParameter("oauth_token");
+  @Override
+  public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL) {
+    String authVerifier = request.getParameter("oauth_verifier");
+    String oauthToken = request.getParameter("oauth_token");
 
-		OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-		OAuthToken savedToken = requestTokens.get(oauthToken);
+    OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
+    OAuthToken savedToken = requestTokens.get(oauthToken);
 
-		if (savedToken != null) {
-			AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(savedToken, authVerifier);
-			OAuthToken accessToken = oauthOperations.exchangeForAccessToken(authorizedRequestToken, null);
-			return new AccessToken(accessToken);
-		}
+    if (savedToken != null) {
+      AuthorizedRequestToken authorizedRequestToken =
+          new AuthorizedRequestToken(savedToken, authVerifier);
+      OAuthToken accessToken = oauthOperations.exchangeForAccessToken(authorizedRequestToken, null);
+      return new AccessToken(accessToken);
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	@Override
-	public UserProfile getUserProfile(AccessToken authorizationToken) {
-		 return connectionFactory.createConnection(authorizationToken.getoAuthToken()).fetchUserProfile();
-	}
+  @Override
+  public UserProfile getUserProfile(AccessToken authorizationToken) {
+    return connectionFactory.createConnection(authorizationToken.getoAuthToken())
+        .fetchUserProfile();
+  }
 
-	@Override
-	public String getUserProfileId(AccessToken authorizationToken) {
-		return connectionFactory.createConnection(authorizationToken.getoAuthToken()).getApi().getProfileId();
-	}
+  @Override
+  public String getUserProfileId(AccessToken authorizationToken) {
+    return connectionFactory.createConnection(authorizationToken.getoAuthToken()).getApi()
+        .getProfileId();
+  }
 
-  /* (non-Javadoc)
-   * @see com.silverpeas.socialnetwork.connectors.SocialNetworkConnector#updateStatus(com.silverpeas.socialnetwork.service.AccessToken, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.silverpeas.socialnetwork.connectors.SocialNetworkConnector#updateStatus(com.silverpeas.
+   * socialnetwork.service.AccessToken, java.lang.String)
    */
   @Override
   public void updateStatus(AccessToken authorizationToken, String status) {
-   connectionFactory.createConnection(authorizationToken.getoAuthToken()).updateStatus(status);
+    connectionFactory.createConnection(authorizationToken.getoAuthToken()).updateStatus(status);
   }
 
   @Override
@@ -103,7 +134,5 @@ public class LinkedInConnector extends AbstractSocialNetworkConnector  {
 
     return code.toString();
   }
-
-
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.external.filesharing.model;
 
 import java.io.Serializable;
@@ -60,10 +61,11 @@ public class TicketDetail implements Serializable {
   private List<DownloadDetail> downloads = new ArrayList<DownloadDetail>();
 
   /**
-   * Creates a new file-downloading ticket with the specified information about the file to download.
-   * The ticket is not limited in time or in quantity. It is a continuous ticket.
+   * Creates a new file-downloading ticket with the specified information about the file to
+   * download. The ticket is not limited in time or in quantity. It is a continuous ticket.
    * @param fileId the identifier of the file to download.
-   * @param componentId the identifier of the Silverpeas component instance to which the file belongs.
+   * @param componentId the identifier of the Silverpeas component instance to which the file
+   * belongs.
    * @param versioning is the file versionned?
    * @param creator the ticket creator.
    * @param creationDate the date at which the ticket was created.
@@ -76,12 +78,14 @@ public class TicketDetail implements Serializable {
   }
 
   /**
-   * Creates a new file-downloading ticket with the specified information about the file to download.
-   * The ticket can be limited in time and in quantity. The first threshold reached expires the ticket.
-   * If the end date is null then no expiration date is defined for the ticket. If the maximum number
-   * of access is null or negative then no maximum download is defined for the ticket.
+   * Creates a new file-downloading ticket with the specified information about the file to
+   * download. The ticket can be limited in time and in quantity. The first threshold reached
+   * expires the ticket. If the end date is null then no expiration date is defined for the ticket.
+   * If the maximum number of access is null or negative then no maximum download is defined for the
+   * ticket.
    * @param fileId the identifier of the file to download.
-   * @param componentId the identifier of the Silverpeas component instance to which the file belongs.
+   * @param componentId the identifier of the Silverpeas component instance to which the file
+   * belongs.
    * @param versioning is the file versionned?
    * @param creator the ticket creator.
    * @param creationDate the date at which the ticket was created.
@@ -216,7 +220,7 @@ public class TicketDetail implements Serializable {
     if (StringUtil.isDefined(getKeyFile())) {
       boolean isValid = true;
       if (getEndDate() != null) {
-         isValid &= getEndDate().after(new Date());
+        isValid &= getEndDate().after(new Date());
       }
       if (getNbAccessMax() > 0) {
         isValid &= getNbAccess() < getNbAccessMax();

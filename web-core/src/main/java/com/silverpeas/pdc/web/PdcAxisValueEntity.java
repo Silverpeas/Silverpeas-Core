@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -30,27 +31,25 @@ import javax.xml.bind.annotation.XmlTransient;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
- * A value of a PdC's axis.
- * 
- * A value of an axis is a term in the vocabulary of the concept represented by the axis, and it is
- * related to the base value of the axis; It can be either a parent or a child of the axis base value. 
- * 
- * As the axis is a tree, its values can be refined by its branches. As such, the value can also be
- * a part of an axis branch whose its level attribute indicates its position in the tree from the root.
+ * A value of a PdC's axis. A value of an axis is a term in the vocabulary of the concept
+ * represented by the axis, and it is related to the base value of the axis; It can be either a
+ * parent or a child of the axis base value. As the axis is a tree, its values can be refined by its
+ * branches. As such, the value can also be a part of an axis branch whose its level attribute
+ * indicates its position in the tree from the root.
  */
 @XmlRootElement
 public class PdcAxisValueEntity extends PdcValueEntity {
   private static final long serialVersionUID = -1689709605873362349L;
-  
-  @XmlElement(required=true)
+
+  @XmlElement(required = true)
   private String term;
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private int level;
-  @XmlElement(defaultValue="false")
+  @XmlElement(defaultValue = "false")
   private boolean ascendant = false;
-  @XmlElement(defaultValue="false")
+  @XmlElement(defaultValue = "false")
   private boolean origin = false;
-  
+
   /**
    * Creates a new value of a PdC axis from the specified business PdC value and expressed in the
    * specified language.
@@ -64,10 +63,10 @@ public class PdcAxisValueEntity extends PdcValueEntity {
       axisId = value.getTreeId();
     }
     PdcAxisValueEntity axisValue = new PdcAxisValueEntity(
-            withId(value.getFullPath()),
-            withTerm(value.getName(inLanguage)),
-            inAxis(axisId)).
-            inTree(value.getTreeId(), atLevel(value.getLevelNumber()));
+        withId(value.getFullPath()),
+        withTerm(value.getName(inLanguage)),
+        inAxis(axisId)).
+        inTree(value.getTreeId(), atLevel(value.getLevelNumber()));
     return axisValue;
   }
 
@@ -89,16 +88,15 @@ public class PdcAxisValueEntity extends PdcValueEntity {
   }
 
   /**
-   * Is this value is ascendant from the axis origin ? 
-   * When a PdC is parameterized for a given Silverpeas component instance, the origin of each axis
-   * can be refined. As such, values between the default and the new axis origin become ascendant to
-   * the latter.
+   * Is this value is ascendant from the axis origin ? When a PdC is parameterized for a given
+   * Silverpeas component instance, the origin of each axis can be refined. As such, values between
+   * the default and the new axis origin become ascendant to the latter.
    * @return true if this value is ascendant to the configured axis origin.
    */
   public boolean isAscendant() {
     return ascendant;
   }
-  
+
   /**
    * Is this value is the root one of the axis? A value is the root of an axis when its identifier
    * is equal to /0/ where 0 is the node identifier of the root in an axis.
@@ -163,31 +161,31 @@ public class PdcAxisValueEntity extends PdcValueEntity {
     } else {
       synonymArray.append("]");
     }
-    return "PdcAxisValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() + 
-            "term=" + getTerm() + ", level=" + getLevel() + ", ascendant=" + isAscendant() +
-            ", origin=" + isOrigin() + ", synonyms=" + synonymArray.toString() + '}';
+    return "PdcAxisValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() +
+        "term=" + getTerm() + ", level=" + getLevel() + ", ascendant=" + isAscendant() +
+        ", origin=" + isOrigin() + ", synonyms=" + synonymArray.toString() + '}';
   }
-  
+
   private static String withId(String id) {
     return id;
   }
-  
+
   private static String withTerm(String term) {
     return term;
   }
-  
+
   private static int inAxis(String axisId) {
     return Integer.valueOf(axisId);
   }
-  
+
   private static int atLevel(int levelNumber) {
     return levelNumber;
   }
-  
+
   protected PdcAxisValueEntity() {
     super();
   }
-  
+
   /**
    * Sets this axis value as the origin of the axis.
    */
@@ -195,7 +193,7 @@ public class PdcAxisValueEntity extends PdcValueEntity {
     this.origin = true;
     this.ascendant = false;
   }
-  
+
   /**
    * Sets this axis value as ascendant to the axis origin value.
    */
@@ -203,12 +201,12 @@ public class PdcAxisValueEntity extends PdcValueEntity {
     this.ascendant = true;
     this.origin = false;
   }
-  
+
   private PdcAxisValueEntity(String withId, String withTerm, int inAxisId) {
     super(withId, inAxisId);
     this.term = withTerm;
   }
-  
+
   private PdcAxisValueEntity inTree(String treeId, int levelInTree) {
     setTreeId(treeId);
     this.level = levelInTree;

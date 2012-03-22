@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -143,7 +143,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   public ProcessInstance[] getProcessInstances(String peasId, User user,
       String role, String[] userRoles, String[] userGroupIds) throws WorkflowException {
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
-        "root.MSG_GEN_ENTER_METHOD", "peasId = "+peasId+", user = "+user.getUserId()+", role = "+role);
+        "root.MSG_GEN_ENTER_METHOD", "peasId = " + peasId + ", user = " + user.getUserId() +
+        ", role = " + role);
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -198,7 +199,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           selectQuery.append("))");
         }
         selectQuery.append(") and ");
-        
+
         // role can be multiple (e.g: "role1,role2,...,roleN")
         selectQuery.append("( wkUser.role = ? ");
         selectQuery.append(" or wkUser.role like ? ");
@@ -208,9 +209,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
         selectQuery.append(")");
         selectQuery.append("order by I.instanceId desc");
-        
+
         SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
-            "root.MSG_GEN_PARAM_VALUE", "SQL query = "+selectQuery.toString());
+            "root.MSG_GEN_PARAM_VALUE", "SQL query = " + selectQuery.toString());
 
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
@@ -218,9 +219,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         prepStmt.setString(3, role);
         prepStmt.setString(4, user.getUserId());
         prepStmt.setString(5, role);
-        prepStmt.setString(6, "%,"+role);
-        prepStmt.setString(7, role+",%");
-        prepStmt.setString(8, "%,"+role+",%");
+        prepStmt.setString(6, "%," + role);
+        prepStmt.setString(7, role + ",%");
+        prepStmt.setString(8, "%," + role + ",%");
       }
       rs = prepStmt.executeQuery();
 
@@ -310,9 +311,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       }
     }
   }
-  
-  private String getSQLClauseIn(String[] items)
-  {
+
+  private String getSQLClauseIn(String[] items) {
     StringBuffer result = new StringBuffer();
     boolean first = true;
     for (String item : items) {
@@ -471,7 +471,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   public void removeProcessInstance(String instanceId) throws WorkflowException {
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstance()",
-    "root.MSG_GEN_ENTER_METHOD","InstanceId="+instanceId);
+        "root.MSG_GEN_ENTER_METHOD", "InstanceId=" + instanceId);
     ProcessInstanceImpl instance;
     Database db = null;
     try {
@@ -495,7 +495,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
     WorkflowHub.getErrorManager().removeErrorsOfInstance(instanceId);
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstance()",
-    "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -519,12 +519,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
     // delete attachments
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_PARAM_VALUE", "Delete attachments foreignPK = "+foreignPK);
+        "root.MSG_GEN_PARAM_VALUE", "Delete attachments foreignPK = " + foreignPK);
     AttachmentController.deleteAttachmentByCustomerPK(foreignPK);
 
     // delete versioning
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_PARAM_VALUE", "Delete versiong foreignPK = "+foreignPK);
+        "root.MSG_GEN_PARAM_VALUE", "Delete versiong foreignPK = " + foreignPK);
     try {
       getVersioningBm().deleteDocumentsByForeignPK(foreignPK);
     } catch (Exception e) {
@@ -564,7 +564,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         foreignPK.getId() + "##%");
 
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-    "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -678,7 +678,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   /**
    * Get the list of process instances for which timeout date is over
    * @return an array of ProcessInstance objects
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   public ProcessInstance[] getTimeOutProcessInstances() throws WorkflowException {
     Database db = null;
@@ -762,6 +762,6 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
             "root.EX_RESOURCE_CLOSE_FAILED", se);
       }
     }
-  }  
-  
+  }
+
 }

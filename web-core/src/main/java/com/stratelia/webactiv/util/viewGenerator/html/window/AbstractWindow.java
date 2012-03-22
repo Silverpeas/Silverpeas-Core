@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -148,10 +148,10 @@ public abstract class AbstractWindow implements Window {
         msc.getUserId()) && getGEF().isComponentMainPage()) {
       String label =
           GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
-              .getString("GML.operations.setupComponent");
+          .getString("GML.operations.setupComponent");
       String url =
           URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
-              "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
+          "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();
     }
@@ -238,7 +238,8 @@ public abstract class AbstractWindow implements Window {
     sb.append("$(function() {\n");
     sb.append("var welcomeMessageCookieName = \"Silverpeas_").append(component.getName())
         .append("_WelcomeMessage\";\n");
-    sb.append("if (!welcomeMessageAlreadyShown && \"IKnowIt\" != $.cookie(welcomeMessageCookieName)) {\n");
+    sb
+        .append("if (!welcomeMessageAlreadyShown && \"IKnowIt\" != $.cookie(welcomeMessageCookieName)) {\n");
     sb.append("if (!welcomeMessageAlreadyShown) {\n");
     sb.append("welcomeMessageAlreadyShown = true;\n");
     sb.append("$('#welcome-message').dialog({\n");
@@ -273,7 +274,7 @@ public abstract class AbstractWindow implements Window {
         StringBuilder sb = new StringBuilder(300);
         ComponentInstLight component =
             getGEF().getMainSessionController().getOrganizationController()
-                .getComponentInstLight(componentId);
+            .getComponentInstLight(componentId);
         String language = getGEF().getMainSessionController().getFavoriteLanguage();
         if (component != null) {
           String message = getWelcomeMessage(component, language);

@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -31,17 +31,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The attendees to an event scheduled in a calendar.
- * The attendees are expected to be managed by the event itself.
+ * The attendees to an event scheduled in a calendar. The attendees are expected to be managed by
+ * the event itself.
  */
 public class CalendarEventAttendees {
 
-  private Set<String> attendees = new HashSet<String> ();
+  private Set<String> attendees = new HashSet<String>();
 
   /**
-   * Adds an attendee to an event scheduled in a calendar.
-   * The attendee is specified by one of its URI that can be an email address.
-   * If the attendee is already added, then nothing is done.
+   * Adds an attendee to an event scheduled in a calendar. The attendee is specified by one of its
+   * URI that can be an email address. If the attendee is already added, then nothing is done.
    * @param attendeeURI the URI of the attendee to add.
    */
   public void add(final String attendeeURI) {
@@ -49,9 +48,9 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Adds several attendees to an event scheduled in a calendar.
-   * The attendees are specified by one of their URI that can be an email address.
-   * If some of the attendees to add are already present, then they are not added.
+   * Adds several attendees to an event scheduled in a calendar. The attendees are specified by one
+   * of their URI that can be an email address. If some of the attendees to add are already present,
+   * then they are not added.
    * @param attendeeURIs the URI of the attendees to add.
    */
   public void addAll(final List<String> attendeeURIs) {
@@ -59,19 +58,19 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Adds one or several attendees to an event scheduled in a calendar.
-   * The attendees are specified by one of their URI that can be an email address.
-   * If some of the attendees to add are already present, then they are not added.
+   * Adds one or several attendees to an event scheduled in a calendar. The attendees are specified
+   * by one of their URI that can be an email address. If some of the attendees to add are already
+   * present, then they are not added.
    * @param attendeeURIs the URI of the attendees to add.
    */
-  public void addAll(final String ... attendeeURIs) {
+  public void addAll(final String... attendeeURIs) {
     addAll(Arrays.asList(attendeeURIs));
   }
 
   /**
-   * Removes an attendee from the attendees to an event scheduled in a calendar.
-   * The attendee is specified by one of its URI that can be an email address.
-   * If the attendee isn't present, then nothing is done.
+   * Removes an attendee from the attendees to an event scheduled in a calendar. The attendee is
+   * specified by one of its URI that can be an email address. If the attendee isn't present, then
+   * nothing is done.
    * @param attendeeURI the URI of the attendee to remove.
    */
   public void remove(final String attendeeURI) {
@@ -79,9 +78,9 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Removes several attendees from the attendees to an event scheduled in a calendar.
-   * The attendees are specified by one of their URI that can be an email address.
-   * If some of the attendees to remove aren't present, then nothing is done with them.
+   * Removes several attendees from the attendees to an event scheduled in a calendar. The attendees
+   * are specified by one of their URI that can be an email address. If some of the attendees to
+   * remove aren't present, then nothing is done with them.
    * @param attendeeURIs the URI of the attendees to remove.
    */
   public void removeAll(final List<String> attendeeURIs) {
@@ -89,12 +88,12 @@ public class CalendarEventAttendees {
   }
 
   /**
-   * Removes one or several attendees from the attendees to an event scheduled in a calendar.
-   * The attendees are specified by one of their URI that can be an email address.
-   * If some of the attendees to remove aren't present, then nothing is done with them.
+   * Removes one or several attendees from the attendees to an event scheduled in a calendar. The
+   * attendees are specified by one of their URI that can be an email address. If some of the
+   * attendees to remove aren't present, then nothing is done with them.
    * @param attendeeURIs the URI of the attendees to remove.
    */
-  public void remove(final String ... attendeeURIs) {
+  public void remove(final String... attendeeURIs) {
     removeAll(Arrays.asList(attendeeURIs));
   }
 

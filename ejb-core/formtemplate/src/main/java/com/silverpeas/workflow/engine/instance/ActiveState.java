@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,8 +61,8 @@ public class ActiveState extends AbstractReferrableObject {
   private boolean backStatus = false;
 
   /**
-   * Flag that indicates if this active state is there for a long long time 
-   * (As several timeout can be defined in chain, timeoutstatus numeric value N represent the Nth timeout
+   * Flag that indicates if this active state is there for a long long time (As several timeout can
+   * be defined in chain, timeoutstatus numeric value N represent the Nth timeout
    * @field-name timeoutStatus
    */
   private int timeoutStatus = 0;
@@ -72,7 +72,7 @@ public class ActiveState extends AbstractReferrableObject {
    * @field-name timeoutDate
    */
   private Date timeoutDate = null;
-  
+
   /**
    * Default Constructor
    */
@@ -185,7 +185,7 @@ public class ActiveState extends AbstractReferrableObject {
   public Date getTimeoutDate() {
     return timeoutDate;
   }
-  
+
   /**
    * Set the timeout status of this active state
    * @param timeoutStatus true if this active state is there for a long long time

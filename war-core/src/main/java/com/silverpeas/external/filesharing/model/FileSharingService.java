@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,11 +27,10 @@ package com.silverpeas.external.filesharing.model;
 import java.util.List;
 
 /**
- * The business service of file sharing.
- * The file sharing service provides a way to share files from the Silverpeas portal to external
- * users.
- * The share of a file to external users consists of creation a ticket for downloading this file
- * from the Silverpeas portal. This ticket can be limited in time and in download count.
+ * The business service of file sharing. The file sharing service provides a way to share files from
+ * the Silverpeas portal to external users. The share of a file to external users consists of
+ * creation a ticket for downloading this file from the Silverpeas portal. This ticket can be
+ * limited in time and in download count.
  */
 public interface FileSharingService {
 
@@ -45,8 +44,7 @@ public interface FileSharingService {
   /**
    * Deletes all the tickets about the specified file.
    * @param fileId the identifier of the file.
-   * @param versioning is this file is versionned.
-   * specified file.
+   * @param versioning is this file is versionned. specified file.
    */
   public void deleteTicketsByFile(String fileId, boolean versioning);
 

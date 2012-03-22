@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.silverpeas.scheduler.Job;
@@ -52,7 +56,6 @@ import static com.stratelia.silverpeas.silverstatistics.util.StatType.*;
 /**
  * SilverStatisticsManager is the tool used in silverpeas to compute statistics for connexions,
  * files size and components access. This is a singleton class.
- *
  * @author Marc Guillemin
  */
 public class SilverStatisticsManager implements SchedulerEventListener {
@@ -111,7 +114,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * SilverStatisticsManager is a singleton
-   *
    * @return
    */
   public static synchronized SilverStatisticsManager getInstance() {
@@ -125,12 +127,11 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   /**
    * Sets up the scheduling of the specified statistics computation at given moments in time as
    * specified by the Unix-like cron expression.
-   *
    * @param aCronString the cron expression.
-   * @param jobName     the name of the computation to schedule.
+   * @param jobName the name of the computation to schedule.
    * @param methodeName the name of the method that performs the computation.
    * @throws SchedulerException if the computation scheduling failed.
-   * @throws ParseException     if the cron expression is malformed.
+   * @throws ParseException if the cron expression is malformed.
    */
   public void initSchedulerStatistics(String aCronString, String jobName, String methodeName) throws
       SchedulerException, ParseException {
@@ -146,7 +147,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param currentDate
    * @see
    */
@@ -165,7 +165,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   /**
    * For each directory compute the size of all its files and the size of all its subdirectories
    * recursively.
-   *
    * @param currentDate
    * @see
    */
@@ -178,7 +177,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param currentDate
    * @see
    */
@@ -195,7 +193,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param resource
    * @see
    */
@@ -228,7 +225,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param userId
    * @param volume
    * @param dateAccess
@@ -285,7 +281,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param userId
    * @param dateAccess
    * @param peasType
@@ -299,7 +294,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
     if (statsConfig.isRun(Access)) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatAccess",
           " peasType=" + peasType + " spaceId=" + spaceId + " componentId="
-              + componentId);
+          + componentId);
       // creation du stringbuffer correspondant au type Acces du
       // silverstatistics.properties
       StringBuilder stat = new StringBuilder();
@@ -321,7 +316,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param userId
    * @param dateConnection
    * @param count
@@ -352,7 +346,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param date
    * @param dirName
    * @param dirSize
@@ -396,7 +389,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param directoryName
    * @return
    * @see
@@ -413,7 +405,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Method declaration
-   *
    * @param file
    * @return
    * @see
@@ -424,8 +415,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
     }
     File fDirContent[] = file.listFiles();
     long fileslength = 0L;
-    for (File aFDirContent :
-        fDirContent) {
+    for (File aFDirContent : fDirContent) {
       if (aFDirContent.isFile()) {
         fileslength = fileslength + aFDirContent.length();
       } else {
@@ -437,12 +427,11 @@ public class SilverStatisticsManager implements SchedulerEventListener {
 
   /**
    * Creates a job with the specified name and with the specified operation to execute.
-   *
-   * @param jobName      the job name.
+   * @param jobName the job name.
    * @param jobOperation the job operation.
    * @return a job wrapping the operation to schedule at given moments in time.
    * @throws SchedulerException if an error occurs while creating the job to schedule (for example,
-   *                            the operation doesn't exist).
+   * the operation doesn't exist).
    */
   private Job createJobWith(final String jobName,
       final String jobOperation) throws SchedulerException {
@@ -459,7 +448,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
     } catch (Exception ex) {
       SilverTrace
           .error("silverstatistics", "SilverStatisticsManager.createJobWith", ex.getMessage(),
-              ex);
+          ex);
       throw new SchedulerException(ex.getMessage());
     }
   }
@@ -468,20 +457,20 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
     SilverTrace.debug("silverstatistics", "SilverStatisticsManager.handleSchedulerEvent",
         "The job '"
-            + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+        + anEvent.getJobExecutionContext().getJobName() + "' is starting");
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
     SilverTrace.debug("silverstatistics", "SilverStatisticsManager.handleSchedulerEvent",
         "The job '"
-            + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("silverstatistics", "SilverStatisticsManager.handleSchedulerEvent",
         "The job '"
-            + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

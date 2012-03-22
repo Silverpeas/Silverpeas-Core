@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.thesaurus.model.Jargon;
@@ -50,10 +51,10 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
 
   @Override
   public PdcClassifySessionController createComponentSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcClassifySessionController(mainSessionCtrl, componentContext,
-            "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
-            "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
+        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
   }
 
   @Override
@@ -62,7 +63,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
   }
 
   protected void setUpPdcSession(final PdcClassifySessionController pdcSC,
-          final HttpServletRequest request) throws Exception {
+      final HttpServletRequest request) throws Exception {
     String silverObjectId = request.getParameter("SilverObjectId");
     String componentId = request.getParameter("ComponentId");
     if (isDefined(componentId)) {
@@ -82,7 +83,8 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
   }
 
   @Override
-  public String getDestination(String function, PdcClassifySessionController pdcSC, HttpServletRequest request) {
+  public String getDestination(String function, PdcClassifySessionController pdcSC,
+      HttpServletRequest request) {
     String destination = "";
 
     // get the session controller to inform the request
@@ -119,8 +121,9 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
 
         // !!! workaround to get the searchContext
         HttpSession session = request.getSession(true);
-        PdcSearchSessionController pdcSearchSC = (PdcSearchSessionController) session.getAttribute("Silverpeas_pdcSearch_"
-                + pdcSC.getCurrentComponentId());
+        PdcSearchSessionController pdcSearchSC =
+            (PdcSearchSessionController) session.getAttribute("Silverpeas_pdcSearch_"
+            + pdcSC.getCurrentComponentId());
 
         if (pdcSearchSC != null) {
           request.setAttribute("SearchContext", pdcSearchSC.getSearchContext());
@@ -169,7 +172,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
         }
         if (pdcFPM.isEnabled()) {
           destination = getPdcFieldModeReturnDestination(
-                  request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
+              request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
         } else {
           String toURL = request.getParameter("ToURL");
           if (toURL != null && toURL.length() > 0) {
@@ -329,7 +332,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
    * @return The reload page to display to update the positions of a PDC field.
    */
   private String getPdcFieldModeReturnDestination(HttpServletRequest request,
-          PdcFieldPositionsManager pdcFPM, String message) {
+      PdcFieldPositionsManager pdcFPM, String message) {
     request.setAttribute("pdcFieldName", pdcFPM.getFieldName());
     request.setAttribute("pdcFieldPositions", pdcFPM.getPositionsToString());
     if (message != null) {
@@ -383,8 +386,8 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
   }
 
   private void setBrowseContextInRequest(PdcClassifySessionController pdcSC,
-          HttpServletRequest request) {
-    request.setAttribute("browseContext", new String[]{pdcSC.getSpaceLabel(),
-              pdcSC.getComponentLabel()});
+      HttpServletRequest request) {
+    request.setAttribute("browseContext", new String[] { pdcSC.getSpaceLabel(),
+        pdcSC.getComponentLabel() });
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,7 +45,6 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    * List of all linked attachment in wysiwyg content
    */
   private List<String> embeddedFileIds;
-
 
   /**
    * list of XML form fields used to sort results
@@ -138,18 +137,15 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    */
   private float score = 0;
 
-
   /**
    * Set the list of all linked attachment in wysiwyg content
-   *
-   * @param   embeddedFileIds   attachments ids separated by a blank space
+   * @param embeddedFileIds attachments ids separated by a blank space
    */
   public void setEmbeddedFileIds(String[] embeddedFileIds) {
-    if ( embeddedFileIds == null ) {
+    if (embeddedFileIds == null) {
       this.embeddedFileIds = new ArrayList<String>();
-    }
-    else {
-      this.embeddedFileIds = Arrays.asList( embeddedFileIds );
+    } else {
+      this.embeddedFileIds = Arrays.asList(embeddedFileIds);
     }
   }
 

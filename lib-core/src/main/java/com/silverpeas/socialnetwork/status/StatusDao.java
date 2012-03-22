@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.socialnetwork.status;
 
 import java.sql.Connection;
@@ -196,7 +197,7 @@ public class StatusDao {
     try {
       String query =
           "SELECT id,userid, creationdate, description FROM sb_sn_status WHERE userid = ? " +
-              "and creationdate >= ? and creationdate <= ? ORDER BY creationdate DESC";
+          "and creationdate >= ? and creationdate <= ? ORDER BY creationdate DESC";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, userId);
       pstmt.setTimestamp(2, new Timestamp(begin.getTime()));
@@ -226,9 +227,9 @@ public class StatusDao {
     try {
       String query =
           "SELECT id,userid, creationdate, description FROM sb_sn_status WHERE userid in (" +
-              toSqlString(myContactsIds) + ") " +
-              "AND creationdate >= ? AND creationdate <= ? " +
-              "ORDER BY creationdate DESC";
+          toSqlString(myContactsIds) + ") " +
+          "AND creationdate >= ? AND creationdate <= ? " +
+          "ORDER BY creationdate DESC";
 
       pstmt = connection.prepareStatement(query);
       pstmt.setTimestamp(1, new Timestamp(begin.getTime()));

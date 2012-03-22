@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.organization;
 
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPUtility;
@@ -43,14 +44,16 @@ public class UserTable extends Table<UserRow> {
     super(schema, "ST_User");
     this.organization = schema;
   }
-  static final private String USER_COLUMNS = "id, specificId, domainId, login, firstName, lastName,"
+
+  static final private String USER_COLUMNS =
+      "id, specificId, domainId, login, firstName, lastName,"
       + "loginMail, email, accessLevel, loginQuestion, loginAnswer";
 
   /**
    * Fetch the current user row from a resultSet.
    * @param rs
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected UserRow fetchUser(ResultSet rs) throws SQLException {
     UserRow u = new UserRow();
@@ -75,7 +78,7 @@ public class UserTable extends Table<UserRow> {
   /**
    * Returns the User number
    * @return the User number
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public int getUserNumber() throws AdminPersistenceException {
     return getCount("ST_User", "id", "accessLevel <> ?", "R");
@@ -85,11 +88,12 @@ public class UserTable extends Table<UserRow> {
    * Returns the User whith the given id.
    * @param id
    * @return the User whith the given id.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow getUser(int id) throws AdminPersistenceException {
     return getUniqueRow(SELECT_USER_BY_ID, id);
   }
+
   static final private String SELECT_USER_BY_ID = "SELECT " + USER_COLUMNS
       + " FROM ST_User WHERE id = ?";
 
@@ -98,12 +102,13 @@ public class UserTable extends Table<UserRow> {
    * @param domainId
    * @param specificId
    * @return the User with the given specificId and login.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow getUserBySpecificId(int domainId, String specificId) throws
       AdminPersistenceException {
-    List<UserRow> rows = getRows(SELECT_USER_BY_SPECIFICID_AND_LOGIN, new int[]{domainId}, new String[]{
-          specificId});
+    List<UserRow> rows =
+        getRows(SELECT_USER_BY_SPECIFICID_AND_LOGIN, new int[] { domainId }, new String[] {
+        specificId });
     UserRow[] users = rows.toArray(new UserRow[rows.size()]);
 
     if (users.length == 0) {
@@ -117,6 +122,7 @@ public class UserTable extends Table<UserRow> {
         "admin.EX_ERR_LOGIN_FOUND_TWICE", "domain id : '" + domainId + "', user specific Id: '"
         + specificId + "'");
   }
+
   static final private String SELECT_USER_BY_SPECIFICID_AND_LOGIN = "select "
       + USER_COLUMNS + " from ST_User where domainId = ? and specificId = ?";
 
@@ -125,7 +131,7 @@ public class UserTable extends Table<UserRow> {
    * @param domainId
    * @param specificIds
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getUsersBySpecificIds(int domainId, List<String> specificIds) throws
       AdminPersistenceException {
@@ -147,6 +153,7 @@ public class UserTable extends Table<UserRow> {
     List<UserRow> rows = getRows(query, domainId);
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_USERS_BY_SPECIFICIDS = "select " + USER_COLUMNS
       + " from ST_User where domainId = ? and specificId IN ";
 
@@ -155,11 +162,12 @@ public class UserTable extends Table<UserRow> {
    * @param domainId
    * @param login
    * @return the User with the given domainId and login.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow getUserByLogin(int domainId, String login) throws AdminPersistenceException {
-    List<UserRow> users = getRows(SELECT_USER_BY_DOMAINID_AND_LOGIN, new int[]{domainId}, new String[]{
-          login});
+    List<UserRow> users =
+        getRows(SELECT_USER_BY_DOMAINID_AND_LOGIN, new int[] { domainId }, new String[] {
+        login });
     SynchroReport.debug("UserTable.getUserByLogin()", "Vérification que le login" + login
         + " du domaine no " + domainId + " n'est pas présent dans la base, requête : "
         + SELECT_USER_BY_DOMAINID_AND_LOGIN, null);
@@ -173,30 +181,33 @@ public class UserTable extends Table<UserRow> {
         "admin.EX_ERR_LOGIN_FOUND_TWICE", "domain id : '" + domainId + "', user login: '"
         + login + "'");
   }
+
   static final private String SELECT_USER_BY_DOMAINID_AND_LOGIN = "select " + USER_COLUMNS
       + " from ST_User where domainId = ? and lower(login) = lower(?)";
 
   /**
    * Returns all the Users.
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getAllUsers() throws AdminPersistenceException {
     List<UserRow> rows = getRows(SELECT_ALL_USERS);
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_ALL_USERS = "select " + USER_COLUMNS
       + " from ST_User where accessLevel <> 'R' order by lastName";
 
   /**
    * Returns all the User ids.
    * @return all the User ids.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getAllUserIds() throws AdminPersistenceException {
     List<String> rows = getIds(SELECT_ALL_USER_IDS);
     return rows.toArray(new String[rows.size()]);
   }
+
   static final private String SELECT_ALL_USER_IDS =
       "select id from ST_User where accessLevel <> 'R' order by lastName";
 
@@ -204,35 +215,38 @@ public class UserTable extends Table<UserRow> {
    * Returns all the Admin ids.
    * @param fromUser
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getAllAdminIds(UserDetail fromUser) throws AdminPersistenceException {
     if (fromUser.isAccessAdmin() || fromUser.isAccessDomainManager()) {
       List<String> rows = getIds(SELECT_ALL_ADMIN_IDS_TRUE);
       return rows.toArray(new String[rows.size()]);
     }
-    List<String> rows = getIds(SELECT_ALL_ADMIN_IDS_DOMAIN, Integer.parseInt(fromUser.getDomainId()));
+    List<String> rows =
+        getIds(SELECT_ALL_ADMIN_IDS_DOMAIN, Integer.parseInt(fromUser.getDomainId()));
     if (rows.isEmpty()) {
       rows = getIds(SELECT_ALL_ADMIN_IDS_TRUE);
     }
     return rows.toArray(new String[rows.size()]);
   }
+
   static final private String SELECT_ALL_ADMIN_IDS_TRUE =
       "select id from ST_User where accessLevel='A' order by lastName";
   static final private String SELECT_ALL_ADMIN_IDS_DOMAIN = "select id from ST_User where "
       + "((accessLevel='A') or (accessLevel='D')) and (domainId = ?) order by lastName";
 
   /**
-   *  Returns all the User ids.
+   * Returns all the User ids.
    * @param accessLevel
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getUserIdsByAccessLevel(String accessLevel) throws AdminPersistenceException {
-    String[] params = new String[]{accessLevel};
+    String[] params = new String[] { accessLevel };
     List<String> rows = getIds(SELECT_USER_IDS_BY_ACCESS_LEVEL, new int[0], params);
     return rows.toArray(new String[rows.size()]);
   }
+
   static final private String SELECT_USER_IDS_BY_ACCESS_LEVEL =
       "select id from ST_User where accessLevel=? order by lastName";
 
@@ -241,15 +255,16 @@ public class UserTable extends Table<UserRow> {
    * @param domainId
    * @param accessLevel
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getUserIdsOfDomainByAccessLevel(int domainId, String accessLevel) throws
       AdminPersistenceException {
-    String[] params = new String[]{accessLevel};
-    int[] domainIds = new int[]{domainId};
+    String[] params = new String[] { accessLevel };
+    int[] domainIds = new int[] { domainId };
     List<String> rows = getIds(SELECT_USER_IDS_BY_ACCESS_LEVEL_AND_DOMAIN, domainIds, params);
     return rows.toArray(new String[rows.size()]);
   }
+
   static final private String SELECT_USER_IDS_BY_ACCESS_LEVEL_AND_DOMAIN =
       "select id from ST_User where domainId = ? AND accessLevel=? order by lastName";
 
@@ -257,12 +272,13 @@ public class UserTable extends Table<UserRow> {
    * Returns all the Users which compose a group.
    * @param groupId
    * @return all the Users which compose a group.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getDirectUsersOfGroup(int groupId) throws AdminPersistenceException {
     List<UserRow> rows = getRows(SELECT_USERS_IN_GROUP, groupId);
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_USERS_IN_GROUP = "select " + USER_COLUMNS
       + " from ST_User,ST_Group_User_Rel where id = userId and groupId = ? and accessLevel <> 'R'"
       + " order by lastName";
@@ -271,7 +287,7 @@ public class UserTable extends Table<UserRow> {
    * Returns all the User ids which compose a group.
    * @param groupId
    * @return all the User ids which compose a group.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getDirectUserIdsOfGroup(int groupId) throws AdminPersistenceException {
     SynchroReport.debug("UserTable.getDirectUserIdsOfGroup()",
@@ -280,6 +296,7 @@ public class UserTable extends Table<UserRow> {
     List<String> rows = getIds(SELECT_USER_IDS_IN_GROUP, groupId);
     return rows.toArray(new String[rows.size()]);
   }
+
   static final private String SELECT_USER_IDS_IN_GROUP = "select id from ST_User,ST_Group_User_Rel"
       + " where id = userId and groupId = ? and accessLevel <> 'R' order by lastName";
 
@@ -287,12 +304,13 @@ public class UserTable extends Table<UserRow> {
    * Returns all the Users having directly a given role.
    * @param userRoleId
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getDirectUsersOfUserRole(int userRoleId) throws AdminPersistenceException {
     List<UserRow> rows = getRows(SELECT_USERS_IN_USERROLE, userRoleId);
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_USERS_IN_USERROLE = "select " + USER_COLUMNS
       + " from ST_User,ST_UserRole_User_Rel where id = userId and userRoleId = ? and "
       + "accessLevel <> 'R' order by lastName";
@@ -301,12 +319,13 @@ public class UserTable extends Table<UserRow> {
    * Returns all the User ids having directly a given role.
    * @param userRoleId
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getDirectUserIdsOfUserRole(int userRoleId) throws AdminPersistenceException {
     List<String> rows = getIds(SELECT_USER_IDS_IN_USERROLE, userRoleId);
     return rows.toArray(new String[rows.size()]);
   }
+
   static final private String SELECT_USER_IDS_IN_USERROLE = "select id from ST_User,"
       + "ST_UserRole_User_Rel where id = userId and userRoleId = ? and accessLevel <> 'R'"
       + " order by lastName";
@@ -315,7 +334,7 @@ public class UserTable extends Table<UserRow> {
    * Returns all the Users having a given domain id.
    * @param domainId
    * @return all the Users having a given domain id.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getAllUserOfDomain(int domainId) throws AdminPersistenceException {
     SynchroReport.debug("UserTable.getAllUserOfDomain()", "Recherche de l'ensemble des "
@@ -324,6 +343,7 @@ public class UserTable extends Table<UserRow> {
     List<UserRow> rows = getRows(SELECT_ALL_USERS_IN_DOMAIN, domainId);
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_ALL_USERS_IN_DOMAIN = "select " + USER_COLUMNS
       + " from ST_User where domainId=? and accessLevel <> 'R'" + " order by lastName";
 
@@ -331,12 +351,13 @@ public class UserTable extends Table<UserRow> {
    * Returns all the User ids having a given domain id.
    * @param domainId
    * @return all the User ids having a given domain id.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getUserIdsOfDomain(int domainId) throws AdminPersistenceException {
     List<String> rows = getIds(SELECT_ALL_USER_IDS_IN_DOMAIN, domainId);
     return rows.toArray(new String[rows.size()]);
   }
+
   static final private String SELECT_ALL_USER_IDS_IN_DOMAIN =
       "select id from ST_User where domainId=? and accessLevel <> 'R' order by lastName";
 
@@ -344,13 +365,14 @@ public class UserTable extends Table<UserRow> {
    * Returns all the Users having directly a given space userRole.
    * @param spaceUserRoleId
    * @return all the Users having directly a given space userRole.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getDirectUsersOfSpaceUserRole(int spaceUserRoleId) throws
       AdminPersistenceException {
     List<UserRow> rows = getRows(SELECT_USERS_IN_SPACEUSERROLE, spaceUserRoleId);
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_USERS_IN_SPACEUSERROLE = "select "
       + USER_COLUMNS + " from ST_User,ST_SpaceUserRole_User_Rel"
       + " where id = userId and spaceUserRoleId = ? and accessLevel <> 'R'";
@@ -359,27 +381,30 @@ public class UserTable extends Table<UserRow> {
    * Returns all the User ids having directly a given space userRole.
    * @param spaceUserRoleId
    * @return all the User ids having directly a given space userRole.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getDirectUserIdsOfSpaceUserRole(int spaceUserRoleId) throws
       AdminPersistenceException {
     List<String> rows = getIds(SELECT_USER_IDS_IN_SPACEUSERROLE, spaceUserRoleId);
     return rows.toArray(new String[rows.size()]);
   }
-  static final private String SELECT_USER_IDS_IN_SPACEUSERROLE = "select id from ST_User, "
-      + "ST_SpaceUserRole_User_Rel where id = userId and spaceUserRoleId = ? and accessLevel <> 'R'";
+
+  static final private String SELECT_USER_IDS_IN_SPACEUSERROLE =
+      "select id from ST_User, "
+          + "ST_SpaceUserRole_User_Rel where id = userId and spaceUserRoleId = ? and accessLevel <> 'R'";
 
   /**
    * Returns all the Users having directly a given group userRole.
    * @param groupUserRoleId
    * @return all the Users having directly a given group userRole.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getDirectUsersOfGroupUserRole(int groupUserRoleId) throws
       AdminPersistenceException {
     List<UserRow> rows = getRows(SELECT_USERS_IN_GROUPUSERROLE, groupUserRoleId);
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_USERS_IN_GROUPUSERROLE = "select " + USER_COLUMNS
       + " from ST_User, ST_GroupUserRole_User_Rel where id = userId and groupUserRoleId = ? "
       + "and accessLevel <> 'R'";
@@ -388,24 +413,26 @@ public class UserTable extends Table<UserRow> {
    * Returns all the User ids having directly a given group userRole.
    * @param groupUserRoleId
    * @return all the User ids having directly a given group userRole.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getDirectUserIdsOfGroupUserRole(int groupUserRoleId) throws
       AdminPersistenceException {
-    List<String> rows =  getIds(SELECT_USER_IDS_IN_GROUPUSERROLE, groupUserRoleId);
+    List<String> rows = getIds(SELECT_USER_IDS_IN_GROUPUSERROLE, groupUserRoleId);
     return rows.toArray(new String[rows.size()]);
   }
-  static final private String SELECT_USER_IDS_IN_GROUPUSERROLE = "select id from ST_User, "
-      + "ST_GroupUserRole_User_Rel where id = userId and groupUserRoleId = ? and accessLevel <> 'R'";
+
+  static final private String SELECT_USER_IDS_IN_GROUPUSERROLE =
+      "select id from ST_User, "
+          + "ST_GroupUserRole_User_Rel where id = userId and groupUserRoleId = ? and accessLevel <> 'R'";
 
   /**
-   * 
    * @param userIds
    * @param userModel
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
-  public String[] searchUsersIds(List<String> userIds, UserRow userModel) throws AdminPersistenceException {
+  public String[] searchUsersIds(List<String> userIds, UserRow userModel)
+      throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     List<Integer> ids = new ArrayList<Integer>();
@@ -459,6 +486,7 @@ public class UserTable extends Table<UserRow> {
     }
     return result.toArray(new String[result.size()]);
   }
+
   static final private String SELECT_SEARCH_USERSID =
       "select DISTINCT ST_User.id, UPPER(ST_User.lastName) from ST_User";
 
@@ -483,7 +511,8 @@ public class UserTable extends Table<UserRow> {
     }
     concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "id", concatAndOr, andOr);
     concatAndOr = addIdToQuery(ids, theQuery, userModel.domainId, "domainId", concatAndOr, andOr);
-    concatAndOr = addParamToQuery(params, theQuery, userModel.specificId, "specificId", concatAndOr,
+    concatAndOr =
+        addParamToQuery(params, theQuery, userModel.specificId, "specificId", concatAndOr,
         andOr);
     concatAndOr = addParamToQuery(params, theQuery, userModel.login, "login", concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, userModel.firstName, "firstName", concatAndOr,
@@ -508,9 +537,11 @@ public class UserTable extends Table<UserRow> {
     for (int i = 0; i < ids.size(); i++) {
       idsArray[i] = ids.get(i);
     }
-    List<UserRow> rows = getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
+    List<UserRow> rows =
+        getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
     return rows.toArray(new UserRow[rows.size()]);
   }
+
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS
       + ", UPPER(lastName) from ST_User";
 
@@ -518,12 +549,12 @@ public class UserTable extends Table<UserRow> {
    * Returns the users whose fields match those of the given sample space fields.
    * @param sampleUser
    * @return the users whose fields match those of the given sample space fields.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public UserRow[] getAllMatchingUsers(UserRow sampleUser) throws AdminPersistenceException {
-    String[] columns = new String[]{"login", "firstName", "lastName", "email"};
-    String[] values = new String[]{sampleUser.login, sampleUser.firstName, sampleUser.lastName,
-      sampleUser.eMail};
+    String[] columns = new String[] { "login", "firstName", "lastName", "email" };
+    String[] values = new String[] { sampleUser.login, sampleUser.firstName, sampleUser.lastName,
+        sampleUser.eMail };
     List<UserRow> rows = getMatchingRows(USER_COLUMNS, columns, values);
     return rows.toArray(new UserRow[rows.size()]);
   }
@@ -531,7 +562,7 @@ public class UserTable extends Table<UserRow> {
   /**
    * Inserts in the database a new user row.
    * @param user
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void createUser(UserRow user) throws AdminPersistenceException {
     SynchroReport.debug("UserTable.createUser()", "Ajout de " + user.login + ", requête : "
@@ -540,6 +571,7 @@ public class UserTable extends Table<UserRow> {
     CallBackManager callBackManager = CallBackManager.get();
     callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_USER, user.id, null, null);
   }
+
   static final private String INSERT_USER = "insert into ST_User ("
       + USER_COLUMNS + ") values (?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -566,13 +598,14 @@ public class UserTable extends Table<UserRow> {
   /**
    * Update a user row.
    * @param user
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void updateUser(UserRow user) throws AdminPersistenceException {
-    SynchroReport.debug("UserTable.updateUser()", "Maj de " + user.login + ", Id=" + user.id 
+    SynchroReport.debug("UserTable.updateUser()", "Maj de " + user.login + ", Id=" + user.id
         + ", requête : " + UPDATE_USER, null);
     updateRow(UPDATE_USER, user);
   }
+
   static final private String UPDATE_USER = "update ST_User set"
       + " specificId = ?,"
       + " domainId = ?,"
@@ -606,7 +639,7 @@ public class UserTable extends Table<UserRow> {
   /**
    * Removes a user row.
    * @param id
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void removeUser(int id) throws AdminPersistenceException {
     CallBackManager callBackManager = CallBackManager.get();
@@ -657,6 +690,7 @@ public class UserTable extends Table<UserRow> {
     user.specificId = "???REM???" + java.lang.Integer.toString(id);
     updateRow(UPDATE_USER, user);
   }
+
   static final private String DELETE_USER = "delete from ST_User where id = ?";
 
   private static String list2String(List<String> ids) {
@@ -677,5 +711,6 @@ public class UserTable extends Table<UserRow> {
   protected UserRow fetchRow(ResultSet rs) throws SQLException {
     return fetchUser(rs);
   }
+
   private OrganizationSchema organization = null;
 }

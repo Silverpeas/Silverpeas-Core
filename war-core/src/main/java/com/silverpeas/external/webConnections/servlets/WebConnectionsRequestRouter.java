@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,7 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Hashtable;
 import java.util.List;
 
-public class WebConnectionsRequestRouter extends ComponentRequestRouter<WebConnectionsSessionController> {
+public class WebConnectionsRequestRouter extends
+    ComponentRequestRouter<WebConnectionsSessionController> {
   private static final long serialVersionUID = 1L;
 
   /**
@@ -75,7 +76,8 @@ public class WebConnectionsRequestRouter extends ComponentRequestRouter<WebConne
     String destination = "";
     String rootDest = "/webConnections/jsp/";
     SilverTrace.info("webConnections", "WebConnectionsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + webConnectionsSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + webConnectionsSC.getUserId() + " Function=" +
+        function);
 
     try {
       if (function.startsWith("Main")) {
@@ -205,7 +207,7 @@ public class WebConnectionsRequestRouter extends ComponentRequestRouter<WebConne
     request.setAttribute("ComponentInst", inst);
     request.setAttribute("IsAnonymousAccess", isAnonymousAccess(request));
   }
-  
+
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);
     if (lookHelper != null) {

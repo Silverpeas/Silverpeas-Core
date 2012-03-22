@@ -1,24 +1,27 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version
- * 3 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of
- * the text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silvertrace;
 
 import org.apache.log4j.Layout;
@@ -26,7 +29,6 @@ import org.apache.log4j.PatternLayout;
 
 /**
  * Layouts available for Silvertrace.
- *
  * @author ehugonnet
  */
 public enum SilverTraceLayout {
@@ -47,9 +49,8 @@ public enum SilverTraceLayout {
    * module / Message"
    */
   LAYOUT_FULL_DEBUG("%-15.15r [%-26.26t] - %d{dd/MM/yy-HH:mm:ss,SSS} - %-5p : %m%n"),
-   /**
-   * Fully detailed layout : Display "Time / Priority / Thread / Calling Class and
-   * module / Message"
+  /**
+   * Fully detailed layout : Display "Time / Priority / Thread / Calling Class and module / Message"
    */
   LAYOUT_SPY("%d{dd/MM/yy-HH:mm:ss,SSS} : %m%n"),
   /**
@@ -68,7 +69,7 @@ public enum SilverTraceLayout {
    * @param customPattern
    */
   public void updatePattern(String customPattern) {
-    if(this == LAYOUT_CUSTOM) {
+    if (this == LAYOUT_CUSTOM) {
       this.pattern = customPattern;
     }
 
@@ -98,28 +99,27 @@ public enum SilverTraceLayout {
     return LAYOUT_CUSTOM;
   }
 
-
   public static Layout getLayout(String patternLayout) {
     SilverTraceLayout layout;
     try {
       layout = valueOf(patternLayout);
-    }catch(IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       LAYOUT_CUSTOM.updatePattern(patternLayout);
       layout = LAYOUT_CUSTOM;
     }
     return new PatternLayout(layout.getPattern());
   }
-  
+
   /**
    * To be used instead of valueOf since it manages the case of a custom pattern.
    * @param name
-   * @return 
+   * @return
    */
   public static SilverTraceLayout getSilverTraceLayout(String name) {
     SilverTraceLayout layout;
     try {
       layout = valueOf(name);
-    }catch(IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       LAYOUT_CUSTOM.updatePattern(name);
       layout = LAYOUT_CUSTOM;
     }

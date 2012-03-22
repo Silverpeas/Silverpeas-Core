@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html.pdc;
 
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
@@ -77,7 +78,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
-   * Sets the identifier of the HTML element  in which the classification is rendered.
+   * Sets the identifier of the HTML element in which the classification is rendered.
    * @param id the widget identifier to set.
    */
   public void setId(String id) {
@@ -93,9 +94,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
-   * Sets the unique identifier of the Silverpeas component instance to which the resource
-   * belongs.
-   *
+   * Sets the unique identifier of the Silverpeas component instance to which the resource belongs.
    * @param componentId the unique identifier of the instance of a Silverpeas component.
    */
   public void setComponentId(String componentId) {
@@ -104,7 +103,6 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Sets the unique identifier of the resource content.
-   *
    * @param contentId the unique identifier of the resource content.
    */
   public void setContentId(String contentId) {
@@ -112,9 +110,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
-   * Gets the identifier of the Silverpeas component instance to which the resource belongs.
-   * If no component instance identifier is set, then it is fecthed from the request.
-   *
+   * Gets the identifier of the Silverpeas component instance to which the resource belongs. If no
+   * component instance identifier is set, then it is fecthed from the request.
    * @return the component identifier.
    */
   public String getComponentId() {
@@ -127,7 +124,6 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Gets the unique identifier of the resource content in Silverpeas.
-   *
    * @return the resource content identifier.
    */
   public String getContentId() {
@@ -135,9 +131,9 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
-   * Gets the identifier of the node to which the content belongs.
-   * A node is an hierarchic way to organize the contents. A node can represents a category, a topic,
-   * or a folder and its semantic depends on the Silverpeas component that handle the content.
+   * Gets the identifier of the node to which the content belongs. A node is an hierarchic way to
+   * organize the contents. A node can represents a category, a topic, or a folder and its semantic
+   * depends on the Silverpeas component that handle the content.
    * @return the identifier of the node or an empty string.
    */
   public String getNodeId() {
@@ -145,9 +141,9 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   }
 
   /**
-   * Sets the identifier of the node to which the content belongs (if any).
-   * A node is an hierarchic way to organize the contents. A node can represents a category, a topic,
-   * or a folder and its semantic depends on the Silverpeas component that handle the content.
+   * Sets the identifier of the node to which the content belongs (if any). A node is an hierarchic
+   * way to organize the contents. A node can represents a category, a topic, or a folder and its
+   * semantic depends on the Silverpeas component that handle the content.
    * @param nodeId the identifier of the node.
    */
   public void setNodeId(String nodeId) {
@@ -156,12 +152,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   /**
    * Invokes the underlying JQuery PdC plugin with the appropriate function according to the
-   * specified operation.
-   * The operation is actually invoked only if the PdC is used by the underlying Silverpeas
-   * component instance.
+   * specified operation. The operation is actually invoked only if the PdC is used by the
+   * underlying Silverpeas component instance.
    * @param operation the operation to invoke.
    * @return the HTML elements container with the code to render.
-   * @throws JspException 
+   * @throws JspException
    */
   public ElementContainer invoke(final PdcTagOperation operation) throws JspException {
     ElementContainer container;
@@ -195,15 +190,15 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
       classification.setClass(PDC_CLASSIFICATION_WIDGET_TAG_ID + " skinFieldset");
     }
     script pluginDependency1 = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-widgets.js");
+        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc-widgets.js");
     script pluginDependency2 = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc.js");
+        setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-pdc.js");
     script pluginExecution = new script().setType("text/javascript").
-            addElement(executePlugin(operation));
+        addElement(executePlugin(operation));
     xhtmlcontainer.addElement(pluginDependency1).
-            addElement(pluginDependency2).
-            addElement(classification).
-            addElement(pluginExecution);
+        addElement(pluginDependency2).
+        addElement(classification).
+        addElement(pluginExecution);
     return xhtmlcontainer;
   }
 
@@ -219,18 +214,18 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     ResourcesWrapper resources = getResources();
     String function = operation.getPluginFunction();
     String positionAddingLabel = (operation.equals(PREDEFINE_CLASSIFICATION)
-            || operation.equals(CREATE_CLASSIFICATION) ? resources.getString(
-            "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
+        || operation.equals(CREATE_CLASSIFICATION) ? resources.getString(
+        "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
     String script = "$('#" + pdcWidgetId + "').pdc('" + function + "', {resource: {context: '"
-            + context
-            + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
-            + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(
-            "pdcPeas.classifyPublication")
-            + "', modificationTitle: '" + resources.getString("GML.Validation")
-            + "', positionLabel: '" + resources.getString("pdcPeas.position")
-            + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
-            + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")
-            + "'";
+        + context
+        + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()
+        + "', " + "node: '" + getNodeId() + "'}, title: '" + resources.getString(
+        "pdcPeas.classifyPublication")
+        + "', modificationTitle: '" + resources.getString("GML.Validation")
+        + "', positionLabel: '" + resources.getString("pdcPeas.position")
+        + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
+        + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")
+        + "'";
     if (operation != PREVIEW_CLASSIFICATION) {
       if (operation != READ_CLASSIFICATION) {
         String nodeName = "";
@@ -248,25 +243,25 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
           }
         }
         String inheritanceMessage = MessageFormat.format(resources.getString(
-                "pdcPeas.CanDoAPredefineClassification"), nodeName);
+            "pdcPeas.CanDoAPredefineClassification"), nodeName);
         script += ", messages: {mandatoryMessage: \""
-                + resources.getString("pdcPeas.MustBeClassified") + ", \", inheritanceMessage: \""
-                + inheritanceMessage
-                + "\", contentMustHaveAPosition: \""
-                + resources.getString("pdcPeas.theContent") + " " + resources.getString(
-                "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
-                + resources.getString("pdcPeas.positionAlreadyExist")
-                + "\", positionMustBeValued: \""
-                + resources.getString("GML.selectAValue") + "\" }"
-                + ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "',"
-                + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
-                + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
-                getString("pdcPeas.notVariants") + "', mandatoryAxisDefaultValue: \"" + resources.
-                getString("GML.selectAValue") + "\"}, addition: {title: '" + positionAddingLabel
-                + "'}, update: {title: '" + resources.getString("GML.modify")
-                + "'}, deletion: {confirmation: '"
-                + resources.getString("pdcPeas.confirmDeletePosition")
-                + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
+            + resources.getString("pdcPeas.MustBeClassified") + ", \", inheritanceMessage: \""
+            + inheritanceMessage
+            + "\", contentMustHaveAPosition: \""
+            + resources.getString("pdcPeas.theContent") + " " + resources.getString(
+            "pdcPeas.MustContainsMandatoryAxis") + "\", positionAlreayInClassification: \""
+            + resources.getString("pdcPeas.positionAlreadyExist")
+            + "\", positionMustBeValued: \""
+            + resources.getString("GML.selectAValue") + "\" }"
+            + ", mode: 'edition', edition: {ok: '" + resources.getString("GML.validate") + "',"
+            + "cancel: '" + resources.getString("GML.cancel") + "', mandatoryLegend: '"
+            + resources.getString("GML.requiredField") + "', invariantLegend: '" + resources.
+            getString("pdcPeas.notVariants") + "', mandatoryAxisDefaultValue: \"" + resources.
+            getString("GML.selectAValue") + "\"}, addition: {title: '" + positionAddingLabel
+            + "'}, update: {title: '" + resources.getString("GML.modify")
+            + "'}, deletion: {confirmation: '"
+            + resources.getString("pdcPeas.confirmDeletePosition")
+            + "', title: '" + resources.getString("GML.PDCDeletePosition") + "'}});";
       } else {
         script += ", mode: 'view'});";
       }
@@ -279,29 +274,28 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   /**
    * Gets the resources from which translated text and PdC settings can be get.
    * @return a resources wrapper instance.
-   * @throws JspTagException  if an error occurs while fetching the resources.
+   * @throws JspTagException if an error occurs while fetching the resources.
    */
   protected ResourcesWrapper getResources() throws JspTagException {
     MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
     String language = controller.getFavoriteLanguage();
     ResourcesWrapper resources = new ResourcesWrapper(new ResourceLocator(
-            "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
+        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
     return resources;
 
   }
 
   /**
-   * Is the PdC is used currently by the underlying Silverpeas component instance.
-   * For some components, the use of the PdC can be set per instance. For others, the PdC is
-   * used by default.
+   * Is the PdC is used currently by the underlying Silverpeas component instance. For some
+   * components, the use of the PdC can be set per instance. For others, the PdC is used by default.
    * @return true if the component instance uses the PdC, false otherwise.
    */
   protected boolean isPdcUsed() {
     boolean pdcUsed = true; // by default the PdC is considered as used for a silverpeas component.
     MainSessionController sessionController = getSessionAttribute(
-            MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String parameterValue = sessionController.getComponentParameterValue(getComponentId(),
-            USE_PDC_COMPONENT_PARAMETER);
+        USE_PDC_COMPONENT_PARAMETER);
     if (isDefined(parameterValue)) {
       pdcUsed = getBooleanValue(parameterValue);
     }
@@ -323,12 +317,12 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
   protected NodeBm getNodeBm() {
     try {
       NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-              JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       return home.create();
     } catch (Exception ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-              ex);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+          ex);
     }
   }
 }

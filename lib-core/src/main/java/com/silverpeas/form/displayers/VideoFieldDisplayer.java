@@ -1,26 +1,27 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
- * 
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -55,11 +56,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A displayer of a video.
- * The underlying video player is FlowPlayer (http://flowplayer.org/index.html).
+ * A displayer of a video. The underlying video player is FlowPlayer
+ * (http://flowplayer.org/index.html).
  */
 public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
-  
+
   /**
    * The default width in pixels of the video display area.
    */
@@ -90,7 +91,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   private static final String VIDEO_PLAYER_ID = "player";
   private static final String OPERATION_KEY = "Operation";
   private static final int DISPLAYED_HTML_OBJECTS = 2;
-  
+
   /**
    * The different kinds of operation that can be applied into an attached video file.
    */
@@ -98,36 +99,36 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     ADD, UPDATE, DELETION;
   }
 
-
   /**
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[]{FileField.TYPE};
+    return new String[] { FileField.TYPE };
   }
 
   @Override
   public void displayScripts(final PrintWriter out, final FieldTemplate template,
-          final PagesContext pageContext) throws IOException {
+      final PagesContext pageContext) throws IOException {
     checkFieldType(template.getTypeName(), "VideoFieldDisplayer.displayScripts");
     String language = pageContext.getLanguage();
     String fieldName = template.getFieldName();
     if (template.isMandatory() && pageContext.useMandatory()) {
       out
-              .append("	if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
-              .append("		var ").append(fieldName).append("Value = document.getElementById('")
-              .append(fieldName).append(Field.FILE_PARAM_NAME_SUFFIX).append("').value;\n")
-              .append("   var ").append(fieldName).append("Operation = document.")
-              .append(pageContext.getFormName()).append(".")
-              .append(fieldName).append(OPERATION_KEY).append(".value;\n")
-              .append("		if (").append(fieldName).append("Value=='' || ")
-              .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append("') {\n")
-              .append("			errorMsg+=\"  - '")
-              .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
-              .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
-              .append("			errorNb++;\n")
-              .append("		}\n")
-              .append("	}\n");
+          .append("	if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
+          .append("		var ").append(fieldName).append("Value = document.getElementById('")
+          .append(fieldName).append(Field.FILE_PARAM_NAME_SUFFIX).append("').value;\n")
+          .append("   var ").append(fieldName).append("Operation = document.")
+          .append(pageContext.getFormName()).append(".")
+          .append(fieldName).append(OPERATION_KEY).append(".value;\n")
+          .append("		if (").append(fieldName).append("Value=='' || ")
+          .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append(
+          "') {\n")
+          .append("			errorMsg+=\"  - '")
+          .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
+          .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
+          .append("			errorNb++;\n")
+          .append("		}\n")
+          .append("	}\n");
     }
 
     Util.includeFileNameLengthChecker(template, pageContext, out);
@@ -136,7 +137,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   @Override
   public void display(PrintWriter out, FileField field, FieldTemplate template,
-          PagesContext pagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
     checkFieldType(template.getTypeName(), "VideoFieldDisplayer.display");
     String attachmentId = field.getValue();
     if (!StringUtil.isDefined(attachmentId)) {
@@ -151,17 +152,17 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       } else if (!template.isDisabled()) {
         displayVideoFormInput(videoPlayer, attachmentId, template, xhtmlcontainer, pagesContext);
       }
-      
+
       out.println(xhtmlcontainer.toString());
     }
   }
 
   @Override
   public List<String> update(String attachmentId, FileField field, FieldTemplate template,
-          PagesContext PagesContext) throws FormException {
+      PagesContext PagesContext) throws FormException {
     checkFieldType(field.getTypeName(), "VideoFieldDisplayer.update");
     List<String> attachmentIds = new ArrayList<String>();
-    
+
     if (!StringUtil.isDefined(attachmentId)) {
       field.setNull();
     } else {
@@ -173,16 +174,16 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   @Override
   public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-          PagesContext pageContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
-    
+
     try {
       String fieldName = template.getFieldName();
       String attachmentId = uploadVideoFile(items, fieldName, pageContext);
       Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items,
-              fieldName + OPERATION_KEY));
+          fieldName + OPERATION_KEY));
       String currentAttachmentId = FileUploadUtil.getParameter(items, fieldName
-              + Field.FILE_PARAM_NAME_SUFFIX);
+          + Field.FILE_PARAM_NAME_SUFFIX);
       if (isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId)) {
         deleteAttachment(currentAttachmentId, pageContext);
       }
@@ -192,7 +193,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     } catch (Exception ex) {
       SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
     }
-    
+
     return attachmentIds;
   }
 
@@ -207,8 +208,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   /**
-   * Checks the type of the field is as expected.
-   * The field must be of type file.
+   * Checks the type of the field is as expected. The field must be of type file.
    * @param typeName the name of the type.
    * @param contextCall the context of the call: which is the caller of this method. This parameter
    * is used for trace purpose.
@@ -233,8 +233,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         videoURL = attachmentId;
       } else {
         AttachmentDetail attachment =
-                AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId,
-                pageContext.getComponentId()));
+            AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId,
+            pageContext.getComponentId()));
         if (attachment != null) {
           String webContext = FileServerUtils.getApplicationContext();
           videoURL = webContext + attachment.getAttachmentURL();
@@ -252,8 +252,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * @param xhtmlcontainer the XMLHTML container into which the video is displayed.
    */
   private void displayVideo(final VideoPlayer videoPlayer, final String attachmentId,
-          final FieldTemplate template, final ElementContainer xhtmlContainer,
-          final PagesContext pagesContext) {
+      final FieldTemplate template, final ElementContainer xhtmlContainer,
+      final PagesContext pagesContext) {
     String videoURL = computeVideoURL(attachmentId, pagesContext);
     Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
     initVideoPlayer(videoPlayer, videoURL, parameters);
@@ -261,16 +261,16 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   /**
-   * Displays the form part corresponding to the video input.
-   * The form input is a way to change or to remove the video file if this one exists.
+   * Displays the form part corresponding to the video input. The form input is a way to change or
+   * to remove the video file if this one exists.
    * @param videoPlayer the video player to display as a form input.
    * @param attachmentId the identifier of the attached file containing the video to display.
    * @param template the template of the field to which is mapped the video.
    * @param pagesContext the context of the displaying page.
    */
   private void displayVideoFormInput(final VideoPlayer videoPlayer,
-          final String attachmentId, final FieldTemplate template,
-          final ElementContainer xhtmlContainer, final PagesContext pagesContext) {
+      final String attachmentId, final FieldTemplate template,
+      final ElementContainer xhtmlContainer, final PagesContext pagesContext) {
     String fieldName = template.getFieldName();
     String language = pagesContext.getLanguage();
     String deletionIcon = Util.getIcon("delete");
@@ -288,20 +288,20 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       // a link to the deletion operation
       img deletionImage = new img();
       deletionImage.setAlt(deletionLab).setSrc(deletionIcon).setWidth(15).setHeight(15).setAlt(
-              deletionLab).setTitle(deletionLab);
+          deletionLab).setTitle(deletionLab);
       a removeLink = new a();
       removeLink.setHref("#")
-              .addElement(deletionImage)
-              .setOnClick("javascript: document.getElementById('" + fieldName
-              + "Video').style.display='none'; document." + pagesContext.getFormName() + "."
-              + fieldName + OPERATION_KEY + ".value='" + Operation.DELETION.name() + "';");
+          .addElement(deletionImage)
+          .setOnClick("javascript: document.getElementById('" + fieldName
+          + "Video').style.display='none'; document." + pagesContext.getFormName() + "."
+          + fieldName + OPERATION_KEY + ".value='" + Operation.DELETION.name() + "';");
       div videoDiv = new div();
       videoDiv.setID(fieldName + "Video");
       videoDiv.setClass("video");
       videoPlayer.renderIn(videoDiv);
       videoDiv.addElement("&nbsp;");
       videoDiv.addElement(removeLink);
-      
+
       xhtmlContainer.addElement(videoDiv);
     }
 
@@ -313,10 +313,10 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     fileInput.setName(fieldName);
     input attachmentInput = new input();
     attachmentInput.setType("hidden").setName(fieldName + Field.FILE_PARAM_NAME_SUFFIX).setValue(
-            attachmentId).setID(fieldName + Field.FILE_PARAM_NAME_SUFFIX);
+        attachmentId).setID(fieldName + Field.FILE_PARAM_NAME_SUFFIX);
     input operationInput = new input();
     operationInput.setType("hidden").setName(fieldName + OPERATION_KEY).setValue(defaultOperation.
-            name()).setID(fieldName + OPERATION_KEY);
+        name()).setID(fieldName + OPERATION_KEY);
     div selectionDiv = new div();
     selectionDiv.setID(fieldName + "Selection");
     selectionDiv.addElement(fileInput);
@@ -327,21 +327,22 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     }
     xhtmlContainer.addElement(selectionDiv);
   }
-  
+
   /**
    * Initializes the specified video player with the specified URL and the specified parameters.
    * @param videoPlayer the video player to set up.
    * @param videoURL the URL of the video to play.
-   * @param parameters the parameters from which the video player will be initialized (height, width,
-   * ...)
+   * @param parameters the parameters from which the video player will be initialized (height,
+   * width, ...)
    */
-  private void initVideoPlayer(final VideoPlayer videoPlayer, String videoURL, Map<String, String> parameters) {
-    String width = (parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH):
-      DEFAULT_WIDTH) + "px";
-    String height = (parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT):
-      DEFAULT_HEIGHT) + "px";
+  private void initVideoPlayer(final VideoPlayer videoPlayer, String videoURL,
+      Map<String, String> parameters) {
+    String width = (parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH) :
+        DEFAULT_WIDTH) + "px";
+    String height = (parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT) :
+        DEFAULT_HEIGHT) + "px";
     boolean autoplay = (parameters.containsKey(PARAMETER_AUTOPLAY)
-            ? Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)) : false);
+        ? Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)) : false);
     videoPlayer.setVideoURL(videoURL);
     videoPlayer.setAutoplay(autoplay);
     videoPlayer.setWidth(width);
@@ -357,7 +358,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * @return the identifier of the uploaded attached video file.
    */
   private String uploadVideoFile(final List<FileItem> items, final String itemKey,
-          final PagesContext pageContext) throws Exception {
+      final PagesContext pageContext) throws Exception {
     String attachmentId = "";
 
     FileItem item = FileUploadUtil.getFile(items, itemKey);
@@ -370,27 +371,28 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       if (StringUtil.isDefined(logicalName)) {
         if (!FileUtil.isWindows()) {
           logicalName = logicalName.replace('\\', File.separatorChar);
-          SilverTrace.info("form", "VideoFieldDisplayer.uploadVideoFile", "root.MSG_GEN_PARAM_VALUE",
-                  "fullFileName on Unix = " + logicalName);
+          SilverTrace.info("form", "VideoFieldDisplayer.uploadVideoFile",
+              "root.MSG_GEN_PARAM_VALUE",
+              "fullFileName on Unix = " + logicalName);
         }
 
         logicalName =
-                logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.
-                length());
+            logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.
+            length());
         String type = FileRepositoryManager.getFileExtension(logicalName);
         String mimeType = item.getContentType();
         String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
         File dir = getVideoPath(componentId, physicalName);
         item.write(dir);
         AttachmentDetail attachmentDetail =
-                createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-                size,
-                VideoFieldDisplayer.CONTEXT_FORM_VIDEO, userId);
+            createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
+            size,
+            VideoFieldDisplayer.CONTEXT_FORM_VIDEO, userId);
         attachmentDetail = AttachmentController.createAttachment(attachmentDetail, true);
         attachmentId = attachmentDetail.getPK().getId();
       }
     }
-    
+
     return attachmentId;
   }
 
@@ -427,9 +429,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   /**
-   * Gets the path of the physical file into which the video will be saved.
-   * The path of the file depends on the Silverpeas components for which the video will be
-   * uploaded.
+   * Gets the path of the physical file into which the video will be saved. The path of the file
+   * depends on the Silverpeas components for which the video will be uploaded.
    * @param componentId the identifier of the component.
    * @param physicalName the physical name of the video file; the name of the file into which the
    * video will be saved in Silverpeas side.
@@ -453,8 +454,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * @return an AttachmentDetail object.
    */
   private AttachmentDetail createAttachmentDetail(String objectId, String componentId,
-          String physicalName, String logicalName, String mimeType, long size,
-          String contextVideo, String userId) {
+      String physicalName, String logicalName, String mimeType, long size,
+      String contextVideo, String userId) {
     // create AttachmentPK with spaceId and componentId
     AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
 
@@ -467,8 +468,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
     // create AttachmentDetail Object
     AttachmentDetail attachmentDetail =
-            new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, contextVideo,
-            new Date(), foreignKey);
+        new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, contextVideo,
+        new Date(), foreignKey);
     attachmentDetail.setAuthor(userId);
 
     return attachmentDetail;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.publication.model;
 
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -66,8 +67,8 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface, SilverpeasContent,
-    Serializable, Cloneable {
+public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface,
+    SilverpeasContent, Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
@@ -117,7 +118,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
-  
+
   public static final String TYPE = "Publication";
 
   /**
@@ -386,7 +387,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * 
    * @param pk
    * @param name
    * @param description
@@ -402,9 +402,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
    * @param updateDate
    * @param updaterId
    * @param validateDate
-   * @param validatorId 
-   * 
-   * @deprecated 
+   * @param validatorId
+   * @deprecated
    */
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
@@ -575,7 +574,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getCreatorId() {
     return creatorId;
   }
-  
+
   @Override
   public UserDetail getCreator() {
     return UserDetail.getById(getCreatorId());
@@ -636,7 +635,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public ThumbnailDetail getThumbnail() {
     if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
-      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
+      ThumbnailDetail thumbDetail =
+          new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
           getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       return ThumbnailController.getCompleteThumbnail(thumbDetail);
     }
@@ -788,8 +788,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   /** FormTemplate exposition for taglibs */
   /****************************************************************************************/
   /**
-   * 
-   * @return 
+   * @return
    */
   public List<XMLField> getXmlFields() {
     return getXmlFields(null);
@@ -856,7 +855,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
                 fieldValue = "";
               }
             } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
-              fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
+              fieldValue =
+                  WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
                   getId(), fieldName, language);
             } else {
               fieldValue = EncodeHelper.javaStringToHtmlParagraphe(fieldValue);
@@ -879,7 +879,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private FormTemplateBm getFormTemplateBm() {
     FormTemplateBm formTemplateBm = null;
 
-
     if (formTemplateBm == null) {
       try {
         FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
@@ -897,8 +896,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   /****************************************************************************************/
   /**
-   * 
-   * @return 
+   * @return
    */
   public InfoDetail getInfoDetail() {
     if (infoDetail == null) {
@@ -996,6 +994,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     }
     return wysiwygContent;
   }
+
   private PublicationBm publicationBm = null;
 
   public void setImportance(int importance) {
@@ -1203,9 +1202,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public boolean isIndexable() {
     return VALID.equals(this.status);
   }
-  
+
   public boolean isPublicationEditor(String userId) {
-    return Objects.equal(creatorId, userId) ||  Objects.equal(updaterId, userId);
+    return Objects.equal(creatorId, userId) || Objects.equal(updaterId, userId);
   }
 
   @Override

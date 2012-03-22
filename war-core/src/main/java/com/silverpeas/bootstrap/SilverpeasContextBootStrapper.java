@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.bootstrap;
 
 import com.silverpeas.util.FileUtil;
@@ -78,10 +79,10 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         systemFileProperties.load(fis);
 
         // Fix - empty proxy port and proxy host not supported by Spring Social
-        if ( !StringUtil.isDefined(systemFileProperties.getProperty("http.proxyPort")) ) {
+        if (!StringUtil.isDefined(systemFileProperties.getProperty("http.proxyPort"))) {
           systemFileProperties.remove("http.proxyPort");
         }
-        if ( !StringUtil.isDefined(systemFileProperties.getProperty("http.proxyHost")) ) {
+        if (!StringUtil.isDefined(systemFileProperties.getProperty("http.proxyHost"))) {
           systemFileProperties.remove("http.proxyHost");
         }
 
@@ -93,7 +94,8 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         Logger.getLogger("bootstrap").log(Level.SEVERE,
             "File systemSettings.properties in directory {0} not found.", pathInitialize);
       } catch (IOException e) {
-        Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to read systemSettings.properties.");
+        Logger.getLogger("bootstrap")
+            .log(Level.SEVERE, "Unable to read systemSettings.properties.");
       } catch (GeneralSecurityException e) {
         Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to configure the trustore.");
       } finally {

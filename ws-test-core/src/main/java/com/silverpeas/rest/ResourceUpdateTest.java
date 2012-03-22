@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.rest;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -35,12 +36,12 @@ import static org.hamcrest.Matchers.*;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * Unit tests on the update of a resource in Silverpeas through a REST web service.
- * This class is an abstract one and it implements some tests that are redondant over all 
- * web resources in Silverpeas (about authorization failure, authentication failure, ...)
+ * Unit tests on the update of a resource in Silverpeas through a REST web service. This class is an
+ * abstract one and it implements some tests that are redondant over all web resources in Silverpeas
+ * (about authorization failure, authentication failure, ...)
  */
 public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWebServiceTest<T>
-        implements WebResourceTesting {
+    implements WebResourceTesting {
 
   /**
    * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
@@ -50,7 +51,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   }
 
   public abstract <T> T anInvalidResource();
-  
+
   /**
    * A convenient method to improve the readability of the method calls.
    * @param uri a resource URI.
@@ -59,7 +60,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   private static String at(String uri) {
     return uri;
   }
-  
+
   private static String withAsSessionKey(String sessionKey) {
     return sessionKey;
   }
@@ -69,7 +70,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
    * @param <T> the type of the resource's state.
    * @param uri the URI at which the resource is.
    * @param newResourceState the new state of the resource.
-   * @return 
+   * @return
    */
   public <T> T putAt(String uri, T newResourceState) {
     return put(newResourceState, at(uri), withAsSessionKey(getSessionKey()));
@@ -135,7 +136,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
       assertThat(receivedStatus, is(notFound));
     }
   }
-  
+
   private <T> T put(final T entity, String atURI, String withSessionKey) {
     String thePath = atURI;
     WebResource resource = resource();
@@ -148,8 +149,8 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     }
     Class<T> c = (Class<T>) entity.getClass();
     WebResource.Builder resourcePutter = resource.path(thePath).
-            accept(MediaType.APPLICATION_JSON).
-            type(MediaType.APPLICATION_JSON);
+        accept(MediaType.APPLICATION_JSON).
+        type(MediaType.APPLICATION_JSON);
     if (isDefined(withSessionKey)) {
       resourcePutter = resourcePutter.header(HTTP_SESSIONKEY, withSessionKey);
     }

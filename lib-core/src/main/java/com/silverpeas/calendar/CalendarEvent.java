@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.calendar;
 
 import com.silverpeas.annotation.DateRange;
@@ -28,13 +29,12 @@ import java.io.Serializable;
 import java.net.URL;
 import static com.silverpeas.util.StringUtil.*;
 
-
 /**
- * The event in a calendar.
- * An event in the calendar is described by a starting and an ending date and a name.
- * The start and end dates in an event must be in the same type (either a date or a datable).
+ * The event in a calendar. An event in the calendar is described by a starting and an ending date
+ * and a name. The start and end dates in an event must be in the same type (either a date or a
+ * datable).
  */
-@DateRange(startDate="startDate", endDate="endDate")
+@DateRange(startDate = "startDate", endDate = "endDate")
 public class CalendarEvent implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -80,7 +80,7 @@ public class CalendarEvent implements Serializable {
    * @return itself.
    */
   public CalendarEvent withAccessLevel(String accessLevel) {
-    if (! isDefined(accessLevel)) {
+    if (!isDefined(accessLevel)) {
       throw new IllegalArgumentException("The accessLevel parameter isn't defined!");
     }
     this.accessLevel = accessLevel;
@@ -88,8 +88,8 @@ public class CalendarEvent implements Serializable {
   }
 
   /**
-   * Sets an end date to this event. By default, the event end date is non inclusive and it is set to
-   * the start date. For a recurring event, the end date is the one for each occurrences of the
+   * Sets an end date to this event. By default, the event end date is non inclusive and it is set
+   * to the start date. For a recurring event, the end date is the one for each occurrences of the
    * event.
    * @param endDate the event end date.
    * @return itself.
@@ -186,8 +186,8 @@ public class CalendarEvent implements Serializable {
 
   /**
    * Gets a description about this event.
-   * @return a description about this event or an empty string if no description is attached to
-   * this event.
+   * @return a description about this event or an empty string if no description is attached to this
+   * event.
    */
   public String getDescription() {
     return description;
@@ -264,8 +264,8 @@ public class CalendarEvent implements Serializable {
   }
 
   /**
-   * Gets the recurrence of this recurring event.
-   * If the event isn't a recurring one, then returns NO_RECURRENCE.
+   * Gets the recurrence of this recurring event. If the event isn't a recurring one, then returns
+   * NO_RECURRENCE.
    * @return this event recurrence or NO_RECURRENCE.
    */
   public CalendarEventRecurrence getRecurrence() {
@@ -279,7 +279,7 @@ public class CalendarEvent implements Serializable {
   public boolean isRecurring() {
     return this.recurrence != CalendarEventRecurrence.NO_RECURRENCE;
   }
-  
+
   /**
    * Is this event occurring on all the day(s)?
    * @return true if this event is occurring on all its day(s).

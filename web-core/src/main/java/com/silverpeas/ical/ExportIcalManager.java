@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,8 +19,9 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.ical;
 
 import com.silverpeas.calendar.Datable;
@@ -35,7 +36,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -102,9 +102,9 @@ public class ExportIcalManager {
   }
 
   /**
-   * Exports in iCal the events of the user agenda between the specified interval.
-   * Actually, it is the event occurrences that are exported in the iCal file. This iCal file name
-   * is built withWriter the user identifier and it the file is generated in the temporary directory.
+   * Exports in iCal the events of the user agenda between the specified interval. Actually, it is
+   * the event occurrences that are exported in the iCal file. This iCal file name is built
+   * withWriter the user identifier and it the file is generated in the temporary directory.
    * @param startDate the start date of the interval.
    * @param endDate the end date of the interval.
    * @return an export status code indicating if it has been successfull or not.
@@ -144,9 +144,9 @@ public class ExportIcalManager {
   }
 
   /**
-   * Exports in iCal the user agenda.
-   * Actually, it is the event occurrences that are exported in the iCal file. This iCal file name
-   * is built withWriter the user identifier and it the file is generated in the temporary directory.
+   * Exports in iCal the user agenda. Actually, it is the event occurrences that are exported in the
+   * iCal file. This iCal file name is built withWriter the user identifier and it the file is
+   * generated in the temporary directory.
    * @return an export status code indicating if it has been successfull or not.
    * @throws AgendaException if an unexpected error occurs while exporting the events.
    */
@@ -155,9 +155,9 @@ public class ExportIcalManager {
   }
 
   /**
-   * Exports in iCal the user agenda within a synchronization process.
-   * Actually, it is the event occurrences that are exported in the iCal file. This iCal file name
-   * is built withWriter the user identifier and it the file is generated in the temporary directory.
+   * Exports in iCal the user agenda within a synchronization process. Actually, it is the event
+   * occurrences that are exported in the iCal file. This iCal file name is built withWriter the
+   * user identifier and it the file is generated in the temporary directory.
    * @return the path of the generated ics file.
    * @throws AgendaException if an unexpected error occurs while exporting the events.
    */
@@ -196,13 +196,13 @@ public class ExportIcalManager {
    * Get Ical header
    * @return CalendarIcs
    */
-//  private Calendar getIcsCalendarHeader() {
-//    Calendar calendarIcs = new Calendar();
-//    calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
-//    calendarIcs.getProperties().add(Version.VERSION_2_0);
-//    calendarIcs.getProperties().add(CalScale.GREGORIAN);
-//    return calendarIcs;
-//  }
+  // private Calendar getIcsCalendarHeader() {
+  // Calendar calendarIcs = new Calendar();
+  // calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
+  // calendarIcs.getProperties().add(Version.VERSION_2_0);
+  // calendarIcs.getProperties().add(CalScale.GREGORIAN);
+  // return calendarIcs;
+  // }
   /**
    * Get Ical contents
    * @param calendarIcs
@@ -213,100 +213,100 @@ public class ExportIcalManager {
    * @throws RemoteException
    * @throws SocketException
    */
-//  private Calendar getIcsCalendarContent(Calendar calendarIcs,
-//      String startDate, String endDate) throws ParseException, RemoteException,
-//      SocketException, AgendaException, URISyntaxException {
-//    SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
-//        "root.MSG_GEN_ENTER_METHOD");
-//    SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
-//        "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
-//        + endDate);
-//    boolean exportAll = true;
-//    if (StringUtil.isDefined(startDate) && StringUtil.isDefined(startDate)) {
-//      exportAll = false;
-//    }
-//    if (exportAll) {
-//      startDate = DateUtil.getInputDate(firstDate, getLanguage());
-//      endDate = DateUtil.getInputDate(lastDate, getLanguage());
-//      SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
-//          "root.MSG_GEN_PARAM_VALUE", "exportAll");
-//      SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
-//          "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
-//          + endDate);
-//    }
-//
-//    Iterator itSchedules = getSchedulableCalendar(startDate, endDate).iterator();
-//    final List events = new ArrayList();
-//    while (itSchedules.hasNext()) {
-//      Object obj = itSchedules.next();
-//
-//      if (obj instanceof Schedulable) {
-//        Schedulable eventAgenda = (Schedulable) obj;
-//
-//        SilverTrace.debug("agenda",
-//            "ExportIcalManager.getIcsCalendarContent()",
-//            "root.MSG_GEN_PARAM_VALUE", "eventAgenda.getStartDay()="
-//            + eventAgenda.getStartDay() + " eventAgenda.getStartDate()="
-//            + eventAgenda.getStartDate());
-//
-//        // Conv startDateTime and endDateTime in ICal format
-//        DateTime startDateTime = new DateTime(eventAgenda.getStartDate());
-//        DateTime endDateTime = new DateTime(eventAgenda.getEndDate());
-//
-//        // Define event
-//        VEvent event = new VEvent(startDateTime, endDateTime, eventAgenda.getName());
-//        event.getProperties().add(new UidGenerator(Uid.UID).generateUid());
-//
-//        // Add Description
-//        event.getProperties().add(new Description(eventAgenda.getDescription()));
-//        // Add Classification
-//        event.getProperties().add(
-//            new Clazz(eventAgenda.getClassification().getString()));
-//        // Add Priority
-//        event.getProperties().add(
-//            new Priority(eventAgenda.getPriority().getValue()));
-//
-//        // Add Categories
-//        Collection categories = calendarBm.getJournalCategories(eventAgenda.getId());
-//        if (!categories.isEmpty()) {
-//          CategoryList categoryList = new CategoryList();
-//          Iterator categoriesIt = categories.iterator();
-//          while (categoriesIt.hasNext()) {
-//            Category categorie = (Category) categoriesIt.next();
-//            categoryList.add(categorie.getName());
-//          }
-//          event.getProperties().add(new Categories(categoryList));
-//        }
-//
-//        // Add attendees
-//        Collection attendees = calendarBm.getJournalAttendees(eventAgenda.getId());
-//        if (!attendees.isEmpty()) {
-//          Iterator attendeesIt = attendees.iterator();
-//          while (attendeesIt.hasNext()) {
-//            Attendee attendeeAgenda = (Attendee) attendeesIt.next();
-//            OrganizationController oc = new OrganizationController();
-//            UserDetail user = oc.getUserDetail(attendeeAgenda.getUserId());
-//            if (user != null) {
-//              String email = user.geteMail();
-//              if (StringUtil.isDefined(email)) {
-//                event.getProperties().add(
-//                    new net.fortuna.ical4j.model.property.Attendee(email));
-//              }
-//            }
-//          }
-//        }
-//
-//        // Add this event
-//        events.add(event);
-//      }
-//    }
-//    if (!events.isEmpty()) {
-//      calendarIcs.getComponents().addAll(events);
-//    }
-//    SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
-//        "root.MSG_GEN_EXIT_METHOD");
-//    return calendarIcs;
-//  }
+  // private Calendar getIcsCalendarContent(Calendar calendarIcs,
+  // String startDate, String endDate) throws ParseException, RemoteException,
+  // SocketException, AgendaException, URISyntaxException {
+  // SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
+  // "root.MSG_GEN_ENTER_METHOD");
+  // SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
+  // "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
+  // + endDate);
+  // boolean exportAll = true;
+  // if (StringUtil.isDefined(startDate) && StringUtil.isDefined(startDate)) {
+  // exportAll = false;
+  // }
+  // if (exportAll) {
+  // startDate = DateUtil.getInputDate(firstDate, getLanguage());
+  // endDate = DateUtil.getInputDate(lastDate, getLanguage());
+  // SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
+  // "root.MSG_GEN_PARAM_VALUE", "exportAll");
+  // SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
+  // "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
+  // + endDate);
+  // }
+  //
+  // Iterator itSchedules = getSchedulableCalendar(startDate, endDate).iterator();
+  // final List events = new ArrayList();
+  // while (itSchedules.hasNext()) {
+  // Object obj = itSchedules.next();
+  //
+  // if (obj instanceof Schedulable) {
+  // Schedulable eventAgenda = (Schedulable) obj;
+  //
+  // SilverTrace.debug("agenda",
+  // "ExportIcalManager.getIcsCalendarContent()",
+  // "root.MSG_GEN_PARAM_VALUE", "eventAgenda.getStartDay()="
+  // + eventAgenda.getStartDay() + " eventAgenda.getStartDate()="
+  // + eventAgenda.getStartDate());
+  //
+  // // Conv startDateTime and endDateTime in ICal format
+  // DateTime startDateTime = new DateTime(eventAgenda.getStartDate());
+  // DateTime endDateTime = new DateTime(eventAgenda.getEndDate());
+  //
+  // // Define event
+  // VEvent event = new VEvent(startDateTime, endDateTime, eventAgenda.getName());
+  // event.getProperties().add(new UidGenerator(Uid.UID).generateUid());
+  //
+  // // Add Description
+  // event.getProperties().add(new Description(eventAgenda.getDescription()));
+  // // Add Classification
+  // event.getProperties().add(
+  // new Clazz(eventAgenda.getClassification().getString()));
+  // // Add Priority
+  // event.getProperties().add(
+  // new Priority(eventAgenda.getPriority().getValue()));
+  //
+  // // Add Categories
+  // Collection categories = calendarBm.getJournalCategories(eventAgenda.getId());
+  // if (!categories.isEmpty()) {
+  // CategoryList categoryList = new CategoryList();
+  // Iterator categoriesIt = categories.iterator();
+  // while (categoriesIt.hasNext()) {
+  // Category categorie = (Category) categoriesIt.next();
+  // categoryList.add(categorie.getName());
+  // }
+  // event.getProperties().add(new Categories(categoryList));
+  // }
+  //
+  // // Add attendees
+  // Collection attendees = calendarBm.getJournalAttendees(eventAgenda.getId());
+  // if (!attendees.isEmpty()) {
+  // Iterator attendeesIt = attendees.iterator();
+  // while (attendeesIt.hasNext()) {
+  // Attendee attendeeAgenda = (Attendee) attendeesIt.next();
+  // OrganizationController oc = new OrganizationController();
+  // UserDetail user = oc.getUserDetail(attendeeAgenda.getUserId());
+  // if (user != null) {
+  // String email = user.geteMail();
+  // if (StringUtil.isDefined(email)) {
+  // event.getProperties().add(
+  // new net.fortuna.ical4j.model.property.Attendee(email));
+  // }
+  // }
+  // }
+  // }
+  //
+  // // Add this event
+  // events.add(event);
+  // }
+  // }
+  // if (!events.isEmpty()) {
+  // calendarIcs.getComponents().addAll(events);
+  // }
+  // SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
+  // "root.MSG_GEN_EXIT_METHOD");
+  // return calendarIcs;
+  // }
   /**
    * Get All events between the specified interval of time.
    * @param startDate the start date of the interval.
@@ -318,7 +318,8 @@ public class ExportIcalManager {
   private Collection<JournalHeader> getSchedulableCalendar(String startDate, String endDate)
       throws RemoteException, ParseException {
     return calendarBm.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(
-        startDate, getLanguage()), DateUtil.date2SQLDate(endDate, getLanguage()), getUserId(), null,
+        startDate, getLanguage()), DateUtil.date2SQLDate(endDate, getLanguage()), getUserId(),
+        null,
         new ParticipationStatus(ParticipationStatus.ACCEPTED).getString());
   }
 

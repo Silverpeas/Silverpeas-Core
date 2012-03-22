@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdc.control;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
@@ -70,18 +71,18 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   @Override
   public int isPositionAlreadyExists(int silverObjectId, ClassifyPosition position) throws
-          PdcException {
+      PdcException {
     try {
       return classifyEngine.isPositionAlreadyExists(silverObjectId, position);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.isPositionAlreadyExists",
-              SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
     }
   }
 
   @Override
   public int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId) throws
-          PdcException {
+      PdcException {
     Connection connection = null;
     try {
       // Open the connection
@@ -97,7 +98,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     } catch (Exception e) {
       DBUtil.rollback(connection);
       throw new PdcException("PdcClassifyBmImpl.addPosition",
-              SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
     } finally {
       DBUtil.close(connection);
     }
@@ -110,7 +111,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       return 0;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.updatePosition",
-              SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITION", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITION", e);
     }
   }
 
@@ -118,11 +119,11 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   public int updatePositions(List<Value> classifyValues, int silverObjectId) throws PdcException {
     try {
       classifyEngine.updateSilverObjectPositions(null, classifyValues,
-              silverObjectId);
+          silverObjectId);
       return 0;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.updatePositions",
-              SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITION", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITION", e);
     }
   }
 
@@ -140,14 +141,14 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       // Call the containerManager to unregister the association
       // containerInstance - ContentInstance(SilverObjectId)
       containerManager.removeContainerContentInstanceLink(connection,
-              nPositionId, sComponentId);
+          nPositionId, sComponentId);
 
       // Commit
       connection.commit();
     } catch (Exception e) {
       DBUtil.rollback(connection);
       throw new PdcException("PdcClassifyBmImpl.deletePosition",
-              SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_POSITION", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_POSITION", e);
     } finally {
       DBUtil.close(connection);
     }
@@ -155,7 +156,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   @Override
   public List<Position> getPositions(int silverObjectId, String sComponentId)
-          throws PdcException {
+      throws PdcException {
     List<Position> positions = null;
 
     try {
@@ -171,7 +172,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
       // Get only the positions for the given componentId
       List<Integer> alFilteredPositionIds = containerManager.filterPositionsByComponentId(
-              alPositionIds, sComponentId);
+          alPositionIds, sComponentId);
 
       // Rebuild the positions
       List<Position> alFinalPositions = new ArrayList<Position>();
@@ -187,7 +188,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       return positions;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_POSITIONS", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_POSITIONS", e);
     }
   }
 
@@ -205,7 +206,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       return containerManager.getFilterPositionsByComponentIdStatement(null, alComponentId);
     } catch (ContainerManagerException e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_POSITIONS", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_POSITIONS", e);
     }
   }
 
@@ -215,7 +216,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       classifyEngine.registerAxis(con, axisId);
     } catch (ClassifyEngineException e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions",
-              SilverpeasException.ERROR, "Pdc.CANNOT_CREATE_AXE", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_CREATE_AXE", e);
     }
   }
 
@@ -227,10 +228,10 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
     } catch (ClassifyEngineException e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
-              "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);
+          "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);
     } catch (ContainerManagerException e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
-              "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);
+          "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);
     }
   }
 
@@ -243,7 +244,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
    */
   @Override
   public void createValuesAndReplace(Connection con, String axisId,
-          List<String> oldPath, List<String> newPath) throws PdcException {
+      List<String> oldPath, List<String> newPath) throws PdcException {
     List<Value> oldValues = new ArrayList<Value>();
     List<Value> newValues = new ArrayList<Value>();
     String path = "";
@@ -277,7 +278,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       }
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.createValuesAndReplace",
-              SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITIONS", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITIONS", e);
     }
   }
 
@@ -288,30 +289,30 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     List<Integer> objectIdList = new ArrayList<Integer>();
     try {
       List<Integer> alPositionIds = containerManager.filterPositionsByComponentId(null,
-              instanceId);
+          instanceId);
       objectIdList = classifyEngine.getSilverContentIdsByPositionIds(alPositionIds);
     } catch (ClassifyEngineException e) {
       SilverTrace.info("ClassifyEngine", "PdcClassifyBmImpl.hasAlreadyPositions",
-              "pdcClassify.MSG_CANNOT_GET_SILVEROBJECTID_LIST", "", e);
+          "pdcClassify.MSG_CANNOT_GET_SILVEROBJECTID_LIST", "", e);
     } catch (ContainerManagerException e) {
       SilverTrace.info("ClassifyEngine", "PdcClassifyBmImpl.hasAlreadyPositions",
-              "pdcClassify.MSG_CANNOT_GET_SILVEROBJECTID_LIST", "", e);
+          "pdcClassify.MSG_CANNOT_GET_SILVEROBJECTID_LIST", "", e);
     }
     return objectIdList;
   }
 
   /**
    * search a defined position for one usedAxis
-   * @param objectIdList 
+   * @param objectIdList
    * @param usedAxis - the UsedAxis object
    * @return true if for one UsedAxis, a position exists, false otherwise
-   * @throws PdcException  
+   * @throws PdcException
    */
   @Override
   public boolean hasAlreadyPositions(List<Integer> objectIdList, UsedAxis usedAxis)
-          throws PdcException {
+      throws PdcException {
     String newBaseValue = "/"
-            + (new Integer(usedAxis.getBaseValue())).toString() + "/";
+        + (new Integer(usedAxis.getBaseValue())).toString() + "/";
     String instanceId = usedAxis.getInstanceId();
 
     boolean hasOnePosition = false;
@@ -329,7 +330,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
         String onePath = "";
         for (Position position : positions) {
           com.stratelia.silverpeas.classifyEngine.Value value = position.getValueByAxis(usedAxis.
-                  getAxisId());
+              getAxisId());
           onePath = value.getValue();
           if (onePath != null && onePath.contains(newBaseValue)) {
             // une position existe déjà
@@ -358,72 +359,72 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   @Override
   public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds)
-          throws PdcException {
+      throws PdcException {
     try {
       return classifyEngine.getPertinentAxis(searchContext.getCriterias(), axisIds);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
     }
   }
 
   @Override
   public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId)
-          throws PdcException {
+      throws PdcException {
     try {
       return classifyEngine.getPertinentValues(searchContext.getCriterias(), axisId);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentValues",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
     }
   }
 
   @Override
   public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds,
-          JoinStatement joinStatementAllPositions) throws PdcException {
+      JoinStatement joinStatementAllPositions) throws PdcException {
     try {
       return classifyEngine.getPertinentAxisByJoin(
-              searchContext.getCriterias(), axisIds, joinStatementAllPositions);
+          searchContext.getCriterias(), axisIds, joinStatementAllPositions);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
     }
   }
 
   @Override
   public PertinentAxis getPertinentAxis(SearchContext searchContext,
-          String axisId, String sRootValue, JoinStatement joinStatementAllPositions)
-          throws PdcException {
+      String axisId, String sRootValue, JoinStatement joinStatementAllPositions)
+      throws PdcException {
     try {
       return classifyEngine.getSinglePertinentAxisByJoin(null, searchContext.getCriterias(),
-              Integer.parseInt(axisId), sRootValue, joinStatementAllPositions);
+          Integer.parseInt(axisId), sRootValue, joinStatementAllPositions);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
     }
   }
 
   @Override
   public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId,
-          JoinStatement joinStatementAllPositions) throws PdcException {
+      JoinStatement joinStatementAllPositions) throws PdcException {
     try {
       return classifyEngine.getPertinentValuesByJoin(searchContext.getCriterias(), axisId,
-              joinStatementAllPositions);
+          joinStatementAllPositions);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
     }
   }
 
   @Override
   public List<ObjectValuePair> getObjectValuePairs(SearchContext searchContext, int axisId,
-          JoinStatement joinStatementAllPositions) throws PdcException {
+      JoinStatement joinStatementAllPositions) throws PdcException {
     try {
       return classifyEngine.getObjectValuePairsByJoin(searchContext.getCriterias(), axisId,
-              joinStatementAllPositions);
+          joinStatementAllPositions);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
     }
   }
 
@@ -432,11 +433,11 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
    * @param connection
    * @param nSilverContentId
    * @return
-   * @throws PdcException 
+   * @throws PdcException
    */
   @Override
   public List<Integer> removePosition(Connection connection, int nSilverContentId)
-          throws PdcException {
+      throws PdcException {
     try {
       // Get all the positions of the removed object
       List<Position> alPositions = classifyEngine.findPositionsBySilverOjectId(nSilverContentId);
@@ -453,11 +454,11 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       return alPositionIds;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.removePosition",
-              SilverpeasException.ERROR, "Pdc.CANNOT_REMOVE_SILVERCONTENTID", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_REMOVE_SILVERCONTENTID", e);
     }
   }
 
-  /** 
+  /**
    * Find all the SilverContentId with the given position.
    * @param containerPosition
    * @param alComponentId
@@ -465,17 +466,17 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
    * @param afterDate
    * @param beforeDate
    * @return
-   * @throws PdcException 
+   * @throws PdcException
    */
   @Override
   public List<Integer> findSilverContentIdByPosition(
-          ContainerPositionInterface containerPosition, List<String> alComponentId,
-          String authorId, String afterDate, String beforeDate) throws PdcException {
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
+      String authorId, String afterDate, String beforeDate) throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId,
-            authorId, afterDate, beforeDate, true, true);
+        authorId, afterDate, beforeDate, true, true);
   }
 
-  /** 
+  /**
    * Find all the SilverContentId with the given position.
    * @param containerPosition
    * @param alComponentId
@@ -485,33 +486,33 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
    * @param recursiveSearch
    * @param visibilitySensitive
    * @return
-   * @throws PdcException 
+   * @throws PdcException
    */
   @Override
   public List<Integer> findSilverContentIdByPosition(
-          ContainerPositionInterface containerPosition, List<String> alComponentId,
-          String authorId, String afterDate, String beforeDate,
-          boolean recursiveSearch, boolean visibilitySensitive) throws PdcException {
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
+      String authorId, String afterDate, String beforeDate,
+      boolean recursiveSearch, boolean visibilitySensitive) throws PdcException {
     try {
       // Change the position in criteria
       SearchContext searchContext = (SearchContext) containerPosition;
       List alCriterias = searchContext.getCriterias();
       // Call the classifyEngine to get the objects
       return classifyEngine.findSilverOjectByCriterias(alCriterias,
-              containerManager.getFilterPositionsByComponentIdStatement(null,
-              alComponentId), contentManager.getPositionsByGenericSearch(
-              authorId, afterDate, beforeDate), afterDate, beforeDate,
-              recursiveSearch, visibilitySensitive);
+          containerManager.getFilterPositionsByComponentIdStatement(null,
+          alComponentId), contentManager.getPositionsByGenericSearch(
+          authorId, afterDate, beforeDate), afterDate, beforeDate,
+          recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.findSilverContentIdByPosition",
-              SilverpeasException.ERROR, "Pdc.CANNOT_GET_SILVERCONTENTIDS", e);
+          SilverpeasException.ERROR, "Pdc.CANNOT_GET_SILVERCONTENTIDS", e);
     }
   }
 
   @Override
   public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
-          List<String> alComponentId) throws PdcException {
+      List<String> alComponentId) throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId,
-            null, null, null);
+        null, null, null);
   }
 }

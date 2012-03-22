@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2009 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.notification.jms;
 
 import com.silverpeas.notification.jms.access.JMSAccessObject;
@@ -34,10 +35,9 @@ import javax.jms.TopicSubscriber;
 import static com.silverpeas.notification.jms.SilverpeasMessageListener.*;
 
 /**
- * Implementation of the subscribing service using the JMS API.
- * This service is managed by the IoC container under the name 'messageSubscribingService' as
- * required by the Notification API.
- * The JMS system is injected as a dependency by the IoC container.
+ * Implementation of the subscribing service using the JMS API. This service is managed by the IoC
+ * container under the name 'messageSubscribingService' as required by the Notification API. The JMS
+ * system is injected as a dependency by the IoC container.
  */
 @Named("messageSubscribingService")
 public class JMSSubscribingService implements MessageSubscribingService {
@@ -51,7 +51,7 @@ public class JMSSubscribingService implements MessageSubscribingService {
     String topicName = onTopic.getName();
     String subscriptionId = subscriber.getId();
     ManagedTopicsSubscriber topicsSubscriber =
-      ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriptionId);
+        ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriptionId);
     if (topicsSubscriber == null) {
       topicsSubscriber = ManagedTopicsSubscriber.getNewManagedTopicsSubscriber();
     }
@@ -71,10 +71,10 @@ public class JMSSubscribingService implements MessageSubscribingService {
 
   @Override
   public synchronized void unsubscribe(NotificationSubscriber subscriber,
-    NotificationTopic fromTopic) {
+      NotificationTopic fromTopic) {
     try {
       ManagedTopicsSubscriber topicsSubscriber =
-        ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriber.getId());
+          ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriber.getId());
       if (topicsSubscriber != null) {
         TopicSubscriber jmsSubscriber = topicsSubscriber.getSubscription(fromTopic.getName());
         if (jmsSubscriber != null) {
@@ -89,6 +89,5 @@ public class JMSSubscribingService implements MessageSubscribingService {
       throw new SubscriptionException(ex);
     }
   }
-
 
 }

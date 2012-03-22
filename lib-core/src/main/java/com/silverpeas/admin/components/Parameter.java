@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.admin.components;
 
 import java.util.ArrayList;
@@ -41,75 +42,64 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * <p>Java class for ParameterType complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for ParameterType complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ParameterType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="label" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *         &lt;element name="order" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="mandatory" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         &lt;element name="value" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="options" maxOccurs="unbounded" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="option" type="{http://silverpeas.org/xml/ns/component}ParameterOptionType" maxOccurs="unbounded" minOccurs="0"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="type">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;enumeration value="checkbox"/>
- *               &lt;enumeration value="select"/>
- *               &lt;enumeration value="xmltemplates"/>
- *               &lt;enumeration value="text"/>
- *               &lt;enumeration value="radio"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="size" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element name="updatable">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;enumeration value="always"/>
- *               &lt;enumeration value="creation"/>
- *               &lt;enumeration value="never"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="help" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *         &lt;element name="personalSpaceValue" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name=&quot;ParameterType&quot;&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name=&quot;name&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
+ *         &lt;element name=&quot;label&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;order&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}int&quot;/&gt;
+ *         &lt;element name=&quot;mandatory&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot;/&gt;
+ *         &lt;element name=&quot;value&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
+ *         &lt;element name=&quot;options&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name=&quot;option&quot; type=&quot;{http://silverpeas.org/xml/ns/component}ParameterOptionType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name=&quot;type&quot;&gt;
+ *           &lt;simpleType&gt;
+ *             &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;&gt;
+ *               &lt;enumeration value=&quot;checkbox&quot;/&gt;
+ *               &lt;enumeration value=&quot;select&quot;/&gt;
+ *               &lt;enumeration value=&quot;xmltemplates&quot;/&gt;
+ *               &lt;enumeration value=&quot;text&quot;/&gt;
+ *               &lt;enumeration value=&quot;radio&quot;/&gt;
+ *             &lt;/restriction&gt;
+ *           &lt;/simpleType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name=&quot;size&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}int&quot; minOccurs=&quot;0&quot;/&gt;
+ *         &lt;element name=&quot;updatable&quot;&gt;
+ *           &lt;simpleType&gt;
+ *             &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;&gt;
+ *               &lt;enumeration value=&quot;always&quot;/&gt;
+ *               &lt;enumeration value=&quot;creation&quot;/&gt;
+ *               &lt;enumeration value=&quot;never&quot;/&gt;
+ *             &lt;/restriction&gt;
+ *           &lt;/simpleType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name=&quot;help&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;personalSpaceValue&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; minOccurs=&quot;0&quot;/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ParameterType", propOrder = {
-  "name",
-  "label",
-  "order",
-  "mandatory",
-  "value",
-  "options",
-  "type",
-  "size",
-  "updatable",
-  "help",
-  "personalSpaceValue"})
+@XmlType(name = "ParameterType", propOrder = { "name", "label", "order", "mandatory", "value",
+    "options", "type", "size", "updatable", "help", "personalSpaceValue" })
 public class Parameter implements Cloneable {
 
   @XmlElement(required = true)
@@ -136,11 +126,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the name property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getName() {
     return name;
@@ -148,11 +134,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the name property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setName(String value) {
     this.name = value;
@@ -160,11 +142,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the label property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getLabel() {
     if (label == null) {
@@ -175,11 +153,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the label property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setLabel(HashMap<String, String> value) {
     this.label = value;
@@ -187,7 +161,6 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the order property.
-   * 
    */
   public int getOrder() {
     return order;
@@ -195,7 +168,6 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the order property.
-   * 
    */
   public void setOrder(int value) {
     this.order = value;
@@ -203,7 +175,6 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the mandatory property.
-   * 
    */
   public boolean isMandatory() {
     return mandatory;
@@ -211,7 +182,6 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the mandatory property.
-   * 
    */
   public void setMandatory(boolean value) {
     this.mandatory = value;
@@ -219,11 +189,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the value property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getValue() {
     return value;
@@ -231,11 +197,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the value property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setValue(String value) {
     this.value = value;
@@ -243,25 +205,18 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the options property.
-   * 
    * <p>
-   * This accessor method returns a reference to the live list,
-   * not a snapshot. Therefore any modification you make to the
-   * returned list will be present inside the JAXB object.
-   * This is why there is not a <CODE>set</CODE> method for the options property.
-   * 
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+   * modification you make to the returned list will be present inside the JAXB object. This is why
+   * there is not a <CODE>set</CODE> method for the options property.
    * <p>
    * For example, to add a new item, do as follows:
+   * 
    * <pre>
-   *    getOptions().add(newItem);
+   * getOptions().add(newItem);
    * </pre>
-   * 
-   * 
    * <p>
-   * Objects of the following type(s) are allowed in the list
-   * {@link Parameter.Options }
-   * 
-   * 
+   * Objects of the following type(s) are allowed in the list {@link Parameter.Options }
    */
   public List<Option> getOptions() {
     if (isXmlTemplate()) {
@@ -278,11 +233,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the type property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getType() {
     return type;
@@ -290,11 +241,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the type property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setType(String value) {
     this.type = value;
@@ -302,11 +249,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the size property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Integer }
-   *     
+   * @return possible object is {@link Integer }
    */
   public Integer getSize() {
     return size;
@@ -314,11 +257,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the size property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Integer }
-   *     
+   * @param value allowed object is {@link Integer }
    */
   public void setSize(Integer value) {
     this.size = value;
@@ -326,11 +265,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the updatable property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getUpdatable() {
     return updatable;
@@ -338,11 +273,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the updatable property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setUpdatable(String value) {
     this.updatable = value;
@@ -350,11 +281,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the help property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getHelp() {
     if (help == null) {
@@ -365,11 +292,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the help property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setHelp(HashMap<String, String> value) {
     this.help = value;
@@ -377,11 +300,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Gets the value of the personalSpaceValue property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getPersonalSpaceValue() {
     return personalSpaceValue;
@@ -389,11 +308,7 @@ public class Parameter implements Cloneable {
 
   /**
    * Sets the value of the personalSpaceValue property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setPersonalSpaceValue(String value) {
     this.personalSpaceValue = value;

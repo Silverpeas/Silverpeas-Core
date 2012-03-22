@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.external.filesharing.model;
 
+package com.silverpeas.external.filesharing.model;
 
 import com.silverpeas.external.filesharing.model.DownloadDetail;
 import com.silverpeas.external.filesharing.model.TicketDetail;
@@ -175,7 +175,7 @@ public class TicketDAO {
       // création de la requête
       String query =
           "insert into SB_fileSharing_ticket (fileId, componentId, versioning, creatorId, creationDate, endDate, nbAccessMax, keyFile)"
-          + " values (?,?,?,?,?,?,?,?)";
+              + " values (?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
@@ -217,7 +217,7 @@ public class TicketDAO {
       Date today = new Date();
       String query =
           "update SB_fileSharing_ticket set fileId = ? , componentId = ? , updateId = ? , updateDate = ? , "
-          + "endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
+              + "endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());

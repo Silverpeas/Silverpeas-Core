@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.calendar;
 
 import java.util.ArrayList;
@@ -30,10 +31,9 @@ import java.util.List;
 import static com.silverpeas.calendar.DayOfWeekOccurrence.*;
 
 /**
- * It defines the recurrence rules of a calendar event.
- * An event recurrence is defined by a frequence (secondly, minutly, hourly, daily, weekly, monthly,
- * or yearly) and optionally by some days of week on which the event should frequently occur, and
- * by a terminaison condition.
+ * It defines the recurrence rules of a calendar event. An event recurrence is defined by a
+ * frequence (secondly, minutly, hourly, daily, weekly, monthly, or yearly) and optionally by some
+ * days of week on which the event should frequently occur, and by a terminaison condition.
  */
 public class CalendarEventRecurrence {
 
@@ -68,8 +68,7 @@ public class CalendarEventRecurrence {
   /**
    * Creates a new event recurrence from the specified frequency. For example every(2, MONTH) means
    * every 2 month.
-   * @param frequencyValue the value of the event frequency.
-   * every two weeks.
+   * @param frequencyValue the value of the event frequency. every two weeks.
    * @param frequencyUnit the frequency unit.
    * @return the event recurrence instance.
    */
@@ -89,11 +88,10 @@ public class CalendarEventRecurrence {
 
   /**
    * Sets some specific days of week at which the event should periodically occur. For example,
-   * recur every weeks on monday and on thuesday.
-   * For a monthly or an yearly recurrence, the day of week occurrence is the first one of the
-   * month or the year.
-   * @param days the days of week at which an event should occur. Theses days replace the ones already
-   * set in the recurrence.
+   * recur every weeks on monday and on thuesday. For a monthly or an yearly recurrence, the day of
+   * week occurrence is the first one of the month or the year.
+   * @param days the days of week at which an event should occur. Theses days replace the ones
+   * already set in the recurrence.
    * @return itself.
    */
   public CalendarEventRecurrence on(DayOfWeek... days) {
@@ -109,13 +107,12 @@ public class CalendarEventRecurrence {
   /**
    * Sets some specific occurrences of day of week at which the event should periodically occur
    * within monthly or yearly period. For example, recur every month on the third monday and on the
-   * first thuesday.
-   * The days of week for a weekly recurrence can also be indicated if, and only if, the nth
-   * occurrence of the day is the first one or all occurrences (as there is actually only one
-   * possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
+   * first thuesday. The days of week for a weekly recurrence can also be indicated if, and only if,
+   * the nth occurrence of the day is the first one or all occurrences (as there is actually only
+   * one possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
    * considered as an error and an IllegaleArgumentException is thrown.
-   * @param days the occurrences of day of week at which an event should occur.
-   * Theses days replace the ones already set in the recurrence.
+   * @param days the occurrences of day of week at which an event should occur. Theses days replace
+   * the ones already set in the recurrence.
    * @return itself.
    */
   public CalendarEventRecurrence on(DayOfWeekOccurrence... days) {
@@ -125,10 +122,9 @@ public class CalendarEventRecurrence {
   /**
    * Sets some specific occurrences of day of week at which the event should periodically occur
    * within monthly or yearly period. For example, recur every month on the third monday and on the
-   * first thuesday.
-   * The days of week for a weekly recurrence can also be indicated if, and only if, the nth
-   * occurrence of the day is the first one or all occurrences (as there is actually only one
-   * possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
+   * first thuesday. The days of week for a weekly recurrence can also be indicated if, and only if,
+   * the nth occurrence of the day is the first one or all occurrences (as there is actually only
+   * one possible occurrence of a day in a week); any value other than 1 or ALL_OCCURRENCES is
    * considered as an error and an IllegaleArgumentException is thrown.
    * @param days a list of days of week at which an event should occur. Theses days replace the ones
    * already set in the recurrence.
@@ -166,8 +162,8 @@ public class CalendarEventRecurrence {
   }
 
   /**
-   * Sets a terminaison to this recurrence by specifying an end date of the recurrence.
-   * Settings this terminaison overrides the number of time the event should occur.
+   * Sets a terminaison to this recurrence by specifying an end date of the recurrence. Settings
+   * this terminaison overrides the number of time the event should occur.
    * @param endDate the end date of the recurrence.
    * @return itself.
    */

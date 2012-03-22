@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
@@ -52,7 +53,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
 
-  private final static String[] MANAGED_TYPES = new String[]{LdapField.TYPE};
+  private final static String[] MANAGED_TYPES = new String[] { LdapField.TYPE };
   private final static String mandatoryImg = Util.getIcon("mandatoryField");
 
   /**
@@ -63,7 +64,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
 
   /**
    * Returns the name of the managed types.
-   * @return 
+   * @return
    */
   public String[] getManagedTypes() {
     return MANAGED_TYPES;
@@ -78,10 +79,10 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   * @param out 
-   * @param template 
-   * @param pagesContext 
-   * @throws java.io.IOException 
+   * @param out
+   * @param template
+   * @param pagesContext
+   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
@@ -112,11 +113,11 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   * @param out 
-   * @param field 
+   * @param out
+   * @param field
    * @param pagesContext
-   * @param template 
-   * @throws FormException  
+   * @param template
+   * @throws FormException
    */
   @Override
   public void display(PrintWriter out, LdapField field, FieldTemplate template,
@@ -229,7 +230,8 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
       html.append(" {\n").append("		width:15em;\n").append("		padding-bottom:2em;\n");
       html.append("	}\n").append("	#listAutocomplete").append(fieldName).append(" {\n");
       html.append("		z-index:").append(zindex);
-      html.append("; /* z-index needed on top instance for ie & sf absolute inside relative issue ");
+      html
+          .append("; /* z-index needed on top instance for ie & sf absolute inside relative issue ");
       html.append("*/\n").append("	}\n").append("	#").append(fieldName).append(" {\n");
       html.append("		_position:absolute; /* abs pos needed for ie quirks */\n").append("	}\n");
       html.append("</style>\n").append("<div id=\"listAutocomplete").append(fieldName).append(
@@ -283,7 +285,8 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
 
       html.append("	this.oAutoComp").append(fieldName).append(
           ".textboxFocusEvent.subscribe(function(){\n");
-      html.append("		var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append("').value;\n");
+      html.append("		var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
+          "').value;\n");
       html.append("		if(sInputValue.length == 0) {\n");
       html.append("			var oSelf = this;\n");
       html.append("			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");

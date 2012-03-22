@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.admin.service;
 
 import java.util.HashMap;
@@ -34,113 +58,117 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 @Named("silverpeasUserService")
 public class UserServiceLegacy implements UserService {
 
-	ResourceLocator settings = null;
+  ResourceLocator settings = null;
   ResourceLocator multilang = null;
-	String templatePath = null;
+  String templatePath = null;
   String customersTemplatePath = null;
 
-	@PostConstruct
-	void init() {
-		settings = new ResourceLocator(
-				"com.silverpeas.socialnetwork.settings.socialNetworkSettings", "");
+  @PostConstruct
+  void init() {
+    settings = new ResourceLocator(
+        "com.silverpeas.socialnetwork.settings.socialNetworkSettings", "");
 
-    multilang = new ResourceLocator(
-        "com.silverpeas.socialnetwork.multilang.registration", DisplayI18NHelper.getDefaultLanguage());
+    multilang =
+        new ResourceLocator(
+        "com.silverpeas.socialnetwork.multilang.registration", DisplayI18NHelper
+        .getDefaultLanguage());
 
-		templatePath = settings.getString("templatePath");
+    templatePath = settings.getString("templatePath");
     customersTemplatePath = settings.getString("customersTemplatePath");
-	}
+  }
 
-	@Override
-	public String registerUser(String firstName, String lastName,
-			String email) throws AdminException {
+  @Override
+  public String registerUser(String firstName, String lastName,
+      String email) throws AdminException {
 
-		Admin admin = AdminReference.getAdminService();
+    Admin admin = AdminReference.getAdminService();
 
-		String domainId = settings.getString("authentication.justRegisteredDomainId", "0");
-		String login = generateLogin(admin, domainId, email);
-		if (login == null) {
-			throw new AdminException(
-					"SilverpeasAdminServiceLegacy.createGuestUser",
-					SilverpeasException.ERROR, "admin.EX_NO_LOGIN_AVAILABLE");
-		}
-		String password = generatePassword();
+    String domainId = settings.getString("authentication.justRegisteredDomainId", "0");
+    String login = generateLogin(admin, domainId, email);
+    if (login == null) {
+      throw new AdminException(
+          "SilverpeasAdminServiceLegacy.createGuestUser",
+          SilverpeasException.ERROR, "admin.EX_NO_LOGIN_AVAILABLE");
+    }
+    String password = generatePassword();
 
-		UserDetail user = new UserDetail();
-		user.setId("-1");
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.seteMail(email);
-		user.setLogin(login);
-		user.setDomainId(domainId);
-		user.setAccessLevel("U");
+    UserDetail user = new UserDetail();
+    user.setId("-1");
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
+    user.seteMail(email);
+    user.setLogin(login);
+    user.setDomainId(domainId);
+    user.setAccessLevel("U");
 
-		String userId = admin.addUser(user);
+    String userId = admin.addUser(user);
 
-		if (!StringUtil.isDefined(userId)) {
-			throw new AdminException(
-					"SilverpeasAdminServiceLegacy.createGuestUser",
-					SilverpeasException.ERROR, "admin.EX_ADD_USER_FAILED");
-		}
+    if (!StringUtil.isDefined(userId)) {
+      throw new AdminException(
+          "SilverpeasAdminServiceLegacy.createGuestUser",
+          SilverpeasException.ERROR, "admin.EX_ADD_USER_FAILED");
+    }
 
-		// Update UserFull informations
-		UserFull uf = admin.getUserFull(userId);
-		if (uf != null) {
-			uf.setPasswordValid(true);
-			uf.setPassword(password);
-			userId = admin.updateUserFull(uf);
-			if (!StringUtil.isDefined(userId)) {
-				throw new AdminException(
-						"SilverpeasAdminServiceLegacy.createGuestUser",
-						SilverpeasException.ERROR, "admin.EX_ADD_USER_FAILED");
-			}
-		}
+    // Update UserFull informations
+    UserFull uf = admin.getUserFull(userId);
+    if (uf != null) {
+      uf.setPasswordValid(true);
+      uf.setPassword(password);
+      userId = admin.updateUserFull(uf);
+      if (!StringUtil.isDefined(userId)) {
+        throw new AdminException(
+            "SilverpeasAdminServiceLegacy.createGuestUser",
+            SilverpeasException.ERROR, "admin.EX_ADD_USER_FAILED");
+      }
+    }
 
-		Domain domain = admin.getDomain(domainId);
-		sendCredentialsToUser(uf, password, domain.getSilverpeasServerURL());
-		return userId;
-	}
+    Domain domain = admin.getDomain(domainId);
+    sendCredentialsToUser(uf, password, domain.getSilverpeasServerURL());
+    return userId;
+  }
 
-	private String generatePassword() {
-		Random random = new Random();
-		byte[] password = new byte[8];
-		for (int i = 0; i < 8; i++) {
-			password[i] = (byte) (65 + random.nextInt(26));
-		}
-		return new String(password);
-	}
+  private String generatePassword() {
+    Random random = new Random();
+    byte[] password = new byte[8];
+    for (int i = 0; i < 8; i++) {
+      password[i] = (byte) (65 + random.nextInt(26));
+    }
+    return new String(password);
+  }
 
-	private String generateLogin(Admin admin, String domainId,
-			String email) {
-		try {
-			String userId = admin.getUserIdByLoginAndDomain(email,
-					domainId);
-			if (userId == null) {
-				return email;
-			}
-		} catch (AdminException e) {
-		  // An exception is thrown because user is not found
-		  // so this login is available
-			SilverTrace.debug("admin",
-					"SilverpeasAdminServiceLegacy.generateLogin",
-					"firstTryFailed", "firstName :" + email, e);
-			return email;
-		}
+  private String generateLogin(Admin admin, String domainId,
+      String email) {
+    try {
+      String userId = admin.getUserIdByLoginAndDomain(email,
+          domainId);
+      if (userId == null) {
+        return email;
+      }
+    } catch (AdminException e) {
+      // An exception is thrown because user is not found
+      // so this login is available
+      SilverTrace.debug("admin",
+          "SilverpeasAdminServiceLegacy.generateLogin",
+          "firstTryFailed", "firstName :" + email, e);
+      return email;
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	private void sendCredentialsToUser(UserFull user, String password, String silverpeasServerURL) {
+  private void sendCredentialsToUser(UserFull user, String password, String silverpeasServerURL) {
     try {
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       String subject = multilang.getString("credentialsMail.subject");
-      NotificationMetaData notifMetaData = new NotificationMetaData( NotificationParameters.NORMAL, subject, templates, "credentialsMail" );
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+          "credentialsMail");
 
       SilverpeasTemplate template = getNewTemplate();
       template.setAttribute("fullName", user.getDisplayedName());
       template.setAttribute("login", user.getLogin());
       template.setAttribute("password", password);
-      template.setAttribute("url", silverpeasServerURL+"/"+URLManager.getApplicationURL());
+      template.setAttribute("url", silverpeasServerURL + "/" + URLManager.getApplicationURL());
       templates.put(DisplayI18NHelper.getDefaultLanguage(), template);
       notifMetaData.addLanguage(DisplayI18NHelper.getDefaultLanguage(), subject, "");
       notifMetaData.setSender("0");
@@ -149,26 +177,28 @@ public class UserServiceLegacy implements UserService {
       notifMetaData.setLink(URLManager.getApplicationURL());
       notifyUser(notifMetaData, null);
     } catch (Exception e) {
-      SilverTrace.error("socialNetwork", "UserServiceLegacy.sendCredentialsToUser", "EX_SEND_NOTIFICATION_FAILED", "userId=" + user.getId(), e);
+      SilverTrace.error("socialNetwork", "UserServiceLegacy.sendCredentialsToUser",
+          "EX_SEND_NOTIFICATION_FAILED", "userId=" + user.getId(), e);
     }
   }
 
   private SilverpeasTemplate getNewTemplate() {
     Properties templateConfiguration = new Properties();
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, templatePath);
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, customersTemplatePath);
+    templateConfiguration
+        .setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, customersTemplatePath);
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
   private void notifyUser(NotificationMetaData notifMetaData, String componentId)
-  throws AdminException {
+      throws AdminException {
     try {
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
-      throw new AdminException("SilverpeasAdminServiceLegacy.notifyUser", SilverpeasException.ERROR, "EX_SEND_NOTIFICATION_FAILED", e);
+      throw new AdminException("SilverpeasAdminServiceLegacy.notifyUser",
+          SilverpeasException.ERROR, "EX_SEND_NOTIFICATION_FAILED", e);
     }
   }
-
 
 }

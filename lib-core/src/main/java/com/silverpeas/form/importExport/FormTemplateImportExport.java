@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.importExport;
 
 import java.io.File;
@@ -76,7 +77,8 @@ public class FormTemplateImportExport {
       if (field != null) {
         FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
         if (fieldTemplate != null) {
-          FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(field.getTypeName(), 
+          FieldDisplayer fieldDisplayer =
+              TypeManager.getInstance().getDisplayer(field.getTypeName(),
               fieldTemplate.getDisplayerName());
           String fieldValue;
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
@@ -88,7 +90,7 @@ public class FormTemplateImportExport {
             }
 
             String imagePath = xmlFieldValue;
-            String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1, 
+            String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1,
                 imagePath.length());
             String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
             String imageMimeType = AttachmentController.getMimeType(imagePath);
@@ -128,7 +130,8 @@ public class FormTemplateImportExport {
       foreignKey.setId(objectId);
     }
     // create AttachmentDetail Object
-    AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size,
+    AttachmentDetail ad =
+        new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size,
         context, new Date(), foreignKey);
     ad.setAuthor(userId);
     return ad;

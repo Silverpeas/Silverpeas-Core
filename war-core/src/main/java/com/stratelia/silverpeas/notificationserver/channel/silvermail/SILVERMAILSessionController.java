@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -159,13 +159,12 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     if (StringUtil.isDefined(componentId)) {
       OrganizationController orga = new OrganizationController();
       ComponentInst instance = orga.getComponentInst(componentId);
-      
+
       // Sometimes, source could not be found
       SpaceInst space = orga.getSpaceInstById(instance.getDomainFatherId());
       if (space != null) {
         source = space.getName() + " - " + instance.getLabel();
-      }
-      else {
+      } else {
         source = m_Multilang.getString("UnknownSource");
       }
     }
@@ -234,10 +233,9 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   public void setCurrentMessageId(long value) {
     currentMessageId = value;
   }
-  
-  
+
   public SILVERMAILMessage getCurrentMessage() throws SILVERMAILException {
-    return  SILVERMAILPersistence.getMessage(currentMessageId);
+    return SILVERMAILPersistence.getMessage(currentMessageId);
   }
 
 }

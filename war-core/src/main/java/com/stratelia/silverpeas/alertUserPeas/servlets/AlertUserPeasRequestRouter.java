@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,17 +37,15 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
- *
  * @author
  */
-public class AlertUserPeasRequestRouter
-    extends ComponentRequestRouter<AlertUserPeasSessionController> {
+public class AlertUserPeasRequestRouter extends
+    ComponentRequestRouter<AlertUserPeasSessionController> {
 
   private static final long serialVersionUID = 5335551355656715989L;
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -69,10 +67,10 @@ public class AlertUserPeasRequestRouter
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param scc      The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @param scc The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex :
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, AlertUserPeasSessionController scc,
       HttpServletRequest request) {

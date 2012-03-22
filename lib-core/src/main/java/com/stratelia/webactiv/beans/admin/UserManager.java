@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.StringUtil;
@@ -77,7 +78,7 @@ public class UserManager {
    * Get the users that are in the group or one of his sub-groups
    * @param groupIds
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public UserDetail[] getAllUsersOfGroups(List<String> groupIds) throws AdminException {
     if (groupIds == null || groupIds.isEmpty()) {
@@ -102,7 +103,7 @@ public class UserManager {
    * Get the user ids that are in the group or one of his sub-groups
    * @param groupIds
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public List<String> getAllUserIdsOfGroups(List<String> groupIds) throws AdminException {
     if (groupIds == null || groupIds.isEmpty()) {
@@ -126,9 +127,10 @@ public class UserManager {
    * @param ddManager
    * @param sDomainId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
-  public UserDetail[] getUsersOfDomain(DomainDriverManager ddManager, String sDomainId) throws AdminException {
+  public UserDetail[] getUsersOfDomain(DomainDriverManager ddManager, String sDomainId)
+      throws AdminException {
     try {
       // Get users from Silverpeas
       ddManager.getOrganizationSchema();
@@ -163,7 +165,7 @@ public class UserManager {
    * @param ddManager
    * @param sDomainId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String[] getUserIdsOfDomain(DomainDriverManager ddManager, String sDomainId) throws
       AdminException {
@@ -215,7 +217,7 @@ public class UserManager {
    * @param sUserId
    * @param groupIds
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String[] getManageableSpaceIds(String sUserId, List<String> groupIds)
       throws AdminException {
@@ -236,7 +238,7 @@ public class UserManager {
    * Return all the user Ids available in Silverpeas
    * @param ddManager
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String[] getAllUsersIds(DomainDriverManager ddManager) throws AdminException {
     try {
@@ -255,7 +257,7 @@ public class UserManager {
    * @param ddManager
    * @param fromUser
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String[] getAllAdminIds(DomainDriverManager ddManager, UserDetail fromUser) throws
       AdminException {
@@ -276,7 +278,7 @@ public class UserManager {
    * @param ddManager
    * @param sUserId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public UserFull getUserFull(DomainDriverManager ddManager, String sUserId) throws AdminException {
     try {
@@ -295,7 +297,7 @@ public class UserManager {
    * @param ddManager
    * @param sUserId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public UserDetail getUserDetail(DomainDriverManager ddManager, String sUserId) throws
       AdminException {
@@ -318,13 +320,14 @@ public class UserManager {
    * @param sSpecificId
    * @param sDomainId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String getUserIdBySpecificIdAndDomainId(DomainDriverManager ddManager, String sSpecificId,
       String sDomainId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-      UserRow ur = ddManager.getOrganization().user.getUserBySpecificId(idAsInt(sDomainId), sSpecificId);
+      UserRow ur =
+          ddManager.getOrganization().user.getUserBySpecificId(idAsInt(sDomainId), sSpecificId);
       return idAsString(ur.id);
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserIdBySpecificIdAndDomainId",
@@ -342,7 +345,7 @@ public class UserManager {
    * @param sLogin
    * @param sDomainId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String getUserIdByLoginAndDomain(DomainDriverManager ddManager, String sLogin,
       String sDomainId) throws AdminException {
@@ -425,7 +428,7 @@ public class UserManager {
    * @param userDetail
    * @param addOnlyInSilverpeas
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String addUser(DomainDriverManager ddManager, UserDetail userDetail,
       boolean addOnlyInSilverpeas) throws AdminException {
@@ -507,7 +510,7 @@ public class UserManager {
    * @param user
    * @param onlyInSilverpeas
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String deleteUser(DomainDriverManager ddManager, UserDetail user, boolean onlyInSilverpeas)
       throws AdminException {
@@ -534,8 +537,10 @@ public class UserManager {
 
       return user.getId();
     } catch (Exception e) {
-      SynchroReport.error("UserManager.deleteUser()", "problème à la suppression de l'utilisateur " + user.
-          getFirstName() + " " + user.getLastName() + "(specificId:" + user.getSpecificId() + ") - " + e.
+      SynchroReport.error("UserManager.deleteUser()",
+          "problème à la suppression de l'utilisateur " + user.
+          getFirstName() + " " + user.getLastName() + "(specificId:" + user.getSpecificId() +
+          ") - " + e.
           getMessage(), null);
       throw new AdminException("UserManager.deleteUser", SilverpeasException.ERROR,
           "admin.EX_ERR_DELETE_USER", "user id: '" + user.getId() + "'", e);
@@ -549,7 +554,7 @@ public class UserManager {
    * @param ddManager
    * @param user
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String updateUser(DomainDriverManager ddManager, UserDetail user) throws AdminException {
     try {
@@ -581,7 +586,7 @@ public class UserManager {
    * @param ddManager
    * @param userFull
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String updateUserFull(DomainDriverManager ddManager, UserFull userFull) throws
       AdminException {

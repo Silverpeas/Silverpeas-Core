@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.organization;
 
 import com.silverpeas.util.StringUtil;
@@ -61,7 +62,7 @@ public abstract class Table<T> {
    * "u.id,u.firstName,u.lastName" for row alias "u" columns list "id,firstName,lastName".
    * @param rowAlias
    * @param columnList
-   * @return 
+   * @return
    */
   static public String aliasColumns(String rowAlias, String columnList) {
     StringBuilder result = new StringBuilder();
@@ -83,7 +84,7 @@ public abstract class Table<T> {
    * Truncates a string value to be inserted in a fixed size column
    * @param value
    * @param maxSize
-   * @return 
+   * @return
    */
   static public String truncate(String value, int maxSize) {
     if (value != null && value.length() > maxSize) {
@@ -95,7 +96,7 @@ public abstract class Table<T> {
   /**
    * Returns the next id which can be used to create a new row.
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   public int getNextId() throws SQLException {
     int nextId = 0;
@@ -114,7 +115,7 @@ public abstract class Table<T> {
    * Builds a new row object which values are retrieved from the given ResultSet.
    * @param rs
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   abstract protected T fetchRow(ResultSet rs) throws SQLException;
 
@@ -124,10 +125,10 @@ public abstract class Table<T> {
    * @param insertQuery
    * @param insert
    * @param row
-   * @throws SQLException 
+   * @throws SQLException
    */
   abstract protected void prepareInsert(String insertQuery, PreparedStatement insert, T row)
-          throws SQLException;
+      throws SQLException;
 
   /**
    * Set all the parameters of the update PreparedStatement built from the updateQuery in order to
@@ -135,16 +136,16 @@ public abstract class Table<T> {
    * @param updateQuery
    * @param update
    * @param row
-   * @throws SQLException 
+   * @throws SQLException
    */
   abstract protected void prepareUpdate(String updateQuery, PreparedStatement update, T row)
-          throws SQLException;
+      throws SQLException;
 
   /**
    * Returns the unique row referenced by the given query and id. Returns null if no rows match the
    * id. Throws a AdminPersistenceException if more then one row match the id.
    * @return the requiered row or null.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    * @param query the sql query string must be like "select * from ... where ... id=?" where id is
    * an int column.
    * @param id references an unique row.
@@ -160,7 +161,7 @@ public abstract class Table<T> {
       return getUniqueRow(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -170,7 +171,7 @@ public abstract class Table<T> {
    * Returns the unique row referenced by the given query and id. Returns null if no rows match the
    * id. Throws a AdminPersistenceException if more then one row match the id.
    * @return the requiered row or null.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    * @param query the sql query string must be like "select * from ... where ... id=?" where id is
    * an String column.
    * @param id references an unique row.
@@ -180,14 +181,14 @@ public abstract class Table<T> {
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getUniqueRow", "root.MSG_QUERY",
-              query + "  id String: " + id);
+          query + "  id String: " + id);
       select = schema.getStatement(query);
       select.setString(1, id);
       rs = select.executeQuery();
       return getUniqueRow(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -197,7 +198,7 @@ public abstract class Table<T> {
    * Returns the ids described by the given no parameters query.
    * @param query
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected synchronized List<String> getIds(String query) throws AdminPersistenceException {
     ResultSet rs = null;
@@ -209,7 +210,7 @@ public abstract class Table<T> {
       return getIds(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -220,7 +221,7 @@ public abstract class Table<T> {
    * @param query
    * @param id
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected synchronized List<String> getIds(String query, int id) throws AdminPersistenceException {
     ResultSet rs = null;
@@ -233,7 +234,7 @@ public abstract class Table<T> {
       return getIds(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -244,14 +245,15 @@ public abstract class Table<T> {
    * @param query
    * @param ids
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
-  protected synchronized  List<String> getIds(String query, int[] ids) throws AdminPersistenceException {
+  protected synchronized List<String> getIds(String query, int[] ids)
+      throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + "  ids: " + Arrays.
-              toString(ids));
+          toString(ids));
       select = schema.getStatement(query);
       for (int i = 0; i < ids.length; i++) {
         select.setInt(i + 1, ids[i]);
@@ -260,7 +262,7 @@ public abstract class Table<T> {
       return getIds(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -272,15 +274,15 @@ public abstract class Table<T> {
    * @param ids
    * @param params
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected synchronized List<String> getIds(String query, int[] ids, String[] params) throws
-          AdminPersistenceException {
+      AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getIds", "root.MSG_QUERY",
-              query + "  id[]: " + Arrays.toString(ids) + "   params[]: " + Arrays.toString(params));
+          query + "  id[]: " + Arrays.toString(ids) + "   params[]: " + Arrays.toString(params));
       select = schema.getStatement(query);
       int i, j;
       for (i = 0; i < ids.length; i++) {
@@ -293,7 +295,7 @@ public abstract class Table<T> {
       return getIds(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -303,7 +305,7 @@ public abstract class Table<T> {
    * Returns the rows described by the given no parameters query.
    * @param query
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected synchronized List<T> getRows(String query) throws AdminPersistenceException {
     ResultSet rs = null;
@@ -315,7 +317,7 @@ public abstract class Table<T> {
       return getRows(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -326,7 +328,7 @@ public abstract class Table<T> {
    * @param query
    * @param id
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected synchronized List<T> getRows(String query, int id) throws AdminPersistenceException {
     ResultSet rs = null;
@@ -339,7 +341,7 @@ public abstract class Table<T> {
       return getRows(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -350,14 +352,14 @@ public abstract class Table<T> {
    * @param query
    * @param ids
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected synchronized List<T> getRows(String query, int[] ids) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + "  id[]: " + Arrays.
-              toString(ids));
+          toString(ids));
       select = schema.getStatement(query);
       for (int i = 0; i < ids.length; i++) {
         select.setInt(i + 1, ids[i]);
@@ -366,7 +368,7 @@ public abstract class Table<T> {
       return getRows(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -377,7 +379,7 @@ public abstract class Table<T> {
    * @param query
    * @param params
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected List<T> getRows(String query, String[] params) throws AdminPersistenceException {
     ResultSet rs = null;
@@ -385,7 +387,7 @@ public abstract class Table<T> {
 
     try {
       SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + "  params: " + Arrays.
-              toString(params));
+          toString(params));
       select = schema.getStatement(query);
       for (int i = 0; i < params.length; i++) {
         select.setString(i + 1, params[i]);
@@ -394,7 +396,7 @@ public abstract class Table<T> {
       return getRows(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getRows",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -406,16 +408,16 @@ public abstract class Table<T> {
    * @param ids
    * @param params
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected List<T> getRows(String query, int[] ids, String[] params)
-          throws AdminPersistenceException {
+      throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
 
     try {
       SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + "  id[]: " + Arrays.
-              toString(ids) + "   params[]: " + Arrays.toString(params));
+          toString(ids) + "   params[]: " + Arrays.toString(params));
       select = schema.getStatement(query);
       int i, j;
 
@@ -429,7 +431,7 @@ public abstract class Table<T> {
       return getRows(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -440,7 +442,7 @@ public abstract class Table<T> {
    * @param tableName
    * @param agregateColumn
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected int getCount(String tableName, String agregateColumn) throws AdminPersistenceException {
     ResultSet rs = null;
@@ -456,7 +458,7 @@ public abstract class Table<T> {
       return 0;
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -469,10 +471,10 @@ public abstract class Table<T> {
    * @param whereClause
    * @param id
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected int getCount(String tableName, String agregateColumn, String whereClause, int id) throws
-          AdminPersistenceException {
+      AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
@@ -487,7 +489,7 @@ public abstract class Table<T> {
       return 0;
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -500,10 +502,10 @@ public abstract class Table<T> {
    * @param whereClause
    * @param param
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected int getCount(String tableName, String agregateColumn, String whereClause, String param)
-          throws AdminPersistenceException {
+      throws AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
@@ -518,10 +520,10 @@ public abstract class Table<T> {
       return 0;
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } catch (Exception e) {
       throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -535,17 +537,17 @@ public abstract class Table<T> {
    * @param id
    * @param param
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected int getCount(String tableName, String agregateColumn, String whereClause, int id,
-          String param) throws AdminPersistenceException {
+      String param) throws AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
 
     try {
       SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + "  id: " + Integer.
-              toString(id) + " param: " + param);
+          toString(id) + " param: " + param);
       select = schema.getStatement(query);
       select.setInt(1, id);
       select.setString(2, param);
@@ -556,10 +558,10 @@ public abstract class Table<T> {
       return 0;
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } catch (Exception e) {
       throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -572,16 +574,16 @@ public abstract class Table<T> {
    * @param whereClause
    * @param ids
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected int getCount(String tableName, String agregateColumn, String whereClause, int[] ids)
-          throws AdminPersistenceException {
+      throws AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + "  id[]: " + Arrays.
-              toString(ids));
+          toString(ids));
       select = schema.getStatement(query);
       for (int i = 0; i < ids.length; i++) {
         select.setInt(i + 1, ids[i]);
@@ -593,7 +595,7 @@ public abstract class Table<T> {
       return 0;
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -606,16 +608,16 @@ public abstract class Table<T> {
    * @param whereClause
    * @param params
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected int getCount(String tableName, String agregateColumn, String whereClause,
-          String[] params) throws AdminPersistenceException {
+      String[] params) throws AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY",
-              query + "  params[]: " + Arrays.toString(params));
+          query + "  params[]: " + Arrays.toString(params));
       select = schema.getStatement(query);
       for (int i = 0; i < params.length; i++) {
         select.setString(i + 1, params[i]);
@@ -627,7 +629,7 @@ public abstract class Table<T> {
       return 0;
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -641,16 +643,16 @@ public abstract class Table<T> {
    * @param ids
    * @param params
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected int getCount(String tableName, String agregateColumn, String whereClause, int[] ids,
-          String[] params) throws AdminPersistenceException {
+      String[] params) throws AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
     try {
       SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + "  id[]: " + Arrays.
-              toString(ids) + "   params[]: " + Arrays.toString(params));
+          toString(ids) + "   params[]: " + Arrays.toString(params));
       select = schema.getStatement(query);
       int i, j;
       for (i = 0; i < ids.length; i++) {
@@ -667,7 +669,7 @@ public abstract class Table<T> {
 
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -684,10 +686,10 @@ public abstract class Table<T> {
    * @param matchColumns
    * @param matchValues
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected List<T> getMatchingRows(String returnedColumns, String[] matchColumns,
-          String[] matchValues) throws AdminPersistenceException {
+      String[] matchValues) throws AdminPersistenceException {
     String query = "select " + returnedColumns + " from " + tableName;
     ArrayList<String> notNullValues = new ArrayList<String>();
     String sep = " where ";
@@ -707,14 +709,15 @@ public abstract class Table<T> {
    * @param query
    * @param ids
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   protected Integer getInteger(String query, int[] ids) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
-      SilverTrace.debug("admin", "Table.getInteger", "root.MSG_QUERY", query + "  ids[]: " + Arrays.
-              toString(ids));
+      SilverTrace.debug("admin", "Table.getInteger", "root.MSG_QUERY", query + "  ids[]: " +
+          Arrays.
+          toString(ids));
       select = schema.getStatement(query);
       for (int i = 0; i < ids.length; i++) {
         select.setInt(i + 1, ids[i]);
@@ -723,7 +726,7 @@ public abstract class Table<T> {
       return getInteger(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getInteger",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
@@ -737,7 +740,7 @@ public abstract class Table<T> {
     result = fetchRow(rs);
     if (rs.next()) { // more then one row !
       throw new AdminPersistenceException("Table.getUniqueRow", SilverpeasException.ERROR,
-              "admin.EX_ERR_NOT_UNIQUE_ROW");
+          "admin.EX_ERR_NOT_UNIQUE_ROW");
     }
     return result;
   }
@@ -765,7 +768,7 @@ public abstract class Table<T> {
     int result = rs.getInt(1);
     if (rs.next()) { // more then one row !
       throw new AdminPersistenceException("Table.getInteger", SilverpeasException.ERROR,
-              "admin.EX_ERR_NOT_UNIQUE_ROW");
+          "admin.EX_ERR_NOT_UNIQUE_ROW");
     }
     return result;
   }
@@ -781,7 +784,7 @@ public abstract class Table<T> {
     } catch (SQLException e) {
       SynchroReport.error("Table.insertRow()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.insertRow", SilverpeasException.ERROR,
-              "root.EX_RECORD_INSERTION_FAILED", e);
+          "root.EX_RECORD_INSERTION_FAILED", e);
     } finally {
       DBUtil.close(statement);
     }
@@ -798,7 +801,7 @@ public abstract class Table<T> {
     } catch (SQLException e) {
       SynchroReport.error("Table.updateRow()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.updateRow",
-              SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE", e);
     } finally {
       DBUtil.close(statement);
     }
@@ -813,7 +816,7 @@ public abstract class Table<T> {
       return rowsCount;
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE", e);
+          "admin.EX_ERR_UPDATE", e);
     } finally {
       DBUtil.close(statement);
     }
@@ -834,7 +837,7 @@ public abstract class Table<T> {
     } catch (SQLException e) {
       SynchroReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE", e);
+          "admin.EX_ERR_UPDATE", e);
     } finally {
       DBUtil.close(statement);
     }
@@ -857,16 +860,18 @@ public abstract class Table<T> {
     } catch (SQLException e) {
       SynchroReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
       throw new AdminPersistenceException("Table.updateRelation", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE", e);
+          "admin.EX_ERR_UPDATE", e);
     } finally {
       DBUtil.close(statement);
     }
   }
+
   private Schema schema = null;
   private String tableName = null;
 
-  protected boolean addParamToQuery(Collection<String> theVect, StringBuffer theQuery, String value,
-          String column, boolean concatAndOr, String andOr) {
+  protected boolean addParamToQuery(Collection<String> theVect, StringBuffer theQuery,
+      String value,
+      String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
     if ((value != null) && (value.length() > 0)) {
       if (concatAndOr) {
@@ -882,7 +887,7 @@ public abstract class Table<T> {
   }
 
   protected boolean addIdToQuery(Collection<Integer> theVect, StringBuffer theQuery, int value,
-          String column, boolean concatAndOr, String andOr) {
+      String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
 
     if (value != -2) {

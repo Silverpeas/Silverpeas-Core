@@ -1,27 +1,27 @@
-/*
- *  Copyright (C) 2000 - 2011 Silverpeas
- * 
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
- * 
- *  As a special exception to the terms and conditions of version 3.0 of
- *  the GPL, you may redistribute this Program in connection with Free/Libre
- *  Open Source Software ("FLOSS") applications as described in Silverpeas's
- *  FLOSS exception.  You should have recieved a copy of the text describing
- *  the FLOSS exception, and it is also available here:
- *  "http://www.silverpeas.com/legal/licensing"
- * 
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- * 
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.attachment.web;
 
 import com.silverpeas.rest.Exposable;
@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
  * @author ehugonnet
  */
 @XmlRootElement
@@ -69,12 +68,12 @@ public class AttachmentEntity implements Exposable {
   private String permalink;
 
   public static AttachmentEntity fromAttachment(AttachmentDetail detail) {
-    AttachmentEntity entity = new AttachmentEntity();   
+    AttachmentEntity entity = new AttachmentEntity();
     try {
       entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId()));
     } catch (URISyntaxException e) {
       throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
-              AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
+          AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
     }
     entity.id = detail.getPK().getId();
     entity.instanceId = detail.getPK().getComponentName();
@@ -91,13 +90,13 @@ public class AttachmentEntity implements Exposable {
     return entity;
   }
 
-  public static AttachmentEntity fromAttachment(AttachmentDetail detail, String lang)  {
+  public static AttachmentEntity fromAttachment(AttachmentDetail detail, String lang) {
     AttachmentEntity entity = new AttachmentEntity();
     try {
       entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId()));
     } catch (URISyntaxException e) {
       throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
-              AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
+          AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
     }
     entity.id = detail.getPK().getId();
     entity.instanceId = detail.getPK().getComponentName();
@@ -113,17 +112,16 @@ public class AttachmentEntity implements Exposable {
     entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId());
     return entity;
   }
-  
+
   /**
-   * Sets a URI to this entity.
-   * With this URI, it can then be accessed through the Web.
+   * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
    * @param uri the web entity URI.
    * @return itself.
    */
   public AttachmentEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
-  } 
+  }
 
   @Override
   public URI getURI() {

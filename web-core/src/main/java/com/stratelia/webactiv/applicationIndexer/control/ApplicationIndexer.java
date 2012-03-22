@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.pdc.PdcIndexer;
@@ -30,7 +31,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-
 
 public class ApplicationIndexer extends AbstractIndexer {
 
@@ -137,12 +137,15 @@ public class ApplicationIndexer extends AbstractIndexer {
     String className = getClassName(compoInst);
     String packageName = getPackage(compoInst);
     try {
-      componentIndexer = loadIndexer("com.stratelia.webactiv." + packageName + '.' + className + "Indexer");
+      componentIndexer =
+          loadIndexer("com.stratelia.webactiv." + packageName + '.' + className + "Indexer");
       if (componentIndexer == null) {
-        componentIndexer = loadIndexer("com.silverpeas." + packageName + '.' + className + "Indexer");
+        componentIndexer =
+            loadIndexer("com.silverpeas." + packageName + '.' + className + "Indexer");
       }
       if (componentIndexer == null) {
-        componentIndexer = loadIndexer("org.silverpeas." + packageName + '.' + className + "Indexer");
+        componentIndexer =
+            loadIndexer("org.silverpeas." + packageName + '.' + className + "Indexer");
       }
     } catch (InstantiationException e) {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
@@ -159,8 +162,8 @@ public class ApplicationIndexer extends AbstractIndexer {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
           "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
           "component = " + compoName + " with classes com.stratelia.webactiv." + packageName + "."
-              + className + "Indexer and com.silverpeas." + packageName + "." + className +
-              "Indexer");
+          + className + "Indexer and com.silverpeas." + packageName + "." + className +
+          "Indexer");
       return new ComponentIndexerAdapter();
     }
     return componentIndexer;

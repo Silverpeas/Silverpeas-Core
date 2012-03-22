@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.indexEngine.model;
 
 import java.io.File;
@@ -320,7 +321,8 @@ public class IndexManager {
           createIndex = !IndexReader.indexExists(file);
         }
 
-        writer =  new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
+        writer =
+            new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
         writer.setMaxFieldLength(maxFieldLength);
         writer.setMergeFactor(mergeFactor);
         writer.setMaxMergeDocs(maxMergeDocs);
@@ -500,7 +502,7 @@ public class IndexManager {
         }
       }
     }
-    
+
     AttachmentController.updateIndexEntryWithAttachments(indexEntry);
 
     List<FileDescription> list2 = indexEntry.getFileContentList();
@@ -566,7 +568,7 @@ public class IndexManager {
     doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, Index.NOT_ANALYZED));
     return doc;
   }
-  
+
   private String getFieldName(String name, String language) {
     if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
       return name;
@@ -603,18 +605,13 @@ public class IndexManager {
   }
 
   /**
-   * Added by NEY - 22/01/2004
-   * Module Wysiwyg is reused by several modules like publication,...
-   * When you add a wysiwyg content to an object (it's the case in kmelia),
-   * we call the wysiwyg's method index to index the content of the wysiwyg.
-   * The name, description and keywords of the object are used by the index
-   * method to display them when the wysiwyg will be found by the search engine.
-   * Here, this data must be unindexed. But it must not be unstored.
-   * If it is unstored, this data will be indexed.
-   * So, if we search a word present in one of this data, two elements will
-   * be returned by the search engine :
-   * - the object
-   * - the wysiwyg
+   * Added by NEY - 22/01/2004 Module Wysiwyg is reused by several modules like publication,... When
+   * you add a wysiwyg content to an object (it's the case in kmelia), we call the wysiwyg's method
+   * index to index the content of the wysiwyg. The name, description and keywords of the object are
+   * used by the index method to display them when the wysiwyg will be found by the search engine.
+   * Here, this data must be unindexed. But it must not be unstored. If it is unstored, this data
+   * will be indexed. So, if we search a word present in one of this data, two elements will be
+   * returned by the search engine : - the object - the wysiwyg
    * @param indexEntry
    * @return
    */

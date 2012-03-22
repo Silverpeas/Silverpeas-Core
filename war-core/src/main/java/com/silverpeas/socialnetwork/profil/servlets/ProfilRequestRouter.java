@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.socialnetwork.profil.servlets;
 
 import com.silverpeas.directory.model.Member;
@@ -35,7 +36,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author azzedine
  */
 public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionController> {
@@ -61,9 +61,9 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
     String m_context = request.getScheme() + "://" + request.getServerName() + ":" + request.
         getServerPort() + request.getContextPath();
 
-   if (function.equalsIgnoreCase("Main")) {
+    if (function.equalsIgnoreCase("Main")) {
       if (profileSC.getUserId().equals(userId)) {
-        //go to my Profile
+        // go to my Profile
         destination = m_context + "/RMyProfil/jsp/MyInfos";
       } else if (isInMyContact(userId, profileSC)) {
         // this is one of my contacts
@@ -82,7 +82,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
   /**
    * return true if this userId is in my Contacts
    * @param: int userId
-   * @return  boolean
+   * @return boolean
    */
 
   public boolean isInMyContact(String userId, ProfilSessionController profileSC) {

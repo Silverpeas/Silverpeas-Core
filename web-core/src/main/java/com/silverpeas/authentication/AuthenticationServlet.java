@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
@@ -59,7 +60,7 @@ public class AuthenticationServlet extends HttpServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
-          throws IOException, ServletException {
+      throws IOException, ServletException {
     // Get the session
     HttpSession session = request.getSession();
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
@@ -71,13 +72,13 @@ public class AuthenticationServlet extends HttpServlet {
 
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
-            "com.silverpeas.authentication.settings.authenticationSettings", "");
+        "com.silverpeas.authentication.settings.authenticationSettings", "");
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     IdentificationParameters identificationParameters = new IdentificationParameters(session,
-            request);
+        request);
     session.setAttribute("Silverpeas_pwdForHyperlink", identificationParameters.getClearPassword());
     String sDomainId = getDomain(request, authenticationSettings,
-            identificationParameters.isCasMode());
+        identificationParameters.isCasMode());
 
     String authenticationKey = identify(request, identificationParameters, sDomainId);
     String url;
@@ -89,7 +90,7 @@ public class AuthenticationServlet extends HttpServlet {
 
       // if required by user, store password in cookie
       storePassword(response, identificationParameters.getStoredPassword(), isNewEncryptMode,
-              identificationParameters.getClearPassword());
+          identificationParameters.getClearPassword());
 
       MandatoryQuestionChecker checker = new MandatoryQuestionChecker();
       if (checker.check(request, authenticationKey)) {
@@ -125,22 +126,22 @@ public class AuthenticationServlet extends HttpServlet {
   }
 
   private void storePassword(HttpServletResponse response, String sStorePassword,
-          boolean newEncryptMode, String sDecodedPassword) {
+      boolean newEncryptMode, String sDecodedPassword) {
     if (StringUtil.getBooleanValue(sStorePassword)) {
       SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
-              "root.MSG_GEN_ENTER_METHOD", "Ok");
+          "root.MSG_GEN_ENTER_METHOD", "Ok");
       if (newEncryptMode) {
         writeCookie(response, "var2", EncryptionFactory.getInstance().getEncryption().encode(
-                sDecodedPassword), -1);
+            sDecodedPassword), -1);
         writeCookie(response, "var2", EncryptionFactory.getInstance().getEncryption().encode(
-                sDecodedPassword), 31536000);
+            sDecodedPassword), 31536000);
       } else {
         writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
             .encode(
-                sDecodedPassword), -1);
+            sDecodedPassword), -1);
         writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
             .encode(
-                sDecodedPassword), 31536000);
+            sDecodedPassword), 31536000);
       }
     }
   }
@@ -153,9 +154,9 @@ public class AuthenticationServlet extends HttpServlet {
   private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin) {
     if (newEncryptMode) {
       writeCookie(response, "var1", EncryptionFactory.getInstance().getEncryption().encode(sLogin),
-              -1);
+          -1);
       writeCookie(response, "var1", EncryptionFactory.getInstance().getEncryption().encode(sLogin),
-              31536000);
+          31536000);
     } else {
       writeCookie(response, "svpLogin", sLogin, -1);
       writeCookie(response, "svpLogin", sLogin, 31536000);
@@ -168,7 +169,7 @@ public class AuthenticationServlet extends HttpServlet {
   }
 
   private String getDomain(HttpServletRequest request, ResourceLocator authenticationSettings,
-          boolean casMode) {
+      boolean casMode) {
     String sDomainId = request.getParameter("DomainId");
     if (casMode) {
       sDomainId = authenticationSettings.getString("cas.authentication.domainId", "0");
@@ -177,17 +178,18 @@ public class AuthenticationServlet extends HttpServlet {
   }
 
   private String identify(HttpServletRequest request,
-          IdentificationParameters identificationParameters, String sDomainId) {
+      IdentificationParameters identificationParameters, String sDomainId) {
     String testKey = request.getParameter("TestKey");
     if (!StringUtil.isDefined(testKey)) {
       if (identificationParameters.isCasMode()) {
         return lpAuth.authenticate(identificationParameters.getLogin(), sDomainId, request);
       } else if (identificationParameters.isSocialNetworkMode()) {
-        return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters.getDomainId(), request);
+        return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters
+            .getDomainId(), request);
       }
       return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters.
-              getClearPassword(),
-              sDomainId, request);
+          getClearPassword(),
+          sDomainId, request);
     }
     return null;
   }
@@ -201,7 +203,7 @@ public class AuthenticationServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
-          throws ServletException, IOException {
+      throws ServletException, IOException {
     doPost(request, response);
   }
 

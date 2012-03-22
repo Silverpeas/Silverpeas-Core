@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.domains.DomainDriverFactory;
@@ -46,10 +50,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DomainDriverManager extends AbstractDomainDriver {
 
   private OrganizationSchema organization = null;
-  private Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<String, DomainDriver>();
+  private Map<String, DomainDriver> domainDriverInstances =
+      new ConcurrentHashMap<String, DomainDriver>();
 
   public DomainDriverManager() {
   }
+
   // when we are in a transaction the connection must not be released.
   private boolean inTransaction = false;
   private int nbConnected = 0;
@@ -88,9 +94,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * *
-   * Create a new User.
-   *
+   * * Create a new User.
    * @param user
    * @return
    * @throws Exception
@@ -107,7 +111,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.createUser",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", user.getFirstName() +
-           " " + user.getLastName(), e);
+          " " + user.getLastName(), e);
     }
   }
 
@@ -137,7 +141,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Create a new User.
-   *
    * @param user
    * @return
    * @throws Exception
@@ -159,7 +162,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Delete given user from Silverpeas
-   *
    * @param userId user Id
    * @throws Exception
    */
@@ -184,7 +186,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.deleteUser",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "user Id: '" +
-           userId + "'", e);
+          userId + "'", e);
     } finally {
       releaseOrganizationSchema();
     }
@@ -264,7 +266,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       } catch (AdminException e) {
         SilverTrace.error("admin", "DomainDriverManager.getUser",
             "admin.MSG_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '" +
-             ur.domainId + "'", e);
+            ur.domainId + "'", e);
         uf = new UserFull(domainDriver);
         uf.setLogin(ur.login);
         uf.setFirstName(ur.firstName);
@@ -343,7 +345,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @param userIds
    * @return
    * @throws Exception
@@ -422,7 +423,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Indexing all users information of given domain
-   *
    * @param domainId
    * @throws Exception
    */
@@ -474,7 +474,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @param group
    * @return
    * @throws Exception
@@ -508,7 +507,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @param groupId
    * @throws Exception
    */
@@ -537,7 +535,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.deleteGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "group Id: '" +
-           groupId + "'", e);
+          groupId + "'", e);
     } finally {
       releaseOrganizationSchema();
     }
@@ -545,7 +543,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Update given group in specific domain
-   *
    * @param group
    */
   @Override
@@ -582,13 +579,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.updateGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "group Id: '" +
-           group.getId() + "'", e);
+          group.getId() + "'", e);
     }
   }
 
   /**
    * return group with given id (contains list of user ids for this group)
-   *
    * @param groupId
    * @return Group
    */
@@ -631,7 +627,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * return group with given group name in domain
-   *
    * @param groupName
    * @return Group
    */
@@ -650,7 +645,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.getGroupByNameInDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Name: '" +
-           groupName + "'", e);
+          groupName + "'", e);
     } finally {
       releaseOrganizationSchema();
     }
@@ -698,7 +693,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @param domainId
    * @return Group[]
    * @throws Exception
@@ -724,7 +718,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @return @throws Exception
    */
   public Group[] getAllRootGroups() throws Exception {
@@ -737,7 +730,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @param domainId
    * @param groupId
    * @return
@@ -766,7 +758,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @param domainId
    * @return
    * @throws Exception
@@ -796,7 +787,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       getOrganizationSchema();
       return getOrganization().group.getAllGroupsOfDomain(Integer.parseInt(domainId));
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getGroupIdsOfDomain", SilverpeasException.ERROR,
+      throw new AdminException("DomainDriverManager.getGroupIdsOfDomain",
+          SilverpeasException.ERROR,
           "admin.admin.MSG_ERR_GET_ALL_GROUPS", "domainId = " + domainId, e);
     } finally {
       releaseOrganizationSchema();
@@ -805,7 +797,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Indexing all groups information of given domain
-   *
    * @param domainId
    * @throws Exception
    */
@@ -818,12 +809,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Indexing a group
-   *
    * @param group
    */
   public void indexGroup(GroupRow group) {
 
-    FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", Integer.toString(group.id));
+    FullIndexEntry indexEntry =
+        new FullIndexEntry("groups", "GroupRow", Integer.toString(group.id));
     indexEntry.setLastModificationDate(new Date());
     indexEntry.setTitle(group.name);
     indexEntry.setPreView(group.description);
@@ -839,7 +830,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Unindexing a group
-   *
    * @param groupId
    */
   public void unindexGroup(String groupId) {
@@ -893,7 +883,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       throw new AdminException("DomainDriverManager.authenticate",
           SilverpeasException.ERROR, "admin.EX_ERR_AUTHENTICATE", "key: '" +
-           sKey + "'", e);
+          sKey + "'", e);
     } finally {
       releaseOrganizationSchema();
     }
@@ -938,7 +928,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
    * @param domainId
    * @return
    * @throws Exception
@@ -1029,7 +1018,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       this.commit();
       LoginPasswordAuthentication.initDomains();
-      
+
       return domainId;
     } catch (AdminException e) {
       try {
@@ -1040,8 +1029,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       throw new AdminException("DomainDriverManager.createDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_DOMAIN", "domain id: '" +
-           domainId + "'", e);
-    }finally {
+          domainId + "'", e);
+    } finally {
       releaseOrganizationSchema();
     }
   }
@@ -1146,7 +1135,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Called when Admin ends the synchronization
-   *
    * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
   public String endSynchronization(String sdomainId, boolean cancelSynchro) throws Exception {
@@ -1161,8 +1149,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   @Override
   public void startTransaction(boolean bAutoCommit) {
     try {
-    getOrganizationSchema();
-    inTransaction = !bAutoCommit;
+      getOrganizationSchema();
+      inTransaction = !bAutoCommit;
     } catch (AdminException ex) {
       throw new UtilException("DomainDriverManager", "startTransaction", ex);
     }
@@ -1239,7 +1227,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("DomainDriverManager.rollback",
           SilverpeasException.ERROR, "root.EX_ERR_ROLLBACK", "domain Id: '" +
-           domainId + "'", e);
+          domainId + "'", e);
     }
   }
 

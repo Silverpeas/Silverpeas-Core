@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -64,18 +64,19 @@ public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkele
    * Search the index for the required documents.
    */
   public void search(QueryDescription query) throws RemoteException {
-      try{
-          results = new WAIndexSearcher().search(query);
-        // spelling word functionality is triggered by a threshold defined in pdcPeasSettings.properties
-        // (wordSpellingMinScore).
-        if (pdcSettings.getBoolean("enableWordSpelling", false) && isSpellingNeeded()) {
-          DidYouMeanSearcher searcher = new DidYouMeanSearcher();
-          spellingWords = searcher.suggest(query);
-        }
-      }catch(ParseException pe){
-          throw new ParseRuntimeException("SearchEngineEJB.search",
-                  SilverpeasRuntimeException.ERROR, "searchEngine.EXP_PARSE_EXCEPTION", pe);
+    try {
+      results = new WAIndexSearcher().search(query);
+      // spelling word functionality is triggered by a threshold defined in
+      // pdcPeasSettings.properties
+      // (wordSpellingMinScore).
+      if (pdcSettings.getBoolean("enableWordSpelling", false) && isSpellingNeeded()) {
+        DidYouMeanSearcher searcher = new DidYouMeanSearcher();
+        spellingWords = searcher.suggest(query);
       }
+    } catch (ParseException pe) {
+      throw new ParseRuntimeException("SearchEngineEJB.search",
+          SilverpeasRuntimeException.ERROR, "searchEngine.EXP_PARSE_EXCEPTION", pe);
+    }
   }
 
   /**

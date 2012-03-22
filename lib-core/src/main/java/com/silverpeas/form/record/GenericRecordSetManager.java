@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -144,7 +144,7 @@ public class GenericRecordSetManager {
     } catch (SQLException e) {
       throw new FormException("GenericRecordSetManager.getRawValues",
           "form.EXP_INSERT_FAILED", "templateExternalId : " + templateExternalId +
-              ", recordExternalId : " + recordExternalId, e);
+          ", recordExternalId : " + recordExternalId, e);
     } finally {
       closeConnection(con);
     }
@@ -283,7 +283,7 @@ public class GenericRecordSetManager {
 
     SilverTrace.debug("form", "GenericRecordSetManager.getRecord",
         "root.MSG_GEN_PARAM_VALUE", "recordId = " + recordId + ", language = "
-            + language);
+        + language);
 
     Connection con = null;
     GenericDataRecord record = null;
@@ -357,7 +357,7 @@ public class GenericRecordSetManager {
       String recordIdTo, Map<String, String> fileIds) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.cloneRecord",
         "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom
-            + ", recordIdTo = " + recordIdTo);
+        + ", recordIdTo = " + recordIdTo);
 
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
@@ -393,7 +393,7 @@ public class GenericRecordSetManager {
       }
     }
   }
-  
+
   public void moveRecord(IdentifiedRecordTemplate templateFrom,
       String recordIdFrom, IdentifiedRecordTemplate templateTo) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.moveRecord",
@@ -765,8 +765,8 @@ public class GenericRecordSetManager {
 
       SilverTrace.debug("form", "GenericRecordSetManager.insertRecordRow",
           "root.MSG_GEN_PARAM_VALUE", "internalId = " + internalId
-              + ", templateId = " + templateId + ", externalId = " + externalId
-              + ", language = " + record.getLanguage());
+          + ", templateId = " + templateId + ", externalId = " + externalId
+          + ", language = " + record.getLanguage());
 
       insert = con.prepareStatement(INSERT_RECORD);
       insert.setInt(1, internalId);
@@ -817,7 +817,7 @@ public class GenericRecordSetManager {
       throws SQLException, FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.selectRecordRow",
         "root.MSG_GEN_ENTER_METHOD", "templateId = " + template.getInternalId()
-            + ", externalId = " + externalId + ", language = " + language);
+        + ", externalId = " + externalId + ", language = " + language);
     PreparedStatement select = null;
     ResultSet rs = null;
 
@@ -994,7 +994,7 @@ public class GenericRecordSetManager {
   }
 
   private String selectRecordFieldsRow(Connection con,
-       String templateExternalId, String recordExternalId, String fieldName) throws SQLException {
+      String templateExternalId, String recordExternalId, String fieldName) throws SQLException {
     PreparedStatement select = null;
     ResultSet rs = null;
 
@@ -1014,8 +1014,9 @@ public class GenericRecordSetManager {
       DBUtil.close(rs, select);
     }
   }
-  
-  private void updateTemplateId(Connection con, int oldTemplateId, int newTemplateId, String externalId)
+
+  private void updateTemplateId(Connection con, int oldTemplateId, int newTemplateId,
+      String externalId)
       throws SQLException, FormException {
     PreparedStatement update = null;
 
@@ -1082,7 +1083,7 @@ public class GenericRecordSetManager {
 
   static final private String SELECT_RECORD =
       "SELECT recordId, templateId, externalId, lang FROM " +
-          "sb_formtemplate_record WHERE templateId=? AND externalId=?";
+      "sb_formtemplate_record WHERE templateId=? AND externalId=?";
 
   static final private String INSERT_RECORD = "insert into " + RECORD_TABLE
       + "(" + RECORD_COLUMNS + ")" + " values (?,?,?,?)";
@@ -1092,8 +1093,9 @@ public class GenericRecordSetManager {
 
   static final private String DELETE_RECORD = "delete from " + RECORD_TABLE
       + " where recordId=?";
-  
-  static final private String MOVE_RECORD = "update " + RECORD_TABLE +" set templateId = ? where externalId = ? and templateId = ? ";
+
+  static final private String MOVE_RECORD =
+      "update " + RECORD_TABLE + " set templateId = ? where externalId = ? and templateId = ? ";
 
   /* Record fields table */
 

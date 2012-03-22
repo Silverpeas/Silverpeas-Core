@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,7 +25,7 @@
 /*
  * @author Norbert CHAIX
  * @version 1.0
-date 14/09/2000
+ date 14/09/2000
  */
 package com.stratelia.webactiv.beans.admin;
 
@@ -41,10 +41,11 @@ import java.util.List;
 import java.util.Map;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+
 /*
-This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
-It provides access functions to query and modify the domains as well as the company organization
-It should be used only by a client that has the administrator rights
+ This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
+ It provides access functions to query and modify the domains as well as the company organization
+ It should be used only by a client that has the administrator rights
  */
 public class AdminController implements java.io.Serializable {
 
@@ -205,7 +206,8 @@ public class AdminController implements java.io.Serializable {
       if (user.getAccessLevel().equals("A") || sUserId.equals("0")) {
         return getAdminService().getClientSpaceIds(getAdminService().getAllSpaceIds());
       } else {
-        return getAdminService().getClientSpaceIds(getAdminService().getUserManageableSpaceIds(sUserId));
+        return getAdminService().getClientSpaceIds(
+            getAdminService().getUserManageableSpaceIds(sUserId));
       }
     } catch (Exception e) {
       SilverTrace.error("admin",
@@ -234,7 +236,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().deleteSpaceInstById(m_UserId, sSpaceInstId, definitive);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteSpaceInstById", "admin.MSG_ERR_DELETE_SPACE", e);
+      SilverTrace.error("admin", "AdminController.deleteSpaceInstById",
+          "admin.MSG_ERR_DELETE_SPACE", e);
       return "";
     }
   }
@@ -247,7 +250,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().updateSpaceInst(spaceInstNew);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateSpaceInst", "admin.MSG_ERR_UPDATE_SPACE", e);
+      SilverTrace
+          .error("admin", "AdminController.updateSpaceInst", "admin.MSG_ERR_UPDATE_SPACE", e);
       return "";
     }
   }
@@ -266,7 +270,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().getAllRootSpaceIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllSpaceIds", "admin.MSG_ERR_GET_ALL_SPACE_IDS",
+      SilverTrace.error("admin", "AdminController.getAllSpaceIds",
+          "admin.MSG_ERR_GET_ALL_SPACE_IDS",
           e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
@@ -352,7 +357,7 @@ public class AdminController implements java.io.Serializable {
           "admin.MSG_ERR_UPDATE_SPACE", e);
     }
   }
-  
+
   public void indexSpace(int spaceId) {
     getAdminService().createSpaceIndex(spaceId);
   }
@@ -423,7 +428,7 @@ public class AdminController implements java.io.Serializable {
       return "";
     }
   }
-  
+
   /**
    * @param componentInst The component instance to add.
    * @param userId The id of the user who becomes the instance's creator.
@@ -435,7 +440,7 @@ public class AdminController implements java.io.Serializable {
       return getAdminService().addComponentInst(userId, componentInst);
     } catch (Exception e) {
       SilverTrace.error(
-        "admin", "AdminController.addComponentInst", "admin.MSG_ERR_ADD_COMPONENT", e);
+          "admin", "AdminController.addComponentInst", "admin.MSG_ERR_ADD_COMPONENT", e);
       return "";
     }
   }
@@ -474,7 +479,7 @@ public class AdminController implements java.io.Serializable {
       String idComponentBefore, ComponentInst[] componentInsts)
       throws AdminException {
     SilverTrace.info("admin", "AdminController.moveComponentInst",
-        "root.MSG_GEN_ENTER_METHOD", "moving "+componentId+" in space "+spaceId);
+        "root.MSG_GEN_ENTER_METHOD", "moving " + componentId + " in space " + spaceId);
     getAdminService().moveComponentInst(spaceId, componentId, idComponentBefore,
         componentInsts);
   }
@@ -534,7 +539,7 @@ public class AdminController implements java.io.Serializable {
           "admin.MSG_ERR_UPDATE_COMPONENT", e);
     }
   }
-  
+
   public void indexComponent(String componentId) {
     getAdminService().createComponentIndex(componentId);
   }
@@ -670,7 +675,7 @@ public class AdminController implements java.io.Serializable {
   /**
    * Delete the Profile Instance corresponding to the given Profile id.
    * @param sProfileId
-   * @return 
+   * @return
    */
   public String deleteProfileInst(String sProfileId) {
     return deleteProfileInst(sProfileId, null);
@@ -1479,7 +1484,7 @@ public class AdminController implements java.io.Serializable {
       return null;
     }
   }
-  
+
   public void indexGroups(String domainId) {
     try {
       getAdminService().indexGroups(domainId);
@@ -1677,5 +1682,5 @@ public class AdminController implements java.io.Serializable {
       throws AdminException {
     return getAdminService().copyAndPasteSpace(spaceId, toSpaceId, userId);
   }
-  
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -69,10 +69,10 @@ public class SearchEngineAjaxServlet extends HttpServlet {
     }
 
     // Prepare response
-    //resp.setContentType("application/json;charset=UTF-8");
+    // resp.setContentType("application/json;charset=UTF-8");
     resp.setContentType("text");
     resp.setHeader("charset", "UTF-8");
-    
+
     // Send response
     Writer writer = resp.getWriter();
     writer.write(result);
@@ -102,7 +102,8 @@ public class SearchEngineAjaxServlet extends HttpServlet {
     SilverTrace.debug("SearchEngineAjaxServlet", SearchEngineAjaxServlet.class.getName() +
         ".markAsRead()", "root.MSG_GEN_ENTER_METHOD");
     HttpSession session = req.getSession(true);
-    PdcSearchSessionController pdcSC = (PdcSearchSessionController) session.getAttribute(PDC_SESSION_CONTROLLER_ATTRIBUTE_NAME);
+    PdcSearchSessionController pdcSC =
+        (PdcSearchSessionController) session.getAttribute(PDC_SESSION_CONTROLLER_ATTRIBUTE_NAME);
     PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, req);
     // prepare JSON response
     String sId = req.getParameter("id");

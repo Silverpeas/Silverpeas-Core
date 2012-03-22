@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.rest.Exposable;
@@ -37,42 +38,42 @@ import java.util.List;
 /**
  * A web entity representing the classification plan (named PdC). The classification plan can be
  * either the one modeled for the Silverpeas system or the one parametrized for a given Silverpeas
- * component instance. It defines the axis that can be used in the classification
- * of a resource managed by a component instance.
+ * component instance. It defines the axis that can be used in the classification of a resource
+ * managed by a component instance.
  */
 @XmlRootElement
 public class PdcEntity implements Exposable {
   private static final long serialVersionUID = 6798294501268706300L;
-  
+
   /**
    * The value representing an absence of thesaurus.
    */
   public static final UserThesaurusHolder NoThesaurus = null;
 
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement
   private List<PdcAxis> axis = new ArrayList<PdcAxis>();
-  
+
   /**
-   * Creates a new web entity of a PdC containing the specified axis whose terms are expressed
-   * in the specified language and with the specified user thesaurus. The web representation of 
-   * the PdC is identified at the specified URI.
+   * Creates a new web entity of a PdC containing the specified axis whose terms are expressed in
+   * the specified language and with the specified user thesaurus. The web representation of the PdC
+   * is identified at the specified URI.
    * @param withUsedAxis the axis to use in the PdC.
    * @param inLanguage the language in which the PdC's terms should be translated.
    * @param atURI the URI at which the PdC can be found.
    * @param withThesaurus the thesaurus to use with this PdC. The thesaurus will be use to set the
-   * synonyms of each value of the different PdC's axis. NoThesaurus if the user has no thesaurus 
+   * synonyms of each value of the different PdC's axis. NoThesaurus if the user has no thesaurus
    * configured.
    * @return the web representation of a PdC.
-   * @throws ThesaurusException if an error occurs while using the thesaurus to find the synonyms
-   * of values of the different PdC's axis.
+   * @throws ThesaurusException if an error occurs while using the thesaurus to find the synonyms of
+   * values of the different PdC's axis.
    */
-  public static PdcEntity aPdcEntity(final List<UsedAxis> withUsedAxis, String inLanguage, 
-          final URI atURI, final UserThesaurusHolder withThesaurus) throws ThesaurusException {
+  public static PdcEntity aPdcEntity(final List<UsedAxis> withUsedAxis, String inLanguage,
+      final URI atURI, final UserThesaurusHolder withThesaurus) throws ThesaurusException {
     return new PdcEntity(atURI).withAsAxis(fromUsedAxis(withUsedAxis, inLanguage, withThesaurus));
   }
-  
+
   /**
    * A convenient method to enhance the readability of the method calls in which the axis are passed
    * as argument.
@@ -82,7 +83,7 @@ public class PdcEntity implements Exposable {
   public static List<UsedAxis> withAxis(final List<UsedAxis> axis) {
     return axis;
   }
-  
+
   /**
    * A convenient method to enhance the readability of the method calls that expect the language as
    * argument.
@@ -109,7 +110,7 @@ public class PdcEntity implements Exposable {
   public List<PdcAxis> getAxis() {
     return Collections.unmodifiableList(axis);
   }
-  
+
   /**
    * Adds the specified PdC axis among the others axis of this PdC.
    * @param axis the axis of this PdC.
@@ -119,7 +120,7 @@ public class PdcEntity implements Exposable {
     this.axis.addAll(axis);
     return this;
   }
-  
+
   /**
    * A convenient method to enhance the readability of creators.
    * @param uri the URI at which the classification is published.
@@ -128,20 +129,20 @@ public class PdcEntity implements Exposable {
   public static URI atURI(final URI uri) {
     return uri;
   }
-  
+
   protected PdcEntity() {
-    
+
   }
-  
+
   private static List<PdcAxis> fromUsedAxis(final List<UsedAxis> theAxisToUse, String inLanguage,
-          final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
+      final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
     List<PdcAxis> axis = new ArrayList<PdcAxis>();
     for (UsedAxis usedAxis : theAxisToUse) {
       axis.add(PdcAxis.fromTheUsedAxis(usedAxis, inLanguage, usingThesaurus));
     }
     return axis;
   }
-  
+
   private PdcEntity(final URI atURI) {
     this.uri = atURI;
   }
@@ -172,7 +173,7 @@ public class PdcEntity implements Exposable {
   @Override
   public String toString() {
     StringBuilder axisArray = new StringBuilder("[");
-    for (PdcAxis anAxis: getAxis()) {
+    for (PdcAxis anAxis : getAxis()) {
       axisArray.append(anAxis.toString()).append(", ");
     }
     if (axisArray.length() > 1) {
@@ -182,5 +183,5 @@ public class PdcEntity implements Exposable {
     }
     return "PdcEntity{uri=" + getURI() + ", axis=" + axisArray.toString() + '}';
   }
-  
+
 }

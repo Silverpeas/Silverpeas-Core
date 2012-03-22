@@ -1,19 +1,27 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.apache.tika.msoffice;
 
 import java.io.ByteArrayOutputStream;
@@ -45,128 +53,128 @@ import org.xml.sax.SAXException;
 
 abstract class AbstractPOIFSExtractor {
 
-    private final EmbeddedDocumentExtractor extractor;
+  private final EmbeddedDocumentExtractor extractor;
 
-    protected AbstractPOIFSExtractor(ParseContext context) {
-        EmbeddedDocumentExtractor ex = context.get(EmbeddedDocumentExtractor.class);
+  protected AbstractPOIFSExtractor(ParseContext context) {
+    EmbeddedDocumentExtractor ex = context.get(EmbeddedDocumentExtractor.class);
 
-        if (ex==null) {
-            this.extractor = new ParsingEmbeddedDocumentExtractor(context);
-        } else {
-            this.extractor = ex;
-        }
+    if (ex == null) {
+      this.extractor = new ParsingEmbeddedDocumentExtractor(context);
+    } else {
+      this.extractor = ex;
     }
-    
-    protected void handleEmbeddedResource(TikaInputStream resource, String filename,
-          String mediaType, XHTMLContentHandler xhtml, boolean outputHtml)
-          throws IOException, SAXException, TikaException {
-       try {
-           Metadata metadata = new Metadata();
-           if(filename != null) {
-              metadata.set(Metadata.TIKA_MIME_FILE, filename);
-              metadata.set(Metadata.RESOURCE_NAME_KEY, filename);
-           }
-           if(mediaType != null) {
-              metadata.set(Metadata.CONTENT_TYPE, mediaType);
-           }
+  }
 
-           if (extractor.shouldParseEmbedded(metadata)) {
-               extractor.parseEmbedded(resource, xhtml, metadata, outputHtml);
-           }
-       } finally {
-           resource.close();
-       }
+  protected void handleEmbeddedResource(TikaInputStream resource, String filename,
+      String mediaType, XHTMLContentHandler xhtml, boolean outputHtml)
+      throws IOException, SAXException, TikaException {
+    try {
+      Metadata metadata = new Metadata();
+      if (filename != null) {
+        metadata.set(Metadata.TIKA_MIME_FILE, filename);
+        metadata.set(Metadata.RESOURCE_NAME_KEY, filename);
+      }
+      if (mediaType != null) {
+        metadata.set(Metadata.CONTENT_TYPE, mediaType);
+      }
+
+      if (extractor.shouldParseEmbedded(metadata)) {
+        extractor.parseEmbedded(resource, xhtml, metadata, outputHtml);
+      }
+    } finally {
+      resource.close();
+    }
+  }
+
+  /**
+   * Handle an office document that's embedded at the POIFS level
+   */
+  protected void handleEmbededOfficeDoc(
+      DirectoryEntry dir, XHTMLContentHandler xhtml)
+      throws IOException, SAXException, TikaException {
+    // Is it an embedded OLE2 document, or an embedded OOXML document?
+    try {
+      Entry ooxml = dir.getEntry("Package");
+
+      // It's OOXML
+      TikaInputStream stream = TikaInputStream.get(
+          new DocumentInputStream((DocumentEntry) ooxml));
+      try {
+        ZipContainerDetector detector = new ZipContainerDetector();
+        MediaType type = detector.detect(stream, new Metadata());
+        handleEmbeddedResource(stream, null, type.toString(), xhtml, true);
+        return;
+      } finally {
+        stream.close();
+      }
+    } catch (FileNotFoundException e) {
+      // It's regular OLE2
     }
 
-    /**
-     * Handle an office document that's embedded at the POIFS level
-     */
-    protected void handleEmbededOfficeDoc(
-            DirectoryEntry dir, XHTMLContentHandler xhtml)
-            throws IOException, SAXException, TikaException {
-        // Is it an embedded OLE2 document, or an embedded OOXML document?
+    // Need to dump the directory out to a new temp file, so
+    // it's stand along
+    POIFSFileSystem newFS = new POIFSFileSystem();
+    copy(dir, newFS.getRoot());
+
+    File tmpFile = File.createTempFile("tika", ".ole2");
+    try {
+      FileOutputStream out = new FileOutputStream(tmpFile);
+      newFS.writeFilesystem(out);
+      out.close();
+
+      // What kind of document is it?
+      Metadata metadata = new Metadata();
+      POIFSDocumentType type = POIFSDocumentType.detectType(dir);
+
+      TikaInputStream embedded;
+
+      if (type == POIFSDocumentType.OLE10_NATIVE) {
+        Entry entry = dir.getEntry(Ole10Native.OLE10_NATIVE);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        IOUtils.copy(new DocumentInputStream((DocumentEntry) entry), bos);
+        byte[] data = bos.toByteArray();
+
         try {
-            Entry ooxml = dir.getEntry("Package");
+          Ole10Native ole = new Ole10Native(data, 0);
+          byte[] dataBuffer = ole.getDataBuffer();
 
-            // It's OOXML
-            TikaInputStream stream = TikaInputStream.get(
-                    new DocumentInputStream((DocumentEntry) ooxml));
-            try {
-                ZipContainerDetector detector = new ZipContainerDetector();
-                MediaType type = detector.detect(stream, new Metadata());
-                handleEmbeddedResource(stream, null, type.toString(), xhtml, true);
-                return;
-            } finally {
-                stream.close();
-            }
-        } catch(FileNotFoundException e) {
-            // It's regular OLE2
+          metadata.set("resourceName", dir.getName() + '/' + ole.getLabel());
+
+          embedded = TikaInputStream.get(dataBuffer);
+        } catch (Ole10NativeException ex) {
+          embedded = TikaInputStream.get(data);
         }
+      } else {
+        metadata.set(Metadata.CONTENT_TYPE, type.getType().toString());
+        metadata.set(Metadata.RESOURCE_NAME_KEY, dir.getName() + '.' + type.getExtension());
 
-       // Need to dump the directory out to a new temp file, so
-       //  it's stand along
-       POIFSFileSystem newFS = new POIFSFileSystem();
-       copy(dir, newFS.getRoot());
+        embedded = TikaInputStream.get(tmpFile);
+      }
 
-       File tmpFile = File.createTempFile("tika", ".ole2");
-       try {
-           FileOutputStream out = new FileOutputStream(tmpFile);
-           newFS.writeFilesystem(out);
-           out.close();
-
-           // What kind of document is it?
-           Metadata metadata = new Metadata();
-           POIFSDocumentType type = POIFSDocumentType.detectType(dir);
-
-           TikaInputStream embedded;
-
-           if (type==POIFSDocumentType.OLE10_NATIVE) {
-               Entry entry = dir.getEntry(Ole10Native.OLE10_NATIVE);
-               ByteArrayOutputStream bos = new ByteArrayOutputStream();
-               IOUtils.copy(new DocumentInputStream((DocumentEntry) entry), bos);
-               byte[] data = bos.toByteArray();
-
-               try {
-                    Ole10Native ole = new Ole10Native(data, 0);
-                    byte[] dataBuffer = ole.getDataBuffer();
-
-                    metadata.set("resourceName", dir.getName() + '/' + ole.getLabel());
-
-                    embedded = TikaInputStream.get(dataBuffer);
-               } catch (Ole10NativeException ex) {
-                 embedded = TikaInputStream.get(data);
-               }
-           } else {
-               metadata.set(Metadata.CONTENT_TYPE, type.getType().toString());
-               metadata.set(Metadata.RESOURCE_NAME_KEY, dir.getName() + '.' + type.getExtension());
-
-               embedded = TikaInputStream.get(tmpFile);
-           }
-
-           try {
-               if (extractor.shouldParseEmbedded(metadata)) {
-                   extractor.parseEmbedded(embedded, xhtml, metadata, true);
-               }
-           } finally {
-               embedded.close();
-           }
-       } finally {
-           tmpFile.delete();
-       }
-    }
-
-    protected void copy(DirectoryEntry sourceDir, DirectoryEntry destDir)
-            throws IOException {
-        for (Entry entry : sourceDir) {
-            if (entry instanceof DirectoryEntry) {
-                // Need to recurse
-                DirectoryEntry newDir = destDir.createDirectory(entry.getName());
-                copy((DirectoryEntry)entry, newDir);
-            } else {
-                // Copy entry
-                InputStream contents = new DocumentInputStream((DocumentEntry)entry); 
-                destDir.createDocument(entry.getName(), contents);
-            }
+      try {
+        if (extractor.shouldParseEmbedded(metadata)) {
+          extractor.parseEmbedded(embedded, xhtml, metadata, true);
         }
+      } finally {
+        embedded.close();
+      }
+    } finally {
+      tmpFile.delete();
     }
+  }
+
+  protected void copy(DirectoryEntry sourceDir, DirectoryEntry destDir)
+      throws IOException {
+    for (Entry entry : sourceDir) {
+      if (entry instanceof DirectoryEntry) {
+        // Need to recurse
+        DirectoryEntry newDir = destDir.createDirectory(entry.getName());
+        copy((DirectoryEntry) entry, newDir);
+      } else {
+        // Copy entry
+        InputStream contents = new DocumentInputStream((DocumentEntry) entry);
+        destDir.createDocument(entry.getName(), contents);
+      }
+    }
+  }
 }

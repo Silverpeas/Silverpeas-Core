@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.jobOrganizationPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
@@ -163,49 +164,49 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     }
     return currentGroups;
   }
-  
+
   /**
    * @return UserFull
    */
   public UserFull getCurrentUser() {
-	  if(currentUser == null) {
-	      if (getCurrentUserId() == null) {
-	        return null;
-	      }
-	      currentUser = getAdminController().getUserFull(getCurrentUserId());
-	  }
-	  if (currentUser == null) {
-	      SilverTrace.info("jobOrganizationPeas",
-	          "JobOrganizationPeasSessionController.getCurrentUser",
-	          "root.MSG_GEN_PARAM_VALUE", "User NULL !");
-	  } else {
-	      SilverTrace.info("jobOrganizationPeas",
-	          "JobOrganizationPeasSessionController.getCurrentUser",
-	          "root.MSG_GEN_PARAM_VALUE", "User=" + getCurrentUserId());
-	  }
-	  return currentUser;
+    if (currentUser == null) {
+      if (getCurrentUserId() == null) {
+        return null;
+      }
+      currentUser = getAdminController().getUserFull(getCurrentUserId());
+    }
+    if (currentUser == null) {
+      SilverTrace.info("jobOrganizationPeas",
+          "JobOrganizationPeasSessionController.getCurrentUser",
+          "root.MSG_GEN_PARAM_VALUE", "User NULL !");
+    } else {
+      SilverTrace.info("jobOrganizationPeas",
+          "JobOrganizationPeasSessionController.getCurrentUser",
+          "root.MSG_GEN_PARAM_VALUE", "User=" + getCurrentUserId());
+    }
+    return currentUser;
   }
 
   /**
    * @return Group
    */
   public Group getCurrentGroup() {
-	  if(currentGroup == null) {
-	      if (getCurrentGroupId() == null) {
-	        return null;
-	      }
-	      currentGroup = getAdminController().getGroupById(getCurrentGroupId());
-	  }
-	  if (currentGroup == null) {
-	      SilverTrace.info("jobOrganizationPeas",
-	          "JobOrganizationPeasSessionController.getCurrentGroup",
-	          "root.MSG_GEN_PARAM_VALUE", "Group NULL !");
-	  } else {
-	      SilverTrace.info("jobOrganizationPeas",
-	          "JobOrganizationPeasSessionController.getCurrentGroup",
-	          "root.MSG_GEN_PARAM_VALUE", "Group=" + getCurrentGroupId());
-	  }
-	  return currentGroup;
+    if (currentGroup == null) {
+      if (getCurrentGroupId() == null) {
+        return null;
+      }
+      currentGroup = getAdminController().getGroupById(getCurrentGroupId());
+    }
+    if (currentGroup == null) {
+      SilverTrace.info("jobOrganizationPeas",
+          "JobOrganizationPeasSessionController.getCurrentGroup",
+          "root.MSG_GEN_PARAM_VALUE", "Group NULL !");
+    } else {
+      SilverTrace.info("jobOrganizationPeas",
+          "JobOrganizationPeasSessionController.getCurrentGroup",
+          "root.MSG_GEN_PARAM_VALUE", "Group=" + getCurrentGroupId());
+    }
+    return currentGroup;
   }
 
   /**
@@ -238,10 +239,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     return currentSpaces;
   }
 
-
   /**
-   * 
-   * @return list of (array[space name, component id, component label, component name, profile name])
+   * @return list of (array[space name, component id, component label, component name, profile
+   * name])
    */
   public List<String[]> getCurrentProfiles() {
     if (currentProfiles == null) {
@@ -256,7 +256,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       }
       if (profileIds == null) {
         return null;
-      }  
+      }
       currentProfiles = new ArrayList<String[]>();
       ProfileInst currentProfile = null;
       ComponentInst currentComponent = null;
@@ -267,7 +267,11 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
             currentProfile.getComponentFatherId());
         String spaceId = currentComponent.getDomainFatherId();
         SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
-        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {//on n'affiche pas les composants de l'espace personnel
+        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// on n'affiche
+          // pas les
+          // composants de
+          // l'espace
+          // personnel
           String dProfile = currentComponent.getId() + currentProfile.getName();
           if (!distinctProfiles.contains(dProfile)) {
             String[] profile2Display = new String[6];
@@ -286,7 +290,8 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
           }
         }
       }
-      String[] spaceNames = getAdminController().getSpaceNames(spaceIds.toArray(new String[spaceIds.
+      String[] spaceNames =
+          getAdminController().getSpaceNames(spaceIds.toArray(new String[spaceIds.
           size()]));
       for (int iProfile = 0; iProfile < currentProfiles.size(); iProfile++) {
         String[] profile2Display = currentProfiles.get(iProfile);

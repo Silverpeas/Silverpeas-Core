@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.admin.components;
 
 import java.util.HashMap;
@@ -32,33 +33,27 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * <p>Java class for ProfileDescription complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for ProfileDescription complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ProfileDescription">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="label" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *         &lt;element name="help" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name=&quot;ProfileDescription&quot;&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name=&quot;label&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;help&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ProfileDescription", propOrder = {
-  "label",
-  "help"
-})
-@XmlSeeAlso({
-  Profile.class
-})
+@XmlType(name = "ProfileDescription", propOrder = { "label", "help" })
+@XmlSeeAlso( { Profile.class })
 public class ProfileDescription {
 
   @XmlElement(required = true)
@@ -70,11 +65,7 @@ public class ProfileDescription {
 
   /**
    * Gets the value of the label property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getLabel() {
     return label;
@@ -82,11 +73,7 @@ public class ProfileDescription {
 
   /**
    * Sets the value of the label property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setLabel(HashMap<String, String> value) {
     this.label = value;
@@ -94,11 +81,7 @@ public class ProfileDescription {
 
   /**
    * Gets the value of the help property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getHelp() {
     return help;
@@ -106,11 +89,7 @@ public class ProfileDescription {
 
   /**
    * Sets the value of the help property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setHelp(HashMap<String, String> value) {
     this.help = value;

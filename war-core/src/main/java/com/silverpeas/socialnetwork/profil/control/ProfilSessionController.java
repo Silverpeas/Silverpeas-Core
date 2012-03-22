@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialnetwork.profil.control;
 
+package com.silverpeas.socialnetwork.profil.control;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -35,12 +35,9 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class ProfilSessionController extends AbstractComponentSessionController {
-
-
 
   public ProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -52,11 +49,11 @@ public class ProfilSessionController extends AbstractComponentSessionController 
 
   }
 
-/**
- * get this user with full information
- * @param userId
- * @return UserFull
- */
+  /**
+   * get this user with full information
+   * @param userId
+   * @return UserFull
+   */
   public UserFull getUserFul(String userId) {
     return this.getOrganizationController().getUserFull(userId);
   }
@@ -64,7 +61,7 @@ public class ProfilSessionController extends AbstractComponentSessionController 
   /*
    * this userId is in my Contacts
    * @param: int userId
-   * @return true if this user  in my Contacts
+   * @return true if this user in my Contacts
    */
   public boolean isInMyContact(String userId) throws SocialNetworkException {
     try {

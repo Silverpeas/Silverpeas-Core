@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.beans.admin.cache;
 
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class TreeCache {
         "spaceId = " + spaceId);
     return new ArrayList<ComponentInstLight>();
   }
-  
+
   public static List<String> getComponentIds(String spaceId) {
     SilverTrace.debug("admin", "TreeCache.getComponentIds()", "root.MSG_GEN_ENTER_METHOD",
         "spaceId = " + spaceId);
@@ -217,7 +218,7 @@ public class TreeCache {
   private static synchronized Space getSpace(String spaceId) {
     return map.get(spaceId);
   }
-  
+
   public static int getSpaceLevel(String spaceId) {
     return getSpacePath(spaceId).size() - 1;
   }

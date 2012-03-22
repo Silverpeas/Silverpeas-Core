@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.rest;
 
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -47,9 +48,9 @@ import org.springframework.web.context.ContextLoaderListener;
 import static org.mockito.Mockito.*;
 
 /**
- * The base class for testing REST web services in Silverpeas.
- * This base class wraps all of the mechanismes required to prepare the environment for testing
- * web services with Jersey and Spring in the context of Silverpeas.
+ * The base class for testing REST web services in Silverpeas. This base class wraps all of the
+ * mechanismes required to prepare the environment for testing web services with Jersey and Spring
+ * in the context of Silverpeas.
  * @param <T> the test resources wrapper in use in the test cases.
  */
 public abstract class RESTWebServiceTest<T extends TestResources> extends JerseyTest {
@@ -59,21 +60,21 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   private Client webClient;
 
   /**
-   * Constructs a new test case on the REST web service testing.
-   * It bootstraps the runtime context into which the REST web service to test will run.
+   * Constructs a new test case on the REST web service testing. It bootstraps the runtime context
+   * into which the REST web service to test will run.
    * @param webServicePackage the Java package in which is defined the web service to test.
    * @param springContext the Spring context configuration file that accompanies the web service to
    * test.
    */
   public RESTWebServiceTest(String webServicePackage, String springContext) {
     super(new WebAppDescriptor.Builder(webServicePackage).contextPath(CONTEXT_NAME).
-            contextParam("contextConfigLocation", "classpath:/" + springContext).
-            initParam(JSONConfiguration.FEATURE_POJO_MAPPING, "true").
-            requestListenerClass(
-            org.springframework.web.context.request.RequestContextListener.class).
-            servletClass(SpringServlet.class).
-            contextListenerClass(ContextLoaderListener.class).
-            build());
+        contextParam("contextConfigLocation", "classpath:/" + springContext).
+        initParam(JSONConfiguration.FEATURE_POJO_MAPPING, "true").
+        requestListenerClass(
+        org.springframework.web.context.request.RequestContextListener.class).
+        servletClass(SpringServlet.class).
+        contextListenerClass(ContextLoaderListener.class).
+        build());
 
     ClientConfig config = new DefaultClientConfig();
     config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
@@ -97,8 +98,9 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   public void prepareMockedResources() {
     testResources = (T) TestResources.getTestResources();
     PersonalizationService mockedPersonalizationService = mock(PersonalizationService.class);
-    UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
-            true, true, UserMenuDisplay.DISABLE);
+    UserPreferences preferences =
+        new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
+        true, true, UserMenuDisplay.DISABLE);
     when(mockedPersonalizationService.getUserSettings(anyString())).thenReturn(preferences);
     getMockedPersonalizationService().setPersonalizationService(mockedPersonalizationService);
     for (String componentId : getExistingComponentInstances()) {
@@ -107,8 +109,8 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   }
 
   /**
-   * Authenticates the user to use in the tests.
-   * The user will be added in the context of the mocked organization controller.
+   * Authenticates the user to use in the tests. The user will be added in the context of the mocked
+   * organization controller.
    * @param theUser the user to authenticate.
    * @return the key of the opened session.
    */
@@ -161,7 +163,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   protected MockablePersonalizationService getMockedPersonalizationService() {
     return (MockablePersonalizationService) getTestResources().getMockedPersonalizationService();
   }
-  
+
   protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
     MultivaluedMap<String, String> parameters = new MultivaluedMapImpl();
     String[] queryParameters = query.split("&");

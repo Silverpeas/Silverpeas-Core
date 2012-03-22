@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.peasCore;
 
 import java.text.ParseException;
@@ -67,13 +68,12 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * Class declaration This object is a singleton used by AuthenticationService : when the user log in,
- * ComponentRequestRouter : when the user access a component. It provides functions to manage the
- * sessions, to write a log journal and getFactory informations about the logged users.
+ * Class declaration This object is a singleton used by AuthenticationService : when the user log
+ * in, ComponentRequestRouter : when the user access a component. It provides functions to manage
+ * the sessions, to write a log journal and getFactory informations about the logged users.
  * @author Nicolas Eysseric
  */
-public class SessionManager
-    implements SchedulerEventListener, SessionManagement {
+public class SessionManager implements SchedulerEventListener, SessionManagement {
   // Global constants
 
   public static final SimpleDateFormat NOTIFY_DATE_FORMAT = new SimpleDateFormat(
@@ -186,9 +186,13 @@ public class SessionManager
     if (si != null) {
       si.updateLastAccess();
     } else {
-      SilverTrace.debug("peasCore", "SessionManager.setLastAccess",
-          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-          + session.getId());
+      SilverTrace
+          .debug(
+              "peasCore",
+              "SessionManager.setLastAccess",
+              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+                  +
+                  session.getId());
     }
     userNotificationSessions.remove(session.getId());
   }
@@ -225,8 +229,8 @@ public class SessionManager
       throw new SchedulerException(ex.getMessage(), ex);
     }
     scheduler.scheduleJob(manageSession(), trigger, this);
-//    SimpleScheduler.scheduleJob(myInstance, SESSION_MANAGER_JOB_NAME, startMinutes,
-//        null, null, null, null, myInstance, "doSessionManagement");
+    // SimpleScheduler.scheduleJob(myInstance, SESSION_MANAGER_JOB_NAME, startMinutes,
+    // null, null, null, null, myInstance, "doSessionManagement");
   }
 
   /**
@@ -274,9 +278,13 @@ public class SessionManager
       removeSession(si);
       si = null;
     } else {
-      SilverTrace.debug("peasCore", "SessionManager.removeSession",
-          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
-          + sessionId + ")");
+      SilverTrace
+          .debug(
+              "peasCore",
+              "SessionManager.removeSession",
+              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
+                  +
+                  sessionId + ")");
     }
   }
 
@@ -350,9 +358,13 @@ public class SessionManager
     if (si != null) {
       si.updateIsAlive();
     } else {
-      SilverTrace.debug("peasCore", "SessionManager.setIsAlived",
-          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-          + session.getId());
+      SilverTrace
+          .debug(
+              "peasCore",
+              "SessionManager.setIsAlived",
+              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+                  +
+                  session.getId());
     }
   }
 
@@ -370,13 +382,14 @@ public class SessionManager
    * @return Collection of SessionInfo
    */
   @Override
-  public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList(UserDetail user) {
+  public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList(
+      UserDetail user) {
     Map<String, com.silverpeas.session.SessionInfo> distinctConnectedUsersList =
         new HashMap<String, com.silverpeas.session.SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
       UserDetail sessionUser = si.getUserDetail();
-      String key = sessionUser.getLogin()+sessionUser.getDomainId();
+      String key = sessionUser.getLogin() + sessionUser.getDomainId();
       // keep users with distinct login and domainId
       if (!distinctConnectedUsersList.containsKey(key) && !sessionUser.isAccessGuest()) {
         switch (GeneralPropertiesManager.getDomainVisibility()) {
@@ -403,12 +416,10 @@ public class SessionManager
         }
       }
     }
-    
-    
+
     return distinctConnectedUsersList.values();
   }
-  
-  
+
   /**
    * Do not use this method. Use getNbConnectedUsersList(UserDetail user) instead.
    * @return 1

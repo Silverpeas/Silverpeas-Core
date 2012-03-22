@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.socialnetwork.connectors;
 
 import javax.annotation.PostConstruct;
@@ -20,68 +44,77 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 @Named("facebookConnector")
 public class FacebookConnector extends AbstractSocialNetworkConnector {
 
-	private FacebookConnectionFactory connectionFactory = null;
-	private String consumerKey = null;
-	private String secretKey = null;
+  private FacebookConnectionFactory connectionFactory = null;
+  private String consumerKey = null;
+  private String secretKey = null;
 
-	public FacebookConnector() { }
+  public FacebookConnector() {
+  }
 
-	@PostConstruct
-	void init() {
+  @PostConstruct
+  void init() {
     super.init();
-	  consumerKey = getSettings().getString("facebook.consumerKey");
+    consumerKey = getSettings().getString("facebook.consumerKey");
     secretKey = getSettings().getString("facebook.secretKey");
     connectionFactory = new FacebookConnectionFactory(consumerKey, secretKey);
-	}
+  }
 
-	@Override
-	public String buildAuthenticateUrl(String callBackURL) {
-		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-		OAuth2Parameters params = new OAuth2Parameters();
-		params.setRedirectUri(callBackURL);
-		params.setScope("email,publish_stream,offline_access");
+  @Override
+  public String buildAuthenticateUrl(String callBackURL) {
+    OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+    OAuth2Parameters params = new OAuth2Parameters();
+    params.setRedirectUri(callBackURL);
+    params.setScope("email,publish_stream,offline_access");
 
-		return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, params);
-	}
+    return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, params);
+  }
 
-	@Override
-	public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL) throws SocialNetworkAuthorizationException {
-		String error_reason = request.getParameter("error_reason");
-		if (error_reason != null) {
-			throw new SocialNetworkAuthorizationException("FacebookConnector.exchangeForAccessToken", SilverpeasException.WARNING, error_reason);
-		}
-		else {
-			String authorizationCode = request.getParameter("code");
+  @Override
+  public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL)
+      throws SocialNetworkAuthorizationException {
+    String error_reason = request.getParameter("error_reason");
+    if (error_reason != null) {
+      throw new SocialNetworkAuthorizationException("FacebookConnector.exchangeForAccessToken",
+          SilverpeasException.WARNING, error_reason);
+    } else {
+      String authorizationCode = request.getParameter("code");
 
-			OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-			AccessGrant accessGrant = oauthOperations.exchangeForAccess(authorizationCode, callBackURL, null);
-			return new AccessToken(accessGrant);
-		}
+      OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+      AccessGrant accessGrant =
+          oauthOperations.exchangeForAccess(authorizationCode, callBackURL, null);
+      return new AccessToken(accessGrant);
+    }
 
-	}
+  }
 
-	@Override
-	public UserProfile getUserProfile(AccessToken authorizationToken) {
-		AccessGrant accessGrant = authorizationToken.getAccessGrant();
-		UserProfile profile =  connectionFactory.createConnection(accessGrant).fetchUserProfile();
+  @Override
+  public UserProfile getUserProfile(AccessToken authorizationToken) {
+    AccessGrant accessGrant = authorizationToken.getAccessGrant();
+    UserProfile profile = connectionFactory.createConnection(accessGrant).fetchUserProfile();
 
-		return profile;
-	}
+    return profile;
+  }
 
-	@Override
-	public String getUserProfileId(AccessToken authorizationToken) {
-		AccessGrant accessGrant = authorizationToken.getAccessGrant();
-		String profileId =  connectionFactory.createConnection(accessGrant).getApi().userOperations().getUserProfile().getId();
+  @Override
+  public String getUserProfileId(AccessToken authorizationToken) {
+    AccessGrant accessGrant = authorizationToken.getAccessGrant();
+    String profileId =
+        connectionFactory.createConnection(accessGrant).getApi().userOperations().getUserProfile()
+        .getId();
 
-		return profileId;
-	}
+    return profileId;
+  }
 
-  /* (non-Javadoc)
-   * @see com.silverpeas.socialnetwork.connectors.SocialNetworkConnector#updateStatus(com.silverpeas.socialnetwork.service.AccessToken, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.silverpeas.socialnetwork.connectors.SocialNetworkConnector#updateStatus(com.silverpeas.
+   * socialnetwork.service.AccessToken, java.lang.String)
    */
   @Override
   public void updateStatus(AccessToken authorizationToken, String status) {
-    FacebookTemplate facebook = new FacebookTemplate(authorizationToken.getAccessGrant().getAccessToken());
+    FacebookTemplate facebook =
+        new FacebookTemplate(authorizationToken.getAccessGrant().getAccessToken());
     facebook.feedOperations().updateStatus(status);
   }
 
@@ -100,15 +133,16 @@ public class FacebookConnector extends AbstractSocialNetworkConnector {
 
     code.append("   FB.init({\n");
     code.append("     appId      : '").append(consumerKey).append("', // App ID\n");
-    code.append("     channelUrl : '").append(getChannelURL(request)).append("', // Channel File\n");
+    code.append("     channelUrl : '").append(getChannelURL(request))
+        .append("', // Channel File\n");
     code.append("     status     : true, // check login status\n");
-    code.append("     cookie     : true, // enable cookies to allow the server to access the session\n");
+    code
+        .append("     cookie     : true, // enable cookies to allow the server to access the session\n");
     code.append("     xfbml      : true  // parse XFBML\n");
     code.append("   });\n");
 
     code.append("   if (initFB) { initFB() };\n");
     code.append(" };\n");
-
 
     code.append(" // Load the SDK Asynchronously\n");
     code.append(" (function(d){\n");
@@ -125,11 +159,9 @@ public class FacebookConnector extends AbstractSocialNetworkConnector {
 
   private String getChannelURL(HttpServletRequest request) {
     String fullURL = URLManager.getFullApplicationURL(request);
-    fullURL = fullURL.substring( fullURL.indexOf("//") );
+    fullURL = fullURL.substring(fullURL.indexOf("//"));
 
     return fullURL + "/socialNetwork/jsp/channelFB.html";
   }
-
-
 
 }

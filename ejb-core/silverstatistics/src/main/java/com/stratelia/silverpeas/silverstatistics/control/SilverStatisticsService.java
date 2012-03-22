@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
@@ -52,19 +53,18 @@ public class SilverStatisticsService implements SilverStatistics {
   private StatisticsConfig myStatsConfig;
 
   /**
-   * 
    * @param type
-   * @param data 
+   * @param data
    */
   @Override
-  public void putStats(StatType type, String data) {   
+  public void putStats(StatType type, String data) {
     StrTokenizer stData = new StrTokenizer(data, SEPARATOR);
-    List<String> dataArray =  stData.getTokenList();
+    List<String> dataArray = stData.getTokenList();
     if (myStatsConfig.isGoodDatas(type, dataArray)) {
       Connection myCon = DBUtil.makeConnection(SILVERSTATISTICS_DATASOURCE);
       try {
         SilverStatisticsDAO.putDataStats(myCon, type, dataArray, myStatsConfig);
-        if(!myCon.getAutoCommit()) {
+        if (!myCon.getAutoCommit()) {
           myCon.commit();
         }
       } catch (SQLException e) {
@@ -111,7 +111,5 @@ public class SilverStatisticsService implements SilverStatistics {
           "silverstatistics.MSG_CONFIG_FILE", e);
     }
   }
-
-
 
 }

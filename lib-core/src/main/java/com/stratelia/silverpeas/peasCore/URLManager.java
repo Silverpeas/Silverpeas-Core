@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasContent;
@@ -35,7 +36,6 @@ import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
- *
  * @author t.leroi
  */
 public class URLManager {
@@ -95,7 +95,8 @@ public class URLManager {
   public final static int URL_MESSAGE = 7;
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
-  private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL", "/silverpeas");
+  private static final String applicationURL =
+      GeneralPropertiesManager.getString("ApplicationURL", "/silverpeas");
   static Properties specialsURL = null;
   static String httpMode = null;
   static boolean displayUniversalLinks = false;
@@ -110,8 +111,8 @@ public class URLManager {
 
   /**
    * @param sComponentName - the componentName (ie kmelia, bookmark...)
-   * @param sSpace         - the space id
-   * @param sComponentId   - the componentId (ie kmelia12, bookmark578...)
+   * @param sSpace - the space id
+   * @param sComponentId - the componentId (ie kmelia12, bookmark578...)
    * @return an String like '/RcomponentName/componentId/'
    */
   public static String getURL(String sComponentName, String sSpace, String sComponentId) {
@@ -142,8 +143,7 @@ public class URLManager {
 
   /**
    * Retourne l'URL pour les nouveaux composants lors de la recherche globale
-   *
-   * @param spaceId     - l'id de l'espace (WA151)
+   * @param spaceId - l'id de l'espace (WA151)
    * @param componentId - l'id de l'instance de composant (trucsAstuces1042)
    * @return la nouvelle URL
    */
@@ -154,9 +154,8 @@ public class URLManager {
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
-   *
-   * @param componentName  - le nom du jobPeas
-   * @param sComponentId   - l'id de l'instance de composant (trucsAstuces1042)
+   * @param componentName - le nom du jobPeas
+   * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
    * @param isGlobalSearch - boolean (vrai si nous sommes en recherche Globale)
    */
   private static String buildStandardURL(String componentName, String sComponentId) {
@@ -167,33 +166,30 @@ public class URLManager {
   /**
    * Returns kmelia for parameter kmelia23
    * @param sClientComponentId
-   * @return  
+   * @return
    */
   public static String getComponentNameFromComponentId(String sClientComponentId) {
     return ComponentHelper.getInstance().extractComponentName(sClientComponentId);
   }
 
   /**
-   * Returns  The Application web context.
-   *
+   * Returns The Application web context.
    * @return The Application web context.
    */
   public static String getApplicationURL() {
     return applicationURL;
   }
 
-
   public static String getFullApplicationURL(HttpServletRequest request) {
     return getServerURL(request) + getApplicationURL();
   }
 
-
   public static String getServerURL(HttpServletRequest request) {
     String absoluteUrl = "";
-    if(request != null) {
+    if (request != null) {
       absoluteUrl = request.getScheme() + "://" + request.getServerName();
       if (request.getServerPort() != 80) {
-        absoluteUrl += ":" + request.getServerPort(); 
+        absoluteUrl += ":" + request.getServerPort();
       }
     }
     ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
@@ -237,8 +233,8 @@ public class URLManager {
     if (appendContext) {
       url = getApplicationURL();
     }
-    if(url.endsWith("/")) {
-      url = url.substring(0, url.length() -1);
+    if (url.endsWith("/")) {
+      url = url.substring(0, url.length() - 1);
     }
     switch (type) {
       case URL_SPACE:
@@ -282,7 +278,7 @@ public class URLManager {
   public static String getSimpleURL(int type, String id, boolean appendContext) {
     return getSimpleURL(type, id, "", appendContext);
   }
-  
+
   public static String getSearchResultURL(SilverpeasContent content) {
     return getURL(null, null, content.getComponentInstanceId()) + "searchResult?Type=" +
         content.getContributionType() + "&Id=" + content.getId();

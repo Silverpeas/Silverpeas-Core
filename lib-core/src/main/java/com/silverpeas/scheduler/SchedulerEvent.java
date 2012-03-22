@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,12 +25,10 @@
 package com.silverpeas.scheduler;
 
 /**
- * A scheduler event represents an event that is generated within the scheduling system and that
- * is dispatched by schedulers to registered event listeners.
- *
- * A scheduler event is generated each time a state change occurs in the scheduling system machinery
- * and the event carries information about this state change.
- * A state change occurs in the scheduling system in the following situation:
+ * A scheduler event represents an event that is generated within the scheduling system and that is
+ * dispatched by schedulers to registered event listeners. A scheduler event is generated each time
+ * a state change occurs in the scheduling system machinery and the event carries information about
+ * this state change. A state change occurs in the scheduling system in the following situation:
  * <ul>
  * <li>A trigger fires the execution of a job: the scheduling system then runs the job within a
  * dedicated thread;</li>
@@ -38,7 +36,6 @@ package com.silverpeas.scheduler;
  * scheduling system; the failover handler is running.</li>
  * <li>A job terminates correctly: the job termination handler is running.</li>
  * </ul>
- *
  */
 public class SchedulerEvent {
 
@@ -46,15 +43,15 @@ public class SchedulerEvent {
    * The different possible types of an event send by the scheduler.
    */
   public enum Type {
-    /**
+        /**
      * A trigger has fired.
      */
     TRIGGER_FIRED,
-    /**
+        /**
      * The execution of a job has succeeded.
      */
     JOB_SUCCEEDED,
-    /**
+        /**
      * The execution of a job has failed.
      */
     JOB_FAILED;
@@ -139,6 +136,6 @@ public class SchedulerEvent {
   }
 
   protected void setThrowable(final Throwable aThrowable) {
-    this.exception  = aThrowable;
+    this.exception = aThrowable;
   }
 }

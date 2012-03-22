@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialnetwork.myContactProfil.control;
 
+package com.silverpeas.socialnetwork.myContactProfil.control;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -38,18 +38,16 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.ArrayList;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class MyContactProfilSessionController extends AbstractComponentSessionController {
 
-
   private RelationShipService relationShipService = new RelationShipService();
-/**
- *
- * @param mainSessionCtrl
- * @param componentContext
- */
+
+  /**
+   * @param mainSessionCtrl
+   * @param componentContext
+   */
   public MyContactProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl,
@@ -59,12 +57,11 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
         "com.silverpeas.socialnetwork.settings.socialNetworkSettings");
   }
 
-
-/**
- * get this user with full information
- * @param userId
- * @return UserFull
- */
+  /**
+   * get this user with full information
+   * @param userId
+   * @return UserFull
+   */
   public UserFull getUserFull(String userId) {
 
     return this.getOrganizationController().getUserFull(userId);
@@ -73,7 +70,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
   /**
    * this userId is in my Contacts
    * @param: int userId
-   * @return true if this user  in my Contacts
+   * @return true if this user in my Contacts
    */
   public boolean isInMyContact(String userId) throws SocialNetworkException {
     try {
@@ -85,32 +82,33 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
           SilverpeasException.ERROR, "root.EX_NO_MESSAGE", ex);
     }
   }
-/**
-   * get all  RelationShips ids for this user
+
+  /**
+   * get all RelationShips ids for this user
    * @return:List<String>
    * @param: int myId
-   *
    */
   public List<String> getContactsIdsForUser(String userId) {
     try {
       return relationShipService.getMyContactsIds(Integer.parseInt(userId));
     } catch (SQLException ex) {
-       SilverTrace.error("MyContactProfilSessionController",
+      SilverTrace.error("MyContactProfilSessionController",
           "MyContactProfilSessionController.getContactsForUser", "", ex);
     }
     return new ArrayList<String>();
   }
+
   /**
-   * get all  RelationShips ids for this user
+   * get all RelationShips ids for this user
    * @return:List<String>
    * @param: int myId
-   *
    */
   public List<String> getCommonContactsIdsForUser(String userId) {
     try {
-      return relationShipService.getAllCommonContactsIds(Integer.parseInt(userId),Integer.parseInt(this.getUserId()));
+      return relationShipService.getAllCommonContactsIds(Integer.parseInt(userId), Integer
+          .parseInt(this.getUserId()));
     } catch (SQLException ex) {
-       SilverTrace.error("MyContactProfilSessionController",
+      SilverTrace.error("MyContactProfilSessionController",
           "MyContactProfilSessionController.getContactsForUser", "", ex);
     }
     return new ArrayList<String>();

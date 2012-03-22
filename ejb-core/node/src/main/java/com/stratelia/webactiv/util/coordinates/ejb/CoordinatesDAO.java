@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.coordinates.ejb;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -50,16 +51,18 @@ public class CoordinatesDAO {
       "SELECT DISTINCT(coordinatesId) AS id FROM sb_coordinates_coordinates WHERE nodeid = ? AND instanceid = ? ";
   private static final String SELECT_BY_COMPONENT =
       "SELECT DISTINCT(coordinatesid) FROM sb_coordinates_coordinates WHERE instanceid = ?";
-  private static final String SELECT_BY_PK = "SELECT coordinatesid, nodeid, coordinatesleaf, "
-      + "coordinatesdisplayorder,instanceid FROM sb_coordinates_coordinates WHERE coordinatesid = ? "
-      + "AND coordinatesleaf = ? AND instanceid = ? ORDER BY coordinatesdisplayorder ";
+  private static final String SELECT_BY_PK =
+      "SELECT coordinatesid, nodeid, coordinatesleaf, "
+          + "coordinatesdisplayorder,instanceid FROM sb_coordinates_coordinates WHERE coordinatesid = ? "
+          + "AND coordinatesleaf = ? AND instanceid = ? ORDER BY coordinatesdisplayorder ";
   private static final String SELECT_MAX_ORDER =
       "SELECT MAX(coordinatesdisplayorder) FROM sb_coordinates_coordinates WHERE instanceId= ?";
   private static final String SELECT_MAX_ID =
       "SELECT MAX(coordinatesid) FROM sb_coordinates_coordinates WHERE instanceid = ?";
-  private static final String INSERT_COORDINATE = "INSERT INTO sb_coordinates_coordinates ("
-      + "coordinatesid, nodeid, coordinatesleaf, coordinatesdisplayorder, instanceid) VALUES ( ? , "
-      + "? , ? , ? , ?)";
+  private static final String INSERT_COORDINATE =
+      "INSERT INTO sb_coordinates_coordinates ("
+          + "coordinatesid, nodeid, coordinatesleaf, coordinatesdisplayorder, instanceid) VALUES ( ? , "
+          + "? , ? , ? , ?)";
 
   /**
    * Method declaration
@@ -174,7 +177,8 @@ public class CoordinatesDAO {
         "root.MSG_GEN_PARAM_VALUE", "fatherIds = " + fatherIds.toString()
         + " | points = " + points.toString());
 
-    List<CoordinatePoint> toCheck = new ArrayList<CoordinatePoint>(points); // toCheck always contains points
+    List<CoordinatePoint> toCheck = new ArrayList<CoordinatePoint>(points); // toCheck always
+    // contains points
     List<String> coordinatePKs = new ArrayList<String>();
     int nbAxis = fatherIds.size(); // number of axis
     int currentCoordinateId;
@@ -550,7 +554,7 @@ public class CoordinatesDAO {
     int maxDisplayOrder = getMaxDisplayOrder(con, pk);
     point.setOrder(maxDisplayOrder + 1);
     Collection<String> coordinateIds = getCoordinateIds(con, pk);
-    for(String id : coordinateIds) {
+    for (String id : coordinateIds) {
       int coordinateId = Integer.parseInt(id);
       addCoordinatePoint(con, pk, point, coordinateId);
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.formTemplate.ejb;
 
 import java.rmi.RemoteException;
@@ -104,7 +105,8 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
                 "field != null");
             fieldValue = field.getStringValue();
             if (field.getTypeName().equals(FileField.TYPE)) {
-              FieldTemplate fieldTemplate = template.getRecordTemplate().getFieldTemplate(fieldName);
+              FieldTemplate fieldTemplate =
+                  template.getRecordTemplate().getFieldTemplate(fieldName);
               if (fieldTemplate != null) {
                 if ("image".equals(fieldTemplate.getDisplayerName())) {
                   fieldValue = "image_" + fieldValue;
@@ -130,7 +132,8 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
       String language) throws RemoteException {
     String wysiwygContent = null;
     try {
-      wysiwygContent = WysiwygFCKFieldDisplayer.getContentFromFile(componentId, objectId, fieldName,
+      wysiwygContent =
+          WysiwygFCKFieldDisplayer.getContentFromFile(componentId, objectId, fieldName,
           language);
     } catch (UtilException e) {
       throw new FormTemplateBmRuntimeException(

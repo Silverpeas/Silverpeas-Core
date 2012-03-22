@@ -1,22 +1,25 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -36,14 +39,12 @@ import java.util.*;
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
  * provides access functions to query and modify the domains as well as the company organization It
- * should be used only by a client that has the administrator rights.
- *
- * The OrganizationController extends AdminReference that maintains a static references to an Admin
- * instance. During the initialization of the Admin instance, some computations require services
- * published by the underlying IoC container. So, an instance of OrganizationController is created
- * by the IoC container and published under the name 'organizationController' so that the
- * initialization of the static Admin instance can be performed correctly within the execution
- * context of IoC container.
+ * should be used only by a client that has the administrator rights. The OrganizationController
+ * extends AdminReference that maintains a static references to an Admin instance. During the
+ * initialization of the Admin instance, some computations require services published by the
+ * underlying IoC container. So, an instance of OrganizationController is created by the IoC
+ * container and published under the name 'organizationController' so that the initialization of the
+ * static Admin instance can be performed correctly within the execution context of IoC container.
  */
 public class OrganizationController implements java.io.Serializable {
 
@@ -60,7 +61,6 @@ public class OrganizationController implements java.io.Serializable {
   // -------------------------------------------------------------------
   /**
    * Return all the spaces Id available in silverpeas
-   *
    * @return
    */
   public String[] getAllSpaceIds() {
@@ -84,14 +84,13 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSubSpaceIds",
           "admin.MSG_ERR_GET_SUBSPACE_IDS", "father space id: '" + sSpaceId +
-           "'", e);
+          "'", e);
       return new String[0];
     }
   }
 
   /**
    * Return the the spaces name corresponding to the given space ids.
-   *
    * @param asSpaceIds
    * @return
    */
@@ -109,7 +108,6 @@ public class OrganizationController implements java.io.Serializable {
 
   /**
    * Return the space light corresponding to the given space id
-   *
    * @param spaceId
    * @return
    */
@@ -127,7 +125,6 @@ public class OrganizationController implements java.io.Serializable {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -163,7 +160,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (AdminException e) {
       SilverTrace.error("admin", "OrganizationController.getAvailCompoIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '" +
-           sClientSpaceId + "', user Id: '" + sUserId + "'", e);
+          sClientSpaceId + "', user Id: '" + sUserId + "'", e);
       return EMPTY_STRING_ARRAY;
     }
   }
@@ -181,7 +178,7 @@ public class OrganizationController implements java.io.Serializable {
       SilverTrace.error("admin",
           "OrganizationController.getAvailCompoIdsAtRoot",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '" +
-           sClientSpaceId + "', user Id: '" + sUserId + "'", e);
+          sClientSpaceId + "', user Id: '" + sUserId + "'", e);
       return new String[0];
     }
   }
@@ -226,14 +223,13 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAvailDriverCompoIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '" +
-           sClientSpaceId + "', user Id: '" + sUserId + "'", e);
+          sClientSpaceId + "', user Id: '" + sUserId + "'", e);
       return EMPTY_STRING_ARRAY;
     }
   }
 
   /**
    * Return the tuples (space id, compo id) allowed for the given user and given component name
-   *
    * @param sUserId
    * @param sCompoName
    * @return
@@ -251,7 +247,6 @@ public class OrganizationController implements java.io.Serializable {
 
   /**
    * gets the available component for a given user
-   *
    * @param userId user identifier used to get component
    * @param componentName type of component to retrieve ( for example : kmelia, forums, blog)
    * @return a list of ComponentInstLight object
@@ -281,7 +276,6 @@ public class OrganizationController implements java.io.Serializable {
 
   /**
    * Return the compo id for the given component name
-   *
    * @param sCompoName
    * @return
    */
@@ -300,6 +294,7 @@ public class OrganizationController implements java.io.Serializable {
       String parameterName) {
     return getAdminService().getComponentParameterValue(sComponentId, parameterName);
   }
+
   // -------------------------------------------------------------------
   // COMPONENTS QUERIES
   // -------------------------------------------------------------------
@@ -313,7 +308,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getComponentInst",
           "admin.MSG_ERR_GET_COMPONENT", "component Id : '" + sComponentId +
-           "'", e);
+          "'", e);
       return null;
     }
   }
@@ -360,7 +355,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getComponentInstLight",
           "admin.MSG_ERR_GET_COMPONENT", "component Id : '" + sComponentId +
-           "'", e);
+          "'", e);
       return null;
     }
   }
@@ -435,7 +430,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsers",
           "admin.MSG_ERR_GET_USERS_FOR_PROFILE_AND_COMPONENT", "space Id: '" +
-           sPrefixTableName + "' component Id: '" + sComponentName, e);
+          sPrefixTableName + "' component Id: '" + sComponentName, e);
 
     }
     return null;
@@ -560,8 +555,8 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUsers",
           "admin.MSG_ERR_GET_USERS_FOR_PROFILE_AND_COMPONENT", "profile: '" +
-           sProfile + "', space Id: '" + sPrefixTableName +
-           "' component Id: '" + sComponentName, e);
+          sProfile + "', space Id: '" + sPrefixTableName +
+          "' component Id: '" + sComponentName, e);
       return null;
     }
   }
@@ -572,7 +567,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '" +
-           userId + "', componentId: '" + componentId + "'", e);
+          userId + "', componentId: '" + componentId + "'", e);
       return null;
     }
   }
@@ -585,8 +580,8 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId = " +
-           userId + ", componentId = " + componentId + ", objectId = " +
-           objectId, e);
+          userId + ", componentId = " + componentId + ", objectId = " +
+          objectId, e);
       return null;
     }
   }
@@ -791,7 +786,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSubSpaceIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SUBSPACE_IDS", "user Id: '" +
-           sUserId + "', father space id: '" + sSpaceId, e);
+          sUserId + "', father space id: '" + sSpaceId, e);
       return EMPTY_STRING_ARRAY;
     }
   }
@@ -825,7 +820,6 @@ public class OrganizationController implements java.io.Serializable {
   /**
    * Return all the components Id recursively in (Space+subspaces, or only subspaces or all
    * silverpeas) available in silverpeas given a userId and a componentNameRoot
-   *
    * @author dlesimple
    * @param sSpaceId
    * @param sUserId
@@ -851,7 +845,7 @@ public class OrganizationController implements java.io.Serializable {
       SilverTrace.error("admin",
           "OrganizationController.getRootSpacesContainingComponent",
           "admin.MSG_ERR_GET_ROOT_SPACES", "userId = " + userId + ", componentName = " +
-           componentName, e);
+          componentName, e);
       return new ArrayList<SpaceInstLight>();
     }
   }
@@ -864,7 +858,7 @@ public class OrganizationController implements java.io.Serializable {
       SilverTrace.error("admin",
           "OrganizationController.getSubSpacesContainingComponent",
           "admin.MSG_ERR_GET_SUB_SPACES", "spaceId = " + spaceId + ", userId = " + userId +
-           ", componentName = " + componentName, e);
+          ", componentName = " + componentName, e);
       return new ArrayList<SpaceInstLight>();
     }
   }
@@ -875,7 +869,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isComponentAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id: '" +
-           userId + "', componentId: '" + componentId + "'", e);
+          userId + "', componentId: '" + componentId + "'", e);
       return false;
     }
   }
@@ -896,7 +890,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isComponentManageable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id: '" +
-           userId + "', componentId: '" + componentId + "'", e);
+          userId + "', componentId: '" + componentId + "'", e);
       return false;
     }
   }
@@ -907,7 +901,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isSpaceAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + userId +
-           "', spaceId: '" + spaceId + "'", e);
+          "', spaceId: '" + spaceId + "'", e);
       return false;
     }
   }
@@ -915,11 +909,12 @@ public class OrganizationController implements java.io.Serializable {
   public boolean isObjectAvailable(int objectId, ObjectType objectType,
       String componentId, String userId) {
     try {
-      return getAdminService().isObjectAvailable(componentId, objectId, objectType.getCode(), userId);
+      return getAdminService().isObjectAvailable(componentId, objectId, objectType.getCode(),
+          userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isObjectAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_OBJECT", "userId = " + userId +
-           ", componentId = " + componentId + ", objectId = " + objectId, e);
+          ", componentId = " + componentId + ", objectId = " + objectId, e);
       return false;
     }
   }
@@ -940,7 +935,7 @@ public class OrganizationController implements java.io.Serializable {
     } catch (AdminException e) {
       SilverTrace.error("admin", "OrganizationController.getSpaceTreeview",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SUBSPACE_IDS", "user Id = " + userId + ", spaceId = " +
-           spaceFatherId, e);
+          spaceFatherId, e);
       return EMPTY_STRING_ARRAY;
     }
   }
@@ -987,7 +982,6 @@ public class OrganizationController implements java.io.Serializable {
 
   /**
    * Return userIds according to a list of profile names
-   *
    * @param componentId the instance id
    * @param profileNames the list which contains the profile names
    * @return a string array of user id
@@ -1004,8 +998,8 @@ public class OrganizationController implements java.io.Serializable {
           SilverTrace.info("admin",
               "OrganizationController.getUsersIdsByRoleNames",
               "root.MSG_GEN_PARAM_VALUE", "profileName = " +
-               profileInst.getName() + ", profileId = " +
-               profileInst.getId());
+              profileInst.getName() + ", profileId = " +
+              profileInst.getId());
         }
       }
 
@@ -1028,7 +1022,7 @@ public class OrganizationController implements java.io.Serializable {
       ObjectType objectType, List<String> profileNames) {
     SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
         "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId +
-         ", objectId = " + objectId);
+        ", objectId = " + objectId);
     try {
       List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, objectType.
           getCode(),
@@ -1089,7 +1083,8 @@ public class OrganizationController implements java.io.Serializable {
     try {
       return getAdminService().getAllDomains();
     } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.getAllDomain", "admin.EX_ERR_GET_DOMAIN", e);
+      SilverTrace.error("admin", "OrganizationController.getAllDomain", "admin.EX_ERR_GET_DOMAIN",
+          e);
       return null;
     }
   }
@@ -1137,7 +1132,6 @@ public class OrganizationController implements java.io.Serializable {
    * Is the anonymous access is activated for the running Silverpeas? When the anonymous access is
    * activated, then a specific user for anonymous access should be set; all anonym accesses to the
    * running Silverpeas are done with this user profile.
-   *
    * @return true if the anonym access is activated, false otherwise.
    */
   public boolean isAnonymousAccessActivated() {

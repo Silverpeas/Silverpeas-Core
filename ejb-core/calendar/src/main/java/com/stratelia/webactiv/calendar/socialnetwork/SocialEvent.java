@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.calendar.socialnetwork;
 
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class SocialEvent implements SocialEventsInterface {
@@ -52,7 +52,7 @@ public class SocialEvent implements SocialEventsInterface {
    * getEJB
    * @return instance of CalendarBmHome
    */
- private static synchronized CalendarBm getEJB() throws CalendarException {
+  private static synchronized CalendarBm getEJB() throws CalendarException {
     if (calendarBm == null) {
       try {
         calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
@@ -66,8 +66,7 @@ public class SocialEvent implements SocialEventsInterface {
   }
 
   /**
-   * get list of socialEvents according to
-   *  number of Item and the first Index
+   * get list of socialEvents according to number of Item and the first Index
    * @param userId
    * @param classification
    * @param limit
@@ -97,8 +96,7 @@ public class SocialEvent implements SocialEventsInterface {
   }
 
   /**
-   * get the next socialEvents of my contacts according to
-   * number of Item and the first Index
+   * get the next socialEvents of my contacts according to number of Item and the first Index
    * @param myId
    * @param myContactsIds
    * @param numberOfElement
@@ -142,7 +140,7 @@ public class SocialEvent implements SocialEventsInterface {
   }
 
   /**
-   * get the my last socialEvents  according to number of Item and the first Index
+   * get the my last socialEvents according to number of Item and the first Index
    * @param myId
    * @param numberOfElement
    * @param firstIndex

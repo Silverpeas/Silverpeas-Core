@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.node.ejb;
 
 import com.silverpeas.util.StringUtil;
@@ -49,8 +50,10 @@ public class NodeI18NDAO {
       + "nodeDescription FROM sb_node_nodeI18N WHERE nodeId = ?";
   static final private String REMOVE_TRANSLATION = "DELETE FROM sb_node_nodeI18N WHERE id = ?";
   static final private String REMOVE_TRANSLATIONS = "DELETE FROM sb_node_nodeI18N WHERE nodeId = ?";
-  static final private String INSERT_TRANSLATION = "INSERT INTO sb_node_nodeI18N VALUES (?, ?, ?, ?, ?)";
-  static final private String UPDATE_TRANSLATION = "UPDATE sb_node_nodeI18N SET lang = ?, nodeName =  ?, "
+  static final private String INSERT_TRANSLATION =
+      "INSERT INTO sb_node_nodeI18N VALUES (?, ?, ?, ?, ?)";
+  static final private String UPDATE_TRANSLATION =
+      "UPDATE sb_node_nodeI18N SET lang = ?, nodeName =  ?, "
       + "nodeDescription = ?  WHERE id = ?";
 
   /**
@@ -193,7 +196,7 @@ public class NodeI18NDAO {
    * @param con
    * @param nodeId
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static List<Translation> getTranslations(Connection con, int nodeId) throws SQLException {
     ResultSet rs = null;

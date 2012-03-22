@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.form.displayers;
 
+package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -61,7 +61,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
 
   /**
    * Returns the name of the managed types.
-   * @return 
+   * @return
    */
   public String[] getManagedTypes() {
     String[] s = new String[2];
@@ -82,7 +82,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
    * @param out
    * @param template
    * @param PagesContext
-   * @throws java.io.IOException  
+   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
@@ -100,7 +100,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
    * @param field
    * @param template
    * @param pagesContext
-   * @throws FormException  
+   * @throws FormException
    */
   @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
@@ -162,13 +162,11 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
       html.append("<font");
     }
 
-
     String size = "";
     if (parameters.containsKey("fontSize")) {
       size = parameters.get("fontSize");
       html.append(" size=\"").append(size).append("\"");
     }
-
 
     String color = "";
     if (parameters.containsKey("fontColor")) {
@@ -209,13 +207,14 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
-   * @param newValue 
-   * @param field 
-   * @param template 
-   * @param PagesContext 
-   * @return 
-   * @throws FormException 
-   * @throw FormException if the field type is not a managed type or if the field doesn't accept the new value.
+   * @param newValue
+   * @param field
+   * @param template
+   * @param PagesContext
+   * @return
+   * @throws FormException
+   * @throw FormException if the field type is not a managed type or if the field doesn't accept the
+   * new value.
    */
   @Override
   public List<String> update(String newValue, Field field, FieldTemplate template,

@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.rest;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -38,18 +39,14 @@ import org.springframework.context.ApplicationContextAware;
 import static org.junit.Assert.*;
 
 /**
- * It is a wrapper of the resources that have to be used in the RESTWebServiceTest test cases.
- * It defines also some default parameters to use in tests such as the language of the user or the
- * unique identifier of the user.
- * 
- * The life-cycle of test resources is managed by the IoC container in which are bootstrapped the
- * test cases.
- * 
- * The class is dedicated to be extending by the test classes in order to set additional resources
- * required by the test cases they represent.
+ * It is a wrapper of the resources that have to be used in the RESTWebServiceTest test cases. It
+ * defines also some default parameters to use in tests such as the language of the user or the
+ * unique identifier of the user. The life-cycle of test resources is managed by the IoC container
+ * in which are bootstrapped the test cases. The class is dedicated to be extending by the test
+ * classes in order to set additional resources required by the test cases they represent.
  */
 public abstract class TestResources implements ApplicationContextAware {
-  
+
   /**
    * The name under which a test resources must be deployed.
    */
@@ -76,7 +73,7 @@ public abstract class TestResources implements ApplicationContextAware {
   /**
    * Gets a TestResources instance managed by the IoC container within which is running the test
    * case.
-   * @return a bean managed TestResources. 
+   * @return a bean managed TestResources.
    */
   public static TestResources getTestResources() {
     assertNotNull(context);
@@ -106,17 +103,15 @@ public abstract class TestResources implements ApplicationContextAware {
   }
 
   /**
-   * Gets a mock of the organization controller. This mock is to be used in tests.
-   * Currently, the mock is used to specify the detail of the authenticated users to return.
-   * If the business service used by the web service requires some of the OrganizationController
-   * operations,then mocks or stubs the business service so that it calls the operations to
-   * the mock of the OrganizationController instead of a real OrganizationController instance.
-   * This method should be called if the organization controller isn't injected by the IoC container
-   * in the objects that requires it.
-   * Actually the mock is managed by the IoC container under the name 'organizationController'. If
-   * the spring context is well configured for tests, the mock should be injected instead of an
-   * OrganizationController managed instance.
-   *
+   * Gets a mock of the organization controller. This mock is to be used in tests. Currently, the
+   * mock is used to specify the detail of the authenticated users to return. If the business
+   * service used by the web service requires some of the OrganizationController operations,then
+   * mocks or stubs the business service so that it calls the operations to the mock of the
+   * OrganizationController instead of a real OrganizationController instance. This method should be
+   * called if the organization controller isn't injected by the IoC container in the objects that
+   * requires it. Actually the mock is managed by the IoC container under the name
+   * 'organizationController'. If the spring context is well configured for tests, the mock should
+   * be injected instead of an OrganizationController managed instance.
    * @return a mock of the OrganizationController.
    */
   public OrganizationController getMockedOrganizationController() {
@@ -124,10 +119,10 @@ public abstract class TestResources implements ApplicationContextAware {
   }
 
   /**
-   * Gets a mock of the personalization service. This mock is to be used in tests.
-   * This mock is created with Mockito, so you can use it for adding some behaviour to the returned
-   * mocked service. By default, the mock is configured to returns a UserPreferences object for any
-   * user with as prefered language the french (fr).
+   * Gets a mock of the personalization service. This mock is to be used in tests. This mock is
+   * created with Mockito, so you can use it for adding some behaviour to the returned mocked
+   * service. By default, the mock is configured to returns a UserPreferences object for any user
+   * with as prefered language the french (fr).
    * @return a mock of the PersonalizationService.
    */
   public PersonalizationService getMockedPersonalizationService() {
@@ -135,8 +130,8 @@ public abstract class TestResources implements ApplicationContextAware {
   }
 
   /**
-   * Gets a mock of the session management service. This mock is to be used in tests.
-   * This mock is used to manage the sessions of the user(s) used in tests.
+   * Gets a mock of the session management service. This mock is to be used in tests. This mock is
+   * used to manage the sessions of the user(s) used in tests.
    * @return a mock of the SessionManagement.
    */
   public SessionManagement getMockedSessionManager() {

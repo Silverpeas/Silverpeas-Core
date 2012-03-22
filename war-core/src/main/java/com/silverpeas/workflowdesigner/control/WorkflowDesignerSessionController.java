@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflowdesigner.control;
 
 import java.io.File;
@@ -871,7 +872,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       String strParticipantOriginal, String strFolderItemOriginal,
       String strRelationOriginal, String strRoleOriginal)
       throws WorkflowDesignerException, WorkflowException {
-    String strParticipant = source.getParticipant() == null ? null : source.getParticipant().getName(), strFolderItem = source.
+    String strParticipant =
+        source.getParticipant() == null ? null : source.getParticipant().getName(), strFolderItem =
+        source.
         getFolderItem() == null ? null
         : source.getFolderItem().getName();
     RelatedUser check = findRelatedUser(strContext, strParticipant,
@@ -901,14 +904,20 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // Therefore we compare all the attributes with their initial values.
       //
       if (check != null
-          && !((strParticipantOriginal == null && strParticipant == null || strParticipantOriginal != null
-          && strParticipantOriginal.equals(strParticipant))
-          && (strFolderItemOriginal == null && strFolderItem == null || strFolderItemOriginal != null
-          && strFolderItemOriginal.equals(strFolderItem))
-          && (strRelationOriginal == null && source.getRelation() == null || strRelationOriginal != null
-          && strRelationOriginal.equals(source.getRelation())) && (strRoleOriginal == null
-          && source.getRole() == null || strRoleOriginal != null
-          && strRoleOriginal.equals(source.getRole())))) {
+          &&
+          !((strParticipantOriginal == null && strParticipant == null || strParticipantOriginal != null
+              &&
+              strParticipantOriginal.equals(strParticipant))
+              &&
+              (strFolderItemOriginal == null && strFolderItem == null || strFolderItemOriginal != null
+                  &&
+                  strFolderItemOriginal.equals(strFolderItem))
+              &&
+              (strRelationOriginal == null && source.getRelation() == null || strRelationOriginal != null
+                  &&
+                  strRelationOriginal.equals(source.getRelation())) && (strRoleOriginal == null
+              && source.getRole() == null || strRoleOriginal != null
+              && strRoleOriginal.equals(source.getRole())))) {
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateRelatedUser",
             SilverpeasException.ERROR, "workflowDesigner.EX_RELATED_USER_EXISTS");
       }
@@ -1034,7 +1043,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @throws WorkflowException if the action cannot be found
    * @throws WorkflowDesignerException if the action is referenced elsewhere
    */
-  public void removeAction(String strActionName) throws WorkflowException, WorkflowDesignerException {
+  public void removeAction(String strActionName) throws WorkflowException,
+      WorkflowDesignerException {
     States states = processModel.getStatesEx();
 
     // check if this action is referenced in states
@@ -1090,7 +1100,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       throws WorkflowDesignerException, WorkflowException {
     Action action = findAction(strContext);
     Consequences consequences = action.getConsequences();
-    int idxCheck = -1, idxConsequence = Integer.parseInt(strContext.substring(strContext.lastIndexOf(
+    int idxCheck = -1, idxConsequence =
+        Integer.parseInt(strContext.substring(strContext.lastIndexOf(
         '/') + 1));
 
     // If it's a new object the 'Consequences' may not yet exits
@@ -1262,8 +1273,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // with the same name add it to the collection
       //
       if (check == null // or CHECK not really identical to source
-          || (source.getRole() != null && !source.getRole().equals(
-          check.getRole()))) {
+          ||
+          (source.getRole() != null && !source.getRole().equals(
+              check.getRole()))) {
         // add the object to the collection;
         //
         processModel.getForms().addForm(source);
@@ -1285,7 +1297,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // Therefore we compare all the attributes with their initial values.
       //
       if (check != null && (check.getRole() == null && source.getRole() == null // the
-          // "check's"
+      // "check's"
           // name
           // role
           // &
@@ -1301,7 +1313,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
           && !(strNameOriginal.equals(source.getName()) // name & role didn't
           // change
           && (strRoleOriginal == null && source.getRole() == null || strRoleOriginal != null
-          && strRoleOriginal.equals(source.getRole())))) {
+              && strRoleOriginal.equals(source.getRole())))) {
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateForm",
             SilverpeasException.ERROR, "workflowDesigner.EX_FORM_EXISTS");
       }
@@ -2033,7 +2045,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         throw new WorkflowException("WorkflowDesignerSessionController.removeItem()",
             "workflowEngine.EX_ITEM_NOT_FOUND", // $NON-NLS-1$
             strItemName == null ? "<null>"
-            : strItemName);
+                : strItemName);
       }
     } catch (NoSuchElementException e) {
       throw new WorkflowException("WorkflowDesignerSessionController.removeItem()",
@@ -2186,9 +2198,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         // If it is a userInfos item check relatedUsers' relation
         //
         if ((items == processModel.getDataFolder()
-            && relatedUser.getFolderItem() != null && strItemName.equals(relatedUser.getFolderItem().
+            && relatedUser.getFolderItem() != null && strItemName.equals(relatedUser
+            .getFolderItem().
             getName()))
-            || (items == processModel.getUserInfos() && strItemName.equals(
+            ||
+            (items == processModel.getUserInfos() && strItemName.equals(
             relatedUser.getRelation()))) {
           throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem()",
               SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED",
@@ -2324,7 +2338,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
             } else if (CONSEQUENCES.equals(strElement)) {
               // notifiedUsers
               strElement = strtok.nextToken(); // consequence no.
-              Consequence consequence = (Consequence) action.getConsequences().getConsequenceList().get(Integer.
+              Consequence consequence =
+                  (Consequence) action.getConsequences().getConsequenceList().get(Integer.
                   parseInt(strElement));
               strElement = strtok.nextToken(); // notified users
 
@@ -2334,9 +2349,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
                   strElement = strtok.nextToken(); // id of notified users
                   i = Integer.parseInt(strElement);
                 } catch (NoSuchElementException e) {
-                  //no id defined, it's a creation
+                  // no id defined, it's a creation
                 }
-                
+
                 List<QualifiedUsers> qualifiedUsersList = consequence.getNotifiedUsers();
                 if (i != -1 && qualifiedUsersList != null && !qualifiedUsersList.isEmpty()) {
                   qualifiedUsers = qualifiedUsersList.get(i);
@@ -2409,7 +2424,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
                     i = Integer.parseInt(strElement);
                     consequence.getNotifiedUsers().remove(i);
                   } catch (NoSuchElementException e) {
-                    //no id defined, it's a creation
+                    // no id defined, it's a creation
                   }
                 } else {
                   consequence.addNotifiedUsers(qualifiedUsers);
@@ -2480,7 +2495,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
             Consequence consequence = (Consequence) iterConsequence.next();
 
             List<QualifiedUsers> qualifiedUsersList = consequence.getNotifiedUsers();
-            if (qualifiedUsersList!=null && !qualifiedUsersList.isEmpty()) {
+            if (qualifiedUsersList != null && !qualifiedUsersList.isEmpty()) {
               map.put(qualifiedUsersList.get(0), "action: '"
                   + action.getName()
                   + "' : consequence: ["
@@ -2888,8 +2903,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     List<Profile> listSPProfile = new ArrayList<Profile>();
     WAComponent waComponent;
     Role role;
-    List<com.silverpeas.admin.components.Parameter> spParameters = new ArrayList<com.silverpeas.admin.components.Parameter>();
-    com.silverpeas.admin.components.Parameter spParameter = new com.silverpeas.admin.components.Parameter();
+    List<com.silverpeas.admin.components.Parameter> spParameters =
+        new ArrayList<com.silverpeas.admin.components.Parameter>();
+    com.silverpeas.admin.components.Parameter spParameter =
+        new com.silverpeas.admin.components.Parameter();
     spParameter.setName(ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
     spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
         "componentDescriptor.parameterLabel"));
@@ -3003,7 +3020,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @param model process model file
    * @throws WorkflowDesignerException , WorkflowException
    */
-  public void uploadProcessModel(FileItem model) throws WorkflowDesignerException, WorkflowException {
+  public void uploadProcessModel(FileItem model) throws WorkflowDesignerException,
+      WorkflowException {
     String name = model.getName();
     if (name != null) {
       name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());

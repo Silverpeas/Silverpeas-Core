@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -244,16 +244,20 @@ public class AgendaHtmlView {
       calendarHtmlView.setMonthSelectedDayStyle("class=\"intfdcolor6\"");
       StringBuffer result = new StringBuffer("");
 
-      result.append("\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n");
+      result
+          .append("\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"98%\">\n");
       result.append("\t\t\t\t<tr> \n");
       result.append("\t\t\t\t\t<td> \n");
-      result.append("\t\t\t\t\t\t<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n");
+      result
+          .append("\t\t\t\t\t\t<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">\n");
       result.append("\t\t\t\t\t\t\t<tr>\n");
       result.append("\t\t\t\t\t\t\t\t<td class=\"grille\">\n");
-      result.append("\t\t\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n");
+      result
+          .append("\t\t\t\t\t\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n");
       result.append("\t\t\t\t\t\t\t\t\t\t<tr>\n");
       result.append("\t\t\t\t\t\t\t\t\t\t\t<td align=\"center\" class=\"grille\"> ");
-      result.append(calendarHtmlView.getHtmlView(DateUtil.parse(startDate), agendaSessionController));
+      result.append(calendarHtmlView
+          .getHtmlView(DateUtil.parse(startDate), agendaSessionController));
       result.append("\t\t\t\t\t\t\t\t\t\t\t</td>");
       result.append("                    </tr>");
       result.append("                  </table>");
@@ -403,7 +407,8 @@ public class AgendaHtmlView {
       }
     } else {
       result += "  <tr>";
-      result += "    <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
+      result +=
+          "    <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
       result += "&nbsp;</td>";
       result += "    <td class=\"intfdcolor4\" width=\"600\">";
       result += "&nbsp;";
@@ -415,7 +420,8 @@ public class AgendaHtmlView {
     result += "  </tr>\n";
 
     result += "<tr> ";
-    result += "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>";
+    result +=
+        "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>";
     result += "</tr>\n";
 
     int i = BEGINHOUR;

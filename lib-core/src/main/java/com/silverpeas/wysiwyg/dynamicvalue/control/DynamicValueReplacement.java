@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -73,7 +73,7 @@ public class DynamicValueReplacement {
       // get connection
       conn = ConnectionPoolFactory.getConnection();
       // get the list of valid DynamicValue object
-       List<DynamicValue> list = DynamicValueDAO.getAllValidDynamicValue(conn);
+      List<DynamicValue> list = DynamicValueDAO.getAllValidDynamicValue(conn);
 
       // build the HTML select with the key list
       if (list != null) {
@@ -84,7 +84,7 @@ public class DynamicValueReplacement {
         try {
           message =
               new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle",
-                  language);
+              language);
           if (message != null) {
             firstOption = message.getString("DynamicValues");
           }
@@ -98,7 +98,8 @@ public class DynamicValueReplacement {
             " <select id=\"dynamicValues_").append(fieldName).append(
             "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues").append(
             FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-            "();this.selectedIndex=0;\">").append("<option value=\"\">").append(firstOption).append(
+            "();this.selectedIndex=0;\">").append("<option value=\"\">").append(firstOption)
+            .append(
             "</option>");
         for (DynamicValue dynamicValue : list) {
           builder.append("<option value=\"").append(dynamicValue.getKey()).append("\">").append(
@@ -171,10 +172,11 @@ public class DynamicValueReplacement {
         matcher.group());
     // get the dynamic value corresponding to a key
     SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
-        " key to use to get the dynamic value : " + EncodeHelper.htmlStringToJavaString(matcher.group(1)));
+        " key to use to get the dynamic value : " +
+        EncodeHelper.htmlStringToJavaString(matcher.group(1)));
     DynamicValue value =
         DynamicValueDAO.getValidDynamicValue(conn, EncodeHelper.htmlStringToJavaString(matcher
-            .group(1)));
+        .group(1)));
 
     if (value != null) {
       SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(), "key : " +
@@ -189,8 +191,7 @@ public class DynamicValueReplacement {
       // replace all the occurrences of current key in HTML code
       updatedString = wysiwygText.replaceAll(escapementStr, value.getValue());
 
-    }
-    else {
+    } else {
       SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
           " key not found in database : " + EncodeHelper.htmlStringToJavaString(matcher.group(1)));
     }

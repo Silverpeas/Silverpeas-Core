@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflow.engine;
 
 import java.util.ArrayList;
@@ -203,11 +204,12 @@ public class WorkflowEngineThread extends Thread {
       }
     }
   }
+
   /**
    * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
    * access will be synchronized on this list. Futhermore this list is used to synchronize the
    * providers and the consumers of the list :
-   *
+   * 
    * <PRE>
    * // provider
    * synchronized(requestList)
@@ -215,7 +217,6 @@ public class WorkflowEngineThread extends Thread {
    * requestList.add(...);
    * requestList.notify();
    * }
-   *
    * // consumer
    * synchronized(requestList)
    * {
@@ -419,12 +420,13 @@ class TaskDoneRequest implements Request {
 
     return false;
   }
+
   private final TaskDoneEvent event;
 }
 
-//--
-/**vient
- * A TaskSaved indicates the workflow engine that a task has been saved
+// --
+/**
+ * vient A TaskSaved indicates the workflow engine that a task has been saved
  */
 class TaskSavedRequest implements Request {
 
@@ -575,10 +577,11 @@ class TaskSavedRequest implements Request {
 
     return false;
   }
+
   private final TaskSavedEvent event;
 }
 
-//--
+// --
 /**
  * A QuestionRequest indicates the workflow engine that a user ask a back to a precedent
  * actor/activity
@@ -716,7 +719,8 @@ class QuestionRequest implements Request {
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EXP_UNKNOWN_ITEM", fe);
     }
-    State state = instance.addQuestion(question, event.getStepId(), event.getResolvedState(), event.
+    State state =
+        instance.addQuestion(question, event.getStepId(), event.getResolvedState(), event.
         getUser());
 
     // add the state that is discussed in the list of active states
@@ -746,6 +750,7 @@ class QuestionRequest implements Request {
     // unlock process instance
     instance.unLock();
   }
+
   private final QuestionEvent event;
 }
 
@@ -914,6 +919,7 @@ class ResponseRequest implements Request {
     // unlock process instance
     instance.unLock();
   }
+
   private final ResponseEvent event;
 }
 
@@ -1049,6 +1055,7 @@ class TimeoutRequest implements Request {
     // process Action
     return WorkflowTools.processAction(instance, event, step, false);
   }
+
   private final TimeoutEvent event;
 }
 
@@ -1311,7 +1318,8 @@ class WorkflowTools {
     QualifiedUsers wkUsers = state.getWorkingUsers();
     Actor[] actors = instance.getActors(wkUsers, state);
 
-    // Assign tasks to these working users (except for automatic event, in this cas no user for this event)
+    // Assign tasks to these working users (except for automatic event, in this cas no user for this
+    // event)
     if (event.getUser() != null) {
       Task[] tasks = taskManager.createTasks(actors, instance);
       for (int i = 0; i < tasks.length; i++) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.templatedesigner.control;
 
 import java.io.File;
@@ -61,10 +62,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
    * @see
    */
   public TemplateDesignerSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-            "com.silverpeas.templatedesigner.multilang.templateDesignerBundle",
-            "com.silverpeas.templatedesigner.settings.templateDesignerIcons");
+        "com.silverpeas.templatedesigner.multilang.templateDesignerBundle",
+        "com.silverpeas.templatedesigner.settings.templateDesignerIcons");
   }
 
   public List<String> getLanguages() {
@@ -84,22 +85,22 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       return getPublicationTemplateManager().getPublicationTemplates(false);
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
-              "TemplateDesignerSessionController.getTemplates",
-              SilverpeasException.ERROR,
-              "templateManager.GETTING_TEMPLATES_FAILED", e);
+          "TemplateDesignerSessionController.getTemplates",
+          SilverpeasException.ERROR,
+          "templateManager.GETTING_TEMPLATES_FAILED", e);
     }
   }
 
   public PublicationTemplate reloadCurrentTemplate()
-          throws TemplateDesignerException {
+      throws TemplateDesignerException {
     return setTemplate(template.getFileName());
   }
 
   public PublicationTemplate setTemplate(String fileName)
-          throws TemplateDesignerException {
+      throws TemplateDesignerException {
     try {
       template = (PublicationTemplateImpl) getPublicationTemplateManager().loadPublicationTemplate(
-              fileName);
+          fileName);
 
       // load data.xml
       template.getRecordTemplate();
@@ -117,14 +118,14 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       return template;
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
-              "TemplateDesignerSessionController.getTemplate",
-              SilverpeasException.ERROR, "templateManager.GETTING_TEMPLATE_FAILED",
-              e);
+          "TemplateDesignerSessionController.getTemplate",
+          SilverpeasException.ERROR, "templateManager.GETTING_TEMPLATE_FAILED",
+          e);
     }
   }
 
   public void createTemplate(PublicationTemplate template)
-          throws TemplateDesignerException {
+      throws TemplateDesignerException {
     this.template = (PublicationTemplateImpl) template;
 
     String fileName = string2fileName(template.getName());
@@ -176,7 +177,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public void updateTemplate(PublicationTemplateImpl updatedTemplate)
-          throws TemplateDesignerException {
+      throws TemplateDesignerException {
     this.template.setName(updatedTemplate.getName());
     this.template.setDescription(updatedTemplate.getDescription());
     this.template.setThumbnail(updatedTemplate.getThumbnail());
@@ -184,7 +185,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
     if (updatedTemplate.isSearchable()) {
       this.template.setSearchFileName(getSubdir(template.getFileName())
-              + File.separator + "search.xml");
+          + File.separator + "search.xml");
     } else {
       this.template.setSearchFileName(null);
     }
@@ -203,9 +204,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public void addField(FieldTemplate field, int index)
-          throws TemplateDesignerException {
+      throws TemplateDesignerException {
     if (index == -1
-            || index == getRecordTemplate(SCOPE_DATA).getFieldList().size()) {
+        || index == getRecordTemplate(SCOPE_DATA).getFieldList().size()) {
       getRecordTemplate(SCOPE_DATA).getFieldList().add(field);
     } else {
       getRecordTemplate(SCOPE_DATA).getFieldList().add(index, field);
@@ -225,7 +226,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public void moveField(String fieldName, int direction)
-          throws TemplateDesignerException {
+      throws TemplateDesignerException {
     FieldTemplate field = getField(fieldName);
     List<FieldTemplate> fieldTemplates = getRecordTemplate(SCOPE_DATA).getFieldList();
 
@@ -254,7 +255,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public FieldTemplate getField(String fieldName)
-          throws TemplateDesignerException {
+      throws TemplateDesignerException {
     Iterator<FieldTemplate> fields = getFields();
     while (fields != null && fields.hasNext()) {
       FieldTemplate field = fields.next();
@@ -301,8 +302,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
     } catch (PublicationTemplateException e) {
       // Do nothing
-      SilverTrace.error("templateDesigner", "TemplateDesignerSessionController.getRecordTemplate()",
-              "root.EX_NO_MESSAGE", e);
+      SilverTrace.error("templateDesigner",
+          "TemplateDesignerSessionController.getRecordTemplate()",
+          "root.EX_NO_MESSAGE", e);
     }
     return recordTemplate;
   }
@@ -345,7 +347,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         }
         getRecordTemplate(SCOPE_VIEW).getFieldList().add(cloneField);
       }
-      
+
       // Using same content as view to search result extra information
       getRecordTemplate(SCOPE_SEARCHRESULT).getFieldList().addAll(
           getRecordTemplate(SCOPE_VIEW).getFieldList());
@@ -361,9 +363,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       updateInProgress = false;
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
-              "TemplateDesignerSessionController.saveTemplate",
-              SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
-              "template = " + template.getName(), e);
+          "TemplateDesignerSessionController.saveTemplate",
+          SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
+          "template = " + template.getName(), e);
     }
   }
 
@@ -376,9 +378,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
-              "TemplateDesignerSessionController.saveTemplate",
-              SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
-              "template = " + template.getName(), e);
+          "TemplateDesignerSessionController.saveTemplate",
+          SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
+          "template = " + template.getName(), e);
     }
   }
 
@@ -401,8 +403,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   /**
    * Is the specified field should be a read only one in view?
    * @param fieldName the name of the field.
-   * @return true if the field shlould be read only when it is only printed as such and no in a 
-   * form for change.
+   * @return true if the field shlould be read only when it is only printed as such and no in a form
+   * for change.
    */
   private boolean isAReadOnlyField(final String fieldName) {
     return Arrays.asList("wysiwyg", "url", "image", "file", "video").contains(fieldName);

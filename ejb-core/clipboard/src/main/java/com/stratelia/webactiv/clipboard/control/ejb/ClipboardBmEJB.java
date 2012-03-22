@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -195,7 +195,7 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.getObject()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.getObject() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
       throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
           "ERROR occured in getObject(" + index + ")", e);
     }
@@ -228,7 +228,7 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.setSelected()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.setSelected() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
       throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
           "ERROR occured in getSelectedObject(" + index + ", " + setIt + ")", e);
     }
@@ -246,7 +246,7 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.remove()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.remove() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
       throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
           "ERROR occured in ClipboardBmEJB.remove(" + index + ")", e);
 

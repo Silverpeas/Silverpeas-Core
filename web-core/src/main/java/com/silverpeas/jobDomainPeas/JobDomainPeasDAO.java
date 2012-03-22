@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,189 +49,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class JobDomainPeasDAO {
 
   private static final String DB_NAME = JNDINames.SILVERPEAS_DATASOURCE;
-
-  /**
-   * Création de la table Domain<domainName>_Group
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
-  public static void createTableDomain_Group(String domainName)
-      throws SQLException {
-    SilverTrace
-        .info("jobDomainPeas", "JobDomainPeasDAO.createTableDomain_Group",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String createQuery = " CREATE TABLE Domain" + domainName + "_Group " + "("
-        + "	id int NOT NULL ," + "	superGroupId int NULL ,"
-        + "	name varchar(100) NOT NULL ," + "	description varchar(400) NULL ,"
-        + "	grSpecificInfo varchar(50) NULL" + ")";
-
-    Statement stmt = null;
-    Connection myCon = getConnection();
-
-    try {
-      stmt = myCon.createStatement();
-      stmt.executeUpdate(createQuery);
-    } finally {
-      DBUtil.close(stmt);
-      freeConnection(myCon);
-    }
-  }
-
-  /**
-   * Suppression de la table Domain<domainName>_Group
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
-  public static void dropTableDomain_Group(String domainName)
-      throws SQLException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasDAO.dropTableDomain_Group",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String createQuery = " DROP TABLE Domain" + domainName + "_Group ";
-    Statement stmt = null;
-    Connection myCon = getConnection();
-
-    try {
-      stmt = myCon.createStatement();
-      stmt.executeUpdate(createQuery);
-    } finally {
-      DBUtil.close(stmt);
-      freeConnection(myCon);
-    }
-  }
-
-  /**
-   * Création de la table Domain<domainName>_User
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
-  public static void createTableDomain_User(String domainName)
-      throws SQLException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasDAO.createTableDomain_User", "root.MSG_GEN_ENTER_METHOD");
-
-    ResourceLocator propSpecificDomainSQL = new ResourceLocator(
-        "com.stratelia.silverpeas.domains.templateDomainSQL", "");
-    int numberOfColumns = Integer.parseInt(propSpecificDomainSQL.getString("property.Number"));
-
-    String createQuery = " CREATE TABLE Domain" + domainName + "_User " + "("
-        + "id int NOT NULL ," + "firstName varchar(100) NULL ,"
-        + "lastName varchar(100) NULL ," + "email varchar(200) NULL ,"
-        + "login varchar(20) NOT NULL ," + "password varchar(32) NULL ,"
-        + "passwordValid char(1) NULL ,";
-
-    String nameColumnTable;
-    String typeColumnTable;
-    for (int i = 1; i <= numberOfColumns; i++) {
-      typeColumnTable = propSpecificDomainSQL.getString("property_"
-          + String.valueOf(i) + ".Type");
-      nameColumnTable = propSpecificDomainSQL.getString("property_"
-          + String.valueOf(i) + ".MapParameter");
-
-      createQuery += nameColumnTable + " ";
-
-      if ("BOOLEAN".equals(typeColumnTable)) {
-        createQuery += "int NOT NULL DEFAULT (0) ,";
-      } else {
-        createQuery += "varchar(50) NULL ,";
-      }
-    }
-
-    createQuery = createQuery.substring(0, createQuery.length() - 2);
-    createQuery += ")";
-
-    Statement stmt = null;
-    Connection myCon = getConnection();
-
-    try {
-      stmt = myCon.createStatement();
-      stmt.executeUpdate(createQuery);
-    } finally {
-      DBUtil.close(stmt);
-      freeConnection(myCon);
-    }
-  }
-
-  /**
-   * Suppression de la table Domain<domainName>_User
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
-  public static void dropTableDomain_User(String domainName)
-      throws SQLException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasDAO.dropTableDomain_User",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String createQuery = " DROP TABLE Domain" + domainName + "_User ";
-    Statement stmt = null;
-    Connection myCon = getConnection();
-
-    try {
-      stmt = myCon.createStatement();
-      stmt.executeUpdate(createQuery);
-    } finally {
-      DBUtil.close(stmt);
-      freeConnection(myCon);
-    }
-  }
-
-  /**
-   * Création de la table Domain<domainName>_Group_User_Rel
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
-  public static void createTableDomain_Group_User_Rel(String domainName)
-      throws SQLException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasDAO.createTableDomain_Group_User_Rel",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String createQuery = " CREATE TABLE Domain" + domainName
-        + "_Group_User_Rel " + "(" + "groupId int NOT NULL ,"
-        + "userId int NOT NULL" + ")";
-
-    Statement stmt = null;
-    Connection myCon = getConnection();
-
-    try {
-      stmt = myCon.createStatement();
-      stmt.executeUpdate(createQuery);
-    } finally {
-      DBUtil.close(stmt);
-      freeConnection(myCon);
-    }
-  }
-
-  /**
-   * Suppression de la table Domain<domainName>_Group_User_Rel
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
-  public static void dropTableDomain_Group_User_Rel(String domainName)
-      throws SQLException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasDAO.dropTableDomain_Group_User_Rel",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String createQuery = " DROP TABLE Domain" + domainName + "_Group_User_Rel ";
-    Statement stmt = null;
-    Connection myCon = getConnection();
-
-    try {
-      stmt = myCon.createStatement();
-      stmt.executeUpdate(createQuery);
-    } finally {
-      DBUtil.close(stmt);
-      freeConnection(myCon);
-    }
-  }
 
   /**
    * Method declaration
@@ -360,7 +177,6 @@ public class JobDomainPeasDAO {
     return listRes; // Collection de UserFull
   }
 
-  
   /**
    * Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
    * @param domainName

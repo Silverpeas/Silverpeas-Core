@@ -1,26 +1,27 @@
-/*
- *  Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- *  As a special exception to the terms and conditions of version 3.0 of
- *  the GPL, you may redistribute this Program in connection with Free/Libre
- *  Open Source Software ("FLOSS") applications as described in Silverpeas's
- *  FLOSS exception.  You should have recieved a copy of the text describing
- *  the FLOSS exception, and it is also available here:
- *  "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.notification.jms;
 
 import com.silverpeas.notification.SubscriptionException;
@@ -34,16 +35,15 @@ import javax.jms.JMSException;
 import javax.jms.TopicSubscriber;
 
 /**
- * A subscriber of one or more topics whose the life-cycle is managed by the JMS adapter.
- *
- * JMS doesn't support the subscription of a given subscriber to several topics. JMS is a low-level
- * MOM API so that it is required to enhance this API by adding additional features in order to
- * provide high-level messaging features.
+ * A subscriber of one or more topics whose the life-cycle is managed by the JMS adapter. JMS
+ * doesn't support the subscription of a given subscriber to several topics. JMS is a low-level MOM
+ * API so that it is required to enhance this API by adding additional features in order to provide
+ * high-level messaging features.
  */
 class ManagedTopicsSubscriber {
 
   private static Map<String, ManagedTopicsSubscriber> subscribers = Collections.synchronizedMap(
-    new HashMap<String, ManagedTopicsSubscriber>());
+      new HashMap<String, ManagedTopicsSubscriber>());
 
   /**
    * Gets an existing managed subscriber by its unique identifier.
@@ -67,6 +67,7 @@ class ManagedTopicsSubscriber {
   public static ManagedTopicsSubscriber getNewManagedTopicsSubscriber() {
     return new ManagedTopicsSubscriber(UUID.randomUUID().toString());
   }
+
   private final String id;
   private final List<TopicSubscriber> subscriptions = new ArrayList<TopicSubscriber>();
 
@@ -107,9 +108,9 @@ class ManagedTopicsSubscriber {
   }
 
   /**
-   * Adds a new topic subscription represented by the specified JMS TopicSubscriber instance.
-   * This methods attachs the topic subscription represented by the TopicSubscriber instance to
-   * this managed subscriber.
+   * Adds a new topic subscription represented by the specified JMS TopicSubscriber instance. This
+   * methods attachs the topic subscription represented by the TopicSubscriber instance to this
+   * managed subscriber.
    * @param topicSubscriber a TopicSubscriber instance representing an existing subscription.
    */
   public void addSubscription(final TopicSubscriber topicSubscriber) {
@@ -117,8 +118,8 @@ class ManagedTopicsSubscriber {
   }
 
   /**
-   * Removes the topic subscription represented by the specified JMS TopicSubscriber instance.
-   * This methods deattachs from this managed subscriber the topic subscription reprensented by this
+   * Removes the topic subscription represented by the specified JMS TopicSubscriber instance. This
+   * methods deattachs from this managed subscriber the topic subscription reprensented by this
    * TopicSubscriber instance.
    * @param topicSubscriber a TopicSubscriber instance representing an existing subscription.
    */
@@ -149,7 +150,7 @@ class ManagedTopicsSubscriber {
   public void delete() {
     if (!subscriptions.isEmpty()) {
       throw new SubscriptionException("The subscriber cannot be deleted: it has " + subscriptions.
-        size() + " subscriptions!");
+          size() + " subscriptions!");
     }
     subscribers.remove(getId());
   }

@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.scheduler.quartz;
 
 import com.silverpeas.scheduler.trigger.CronJobTrigger;
@@ -33,10 +34,9 @@ import org.quartz.Trigger;
 import org.quartz.TriggerUtils;
 
 /**
- * A builder of a Quartz trigger from the data defined in a QuartzSchedulerJob instance.
- *
- * A QuartzSchedulerJob is a job that will be indirectly scheduled by quartz and thus fired by
- * a Quartz trigger. As such a Quartz trigger is required for doing and it can be obtained from the
+ * A builder of a Quartz trigger from the data defined in a QuartzSchedulerJob instance. A
+ * QuartzSchedulerJob is a job that will be indirectly scheduled by quartz and thus fired by a
+ * Quartz trigger. As such a Quartz trigger is required for doing and it can be obtained from the
  * QuartzSchedulerJob information.
  */
 public final class QuartzTriggerBuilder implements JobTriggerVisitor {
@@ -88,7 +88,7 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }
-  
+
   private QuartzTriggerBuilder() {
   }
 }

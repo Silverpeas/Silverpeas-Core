@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -69,7 +69,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    * @param event the task event that has been done.
    */
   public void process(TaskDoneEvent event) throws WorkflowException {
-	  process(event, false);
+    process(event, false);
   }
 
   /**
@@ -78,7 +78,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    */
   public void process(TaskDoneEvent event, boolean ignoreControls) throws WorkflowException {
 
-	boolean creationEvent = false;
+    boolean creationEvent = false;
     ProcessModel model = event.getProcessModel();
     Database db = null;
     UpdatableProcessInstance instance = null;
@@ -93,8 +93,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         instance = (UpdatableProcessInstance) instanceManager
             .createProcessInstance(model.getModelId());
         event.setProcessInstance(instance);
-      }
-      else {
+      } else {
         instance = (UpdatableProcessInstance) event.getProcessInstance();
       }
       creationEvent = true;
@@ -103,47 +102,47 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     }
 
     if (!ignoreControls) {
-	    try {
-	      // Get database connection
-	      db = WorkflowJDOManager.getDatabase();
+      try {
+        // Get database connection
+        db = WorkflowJDOManager.getDatabase();
 
-	      // begin transaction
-	      db.begin();
+        // begin transaction
+        db.begin();
 
-	      // Re-load process instance
-	      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-	          instance.getInstanceId());
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+            instance.getInstanceId());
 
-	      // Do workflow stuff
-	      try {
-	        // Over-locks the process instance by admin
-	        this.manageLocks((GenericEvent) event, instance);
+        // Do workflow stuff
+        try {
+          // Over-locks the process instance by admin
+          this.manageLocks((GenericEvent) event, instance);
 
-	        // Tests if user is declared as a working user
-	        if (!creationEvent)
-	          this.manageRights((GenericEvent) event, instance);
+          // Tests if user is declared as a working user
+          if (!creationEvent)
+            this.manageRights((GenericEvent) event, instance);
 
-	        // Tests if user is declared as the working user for this state
-	        if (!creationEvent)
-	          this.checkUserLock((GenericEvent) event, instance);
+          // Tests if user is declared as the working user for this state
+          if (!creationEvent)
+            this.checkUserLock((GenericEvent) event, instance);
 
-	        // Checks the datas associated to the event
-	        /* xoxox a faire en concordance avec les specs du form manager */
+          // Checks the datas associated to the event
+          /* xoxox a faire en concordance avec les specs du form manager */
 
-	      } catch (WorkflowException we) {
-	        db.rollback();
-	        throw new WorkflowException("WorkflowEngineImpl.process",
-	            "workflowEngine.EX_ERR_PROCESS_EVENT", we);
-	      }
+        } catch (WorkflowException we) {
+          db.rollback();
+          throw new WorkflowException("WorkflowEngineImpl.process",
+              "workflowEngine.EX_ERR_PROCESS_EVENT", we);
+        }
 
-	      // commit
-	      db.commit();
-	    } catch (PersistenceException pe) {
-	      throw new WorkflowException("WorkflowEngineImpl.process",
-	          "workflowEngine.EX_ERR_PROCESS_EVENT", pe);
-	    } finally {
-	      WorkflowJDOManager.closeDatabase(db);
-	    }
+        // commit
+        db.commit();
+      } catch (PersistenceException pe) {
+        throw new WorkflowException("WorkflowEngineImpl.process",
+            "workflowEngine.EX_ERR_PROCESS_EVENT", pe);
+      } finally {
+        WorkflowJDOManager.closeDatabase(db);
+      }
     }
 
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
@@ -156,7 +155,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    */
   public void process(TaskSavedEvent event) throws WorkflowException {
 
-  boolean creationEvent = false;
+    boolean creationEvent = false;
     ProcessModel model = event.getProcessModel();
     Database db = null;
     UpdatableProcessInstance instance = null;

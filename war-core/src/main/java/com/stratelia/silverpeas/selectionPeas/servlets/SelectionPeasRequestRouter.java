@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.selectionPeas.servlets;
 
 import com.silverpeas.util.StringUtil;
@@ -46,16 +47,15 @@ import java.util.StringTokenizer;
 
 /**
  * Class declaration
- *
  * @author
  */
-public class SelectionPeasRequestRouter extends ComponentRequestRouter<SelectionPeasSessionController> {
+public class SelectionPeasRequestRouter extends
+    ComponentRequestRouter<SelectionPeasSessionController> {
 
   private static final long serialVersionUID = -1531692630305784345L;
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -70,7 +70,6 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter<Selection
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   *
    * @return
    */
   @Override
@@ -81,10 +80,10 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter<Selection
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   * @param function    The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param selectionPeasSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex :
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, SelectionPeasSessionController selectionPeasSC,
@@ -138,7 +137,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter<Selection
           } else {
             UserDetail[] users = selectionPeasSC.getOrganizationController().getUserDetails(
                 selectionPeasSC.
-                    getSelection().getSelectedElements());
+                getSelection().getSelectedElements());
             if (users != null && users.length > 0) {
               request.setAttribute("users", users);
             }
@@ -278,7 +277,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter<Selection
       HttpServletRequest request) {
     selectionPeasSC.setCartSelected(CacheType.CM_SET, getValues(request.getParameter(
         "SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
-    selectionPeasSC.setCartSelected(CacheType.CM_ELEMENT,getValues(request.getParameter(
+    selectionPeasSC.setCartSelected(CacheType.CM_ELEMENT, getValues(request.getParameter(
         "SelectedElements")), getValues(request.getParameter("NonSelectedElements")));
     SilverTrace.info("selectionPeas", "doCartOperation()", "root.MSG_GEN_PARAM_VALUE",
         "Operation=" + op);
@@ -287,7 +286,8 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter<Selection
     }
     if (op != null && op.startsWith("GENERICPANELMINIFILTER")) {
       selectionPeasSC.setCartMiniFilter(request.getParameter("miniFilter"
-          + op.substring("GENERICPANELMINIFILTER".length())), op.substring("GENERICPANELMINIFILTER".
+          + op.substring("GENERICPANELMINIFILTER".length())), op.substring("GENERICPANELMINIFILTER"
+          .
           length()));
       return "selectionCart.jsp";
     }
@@ -308,7 +308,8 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter<Selection
   protected String doBrowseOperation(String op, SelectionPeasSessionController selectionPeasSC,
       HttpServletRequest request) {
     if (selectionPeasSC.isMultiSelect()) {
-      selectionPeasSC.setSelected(CacheType.CM_SET, getValues(request.getParameter("SelectedSets")),
+      selectionPeasSC.setSelected(CacheType.CM_SET,
+          getValues(request.getParameter("SelectedSets")),
           getValues(request.getParameter("NonSelectedSets")));
       selectionPeasSC.setSelected(CacheType.CM_ELEMENT, getValues(request.getParameter(
           "SelectedElements")), getValues(request.getParameter("NonSelectedElements")));
@@ -409,7 +410,8 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter<Selection
     JdbcConnectorSetting jdbcSetting = (JdbcConnectorSetting) m.invoke(componentSessionController,
         null);
 
-    selectionPeasSC.updateJdbcParameters(jdbcSetting, tableName, columnsNames.toString(), formIndex,
+    selectionPeasSC.updateJdbcParameters(jdbcSetting, tableName, columnsNames.toString(),
+        formIndex,
         fieldsNames.toString());
   }
 }

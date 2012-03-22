@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.publication.control;
 
 import java.rmi.RemoteException;
@@ -54,17 +55,17 @@ public interface PublicationBmBusinessSkeleton {
    * get details on the publication specified by the primary key given in pubPK parameter
    */
   public PublicationDetail getDetail(PublicationPK pubPK)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Create a new publication A new line will be added in publication table. The "id" in "detail" is
    * not used (a new one will be computed). The "ed" is used to know the table name.
    */
   public PublicationPK createPublication(PublicationDetail detail)
-    throws RemoteException;
+      throws RemoteException;
 
   public void movePublication(PublicationPK pubPK, NodePK nodePK,
-    boolean indexIt) throws RemoteException;
+      boolean indexIt) throws RemoteException;
 
   /**
    * Change order of the given publication identified by pubPK in the given nodePK. direction less
@@ -75,7 +76,7 @@ public interface PublicationBmBusinessSkeleton {
    * @throws RemoteException
    */
   public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK,
-    int direction) throws RemoteException;
+      int direction) throws RemoteException;
 
   /**
    * remove the publication designed by pubPK parameter.
@@ -94,14 +95,14 @@ public interface PublicationBmBusinessSkeleton {
    * visible from its new father node.
    */
   public void addFather(PublicationPK pubPK, NodePK fatherPK)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * remove a father (designed by "fatherPK") from a publication ("pubPK") The publication won't be
    * visible from its old father node.
    */
   public void removeFather(PublicationPK pubPK, NodePK fatherPK)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * remove a father (designed by "fatherPK") from a publication ("pubPK") The publication won't be
@@ -114,7 +115,7 @@ public interface PublicationBmBusinessSkeleton {
    * visible from its old father node.
    */
   public void removeFathers(PublicationPK pubPK, Collection<String> fatherIds)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * remove all father from a publication ("pubPK") The publication won't be visible.
@@ -125,13 +126,13 @@ public interface PublicationBmBusinessSkeleton {
    * return the Detail of publication which are not linked to a father
    */
   public Collection<PublicationDetail> getOrphanPublications(PublicationPK pubPK)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * return the Detail of publication which are linked to at least one father
    */
   public Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Method declaration
@@ -141,15 +142,15 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK,
-    String creatorId) throws RemoteException;
+      String creatorId) throws RemoteException;
 
   /**
    * return the publications : - which take place in the basket - which are out of the visibility
    * period
    */
   public Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
-    PublicationPK pubPK, String publisherId, String nodeId)
-    throws RemoteException;
+      PublicationPK pubPK, String publisherId, String nodeId)
+      throws RemoteException;
 
   /**
    * return a collection, containing all node primary key from where the publication is visible
@@ -164,45 +165,45 @@ public interface PublicationBmBusinessSkeleton {
   public void addAlias(PublicationPK pubPK, List<Alias> alias) throws RemoteException;
 
   public void removeAlias(PublicationPK pubPK, List<Alias> alias)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * return a PublicationDetail collection of all publication visible from the node identified by
    * "fatherPK" parameter
    */
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK)
-    throws RemoteException;
+      throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting)
-    throws RemoteException;
+      throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
-    boolean filterOnVisibilityPeriod) throws RemoteException;
+      boolean filterOnVisibilityPeriod) throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
-    boolean filterOnVisibilityPeriod, String userId) throws RemoteException;
+      boolean filterOnVisibilityPeriod, String userId) throws RemoteException;
 
   /**
    * return a PublicationDetail collection of all publications not in the node identified by
    * "fatherPK" parameter
    */
   public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK)
-    throws RemoteException;
+      throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * return a PublicationDetail collection of x last publications
    */
   public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatus(PublicationPK pk,
-    String status, int nbPubs) throws RemoteException;
+      String status, int nbPubs) throws RemoteException;
 
   /**
    * return a PublicationDetail collection of x last publications
    */
   public Collection<PublicationDetail> getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Method declaration
@@ -215,14 +216,14 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
-    PublicationPK pk, String status, int nbPubs, String fatherId)
-    throws RemoteException;
+      PublicationPK pk, String status, int nbPubs, String fatherId)
+      throws RemoteException;
 
   /**
    *
    */
   public Collection<ModelDetail> getAllModelsDetail( /* PublicationPK pubPK */)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    *
@@ -233,13 +234,13 @@ public interface PublicationBmBusinessSkeleton {
    *
    */
   public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK,
-    InfoDetail infos) throws RemoteException;
+      InfoDetail infos) throws RemoteException;
 
   /**
    *
    */
   public void createInfoModelDetail(PublicationPK pubPK, ModelPK modelPK,
-    InfoDetail infos) throws RemoteException;
+      InfoDetail infos) throws RemoteException;
 
   /**
    *
@@ -247,33 +248,30 @@ public interface PublicationBmBusinessSkeleton {
   public InfoDetail getInfoDetail(PublicationPK pubPK) throws RemoteException;
 
   /**
-   * 
    * @param pubPK
    * @param infos
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos) throws RemoteException;
 
   public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
-   * 
    * @param pubPK
    * @return
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public CompletePublication getCompletePublication(PublicationPK pubPK)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
-   * 
    * @param publicationPKs
    * @return
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Method declaration
@@ -284,27 +282,27 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK)
-    throws RemoteException;
+      throws RemoteException;
 
   public Collection<PublicationPK> getPublicationPKsByStatus(String status,
-    List<String> componentIds)
-    throws RemoteException;
+      List<String> componentIds)
+      throws RemoteException;
 
   /**
-   * Return the list of publications with a maxSize as specified, each publication has the specified 
+   * Return the list of publications with a maxSize as specified, each publication has the specified
    * status and has been updated since the specified date
    * @param status : the publications status.
    * @param since : the last update of the publication
    * @param maxSize : the maximum size of the list. If 0 is specified, the limit is not used.
    * @param componentIds
    * @return a list of publications with the specified maxSize or none if 0 or less is specified.
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public Collection<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
-    int maxSize, List<String> componentIds) throws RemoteException;
+      int maxSize, List<String> componentIds) throws RemoteException;
 
   public Collection<PublicationDetail> getPublicationsByStatus(String status,
-    List<String> componentIds) throws RemoteException;
+      List<String> componentIds) throws RemoteException;
 
   /**
    * Method declaration
@@ -315,7 +313,7 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Method declaration
@@ -335,18 +333,18 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath)
-    throws RemoteException;
-  
+      throws RemoteException;
+
   /**
    * * Return the tree of nodes with the number of publication per node.
    * @param instanceId
    * @param statusSubQuery
    * @param checkVisibility
    * @return the tree of nodes with the number of publication per node
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public NodeTree getDistributionTree(String instanceId, String statusSubQuery,
-    boolean checkVisibility) throws RemoteException;
+      boolean checkVisibility) throws RemoteException;
 
   /**
    * Method declaration
@@ -357,28 +355,28 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public Collection<PublicationDetail> getDetailsByFatherIds(ArrayList<String> fatherIds,
-    PublicationPK pubPK) throws RemoteException;
+      PublicationPK pubPK) throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherIds(ArrayList<String> fatherIds,
-    PublicationPK pubPK, boolean filterOnVisibilityPeriod)
-    throws RemoteException;
+      PublicationPK pubPK, boolean filterOnVisibilityPeriod)
+      throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherIds(ArrayList<String> fatherIds,
-    PublicationPK pubPK, String sorting) throws RemoteException;
+      PublicationPK pubPK, String sorting) throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatus(ArrayList<String> fatherIds,
-    PublicationPK pubPK, String sorting, String status)
-    throws RemoteException;
+      PublicationPK pubPK, String sorting, String status)
+      throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
-    ArrayList<String> fatherIds,
-    PublicationPK pubPK, String sorting, ArrayList<String> status)
-    throws RemoteException;
+      ArrayList<String> fatherIds,
+      PublicationPK pubPK, String sorting, ArrayList<String> status)
+      throws RemoteException;
 
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
-    ArrayList<String> fatherIds,
-    PublicationPK pubPK, String sorting, ArrayList<String> status,
-    boolean filterOnVisibilityPeriod) throws RemoteException;
+      ArrayList<String> fatherIds,
+      PublicationPK pubPK, String sorting, ArrayList<String> status,
+      boolean filterOnVisibilityPeriod) throws RemoteException;
 
   /**
    * Method declaration
@@ -388,7 +386,7 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Method declaration
@@ -425,10 +423,10 @@ public interface PublicationBmBusinessSkeleton {
    * @see
    */
   public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK)
-    throws RemoteException;
+      throws RemoteException;
 
   public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK, String sorting)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Looking for, in the instance identified by pubPK, a publication named pubName.
@@ -438,10 +436,10 @@ public interface PublicationBmBusinessSkeleton {
    * @throws RemoteException
    */
   public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName)
-    throws RemoteException;
+      throws RemoteException;
 
   public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK,
-    String pubName, int nodeId) throws RemoteException;
+      String pubName, int nodeId) throws RemoteException;
 
   /**
    * A wysiwyg's content has been added or modified to a publication. Its content must be added to
@@ -459,22 +457,22 @@ public interface PublicationBmBusinessSkeleton {
    * @throws RemoteException
    */
   public Collection<PublicationDetail> getDetailBetweenDate(String beginDate, String endDate,
-    String instanceId) throws RemoteException;
+      String instanceId) throws RemoteException;
 
   public List<ValidationStep> getValidationSteps(PublicationPK pubPK) throws RemoteException;
 
   public ValidationStep getValidationStepByUser(PublicationPK pubPK,
-    String userId) throws RemoteException;
+      String userId) throws RemoteException;
 
   public void addValidationStep(ValidationStep step) throws RemoteException;
 
   public void removeValidationSteps(PublicationPK pubPK) throws RemoteException;
 
   public void changePublicationsOrder(List<String> ids, NodePK nodePK)
-    throws RemoteException;
+      throws RemoteException;
 
   public Collection<Coordinate> getCoordinates(String pubId, String componentId)
-    throws RemoteException;
+      throws RemoteException;
 
   /**
    * Updates the publication links
@@ -488,9 +486,10 @@ public interface PublicationBmBusinessSkeleton {
       Date begin, Date end) throws RemoteException;
 
   /**
-   * get list of socialInformation of my contacts according to options and number of Item and the first Index
+   * get list of socialInformation of my contacts according to options and number of Item and the
+   * first Index
    * @return: List <SocialInformation>
-   * @param:  myId
+   * @param: myId
    * @param :List<String> myContactsIds
    * @param :List<String> options list of Available Components name
    * @param int numberOfElement, int firstIndex
@@ -500,5 +499,5 @@ public interface PublicationBmBusinessSkeleton {
       throws RemoteException;
 
   public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone)
-    throws RemoteException;
+      throws RemoteException;
 }

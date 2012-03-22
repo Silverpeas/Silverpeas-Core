@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdcSubscriptionPeas.control;
 
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
@@ -62,14 +63,14 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   /**
    * Constructor Creates new PdcSubscription Session Controller
-   * @param mainSessionCtrl 
-   * @param componentContext 
+   * @param mainSessionCtrl
+   * @param componentContext
    */
   public PdcSubscriptionSessionController(MainSessionController mainSessionCtrl,
-          ComponentContext componentContext) {
+      ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-            "com.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
-            "com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
+        "com.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
+        "com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
   }
 
   /**
@@ -79,11 +80,11 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     if (scBm == null) {
       try {
         PdcSubscriptionBmHome icEjbHome = EJBUtilitaire.getEJBObjectRef(
-                JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBmHome.class);
+            JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBmHome.class);
         scBm = icEjbHome.create();
       } catch (Exception e) {
         throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
-                SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+            SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
   }
@@ -103,11 +104,11 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     NodeBm nodeBm = null;
     try {
       NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-              NodeBmHome.class);
+          NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeBm()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return nodeBm;
   }
@@ -121,10 +122,11 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptions(currentUserId);
     for (Subscription subscription : list) {
       try {
-        Collection<NodeDetail> path = getNodeBm().getPath((NodePK)subscription.getTopic());
+        Collection<NodeDetail> path = getNodeBm().getPath((NodePK) subscription.getTopic());
         subscribe.add(path);
       } catch (RemoteException e) {
-        // User subscribed to a non existing component or topic .Do nothing. Process next subscription.
+        // User subscribed to a non existing component or topic .Do nothing. Process next
+        // subscription.
       }
     }
     return subscribe;
@@ -135,8 +137,9 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       // convertir la chaine en NodePK
       String nodeId = themes[i].substring(0, themes[i].lastIndexOf("-"));
       String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
-              themes[i].length());
-      NodeSubscription subscription = new NodeSubscription(getUserId(), new NodePK(nodeId, instanceId));
+          themes[i].length());
+      NodeSubscription subscription =
+          new NodeSubscription(getUserId(), new NodePK(nodeId, instanceId));
       getSubscribeBm().unsubscribe(subscription);
     }
   }
@@ -157,7 +160,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public void createPDCSubscription(PDCSubscription subscription)
-          throws RemoteException {
+      throws RemoteException {
     initEJB();
     subscription.setId(scBm.createPDCSubscription(subscription));
   }

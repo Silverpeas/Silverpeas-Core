@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.silverpeas.util.i18n.I18NHelper;
@@ -64,16 +65,16 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
     if (qtip.name().equals(getName())) {
       script qtip = new script().setType("text/javascript").setSrc(jqueryPath + JQUERY_QTIP);
       script silverpeasQtip = new script().setType("text/javascript").setSrc(jqueryPath
-              + SILVERPEAS_QTIP);
+          + SILVERPEAS_QTIP);
       xhtml.addElement(qtip);
       xhtml.addElement(silverpeasQtip);
     } else if (datepicker.name().equals(getName())) {
       script datePicker = new script().setType("text/javascript").setSrc(jqueryPath
-              + MessageFormat.format(JQUERY_DATEPICKER, getLanguage()));
+          + MessageFormat.format(JQUERY_DATEPICKER, getLanguage()));
       script silverpeasDatePicker = new script().setType("text/javascript").setSrc(javascriptPath
-              + SILVERPEAS_DATEPICKER);
+          + SILVERPEAS_DATEPICKER);
       script silverpeasDateUtils = new script().setType("text/javascript").setSrc(javascriptPath
-              + SILVERPEAS_DATE_UTILS);
+          + SILVERPEAS_DATE_UTILS);
       xhtml.addElement(datePicker);
       xhtml.addElement(silverpeasDatePicker);
       xhtml.addElement(silverpeasDateUtils);

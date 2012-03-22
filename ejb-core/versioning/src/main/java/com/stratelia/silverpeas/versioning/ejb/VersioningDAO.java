@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.versioning.ejb;
 
 import java.sql.Connection;
@@ -61,11 +62,12 @@ public class VersioningDAO {
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
       + " currentWorkListOrder, alertDate, expiryDate, documentordernum  FROM "
       + "sb_version_document WHERE documentId = ? ";
-  public final static String GET_DOCUMENT_BYFOREIGNID_QUERY = "SELECT documentId, "
-      + " documentName, documentDescription, documentStatus, documentOwnerId, "
-      + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
-      + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
-      + " FROM sb_version_document WHERE foreignId = ? and instanceId = ? ORDER BY documentordernum, documentId ";
+  public final static String GET_DOCUMENT_BYFOREIGNID_QUERY =
+      "SELECT documentId, "
+          + " documentName, documentDescription, documentStatus, documentOwnerId, "
+          + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
+          + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
+          + " FROM sb_version_document WHERE foreignId = ? and instanceId = ? ORDER BY documentordernum, documentId ";
   public final static String GET_DOCUMENTS_BYINSTANCEID_QUERY = "SELECT documentId, "
       + " documentName, documentDescription, documentStatus, documentOwnerId, "
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
@@ -278,6 +280,7 @@ public class VersioningDAO {
     doc.setOrderNumber(rs.getInt("documentordernum"));
     return doc;
   }
+
   public final static String CREATE_DOCUMENT_QUERY =
       "INSERT INTO sb_version_document (documentId, documentName, documentDescription, "
       + "documentStatus, documentOwnerId, documentCheckoutDate, documentInfo, foreignId, "
@@ -387,12 +390,16 @@ public class VersioningDAO {
 
     return result;
   }
+
   public final static String UPDATE_DOCUMENT_QUERY =
       "UPDATE "
-      + documentTableName
-      + " SET documentName = ? , documentDescription = ? , documentStatus = ? , documentOwnerId = ? , "
-      + " documentCheckoutDate = ?, documentInfo = ? , foreignId = ? , instanceId = ? , typeWorkList = ? ,"
-      + " currentWorkListOrder = ?, alertDate = ?, expiryDate = ?  WHERE documentId = ? ";
+          +
+          documentTableName
+          +
+          " SET documentName = ? , documentDescription = ? , documentStatus = ? , documentOwnerId = ? , "
+          +
+          " documentCheckoutDate = ?, documentInfo = ? , foreignId = ? , instanceId = ? , typeWorkList = ? ,"
+          + " currentWorkListOrder = ?, alertDate = ?, expiryDate = ?  WHERE documentId = ? ";
 
   /**
    * @param conn
@@ -451,6 +458,7 @@ public class VersioningDAO {
       DBUtil.close(prepStmt);
     }
   }
+
   public final static String UPDATE_DOCUMENT_FOREIGNKEY_QUERY = "UPDATE "
       + documentTableName
       + " SET foreignId = ?, instanceId = ? WHERE documentId = ? ";
@@ -506,6 +514,7 @@ public class VersioningDAO {
       boolean keepSaved) throws SQLException, VersioningRuntimeException {
     WorkListDAO.removeAllWorkers(conn, document.getPk(), keepSaved);
   }
+
   public static final String CHECKOUT_DOCUMENT_QUERY = "UPDATE "
       + documentTableName
       + " SET documentOwnerId = ? ,"
@@ -578,6 +587,7 @@ public class VersioningDAO {
           + documentPK.getId());
     }
   }
+
   public static final String CHECKIN_DOCUMENT_QUERY = "UPDATE "
       + documentTableName + " SET documentownerid = -1, "
       + " documentStatus = 0 , alertDate = null , expiryDate = null "
@@ -617,13 +627,19 @@ public class VersioningDAO {
           + documentPK.getId());
     }
   }
+
   public static final String ADD_NEW_VERSION_QUERY =
       "INSERT INTO "
-      + versionTableName
-      + " (versionId, "
-      + " documentId, versionMajorNumber, versionMinorNumber, versionAuthorId, "
-      + " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
-      + " versionLogicalName, versionMimeType, versionSize, instanceId, xmlForm) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+          +
+          versionTableName
+          +
+          " (versionId, "
+          +
+          " documentId, versionMajorNumber, versionMinorNumber, versionAuthorId, "
+          +
+          " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
+          +
+          " versionLogicalName, versionMimeType, versionSize, instanceId, xmlForm) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   /**
    * @param conn
@@ -697,14 +713,19 @@ public class VersioningDAO {
 
     return newVersion.getPk();
   }
+
   public static final String UPDATE_VERSION_QUERY =
       "UPDATE "
-      + versionTableName
-      + " SET "
-      + " versionMajorNumber = ? , versionMinorNumber = ? , versionAuthorId = ? , "
-      + " versionCreationDate = ? , versionComments = ? , versionType = ? , versionStatus = ?, versionPhysicalname = ?, "
-      + " versionLogicalName = ? , versionMimeType = ? , versionSize = ? , instanceId = ?"
-      + " WHERE versionId = ? ";
+          +
+          versionTableName
+          +
+          " SET "
+          +
+          " versionMajorNumber = ? , versionMinorNumber = ? , versionAuthorId = ? , "
+          +
+          " versionCreationDate = ? , versionComments = ? , versionType = ? , versionStatus = ?, versionPhysicalname = ?, "
+          + " versionLogicalName = ? , versionMimeType = ? , versionSize = ? , instanceId = ?"
+          + " WHERE versionId = ? ";
 
   /**
    * @param conn
@@ -762,13 +783,16 @@ public class VersioningDAO {
       DBUtil.close(prepStmt);
     }
   }
+
   public static final String GET_VERSIONS_QUERY =
       "SELECT v.versionId, "
-      + " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
-      + " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
-      + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
-      + " FROM " + versionTableName
-      + " v WHERE v.documentId = ? ORDER BY v.versionId DESC";
+          +
+          " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
+          +
+          " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
+          + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
+          + " FROM " + versionTableName
+          + " v WHERE v.documentId = ? ORDER BY v.versionId DESC";
 
   /**
    * @param conn
@@ -815,15 +839,18 @@ public class VersioningDAO {
 
     return result;
   }
+
   public static final String GET_LAST_VERSION_QUERY =
       "SELECT v.versionId, "
-      + " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
-      + " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
-      + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
-      + " FROM " + versionTableName + " v WHERE  " + " (v.documentId = ?) AND "
-      + " (versionMajorNumber = (select max(versionMajorNumber) FROM "
-      + versionTableName + " a WHERE "
-      + " a.documentId = ? AND a.versionType = 0 )  )";
+          +
+          " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
+          +
+          " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
+          + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
+          + " FROM " + versionTableName + " v WHERE  " + " (v.documentId = ?) AND "
+          + " (versionMajorNumber = (select max(versionMajorNumber) FROM "
+          + versionTableName + " a WHERE "
+          + " a.documentId = ? AND a.versionType = 0 )  )";
 
   /**
    * @param conn
@@ -961,6 +988,7 @@ public class VersioningDAO {
 
     return version;
   }
+
   public final static String DELETE_DOCUMENT = "delete from "
       + documentTableName + " where documentId = ? ";
   public final static String DELETE_DOCUMENT_HEADER = "delete from "
@@ -1017,6 +1045,7 @@ public class VersioningDAO {
       DBUtil.close(prepStmt);
     }
   }
+
   public static final String GET_ALL_PUBLIC_VERSIONS_QUERY = "SELECT versionId, "
       + " documentId, versionMajorNumber , versionMinorNumber, versionAuthorId, "
       + " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
@@ -1091,6 +1120,7 @@ public class VersioningDAO {
       deleteDocument(con, document.getPk());
     }
   }
+
   public static final String GET_ALL_FILES_RESERVED_QUERY = "SELECT d.documentId, "
       + " d.documentName, d.documentDescription, d.documentStatus, d.documentOwnerId, "
       + " d.documentCheckoutDate, d.documentInfo, d.foreignId, d.instanceId, d.typeWorkList, "
@@ -1534,6 +1564,7 @@ public class VersioningDAO {
 
     return results;
   }
+
   /**
    *
    */

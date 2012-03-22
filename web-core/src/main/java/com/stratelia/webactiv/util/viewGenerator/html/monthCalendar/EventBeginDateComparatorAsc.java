@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
 import com.silverpeas.util.StringUtil;
@@ -40,7 +41,7 @@ public class EventBeginDateComparatorAsc implements Comparator<Event> {
     String separator = ":";
     if (StringUtil.isDefined(startHour) && startHour.lastIndexOf(separator) != -1) {
       int hour = Integer.parseInt(startHour.substring(0, startHour.lastIndexOf(separator)));
-      int minutes = Integer.parseInt(startHour.substring(startHour.lastIndexOf(separator) + 1, 
+      int minutes = Integer.parseInt(startHour.substring(startHour.lastIndexOf(separator) + 1,
           startHour.length()));
       date1.set(Calendar.HOUR_OF_DAY, hour);
       date1.set(Calendar.MINUTE, minutes);
@@ -50,7 +51,7 @@ public class EventBeginDateComparatorAsc implements Comparator<Event> {
     startHour = e2.getStartHour();
     if (StringUtil.isDefined(startHour) && startHour.lastIndexOf(separator) != -1) {
       int hour = Integer.parseInt(startHour.substring(0, startHour.lastIndexOf(separator)));
-      int minutes = Integer.parseInt(startHour.substring(startHour.lastIndexOf(separator) + 1, 
+      int minutes = Integer.parseInt(startHour.substring(startHour.lastIndexOf(separator) + 1,
           startHour.length()));
       date2.set(Calendar.HOUR_OF_DAY, hour);
       date2.set(Calendar.MINUTE, minutes);

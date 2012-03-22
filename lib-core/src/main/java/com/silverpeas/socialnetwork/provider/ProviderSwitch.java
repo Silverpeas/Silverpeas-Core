@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.socialnetwork.provider;
 
 import com.silverpeas.calendar.Date;
@@ -88,21 +89,25 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    * @return List<SocialInformation>
    */
   @Override
-  public List<SocialInformation> getSocialInformationsList(SocialInformationType socialInformationType, String userId,
+  public List<SocialInformation> getSocialInformationsList(
+      SocialInformationType socialInformationType, String userId,
       String classification, Date begin, Date end) throws SocialNetworkException {
 
     List<SocialInformation> listResult = new ArrayList<SocialInformation>();
     try {
       switch (socialInformationType) {
         case EVENT:
-          listResult = getSocialEventsInterface().getSocialInformationsList(userId, classification, begin, end);
+          listResult =
+              getSocialEventsInterface().getSocialInformationsList(userId, classification, begin,
+              end);
           break;
         case PHOTO:
 
           listResult = getSocialGalleryInterface().getSocialInformationsList(userId, begin, end);
           break;
         case PUBLICATION:
-          listResult = getSocialPublicationsInterface().getSocialInformationsList(userId, begin, end);
+          listResult =
+              getSocialPublicationsInterface().getSocialInformationsList(userId, begin, end);
 
           break;
         case STATUS:
@@ -110,11 +115,13 @@ public class ProviderSwitch implements ProviderSwitchInterface {
           break;
 
         case RELATIONSHIP:
-          listResult = getSocialRelationShipsInterface().getSocialInformationsList(userId, begin, end);
+          listResult =
+              getSocialRelationShipsInterface().getSocialInformationsList(userId, begin, end);
           break;
 
         case LASTEVENT:
-          listResult = getSocialEventsInterface().getMyLastSocialInformationsList(userId, begin, end);
+          listResult =
+              getSocialEventsInterface().getMyLastSocialInformationsList(userId, begin, end);
           break;
 
         case ALL:
@@ -198,12 +205,8 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-
-   * get the List of social Informations of my contatcs according to the social information type
-   * and  my UserId
-   * , ids of my contacts
-   * ,limit
-   * and index
+   * get the List of social Informations of my contatcs according to the social information type and
+   * my UserId , ids of my contacts ,limit and index
    * @param socialInformationType
    * @param myId
    * @param myContactsIds the ids of my contacts
@@ -212,7 +215,8 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    * @return List<SocialInformation>
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(SocialInformationType socialInformationType,
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(
+      SocialInformationType socialInformationType,
       String myId, List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     List<SocialInformation> list = new ArrayList<SocialInformation>();
     try {
@@ -233,7 +237,9 @@ public class ProviderSwitch implements ProviderSwitchInterface {
           break;
 
         case STATUS:
-          list = getSocialStatusInterface().getSocialInformationsListOfMyContacts(myContactsIds, begin, end);
+          list =
+              getSocialStatusInterface().getSocialInformationsListOfMyContacts(myContactsIds,
+              begin, end);
           break;
 
         case RELATIONSHIP:

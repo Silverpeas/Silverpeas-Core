@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.indexEngine.parser;
 
 import java.lang.reflect.Constructor;
@@ -42,7 +46,7 @@ public final class ParserManager {
   /**
    * Set the parser for a given file format.
    * @param format
-   * @param parser  
+   * @param parser
    */
   static public void setParser(String format, Parser parser) {
     parserMap.put(format, parser);
@@ -50,7 +54,7 @@ public final class ParserManager {
 
   /**
    * Returns the set of all the known file formats. The returned set is a Set of String.
-   * @return 
+   * @return
    */
   static public Set<String> getFormatNames() {
     return parserMap.keySet();
@@ -58,8 +62,8 @@ public final class ParserManager {
 
   /**
    * Get the parser for a given file format.
-   * @param format 
-   * @return 
+   * @param format
+   * @return
    */
   static public Parser getParser(String format) {
     Parser parser = parserMap.get(format);
@@ -77,7 +81,7 @@ public final class ParserManager {
 
     try {
       ResourceLocator MyResource = new ResourceLocator(
-              "com.stratelia.webactiv.util.indexEngine.Parser", "");
+          "com.stratelia.webactiv.util.indexEngine.Parser", "");
 
       formatNames = MyResource.getKeys();
       while (formatNames.hasMoreElements()) {
@@ -101,18 +105,19 @@ public final class ParserManager {
 
           parserMap.put(name, parser);
           SilverTrace.debug("indexEngine", "ParserManager", "indexEngine.MSG_INIT_PARSER",
-                  name + ", " + newCall);
+              name + ", " + newCall);
 
         } catch (ClassNotFoundException e) {
           SilverTrace.error("indexEngine", "ParserManager", "indexEngine.MSG_UNKNOWN_PARSER_CLASS",
-                  name + ", " + className);
+              name + ", " + className);
         } catch (Exception e) {
           SilverTrace.fatal("indexEngine", "ParserManager",
-                  "indexEngine.MSG_PARSER_INITIALIZATION_FAILED", name);
+              "indexEngine.MSG_PARSER_INITIALIZATION_FAILED", name);
         }
       }
     } catch (MissingResourceException e) {
-      SilverTrace.fatal("indexEngine", "ParserManager", "indexEngine.MSG_MISSING_PARSER_PROPERTIES");
+      SilverTrace
+          .fatal("indexEngine", "ParserManager", "indexEngine.MSG_MISSING_PARSER_PROPERTIES");
     }
   }
 
@@ -166,6 +171,7 @@ public final class ParserManager {
     }
     return (Class[]) args.toArray(new Class[args.size()]);
   }
+
   /**
    * The map giving the parser for a specific file format. The type of this map is : Map (String ->
    * Parser).

@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.contentManager;
 
 import java.util.ArrayList;
@@ -50,7 +54,8 @@ public class ContentPeas {
       this.init("whitePages", "com.silverpeas.whitePages.control.WhitePagesContentManager",
           "whitePagesPDC", "admin", "user");
     } else if ("questionReply".equals(sContentDescriptorPath)) {
-      this.init("questionReply", "com.silverpeas.questionReply.control.QuestionReplyContentManager",
+      this.init("questionReply",
+          "com.silverpeas.questionReply.control.QuestionReplyContentManager",
           "questionReplyPDC", "admin", "publisher", "writer", "user");
     } else if ("kmelia".equals(sContentDescriptorPath)) {
       this.init("kmelia", "com.stratelia.webactiv.kmelia.KmeliaContentManager", "kmelia", "admin",
@@ -62,7 +67,8 @@ public class ContentPeas {
       this.init("toolbox", "com.stratelia.webactiv.kmelia.KmeliaContentManager", "kmelia", "admin",
           "publisher", "user");
     } else if ("quickinfo".equals(sContentDescriptorPath)) {
-      this.init("quickinfo", "com.stratelia.webactiv.quickinfo.QuickInfoContentManager", "quickinfo",
+      this.init("quickinfo", "com.stratelia.webactiv.quickinfo.QuickInfoContentManager",
+          "quickinfo",
           "admin", "publisher", "user");
     } else if ("almanach".equals(sContentDescriptorPath)) {
       this.init("almanach", "com.stratelia.webactiv.almanach.AlmanachContentManager", "almanach",
@@ -86,7 +92,8 @@ public class ContentPeas {
       this.init("infoLetter", "com.stratelia.silverpeas.infoLetter.InfoLetterContentManager",
           "infoLetter", "admin", "publisher", "user");
     } else if ("expertLocator".equals(sContentDescriptorPath)) {
-      this.init("expertLocator", "com.silverpeas.expertLocator.control.ExpertLocatorContentManager",
+      this.init("expertLocator",
+          "com.silverpeas.expertLocator.control.ExpertLocatorContentManager",
           "expertLocator", "admin", "user");
     } else if ("webSites".equals(sContentDescriptorPath)) {
       this.init("webSites", "com.stratelia.webactiv.webSites.WebSitesContentManager", "webSites",

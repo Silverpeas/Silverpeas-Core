@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -28,22 +28,20 @@ import java.io.Serializable;
 
 /**
  * This interface defines the features an immporter of serializable resources in Silverpeas have to
- * satisfy. All importer in Silverpeas should implement this interface.
- *
- * An importer in Silverpeas is defined for a specific type of serializable resources and it has the
- * responsability to know how to import them from a specific or a specified format.
+ * satisfy. All importer in Silverpeas should implement this interface. An importer in Silverpeas is
+ * defined for a specific type of serializable resources and it has the responsability to know how
+ * to import them from a specific or a specified format.
  * @param <T> The type of the serializable resources to import.
  */
 public interface Importer<T extends Serializable> {
 
   /**
    * Imports a serialized resource from either the reader or the input stream and according to the
-   * import parameters carried by the specified descriptor.
-   * The resource is deserialized in an instance of T.
+   * import parameters carried by the specified descriptor. The resource is deserialized in an
+   * instance of T.
    * @param descriptor the import descriptor in which information about the import process is
    * indicated.
-   * @throws ImportException when an unexpected error occurs while importing
-   * the resource.
+   * @throws ImportException when an unexpected error occurs while importing the resource.
    * @return an instance of T corresponfding to the imported resource.
    */
   T importFrom(final ImportDescriptor descriptor) throws ImportException;

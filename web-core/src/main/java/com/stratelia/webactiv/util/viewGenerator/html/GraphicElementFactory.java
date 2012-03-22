@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
@@ -114,7 +115,6 @@ public class GraphicElementFactory {
 
   /**
    * Constructor declaration
-   *
    * @param look
    * @see
    */
@@ -150,9 +150,8 @@ public class GraphicElementFactory {
 
   /**
    * Get the settings for the factory.
-   *
    * @return The ResourceLocator returned contains all default environment settings necessary to
-   *         know wich component to instanciate, but also to know how to generate html code.
+   * know wich component to instanciate, but also to know how to generate html code.
    */
   public static ResourceLocator getSettings() {
     return settings;
@@ -160,7 +159,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return Customer specific look settings if defined, default look settings otherwise
    * @see
    */
@@ -176,8 +174,8 @@ public class GraphicElementFactory {
       try {
         lookSettings =
             new ResourceLocator(
-                "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
-                silverpeasSettings);
+            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
+            silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined get the default silverpeas looks
         lookSettings = silverpeasSettings;
@@ -190,7 +188,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return the default look settings ResourceLocator
    * @see
    */
@@ -207,7 +204,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -217,7 +213,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @param look
    * @see
    */
@@ -269,7 +264,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -282,7 +276,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -359,7 +352,7 @@ public class GraphicElementFactory {
     // append javascript
     code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append(
         "';").append("</script>\n");
-    
+
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
@@ -372,7 +365,7 @@ public class GraphicElementFactory {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
     }
-    
+
     if (isComponentMainPage()) {
       code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
           "/util/javaScript/jquery/jquery.cookie.js\"></script>\n");
@@ -389,16 +382,20 @@ public class GraphicElementFactory {
   }
 
   /**
-   * Retrieve space look <br/> Look Style behavior algorithm is : <ul> <li>Use specific space look
-   * if defined</li> <li>else if use the user defined look settings</li> <li>else if use the default
-   * look settings</li> </ul>
-   *
+   * Retrieve space look <br/>
+   * Look Style behavior algorithm is :
+   * <ul>
+   * <li>Use specific space look if defined</li>
+   * <li>else if use the user defined look settings</li>
+   * <li>else if use the default look settings</li>
+   * </ul>
    * @param code the current state of the HTML produced for the header.
    */
   private void appendSpecificCSS(StringBuilder code) {
     if (StringUtil.isDefined(this.spaceId)) {
-      SpaceInstLight curSpace = mainSessionController.getOrganizationController().getSpaceInstLightById(
-              this.spaceId);
+      SpaceInstLight curSpace =
+          mainSessionController.getOrganizationController().getSpaceInstLightById(
+          this.spaceId);
       if (curSpace != null) {
         String spaceLookStyle = curSpace.getLook();
         getSpaceLook(code, curSpace, spaceLookStyle);
@@ -409,7 +406,7 @@ public class GraphicElementFactory {
   }
 
   /**
-   * @param code  the current state of the HTML produced for the header.
+   * @param code the current state of the HTML produced for the header.
    * @param curSpace
    * @param spaceLookStyle
    */
@@ -437,7 +434,6 @@ public class GraphicElementFactory {
 
   /**
    * Append the default look CSS.
-   *
    * @param code the current state of the HTML produced for the header.
    */
   private void appendDefaultLookCSS(StringBuilder code) {
@@ -453,13 +449,13 @@ public class GraphicElementFactory {
   /**
    * Some logical components have got the same technical component. For example, "toolbox" component
    * is technically "kmelia"
-   *
    * @return the "implementation" name of the given component
    */
   private String getGenericComponentName(String componentName) {
     if ("toolbox".equalsIgnoreCase(componentName) || "kmax".equalsIgnoreCase(componentName)) {
       return "kmelia";
-    } if ("pollingstation".equalsIgnoreCase(componentName)) {
+    }
+    if ("pollingstation".equalsIgnoreCase(componentName)) {
       return "survey";
     }
     return componentName;
@@ -492,7 +488,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -504,7 +499,6 @@ public class GraphicElementFactory {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -520,12 +514,11 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new button.
-   *
-   * @param label    The new button label
-   * @param action   The action associated exemple : "javascript:onClick=history.back()", or
-   *                 "http://www.stratelia.com/"
+   * @param label The new button label
+   * @param action The action associated exemple : "javascript:onClick=history.back()", or
+   * "http://www.stratelia.com/"
    * @param disabled Specify if the button is disabled or not. If disabled, no action will be
-   *                 possible.
+   * possible.
    * @return returns an object implementing the FormButton interface. That's the new button to use.
    */
   public Button getFormButton(String label, String action, boolean disabled) {
@@ -545,7 +538,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new frame.
-   *
    * @param title The new frame title
    * @return returns an object implementing the Frame interface. That's the new frame to use.
    */
@@ -565,7 +557,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new board.
-   *
    * @return returns an object implementing the Board interface. That's the new board to use.
    */
   public Board getBoard() {
@@ -584,7 +575,6 @@ public class GraphicElementFactory {
 
   /**
    * Construct a new navigation list.
-   *
    * @return returns an object implementing the NavigationList interface.
    */
   public NavigationList getNavigationList() {
@@ -602,16 +592,13 @@ public class GraphicElementFactory {
     return navigationList;
   }
 
-
-
   /**
    * Construct a new button.
-   *
-   * @param label     The new button label
-   * @param action    The action associated exemple : "javascript:history.back()", or
-   *                  "http://www.stratelia.com/"
-   * @param disabled  Specify if the button is disabled or not. If disabled, no action will be
-   *                  possible.
+   * @param label The new button label
+   * @param action The action associated exemple : "javascript:history.back()", or
+   * "http://www.stratelia.com/"
+   * @param disabled Specify if the button is disabled or not. If disabled, no action will be
+   * possible.
    * @param imagePath The path where the images needed to display buttons will be found.
    * @return returns an object implementing the FormButton interface. That's the new button to use.
    * @deprecated
@@ -623,7 +610,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new TabbedPane.
-   *
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane() {
@@ -645,7 +631,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new TabbedPane.
-   *
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane(int nbLines) {
@@ -667,13 +652,11 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ArrayPane.
-   *
-   * @param name        The name from your array. This name has to be unique in the session. It will
-   *                    be used to put some information (including the sorted column), in the
-   *                    session. exemple : "MyToDoArrayPane"
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
    * @param pageContext The page context computed by the servlet or JSP. The PageContext is used to
-   *                    both get new request (sort on a new column), and keep the current state (via
-   *                    the session).
+   * both get new request (sort on a new column), and keep the current state (via the session).
    * @return An object implementing the ArrayPane interface.
    * @deprecated
    */
@@ -697,10 +680,9 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ArrayPane.
-   *
-   * @param name    The name from your array. This name has to be unique in the session. It will be
-   *                used to put some information (including the sorted column), in the session.
-   *                exemple : "MyToDoArrayPane"
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
    * @param request The http request (to get entering action, like sort operation)
    * @param session The client session (to get the old status, like on which column we are sorted)
    * @return An object implementing the ArrayPane interface.
@@ -724,12 +706,11 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ArrayPane.
-   *
-   * @param name    The name from your array. This name has to be unique in the session. It will be
-   *                used to put some information (including the sorted column), in the session.
-   *                exemple : "MyToDoArrayPane"
-   * @param url     The url to root sorting action. This url can contain parameters. exemple :
-   *                http://localhost/webactiv/Rkmelia/topicManager?topicId=12
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
+   * @param url The url to root sorting action. This url can contain parameters. exemple :
+   * http://localhost/webactiv/Rkmelia/topicManager?topicId=12
    * @param request The http request (to get entering action, like sort operation)
    * @param session The client session (to get the old status, like on which column we are sorted)
    * @return An object implementing the ArrayPane interface.
@@ -753,7 +734,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new main Window using the object specified in the properties.
-   *
    * @return An object implementing Window interface
    */
   public Window getWindow() {
@@ -773,7 +753,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new ButtonPane.
-   *
    * @return An object implementing the ButtonPane interface
    */
   public ButtonPane getButtonPane() {
@@ -791,7 +770,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new IconPane.
-   *
    * @return An object implementing the IconPane interface.
    */
   public IconPane getIconPane() {
@@ -807,7 +785,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new FormPane.
-   *
    * @param name
    * @param actionURL
    * @param pageContext
@@ -820,7 +797,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new OperationPane.
-   *
    * @return An object implementing the OperationPane interface.
    */
   public OperationPane getOperationPane() {
@@ -839,7 +815,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new BrowseBar.
-   *
    * @return An object implementing the BrowseBar interface.
    */
   public BrowseBar getBrowseBar() {
@@ -861,7 +836,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new monthCalendar.
-   *
    * @param String : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
@@ -871,7 +845,6 @@ public class GraphicElementFactory {
 
   /**
    * Build a new Calendar.
-   *
    * @param String : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
@@ -928,14 +901,14 @@ public class GraphicElementFactory {
   public MainSessionController getMainSessionController() {
     return mainSessionController;
   }
-  
+
   public void setHttpRequest(HttpServletRequest request) {
     HttpSession session = request.getSession(true);
     mainSessionController =
         (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
     componentMainPage = request.getRequestURI().endsWith("/Main");
   }
-  
+
   public boolean isComponentMainPage() {
     return componentMainPage;
   }
@@ -956,7 +929,6 @@ public class GraphicElementFactory {
 
   /**
    * Retrieve default look name
-   *
    * @return user personal look settings if defined, default look settings otherwise
    */
   public String getDefaultLookName() {

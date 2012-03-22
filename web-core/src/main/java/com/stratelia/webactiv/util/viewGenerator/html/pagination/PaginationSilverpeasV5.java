@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
 public class PaginationSilverpeasV5 extends AbstractPagination {
@@ -59,7 +60,8 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
   public String printIndex(String javascriptFunc) {
     StringBuilder result = new StringBuilder();
     if (getNbItems() > 0 && getNbItems() > getNbItemsPerPage()) {
-      result.append(
+      result
+          .append(
           "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
       result.append("<tr valign=\"middle\" class=\"intfdcolor\">");
       result.append("<td align=\"center\">");
@@ -118,7 +120,8 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
         }
 
         result.append("\"><img src=\"").append(getIconsPath()).append(
-            "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"").append(altNextPage).
+            "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"").append(altNextPage)
+            .
             append("\"/></a>");
       } else {
         result.append("&#160;&#160;&#160;");

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -64,7 +64,7 @@ public class TreeBmImpl implements TreeBm {
     try {
       List<TreeNodePersistence> roots =
           (List<TreeNodePersistence>) getDAO().findByWhereClause(new TreeNodePK("useless"),
-              whereClause);
+          whereClause);
       if (roots.size() > 0) {
         SilverTrace.info("treeManager", "TreeManagerBmImpl.getRoot()",
             "root.MSG_GEN_PARAM_VALUE", "roots.size() = " + roots.size());
@@ -674,7 +674,7 @@ public class TreeBmImpl implements TreeBm {
       String whereClause = "name = '" + encode(nodeName) + "'";
       nodes =
           (List<TreeNodePersistence>) getDAO().findByWhereClause(con, new TreeNodePK("useless"),
-              whereClause);
+          whereClause);
       result = persistence2TreeNode(con, nodes);
     } catch (PersistenceException pe) {
       throw new TreeManagerException("TreeBmImpl.getNodesByName()",

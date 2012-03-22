@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.node.ejb;
 
 import java.sql.Connection;
@@ -179,7 +180,6 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Create a new Node object.
-   *
    * @param nd the NodeDetail which contains data
    * @return the NodePK of the new Node
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
@@ -253,7 +253,6 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Create an instance of a Node object.
-   *
    * @param pk the PK of the Node to instanciate
    * @return the NodePK of the instanciated Node if it exists in database
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
@@ -296,13 +295,15 @@ public class NodeEJB implements EntityBean {
             "root.EX_CANT_FIND_ENTITY",
             "name = " + name
             + ", component = " + pk.getComponentName() + ", parent ID = " + nodeFatherId);
-        throw new ObjectNotFoundException("Cannot find node named " + name + ", component " + pk.getComponentName()
+        throw new ObjectNotFoundException("Cannot find node named " + name + ", component " +
+            pk.getComponentName()
             + ", parent ID " + nodeFatherId);
       }
     } catch (SQLException e) {
       throw new NodeRuntimeException("NodeEJB.ejbFindByNameAndFatherId()",
           SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_FIND_ENTITY", "name = " + name + ", component = " + pk.getComponentName() + ", parent ID = "
+          "root.EX_CANT_FIND_ENTITY", "name = " + name + ", component = " + pk.getComponentName() +
+          ", parent ID = "
           + nodeFatherId, e);
     } finally {
       freeConnection(con);
@@ -372,12 +373,12 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Load node attributes from database.
-  @Override
+   * @Override
    * @since 1.0
    */
   @Override
   public void ejbLoad() {
-        Connection con = getConnection();
+    Connection con = getConnection();
     try {
       NodeDetail nodeDetail = NodeDAO.loadRow(con, nodePK);
       this.name = nodeDetail.getName();

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -70,8 +71,7 @@ public abstract class Schema {
       this.connection = src.getConnection();
       if (!this.connection.getAutoCommit()) {
         managed = true;
-      }
-      else {
+      } else {
         managed = false;
         this.connection.setAutoCommit(false);
       }
@@ -129,10 +129,9 @@ public abstract class Schema {
   public synchronized void close() {
     SilverTrace.info("util", "Schema.close()", "root.MSG_GEN_ENTER_METHOD");
     /*
-    for (Object o : statementsMap.values()) {
-      DBUtil.close((Statement) o);
-    }
-    statementsMap.clear();*/
+     * for (Object o : statementsMap.values()) { DBUtil.close((Statement) o); }
+     * statementsMap.clear();
+     */
     try {
       DBUtil.close(this.connection);
     } finally {
@@ -164,7 +163,6 @@ public abstract class Schema {
 
   /**
    * Return the value of the managed property.
-   *
    * @return the value of managed.
    */
   public boolean isManaged() {
@@ -183,7 +181,6 @@ public abstract class Schema {
     return statement;
   }
 
-
   public synchronized Connection getConnection() {
     if (!isOk() && isLocalConnection) {
       SilverTrace.info("util", "Schema.getConnection", "root.MSG_GEN_ENTER_METHOD",
@@ -193,8 +190,7 @@ public abstract class Schema {
       } catch (UtilException e) {
         SilverTrace.error("util", "Schema.getConnection", "util.CAN_T_CLOSE_CONNECTION", e);
       }
-    }
-    else {
+    } else {
       SilverTrace.info("util", "Schema.getConnection",
           "root.MSG_GEN_ENTER_METHOD", "Connection Verified");
     }

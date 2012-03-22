@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.rest;
 
 import javax.inject.Inject;
@@ -92,7 +93,6 @@ public abstract class RESTWebService {
    * bootstrapping, an instance of access controller is created and injected as dependency in each
    * new REST web service instance (for doing, the web service must be managed by an IoC container).
    * This method is mainly for testing purpose.
-   *
    * @param accessController the access controller to set.
    */
   protected void setAccessController(final AccessController<String> accessController) {
@@ -104,7 +104,6 @@ public abstract class RESTWebService {
    * Silverpeas bootstrapping, a service for session management is created and injected as
    * dependency in each new REST web service instance (for doing, the web service must be managed by
    * an IoC container). This method is mainly for testing purpose.
-   *
    * @param sessionManager the session manager to set.
    */
   protected void setSessionManager(final SessionManagement sessionManager) {
@@ -113,14 +112,12 @@ public abstract class RESTWebService {
 
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
-   *
    * @return the identifier of the Silverpeas component instance.
    */
   abstract protected String getComponentId();
 
   /**
    * Gets information about the URI with which this web service was invoked.
-   *
    * @return an UriInfo instance.
    */
   protected UriInfo getUriInfo() {
@@ -129,7 +126,6 @@ public abstract class RESTWebService {
 
   /**
    * Gets the HTTP servlet context mapped with this web service.
-   *
    * @return the HTTP servlet context.
    */
   protected HttpServletRequest getHttpServletContext() {
@@ -142,7 +138,6 @@ public abstract class RESTWebService {
    * authentication operation followed by an authorization validation. If the identification or the
    * authorization fails, then a WebApplicationException is thrown with respectively a HTTP status
    * code UNAUTHORIZED (401) or FORBIDEN (403).
-   *
    * @return the detail about the user.
    */
   protected UserDetail getUserDetail() {
@@ -159,7 +154,6 @@ public abstract class RESTWebService {
    * identification or the authorization fails, then a WebApplicationException is thrown with
    * respectively a HTTP status code UNAUTHORIZED (401) or FORBIDEN (403). If the preferences can be
    * retrieved, then null is returned.
-   *
    * @return the user preference or null if its preferences can be retrieved.
    */
   protected UserPreferences getUserPreferences() {
@@ -171,24 +165,21 @@ public abstract class RESTWebService {
    * Checks the user that requested this web service has the correct priviledges to access the
    * underlying referenced resource that belongs to a Silverpeas component instance. For doing, the
    * resource should exists, otherwise a WebApplicationException is thrown with a status code NOT
-   * FOUND (404).
-   * 
-   * This method should be called at each incoming request processing to ensure a strong security. User
-   * information is retreived from the context of the incoming HTTP request. If no user information
-   * can be retrieved, then a WebApplicationException is thrown with a status code UNAUTHORIZED
-   * (401). When the check fails, a WebApplicationException is thrown with the HTTP status code set
-   * according to the failure.
+   * FOUND (404). This method should be called at each incoming request processing to ensure a
+   * strong security. User information is retreived from the context of the incoming HTTP request.
+   * If no user information can be retrieved, then a WebApplicationException is thrown with a status
+   * code UNAUTHORIZED (401). When the check fails, a WebApplicationException is thrown with the
+   * HTTP status code set according to the failure.
    */
   protected void checkUserPriviledges() {
     checkComponentInstanceExistance(getComponentId());
     checkUserAuthentication();
     checkUserAuthorizationOnComponent(getComponentId());
   }
-  
+
   /**
-   * Checks the component instance requested in the URI exists in Silverpeas.
-   * If no such component exists, then a WebApplicationException is thrown with a HTTP status code
-   * NOT FOUND (404).
+   * Checks the component instance requested in the URI exists in Silverpeas. If no such component
+   * exists, then a WebApplicationException is thrown with a HTTP status code NOT FOUND (404).
    * @param componentId the unique identifier of the component instance.
    */
   private void checkComponentInstanceExistance(String componentId) {
@@ -198,11 +189,10 @@ public abstract class RESTWebService {
   }
 
   /**
-   * Checks the user that requested the resource backed by this web service  is authorized to access
+   * Checks the user that requested the resource backed by this web service is authorized to access
    * the specified Silverpeas component instance. If the user isn't authorized to access the
    * specified component, then a WebApplicationException exception is thrown with a HTTP status code
    * FORBIDDEN (403).
-   *
    * @param componentId the identifier of the Silverpeas component instance.
    */
   private void checkUserAuthorizationOnComponent(String componentId) {
@@ -216,11 +206,14 @@ public abstract class RESTWebService {
    * Once the authentication succeed, the identification of the user is done and detail about it can
    * then be got by a getUserDetail() method call.
    * <p/>
-   * The authentication checking is performed by following steps: <ul> <li>checks if an active HTTP
-   * session exists for the user,</li> <li>if no active HTTP session is available for the user,
-   * authenticates him with the credentials passed in the header of the HTTP request,</li> <li>if
-   * neither credentials are available nor the credentials are valid nor the session key is valid, a
-   * WebApplicationException exception is thrown with as HTTP status code UNAUTHORIZED (401).</li>
+   * The authentication checking is performed by following steps:
+   * <ul>
+   * <li>checks if an active HTTP session exists for the user,</li>
+   * <li>if no active HTTP session is available for the user, authenticates him with the credentials
+   * passed in the header of the HTTP request,</li>
+   * <li>if neither credentials are available nor the credentials are valid nor the session key is
+   * valid, a WebApplicationException exception is thrown with as HTTP status code UNAUTHORIZED
+   * (401).</li>
    * </ul>
    */
   private void checkUserAuthentication() {
@@ -238,9 +231,8 @@ public abstract class RESTWebService {
    * is then retrieved from the current HTTP session if any. If the incoming request isn't sent
    * within an active HTTP session, then an empty string is returned as no HTTP session was defined
    * for the current request.
-   *
    * @return the user session key or an empty string if no HTTP session is active for the current
-   *         request.
+   * request.
    */
   private String getUserSessionKey() {
     String sessionId = sessionKey;
@@ -262,7 +254,6 @@ public abstract class RESTWebService {
    * session, when a request is recieved by this web service and that request does neither belong to
    * an opened session nor carries autentication information, it is accepted only if the anonymous
    * access is authorized; in that case, the request is attached to the anonymous user account.
-   *
    * @param sessionKey the user session key.
    * @return the detail about the user requesting this web service.
    */
@@ -284,7 +275,6 @@ public abstract class RESTWebService {
    * taking into account the Silverpeas security doesn't satisfy the JAAS way. Once JAAS supported
    * in Silverpeas, the web services should use the SecurityContext instead of the credentials token
    * passed in the header of HTTP requests.
-   *
    * @return the detail about the authenticated user requested this web service.
    */
   private UserDetail authenticateUser(String userCredentials) {
@@ -303,13 +293,12 @@ public abstract class RESTWebService {
 
   /**
    * Gets the controller of user access on the silverpeas resources.
-   *
    * @return the user access controller.
    */
   private AccessController<String> getAccessController() {
     return accessController;
   }
-  
+
   /**
    * Gets the organization controller.
    * @return an OrganizationController instance.
@@ -320,7 +309,6 @@ public abstract class RESTWebService {
 
   /**
    * Gets the session manager to use to control the user authentication.
-   *
    * @return the user session manager.
    */
   private SessionManagement getSessionManagement() {

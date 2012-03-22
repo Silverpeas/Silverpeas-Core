@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +31,7 @@ import java.util.Vector;
 public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   private final static String line = "</ul>\n<ul>";
+
   /**
    * Constructor declaration
    * @see
@@ -86,13 +87,13 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");
     result.append("<div class=\"bd\">");
     result.append("<ul class=\"first-of-type\">");
-    
+
     // prevents to display a line as last entry
     String lastElement = stack.lastElement();
     if (lastElement.equals(line)) {
-      stack.removeElementAt(stack.size()-1);
+      stack.removeElementAt(stack.size() - 1);
     }
-    
+
     String lastItem = "";
     for (String item : stack) {
       if (!item.equals(lastItem)) {

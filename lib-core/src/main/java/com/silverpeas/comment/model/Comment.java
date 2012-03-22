@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,8 +66,9 @@ public class Comment implements SilverpeasContent {
     init(pk, foreign_key, owner_id, message, creation_date,
         modification_date);
   }
-  
-  public Comment(CommentPK pk, WAPrimaryKey contentPk, String authorId, String message, Date creationDate,
+
+  public Comment(CommentPK pk, WAPrimaryKey contentPk, String authorId, String message,
+      Date creationDate,
       Date modificationDate) {
     init(pk, contentPk, Integer.valueOf(authorId), message, creationDate, modificationDate);
   }
@@ -127,7 +128,7 @@ public class Comment implements SilverpeasContent {
     }
     return date;
   }
-  
+
   public UserDetail getOwnerDetail() {
     return getCreator();
   }
@@ -175,7 +176,7 @@ public class Comment implements SilverpeasContent {
   public String getComponentInstanceId() {
     return pk.getInstanceId();
   }
-  
+
   private OrganizationController getOrganizationController() {
     OrganizationControllerFactory factory = OrganizationControllerFactory.getFactory();
     return factory.getOrganizationController();

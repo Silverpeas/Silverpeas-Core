@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.thumbnail;
 
 import java.sql.Connection;
@@ -36,8 +37,8 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class ThumbnailInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
-  private ThumbnailService thumbnailService = null;	
-	
+  private ThumbnailService thumbnailService = null;
+
   public ThumbnailInstanciator() {
   }
 
@@ -46,46 +47,46 @@ public class ThumbnailInstanciator extends SQLRequest implements ComponentsInsta
   }
 
   private ThumbnailService getThumbnailBm() {
-	if (thumbnailService == null) {
-		thumbnailService = new ThumbnailServiceImpl();
-	}
-	return thumbnailService;
+    if (thumbnailService == null) {
+      thumbnailService = new ThumbnailServiceImpl();
+    }
+    return thumbnailService;
   }
-	
-	@Override
-	public void create(Connection connection, String spaceId, String componentId,
-			String userId) throws InstanciationException {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void delete(Connection connection, String spaceId, String componentId,
-			String userId) throws InstanciationException {
-		 SilverTrace.info("thumbnail", "ThumbnailInstanciator.delete()",
-			        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
-	
-			    // 1 - delete data in database
-			    try {
-			    	getThumbnailBm().deleteAllThumbnail(componentId);
-			    } catch (Exception e) {
-			      throw new InstanciationException("ThumbnailInstanciator.delete()",
-			          InstanciationException.ERROR, "root.EX_RECORD_DELETE_FAILED", e);
-			    }
-	
-			    // 2 - delete directory where files are stored
-			    String[] ctx = { "thumbnail" };
-			    String path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
-			    try {
-			      FileFolderManager.deleteFolder(path);
-			    } catch (Exception e) {
-			      throw new InstanciationException("ThumbnailInstanciator.delete()",
-			          InstanciationException.ERROR, "root.DELETING_DATA_DIRECTORY_FAILED",
-			          e);
-			    }
-			    SilverTrace.info("thumbnail", "ThumbnailInstanciator.delete()",
-		        "root.MSG_GEN_EXIT_METHOD");
-		
-	}
-  
+  @Override
+  public void create(Connection connection, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void delete(Connection connection, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("thumbnail", "ThumbnailInstanciator.delete()",
+        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
+
+    // 1 - delete data in database
+    try {
+      getThumbnailBm().deleteAllThumbnail(componentId);
+    } catch (Exception e) {
+      throw new InstanciationException("ThumbnailInstanciator.delete()",
+          InstanciationException.ERROR, "root.EX_RECORD_DELETE_FAILED", e);
+    }
+
+    // 2 - delete directory where files are stored
+    String[] ctx = { "thumbnail" };
+    String path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
+    try {
+      FileFolderManager.deleteFolder(path);
+    } catch (Exception e) {
+      throw new InstanciationException("ThumbnailInstanciator.delete()",
+          InstanciationException.ERROR, "root.DELETING_DATA_DIRECTORY_FAILED",
+          e);
+    }
+    SilverTrace.info("thumbnail", "ThumbnailInstanciator.delete()",
+        "root.MSG_GEN_EXIT_METHOD");
+
+  }
+
 }

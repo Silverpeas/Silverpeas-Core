@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.comment.web;
 
 import org.springframework.web.context.ContextLoaderListener;
@@ -59,7 +60,6 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Creates an new comment author entity from the specified user.
-   *
    * @param user the user to entitify.
    * @return the comment writer.
    */
@@ -69,7 +69,6 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the relative path of the user avatar.
-   *
    * @return the relative path of the URI refering the user avatar.
    */
   public String getAvatar() {
@@ -78,7 +77,6 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Sets the URL at which is located the user's avatar.
-   *
    * @param avatarURL the URL of the user's avatar.
    */
   public void setAvatar(String avatarURL) {
@@ -87,7 +85,6 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the unique identifier of the author.
-   *
    * @return the user identifier.
    */
   public String getId() {
@@ -96,7 +93,6 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the full name of the author (both the first name and the last name).
-   *
    * @return the user full name.
    */
   public String getFullName() {
@@ -105,9 +101,8 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the prefered language of the author.
-   *
    * @return the language code of the author according to the ISO 639-1 standard (for example fr for
-   *         french).
+   * french).
    */
   public String getLanguage() {
     return this.language;
@@ -143,12 +138,11 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets a user detail from this entity.
-   *
    * @return a UserDetail instance.
    */
   public UserDetail toUser() {
     OrganizationController controller = OrganizationControllerFactory.getFactory().
-            getOrganizationController();
+        getOrganizationController();
     return controller.getUserDetail(id);
   }
 
@@ -177,7 +171,6 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the preference of this author.
-   *
    * @return the preferences of the user or null if its preferences cannot be retrieved.
    */
   @XmlTransient
