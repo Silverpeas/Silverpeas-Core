@@ -25,12 +25,15 @@
 package com.stratelia.webactiv.util.statistic.control;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJBObject;
 
 import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 
@@ -70,7 +73,6 @@ public interface StatisticBm extends EJBObject {
    * @param foreignPK
    * @return
    * @throws RemoteException
-   * @see
    */
   public void deleteHistoryByAction(ForeignPK foreignPK, int action,
       String objectType) throws RemoteException;
@@ -81,7 +83,6 @@ public interface StatisticBm extends EJBObject {
    * @param action
    * @return
    * @throws RemoteException
-   * @see
    */
   public int getCount(List<ForeignPK> foreignPKs, int action, String objectType)
       throws RemoteException;
@@ -92,7 +93,6 @@ public interface StatisticBm extends EJBObject {
    * @param action
    * @return
    * @throws RemoteException
-   * @see
    */
   public int getCount(ForeignPK foreignPK, int action, String objectType)
       throws RemoteException;
@@ -102,7 +102,6 @@ public interface StatisticBm extends EJBObject {
    * @param foreignPK
    * @return
    * @throws RemoteException
-   * @see
    */
   public int getCount(ForeignPK foreignPK, String objectType)
       throws RemoteException;
@@ -117,4 +116,28 @@ public interface StatisticBm extends EJBObject {
    */
   public void moveStat(ForeignPK toForeignPK, int actionType, String objectType)
       throws RemoteException;
+
+  /**
+   * @param foreignPKs
+   * @param objectType String representation of an object type
+   * @param startDate the start date
+   * @param endDate the end date
+   * @return the number of access over a list of publications between startDate and endDate
+   * @throws RemoteException
+   */
+  public int getCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
+      Date startDate, Date endDate) throws RemoteException;
+
+  /**
+   * @param primaryKey
+   * @param objectType String representation of an object type
+   * @param startDate the start date
+   * @param endDate the end date
+   * @param userId the user identifier
+   * @return the number of access over a list of publications between startDate and endDate for specific user 
+   * @throws SQLException
+   */
+  public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType, Date startDate,
+      Date endDate, List<String> userIds) throws RemoteException;
+
 }

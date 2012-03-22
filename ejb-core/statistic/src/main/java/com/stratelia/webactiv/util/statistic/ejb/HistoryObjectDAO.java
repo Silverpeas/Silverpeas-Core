@@ -41,6 +41,7 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -53,6 +54,22 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
  * @author
  */
 public class HistoryObjectDAO {
+
+  private static final String QUERY_STATISTIC_INSERT =
+      "INSERT INTO SB_Statistic_History VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  private static final String QUERY_STATISTIC_DELETE =
+      "DELETE FROM SB_Statistic_History WHERE objectId = ? AND componentId = ? AND objectType = ?";
+
+  private static final String QUERY_STATISTIC_COUNT =
+      "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ?";
+
+  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD =
+      "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ? AND datestat >= ? AND datestat < ?";
+
+  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER =
+      "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ? AND datestat >= ? AND datestat < ? AND userid = ?";
+
   /**
    * Method declaration
    * @param rs
@@ -68,7 +85,7 @@ public class HistoryObjectDAO {
       String space, String componentName) throws SQLException {
     List<HistoryNodePublicationActorDetail> list =
         new ArrayList<HistoryNodePublicationActorDetail>();
-    java.util.Date date;
+    Date date;
     String actorId = "";
     String nodeId = "";
     String pubId = "";
@@ -129,8 +146,7 @@ public class HistoryObjectDAO {
       userId = rs.getString(3);
       foreignId = String.valueOf(rs.getInt(4));
       ForeignPK foreignPK = new ForeignPK(foreignId, componentName);
-      HistoryObjectDetail detail = new HistoryObjectDetail(date, userId,
-          foreignPK);
+      HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, foreignPK);
 
       list.add(detail);
     }
@@ -159,25 +175,23 @@ public class HistoryObjectDAO {
   public static void add(Connection con, String tableName, String userId,
       ForeignPK foreignPK, int actionType, String objectType)
       throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.add",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String insertStatement = "insert into " + tableName
-        + " values (?, ?, ?, ?, ?, ?, ?)";
+    SilverTrace.info("statistic", "HistoryObjectDAO.add", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
 
     try {
-      prepStmt = con.prepareStatement(insertStatement);
+      prepStmt = con.prepareStatement(QUERY_STATISTIC_INSERT);
       prepStmt.setString(1, DateUtil.today2SQLDate());
       Calendar calendar = Calendar.getInstance(Locale.FRENCH);
       int hourInt = calendar.get(Calendar.HOUR_OF_DAY);
       String hour = Integer.toString(hourInt);
-      if (hourInt < 10)
+      if (hourInt < 10) {
         hour = "0" + hour;
+      }
       int minuteInt = calendar.get(Calendar.MINUTE);
       String minute = Integer.toString(minuteInt);
-      if (minuteInt < 10)
+      if (minuteInt < 10) {
         minute = "0" + minute;
+      }
       String time = hour + ":" + minute;
       prepStmt.setString(2, time);
       prepStmt.setString(3, userId);
@@ -207,7 +221,7 @@ public class HistoryObjectDAO {
         "root.MSG_GEN_ENTER_METHOD");
     String space = foreignPK.getSpace();
     String componentName = foreignPK.getComponentName();
-    String selectStatement = "select * " + "from " + tableName
+    String selectStatement = "select * from " + tableName
         + " where objectId=" + foreignPK.getId() + " and componentId='"
         + foreignPK.getInstanceId() + "'" + " and objectType='" + objectType
         + "'";
@@ -231,7 +245,7 @@ public class HistoryObjectDAO {
         "root.MSG_GEN_ENTER_METHOD");
     String space = foreignPK.getSpace();
     String componentName = foreignPK.getComponentName();
-    String selectStatement = "select * " + "from " + tableName
+    String selectStatement = "select * from " + tableName
         + " where objectId=" + foreignPK.getId() + " and componentId='"
         + foreignPK.getInstanceId() + "'" + " and objectType='" + objectType
         + "'" + " and userId ='" + userId + "'"
@@ -257,16 +271,13 @@ public class HistoryObjectDAO {
    * @throws SQLException
    * @see
    */
-  public static void deleteHistoryByObject(Connection con, String tableName,
-      ForeignPK foreignPK, String objectType) throws SQLException {
+  public static void deleteHistoryByObject(Connection con, String tableName, ForeignPK foreignPK,
+      String objectType) throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.deleteHistoryByObject",
         "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
-      String query = "delete from " + tableName
-          + " where objectId = ? and componentId = ? and objectType = ?";
-
-      prepStmt = con.prepareStatement(query);
+      prepStmt = con.prepareStatement(QUERY_STATISTIC_DELETE);
       prepStmt.setInt(1, Integer.parseInt(foreignPK.getId()));
       prepStmt.setString(2, foreignPK.getInstanceId());
       prepStmt.setString(3, objectType);
@@ -282,9 +293,7 @@ public class HistoryObjectDAO {
     if (!foreignPKs.isEmpty()) {
       Iterator<ForeignPK> iterator = foreignPKs.iterator();
       for (; iterator.hasNext();) {
-        nb = nb
-            + getCount(con, iterator.next(), action, tableName,
-            objectType);
+        nb = nb + getCount(con, iterator.next(), action, tableName, objectType);
       }
     }
     return nb;
@@ -293,16 +302,13 @@ public class HistoryObjectDAO {
   public static int getCount(Connection con, ForeignPK foreignPK, int action,
       String tableName, String objectType) throws SQLException {
     int nb = 0;
-    SilverTrace.info("statistic", "HistoryObjectDAO.getCount",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("statistic", "HistoryObjectDAO.getCount", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String selectQuery = "select count(objectId) from " + tableName
-        + " where ObjectId=? and ComponentId=? and objectType = ?";
     String foreignId = foreignPK.getId();
     String instanceId = foreignPK.getInstanceId();
     try {
-      prepStmt = con.prepareStatement(selectQuery);
+      prepStmt = con.prepareStatement(QUERY_STATISTIC_COUNT);
       prepStmt.setInt(1, Integer.parseInt(foreignId));
       prepStmt.setString(2, instanceId);
       prepStmt.setString(3, objectType);
@@ -316,13 +322,65 @@ public class HistoryObjectDAO {
     }
   }
 
+  public static int getCountByPeriod(Connection con, WAPrimaryKey primaryKey, String objectType,
+      Date startDate, Date endDate) throws SQLException {
+    int nb = 0;
+    SilverTrace.info("statistic", "HistoryObjectDAO.getCountBYPeriod", "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    String foreignId = primaryKey.getId();
+    String instanceId = primaryKey.getInstanceId();
+    try {
+      prepStmt = con.prepareStatement(QUERY_STATISTIC_COUNT_BY_PERIOD);
+      prepStmt.setInt(1, Integer.parseInt(foreignId));
+      prepStmt.setString(2, instanceId);
+      prepStmt.setString(3, objectType);
+      prepStmt.setString(4, DateUtil.date2SQLDate(startDate));
+      prepStmt.setString(5, DateUtil.date2SQLDate(endDate));
+      rs = prepStmt.executeQuery();
+      if (rs.next()) {
+        nb = rs.getInt(1);
+      }
+      return nb;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  public static int getCountByPeriodAndUser(Connection con, WAPrimaryKey primaryKey, String objectType,
+      Date startDate, Date endDate, String userId) throws SQLException {
+    int nb = 0;
+    SilverTrace.info("statistic", "HistoryObjectDAO.getCountBYPeriod", "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    String foreignId = primaryKey.getId();
+    String instanceId = primaryKey.getInstanceId();
+    try {
+      prepStmt = con.prepareStatement(QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER);
+      prepStmt.setInt(1, Integer.parseInt(foreignId));
+      prepStmt.setString(2, instanceId);
+      prepStmt.setString(3, objectType);
+      prepStmt.setString(4, DateUtil.date2SQLDate(startDate));
+      prepStmt.setString(5, DateUtil.date2SQLDate(endDate));
+      prepStmt.setString(6, userId);
+      rs = prepStmt.executeQuery();
+      if (rs.next()) {
+        nb = rs.getInt(1);
+      }
+      return nb;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  
   public static void move(Connection con, String tableName, ForeignPK toForeignPK, int actionType,
       String objectType) throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.move", "root.MSG_GEN_ENTER_METHOD");
 
     String insertStatement =
         "update " + tableName +
-        " set componentId = ? where objectId = ? and actionType = ? and objectType = ?";
+            " set componentId = ? where objectId = ? and actionType = ? and objectType = ?";
     PreparedStatement prepStmt = null;
 
     try {
