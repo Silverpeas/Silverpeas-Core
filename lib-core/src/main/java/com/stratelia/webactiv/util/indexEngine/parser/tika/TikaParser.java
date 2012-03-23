@@ -43,9 +43,10 @@ import org.apache.tika.parser.ParseContext;
  */
 public class TikaParser implements Parser {
 
-  @Override
-  public Reader getReader(String path, String encoding) { 
-   TikaConfig configuration = TikaConfig.getDefaultConfig();
+  private final Tika _tika = initTika();
+
+  private Tika initTika() {
+    TikaConfig configuration = TikaConfig.getDefaultConfig();
     ParseContext context = new ParseContext();
     CompositeParser parser = ((CompositeParser) configuration.getParser());
     org.apache.tika.parser.Parser openOfficeParser = new OpenDocumentParser();
@@ -62,13 +63,16 @@ public class TikaParser implements Parser {
       parsers.put(type, ooxmlParser);
     }
     parser.setParsers(parsers);
-    Tika tika = new Tika(configuration);
+    return new Tika(configuration);
+  }
+
+  @Override
+  public Reader getReader(String path, String encoding) { 
     try {
-      return tika.parse(new File(path));
+      return _tika.parse(new File(path));
     } catch (IOException ex) {
-     SilverTrace.error("util", "OpenxmlParser.getReader", "root.EX_LOAD_IO_EXCEPTION", ex);
+      SilverTrace.error("util", "OpenxmlParser.getReader", "root.EX_LOAD_IO_EXCEPTION", ex);
     }
     return new StringReader("");
   }
-  
 }

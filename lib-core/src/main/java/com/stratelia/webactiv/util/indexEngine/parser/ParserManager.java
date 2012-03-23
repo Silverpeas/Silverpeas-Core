@@ -40,23 +40,6 @@ import com.stratelia.webactiv.util.indexEngine.parser.tika.TikaParser;
 public final class ParserManager {
 
   /**
-   * Set the parser for a given file format.
-   * @param format
-   * @param parser  
-   */
-  static public void setParser(String format, Parser parser) {
-    parserMap.put(format, parser);
-  }
-
-  /**
-   * Returns the set of all the known file formats. The returned set is a Set of String.
-   * @return 
-   */
-  static public Set<String> getFormatNames() {
-    return parserMap.keySet();
-  }
-
-  /**
    * Get the parser for a given file format.
    * @param format 
    * @return 
@@ -65,6 +48,7 @@ public final class ParserManager {
     Parser parser = parserMap.get(format);
     if (parser == null) {
       parser = new TikaParser();
+      parserMap.put(format, parser);
     }
     return parser;
   }
