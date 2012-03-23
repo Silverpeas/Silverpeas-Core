@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.organization;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroGroupReport;
@@ -598,7 +599,7 @@ public class GroupTable extends Table<GroupRow> {
     insert.setString(5, truncate(row.name, 100));
     insert.setString(6, truncate(row.description, 500));
 
-    insert.setString(7, row.rule);
+    insert.setString(7, StringUtil.isDefined(row.rule)? row.rule:null);
   }
 
   /**
@@ -630,7 +631,7 @@ public class GroupTable extends Table<GroupRow> {
     } else {
       update.setNull(5, Types.INTEGER);
     }
-    update.setString(6, row.rule);
+    update.setString(6, StringUtil.isDefined(row.rule)? row.rule:null);
     update.setInt(7, row.id);
   }
 
