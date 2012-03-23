@@ -52,7 +52,7 @@ function resizeFrame() {
 function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
       var domainsBarPage = getDomainsBarPage();
       if (!domainsBarPage.startsWith('/')) {
-        domainsBarPage = '/admin/jsp/' + domainsBarPage;
+        domainsBarPage = getContext() + '/admin/jsp/' + domainsBarPage;
       }
 
   top.bottomFrame.SpacesBar.location = domainsBarPage + "?privateDomain=" + spaceId + "&privateSubDomain=" + subSpaceId + "&component_id=" + componentId + "&FromTopBar=1";
