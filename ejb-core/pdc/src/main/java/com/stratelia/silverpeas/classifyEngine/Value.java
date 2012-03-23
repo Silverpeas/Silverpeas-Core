@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.classifyEngine;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class Value implements java.io.Serializable {
 
@@ -72,4 +72,32 @@ public class Value implements java.io.Serializable {
   public int getPhysicalAxisId() {
     return physicalAxisId;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Value other = (Value) obj;
+    if (this.nAxisId != other.nAxisId) {
+      return false;
+    }
+    if ((this.sValue == null) ? (other.sValue != null) : !this.sValue.equals(other.sValue)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 97 * hash + this.nAxisId;
+    hash = 97 * hash + (this.sValue != null ? this.sValue.hashCode() : 0);
+    return hash;
+  }
+  
+  
 }

@@ -67,6 +67,8 @@ public class AttachmentEntity implements Exposable {
   private String icon;
   @XmlElement(required = true)
   private String permalink;
+  @XmlElement(required = false)
+  private URI sharedUri;
 
   public static AttachmentEntity fromAttachment(AttachmentDetail detail) {
     AttachmentEntity entity = new AttachmentEntity();   
@@ -128,5 +130,9 @@ public class AttachmentEntity implements Exposable {
   @Override
   public URI getURI() {
     return this.uri;
+  }
+
+  public void setSharedUri(URI sharedUri) {
+    this.sharedUri = sharedUri;
   }
 }
