@@ -83,9 +83,11 @@ public class DBUtil {
   }
 
   public static DBUtil getInstanceForTest(Connection connectionForTest) {
+    clearTestInstance();
     synchronized (DBUtil.class) {
       if (connectionForTest != null) {
         instance = new DBUtil(connectionForTest);
+        
       }
     }
     return instance;
@@ -94,6 +96,7 @@ public class DBUtil {
   public static void clearTestInstance() {
     synchronized (DBUtil.class) {
       instance = new DBUtil(null);
+      dsStock.clear();
     }
   }
   /**

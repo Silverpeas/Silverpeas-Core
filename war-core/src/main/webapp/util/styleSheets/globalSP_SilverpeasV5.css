@@ -4824,3 +4824,17 @@ input.search:focus {
 #selected_userPanel #validate table {
   margin: 0 auto;
 }
+
+#sharing-overview a.Node,
+#sharing-overview a.Attachment,
+#sharing-overview a.Versionned  {
+	background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
+	padding: 2px 0px 0px 20px;
+	display: block;
+    line-height: 16px;
+}
+
+#sharing-overview a.Attachment,
+#sharing-overview a.Versionned {
+	background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+}
