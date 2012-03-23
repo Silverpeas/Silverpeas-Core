@@ -59,10 +59,11 @@ String spaceId    = request.getParameter("privateDomain");
 String subSpaceId    = request.getParameter("privateSubDomain");
 String componentId  = request.getParameter("component_id");
 
+if (StringUtil.isDefined(subSpaceId)) {
+  spaceId = subSpaceId;
+}
 if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId)){
   spaceId = helper.getSpaceId(componentId);
-} else if (StringUtil.isDefined(subSpaceId)) {
-  spaceId = subSpaceId;
 }
 
 ResourceLocator resourceSearchEngine = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
