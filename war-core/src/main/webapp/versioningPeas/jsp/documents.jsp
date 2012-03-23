@@ -115,7 +115,7 @@ function uploadCompleted(s)
 
 function ShareAttachment(id)
 {
-	var url = "<%=m_context%>/RfileSharing/jsp/NewTicket?FileId="+id+"&ComponentId=<%=componentId%>&Type=Version";
+	var url = "<%=m_context%>/RfileSharing/jsp/NewTicket?objectId="+id+"&componentId=<%=componentId%>&type=Versionned";
 	SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
 }
 </script>

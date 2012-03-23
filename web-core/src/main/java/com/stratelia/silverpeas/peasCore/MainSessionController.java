@@ -71,7 +71,7 @@ import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 public class MainSessionController implements Clipboard {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
-  ClipboardBm m_ClipboardBm = null;
+  ClipboardBm clipboardBm = null;
   final UserPreferences userPreferences;
   PdcBm pdcBm = null;
   Object m_ComponentSOFactory = null;
@@ -242,18 +242,18 @@ public class MainSessionController implements Clipboard {
 
   // ------------------- Clipboard Functions -----------------------------
   public synchronized void initClipboard() {
-    m_ClipboardBm = null;
+    clipboardBm = null;
   }
 
   /**
    * Return the clipboard EJB
    */
   public synchronized ClipboardBm getClipboard() {
-    if (m_ClipboardBm == null) {
+    if (clipboardBm == null) {
       SilverTrace.info("peasCore", "MainSessionController.getClipboard()",
           "root.MSG_GEN_ENTER_METHOD");
       try {
-        m_ClipboardBm = EJBUtilitaire.getEJBObjectRef(
+        clipboardBm = EJBUtilitaire.getEJBObjectRef(
             JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class).create(
             "MainClipboard");
       } catch (Exception e) {
@@ -264,7 +264,7 @@ public class MainSessionController implements Clipboard {
     }
     SilverTrace.info("peasCore", "MainSessionController.getClipboard()",
         "root.MSG_GEN_EXIT_METHOD");
-    return m_ClipboardBm;
+    return clipboardBm;
   }
 
 
@@ -606,8 +606,8 @@ public class MainSessionController implements Clipboard {
 
   public void close() {
     try {
-      if (m_ClipboardBm != null) {
-        m_ClipboardBm.remove();
+      if (clipboardBm != null) {
+        clipboardBm.remove();
       }
     } catch (RemoteException e) {
       SilverTrace.error("peasCore", "MainSessionController.close",

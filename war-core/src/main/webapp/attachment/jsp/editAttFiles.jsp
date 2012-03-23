@@ -221,7 +221,7 @@
 
           function ShareAttachment(id)
           {
-            var url = "<%=m_Context%>/RfileSharing/jsp/NewTicket?FileId="+id+"&ComponentId=<%=componentId%>";
+            var url = "<%=m_Context%>/RfileSharing/jsp/NewTicket?objectId="+id+"&componentId=<%=componentId%>&type=Attachment";
             SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
           }
 
@@ -563,4 +563,4 @@
   setTimeout("displayWarning();", 500);
 </script>
 <% }%>
-<div id="attachmentModalDialog" style="display: none"/>
+<div id="attachmentModalDialog" style="display: none"></div>

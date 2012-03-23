@@ -24,18 +24,12 @@
 package com.silverpeas.admin;
 
 import com.silverpeas.components.model.AbstractSpringJndiDaoTest;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.GroupProfileInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 @ContextConfiguration(locations = {"classpath:/spring-jpa-datasource.xml",
   "classpath:/spring-domains.xml"})

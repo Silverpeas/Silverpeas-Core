@@ -28,20 +28,6 @@ package com.silverpeas.admin.components;
  * @author akhadrou
  * @version
  */
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import javax.xml.stream.XMLStreamException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,8 +38,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class Instanciateur {
 
@@ -64,7 +66,8 @@ public class Instanciateur {
   private static String m_sSpaceId = "";
   private static String m_sComponentId = "";
   private static String m_sUserId = "";
-  private static Map<String, WAComponent> WAComponents = new HashMap<String, WAComponent>();
+  private final static Map<String, WAComponent> WAComponents = new HashMap<String, WAComponent>();
+  private static final ObjectFactory factory = new ObjectFactory();
 
   // Init Function
   static {
@@ -138,7 +141,6 @@ public class Instanciateur {
     instantiateComponent(waComponent);
   }
 
-  @SuppressWarnings("unchecked")
   public void instantiateComponent(WAComponent wac)
       throws InstanciationException {
     try {
@@ -177,7 +179,6 @@ public class Instanciateur {
 
   }
 
-  @SuppressWarnings("unchecked")
   public void unInstantiateComponent(
       WAComponent wac) throws InstanciationException {
     try {
@@ -257,7 +258,7 @@ public class Instanciateur {
     return FileUtils.listFiles(new File(xmlPackage), new String[]{"xml"}, true);
   }
 
-  private static String getDescriptorFullPath(String componentName) throws IOException {
+  static String getDescriptorFullPath(String componentName) throws IOException {
     IOFileFilter filter = new NameFileFilter(componentName + ".xml");
     List<File> list = new ArrayList<File>(FileUtils.listFiles(new File(xmlPackage), filter,
         TrueFileFilter.INSTANCE));
@@ -296,10 +297,20 @@ public class Instanciateur {
   }
 
   public static void saveComponent(WAComponent waComponent, String fileName) throws JAXBException {
+    saveComponent(waComponent, fileName, false);
+  }
+  
+  public static void saveComponent(WAComponent waComponent, String fileName, boolean workflow) throws JAXBException {
     JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.components");
     Marshaller marshaller = context.createMarshaller();
-    File file = new File(getXMLPackage() + File.separatorChar + fileName);
-    marshaller.marshal(waComponent, file);
+    marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd");
+    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    String path = getXMLPackage() + File.separatorChar;
+    if (workflow) {
+      path += "workflows" + File.separatorChar;
+    }
+    File file = new File(path + fileName);    
+    marshaller.marshal(factory.createWAComponent(waComponent), file);
   }
 
   /**

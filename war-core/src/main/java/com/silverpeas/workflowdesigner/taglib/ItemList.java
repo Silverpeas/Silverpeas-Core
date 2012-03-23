@@ -31,10 +31,10 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.workflow.api.model.DataFolder;
 import com.silverpeas.workflow.api.model.Item;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;
@@ -46,6 +46,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
  * Class implementing the tag &lt;itemList&gt; from workflowEditor.tld
  */
 public class ItemList extends TagSupport {
+
+  private static final long serialVersionUID = -7885970074029478168L;
   private String strContext, strPaneTitleKey, strCurrentScreen;
   private DataFolder items;
 
@@ -87,10 +89,10 @@ public class ItemList extends TagSupport {
         Icon updateIcon;
         Icon delIcon;
         Item item;
-        Iterator iterItem = items.iterateItem();
+        Iterator<Item> iterItem = items.iterateItem();
 
         while (iterItem.hasNext()) {
-          item = (Item) iterItem.next();
+          item = iterItem.next();
           strContextEncoded = URLEncoder.encode(strContext + "/"
               + item.getName(), "UTF-8");
           strEditURL = "ModifyItem?context=" + strContextEncoded;
@@ -103,7 +105,7 @@ public class ItemList extends TagSupport {
           sb.append("', '");
           sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
           sb.append(" ");
-          sb.append(Encode.javaStringToJsString(item.getName()));
+          sb.append(EncodeHelper.javaStringToJsString(item.getName()));
           sb.append(" ?');");
 
           iconPane = gef.getIconPane();

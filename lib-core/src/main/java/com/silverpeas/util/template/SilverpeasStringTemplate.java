@@ -82,4 +82,18 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     return attributes;
   }
 
+  @Override
+  public String applyFileTemplateOnComponent(String componentName, String fileName) {
+    return applyFileTemplate("/"+componentName.toLowerCase()+"/" + fileName);
+  }
+  
+  public boolean isCustomTemplateExists(String componentName, String fileName) {
+    String filePath = "/"+componentName.toLowerCase()+"/" + fileName;
+    String customersRootDir = templateConfig.getProperty(TEMPLATE_CUSTOM_DIR);
+    StringTemplateGroup group = new StringTemplateGroup(filePath, customersRootDir);
+    String physicalName = group.getFileNameFromTemplateName(filePath);
+    File file = new File(customersRootDir, physicalName);
+    return file.exists() && file.isFile();
+  }
+
 }

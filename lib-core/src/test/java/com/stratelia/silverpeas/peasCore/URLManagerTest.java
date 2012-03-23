@@ -97,17 +97,6 @@ public class URLManagerTest {
   }
 
   /**
-   * Test of getEndURL method, of class URLManager.
-   */
-  @Test
-  public void testGetEndURL() {
-    String spaceId = "WA21";
-    String componentId = "kmelia128";
-    String result = URLManager.getEndURL(spaceId, componentId);
-    assertThat(result, is("&componentId=kmelia128&spaceId=WA21"));
-  }
-
-  /**
    * Test of getComponentNameFromComponentId method, of class URLManager.
    */
   @Test

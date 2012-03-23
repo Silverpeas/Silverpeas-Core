@@ -4,16 +4,23 @@
  */
 package com.silverpeas.admin.components;
 
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
-import com.silverpeas.util.PathTestUtil;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.PathTestUtil;
 
 /**
  *
@@ -112,5 +119,33 @@ public class InstanciateurTest {
     assertThat(paramWithXMLTemplate.getOptions().size(), is(1));
     assertThat(paramWithXMLTemplate.getOptions().get(0).getValue(), is("template.xml"));
     assertThat(paramWithXMLTemplate.getOptions().get(0).getName().get("fr"), is("template"));
+  }
+  
+  @Test
+  public void testSaveAndLoadComponent() throws Exception {
+    String componentName = "newApplication";
+    String xmlComponentFileName = "newApplication.xml";
+    String label = "Nouvelle application";
+    WAComponent component = new WAComponent();
+    component.setName(componentName);
+    component.getLabel().put("fr", label);
+    component.getDescription().put("fr", "La nouvelle application");
+    component.getSuite().put("fr", "80 Nouvelles applications");
+    component.setVisible(true);
+    component.setPortlet(false);
+    component.setInstanceClassName("org.silverpeas.components.newly.Instanciator");
+    Instanciateur.saveComponent(component, xmlComponentFileName);
+    
+    Instanciateur.rebuildWAComponentCache();
+    
+    String path = Instanciateur.getDescriptorFullPath(componentName);
+    Instanciateur instance = new Instanciateur();
+    WAComponent loadedComponent = instance.loadComponent(path);
+    assertEquals(label, loadedComponent.getLabel().get("fr"));
+    
+    Map<String, WAComponent> components = Instanciateur.getWAComponents();
+    assertEquals(3, components.size());
+    component = Instanciateur.getWAComponent(componentName);
+    assertEquals(label, component.getLabel().get("fr"));
   }
 }

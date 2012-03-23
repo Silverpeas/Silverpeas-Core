@@ -248,7 +248,7 @@ function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
   if (confirmationMsg != null && confirmationMsg.length > 0)
     confirmed = window.confirm( confirmationMsg );
   if (confirmed) {
-    var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
+    var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
     var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
     $.ajax({
       url: uri_position,
@@ -319,7 +319,7 @@ function postPosition( uri, position, onSuccess, onError ) {
  * }
  */
 function updatePosition( uri, position, onSuccess, onError ) {
-  var uri_parts = uri.match(/[a-zA-Z0-9:=\/]+/gi);
+  var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
   var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
   $.ajax({
     url: uri_position,
@@ -380,7 +380,7 @@ function findPosition( withValues, inSomePositions ) {
 
 /**
  * Sorts the specified values according to the identifier of the axis they belong to.
- * The array of values passed as parameter isn't modified; the sorted array is returned.
+ * The sorted array is returned.
  * Each value is of type:
  * {
  *   axisId: the identifier of the axis it belongs to,
@@ -398,6 +398,7 @@ function sortValues( values ) {
     }
     values[j] = pivot;
   }
+  return values;
 }
 
 /**************************************************************************************************/
@@ -705,20 +706,21 @@ function removePosition( position, positions ) {
   }
   
   function SelectedPositions( fromValues ) {
+    var axisprefix = 'axis:';
     // the values at index 0 servs as the referencial position. Values at other indexes will be
     // only for multiple values of a given single axis
     this.matrix = [];
     if (fromValues != null && fromValues.length > 0) {
       this.matrix[0] = [];
       for (var i = 0; i < fromValues.length; i++) {
-        this.matrix[0][fromValues[i].axisId] = fromValues[i];
+        this.matrix[0][axisprefix + fromValues[i].axisId] = fromValues[i];
       }
     }
     
     this.put = function( positionIndex, axisId, value ) {
       if (this.matrix[positionIndex] == null)
         this.matrix[positionIndex] = [];
-      this.matrix[positionIndex][axisId] = value;
+      this.matrix[positionIndex][axisprefix + axisId] = value;
       for (var i = 1; i < positionIndex; i++) {
         if (this.matrix[i] == null)
           this.matrix[i] = [];
@@ -726,7 +728,7 @@ function removePosition( position, positions ) {
     }
     
     this.remove = function( positionIndex, axisId ) {
-      this.matrix[positionIndex][axisId] = null;
+      this.matrix[positionIndex][axisprefix + axisId] = null;
     }
     
     this.clear = function() {
@@ -735,31 +737,53 @@ function removePosition( position, positions ) {
     
     this.at = function( positionIndex, axisId ) {
       if (this.matrix[positionIndex] != null)
-        return this.matrix[positionIndex][axisId];
+        return this.matrix[positionIndex][axisprefix + axisId];
       return null;
     }
     
-    this.each = function( doWithPosition ) {
-      for (var i = 0; i < this.matrix.length; i++) {
-        var values = [];
-        for (var axisId in this.matrix[i]) {
-          if (i > 0) {
-            for (var axisId0 in this.matrix[0]) {
-              if (axisId0 != axisId && this.matrix[0][axisId0] != null) {
-                values.push(aPositionValueFrom(this.matrix[0][axisId0]));
+    this.all = function() {
+      var positions = [];
+      
+      function contains(position) {
+        for (var ipos in positions)
+          if (position.values.length == positions[ipos].values.length) {
+            var ok = true;
+            for (var ival = 0; ival < position.values.length && ok; ival++) {
+              if (position.values[ival].axisId != positions[ipos].values[ival].axisId ||
+                  position.values[ival].id != positions[ipos].values[ival].id)
+                ok = false;
+            }
+            if (ok)
+              return true;
+          }
+        return false;
+      }
+
+      positions[0] = {values: []};
+      for (var axisId in this.matrix[0]) {
+        if (this.matrix[0][axisId] != null)
+          positions[0].values.push(aPositionValueFrom(this.matrix[0][axisId]))
+      }
+      sortValues(positions[0].values);
+      for (var i = 1; i < this.matrix.length; i++) {
+        for (axisId in this.matrix[i]) {
+          if (this.matrix[i][axisId] != null) {
+            var lastpos = positions.length;
+            for (var pos = 0; pos < lastpos; pos++) {
+              var newPosition = {values: [ aPositionValueFrom(this.matrix[i][axisId]) ]};
+              for (var val = 0; val < positions[pos].values.length; val++) {
+                if (positions[pos].values[val].axisId != axisId.substring(axisprefix.length))
+                  newPosition.values.push(positions[pos].values[val]);
+              }
+              sortValues(newPosition.values);
+              if (!contains(newPosition)) {
+                positions.push(newPosition);
               }
             }
           }
-          if (this.matrix[i][axisId] != null)
-            values.push(aPositionValueFrom(this.matrix[i][axisId]));
-        }
-        if (values.length > 0) {
-          sortValues(values);
-          doWithPosition({
-            values: values
-          });
         }
       }
+      return positions;
     }
     
     this.size = function() {
@@ -787,10 +811,7 @@ function removePosition( position, positions ) {
   }
   
   function informOfNewPositions( $thisPdcAxisValuesSelector, settings, selectedPositions ) {
-    var positions = [];
-    selectedPositions.each(function(aSelectedPosition) {
-      positions.push(aSelectedPosition);
-    });
+    var positions = selectedPositions.all();
     if (positions.length == 0) {
       alert(settings.positionError)
     } else {
@@ -857,13 +878,20 @@ function removePosition( position, positions ) {
       if (theValue == 0) {
         selectedPositions.remove(i, anAxis.id);
       } else {
+        var previousValue = selectedPositions.at(i, anAxis.id);
         selectedPositions.put(i, anAxis.id, anAxis.values[theValue]);
         if (settings.multiValuation) {
-          // hide the other identical options in duplicate selects (to avoid the position duplication)
+          // enable the other identical previous values in duplicate selects and
+          // disable the other identical options in duplicate selects (to avoid the position duplication)
           var j = 0;
           while(contains($axisDiv, idPrefix + j)) {
-            if (j!= i)
-              $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").hide();
+            if (j!= i) {
+              if (previousValue != null) {
+                var index = anAxis.values.indexOf(previousValue);
+                $("select[id=" + idPrefix + j + "] option[value='" + index + "']").attr('disabled', false);
+              }
+              $("select[id=" + idPrefix + j + "] option[value='" + theValue + "']").attr('disabled', true);
+            }
             j++;
           }
         }
@@ -914,13 +942,13 @@ function removePosition( position, positions ) {
           option.attr('selected', true);
         }
         
-        // in the case of a duplicate select, hide any options that were previously selected for the
+        // in the case of a duplicate select, disable any options that were previously selected for the
         // same axis
         if (settings.multiValuation && i > 0 && selectedPositions.size() > 0) {
           for(var ipos = 0; ipos < selectedPositions.size(); ipos++) {
             var selectedValue = selectedPositions.at(ipos, anAxis.id);
             if (selectedValue != null && aValue == selectedValue) {
-              option.hide();
+              option.attr('disabled', true);
               break;
             }
           }
@@ -929,22 +957,22 @@ function removePosition( position, positions ) {
     });
     
     if (anAxis.mandatory) {
-    	option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
-        $('<img>', {
-          src: settings.mandatoryAxisIcon,
-          alt: settings.mandatoryAxisLegend, 
-          width: '5px',
-          height: '5px'
-        }).appendTo($axisDiv.append(' '));
-      }
-      if (anAxis.invariant) {
-        $('<img>', {
-          src: settings.invariantAxisIcon, 
-          alt: settings.invariantAxisLegend,
-          width: '10px',
-          height: '10px'
-        }).appendTo($axisDiv);
-      }
+      option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
+      $('<img>', {
+        src: settings.mandatoryAxisIcon,
+        alt: settings.mandatoryAxisLegend, 
+        width: '5px',
+        height: '5px'
+      }).appendTo($axisDiv.append(' '));
+    }
+    if (anAxis.invariant) {
+      $('<img>', {
+        src: settings.invariantAxisIcon, 
+        alt: settings.invariantAxisLegend,
+        width: '10px',
+        height: '10px'
+      }).appendTo($axisDiv);
+    }
  
     if (selectedPositions.at(i, anAxis.id) == null) {
       option.attr('selected', true);
@@ -954,7 +982,7 @@ function removePosition( position, positions ) {
   }
   
   function duplicateAxis( $axisDiv, settings, selectedValues, axis) {
-    $('.another-value').remove();
+    $axisDiv.children('.another-value').remove();
     renderAxis($axisDiv, settings, selectedValues, axis);
   }
   
@@ -1010,7 +1038,7 @@ function removePosition( position, positions ) {
             informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
           }));
       } else {
-    	  $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
+        $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
       }
       if (settings.axis.length > 0) {
         var legende = $('<p>').addClass('legende');

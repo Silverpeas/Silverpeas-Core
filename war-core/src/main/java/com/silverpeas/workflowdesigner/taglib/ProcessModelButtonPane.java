@@ -38,6 +38,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
  * Class implementing the tag &lt;buttonPane&gt; from workflowEditor.tld
  */
 public class ProcessModelButtonPane extends TagSupport {
+
+  private static final long serialVersionUID = 2771341684220021139L;
   private String strCancelAction;
 
   /**

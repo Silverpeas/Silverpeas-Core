@@ -27,6 +27,9 @@ package com.silverpeas.workflowdesigner.model;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class WorkflowDesignerException extends SilverpeasException {
+
+  private static final long serialVersionUID = 3079795933234932180L;
+
   /**
    * -------------------------------------------------------------------------- constructors
    * constructors

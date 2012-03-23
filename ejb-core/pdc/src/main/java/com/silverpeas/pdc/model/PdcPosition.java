@@ -23,6 +23,7 @@
  */
 package com.silverpeas.pdc.model;
 
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -31,16 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A position of a content on some axis of the classification plan (named PdC). The positions of 
@@ -62,7 +57,9 @@ public class PdcPosition implements Serializable, Cloneable {
   private static final long serialVersionUID = 665144316569539208L;
   
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
+  valueColumnName = "maxId", pkColumnValue = "PdcPosition", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Long id;
   @OneToMany(fetch = FetchType.EAGER)
   @NotNull

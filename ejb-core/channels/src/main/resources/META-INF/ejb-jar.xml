@@ -24,9 +24,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+         version="3.1">
 
   <description>no description</description>
   <display-name>ejbNotificationServer</display-name>
@@ -50,6 +51,10 @@
           <activation-config-property-name>messageSelector</activation-config-property-name>
           <activation-config-property-value>CHANNEL='POPUP'</activation-config-property-value>
         </activation-config-property>
+        <activation-config-property>
+          <activation-config-property-name>destination</activation-config-property-name>
+          <activation-config-property-value>java:/queue/notificationsQueue</activation-config-property-value>
+        </activation-config-property>
       </activation-config>
     </message-driven>
     <message-driven>
@@ -69,6 +74,10 @@
         <activation-config-property>
           <activation-config-property-name>messageSelector</activation-config-property-name>
           <activation-config-property-value>CHANNEL='REMOVE'</activation-config-property-value>
+        </activation-config-property>
+        <activation-config-property>
+          <activation-config-property-name>destination</activation-config-property-name>
+          <activation-config-property-value>java:/queue/notificationsQueue</activation-config-property-value>
         </activation-config-property>
       </activation-config>
     </message-driven>
@@ -90,6 +99,10 @@
           <activation-config-property-name>messageSelector</activation-config-property-name>
           <activation-config-property-value>CHANNEL='SERVER'</activation-config-property-value>
         </activation-config-property>
+        <activation-config-property>
+          <activation-config-property-name>destination</activation-config-property-name>
+          <activation-config-property-value>java:/queue/notificationsQueue</activation-config-property-value>
+        </activation-config-property>
       </activation-config>
     </message-driven>
     <message-driven>
@@ -110,6 +123,10 @@
           <activation-config-property-name>messageSelector</activation-config-property-name>
           <activation-config-property-value>CHANNEL='SILVERMAIL'</activation-config-property-value>
         </activation-config-property>
+        <activation-config-property>
+          <activation-config-property-name>destination</activation-config-property-name>
+          <activation-config-property-value>java:/queue/notificationsQueue</activation-config-property-value>
+        </activation-config-property>
       </activation-config>
     </message-driven>
     <message-driven>
@@ -129,6 +146,10 @@
         <activation-config-property>
           <activation-config-property-name>messageSelector</activation-config-property-name>
           <activation-config-property-value>CHANNEL='SMTP'</activation-config-property-value>
+        </activation-config-property>
+        <activation-config-property>
+          <activation-config-property-name>destination</activation-config-property-name>
+          <activation-config-property-value>java:/queue/notificationsQueue</activation-config-property-value>
         </activation-config-property>
       </activation-config>
     </message-driven>

@@ -34,10 +34,10 @@
   <publishDate position="right" format="yyyy-MM-dd" />
   <version position="right" />
   <skin>
-      <groupId>org.apache.maven.skins</groupId>
-      <artifactId>maven-fluido-skin</artifactId>
-      <version>1.0</version>
-    </skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.0</version>
+  </skin>
   <custom>
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
@@ -54,8 +54,9 @@
   </custom>
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans 7.0" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
+    <logo name="Netbeans 7.1" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
     <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
+    <logo name="Intellij Idea" href="http://www.jetbrains.com/idea/" img="http://www.jetbrains.com/idea/opensource/img/all/banners/idea120x60_white.gif" />
     <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
     <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" />
     <logo name="Izpack" href="http://izpack.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_izPack.png" />
@@ -89,10 +90,10 @@
       <item name="Source Code" href="source-repository.html" collapse="true"/>
     </menu>
     <menu name="Configuration" inherit="none">
-      <item name="Securing Jboss" href="securing_jboss.html" collapse="true"/>
-      <item name="Security" href="securing.html" collapse="true"/>
-      <item name="Migration" href="migration.html"  collapse="true"/>
-      <item name="Configuring a reverse-proxy" href="proxy.html"  collapse="true"/>
+      <item name="Securing Jboss" href="configuration/securing_jboss.html" collapse="true"/>
+      <item name="Security" href="configuration/securing.html" collapse="true"/>
+      <item name="Migration" href="configuration/migration.html"  collapse="true"/>
+      <item name="Configuring a reverse-proxy" href="configuration/proxy.html"  collapse="true"/>
     </menu>
     <menu name="Product" inherit="none">
       <item name="Key Features" href="product/features.html" collapse="true"/>

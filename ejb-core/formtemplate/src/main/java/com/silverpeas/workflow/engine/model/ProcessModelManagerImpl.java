@@ -26,7 +26,6 @@ package com.silverpeas.workflow.engine.model;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -46,6 +45,8 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import com.stratelia.webactiv.beans.admin.AdminReference;
+
+import org.apache.commons.io.FileUtils;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
@@ -65,7 +66,6 @@ import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Forms;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -401,7 +401,6 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     // url
     String schemaFileName = settings.getString("ProcessModesSchemaFileURL");
     String strProcessModelFileEncoding = settings.getString("ProcessModelFileEncoding");
-    Marshaller mar;
     boolean runOnUnix = !FileUtil.isWindows();
     String processPath = getProcessPath(processFileName);
     try {
@@ -411,8 +410,10 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
         mappingFileName = "file:///" + mappingFileName.replace('\\', '/');
       }
       mapping.loadMapping(mappingFileName);
-      mar = new Marshaller(new OutputStreamWriter(new FileOutputStream(processPath),
-          strProcessModelFileEncoding));
+      File file = new File(processPath);
+      Marshaller mar =
+          new Marshaller(new OutputStreamWriter(FileUtils.openOutputStream(file),
+              strProcessModelFileEncoding));
       mar.setMapping(mapping);
       mar.setNoNamespaceSchemaLocation(schemaFileName);
       mar.setSuppressXSIType(true);

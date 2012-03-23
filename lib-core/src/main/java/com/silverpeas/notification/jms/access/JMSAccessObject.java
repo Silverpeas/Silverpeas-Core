@@ -60,7 +60,7 @@ public final class JMSAccessObject {
   /**
    * The prefix of the JNDI name under which JMS topic will be registered.
    */
-  static final String PREFIX_TOPIC_JNDI = "topic/";
+  static final String PREFIX_TOPIC_JNDI = "java:/topic/";
 
   /**
    * Gets the topic corresponding to the specified name.

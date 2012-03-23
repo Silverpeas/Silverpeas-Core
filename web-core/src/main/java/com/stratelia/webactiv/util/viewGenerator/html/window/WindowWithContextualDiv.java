@@ -119,6 +119,9 @@ public class WindowWithContextualDiv extends AbstractWindow {
     if (StringUtil.isDefined(contextualDiv)) {
       result.append("</div>");
     }
+    
+    result.append(displayWelcomeMessage());
+    
     return result.toString();
   }
 

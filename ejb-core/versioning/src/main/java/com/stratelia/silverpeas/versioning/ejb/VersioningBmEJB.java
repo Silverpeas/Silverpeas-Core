@@ -1542,11 +1542,9 @@ public class VersioningBmEJB implements SessionBean {
 
   public void notifyUser(NotificationMetaData notifMetaData, String senderId,
       String componentId) throws VersioningRuntimeException {
-    Connection con = openConnection();
     SilverTrace.info("versioning", "VersioningBmEJB.notifyUser()",
         "root.MSG_GEN_EXIT_METHOD");
     try {
-      notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null
           || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
@@ -1557,8 +1555,6 @@ public class VersioningBmEJB implements SessionBean {
       throw new VersioningRuntimeException("VersioningBmEJB.notifyUser()",
           SilverpeasRuntimeException.ERROR,
           "versioning.MSG_DOCUMENT_NOT_EXIST", e);
-    } finally {
-      closeConnection(con);
     }
   }
 

@@ -33,6 +33,10 @@ public interface SilverpeasTemplate {
   public void setAttribute(String name, Object value);
 
   public String applyFileTemplate(String fileName);
+  
+  public String applyFileTemplateOnComponent(String componentName, String fileName);
+  
+  public boolean isCustomTemplateExists(String componentName, String fileName);
 
   public String applyStringTemplate(String label);
 
