@@ -1,1 +1,1 @@
-ALTER TABLE ST_Group SET synchrorule = null where synchrorule = '';
+UPDATE ST_Group SET synchrorule = null where synchrorule = '';
