@@ -239,6 +239,10 @@ In the extract of this file below you will see how to change a simple properties
       </parameter>
     </xmlfile>
   </fileset>
+  <!-- Copy file from ${SILVERPEAS_HOME}/path/to/source.txt to ${SILVERPEAS_DATA_HOME}/path/to/target.txt -->
+  <fileset root="${SILVERPEAS_HOME}/path/to/">
+    <copyfile name="source.txt">${SILVERPEAS_DATA_HOME}/path/to/target.txt</copyfile>
+  </fileset>  
 </silverpeas-settings>
 ]]>
 </source>
