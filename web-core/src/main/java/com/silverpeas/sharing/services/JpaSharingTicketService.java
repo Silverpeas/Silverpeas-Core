@@ -25,6 +25,7 @@ package com.silverpeas.sharing.services;
 
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.repository.DownloadDetailRepository;
 import com.silverpeas.sharing.repository.TicketRepository;
 import org.silverpeas.util.UuidPk;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,9 @@ public class JpaSharingTicketService implements SharingTicketService {
 
   @Inject
   TicketRepository repository;
+  
+  @Inject
+  DownloadDetailRepository historyRepository;
 
   @Override
   public List<Ticket> getTicketsByUser(String userId) {
@@ -78,7 +82,7 @@ public class JpaSharingTicketService implements SharingTicketService {
       List<DownloadDetail> downloads = new ArrayList<DownloadDetail>(ticket.getDownloads());
       downloads.add(download);
       ticket.setDownloads(downloads);
-      repository.saveAndFlush(ticket);
+      historyRepository.saveAndFlush(download);
     }
   }
 
