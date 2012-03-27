@@ -180,7 +180,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     }
     
     if (selectionProcessor.isSelectionDone(request)) {
-      selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
+      destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
+      if (StringUtil.isDefined(destination)) {
+        return destination;
+      }
     }
     
     // retourne la page jsp de destination et place dans la request les objets
