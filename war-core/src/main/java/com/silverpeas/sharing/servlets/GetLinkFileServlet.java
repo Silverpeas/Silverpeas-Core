@@ -96,7 +96,7 @@ public class GetLinkFileServlet extends HttpServlet {
         input = new BufferedInputStream(FileUtils.openInputStream(realFile));
         IOUtils.copy(input, out);
         DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());
-        SharingServiceFactory.getFactory().getSharingTicketService().addDownload(download);
+        SharingServiceFactory.getSharingTicketService().addDownload(download);
         return;
       } catch (Exception ex) {
       } finally {

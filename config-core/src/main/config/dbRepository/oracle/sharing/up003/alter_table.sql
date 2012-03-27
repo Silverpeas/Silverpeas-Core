@@ -1,66 +1,65 @@
 ALTER TABLE sb_filesharing_ticket ADD shared_object VARCHAR2(255) NOT NULL;
 UPDATE sb_filesharing_ticket SET shared_object = fileId;
-ALTER TABLE sb_filesharing_ticket DROP fileId;
-ALTER TABLE SB_fileSharing_ticket
+ALTER TABLE sb_filesharing_ticket DROP COLUMN fileId;
 
 ALTER TABLE sb_filesharing_ticket DROP CONSTRAINT PK_SB_fileSharing_ticket;
 ALTER TABLE sb_filesharing_ticket ADD keyFile_temp VARCHAR2(255) NOT NULL;
 UPDATE sb_filesharing_ticket SET keyFile_temp = keyFile;
-ALTER TABLE sb_filesharing_ticket DROP keyFile;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN keyFile;
 ALTER TABLE sb_filesharing_ticket ADD keyFile VARCHAR2(255) NOT NULL;
 UPDATE sb_filesharing_ticket SET keyFile = keyFile_temp;
-ALTER TABLE sb_filesharing_ticket DROP keyFile_temp;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN keyFile_temp;
 ALTER TABLE SB_fileSharing_ticket ADD CONSTRAINT PK_SB_fileSharing_ticket PRIMARY KEY (keyFile);
 
 ALTER TABLE sb_filesharing_ticket ADD shared_object_type VARCHAR2(255) NOT NULL;
 UPDATE sb_filesharing_ticket SET shared_object_type = 'Attachment' WHERE versioning = '0';
 UPDATE sb_filesharing_ticket SET shared_object_type = 'Versionned' WHERE versioning = '1';
-ALTER TABLE sb_filesharing_ticket DROP versioning;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN versioning;
 
 ALTER TABLE sb_filesharing_ticket ADD creationDate_temp NUMBER(19,0);
 UPDATE sb_filesharing_ticket SET creationDate_temp  = TO_NUMBER(creationDate);
-ALTER TABLE sb_filesharing_ticket DROP creationDate;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN creationDate;
 ALTER TABLE sb_filesharing_ticket ADD creationDate NUMBER(19,0) NOT NULL;
 UPDATE sb_filesharing_ticket SET creationDate = creationDate_temp;
-ALTER TABLE sb_filesharing_ticket DROP creationDate_temp;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN creationDate_temp;
 
 
 ALTER TABLE sb_filesharing_ticket ADD updateDate_temp NUMBER(19,0);
-UPDATE sb_filesharing_ticket SET updateDate_temp  = TO_NUMBER(updateDate);
-ALTER TABLE sb_filesharing_ticket DROP updateDate;
+UPDATE sb_filesharing_ticket SET updateDate_temp = TO_NUMBER(updateDate);
+ALTER TABLE sb_filesharing_ticket DROP COLUMN updateDate;
 ALTER TABLE sb_filesharing_ticket ADD updateDate NUMBER(19,0);
 UPDATE sb_filesharing_ticket SET updateDate = updateDate_temp;
-ALTER TABLE sb_filesharing_ticket DROP updateDate_temp;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN updateDate_temp;
 
 ALTER TABLE sb_filesharing_ticket ADD endDate_temp NUMBER(19,0);
 UPDATE sb_filesharing_ticket SET endDate_temp = TO_NUMBER(endDate);
-ALTER TABLE sb_filesharing_ticket DROP endDate;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN endDate;
 ALTER TABLE sb_filesharing_ticket ADD endDate NUMBER(19,0);
 UPDATE sb_filesharing_ticket SET endDate = endDate_temp;
-ALTER TABLE sb_filesharing_ticket DROP endDate_temp;
+ALTER TABLE sb_filesharing_ticket DROP COLUMN endDate_temp;
 
 
 ALTER TABLE sb_filesharing_history DROP CONSTRAINT PK_SB_fileSharing_history;
 ALTER TABLE sb_filesharing_history ADD id_temp NUMBER(19, 0);
 UPDATE sb_filesharing_history SET id_temp = id;
-ALTER TABLE sb_filesharing_history DROP id;
+ALTER TABLE sb_filesharing_history DROP COLUMN id;
 ALTER TABLE sb_filesharing_history ADD id NUMBER(19, 0) NOT NULL;
 UPDATE sb_filesharing_history SET id = id_temp;
-ALTER TABLE sb_filesharing_history DROP id_temp;
+ALTER TABLE sb_filesharing_history DROP COLUMN id_temp;
 ALTER TABLE SB_fileSharing_history ADD CONSTRAINT PK_SB_fileSharing_history PRIMARY KEY (id);
 
 ALTER TABLE sb_filesharing_history ADD downloadDate_temp NUMBER(19,0);
 UPDATE sb_filesharing_history SET downloadDate_temp = TO_NUMBER(downloadDate);
-ALTER TABLE sb_filesharing_history DROP downloadDate;
+ALTER TABLE sb_filesharing_history DROP COLUMN downloadDate;
 ALTER TABLE sb_filesharing_history ADD downloadDate NUMBER(19,0);
-UPDATE sb_filesharing_history SET endDate = downloadDate_temp;
-ALTER TABLE sb_filesharing_history DROP downloadDate_temp;
+UPDATE sb_filesharing_history SET downloadDate = downloadDate_temp;
+ALTER TABLE sb_filesharing_history DROP COLUMN downloadDate_temp;
 
 ALTER TABLE sb_filesharing_history ADD keyFile_temp VARCHAR2(255) NOT NULL;
 UPDATE sb_filesharing_history SET keyFile_temp = keyFile;
-ALTER TABLE sb_filesharing_history DROP keyFile;
+ALTER TABLE sb_filesharing_history DROP COLUMN keyFile;
 ALTER TABLE sb_filesharing_history ADD keyFile VARCHAR2(255) NOT NULL;
 UPDATE sb_filesharing_history SET keyFile = keyFile_temp;
-ALTER TABLE sb_filesharing_history DROP keyFile_temp;
+ALTER TABLE sb_filesharing_history DROP COLUMN keyFile_temp;
 
 UPDATE sb_filesharing_ticket SET nbaccess = 0 WHERE nbaccess IS NULL;

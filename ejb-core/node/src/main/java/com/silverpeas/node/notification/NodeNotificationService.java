@@ -26,8 +26,9 @@ package com.silverpeas.node.notification;
 import com.silverpeas.notification.NotificationPublisher;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import javax.inject.Inject;
-import static com.silverpeas.notification.RegisteredTopics.*;
+
 import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.NODE_TOPIC;
 
 /**
  * A service to notify about the creation or the deletion of nodes.

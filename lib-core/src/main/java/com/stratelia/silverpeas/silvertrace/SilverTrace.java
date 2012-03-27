@@ -25,6 +25,7 @@ package com.stratelia.silverpeas.silvertrace;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import java.io.CharArrayWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Appender;
@@ -43,6 +44,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.LineNumberReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -1313,13 +1315,14 @@ public class SilverTrace {
    */
   static protected String formatErrorAndFatalMessage(String module,
           String classe, String messageID, String extraInfos, Throwable ex) {
-    String extraParams;
-
+    String extraParams;    
     if (ex != null) {
+      CharArrayWriter buffer = new CharArrayWriter();
+      ex.printStackTrace(new PrintWriter(buffer));
       if (StringUtil.isDefined(extraInfos)) {
-        extraParams = extraInfos + ", EXCEPTION : " + ex.toString();
+        extraParams = extraInfos + ", EXCEPTION : " + buffer.toString();
       } else {
-        extraParams = "EXCEPTION : " + ex.toString();
+        extraParams = "EXCEPTION : " + buffer.toString();
       }
     } else {
       extraParams = extraInfos;

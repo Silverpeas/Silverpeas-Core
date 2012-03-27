@@ -389,6 +389,9 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    */
   public void addSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
     spaceProfileInst.setSpaceFatherId(getId());
+    if (spaceProfiles.contains(spaceProfileInst)) {
+      spaceProfiles.remove(spaceProfileInst);
+    }
     spaceProfiles.add(spaceProfileInst);
   }
 
