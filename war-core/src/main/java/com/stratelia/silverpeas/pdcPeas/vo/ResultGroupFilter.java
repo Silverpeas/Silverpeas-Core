@@ -29,6 +29,8 @@ public class ResultGroupFilter {
   private List<AuthorVO> authors = null;
   private List<ComponentVO> components = null;
   private List<String> year = null;
+  
+  private List<FormFieldFacet> formfieldFacets;
 
   /**
    * Default constructor
@@ -59,6 +61,14 @@ public class ResultGroupFilter {
 
   public void setYear(List<String> year) {
     this.year = year;
+  }
+
+  public void setFormFieldFacets(List<FormFieldFacet> formfields) {
+    this.formfieldFacets = formfields;
+  }
+
+  public List<FormFieldFacet> getFormFieldFacets() {
+    return formfieldFacets;
   }
 
 }

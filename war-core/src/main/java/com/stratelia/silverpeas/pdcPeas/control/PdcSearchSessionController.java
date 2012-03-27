@@ -34,17 +34,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FormException;
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.interestCenter.util.InterestCenterUtil;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -79,6 +83,8 @@ import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.pdcPeas.vo.AuthorVO;
 import com.stratelia.silverpeas.pdcPeas.vo.ComponentVO;
 import com.stratelia.silverpeas.pdcPeas.vo.ExternalSPConfigVO;
+import com.stratelia.silverpeas.pdcPeas.vo.FacetEntryVO;
+import com.stratelia.silverpeas.pdcPeas.vo.FormFieldFacet;
 import com.stratelia.silverpeas.pdcPeas.vo.ResultFilterVO;
 import com.stratelia.silverpeas.pdcPeas.vo.ResultGroupFilter;
 import com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO;
@@ -591,12 +597,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     Map<String, AuthorVO> authorsMap = new HashMap<String, AuthorVO>();
     Map<String, ComponentVO> componentsMap = new HashMap<String, ComponentVO>();
+    
+    // key is the fieldName
+    Map<String, FormFieldFacet> fieldFacetsMap = new HashMap<String, FormFieldFacet>();
 
     if (results != null) {
       // Retrieve the black list component (we don't need to filter data on it)
       List<String> blackList = getFacetBlackList();
 
-      // Loop or each result
+      // Loop on each result
       for (GlobalSilverResult result : results) {
         String authorName = result.getCreatorName();
         String authorId = result.getUserId();
@@ -615,7 +624,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           }
         }
 
-        if (StringUtil.isDefined(authorId)) {
+        if (StringUtil.isDefined(authorId) && StringUtil.isDefined(authorName)) {
           if (!authorsMap.containsKey(authorId)) {
             authorsMap.put(authorId, curAuthor);
           } else {
@@ -628,6 +637,36 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
                 '/') + 1), instanceId));
           } else {
             componentsMap.get(instanceId).setNbElt(componentsMap.get(instanceId).getNbElt() + 1);
+          }
+        }
+        
+        Hashtable<String, String> fieldsForFacets = result.getFormFieldsForFacets();
+        if (fieldsForFacets != null && !fieldsForFacets.isEmpty()) {
+          // there is at least one field used to generate a facet
+          Set<String> fieldNames = fieldsForFacets.keySet();
+          for (String fieldName : fieldNames) {
+            String[] splitted = getFormNameAndFieldName(fieldName);
+            String formName = splitted[0];
+            FormFieldFacet facet = null;
+            if (!fieldFacetsMap.containsKey(fieldName)) {
+              // new facet, adding it to result list
+              try {
+                facet = new FormFieldFacet(getFieldLabel(formName, splitted[1]));
+              } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+              fieldFacetsMap.put(fieldName, facet);
+            } else {
+              // facet already initialized
+              facet = fieldFacetsMap.get(fieldName);
+            }
+            if (facet != null) {
+              String fieldValueKey = fieldsForFacets.get(fieldName);
+              String fieldValueLabel = fieldValueKey;
+              FacetEntryVO entry = new FacetEntryVO(fieldValueLabel, fieldValueKey);
+              facet.addEntry(entry);
+            }
           }
         }
 
@@ -654,7 +693,22 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // Fill result filter with current result values
     res.setAuthors(authors);
     res.setComponents(components);
+    res.setFormFieldFacets(new ArrayList<FormFieldFacet>(fieldFacetsMap.values()));
     return res;
+  }
+  
+  private String getFieldLabel(String formName, String fieldName) throws PublicationTemplateException, FormException {
+    PublicationTemplate form = PublicationTemplateManager.getInstance().loadPublicationTemplate(formName);
+    return form.getRecordTemplate().getFieldTemplate(fieldName).getLabel(getLanguage());
+  }
+  
+  private String[] getFormNameAndFieldName(String compressedFieldName) {
+    String formName = compressedFieldName.substring(0, compressedFieldName.indexOf("$$"));
+    if (!formName.endsWith(".xml")) {
+      formName += ".xml";
+    }
+    String fieldName = compressedFieldName.substring(compressedFieldName.indexOf("$$")+2);
+    return new String[]{formName, fieldName};
   }
 
   public List<GlobalSilverResult> processResultsToDisplay(MatchingIndexEntry[] indexEntries)

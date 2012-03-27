@@ -412,6 +412,18 @@ public class WAIndexSearcher {
       }
       indexEntry.setSortableXMLFormFields(sortableField);
     }
+    // adds fields and values used to generate facets
+    String fieldsForFacets = doc.get(IndexManager.FIELDS_FOR_FACETS);
+    if (StringUtil.isDefined(fieldsForFacets)) {
+      Hashtable<String, String> fieldsValueForFacets = new Hashtable<String, String>();
+      StringTokenizer tokenizer = new StringTokenizer(fieldsForFacets, ",");
+      while (tokenizer.hasMoreTokens()) {
+        String fieldName = tokenizer.nextToken();
+        fieldsValueForFacets.put(fieldName, doc.get(fieldName));
+      }
+      indexEntry.setXMLFormFieldsForFacets(fieldsValueForFacets);
+    }
+    
     // Set server name
     indexEntry.setServerName(doc.get(IndexManager.SERVER_NAME));
     return indexEntry;

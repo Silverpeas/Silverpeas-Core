@@ -683,6 +683,56 @@ function showExternalSearchError() {
       	  <%
       	}
       	%>
+      	
+      	<%
+      	List<FormFieldFacet> fieldFacets = resultGroup.getFormFieldFacets();
+      	for (FormFieldFacet facet : fieldFacets) {
+      	if (facet != null) {
+      	  %>
+      	  <div id="facetAuthor">
+      	  <div id="searchGroupTitle"><span class="author"><%=facet.getName() %></span></div>
+   		  <div id="searchGroupValues">
+   			<ul>
+      	  <%
+  	      for(int cpt=0; cpt < facet.getEntries().size(); cpt++){
+  	        FacetEntryVO entry = (FacetEntryVO) facet.getEntries().get(cpt);
+  	        String authorName = entry.getName();
+  	        String authorId = entry.getId();
+  	        String displayAuthor = (authorName != null && authorName.length() > facetResultLength)? authorName.substring(0,facetResultLength) + "...":authorName;
+  	        displayAuthor += "&nbsp;(" + entry.getNbElt() + ")";
+  	        String lastClass = "";
+  	        if (cpt == facet.getEntries().size() - 1) {
+  	          lastClass = "last";
+  	        }
+  	        String jsAction = "";
+  	        if (authorId.equalsIgnoreCase(filteredUserId)) {
+  	          lastClass += " selected";
+  	          jsAction = "clearFilter('author')";
+  	        %>
+       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.disable">
+			<fmt:param value="<%=authorName%>"/>
+		  </fmt:message>
+  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
+  	        <%
+  	        } else {
+  	          jsAction = "filterResult('" + authorId + "', 'author')";
+    	    %>
+       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.enable">
+			<fmt:param value="<%=authorName%>"/>
+		  </fmt:message>
+  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
+  	        <%
+  	        }
+
+  	      }
+      	  %>
+      		</ul>
+      	  </div>
+      	  </div>
+      	  <%
+      	}
+      	}
+      	%>
 
       	<%
       	List components = resultGroup.getComponents();

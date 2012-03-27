@@ -88,6 +88,10 @@ public class FieldDescription implements Serializable {
   public String getLang() {
     return lang;
   }
+  
+  public boolean isStored() {
+    return stored;
+  }
 
   /**
    * All the attributes are private and final.
