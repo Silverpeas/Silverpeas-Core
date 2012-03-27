@@ -474,8 +474,8 @@ td.milieuOngletOn {
 	border:1px solid #CACACA;
 	border-bottom:none;
 	border-radius:8px 8px 0 0;
-	-moz-border-radius:8px 8px 0 0;
-	-webkit-border-radius:8px 8px 0 0;
+		-moz-border-radius:8px 8px 0 0;
+		-webkit-border-radius:8px 8px 0 0;
 	padding-left: 10px;
 	padding-right: 10px;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
@@ -541,26 +541,10 @@ td.milieuOngletOn {
 .fondPhoto .txtlibform {
 	color: #ffffff;
 }
-.pageNav , .pageNav .ArrayNavigation, .pageNav .pageOff {
-	background-image: none;
-}
-.pageNav {
-	background-color:#C8ED99;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	box-shadow:5px 5px 10px #cccccc;
-	-moz-box-shadow:5px 5px 10px #cccccc;
-	-webkit-box-shadow:5px 5px 10px #cccccc;
-	padding-top:3px;
-	padding-left:5px;
-	padding-right:5px;
-}
-.pageNav .pageIndex {
-	background-color:transparent;
-	border-right:1px solid #80A452;
-	margin:0 10px 0 0;
-	padding:3px 0 0 0;
+
+.pageNav .pageOff a:hover, .pageNav .pageOff a:focus{
+	background-color:#7eb73b;
+	color:#fff;
 }
 
 #blog #titresTopics , #blog #titresArchives, #blog #titresLiens {
@@ -592,8 +576,8 @@ td.milieuOngletOn {
 
 .question {
   border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+	  -moz-border-radius: 5px;
+	  -webkit-border-radius: 5px;
   border-color: 1px solid #FFFFFF;
   margin:2px;
 }

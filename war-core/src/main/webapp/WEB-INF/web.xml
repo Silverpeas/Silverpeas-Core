@@ -412,15 +412,15 @@
     </servlet>
     <servlet>
         <servlet-name>FileSharingRequestRouter</servlet-name>
-        <servlet-class>com.silverpeas.external.filesharing.servlets.FileSharingRequestRouter</servlet-class>
+        <servlet-class>com.silverpeas.sharing.servlets.FileSharingRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetInfoFromKey</servlet-name>
-        <servlet-class>com.silverpeas.external.filesharing.servlets.GetInfoFromKeyServlet</servlet-class>
+        <servlet-class>com.silverpeas.sharing.servlets.GetInfoFromKeyServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetLinkFile</servlet-name>
-        <servlet-class>com.silverpeas.external.filesharing.servlets.GetLinkFileServlet</servlet-class>
+        <servlet-class>com.silverpeas.sharing.servlets.GetLinkFileServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportExportRequestRouter</servlet-name>

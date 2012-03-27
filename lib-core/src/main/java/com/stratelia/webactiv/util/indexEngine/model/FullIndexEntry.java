@@ -24,14 +24,9 @@
 
 package com.stratelia.webactiv.util.indexEngine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.stratelia.webactiv.util.indexEngine.DateFormatter;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * A FullIndexEntry is an IndexEntry completed with data usefull uniquely at the index creation time

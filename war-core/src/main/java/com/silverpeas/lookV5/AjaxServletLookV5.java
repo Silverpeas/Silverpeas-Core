@@ -23,16 +23,15 @@
  */
 package com.silverpeas.lookV5;
 
-import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.external.filesharing.model.FileSharingService;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -769,10 +768,8 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + "Main\"/>");
       }
       if (settings.getBoolean("fileSharingVisible", true)) {
-        FileSharingService fileSharing = FileSharingServiceFactory.getFactory().
-                getFileSharingService();
-        if (!fileSharing.getTicketsByUser(userId).isEmpty()) {
-          writer.write("<item id=\"fileSharing\" name=\""
+        if (!SharingServiceFactory.getSharingTicketService().getTicketsByUser(userId).isEmpty()) {
+          writer.write("<item id=\"sharingTicket\" name=\""
                   + EncodeHelper.escapeXml(message.getString("FileSharing"))
                   +
               "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""

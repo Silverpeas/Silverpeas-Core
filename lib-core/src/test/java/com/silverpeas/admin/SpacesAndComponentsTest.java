@@ -38,6 +38,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 
+import org.apache.ecs.xhtml.sub;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,6 +74,9 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   @Test
   public void testAddSpace() {
     AdminController ac = getAdminController();
+    
+    String expectedRootSpaceId = "WA7";
+    String expectedSubSpaceId = "WA8";
 
     // test space creation
     SpaceInst space = new SpaceInst();
@@ -80,26 +84,26 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     space.setName("Space 3");
     String spaceId = ac.addSpaceInst(space);
     assertNotNull(spaceId);
-    assertEquals("WA4", spaceId);
+    assertEquals(expectedRootSpaceId, spaceId);
 
     // test subspace creation
     SpaceInst subspace = new SpaceInst();
     subspace.setCreatorUserId(userId);
     subspace.setName("Space 3 - 1");
-    subspace.setDomainFatherId("4");
+    subspace.setDomainFatherId(spaceId);
     String subSpaceId = ac.addSpaceInst(subspace);
     assertNotNull(subSpaceId);
-    assertEquals("WA5", subSpaceId);
+    assertEquals(expectedSubSpaceId, subSpaceId);
 
     // test subspace of root space
-    String[] subSpaceIds = ac.getAllSubSpaceIds("WA4");
+    String[] subSpaceIds = ac.getAllSubSpaceIds(spaceId);
     assertEquals(1, subSpaceIds.length);
 
     // test level calculation
-    subspace = ac.getSpaceInstById("WA5");
+    subspace = ac.getSpaceInstById(subSpaceId);
     assertEquals(1, subspace.getLevel());
 
-    SpaceInstLight subspaceLight = ac.getSpaceInstLight("WA5");
+    SpaceInstLight subspaceLight = ac.getSpaceInstLight(subSpaceId);
     assertEquals(1, subspaceLight.getLevel());
   }
 
@@ -235,6 +239,120 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     // test inheritance
     assertEquals(false, ac.isComponentAvailable("almanach2", userId));
   }
+  
+  @Test
+  public void testProfileInheritanceBetweenSpaces() {
+    AdminController ac = getAdminController();
+    String rootSpaceId = "WA4";
+    String subSpaceIdWithoutInheritance = "WA5";
+    String subSpaceIdWithInheritance = "WA6";
+    
+    // force space to block inheritance 
+    SpaceInst spaceWithoutInheritance = ac.getSpaceInstById(subSpaceIdWithoutInheritance);
+    spaceWithoutInheritance.setInheritanceBlocked(true);
+    ac.updateSpaceInst(spaceWithoutInheritance);
+    
+    spaceWithoutInheritance = ac.getSpaceInstById(subSpaceIdWithoutInheritance);
+    assertEquals(true, spaceWithoutInheritance.isInheritanceBlocked());
+    SpaceInst spaceWithInheritance = ac.getSpaceInstById(subSpaceIdWithInheritance);
+    assertEquals(false, spaceWithInheritance.isInheritanceBlocked());
+    
+    // set space profile (admin)
+    SpaceProfileInst profile = new SpaceProfileInst();
+    profile.setSpaceFatherId(rootSpaceId);
+    profile.setName("admin");
+    profile.addUser(userId);
+    
+    String profileId = ac.addSpaceProfileInst(profile, rootSpaceId);
+    assertEquals("4", profileId);
+    
+    SpaceInst root = ac.getSpaceInstById(rootSpaceId);
+    List<SpaceProfileInst> profiles = root.getProfiles();
+    assertEquals(1, profiles.size());
+    
+    spaceWithoutInheritance = ac.getSpaceInstById(subSpaceIdWithoutInheritance);
+    profiles = spaceWithoutInheritance.getAllSpaceProfilesInst();
+    assertEquals(0, profiles.size());
+    
+    spaceWithInheritance = ac.getSpaceInstById(subSpaceIdWithInheritance);
+    profiles = spaceWithInheritance.getAllSpaceProfilesInst();
+    assertEquals(1, profiles.size());
+  }
+  
+  @Test
+  public void testProfileInheritanceBetweenNewSpaces() {
+    AdminController ac = getAdminController();
+    
+    // creating new root space
+    SpaceInst newRootSpace = new SpaceInst();
+    newRootSpace.setName("Root space");
+    newRootSpace.setCreatorUserId(userId);
+    String newRootSpaceId = ac.addSpaceInst(newRootSpace);
+    assertEquals("WA7", newRootSpaceId);
+    
+    newRootSpace = ac.getSpaceInstById(newRootSpaceId);
+    
+    // creating a first child
+    SpaceInst sub1 = new SpaceInst();
+    sub1.setName("Sub 1");
+    sub1.setCreatorUserId(userId);
+    sub1.setDomainFatherId(newRootSpaceId);
+    String sub1Id = ac.addSpaceInst(sub1);
+    assertEquals("WA8", sub1Id);
+    
+    sub1 = ac.getSpaceInstById(sub1Id);
+    
+    ac.updateSpaceOrderNum(sub1Id, 0);
+    
+    sub1 = ac.getSpaceInstById(sub1Id);
+    
+    // by default, inheritance is active, checking it 
+    assertEquals(false, sub1.isInheritanceBlocked());
+    
+    // blocking inheritance
+    sub1.setInheritanceBlocked(true);
+    sub1.setUpdaterUserId(userId);
+    ac.updateSpaceInst(sub1);
+    
+    List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(newRootSpaceId.substring(2));
+    assertEquals(1, subspaces.size());
+    SpaceInstLight subspace = subspaces.get(0);
+    assertEquals(true, subspace.isInheritanceBlocked());
+    
+    // creating a second child
+    SpaceInst sub2 = new SpaceInst();
+    sub2.setName("Sub 2");
+    sub2.setCreatorUserId(userId);
+    sub2.setDomainFatherId(newRootSpaceId);
+    String sub2Id = ac.addSpaceInst(sub2);
+    assertEquals("WA9", sub2Id);
+    
+    sub2 = ac.getSpaceInstById(sub2Id);
+    
+    ac.updateSpaceOrderNum(sub2Id, 1);
+    
+    // adding a profile on root level
+    SpaceProfileInst profile = new SpaceProfileInst();
+    profile.setSpaceFatherId(newRootSpaceId);
+    profile.setName("admin");
+    profile.addUser(userId);
+    
+    String profileId = ac.addSpaceProfileInst(profile, userId);
+    assertEquals("4", profileId);
+    
+    profile = ac.getSpaceProfileInst(profileId);
+    profile.addUser("2");
+    ac.updateSpaceProfileInst(profile, userId);
+    
+    // checking first child have no active profiles 
+    sub1 = ac.getSpaceInstById(sub1Id);
+    assertEquals(0, sub1.getAllSpaceProfilesInst().size());
+    
+    // checking second child have one active profile
+    sub2 = ac.getSpaceInstById(sub2Id);
+    assertEquals(1, sub2.getAllSpaceProfilesInst().size());
+    
+  }
 
   @Test
   public void testSpaceManager() throws AdminException {
@@ -298,12 +416,12 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
 
     String[] rootSpaceIds = ac.getAllRootSpaceIds();
-    assertEquals(2, rootSpaceIds.length);
+    assertEquals(3, rootSpaceIds.length);
 
     String targetSpaceId = null;
     String newSpaceId = ac.copyAndPasteSpace("WA1", targetSpaceId, userId);
 
-    String expectedSpaceId = "WA4";
+    String expectedSpaceId = "WA7";
     assertEquals(expectedSpaceId, newSpaceId);
 
     SpaceInstLight spaceLight = ac.getSpaceInstLight(expectedSpaceId);
@@ -322,7 +440,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     assertEquals(expectedComponentId, component.getId());
 
     // test pasted subspace
-    String expectedSubSpaceId = "WA5";
+    String expectedSubSpaceId = "WA8";
     String[] subSpaceIds = space.getSubSpaceIds();
     assertEquals(1, subSpaceIds.length);
     SpaceInst subSpace = ac.getSpaceInstById(subSpaceIds[0]);
@@ -331,7 +449,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     assertEquals("Space 1-2", subSpace.getName());
 
     rootSpaceIds = ac.getAllRootSpaceIds();
-    assertEquals(3, rootSpaceIds.length);
+    assertEquals(4, rootSpaceIds.length);
   }
 
   @Test
@@ -345,7 +463,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     String targetSpaceId = "WA3";
     String newSpaceId = ac.copyAndPasteSpace(copiedSpaceId, targetSpaceId, userId);
 
-    String expectedSpaceId = "WA4";
+    String expectedSpaceId = "WA7";
     assertEquals(expectedSpaceId, newSpaceId);
 
     SpaceInstLight copiedSpace = ac.getSpaceInstLight(copiedSpaceId);

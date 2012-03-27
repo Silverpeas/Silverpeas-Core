@@ -23,18 +23,20 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialNetwork.status.StatusService;
+import static com.silverpeas.util.StringUtil.areStringEquals;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.beanutils.BeanUtils;
-
 import java.io.File;
 import java.io.Serializable;
-
-import static com.silverpeas.util.StringUtil.areStringEquals;
-import static com.silverpeas.util.StringUtil.isDefined;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.beanutils.BeanUtils;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
   private static final long serialVersionUID = -109886153681824159L;
@@ -52,6 +54,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       GeneralPropertiesManager.getString("avatar.extension", "jpg");
   private static final ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+
   private String id = null;
   private String specificId = null;
   private String domainId = null;
@@ -63,8 +66,31 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private String loginQuestion = "";
   private String loginAnswer = "";
 
+  /**
+   * Gets the detail about the specified user.
+   * @param userId the unique identifier of the user to get.
+   * @return the detail about the user with the specified identifier or null if no such user exists.
+   */      
   public static UserDetail getById(String userId) {
     return getOrganizationController().getUserDetail(userId);
+  }
+  
+  /**
+   * Gets the detail about all the users in Silverpeas, whatever their domain.
+   * @return a list with all the users in Silverpeas.
+   */
+  public static List<UserDetail> getAll() {
+    return Arrays.asList(getOrganizationController().getAllUsers());
+  }
+  
+  /**
+   * Gets the detail about all the users belonging in the specified domain.
+   * @param domainId the unique identifier of the domain.
+   * @return a list with all the users that defined in the specified domain or null if no such
+   * domain exists.
+   */
+  public static List<UserDetail> getAllInDomain(String domainId) {
+    return Arrays.asList(getOrganizationController().getAllUsersInDomain(domainId));
   }
 
   /**
@@ -264,6 +290,16 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
 
   }
+  
+  /**
+   * Is the specified user is restricted to access the resource in its own domain?
+   * @return true if he's restricted in its own domain, false otherwise.
+   */
+  public boolean isDomainRestricted() {
+    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE ||
+            (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH &&
+            ! "0".equals(getDomainId()))) && !isAccessAdmin();
+  }
 
   public boolean isDomainAdminRestricted() {
     return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL)
@@ -353,7 +389,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     hash = 41 * hash + (this.accessLevel != null ? this.accessLevel.hashCode() : 0);
     return hash;
   }
-
+  
   /**
    * Dump user values to the trace system
    */
@@ -407,6 +443,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
     return "";
   }
+  
+  /**
+   * Gets the preferences of this user.
+   * @return the user preferences.
+   */
+  public final UserPreferences getUserPreferences() {
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getId());
+  }
 
   /**
    * Is the anonymous user exist in this running Silverpeas application?
@@ -433,7 +477,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
   }
 
-  private static OrganizationController getOrganizationController() {
+  protected static OrganizationController getOrganizationController() {
     return OrganizationControllerFactory.getFactory().getOrganizationController();
   }
 }
