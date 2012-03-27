@@ -184,6 +184,7 @@ public class JpaSharingTicketServiceTest {
     result = service.getTicket(key);
     assertThat(result, is(expResult));
     assertThat(result.getDownloads(), hasSize(2));
+    assertThat(result.getNbAccess(), is(2));
   }
 
   /**

@@ -280,6 +280,10 @@ public abstract class Ticket implements Serializable {
   public String toString() {
     return "Ticket{" + "sharedObjectType=" + sharedObjectType + ", sharedObjectId=" + sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" + updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" + nbAccess + ", token=" + token + ", downloads=" + downloads + '}';
   }
+  
+  public void addDownload() {
+    this.nbAccess = this.nbAccess + 1;
+  }
 
   public abstract ShareableAccessControl getAccessControl();
 
