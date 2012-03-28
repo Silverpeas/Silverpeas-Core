@@ -25,7 +25,7 @@ package com.silverpeas.profile.web;
 
 import com.silverpeas.personalization.UserPreferences;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.silverpeas.ui.DisplayI18NHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.beans.admin.UserDetail;

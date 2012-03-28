@@ -27,7 +27,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import org.junit.Test;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
-import com.silverpeas.rest.ResourceGettingTest;
+import com.silverpeas.web.ResourceGettingTest;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;

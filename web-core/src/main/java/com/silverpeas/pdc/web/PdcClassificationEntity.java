@@ -31,7 +31,7 @@ import java.io.StringReader;
 import javax.xml.bind.JAXBException;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 

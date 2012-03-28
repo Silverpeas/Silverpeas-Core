@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import java.util.Collections;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;

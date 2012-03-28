@@ -27,7 +27,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import com.silverpeas.rest.ResourceUpdateTest;
+import com.silverpeas.web.ResourceUpdateTest;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.beans.admin.UserDetail;

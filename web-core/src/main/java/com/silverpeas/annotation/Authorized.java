@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -21,23 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.annotation;
 
-package com.silverpeas.rest;
-
-import java.io.Serializable;
-import java.net.URI;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Target;
 
 /**
- * This interface is for qualifying the entities or functions that can be exposable as REST
- * resources through a REST web service.
- * All objects that can be exposable to the web must satisfy the contract defined by this interface.
+ * Annotation to indicate the access a web resource is protected by authorization schema.
+ * With this annotation, for each access to a component instance that provides the web resource,
+ * the user authentication is validated and then its access rights are checked.
  */
-public interface Exposable extends Serializable {
-
-  /**
-   * Gets the URI at which this resource is published and can be accessed.
-   * @return the web resource URI.
-   */
-  URI getURI();
-
+@Documented
+@Target(ElementType.TYPE)
+@Inherited
+public @interface Authorized {
+  
 }

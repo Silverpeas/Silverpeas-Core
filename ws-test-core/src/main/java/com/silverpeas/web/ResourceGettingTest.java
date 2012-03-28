@@ -21,50 +21,65 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rest;
+package com.silverpeas.web;
 
-import java.util.UUID;
 import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
+import java.util.UUID;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 /**
- * Unit tests on the deletion of a resource in Silverpeas through a REST web service.
+ * Unit tests on the getting of a resource in Silverpeas through a REST web service.
  * This class is an abstract one and it implements some tests that are redondant over all 
  * web resources in Silverpeas (about authorization failure, authentication failure, ...)
  */
-public abstract class ResourceDeletionTest<T extends TestResources> extends RESTWebServiceTest<T>
+public abstract class ResourceGettingTest<T extends TestResources> extends RESTWebServiceTest<T>
         implements WebResourceTesting {
 
   /**
    * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
    */
-  public ResourceDeletionTest(String webServicePackage, String springContext) {
+  public ResourceGettingTest(String webServicePackage, String springContext) {
     super(webServicePackage, springContext);
   }
 
   /**
-   * Requests a delete of the web resource identified at the specified URI.
-   * If an error occurs, then an UniformInterfaceException exception is thrown.
-   * @param uri the uri of the resource to delete.
+   * Gets the web resource at the specified URI as an instance of the specified class.
+   * @param <T> the type of the resource to return.
+   * @param uri the URI identifying uniquely the resource. the uri can be compound of a query
+   * string (starts at ?).
+   * @param c the class of which the returned resource should be an instance.
+   * @return the web entity representing the resource at the specified URI.
    */
-  public void deleteAt(String uri) {
-    resource().path(uri).
+  public <T> T getAt(String uri, Class<T> c) {
+    String thePath = uri;
+    WebResource resource = resource();
+    if (thePath.contains("?")) {
+      String[] pathParts = thePath.split("\\?");
+      String query = pathParts[1];
+      thePath = pathParts[0];
+      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
+      resource = resource.queryParams(parameters);
+    }
+    return resource.path(thePath).
             header(HTTP_SESSIONKEY, getSessionKey()).
             accept(MediaType.APPLICATION_JSON).
-            delete();
+            get(c);
   }
 
   @Test
-  public void deletionOfAResourceByANonAuthenticatedUser() throws Exception {
+  public void gettingAResourceByANonAuthenticatedUser() {
     try {
       resource().path(aResourceURI()).
               accept(MediaType.APPLICATION_JSON).
-              delete();
-      fail("A non authenticated user shouldn't delete a resource");
+              get(getWebEntityClass());
+      fail("A non authenticated user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
@@ -73,13 +88,12 @@ public abstract class ResourceDeletionTest<T extends TestResources> extends REST
   }
 
   @Test
-  public void deletionOfAResourceWithADeprecatedSession() throws Exception {
+  public void gettingAResourceWithAnExpiredSession() {
     try {
       resource().path(aResourceURI()).
               header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-              accept(MediaType.APPLICATION_JSON).
-              delete();
-      fail("A user with a deprecated session shouldn't delete a resource");
+              accept(MediaType.APPLICATION_JSON).get(getWebEntityClass());
+      fail("A non authenticated user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
@@ -88,11 +102,11 @@ public abstract class ResourceDeletionTest<T extends TestResources> extends REST
   }
 
   @Test
-  public void deletionOfAResourceByANonAuthorizedUser() throws Exception {
+  public void gettingAResourceByAnUnauthorizedUser() {
     denieAuthorizationToUsers();
     try {
-      deleteAt(aResourceURI());
-      fail("An unauthorized user shouldn't delete a resource");
+      getAt(aResourceURI(), getWebEntityClass());
+      fail("An unauthorized user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int forbidden = Status.FORBIDDEN.getStatusCode();
@@ -101,9 +115,10 @@ public abstract class ResourceDeletionTest<T extends TestResources> extends REST
   }
 
   @Test
-  public void deletionOfAnUnexistingResource() throws Exception {
+  public void gettingAnUnexistingResource() {
     try {
-      deleteAt(anUnexistingResourceURI());
+      getAt(anUnexistingResourceURI(), getWebEntityClass());
+      fail("A user shouldn't get an unexisting resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int notFound = Status.NOT_FOUND.getStatusCode();
