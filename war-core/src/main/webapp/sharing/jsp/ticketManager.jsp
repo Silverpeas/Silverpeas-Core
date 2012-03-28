@@ -45,13 +45,13 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:set var="ticket" value="${requestScope.Ticket}"/>
 <c:set var="ticketURL" value="${requestScope.Url}"/>
 <c:set var="action" value="${requestScope.Action}"/>
-<c:set var="validation" value="javascript:onClick=sendDataCreate();"/>
+<c:set var="cancellation" value="javascript:window.close();"/>
 <c:set var="endDate" value="${ticket.endDate}"/>
 <c:set var="sharedObjectType" value="${ticket.sharedObjectType}"/>
 <c:set var="maxAccessNb" value="${ticket.nbAccessMax}"/>
 <fmt:message var="currentOp" key="sharing.createTicket"/>
 <c:if test="${action eq 'UpdateTicket'}">
-  <c:set var="validation" value="javascript:onClick=sendData();"/>
+  <c:set var="cancellation" value="ViewTickets"/>
   <fmt:message var="currentOp" key="sharing.updateTicket"/>
 </c:if>
 <c:set var="fileName" value="${ticket.resource.name}"/>
@@ -80,52 +80,31 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
         toggleContinuous();
       });
 
-      function sendData()
-      {
-        if (isCorrectForm())
-        {
-          window.opener.document.ticketForm.action = "<c:out value='${action}'/>";
-          window.opener.document.ticketForm.token.value = document.ticketForm.token.value;
-          window.opener.document.ticketForm.endDate.value = document.ticketForm.endDate.value;
-          window.opener.document.ticketForm.nbAccessMax.value = document.ticketForm.nbAccessMax.value;
-          if (continuousTicket)
-          {
-            window.opener.document.ticketForm.continuous.value = document.ticketForm.continuous.value;
-          }
-          window.opener.document.ticketForm.submit();
-          window.close();
-        }
-      }
-
-      function sendDataCreate()
-      {
-        if (isCorrectForm())
-        {
+      function sendData() {
+        if (isCorrectForm()) {
           document.ticketForm.action = "<c:out value='${action}'/>";
           document.ticketForm.submit();
         }
       }
 
       function isCorrectForm() {
-
         var errorMsg = "";
         var errorNb = 0;
         var nb  = document.ticketForm.nbAccessMax.value;
-        var nbMin = <c:out value="${maxAccessNb}"/>;
+        var nbMin = <c:out value="${ticket.nbAccess}"/>;
         var endDate = document.ticketForm.endDate.value;
         if(!continuousTicket)
         {
-          if (nb > 100 || nb < nbMin) {
+          if (nb > 10000 || nb < nbMin) {
             errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.nbAccessMax'/>' <fmt:message key='sharing.maxValue'/> " +
-              nbMin + " <fmt:message key='GML.and'/> 100\n";
+              nbMin + " <fmt:message key='GML.and'/> 10000\n";
             errorNb++;
           }
           if (isWhitespace(endDate)) {
             errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate'/>' <fmt:message key='GML.MustBeFilled'/>\n";
             errorNb++;
           } else {
-            if (!isDateOK(endDate, '<c:out value="${language}"/>'))
-            {
+            if (!isDateOK(endDate, '<c:out value="${language}"/>')) {
               errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='sharing.endDate'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
               errorNb++;
             }
@@ -165,7 +144,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
   </head>
   <body>
     <fmt:message var="componentId" key="sharing.tickets"/>
-    <view:browseBar componentId="${ticket.componentId}" >
+    <view:browseBar componentId="${ticket.componentId}" clickable="false">
       <view:browseBarElt id="${currentOp}" label="${currentOp}" link=""/>
     </view:browseBar>
 
@@ -251,8 +230,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
         <fmt:message var="cancel" key="GML.cancel"/>
         <fmt:message var="validate" key="GML.validate"/>
         <view:buttonPane>
-          <view:button action="${validation}" label="${validate}" disabled="false"/>
-          <view:button action="javascript:window.close();" label="${cancel}" disabled="false"/>
+          <view:button action="javascript:onclick=sendData();" label="${validate}" disabled="false"/>
+          <view:button action="${cancellation}" label="${cancel}" disabled="false"/>
         </view:buttonPane>
       </center>
     </view:frame>
