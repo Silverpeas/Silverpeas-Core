@@ -20,7 +20,7 @@
 <c:set var="roles"             value="${selection.extraParams.joinedProfileNames}"/>
 <c:set var="validationURL"     value="${selection.goBackURL}"/>
 <c:set var="cancelationURL"    value="${selection.cancelURL}"/>
-<c:set var="hotSetting"        value="${selection.htmlFormName != null && fn:length(selection.htmlFormName) > 0}"/>
+<c:set var="hotSetting"        value="${selection.hotSetting}"/>
 
 <c:set var="selectionScope"   value=""/>
 <c:if test="${selection.elementSelectable}">
