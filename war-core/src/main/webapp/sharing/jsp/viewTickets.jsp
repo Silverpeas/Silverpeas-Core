@@ -38,20 +38,8 @@
   <view:looknfeel/>
   <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
   <script type="text/javascript">
-    var ticketWindow = window;
-
     function editTicket(token) {
-      urlWindows = "EditTicket?token=" + token;
-      windowName = "ticketWindow";
-      larg = "700";
-      haut = "400";
-      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-      if (!ticketWindow.closed && ticketWindow.name == "ticketWindow")
-        ticketWindow.close();
-      ticketWindow = SP_openWindow(urlWindows, windowName, larg, haut, windowParams);
-      ticketWindow.onClose = function() {
-        location.reload(true);
-      }
+      location.href = "EditTicket?token=" + token;
     }
 
     function deleteTicket(token) {
@@ -59,6 +47,10 @@
         document.deleteForm.token.value = token;
         document.deleteForm.submit();
       }
+    }
+    
+    function go(url) {
+    	window.open(url);	
     }
   </script>
 </head>
@@ -94,7 +86,7 @@
                IconPane iconPane = gef.getIconPane();
               Icon keyIcon = iconPane.addIcon();
               keyIcon.setProperties(resource.getIcon("sharing.ticket"),
-                  resource.getString("sharing.ticket"), ((Ticket)pageContext.getAttribute("ticket")).getUrl(request));
+                  resource.getString("sharing.ticket"), "javascript:go('"+((Ticket)pageContext.getAttribute("ticket")).getUrl(request)+"');");
               pageContext.setAttribute("ticketIcon", keyIcon.print());
               %>
               <view:arrayCellText text="${ticketIcon}"/>
