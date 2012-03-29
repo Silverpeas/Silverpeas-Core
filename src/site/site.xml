@@ -36,11 +36,27 @@
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
   </skin>
   <custom>
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
+      <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+      <googleSearch>
+        <sitesearch/>
+      </googleSearch>
+      <googlePlusOne />
+       <facebookLike />
+      <gitHub>
+        <projectId>Silverpeas</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>orange</ribbonColor>
+      </gitHub>
+      <twitter>
+        <user>Silverpeas</user>
+        <showUser>true</showUser>
+        <showFollowers>true</showFollowers>
+      </twitter>
       <!--
       <topBarIcon>
         <name>Maven Fluido Skin</name>

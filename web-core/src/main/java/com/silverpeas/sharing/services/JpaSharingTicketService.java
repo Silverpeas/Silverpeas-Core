@@ -84,6 +84,8 @@ public class JpaSharingTicketService implements SharingTicketService {
       ticket.setDownloads(downloads);
       historyRepository.saveAndFlush(download);
     }
+    ticket.addDownload();
+    repository.saveAndFlush(ticket);
   }
 
   @Override
