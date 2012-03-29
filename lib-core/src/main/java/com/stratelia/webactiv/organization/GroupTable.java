@@ -181,7 +181,7 @@ public class GroupTable extends Table<GroupRow> {
     return rows.toArray(new GroupRow[rows.size()]);
   }
   static final private String SELECT_SYNCHRONIZED_GROUPS = "select " + GROUP_COLUMNS
-          + " from ST_Group where synchroRule is not null and synchroRule <> ''";
+          + " from ST_Group where synchroRule is not null";
 
   /**
    * Returns all the Group ids.
