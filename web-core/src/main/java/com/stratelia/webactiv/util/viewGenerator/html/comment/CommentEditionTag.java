@@ -40,8 +40,7 @@ public class CommentEditionTag extends CommentWidget {
   private String indexed;
 
   /**
-   * Is new comments should be indexed?
-   * By default, new comments are indexed.
+   * Is new comments should be indexed? By default, new comments are indexed.
    * @return true if the comments should be indexed, false otherwise.
    */
   public boolean isCommentsIndexed() {
@@ -79,9 +78,11 @@ public class CommentEditionTag extends CommentWidget {
     UserDetail user = controller.getUserDetail(getUserId());
     String edition = "";
     if (!user.isAccessGuest() && !user.isAnonymous()) {
-      edition = "$('#" + COMMENT_WIDGET_DIV_ID + "').comment('edition', function() {"
-        + "return {author: {id: '" + getUserId() + "' }, componentId: '" + getComponentId() + "',"
-        + "resourceId: '" + getResourceId() + "', indexed: " + isCommentsIndexed() + "} });";
+      edition =
+          "$('#" + COMMENT_WIDGET_DIV_ID + "').comment('edition', function() {"
+              + "return {author: {id: '" + getUserId() + "' }, componentId: '" + getComponentId() +
+              "', resourceId: '" + getResourceId() + "', resourceType: '" + getResourceType() +
+              "', indexed: " + isCommentsIndexed() + "} });";
     }
     return edition;
   }

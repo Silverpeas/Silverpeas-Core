@@ -90,6 +90,16 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
    */
   abstract public String[] getExistingComponentInstances();
 
+  /**
+   * Gets tools to take into account in tests. Theses tools will be considered as existing. Others
+   * than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+   * @return an array with the identifier of tools to take into account in tests. The array cannot
+   * be null but it can be empty.
+   */
+  public String[] getExistingTools() {
+    return new String[]{};
+  }
+
   @Override
   public WebResource resource() {
     return webClient.resource(getBaseURI() + CONTEXT_NAME + "/");
@@ -105,6 +115,9 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     getMockedPersonalizationService().setPersonalizationService(mockedPersonalizationService);
     for (String componentId : getExistingComponentInstances()) {
       getMockedOrganizationController().addComponentInstance(componentId);
+    }
+    for (String toolId : getExistingTools()) {
+      getMockedOrganizationController().addTool(toolId);
     }
   }
 

@@ -169,18 +169,38 @@ public abstract class RESTWebService {
 
   /**
    * Checks the user that requested this web service has the correct priviledges to access the
-   * underlying referenced resource that belongs to a Silverpeas component instance. For doing, the
-   * resource should exists, otherwise a WebApplicationException is thrown with a status code NOT
-   * FOUND (404).
+   * underlying referenced resource that belongs to a Silverpeas component instance or a tool. For
+   * doing, the resource should exists, otherwise a WebApplicationException is thrown with a status
+   * code NOT FOUND (404).
    * 
-   * This method should be called at each incoming request processing to ensure a strong security. User
-   * information is retreived from the context of the incoming HTTP request. If no user information
-   * can be retrieved, then a WebApplicationException is thrown with a status code UNAUTHORIZED
-   * (401). When the check fails, a WebApplicationException is thrown with the HTTP status code set
-   * according to the failure.
+   * This method should be called at each incoming request processing to
+   * ensure a strong security. User information is retreived from the context of the incoming HTTP
+   * request. If no user information can be retrieved, then a WebApplicationException is thrown with
+   * a status code UNAUTHORIZED (401). When the check fails, a WebApplicationException is thrown
+   * with the HTTP status code set according to the failure.
    */
   protected void checkUserPriviledges() {
-    checkComponentInstanceExistance(getComponentId());
+    try {
+
+      // Component check
+      checkComponentInstanceExistance(getComponentId());
+
+    } catch (WebApplicationException aWAE) {
+
+      // Tool check
+      if (checkAvailableTool(getComponentId())) {
+        checkUserAuthentication();
+
+        // For tools, check only the user authentication
+        return;
+      } else {
+
+        // The componentId don't exist
+        throw aWAE;
+      }
+    }
+
+    // End of component checks
     checkUserAuthentication();
     checkUserAuthorizationOnComponent(getComponentId());
   }
@@ -230,6 +250,15 @@ public abstract class RESTWebService {
     } else {
       this.userDetail = validateUserSession(sessionId);
     }
+  }
+  
+  /**
+   * Checks the tool requested in the URI is available in Silverpeas.
+   * @param toolId the identifier of the Silverpeas tool.
+   * @return requested tool avaibility
+   */
+  protected boolean checkAvailableTool(String toolId) {
+    return getOrganizationController().isToolAvailable(toolId);
   }
 
   /**

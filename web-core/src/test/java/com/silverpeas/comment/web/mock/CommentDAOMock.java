@@ -47,7 +47,8 @@ import static com.silverpeas.util.StringUtil.*;
 @Named("commentDAO")
 public class CommentDAOMock implements CommentDAO {
 
-  private Map<String, Comment> comments = Collections.synchronizedMap(new HashMap<String, Comment>());
+  private Map<String, Comment> comments = Collections
+      .synchronizedMap(new HashMap<String, Comment>());
 
   @Override
   public CommentPK saveComment(Comment cmt) {
@@ -58,20 +59,21 @@ public class CommentDAOMock implements CommentDAO {
   }
 
   @Override
-  public void removeAllCommentsByForeignPk(ForeignPK pk) {
+  public void removeAllCommentsByForeignPk(String resourceType, ForeignPK pk) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public void removeComment(CommentPK pk) {
     if (comments.remove(pk.getId()) == null) {
-      throw new CommentRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
+      throw new CommentRuntimeException(getClass().getSimpleName(),
+          SilverpeasRuntimeException.ERROR,
           "No comment with id " + pk.getId());
     }
   }
 
   @Override
-  public List<Comment> getAllCommentsByForeignKey(ForeignPK pk) {
+  public List<Comment> getAllCommentsByForeignKey(String resourceType, ForeignPK pk) {
     List<Comment> allComments = new ArrayList<Comment>();
     for (Comment comment : comments.values()) {
       if (comment.getForeignKey().getId().equals(pk.getId())) {
@@ -85,19 +87,21 @@ public class CommentDAOMock implements CommentDAO {
   public Comment getComment(CommentPK pk) {
     Comment comment = comments.get(pk.getId());
     if (comment == null) {
-      throw new CommentRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
+      throw new CommentRuntimeException(getClass().getSimpleName(),
+          SilverpeasRuntimeException.ERROR,
           "No comment with id " + pk.getId());
     }
     return comment;
   }
 
   @Override
-  public int getCommentsCountByForeignKey(ForeignPK pk) {
+  public int getCommentsCountByForeignKey(String resourceType, ForeignPK pk) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public List<CommentedPublicationInfo> getMostCommentedPublications(List<WAPrimaryKey> pks) {
+  public List<CommentedPublicationInfo> getMostCommentedPublications(String resourceType,
+      List<WAPrimaryKey> pks) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -107,7 +111,13 @@ public class CommentDAOMock implements CommentDAO {
   }
 
   @Override
-  public void moveComments(ForeignPK fromPK, ForeignPK toPK) {
+  public void moveComments(String resourceType, ForeignPK fromPK, ForeignPK toPK) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void moveComments(String fromResourceType, ForeignPK fromPK, String toResourceType,
+      ForeignPK toPK) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -116,7 +126,8 @@ public class CommentDAOMock implements CommentDAO {
     if (isDefined(cmt.getCommentPK().getId()) && comments.containsKey(cmt.getCommentPK().getId())) {
       comments.put(cmt.getCommentPK().getId(), cmt);
     } else {
-      throw new CommentRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
+      throw new CommentRuntimeException(getClass().getSimpleName(),
+          SilverpeasRuntimeException.ERROR,
           "No comment with id " + cmt.getCommentPK().getId());
     }
   }
