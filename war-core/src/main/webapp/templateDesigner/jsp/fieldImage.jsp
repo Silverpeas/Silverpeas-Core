@@ -40,20 +40,18 @@
 	String maxHeight = "";
 	String galleriesChecked = "";
 	
-	if (field != null)
-	{
+	if (field != null) {
 		if (parameters.containsKey("width")) {
-		  maxWidth = (String) parameters.get("width");
+		  maxWidth = parameters.get("width");
 		}
 		
 		if (parameters.containsKey("height")) {
-		  maxHeight = (String) parameters.get("height");
+		  maxHeight = parameters.get("height");
 		}
 		
 		if (parameters.containsKey("galleries")) {
-	  		String galleries = (String) parameters.get("galleries");
-	  		if ("true".equalsIgnoreCase(galleries))
-	  		{
+	  		String galleries = parameters.get("galleries");
+	  		if ("true".equalsIgnoreCase(galleries)) {
 	  		  galleriesChecked = "checked=\"checked\"";
 	  		}
 		}

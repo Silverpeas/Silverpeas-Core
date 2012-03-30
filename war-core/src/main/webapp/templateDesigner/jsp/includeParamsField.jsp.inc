@@ -9,10 +9,9 @@ String mandatoryChecked = "";
 String searchable = "";
 boolean nameDisabled = false;
 String actionForm = "AddField";
-Map parameters = null;
+Map<String, String> parameters = null;
 
-if (field != null)
-{
+if (field != null) {
 	name 			= field.getFieldName();
 	actionForm 		= "UpdateField";
 	
