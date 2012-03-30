@@ -184,9 +184,15 @@ public class SpaceDAO {
   private static SpaceInstLight fetchSpace(ResultSet rs) throws SQLException {
     SpaceInstLight space = new SpaceInstLight();
 
-    space.setId(rs.getInt(1));
-    space.setFatherId(rs.getInt(2));
-    space.setName(rs.getString(3));
+    space.setId(rs.getInt("id"));
+    space.setFatherId(rs.getInt("domainFatherId"));
+    space.setName(rs.getString("name"));
+    space.setOrderNum(rs.getInt("orderNum"));
+    space.setLook(rs.getString("look"));
+    boolean isPersonalSpace = rs.getInt("isPersonal") == 1;
+    space.setPersonalSpace(isPersonalSpace);
+    boolean inheritanceBlocked = rs.getInt("isInheritanceBlocked") == 1;
+    space.setInheritanceBlocked(inheritanceBlocked);
 
     return space;
   }

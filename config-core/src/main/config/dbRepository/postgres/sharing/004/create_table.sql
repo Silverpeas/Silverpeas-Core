@@ -6,7 +6,7 @@ CREATE TABLE sb_filesharing_ticket
 	creationDate BIGINT NOT NULL,
 	updateId VARCHAR(50)	NULL,
 	updateDate BIGINT NULL,
-	endDate CHAR(13) NULL,
+	endDate BIGINT NULL,
 	nbAccessMax INTEGER NOT NULL,
 	nbAccess INTEGER NULL,
 	keyfile	VARCHAR(255) NOT NULL,
