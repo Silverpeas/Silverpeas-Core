@@ -494,8 +494,8 @@
         <servlet-class>com.silverpeas.socialNetwork.myProfil.servlets.MyProfilRequestRouter</servlet-class>
     </servlet>
     <servlet>
-      <display-name>GoToMyProfil</display-name>
-      <servlet-name>GoToMyProfil</servlet-name>
+      <display-name>GoToMyProfile</display-name>
+      <servlet-name>GoToMyProfile</servlet-name>
       <servlet-class>com.silverpeas.socialNetwork.myProfil.servlets.GoToMyProfile</servlet-class>
     </servlet>
     <servlet>
@@ -890,7 +890,7 @@
         <url-pattern>/RMyProfil/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GoToMyProfil</servlet-name>
+        <servlet-name>GoToMyProfile</servlet-name>
         <url-pattern>/MyProfil/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
