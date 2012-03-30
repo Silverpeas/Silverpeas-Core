@@ -96,8 +96,7 @@ import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
@@ -2389,7 +2388,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ******************************************************************************************
    */
   private PdcBm pdcBm = null; // To retrieve items from PDC
-  private SearchEngineBm searchEngine = null; // To retrieve items using
+  private SearchEngine searchEngine = null; // To retrieve items using
 
   // searchEngine
   private PdcBm getPdcBm() {
@@ -2399,7 +2398,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return pdcBm;
   }
 
-  private SearchEngineBm getSearchEngineBm() throws PdcException {
+  private SearchEngine getSearchEngineBm() throws PdcException {
     if (searchEngine == null) {
       try {
         SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(

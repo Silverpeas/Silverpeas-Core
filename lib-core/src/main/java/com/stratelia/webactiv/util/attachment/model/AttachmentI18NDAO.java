@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 
 public class AttachmentI18NDAO {
-  private static String attachmentTableName = "SB_Attachment_AttachmentI18N";
   private static String attachmentTableColumns =
       " id, attachmentId, lang, attachmentPhysicalName, attachmentLogicalName, attachmentType, attachmentSize, instanceId, attachmentCreationDate, attachmentAuthor, attachmentTitle, attachmentInfo, xmlForm ";
 
@@ -80,9 +79,8 @@ public class AttachmentI18NDAO {
   public static List<AttachmentDetailI18N> getTranslations(Connection con, WAPrimaryKey foreignKey)
       throws SQLException {
     StringBuilder selectStatement = new StringBuilder();
-    selectStatement.append("select ").append(attachmentTableColumns);
-    selectStatement.append(" from ").append(attachmentTableName);
-    selectStatement.append(" where attachmentId= ? and instanceId= ? ");
+    selectStatement.append("SELECT ").append(attachmentTableColumns);
+    selectStatement.append(" FROM sb_attachment_attachmentI18N WHERE attachmentId= ? AND instanceId= ? ");
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -110,14 +108,15 @@ public class AttachmentI18NDAO {
       throws SQLException {
     int id = -1;
     try {
-      id = DBUtil.getNextId(attachmentTableName, "id");
+      id = DBUtil.getNextId("sb_attachment_attachmentI18N", "id");
     } catch (UtilException e) {
       throw new SQLException(e.toString());
     }
 
-    String insertQuery =
-        "insert into " + attachmentTableName +
-        " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )";
+    String insertQuery = "INSERT INTO sb_attachment_attachmentI18N (id, attachmentId, lang,"
+      + "attachmentPhysicalName, attachmentLogicalName, attachmentType, attachmentSize, instanceId, "
+      + "attachmentCreationDate, attachmentAuthor, attachmentTitle, attachmentInfo, xmlForm) "
+      + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(insertQuery);
@@ -142,10 +141,10 @@ public class AttachmentI18NDAO {
 
   public static void updateTranslation(Connection con, AttachmentDetailI18N attach)
       throws SQLException {
-    String updateQuery =
-        "update " +
-            attachmentTableName +
-            " set attachmentTitle = ?, attachmentInfo = ?, attachmentPhysicalName = ?, attachmentLogicalName = ?, attachmentSize = ?, attachmentType = ?, attachmentCreationDate = ?, attachmentAuthor = ? where id = ? ";
+    String updateQuery = "UPDATE sb_attachment_attachmentI18N  SET attachmentTitle = ?, "
+      + "attachmentInfo = ?, attachmentPhysicalName = ?, attachmentLogicalName = ?, "
+      + "attachmentSize = ?, attachmentType = ?, attachmentCreationDate = ?, attachmentAuthor = ? "
+      + "WHERE id = ? ";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(updateQuery);
@@ -176,7 +175,7 @@ public class AttachmentI18NDAO {
   public static void removeTranslation(Connection con, int translationId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      String deleteQuery = "delete from " + attachmentTableName + " where id = ? ";
+      String deleteQuery = "DELETE FROM sb_attachment_attachmentI18N WHERE id = ? ";
 
       prepStmt = con.prepareStatement(deleteQuery);
       prepStmt.setInt(1, translationId);
@@ -190,8 +189,7 @@ public class AttachmentI18NDAO {
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      String deleteQuery =
-          "delete from " + attachmentTableName + " where attachmentId = ? and instanceId = ? ";
+      String deleteQuery = "DELETE FROM sb_attachment_attachmentI18N WHERE attachmentId = ? AND instanceId = ? ";
 
       prepStmt = con.prepareStatement(deleteQuery);
       prepStmt.setInt(1, Integer.parseInt(primaryKey.getId()));
@@ -204,8 +202,7 @@ public class AttachmentI18NDAO {
 
   public static void updateXmlForm(Connection con, AttachmentPK pk, String language,
       String xmlFormName) throws SQLException {
-    String updateQuery =
-        "update " + attachmentTableName + " set xmlForm = ? where attachmentid = ? and lang = ? ";
+    String updateQuery = "UPDATE sb_attachment_attachmentI18N SET xmlForm = ? WHERE attachmentid = ? AND lang = ? ";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(updateQuery);

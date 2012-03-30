@@ -9,6 +9,6 @@
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>searchengine</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Search Engine - ${project.version}</name>
+  <packaging>jar</packaging>
+  <name>Search Engine - ${project.version}</name>
 </project>

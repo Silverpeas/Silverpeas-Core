@@ -59,8 +59,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -195,7 +194,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.addSpaceComponentPair(null, "users");
 
-    SearchEngineBm searchEngine = getSearchEngineBm();
+    SearchEngine searchEngine = getSearchEngineBm();
     try {
       searchEngine.search(queryDescription);
 
@@ -465,7 +464,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return sb.toString();
   }
 
-  private SearchEngineBm getSearchEngineBm() throws DirectoryException {
+  private SearchEngine getSearchEngineBm() throws DirectoryException {
     try {
       SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(
               JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
