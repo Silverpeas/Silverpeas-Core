@@ -1,5 +1,5 @@
-ALTER TABLE sb_filesharing_ticket ADD shared_object VARCHAR2(255) NOT NULL;
-UPDATE sb_filesharing_ticket SET shared_object = fileId;
+ALTER TABLE sb_filesharing_ticket ADD shared_object number(19,0) NOT NULL;
+UPDATE sb_filesharing_ticket SET shared_object = to_number(fileId);
 ALTER TABLE sb_filesharing_ticket DROP COLUMN fileId;
 
 ALTER TABLE sb_filesharing_ticket DROP CONSTRAINT PK_SB_fileSharing_ticket;

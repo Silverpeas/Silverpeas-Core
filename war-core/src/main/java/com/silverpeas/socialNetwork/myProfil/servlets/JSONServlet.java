@@ -45,16 +45,16 @@ public class JSONServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
+    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if (m_MainSessionCtrl == null) {
+    if (mainSessionCtrl == null) {
       JSONObject jsonStatus = new JSONObject();
       jsonStatus.put("status", "silverpeastimeout");
       PrintWriter out = response.getWriter();
       out.println(jsonStatus);
       return;
     }
-    String userId = m_MainSessionCtrl.getUserId();
+    String userId = mainSessionCtrl.getUserId();
     String action = request.getParameter("Action");
     if ("updateStatus".equalsIgnoreCase(action)) {
       SocialNetworkService socialNetworkService = new SocialNetworkService(userId);

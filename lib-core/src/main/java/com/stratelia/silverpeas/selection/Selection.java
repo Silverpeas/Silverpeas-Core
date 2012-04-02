@@ -165,6 +165,17 @@ public final class Selection {
   public void setPopupMode(boolean popupMode) {
     this.popupMode = popupMode;
   }
+  
+  /**
+   * Is the set of fields with the selection could be done directly from the user panel?
+   * This is can be done only if the user panel is opened within a window popup and the information
+   * about HTML form of the opener is provided (see the setHtmlForm kind methods).
+   * @return true if the user panel should modify directly the opener with the result of the selection,
+   * false otherwise.
+   */
+  public boolean isHotSetting() {
+    return StringUtil.isDefined(htmlFormName);
+  }
 
   public boolean isMultiSelect() {
     return multiSelect;

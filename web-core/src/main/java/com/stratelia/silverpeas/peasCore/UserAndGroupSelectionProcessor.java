@@ -50,7 +50,7 @@ public class UserAndGroupSelectionProcessor {
     request.setAttribute(SELECTION_PARAMETER, selection);
   }
   
-  public void processSelection(final Selection selection, final HttpServletRequest request) {
+  public String processSelection(final Selection selection, final HttpServletRequest request) {
     String userSelection = request.getParameter(USER_SELECTION_PARAMETER);
     String[] selectedUsers = null;
     if (isDefined(userSelection)) {
@@ -63,6 +63,15 @@ public class UserAndGroupSelectionProcessor {
     }
     selection.setSelectedElements(selectedUsers);
     selection.setSelectedSets(selectedGroups);
+    
+    // a workaround to clients that use the user panel within a window popup without taking avantage
+    // of the hot settings
+    if (!selection.isHotSetting() && selection.isPopupMode()) {
+      request.setAttribute("RedirectionURL", selection.getGoBackURL());
+      return "/selection/jsp/redirect.jsp";
+    }
+    
+    return null;
   }
   
   public boolean isSelectionAsked(String destination) {
