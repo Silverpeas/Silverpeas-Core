@@ -139,6 +139,20 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   }
 
   /**
+   * Deletes all of the comments by the component instance identifier. Any indexes on it are
+   * removed. All callback interested by the deletion of a comment will be invoked through the
+   * CallBackManager. The callback will recieve as invocation parameters respectively the identifier
+   * of the commented publication, the component instance name, and the deleted comment. If no such
+   * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
+   * @param pk the identifier of the publication the comments are on.
+   */
+  @Override
+  public void deleteAllCommentsByComponentInstanceId(String instanceId) {
+    deleteAllCommentsOnPublication(null, new ForeignPK(null, instanceId));
+  }
+
+  /**
    * Deletes the specified comment. Any indexes on it are removed. If no such comment exists with
    * the specified identifier, then a CommentRuntimeException is thrown. All callback interested by
    * the deletion of a comment will be invoked through the CallBackManager. The callback will

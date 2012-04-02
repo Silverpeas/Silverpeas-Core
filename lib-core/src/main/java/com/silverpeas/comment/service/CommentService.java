@@ -43,6 +43,8 @@ public interface CommentService extends SilverpeasComponentService {
 
   void deleteAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 
+  void deleteAllCommentsByComponentInstanceId(final String instanceId);
+
   void deleteComment(Comment comment);
 
   void moveComments(final String resourceType, WAPrimaryKey fromPK, WAPrimaryKey toPK);

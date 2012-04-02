@@ -272,19 +272,23 @@ public class JDBCCommentRequester {
 
   public List<Comment> getAllComments(Connection con, String resourceType, WAPrimaryKey foreign_pk)
       throws SQLException {
-    String select_query =
-        "SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, "
-            + "commentComment, resourceType, resourceId, instanceId FROM sb_comment_comment "
-            + "WHERE resourceType = ? AND resourceId = ? AND instanceId = ? "
-            + "ORDER BY commentCreationDate DESC, commentId DESC";
+    final List<String> params = new ArrayList<String>();
+    final StringBuffer select_query = new StringBuffer();
+    select_query
+        .append("SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, ");
+    select_query
+        .append("commentComment, resourceType, resourceId, instanceId FROM sb_comment_comment");
+    performQueryAndParams(select_query, params, resourceType, foreign_pk);
+    select_query.append("ORDER BY commentCreationDate DESC, commentId DESC");
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
     List<Comment> comments = new ArrayList<Comment>(INITIAL_CAPACITY);
     try {
-      prep_stmt = con.prepareStatement(select_query);
-      prep_stmt.setString(1, resourceType);
-      prep_stmt.setString(2, foreign_pk.getId());
-      prep_stmt.setString(3, foreign_pk.getComponentName());
+      prep_stmt = con.prepareStatement(select_query.toString());
+      int indexParam = 1;
+      for (String param : params) {
+        prep_stmt.setString(indexParam++, param); 
+      }
       rs = prep_stmt.executeQuery();
       CommentPK pk;
       Comment cmt = null;
@@ -310,19 +314,46 @@ public class JDBCCommentRequester {
     return comments;
   }
 
-  public void deleteAllComments(Connection con, String resourceType, ForeignPK foreignPK)
+  public int deleteAllComments(Connection con, String resourceType, ForeignPK foreignPK)
       throws SQLException {
-    String delete_query =
-        "DELETE FROM sb_comment_comment WHERE resourceType = ? AND resourceId = ? AND instanceId = ?";
+    final List<String> params = new ArrayList<String>();
+    final StringBuffer delete_query = new StringBuffer("DELETE FROM sb_comment_comment");
+    performQueryAndParams(delete_query, params, resourceType, foreignPK);
+    
     PreparedStatement prep_stmt = null;
     try {
-      prep_stmt = con.prepareStatement(delete_query);
-      prep_stmt.setString(1, resourceType);
-      prep_stmt.setString(2, foreignPK.getId());
-      prep_stmt.setString(3, foreignPK.getInstanceId());
-      prep_stmt.executeUpdate();
+      prep_stmt = con.prepareStatement(delete_query.toString());
+      int indexParam = 1;
+      for (String param : params) {
+        prep_stmt.setString(indexParam++, param); 
+      }
+      return prep_stmt.executeUpdate();
     } finally {
       DBUtil.close(prep_stmt);
+    }
+  }
+
+  private void performQueryAndParams(StringBuffer query, List<String> params, String resourceType, WAPrimaryKey foreignPK) {
+    String clause = " WHERE ";
+    if (StringUtil.isDefined(resourceType)) {
+      query.append(clause).append("resourceType = ? ");
+      clause = "AND ";
+      params.add(resourceType);
+    }
+    if (foreignPK != null) {
+      if (StringUtil.isDefined(foreignPK.getId())) {
+        query.append(clause).append("resourceId = ? ");
+        clause = "AND ";
+        params.add(foreignPK.getId());
+      }
+      if (StringUtil.isDefined(foreignPK.getInstanceId())) {
+        query.append(clause).append("instanceId = ? ");
+        params.add(foreignPK.getInstanceId());
+      }
+    }
+
+    if (params.size() == 0) {
+      throw new IllegalArgumentException();
     }
   }
 }

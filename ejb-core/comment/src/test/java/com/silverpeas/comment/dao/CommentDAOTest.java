@@ -7,6 +7,7 @@ package com.silverpeas.comment.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -342,7 +343,38 @@ public class CommentDAOTest {
     foreignKey.setId(null);
     comments = commentDAO.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
-    assertEquals(0, comments.size());
+    assertEquals(1, comments.size());
+
+    foreignKey.setComponentName(null);
+    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    assertNotNull(comments);
+    assertEquals(2, comments.size());
+
+    resourceType = null;
+    foreignKey = new ForeignPK("500", "instanceId10");
+    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    assertNotNull(comments);
+    assertEquals(3, comments.size());
+
+    foreignKey.setId(null);
+    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    assertNotNull(comments);
+    assertEquals(3, comments.size());
+
+    foreignKey.setId("500");
+    foreignKey.setComponentName(null);
+    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    assertNotNull(comments);
+    assertEquals(3, comments.size());
+
+    boolean isIllegalArgumentException = false;
+    foreignKey.setId(null);
+    try {
+      comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    } catch (IllegalArgumentException e) {
+      isIllegalArgumentException = true;
+    }
+    assertTrue(isIllegalArgumentException);
 
     baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
@@ -363,11 +395,93 @@ public class CommentDAOTest {
     assertNotNull(comments);
     assertEquals(2, comments.size());
 
-    commentDAO.deleteAllComments(con, resourceType, foreignKey);
+    final int nbDeletes = commentDAO.deleteAllComments(con, resourceType, foreignKey);
+    assertEquals(2, nbDeletes);
 
     comments = commentDAO.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(0, comments.size());
+
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  /**
+   * Test of deleteAllComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testDeleteAllCommentsOnNullValues() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+
+    boolean isIllegalArgumentException = false;
+    try {
+      commentDAO.deleteAllComments(con, null, null);
+    } catch (IllegalArgumentException e) {
+      isIllegalArgumentException = true;
+    }
+    assertTrue(isIllegalArgumentException);
+
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  /**
+   * Test of deleteAllComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testDeleteAllCommentsOnResourceTypeOnly() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+
+    String resourceType = "RtypeTest";
+
+    int nbDeletes = commentDAO.deleteAllComments(con, resourceType, null);
+    assertEquals(3, nbDeletes);
+    nbDeletes = commentDAO.deleteAllComments(con, resourceType, null);
+    assertEquals(0, nbDeletes);
+
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  /**
+   * Test of deleteAllComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testDeleteAllCommentsOnResourceIdOnly() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+
+    ForeignPK foreignKey = new ForeignPK("500");
+
+    int nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    assertEquals(3, nbDeletes);
+    nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    assertEquals(0, nbDeletes);
+
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  }
+
+  /**
+   * Test of deleteAllComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testDeleteAllCommentsOnInstanceIdOnly() throws Exception {
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    Connection con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+
+    ForeignPK foreignKey = new ForeignPK(null, "instanceId20");
+
+    int nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    assertEquals(2, nbDeletes);
+    nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    assertEquals(0, nbDeletes);
 
     baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
