@@ -2368,7 +2368,6 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 #searchGroupTitle span.author {
   background:url("/silverpeas/util/icons/user.gif") no-repeat scroll left top transparent;
-  color: #FFFFFF;
   display:block;
   font-weight:bold;
   height:16px;
@@ -2388,7 +2387,6 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 #searchGroupTitle span.component {
   background:url("/silverpeas/util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
-  color: #FFFFFF;
   display:block;
   font-weight:bold;
   height:16px;

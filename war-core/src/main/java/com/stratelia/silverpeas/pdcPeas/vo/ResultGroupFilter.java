@@ -23,36 +23,22 @@
  */
 package com.stratelia.silverpeas.pdcPeas.vo;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ResultGroupFilter {
-  private List<AuthorVO> authors = null;
-  private List<ComponentVO> components = null;
   private List<String> year = null;
   
-  private List<FormFieldFacet> formfieldFacets;
+  private Facet authorFacet = null;
+  private Facet componentFacet = null;
+  private List<Facet> formfieldFacets;
 
   /**
    * Default constructor
    */
   public ResultGroupFilter() {
     super();
-  }
-
-  public List<AuthorVO> getAuthors() {
-    return authors;
-  }
-
-  public void setAuthors(List<AuthorVO> authors) {
-    this.authors = authors;
-  }
-
-  public List<ComponentVO> getComponents() {
-    return components;
-  }
-
-  public void setComponents(List<ComponentVO> components) {
-    this.components = components;
   }
 
   public List<String> getYear() {
@@ -62,13 +48,51 @@ public class ResultGroupFilter {
   public void setYear(List<String> year) {
     this.year = year;
   }
+  
+  public Facet getAuthorFacet() {
+    return authorFacet;
+  }
 
-  public void setFormFieldFacets(List<FormFieldFacet> formfields) {
+  public void setAuthorFacet(Facet authorFacet) {
+    this.authorFacet = authorFacet;
+  }
+
+  public Facet getComponentFacet() {
+    return componentFacet;
+  }
+
+  public void setComponentFacet(Facet componentFacet) {
+    this.componentFacet = componentFacet;
+  }
+
+  public void setFormFieldFacets(List<Facet> formfields) {
     this.formfieldFacets = formfields;
   }
 
-  public List<FormFieldFacet> getFormFieldFacets() {
+  public List<Facet> getFormFieldFacets() {
     return formfieldFacets;
+  }
+  
+  public void sortFacetsEntries() {
+    EntryComparator comparator = new EntryComparator();
+    Collections.sort(authorFacet.getEntries(), comparator);
+    Collections.sort(componentFacet.getEntries(), comparator);
+    
+    for (Facet formFieldFacet : formfieldFacets) {
+      Collections.sort(formFieldFacet.getEntries(), comparator);
+    }
+  }
+  
+  private class EntryComparator implements Comparator<FacetEntryVO>{
+    @Override
+    public int compare(FacetEntryVO o1, FacetEntryVO o2) {
+      int comp = o2.getNbElt() - o1.getNbElt();
+      if (comp != 0) {
+        return comp;
+      }
+      // sort same weight entries according to alphabetical order
+      return o1.getName().compareTo(o2.getName());
+    }
   }
 
 }

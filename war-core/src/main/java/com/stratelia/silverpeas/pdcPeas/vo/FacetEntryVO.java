@@ -25,6 +25,7 @@ public class FacetEntryVO {
   private String name = "";
   private String id = "";
   private int nbElt = 0;
+  private boolean selected = false;
 
   /**
    * Default constructor
@@ -76,6 +77,14 @@ public class FacetEntryVO {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
+  } 
+  
+  public void setSelected(boolean selected) {
+    this.selected = selected;
+  }
+
+  public boolean isSelected() {
+    return selected;
   }
 
   @Override
@@ -99,4 +108,6 @@ public class FacetEntryVO {
       return false;
     return true;
   }
+
+
 }

@@ -23,14 +23,22 @@ package com.stratelia.silverpeas.pdcPeas.vo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormFieldFacet {
+import com.silverpeas.util.StringUtil;
+
+public class Facet {
   
   private String name;
+  private String id;
   private List<FacetEntryVO> entries = new ArrayList<FacetEntryVO>();
   
-  public FormFieldFacet(String name) {
+  public Facet(String id, String name) {
     super();
     this.name = name;
+    this.id = id;
+  }
+  
+  public String getId() {
+    return id;
   }
 
   public String getName() {
@@ -50,11 +58,13 @@ public class FormFieldFacet {
   }
   
   public void addEntry(FacetEntryVO entry) {
-    int index = entries.indexOf(entry);
-    if (index == -1) {
-      entries.add(entry);
-    } else {
-      entries.get(index).incrementEntry();
+    if (StringUtil.isDefined(entry.getName())) {
+      int index = entries.indexOf(entry);
+      if (index == -1) {
+        entries.add(entry);
+      } else {
+        entries.get(index).incrementEntry();
+      }
     }
   }
   
