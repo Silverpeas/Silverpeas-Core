@@ -22,19 +22,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.searchEngine.control.ejb;
+package org.silverpeas.search;
+
+import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 
 import java.rmi.RemoteException;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBHome;
+import java.util.Set;
 
 /**
- * The home interface for the state-full EJB session SearchEngineBm.
+ * A SearchEngine search the web'activ index and give access to the retrieved index entries.
  */
-public interface SearchEngineBmHome extends EJBHome {
+public interface SearchEngine {
   /**
-   * Create a SearchEngineBm.
+   * Search the index for the required documents.
    */
-  SearchEngineBm create() throws CreateException, RemoteException;
+  PlainSearchResult search(QueryDescription query) throws RemoteException;
+
+
+  /**
+   * gets a list of suggestion from a partial String
+   * @param keywordFragment string to execute the search
+   * @return a set of result sorted by alphabetic order
+   */
+  Set<String> suggestKeywords(String keywordFragment) throws RemoteException;
+
+
+
 }

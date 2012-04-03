@@ -105,8 +105,7 @@ public class WorkListDAO {
         int rownum = prepStmt.executeUpdate();
         if (rownum < 1) {
           throw new VersioningRuntimeException("WorkListDAO.addWorkers",
-              SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_RECORD_INSERTION_FAILED",
-              worker);
+              SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_RECORD_INSERTION_FAILED", worker);
         }
       }
     } finally {
@@ -143,7 +142,6 @@ public class WorkListDAO {
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
     PreparedStatement prepStmt = null;
-
     try {
       if (keepSaved) {
         prepStmt = conn.prepareStatement(REMOVE_WORKERS_NOT_SAVED);
