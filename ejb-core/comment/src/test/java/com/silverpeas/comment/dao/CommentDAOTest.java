@@ -298,7 +298,7 @@ public class CommentDAOTest {
     assertEquals(0, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
 
     foreignKey.setId(null);
-    assertEquals(0, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
+    assertEquals(1, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
 
     baseTest.getDatabaseTester().closeConnection(dbConnection);
   }

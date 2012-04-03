@@ -1,13 +1,13 @@
 ALTER TABLE SB_Comment_Comment
-RENAME foreignId TO resourceId
+RENAME COLUMN foreignId TO resourceId
 ;
 
 ALTER TABLE SB_Comment_Comment
-ALTER COLUMN resourceId TYPE VARCHAR(50)
+MODIFY (resourceId VARCHAR2(50) NOT NULL)
 ;
 
 ALTER TABLE SB_Comment_Comment
-ADD resourceType VARCHAR (50)
+ADD (resourceType VARCHAR2(50))
 ;
 
 -- Data recovery
@@ -34,5 +34,5 @@ SET resourceType =
 
 -- Ending structure modifications
 ALTER TABLE SB_Comment_Comment
-ALTER COLUMN resourceType SET NOT NULL
+MODIFY (resourceType NOT NULL)
 ;

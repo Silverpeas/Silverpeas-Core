@@ -246,16 +246,18 @@ public class JDBCCommentRequester {
 
   public int getCommentsCount(Connection con, String resourceType, WAPrimaryKey foreign_pk)
       throws SQLException {
-    String select_query = "SELECT COUNT(commentId) AS nb_comment FROM sb_comment_comment "
-        + "WHERE instanceId = ? AND resourceType = ? AND resourceId = ?";
+    final List<String> params = new ArrayList<String>();
+    final StringBuffer select_query = new StringBuffer("SELECT COUNT(commentId) AS nb_comment FROM sb_comment_comment");
+    performQueryAndParams(select_query, params, resourceType, foreign_pk);
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
     int commentsCount = 0;
     try {
-      prep_stmt = con.prepareStatement(select_query);
-      prep_stmt.setString(1, foreign_pk.getComponentName());
-      prep_stmt.setString(2, resourceType);
-      prep_stmt.setString(3, foreign_pk.getId());
+      prep_stmt = con.prepareStatement(select_query.toString());
+      int indexParam = 1;
+      for (String param : params) {
+        prep_stmt.setString(indexParam++, param); 
+      }
       rs = prep_stmt.executeQuery();
       while (rs.next()) {
         commentsCount = rs.getInt("nb_comment");

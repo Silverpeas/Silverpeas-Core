@@ -1,13 +1,11 @@
+EXEC sp_rename 'SB_Comment_Comment.foreignId','resourceId','COLUMN';
+
 ALTER TABLE SB_Comment_Comment
-RENAME foreignId TO resourceId
+ALTER COLUMN resourceId VARCHAR(50) NOT NULL
 ;
 
 ALTER TABLE SB_Comment_Comment
-ALTER COLUMN resourceId TYPE VARCHAR(50)
-;
-
-ALTER TABLE SB_Comment_Comment
-ADD resourceType VARCHAR (50)
+ADD resourceType VARCHAR (50) NULL
 ;
 
 -- Data recovery
@@ -34,5 +32,5 @@ SET resourceType =
 
 -- Ending structure modifications
 ALTER TABLE SB_Comment_Comment
-ALTER COLUMN resourceType SET NOT NULL
+ALTER COLUMN resourceType VARCHAR(50) NOT NULL
 ;
