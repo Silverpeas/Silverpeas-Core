@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
+import static org.hamcrest.Matchers.*;
 /**
  *
  * @author ehugonnet
@@ -43,22 +43,6 @@ import static org.junit.Assert.*;
 public class StringUtilTest {
 
   public StringUtilTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   /**
@@ -220,15 +204,21 @@ public class StringUtilTest {
   @Test
   public void testDetectEncoding() throws UnsupportedEncodingException {
     String testString = "voici une chaîne créée exprès";
-    String expectedResult = "ISO-8859-1";
+
     String result = StringUtil.detectEncoding(testString.getBytes("ISO-8859-1"), null);
-    assertEquals(expectedResult, result);
+    assertThat(result, is("ISO-8859-1"));
     result = StringUtil.detectEncoding(testString.getBytes("ISO-8859-1"), "UTF-8");
-    assertEquals(expectedResult, result);
-    expectedResult = "UTF-8";
+    assertThat(result, is("ISO-8859-1"));
     result = StringUtil.detectEncoding(testString.getBytes("UTF-8"), null);
-    assertEquals(expectedResult, result);
+    assertThat(result, is("UTF-8"));
     result = StringUtil.detectEncoding(testString.getBytes("UTF-8"), "UTF-8");
-    assertEquals(expectedResult, result);
+    assertThat(result, is("UTF-8"));
+    
+    /*String copyright = "Département de la Drôme";
+    result = StringUtil.detectEncoding(copyright.getBytes("UTF-8"), "UTF-8");
+    assertThat(result, is("UTF-8"));
+    copyright = "Département de la Drôme";
+    result = StringUtil.detectEncoding(copyright.getBytes("ISO-8859-1"), "UTF-8");
+    assertThat(result, is("ISO-8859-1"));*/
   }
 }

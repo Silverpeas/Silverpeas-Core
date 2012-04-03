@@ -60,7 +60,7 @@
         <p>Silverpeas users and groups management is based on <b>Domains</b>. You can create as much domains as you want, each with is own storage type or configuration.</p>
         <p>Each domain is configured using properties files, let's look at them on the next section.</p>
       </subsection>
-      <subsubsection name="Configuring the domain">
+      <subsection name="Configuring the domain">
         <p>First we need a configuration file to define how to connect to te LDAP server and how to synchronize it with Silverpeas.</p>
         <p>You would have to create a new  <i>domainOpenDJTutorial.properties</i> into <i>$SILVERPEAS_HOME/properties/com/stratelia/silverpeas/domains</i>.</p>
         <p>As it happens, you don't have to write this configuration file as it is provided with a default Silverpeas installation.</p>
@@ -92,7 +92,6 @@ database.LDAPOpAttributesUsed=true
         <p>The parameter <b>synchro.Threaded</b> indicates if the synchronization is manual or if it is automatic, launched regularly. The delay between each synchronization is defined in the file <i>com/stratelia/webactiv/beans/admin/admin.properties</i> in the property <b>AdminThreadedSynchroDelay</b>.</p>
         <p>The parameter <b>synchro.timeStampVar</b> indicates which attribute on the LDAP entries is used to check for modificationon the LDAP side.</p>
         <p>
-        <p>
           <code><pre>
 # Synchro parameters
 # ------------------
@@ -102,29 +101,148 @@ synchro.timeStampVar=modifyTimestamp
 synchro.Threaded=false
                 </pre></code>
         </p>
-        <p>Next
-          
-        </p>
+        <p>Next, we need to configure which users we are going to synchronize, and how their attributes match the mandatory fields of Silverpeas users.</p>
+        <p>The selection of users is done through a LDAP fiter. Since it is not the purpose of this tutorial to learn such a filter, we will keep the field blank.</p>
+        <p>Silverpeas requires that a user must have a first and a last name, an external id (for synchronization purpose) and a login.</p>
         <p>
           <code><pre>          
 # Users data synchronization settings
 # ---------------
 users.ClassName=person
 # Note : the filter MUST be put between parentheses.
-#        there MUSTN'T have dummy parentheses levels ex : (&((Condition1))(Condition2)) will NOT works, (&(Condition1)(Condition2)) will works
-# (&(mail=*)(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=TSTEXCHANGE))
+#        there MUSTN'T have dummy parentheses levels ex : (&amp;((Condition1))(Condition2)) will NOT works, (&amp;(Condition1)(Condition2)) will works
+# (&amp;(mail=*)(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=TSTEXCHANGE))
 users.Filter=
 # Note : To make domains easiest to change, the Id must be set to the login field
 #        It's not an obligation but it's very strongly advised
 users.IdField=entryUUID
-users.LoginField=uid
+users.LoginField=cn
 users.FirstNameField=givenName
 users.LastNameField=sn
 #Not mandatory
 users.EmailField=mail
           </pre></code>
         </p>
-      </subsubsection>
+        <p>Next, is th groups synchronization parameters. It is almost the same as for users. We won't dwell into the parameters for now.</p>
+        <p>
+          <code><pre>          
+# Groups' settings
+# ----------------
+#Depend de l'implémentation
+groups.ClassName=groupOfUniqueNames
+# Note : the filter MUST be put between parentheses.
+#        there MUSTN'T have dummy parentheses levels ex : (&amp;((Condition1))(Condition2)) will NOT works, (&amp;(Condition1)(Condition2)) will works
+# (&amp;(objectCategory=CN=group,CN=Schema,CN=Configuration,DC=TSTEXCHANGE)(member=*))
+groups.Filter=(uniqueMember=*)
+# Set the id Field to the 'cn' insteed of the DN to allow groups to move in the LDAP database
+# Set to objectGUID to have a unique ID
+groups.IdField=entryUUID
+
+
+# Use com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupSubTree to access groups that are just node with users and sub-groups as sons
+# Use com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupUniqueDescriptor to access groups that contains an attribute containing DN of all there sons
+# Use com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupAllRoot to access groups that contains an attribute containing DN of all there sons AND to have ALL those groups at the root with all sub-users at the first level
+#Mettre com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupAllRoot par defaut
+groups.Type=com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupAllRoot
+
+# For LDAPGroupUniqueDescriptor, LDAPGroupCTI and LDAPGroupAllRoot only :
+# ---------------------------------------------------------
+# The field that contains the child's DNs
+groups.MemberField=uniqueMember
+# If groups.SpecificGroupsBaseDN is not set, database.LDAPUserBaseDN is used as root for searchs
+groups.SpecificGroupsBaseDN=ou=silverpeas,dc=silverpeas,dc=com
+
+# For LDAPGroupAllRoot and LDAPGroupCTI only :
+# ---------------------------
+# ONLY PUT THIS VALUE TO TRUE FOR THE FIRST TIME THE SYNCHRO IS DONE WITH THE 'ALL ROOT' MODEL
+# This inherit the profiles from parent groups to child groups
+groups.InheritProfiles=false
+
+# For LDAPGroupCTI only :
+# ---------------------------
+# Give the deph for group naming : 0 = no naming depth (use the groups.NameField value), 1 = only use the first element of the DN, x = use the firt x elements of the DN
+groups.NamingDepth=2
+
+# For LDAPGroupSubTree only :
+# ---------------------------
+groups.IncludeEmptyGroups=true
+
+groups.NameField=cn
+groups.DescriptionField=description
+
+          </pre></code>
+        </p>
+        <p>Most of the time, the users information are stored in the LDAP directory. So we have to define which are the attributes we are interested in obtaining from it.
+          You can define as many attributes as you want.</p>
+        <p>First, you have to define the number of attributes (<i>property.Number</i>) and the resources where Silverpeas will get the multilang labels for the user attributes using 
+          <i>property.ResourceFile</i>.          
+        </p>
+        <p>The, for each attribute you will provide 
+          <ul>
+            <li>
+              <i>property_#.Name</i>: which is the name of the property in the resource bundle.
+            </li>
+            <li>
+              <i>property_#.Type</i>: the type of the property (only 
+              <b>STRING</b> and 
+              <b>USERID</b> are currently supported).
+            </li>
+            <li>
+              <i>property_#.MapParameter</i>: the name of the attribute in the LDAP entry.
+            </li>
+          </ul>
+        </p>
+        <p>
+          <code><pre>    
+
+# USERS Specific Properties
+# -------------------------
+
+# Property number : from 1 to N
+# Available Types : STRING, USERID
+# MapParameter : Name of the LDAP corresponding field
+
+property.Number = 9
+property.ResourceFile = com.stratelia.silverpeas.domains.multilang.domainOpenDJBundle
+
+property_1.Name = title
+property_1.Type = STRING
+property_1.MapParameter = title
+
+property_2.Name = company
+property_2.Type = STRING
+property_2.MapParameter = company
+
+property_3.Name = position
+property_3.Type = STRING
+property_3.MapParameter = department
+
+property_4.Name = boss
+property_4.Type = USERID
+property_4.MapParameter = manager
+
+property_5.Name = phone
+property_5.Type = STRING
+property_5.MapParameter = telephoneNumber
+
+property_6.Name = homePhone
+property_6.Type = STRING
+property_6.MapParameter = homePhone
+
+property_7.Name = fax
+property_7.Type = STRING
+property_7.MapParameter = facsimileTelephoneNumber
+
+property_8.Name = cellularPhone
+property_8.Type = STRING
+property_8.MapParameter = mobile
+
+property_9.Name = address
+property_9.Type = STRING
+property_9.MapParameter = streetAddress
+          </pre></code>
+        </p>
+      </subsection>
     </section>
   </body>
 </document>

@@ -26,10 +26,21 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp.inc" %>
-<script language="javascript">
-function isCorrectForm() 
-{
+<script type="text/javascript">
+function isCorrectForm() {
  	checkFieldName();
+ 	
+ 	if($('#galleries').is(':checked')){
+ 		$('#Param_galleries').val("true");
+ 	} else {
+ 		$('#Param_galleries').val("false");
+ 	}
+ 	
+ 	if($('#fileStorages').is(':checked')){
+ 		$('#Param_fileStorages').val("true");
+ 	} else {
+ 		$('#Param_fileStorages').val("false");
+ 	}
  	return checkErrors();
 }
 </script>
@@ -38,15 +49,30 @@ function isCorrectForm()
 <%
 	String width = "";
 	String height = "";
+	String galleriesChecked = "checked=\"checked\"";
+	String fileStoragesChecked = "checked=\"checked\"";
 	
-	if (field != null)
-	{
+	if (field != null) {
 		if (parameters.containsKey("width")) {
-		  width = (String) parameters.get("width");
+		  width = parameters.get("width");
 		}
 		
 		if (parameters.containsKey("height")) {
-		  height = (String) parameters.get("height");
+		  height = parameters.get("height");
+		}
+		
+		if (parameters.containsKey("galleries")) {
+	  		String galleries = parameters.get("galleries");
+	  		if ("false".equalsIgnoreCase(galleries)) {
+	  		  galleriesChecked = "";
+	  		}
+		}
+		
+		if (parameters.containsKey("fileStorages")) {
+	  		String fileStorages = parameters.get("fileStorages");
+	  		if ("false".equalsIgnoreCase(fileStorages)) {
+	  		  fileStoragesChecked = "";
+	  		}
 		}
 	}
 %>
@@ -56,5 +82,11 @@ function isCorrectForm()
 </tr>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.wysiwyg.height")%> :</td><td><input type="text" name="Param_height" value="<%=height%>" size="5" maxLength="4"/></td>
+</tr>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.wysiwyg.galleries")%> :</td><td><input type="checkbox" id="galleries" <%=galleriesChecked%>/><input type="hidden" name="Param_galleries" id="Param_galleries"/></td>
+</tr>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.wysiwyg.fileStorages")%> :</td><td><input type="checkbox" id="fileStorages" <%=fileStoragesChecked%>/><input type="hidden" name="Param_fileStorages" id="Param_fileStorages"/></td>
 </tr>
 <%@ include file="includeBottomField.jsp.inc" %>
