@@ -1541,7 +1541,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   width: 5px;
 }
 
-/* pour encadrer les boutons et remplacer la balise center untilisée dans les anciennes pages */
+/* pour encadrer les boutons et remplacer la balise center utilisée dans les anciennes pages */
 .buttonPane {
 	text-align:center;
 }
