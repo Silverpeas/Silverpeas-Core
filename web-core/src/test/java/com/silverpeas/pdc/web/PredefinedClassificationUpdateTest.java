@@ -30,7 +30,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import javax.ws.rs.core.MediaType;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import com.silverpeas.rest.ResourceUpdateTest;
+import com.silverpeas.web.ResourceUpdateTest;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;

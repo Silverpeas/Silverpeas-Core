@@ -23,29 +23,30 @@
  */
 package com.silverpeas.subscribe.web;
 
-import java.util.List;
-
-import com.silverpeas.subscribe.Subscription;
-import org.junit.Before;
-import java.util.Collection;
 import com.google.common.collect.Lists;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.rest.mock.UserDetailWithProfiles;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.silverpeas.rest.RESTWebServiceTest;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.web.RESTWebServiceTest;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import java.util.Collection;
+import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.junit.Test;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static com.silverpeas.rest.RESTWebService.*;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.*;
+import org.junit.Before;
+import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTestResources> {
 

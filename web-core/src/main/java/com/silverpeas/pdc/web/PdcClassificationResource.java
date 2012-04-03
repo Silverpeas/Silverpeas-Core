@@ -23,32 +23,26 @@
  */
 package com.silverpeas.pdc.web;
 
-import java.util.List;
-import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
+import com.silverpeas.annotation.Authorized;
+import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
+import static com.silverpeas.pdc.web.PdcServiceProvider.forContentOfId;
+import static com.silverpeas.pdc.web.PdcServiceProvider.inComponentOfId;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import java.net.URI;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
-import static com.silverpeas.pdc.web.PdcServiceProvider.*;
 
 /**
  * A REST Web resource that represents the classification of a Silverpeas's resource on the
@@ -67,6 +61,7 @@ import static com.silverpeas.pdc.web.PdcServiceProvider.*;
 @Service
 @Scope("request")
 @Path("pdc/{componentId}/{contentId}")
+@Authorized
 public class PdcClassificationResource extends RESTWebService {
 
   @Inject
@@ -77,7 +72,7 @@ public class PdcClassificationResource extends RESTWebService {
   private String contentId;
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return this.componentId;
   }
 
@@ -97,7 +92,6 @@ public class PdcClassificationResource extends RESTWebService {
   @GET
   @Produces({MediaType.APPLICATION_JSON})
   public PdcClassificationEntity getPdCClassification() {
-    checkUserPriviledges();
     try {
       URI itsURI = getUriInfo().getAbsolutePath();
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
@@ -125,7 +119,6 @@ public class PdcClassificationResource extends RESTWebService {
   @DELETE
   @Path("{positionId}")
   public void deletePdcPosition(@PathParam("positionId") int positionId) {
-    checkUserPriviledges();
     try {
       pdcServiceProvider().deletePosition(positionId, forContentOfId(getContentId()),
               inComponentOfId(getComponentId()));
@@ -158,7 +151,6 @@ public class PdcClassificationResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response addPdcPosition(final PdcPositionEntity newPosition) {
-    checkUserPriviledges();
     if (newPosition.getPositionValues().isEmpty()) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
@@ -202,7 +194,6 @@ public class PdcClassificationResource extends RESTWebService {
   @Path("{positionId}")
   public PdcClassificationEntity updatePdcPosition(@PathParam("positionId") String positionId,
           final PdcPositionEntity modifiedPosition) {
-    checkUserPriviledges();
     if (!positionId.equals(modifiedPosition.getId())
             || modifiedPosition.getPositionValues().isEmpty()) {
       throw new WebApplicationException(Status.BAD_REQUEST);

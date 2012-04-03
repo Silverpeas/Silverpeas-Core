@@ -1,4 +1,4 @@
-package com.silverpeas.rest.mock;
+package com.silverpeas.web.mock;
 
 import javax.inject.Named;
 

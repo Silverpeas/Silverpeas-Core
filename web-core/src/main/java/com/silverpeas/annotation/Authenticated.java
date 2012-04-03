@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -21,9 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Target;
 
 /**
- * Provides the classes and interfaces from which web services can be defined and published in
- * Silverpeas.
+ * Annotation to indicate the access a web resource must be done within an authenticated session.
+ * With this annotation, for each incoming request, the authentication of the caller is validated.
+ * If the user isn't yet authenticated, an authentication challenge is triggered with the
+ * credentials from the Authenticate HTTP header of the request.
  */
-package com.silverpeas.rest;
+@Documented
+@Target(ElementType.TYPE)
+@Inherited
+public @interface Authenticated {
+  
+}

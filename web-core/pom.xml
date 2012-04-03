@@ -15,6 +15,10 @@
   
   <dependencies>
     <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
@@ -278,6 +282,28 @@
     <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <version>1.4</version>
+        <configuration>
+          <complianceLevel>1.6</complianceLevel>
+          <source>1.6</source>
+          <target>1.6</target>
+          <encoding>UTF-8</encoding>
+          <proceedOnError>true</proceedOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>test-compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <reporting>

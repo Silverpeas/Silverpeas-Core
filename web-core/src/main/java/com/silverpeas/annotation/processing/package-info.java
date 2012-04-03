@@ -21,28 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.web;
 
-/** 
- * A selectable is a GUI object that can be selected.
- * Any items that can be selected by a user has to implement this interface.
+/**
+ * This package provides the annotation processors for the custom Silverpeas annotations.
  */
-public interface Selectable {
-  
-  /**
-   * Is this selectable selected by a user?
-   * @return true if this object is selected, false otherwise.
-   */
-  boolean isSelected();
-  
-  /**
-   * Selects this object.
-   */
-  void select();
-  
-  /**
-   * Unselects this object.
-   */ 
-  void unselect();
-  
-}
+package com.silverpeas.annotation.processing;

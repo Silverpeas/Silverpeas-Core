@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,37 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.sharing.web;
 
+package com.silverpeas.web;
+
+import java.io.Serializable;
 import java.net.URI;
-import java.util.Date;
 
-import javax.xml.bind.annotation.XmlElement;
+/**
+ * This interface is for qualifying the entities or functions that can be exposable as REST
+ * resources through a REST web service.
+ * All objects that can be exposable to the web must satisfy the contract defined by this interface.
+ */
+public interface Exposable extends Serializable {
 
-import com.silverpeas.web.Exposable;
-
-public class SharingEntity implements Exposable {
-
-  private static final long serialVersionUID = 1L;
-  
-  @XmlElement(defaultValue = "")
-  private URI uri;
-  @XmlElement(defaultValue = "")
-  private URI webApplicationRootUri;
-  @XmlElement(defaultValue = "")
-  private String expiration;
-
-  @Override
-  public URI getURI() {
-    return uri;
-  }
-  
-  public SharingEntity(URI uri, URI webApplicationRootUri, Date expiration) {
-    this.uri = uri;
-    this.webApplicationRootUri = webApplicationRootUri;
-    if (expiration != null) {
-      this.expiration = Long.toString(expiration.getTime());
-    }
-  }
+  /**
+   * Gets the URI at which this resource is published and can be accessed.
+   * @return the web resource URI.
+   */
+  URI getURI();
 
 }
