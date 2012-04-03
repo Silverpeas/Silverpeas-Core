@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response.Status;
 import com.sun.jersey.api.client.ClientResponse;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.rest.ResourceCreationTest;
+import com.silverpeas.web.ResourceCreationTest;
 import org.junit.Test;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;

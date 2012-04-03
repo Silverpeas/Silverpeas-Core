@@ -25,7 +25,7 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.silverpeas.rest.ResourceDeletionTest;
+import com.silverpeas.web.ResourceDeletionTest;
 import java.util.List;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import org.junit.Before;

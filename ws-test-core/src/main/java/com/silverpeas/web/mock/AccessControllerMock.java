@@ -22,51 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.rest.mock;
+package com.silverpeas.web.mock;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.silverpeas.accesscontrol.AccessController;
 import javax.inject.Named;
 
 /**
- * A mock of a session manager for testing purpose.
+ * A mock of an user access controller for testing purpose.
  */
-@Named("sessionManager")
-public class SessionManagerMock implements SessionManagement {
+@Named("componentAccessController")
+public class AccessControllerMock implements AccessController<String> {
 
-  private Map<String, SessionInfo> sessions = new HashMap<String, SessionInfo>();
+  private boolean authorization = true;
 
-  @Override
-  public Collection<SessionInfo> getDistinctConnectedUsersList(UserDetail user) {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public void setAuthorization(boolean isUsersAuthorized) {
+    authorization = isUsersAuthorized;
   }
 
   @Override
-  public int getNbConnectedUsersList(UserDetail user) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public SessionInfo getSessionInfo(String sessionKey) {
-    return sessions.get(sessionKey);
-  }
-
-  @Override
-  public String openSession(SessionInfo sessionInfo) {
-    String key = UUID.randomUUID().toString();
-    sessions.put(key, sessionInfo);
-    return key;
-  }
-
-  @Override
-  public void closeSession(String sessionKey) {
-    sessions.remove(sessionKey);
+  public boolean isUserAuthorized(String userId, String object) {
+    return authorization;
   }
 
 }

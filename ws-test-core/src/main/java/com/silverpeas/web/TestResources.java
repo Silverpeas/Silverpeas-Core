@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.rest;
+package com.silverpeas.web;
 
 import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.rest.mock.AccessControllerMock;
-import com.silverpeas.rest.mock.OrganizationControllerMock;
-import com.silverpeas.rest.mock.SessionManagerMock;
+import com.silverpeas.web.mock.AccessControllerMock;
+import com.silverpeas.web.mock.OrganizationControllerMock;
+import com.silverpeas.web.mock.SessionManagerMock;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Inject;
 import static org.junit.Assert.assertNotNull;

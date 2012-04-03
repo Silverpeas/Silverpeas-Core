@@ -38,7 +38,7 @@ import org.silverpeas.node.web.NodeEntity;
 
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.profile.web.UserProfileEntity;
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
