@@ -27,17 +27,15 @@ import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
-/**
- * Created by IntelliJ IDEA. User: ehugonnet Date: 28/03/12 Time: 16:12 To change this template use
- * File | Settings | File Templates.
- */
+  /**
+   * The result of a search.
+   */
 public class PlainSearchResult implements Serializable {
-  private Set<String> spellingWords;
+  private List<String> spellingWords;
   private List<MatchingIndexEntry> entries;
 
-  public PlainSearchResult(Set<String> spellingWords, List<MatchingIndexEntry> entries) {
+  public PlainSearchResult(List<String> spellingWords, List<MatchingIndexEntry> entries) {
     this.spellingWords = spellingWords;
     this.entries = entries;
   }
@@ -46,7 +44,7 @@ public class PlainSearchResult implements Serializable {
     return entries;
   }
 
-  public Set<String> getSpellingWords() {
+  public List<String> getSpellingWords() {
     return spellingWords;
   }
 }

@@ -24,7 +24,6 @@
 package org.silverpeas.search;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import javax.inject.Inject;
 
 /**

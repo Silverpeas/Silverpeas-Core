@@ -65,6 +65,7 @@ import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.search.SearchEngineFactory;
 
 /**
  * @author Nabil Bensalem
@@ -193,13 +194,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.addSpaceComponentPair(null, "users");
-
-    SearchEngine searchEngine = getSearchEngineBm();
     try {
-      searchEngine.search(queryDescription);
-
-      MatchingIndexEntry[] plainSearchResults =
-              searchEngine.getRange(0, searchEngine.getResultLength());
+      List<MatchingIndexEntry> plainSearchResults = SearchEngineFactory.getSearchEngine().search(
+        queryDescription).getEntries();
 
       for (MatchingIndexEntry result : plainSearchResults) {
         String userId = result.getObjectId();
@@ -210,10 +207,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         }
       }
     } catch (Exception e) {
-      throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH",
-              e);
+      throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH", e);
     }
-
     return lastListUsersCalled;
 
   }
@@ -464,16 +459,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return sb.toString();
   }
 
-  private SearchEngine getSearchEngineBm() throws DirectoryException {
-    try {
-      SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(
-              JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
-      return home.create();
-    } catch (Exception e) {
-      throw new DirectoryException(this.getClass().getSimpleName(), "root.EX_SEARCH_ENGINE_FAILED",
-              e);
-    }
-  }
 
   private void setCurrentDirectory(int currentDirectory) {
     this.currentDirectory = currentDirectory;

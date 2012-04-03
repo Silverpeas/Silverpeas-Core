@@ -75,7 +75,10 @@
 		  //highlight glossary term
 		  if(StringUtil.isDefined(axisId)){
 		  		content = new HighlightGlossaryTerms().searchReplace(content,"highlight-silver",axisId,StringUtil.getBooleanValue(highlightFirst),language);
-		  }
+		  } 
+      if(content == null) {
+        content = "";
+      }
 		  out.println(content);
 	  }
 	  else

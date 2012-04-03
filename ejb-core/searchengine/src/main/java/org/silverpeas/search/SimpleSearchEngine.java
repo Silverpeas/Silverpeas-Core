@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -55,21 +56,27 @@ public class SimpleSearchEngine implements SearchEngine{
 
   /**
    * Search the index for the required documents.
+   * @param query the search query.
+   * @return  the results.
    */
+  @Override
   public PlainSearchResult search(QueryDescription query) {
     try {
       List<MatchingIndexEntry> results = Arrays.asList(new WAIndexSearcher().search(query));
       // spelling word functionality is triggered by a threshold defined in pdcPeasSettings.properties
       // (wordSpellingMinScore).
-      Set<String> spellingWords;
+      @SuppressWarnings("unchecked")
+      Set<String> spellingWords = Collections.EMPTY_SET;
       if (enableWordSpelling && isSpellingNeeded(results)) {
         DidYouMeanSearcher searcher = new DidYouMeanSearcher();
-        spellingWords = new HashSet<String>();
-        Collections.addAll(spellingWords, searcher.suggest(query));
-      } else {
-        spellingWords = new HashSet<String>();
+        
+        String[] suggestions = searcher.suggest(query);
+        if(suggestions != null && suggestions.length > 0) {
+          spellingWords = new HashSet<String>(suggestions.length);
+          Collections.addAll(spellingWords, suggestions);
+        }      
       }
-      return new PlainSearchResult(spellingWords, results);
+      return new PlainSearchResult(new ArrayList<String>(spellingWords), results);
     } catch (ParseException pe) {
       throw new ParseRuntimeException("SimpleSearchEngine.search",
           SilverpeasRuntimeException.ERROR, "searchEngine.EXP_PARSE_EXCEPTION", pe);
