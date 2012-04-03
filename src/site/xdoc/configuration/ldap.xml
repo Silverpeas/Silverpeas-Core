@@ -172,11 +172,28 @@ groups.DescriptionField=description
 
           </pre></code>
         </p>
-        <p>
-          
+        <p>Most of the time, the users information are stored in the LDAP directory. So we have to define which are the attributes we are interested in obtaining from it.
+          You can define as many attributes as you want.</p>
+        <p>First, you have to define the number of attributes (<i>property.Number</i>) and the resources where Silverpeas will get the multilang labels for the user attributes using 
+          <i>property.ResourceFile</i>.          
+        </p>
+        <p>The, for each attribute you will provide 
+          <ul>
+            <li>
+              <i>property_#.Name</i>: which is the name of the property in the resource bundle.
+            </li>
+            <li>
+              <i>property_#.Type</i>: the type of the property (only 
+              <b>STRING</b> and 
+              <b>USERID</b> are currently supported).
+            </li>
+            <li>
+              <i>property_#.MapParameter</i>: the name of the attribute in the LDAP entry.
+            </li>
+          </ul>
         </p>
         <p>
-          <code><pre>          
+          <code><pre>    
 
 # USERS Specific Properties
 # -------------------------
