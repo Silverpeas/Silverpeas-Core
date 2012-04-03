@@ -36,6 +36,8 @@
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.searchable")%> :</td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
 </tr>
+<% if (showFacetParam) { %>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.facet")%> :</td><td><input type="checkbox" name="UsedAsFacet" value="true" <%=usedAsFacet%>/></td>
+<td class="txtlibform"><%=resource.getString("templateDesigner.facet")%> :</td><td><input type="checkbox" id="UsedAsFacet" name="UsedAsFacet" value="true" <%=usedAsFacet%>/></td>
 </tr>
+<% } %>

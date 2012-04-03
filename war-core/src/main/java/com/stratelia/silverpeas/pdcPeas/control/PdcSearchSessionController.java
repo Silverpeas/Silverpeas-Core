@@ -666,14 +666,18 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             String[] splitted = getFormNameAndFieldName(facetId);
             String formName = splitted[0];
             String fieldName = splitted[1];
+            if (!isFieldStillAFacet(formName, fieldName)) {
+              // this field is no more a facet
+              continue;
+            }
             Facet facet = null;
             if (!fieldFacetsMap.containsKey(facetId)) {
               // new facet, adding it to result list
               try {
                 facet = new Facet(facetId, getFieldLabel(formName, splitted[1]));
               } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                SilverTrace.error("pdcPeas", "PdcSearchSessionController.getResultGroupFilter()",
+                    "pdcPeas.CANT_GET_FACET_LABEL", e);
               }
               fieldFacetsMap.put(facetId, facet);
             } else {
@@ -754,6 +758,18 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     String fieldName = compressedFieldName.substring(compressedFieldName.indexOf("$$") + 2);
     return new String[] { formName, fieldName };
+  }
+  
+  private boolean isFieldStillAFacet(String formName, String fieldName) {
+    PublicationTemplate form;
+    try {
+      form = PublicationTemplateManager.getInstance().loadPublicationTemplate(formName);
+      return form.getFieldsForFacets().contains(fieldName);
+    } catch (PublicationTemplateException e) {
+      SilverTrace.error("pdcPeas", "PdcSearchSessionController.isFieldStillAFacet()",
+          "pdcPeas.CANT_GET_FIELDS_FOR_FACETS", e);
+    }
+    return false;
   }
 
   public List<GlobalSilverResult> processResultsToDisplay(MatchingIndexEntry[] indexEntries)

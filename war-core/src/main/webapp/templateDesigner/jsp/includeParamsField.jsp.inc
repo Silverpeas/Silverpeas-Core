@@ -12,6 +12,8 @@ boolean nameDisabled = false;
 String actionForm = "AddField";
 Map<String, String> parameters = null;
 
+boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
+
 if (field != null) {
 	name 			= field.getFieldName();
 	actionForm 		= "UpdateField";
@@ -54,6 +56,11 @@ if (field != null) {
 	
 	function sendData() {
 		if (isCorrectForm()) {
+			<% if (field != null && !field.isUsedAsFacet()) { %>
+				if ($("#UsedAsFacet").is(':checked')) {
+					alert("<%=resource.getString("templateDesigner.facet.warning")%>");
+				}
+			<% } %>
 			document.fieldForm.submit();
 		} else {
 			errorMsg = "";
