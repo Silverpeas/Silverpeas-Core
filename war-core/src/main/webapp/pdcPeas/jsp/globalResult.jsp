@@ -82,7 +82,7 @@ String sortImplementor = (String) request.getAttribute("sortImp");
 
 List	webTabs			= (List) request.getAttribute("WebTabs");
 // spelling words
-String [] spellingWords = (String []) request.getAttribute("spellingWords");
+List<String> spellingWords = (List<String>) request.getAttribute("spellingWords");
 
 // List of Group result filter (new function added by EBO)
 ResultGroupFilter resultGroup = (ResultGroupFilter) request.getAttribute("ResultGroup");
@@ -380,9 +380,9 @@ function markAsRead(id) {
 
 <%}%>
 
-	<% if(spellingWords!= null && StringUtil.isDefined(spellingWords[0])){ %>
+	<% if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){ %>
 		function dymsend() {
-			document.AdvancedSearch.query.value = '<%=EncodeHelper.javaStringToJsString(spellingWords[0])%>';
+			document.AdvancedSearch.query.value = '<%=EncodeHelper.javaStringToJsString(spellingWords.get(0))%>';
 			document.AdvancedSearch.submit();
 		}
 	<% } %>
@@ -544,7 +544,7 @@ function showExternalSearchError() {
 		out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
 		displayItemsListHeader(keywords, pagination, resource, out);
 		out.println("<tr><td>");
-	if(spellingWords!= null && spellingWords[0]!= null && !spellingWords[0].equals("")){
+	if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){
 %>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="globalResultListDidYouMean">
 			<tr >
@@ -553,7 +553,7 @@ function showExternalSearchError() {
 						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%>
 
 					</span>
-					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords[0]%></span></b></a>
+					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords.get(0)%></span></b></a>
 					<p>&nbsp;</p>
 				</td>
 			</tr>

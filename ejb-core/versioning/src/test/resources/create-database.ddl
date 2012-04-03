@@ -1,3 +1,8 @@
+CREATE TABLE UniqueId (
+	maxId BIGINT NOT NULL, 
+	tableName varchar(100) NOT NULL
+);
+
 CREATE TABLE SB_Version_Document 
 	(
 	documentId		int		not null, 
