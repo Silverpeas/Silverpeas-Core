@@ -484,13 +484,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.equals("Pagination")) {
-        // Initialize searchFilter
-        ResultFilterVO filter = initSearchFilter(request, pdcSC);
         processPDCSelectionActions("ValidateSelectedObjects", pdcSC, request);
 
         String index = request.getParameter("Index");
         pdcSC.setIndexOfFirstResultToDisplay(index);
-        setDefaultDataToNavigation(request, pdcSC, filter);
+        setDefaultDataToNavigation(request, pdcSC);
 
         destination = getDestinationForResults(pdcSC);
       } else if ("SortResults".equals(function)) {
@@ -510,8 +508,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           pdcSC.setSortOrder(paramSortOrder);
         }
 
-        ResultFilterVO filter = initSearchFilter(request, pdcSC);
-        setDefaultDataToNavigation(request, pdcSC, filter);
+        setDefaultDataToNavigation(request, pdcSC);
 
         destination = getDestinationForResults(pdcSC);
       } else if (function.startsWith("AdvancedSearch")) {
@@ -625,8 +622,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
             && !pdcSC.getResultPage().equals("pdaResult.jsp")) {
           PdcSearchRequestRouterHelper.processItemsPagination(function, pdcSC, request);
         } else {
-          ResultFilterVO filter = initSearchFilter(request, pdcSC);
-          setDefaultDataToNavigation(request, pdcSC, filter);
+          setDefaultDataToNavigation(request, pdcSC);
         }
 
         // destination = "/pdcPeas/jsp/globalResult.jsp";
@@ -906,8 +902,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       } else if (function.startsWith("FilterSearchResult")) {// This function allow group filtering
         // result on globalResult page
         // Retrieve filter parameter
-        ResultFilterVO filter = initSearchFilter(request, pdcSC);
-        setDefaultDataToNavigation(request, pdcSC, filter);
+        initSearchFilter(request, pdcSC);
+        setDefaultDataToNavigation(request, pdcSC);
         destination = getDestinationForResults(pdcSC);
       } else {
         destination = "/pdcPeas/jsp/" + function;
@@ -932,22 +928,29 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       PdcSearchSessionController pdcSC) {
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
-    ResultFilterVO filter = null;
+    ResultFilterVO filter = new ResultFilterVO();
 
     // Check filter values
     if (StringUtil.isDefined(userId) || StringUtil.isDefined(instanceId)) {
-      filter = new ResultFilterVO();
       if (StringUtil.isDefined(userId)) {
         filter.setAuthorId(userId);
       }
       if (StringUtil.isDefined(instanceId)) {
         filter.setComponentId(instanceId);
       }
-      String changerFilter = request.getParameter("changeFilter");
-      if (StringUtil.isDefined(changerFilter)) {
-        pdcSC.setIndexOfFirstResultToDisplay("0");
+    }
+    
+    // check form field facets
+    for (String facetId : pdcSC.getFieldFacets().keySet()) {
+      String param = request.getParameter(facetId);
+      if (StringUtil.isDefined(param)) {
+        filter.addFormFieldSelectedFacetEntry(facetId, param);
       }
     }
+    
+    pdcSC.setIndexOfFirstResultToDisplay("0");
+    pdcSC.setSelectedFacetEntries(filter);
+    
     return filter;
   }
 
@@ -1281,11 +1284,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
    */
   private void setDefaultDataToNavigation(HttpServletRequest request,
       PdcSearchSessionController pdcSC) throws Exception {
-    setDefaultDataToNavigation(request, pdcSC, null);
-  }
-
-  private void setDefaultDataToNavigation(HttpServletRequest request,
-      PdcSearchSessionController pdcSC, ResultFilterVO filter) throws Exception {
+    
+    ResultFilterVO filter = pdcSC.getSelectedFacetEntries();
 
     request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
 
@@ -1298,12 +1298,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC.
         getSortOrder(), pdcSC.getXmlFormSortValue(), pdcSC.getSortImplemtor(), filter));
     request.setAttribute("UserId", pdcSC.getUserId());
-
-    if (filter != null) {
-      // Add filtered data
-      request.setAttribute("FilteredUserId", filter.getAuthorId());
-      request.setAttribute("FilteredComponentId", filter.getComponentId());
-    }
 
     // Add result group filter data
     request.setAttribute("ResultGroup", pdcSC.getResultGroupFilter());

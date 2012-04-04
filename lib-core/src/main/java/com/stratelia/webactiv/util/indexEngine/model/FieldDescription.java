@@ -43,10 +43,11 @@ public class FieldDescription implements Serializable {
 
   private static final long serialVersionUID = -475049855423827178L;
 
-  public FieldDescription(String fieldName, String content, String lang) {
+  public FieldDescription(String fieldName, String content, String lang, boolean stored) {
     this.content = content;
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
+    this.stored = stored;
   }
 
   public FieldDescription(String fieldName, Date begin, Date end, String lang) {
@@ -64,6 +65,7 @@ public class FieldDescription implements Serializable {
     this.content = content;
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
+    this.stored = false;
   }
 
   /**
@@ -86,6 +88,10 @@ public class FieldDescription implements Serializable {
   public String getLang() {
     return lang;
   }
+  
+  public boolean isStored() {
+    return stored;
+  }
 
   /**
    * All the attributes are private and final.
@@ -93,4 +99,5 @@ public class FieldDescription implements Serializable {
   private final String content;
   private final String lang;
   private final String fieldName;
+  private final boolean stored;
 }

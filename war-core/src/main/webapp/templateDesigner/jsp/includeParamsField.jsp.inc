@@ -2,15 +2,21 @@
 <%
 FieldTemplate 	field 		= (FieldTemplate) request.getAttribute("Field");
 String			displayer 	= (String) request.getAttribute("Displayer");
-Iterator		languages	= ((List) request.getAttribute("Languages")).iterator();
+List<String>	languages	= (List<String>) request.getAttribute("Languages");
 
 String name = "";
 String mandatoryChecked = "";
 String searchable = "";
+String usedAsFacet = "";
 boolean nameDisabled = false;
 String actionForm = "AddField";
 Map<String, String> parameters = null;
 
+<<<<<<< HEAD
+boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
+
+=======
+>>>>>>> master
 if (field != null) {
 	name 			= field.getFieldName();
 	actionForm 		= "UpdateField";
@@ -27,11 +33,15 @@ if (field != null) {
 	parameters = field.getParameters("fr");
 		
 	if (field.isMandatory()) {
-		mandatoryChecked = "checked";
+		mandatoryChecked = "checked=\"checked\"";
 	}
 		
 	if (field.isSearchable()) {
-		searchable = "checked";
+		searchable = "checked=\"checked\"";
+	}
+	
+	if (field.isUsedAsFacet()) {
+		usedAsFacet = "checked=\"checked\"";
 	}
 }
 %>
@@ -49,6 +59,11 @@ if (field != null) {
 	
 	function sendData() {
 		if (isCorrectForm()) {
+			<% if (field != null && !field.isUsedAsFacet()) { %>
+				if ($("#UsedAsFacet").is(':checked')) {
+					alert("<%=resource.getString("templateDesigner.facet.warning")%>");
+				}
+			<% } %>
 			document.fieldForm.submit();
 		} else {
 			errorMsg = "";
