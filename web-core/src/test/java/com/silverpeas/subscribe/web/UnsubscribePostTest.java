@@ -23,29 +23,28 @@
  */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.subscribe.MockableSubscriptionService;
-import org.junit.Before;
-import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.rest.mock.UserDetailWithProfiles;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
-import javax.inject.Inject;
-import com.silverpeas.rest.RESTWebServiceTest;
+import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.UNSUBSCRIBE_RESOURCE_PATH;
+import com.silverpeas.web.RESTWebServiceTest;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
-import static com.silverpeas.rest.RESTWebService.*;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.*;
 
 public class UnsubscribePostTest extends RESTWebServiceTest<SubscriptionTestResources> {
 

@@ -28,7 +28,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 
 public class SharingEntity implements Exposable {
 

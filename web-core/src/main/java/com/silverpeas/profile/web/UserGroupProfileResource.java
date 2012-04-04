@@ -23,9 +23,10 @@
  */
 package com.silverpeas.profile.web;
 
+import com.silverpeas.annotation.Authenticated;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
-import com.silverpeas.rest.RESTWebService;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("request")
 @Path(GROUPS_BASE_URI)
+@Authenticated
 public class UserGroupProfileResource extends RESTWebService {
 
   @Inject
@@ -66,7 +68,6 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name) {
-    checkUserAuthentication();
     List<String> groupIds = new ArrayList<String>();
     if (getUserDetail().isDomainRestricted()) {
       String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
@@ -88,7 +89,6 @@ public class UserGroupProfileResource extends RESTWebService {
           @PathParam("instanceId") String instanceId,
           @QueryParam("roles") String roles,
           @QueryParam("name") String name) {
-    checkUserAuthentication();
     String[] roleNames = (isDefined(roles) ? roles.split(","):new String[0]);
     String[] roleIds = profileService.getRoleIds(instanceId, roleNames);
     String[] groupIds = getOrganizationController().searchGroupsIds(true, null, roleIds,
@@ -102,7 +102,6 @@ public class UserGroupProfileResource extends RESTWebService {
   @Path("{path: [0-9]+(/groups/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
   public UserGroupProfileEntity getGroup(@PathParam("path") String groupPath) {
-    checkUserAuthentication();
     String[] groupIds = groupPath.split("/groups/");
     String groupId = groupIds[groupIds.length - 1];
     Group theGroup = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -114,7 +113,6 @@ public class UserGroupProfileResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public UserGroupProfileEntity[] getSubGroups(@PathParam("path") String groups,
           @QueryParam("name") String name) {
-    checkUserAuthentication();
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
     profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -126,7 +124,7 @@ public class UserGroupProfileResource extends RESTWebService {
   }
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     throw new UnsupportedOperationException("The UserGroupProfileResource doesn't belong to any component"
             + " instances");
   }

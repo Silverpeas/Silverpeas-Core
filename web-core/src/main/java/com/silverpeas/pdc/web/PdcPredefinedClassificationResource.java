@@ -23,30 +23,24 @@
  */
 package com.silverpeas.pdc.web;
 
-import javax.ws.rs.PUT;
-import java.net.URI;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.pdc.model.PdcClassification.aPredefinedPdcClassificationForComponentInstance;
+import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.net.URI;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import static com.silverpeas.pdc.model.PdcClassification.*;
-import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 /**
  * A REST Web resource that represents the predefined classifications on the PdC to classify the
@@ -84,6 +78,7 @@ import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 @Service
 @Scope("request")
 @Path("pdc/{componentId}/classification")
+@Authorized
 public class PdcPredefinedClassificationResource extends RESTWebService {
 
   private static final String BASE_URI_PATH = "pdc/{componentId}/classification";
@@ -93,7 +88,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   private String componentId;
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return componentId;
   }
 
@@ -119,7 +114,6 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   @Produces({MediaType.APPLICATION_JSON})
   public PdcClassificationEntity getPredefinedPdCClassificationForContentsInNode(
           @QueryParam("nodeId") String nodeId) {
-    checkUserPriviledges();
     try {
       PdcClassification theClassification = pdcServiceProvider().
               findPredefinedClassificationForContentsIn(nodeId, getComponentId());
@@ -153,7 +147,6 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createPredefinedPdcClassification(@QueryParam("nodeId") String nodeId,
           final PdcClassificationEntity classification) {
-    checkUserPriviledges();
     PdcClassification alreadyExistingClassification =
             pdcServiceProvider().getPredefinedClassification(nodeId, getComponentId());
     if (alreadyExistingClassification != NONE_CLASSIFICATION) {
@@ -200,7 +193,6 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   public PdcClassificationEntity updatePredefinedPdcClassification(
           @QueryParam("nodeId") String nodeId,
           final PdcClassificationEntity classification) {
-    checkUserPriviledges();
     try {
       PdcClassification classificationToUpdate = pdcServiceProvider().
               findPredefinedClassificationForContentsIn(nodeId, getComponentId());

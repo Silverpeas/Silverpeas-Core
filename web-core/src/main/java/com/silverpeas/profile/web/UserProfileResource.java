@@ -23,18 +23,19 @@
  */
 package com.silverpeas.profile.web;
 
+import com.silverpeas.annotation.Authenticated;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
-import com.silverpeas.rest.RESTWebService;
+import static com.silverpeas.profile.web.SearchCriteriaBuilder.aSearchCriteria;
 import com.silverpeas.socialNetwork.relationShip.RelationShip;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.SearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserSearchCriteriaFactory;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,8 +47,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import static com.silverpeas.profile.web.SearchCriteriaBuilder.aSearchCriteria;
-import com.stratelia.webactiv.beans.admin.*;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -61,6 +60,7 @@ import com.stratelia.webactiv.beans.admin.*;
 @Service
 @Scope("request")
 @Path(USERS_BASE_URI)
+@Authenticated
 public class UserProfileResource extends RESTWebService {
 
   /**
@@ -113,7 +113,6 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("group") String groupId,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
-    checkUserAuthentication();
     String domainId = null;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -140,7 +139,6 @@ public class UserProfileResource extends RESTWebService {
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity getUser(@PathParam("userId") String userId) {
-    checkUserAuthentication();
     UserDetail theUser = getUserDetailById(userId);
     return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
   }
@@ -178,7 +176,6 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("roles") String roles,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
-    checkUserAuthentication();
     String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
             : null);
     String domainId = null;
@@ -214,7 +211,6 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("roles") String roles,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
-    checkUserAuthentication();
     UserDetail theUser = getUserDetailById(userId);
     String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
             : null);
@@ -239,7 +235,7 @@ public class UserProfileResource extends RESTWebService {
   }
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     throw new UnsupportedOperationException("The UserProfileResource doesn't belong to any component"
             + " instances");
   }
