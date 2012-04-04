@@ -38,22 +38,8 @@ import com.stratelia.webactiv.util.indexEngine.parser.tika.TikaParser;
  * The ParserManager class manages all the parsers which will be used to parse the indexed files.
  */
 public final class ParserManager {
-
-  /**
-   * Set the parser for a given file format.
-   * @param format
-   * @param parser  
-   */
-  static public void setParser(String format, Parser parser) {
-    parserMap.put(format, parser);
-  }
-
-  /**
-   * Returns the set of all the known file formats. The returned set is a Set of String.
-   * @return 
-   */
-  static public Set<String> getFormatNames() {
-    return parserMap.keySet();
+  private static final class DefaultParserSingletonLoader {
+    private static final Parser defaultParser = new TikaParser();
   }
 
   /**
@@ -64,7 +50,7 @@ public final class ParserManager {
   static public Parser getParser(String format) {
     Parser parser = parserMap.get(format);
     if (parser == null) {
-      parser = new TikaParser();
+      return DefaultParserSingletonLoader.defaultParser;
     }
     return parser;
   }
