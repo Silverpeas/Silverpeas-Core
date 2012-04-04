@@ -183,9 +183,7 @@ public class FileUtil implements MimeTypes {
    * @return true is the file s of type archive - false otherwise.
    */
   public static boolean isArchive(String filename) {
-    String mimeType = getMimeType(filename);
-    return ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
-        mimeType) || JAVA_ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType);
+    return ARCHIVE_MIME_TYPES.contains(getMimeType(filename));
   }
 
   /**
