@@ -51,9 +51,6 @@ public class VersioningDAO {
    * Date format pattern constant. This patters is used in db operations
    */
   public final static String DATE_FORMAT = "yyyy/MM/dd";
-  public final static String documentTableName = "SB_Version_Document";
-  public final static String accessListTableName = "sb_doc_readers_acl";
-  public final static String accessListContentTableName = "sb_doc_readers_acl_list";
   private final static int nameMaxLength = 100;
   public final static String GET_DOCUMENT_BYID_QUERY = "SELECT documentId, "
     + " documentName, documentDescription, documentStatus, documentOwnerId, "
@@ -85,8 +82,10 @@ public class VersioningDAO {
     + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
     + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
     + " FROM sb_version_document WHERE expiryDate < ? ";
-  public final static String GET_DOCUMENT_VERSION_BYID_QUERY = "SELECT d.* FROM "
-    + "sb_version_version d WHERE d.versionId = ? ";
+  public final static String GET_DOCUMENT_VERSION_BYID_QUERY = "SELECT versionId, documentId, "
+    + "versionMajorNumber, versionMinorNumber, versionAuthorId, versionCreationDate, "
+    + "versionComments, versionType, versionStatus, versionPhysicalname, versionLogicalName, "
+    + "versionMimeType, versionSize, instanceId, xmlForm FROM sb_version_version WHERE versionId = ? ";
 
   /**
    * @param conn
@@ -116,9 +115,7 @@ public class VersioningDAO {
         throw new VersioningRuntimeException("VersioningDAO.getDocument",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", pk.toString(), e);
       }
-
       rs = prepStmt.executeQuery();
-
       if (rs.next()) {
         result = getDocFormRS(rs, conn, pk.getSpace());
       }
@@ -317,23 +314,14 @@ public class VersioningDAO {
       prepStmt = conn.prepareStatement(CREATE_DOCUMENT_QUERY);
 
       try {
-        newId = DBUtil.getNextId(documentTableName, "documentId");
+        newId = DBUtil.getNextId("sb_version_document", "documentId");
       } catch (Exception e) {
         throw new VersioningRuntimeException("VersioningDAO.createDocument",
-          SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_GET_NEXTID_FAILED",
-          documentTableName, e);
+          SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_GET_NEXTID_FAILED", "sb_version_document", e);
       }
 
       prepStmt.setInt(1, newId);
-      String name = document.getName();
-
-      if (StringUtil.isDefined(name)) {
-        if (name.length() > 100) {
-          name = name.substring(0, 99);
-        }
-      }
-      prepStmt.setString(2, StringUtil.truncate(document.getName(),
-        nameMaxLength));
+      prepStmt.setString(2, StringUtil.truncate(document.getName(), nameMaxLength));
       prepStmt.setString(3, document.getDescription());
       prepStmt.setInt(4, document.getStatus());
       prepStmt.setInt(5, -1);
@@ -388,12 +376,10 @@ public class VersioningDAO {
 
     return result;
   }
-  public final static String UPDATE_DOCUMENT_QUERY =
-    "UPDATE "
-    + documentTableName
-    + " SET documentName = ? , documentDescription = ? , documentStatus = ? , documentOwnerId = ? , "
-    + " documentCheckoutDate = ?, documentInfo = ? , foreignId = ? , instanceId = ? , typeWorkList = ? ,"
-    + " currentWorkListOrder = ?, alertDate = ?, expiryDate = ?  WHERE documentId = ? ";
+  public final static String UPDATE_DOCUMENT_QUERY = "UPDATE sb_version_document "
+    + "SET documentName = ?, documentDescription = ?, documentStatus = ?, documentOwnerId = ?, "
+    + "documentCheckoutDate = ?, documentInfo = ?, foreignId = ?, instanceId = ?, typeWorkList = ?, "
+    + "currentWorkListOrder = ?, alertDate = ?, expiryDate = ? WHERE documentId = ? ";
 
   /**
    * @param conn
@@ -452,9 +438,8 @@ public class VersioningDAO {
       DBUtil.close(prepStmt);
     }
   }
-  public final static String UPDATE_DOCUMENT_FOREIGNKEY_QUERY = "UPDATE "
-    + documentTableName
-    + " SET foreignId = ?, instanceId = ? WHERE documentId = ? ";
+  public final static String UPDATE_DOCUMENT_FOREIGNKEY_QUERY = "UPDATE sb_version_document "
+    + "SET foreignId = ?, instanceId = ? WHERE documentId = ? ";
 
   /**
    * @param conn
@@ -507,11 +492,9 @@ public class VersioningDAO {
     boolean keepSaved) throws SQLException, VersioningRuntimeException {
     WorkListDAO.removeAllWorkers(conn, document.getPk(), keepSaved);
   }
-  public static final String CHECKOUT_DOCUMENT_QUERY = "UPDATE "
-    + documentTableName
-    + " SET documentOwnerId = ? ,"
-    + " documentStatus = 1 , documentCheckOutDate = ? , alertDate = ? , expiryDate = ?  "
-    + " WHERE documentId = ?";
+  public static final String CHECKOUT_DOCUMENT_QUERY = "UPDATE sb_version_document"
+    + " SET documentOwnerId = ?, documentStatus = 1, documentCheckOutDate = ?, alertDate = ?, "
+    + "expiryDate = ? WHERE documentId = ?";
 
   public static void checkDocumentOut(Connection conn, DocumentPK documentPK,
     int ownerId, Date checkOutDate) throws SQLException,
@@ -579,10 +562,9 @@ public class VersioningDAO {
         + documentPK.getId());
     }
   }
-  public static final String CHECKIN_DOCUMENT_QUERY = "UPDATE "
-    + documentTableName + " SET documentownerid = -1, "
-    + " documentStatus = 0 , alertDate = null , expiryDate = null "
-    + " WHERE documentId = ?";
+  public static final String CHECKIN_DOCUMENT_QUERY = "UPDATE sb_version_document"
+    + " SET documentownerid = -1,  documentStatus = 0 , alertDate = null , expiryDate = null "
+    + "WHERE documentId = ?";
 
   /**
    * @param conn
@@ -613,8 +595,7 @@ public class VersioningDAO {
 
     if (rowCount == 0) {
       throw new VersioningRuntimeException("VersioningDAO.checkDocumentIn",
-        SilverpeasRuntimeException.ERROR,
-        "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = "
+        SilverpeasRuntimeException.ERROR, "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = "
         + documentPK.getId());
     }
   }
@@ -883,13 +864,10 @@ public class VersioningDAO {
       try {
         prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       } catch (NumberFormatException e) {
-        throw new VersioningRuntimeException(
-          "VersioningDAO.getDocumentVersion", SilverTrace.TRACE_LEVEL_ERROR,
-          "root.EX_WRONG_PK", pk.toString(), e);
+        throw new VersioningRuntimeException("VersioningDAO.getDocumentVersion", 
+          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_WRONG_PK", pk.toString(), e);
       }
-
       rs = prepStmt.executeQuery();
-
       if (rs.next()) {
         result = getDocVersionFormRS(rs);
       }
@@ -943,15 +921,14 @@ public class VersioningDAO {
     version.setXmlForm(rs.getString("xmlForm"));
     return version;
   }
-  public final static String DELETE_DOCUMENT = "DELETE FROM " + documentTableName
-    + " WHERE documentId = ? ";
+  public final static String DELETE_DOCUMENT = "DELETE FROM sb_version_document "
+    + "WHERE documentId = ? ";
   public final static String DELETE_DOCUMENT_HEADER = "DELETE FROM sb_version_version "
     + "WHERE documentId = ? ";
 
   /**
    * @param conn
    * @param documentPK
-   * @return
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
@@ -1063,13 +1040,11 @@ public class VersioningDAO {
       deleteDocument(con, document.getPk());
     }
   }
-  public static final String GET_ALL_FILES_RESERVED_QUERY = "SELECT d.documentId, "
-    + " d.documentName, d.documentDescription, d.documentStatus, d.documentOwnerId, "
-    + " d.documentCheckoutDate, d.documentInfo, d.foreignId, d.instanceId, d.typeWorkList, "
-    + " d.currentWorkListOrder, alertDate, expiryDate, documentordernum "
-    + " FROM "
-    + documentTableName
-    + " d WHERE d.documentOwnerId = ? and d.documentStatus = 1 ";
+  public static final String GET_ALL_FILES_RESERVED_QUERY = "SELECT documentId, "
+    + "documentName, documentDescription, documentStatus, documentOwnerId, "
+    + "documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
+    + "currentWorkListOrder, alertDate, expiryDate, documentordernum "
+    + "FROM sb_version_document WHERE documentOwnerId = ? AND documentStatus = 1 ";
 
   /**
    * @param conn
@@ -1197,7 +1172,6 @@ public class VersioningDAO {
 
   /**
    * @param conn
-   * @param role
    * @param componentId
    * @param groupsIds
    * @param usersIds
@@ -1215,11 +1189,10 @@ public class VersioningDAO {
     int newId = -1;
 
     try {
-      newId = DBUtil.getNextId(accessListTableName, "id");
+      newId = DBUtil.getNextId("sb_doc_readers_acl", "id");
     } catch (Exception e) {
       throw new VersioningRuntimeException("VersioningDAO.insertReadersAccessList",
-        SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_GET_NEXTID_FAILED",
-        accessListTableName, e);
+        SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_GET_NEXTID_FAILED","sb_doc_readers_acl", e);
     }
 
     try {
@@ -1259,7 +1232,7 @@ public class VersioningDAO {
 
     int rowCount = 0;
     PreparedStatement prepStmt = null;
-    int newId = DBUtil.getNextId(accessListTableName, "id");
+    int newId = DBUtil.getNextId("sb_doc_readers_acl", "id");
     try {
       prepStmt = conn.prepareStatement(INSERT_ACCESS_LIST);
       prepStmt.setInt(1, newId);
@@ -1344,7 +1317,7 @@ public class VersioningDAO {
 
     int rowCount = 0;
     PreparedStatement prepStmt = null;
-    int newId = DBUtil.getNextId(accessListContentTableName, "id");
+    int newId = DBUtil.getNextId("sb_doc_readers_acl_list", "id");
     try {
       prepStmt = conn.prepareStatement(INSERT_ACCESS_LIST_CONTENT);
       prepStmt.setInt(1, newId);
@@ -1467,76 +1440,37 @@ public class VersioningDAO {
 
     return results;
   }
-  /**
-   *
-   */
-  public static final String SELECT_ACCESS_LIST_USERS = "select t2.settypeid from "
-    + accessListTableName + " t1, "
-    + accessListContentTableName
-    + " t2"
-    + " where t1.componentid = ? and t2.accessId = t1.id and t2.settype = 'U'";
-  public static final String SELECT_ACCESS_LIST_USERS_BY_DOCUMENT = "select t2.settypeid from "
-    + accessListTableName
-    + " t1, "
-    + accessListContentTableName
-    + " t2"
-    + " where t1.componentid = ? and t2.accessId = t1.id and t2.settype = 'U'";
-  /**
-   *
-   */
-  public static final String SELECT_ACCESS_LIST_GROUPS = "select t2.settypeid from "
-    + accessListTableName
-    + " t1, "
-    + accessListContentTableName
-    + " t2"
-    + " where t1.componentid = ? and t2.accessId = t1.id and t2.settype = 'G'";
-  public static final String SELECT_ACCESS_LIST_GROUPS_BY_DOCUMENT = "select t2.settypeid from "
-    + accessListTableName
-    + " t1, "
-    + accessListContentTableName
-    + " t2"
-    + " where t1.componentid = ? and t2.accessId = t1.id and t2.settype = 'G'";
-  /**
-   *
-   */
-  public static final String INSERT_ACCESS_LIST = "insert into "
-    + accessListTableName + " (id, componentid) values (?,?)";
-  /**
-   *
-   */
-  public static final String DELETE_ACCESS_LIST = "delete from "
-    + accessListTableName + " where componentid = ?";
-  /**
-   *
-   */
-  public static final String INSERT_ACCESS_LIST_CONTENT = "insert into "
-    + accessListContentTableName
-    + " (id, settype, settypeid, accessid) values (?,?,?,?)";
-  /**
-   *
-   */
-  public static final String DELETE_ACCESS_LIST_CONTENT = "delete from "
-    + accessListContentTableName + " where accessid in (select id from "
-    + accessListTableName + " where componentId = ?)";
+
+  public static final String SELECT_ACCESS_LIST_USERS = "SELECT t2.settypeid "
+    + "FROM sb_doc_readers_acl t1, sb_doc_readers_acl_list t2 WHERE t1.componentid = ? "
+    + "AND t2.accessId = t1.id AND t2.settype = 'U'";
+  public static final String SELECT_ACCESS_LIST_USERS_BY_DOCUMENT = "SELECT t2.settypeid FROM "
+    + "sb_doc_readers_acl t1, sb_doc_readers_acl_list t2 WHERE t1.componentid = ? "
+    + "AND t2.accessId = t1.id AND t2.settype = 'U'";
+
+  public static final String SELECT_ACCESS_LIST_GROUPS = "SELECT t2.settypeid "
+    + "FROM sb_doc_readers_acl t1, sb_doc_readers_acl_list t2 WHERE t1.componentid = ? "
+    + "AND t2.accessId = t1.id AND t2.settype = 'G'";
+  public static final String SELECT_ACCESS_LIST_GROUPS_BY_DOCUMENT = "SELECT t2.settypeid FROM "
+    + "sb_doc_readers_acl t1, sb_doc_readers_acl_list t2 WHERE t1.componentid = ? "
+    + "AND t2.accessId = t1.id AND t2.settype = 'G'";
+  public static final String INSERT_ACCESS_LIST = "INSERT INTO sb_doc_readers_acl "
+    + "(id, componentid) VALUES (?,?)";
+  public static final String DELETE_ACCESS_LIST = "DELETE FROM sb_doc_readers_acl WHERE componentid = ?";
+  public static final String INSERT_ACCESS_LIST_CONTENT = "INSERT INTO sb_doc_readers_acl_list "
+    + "(id, settype, settypeid, accessid) VALUES (?,?,?,?)";
+  public static final String DELETE_ACCESS_LIST_CONTENT = "DELETE FROM sb_doc_readers_acl_list "
+    + "WHERE accessid IN (SELECT id FROM sb_doc_readers_acl WHERE componentId = ?)";
 
   public static int getMaxOrderNumber(Connection con, WAPrimaryKey foreignKey) throws SQLException {
-    StringBuilder selectQuery = new StringBuilder();
-    selectQuery.append("SELECT MAX(documentOrderNum)");
-    selectQuery.append(" FROM ").append(documentTableName);
-    selectQuery.append(" WHERE foreignId = ? ");
-    selectQuery.append(" AND instanceId = ? ");
-
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     try {
-      prepStmt = con.prepareStatement(selectQuery.toString());
-
+      prepStmt = con.prepareStatement("SELECT MAX(documentOrderNum) FROM sb_version_document "
+        + "WHERE foreignId = ? AND instanceId = ? ");
       prepStmt.setInt(1, Integer.parseInt(foreignKey.getId()));
       prepStmt.setString(2, foreignKey.getComponentName());
-
       rs = prepStmt.executeQuery();
-
       if (rs.next()) {
         return rs.getInt(1);
       }
@@ -1547,25 +1481,18 @@ public class VersioningDAO {
   }
 
   public static void sortDocuments(Connection con, List<DocumentPK> pks) throws SQLException {
-    StringBuilder updateQuery = new StringBuilder();
-    updateQuery.append("update ").append(documentTableName);
-    updateQuery.append(" set documentOrderNum = ? ");
-    updateQuery.append(" where documentId = ? ");
-    updateQuery.append(" and instanceId = ? ");
-    String query = updateQuery.toString();
     PreparedStatement prepStmt = null;
     try {
-      prepStmt = con.prepareStatement(query);
+      prepStmt = con.prepareStatement("UPDATE sb_version_document SET documentOrderNum = ? "
+        + "WHERE documentId = ? AND instanceId = ? ");
       DocumentPK pk;
       for (int i = 0; i < pks.size(); i++) {
         pk = pks.get(i);
         prepStmt.setInt(1, i);
         prepStmt.setInt(2, Integer.parseInt(pk.getId()));
         prepStmt.setString(3, pk.getInstanceId());
-
         prepStmt.executeUpdate();
       }
-
     } finally {
       DBUtil.close(prepStmt);
     }
