@@ -45,8 +45,8 @@ public class WorkListDAO {
   public final static String ADD_WORKERS = "INSERT INTO sb_document_workList (documentId , userid, "
       + "orderby, writer, approval, instanceId, settype, saved, used, listtype ) VALUES "
       + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
-  public final static String SAVE_WORKERS = "UPDATE sb_document_workList SET saved = 1, l"
-      + "isttype = ? WHERE instanceid = ? AND documentId = ?";
+  public final static String SAVE_WORKERS = "UPDATE sb_document_workList SET saved = 1, "
+    + "listtype = ? WHERE instanceid = ? AND documentId = ?";
   public final static String GET_WORKERS_ACCESS_LIST_USERS = "SELECT * FROM sb_document_workList "
       + "WHERE instanceid = ? AND saved = 1 AND settype='U' ORDER BY orderby";
   public final static String GET_WORKERS_ACCESS_LIST_GROUPS = "SELECT * FROM sb_document_workList "
@@ -55,9 +55,9 @@ public class WorkListDAO {
       "DELETE FROM sb_document_workList WHERE documentId = ? ";
   public final static String REMOVE_WORKERS_NOT_SAVED =
       "DELETE FROM sb_document_workList WHERE documentId = ? AND saved = 0";
-  public final static String GET_WORKERS_QUERY = "SELECT a.documentId, a.userid, "
-      + " a.orderBy, a.writer,  a.approval, a.instanceId, a.settype, a.saved, a.used, a.listtype"
-      + " FROM sb_document_workList a WHERE a.documentId = ? ORDER BY orderby";
+  public final static String GET_WORKERS_QUERY = "SELECT documentId, userid, orderBy, writer, "
+    + "approval, instanceId, settype, saved, used, listtype FROM sb_document_workList "
+    + "WHERE documentId = ? ORDER BY orderby";
   public final static String GET_SAVED_LIST_TYPE =
       "SELECT listtype FROM sb_document_workList WHERE instanceid = ? AND saved = 1";
   public final static String REMOVE_SAVED_LIST =
@@ -193,12 +193,9 @@ public class WorkListDAO {
         throw new VersioningRuntimeException("WorkListDAO.getWorkers",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK.toString(), e);
       }
-
       rs = prepStmt.executeQuery();
-
       while (rs.next()) {
         Worker worker = new Worker();
-
         worker.setDocumentId(rs.getInt(1));
         worker.setId(rs.getInt(2));
         worker.setOrder(rs.getInt(3));
