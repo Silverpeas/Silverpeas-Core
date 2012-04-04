@@ -55,11 +55,16 @@ a:hover {
 }
 
 input {
-  background-color: #FFFFFF;
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 10px;
-  color: #000000;
-  border: 1px solid #999999;
+	background-color: #FFFFFF;
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
+	border: 1px solid #999999;
+}
+
+input[type=radio],
+input[type=checkbox]{
+	border:0px;
 }
 
 .invisible {
@@ -1744,6 +1749,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   padding: 2px 5px;
   margin-right:2px;
   display:block;
+  float: left;
   height:1.3em;
   font-weight:100;
 }
@@ -2291,6 +2297,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 .lineResult .content {
   padding-top: 4px;
   padding-bottom: 14px;
+}
+
+.lineResult .content a img{
+	border:0;
 }
 
 #globalResultFrame {
