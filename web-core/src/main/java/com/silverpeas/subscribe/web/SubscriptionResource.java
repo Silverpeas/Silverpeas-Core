@@ -24,28 +24,21 @@
  */
 package com.silverpeas.subscribe.web;
 
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.comment.CommentRuntimeException;
-import com.silverpeas.rest.RESTWebService;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.web.RESTWebService;
 import java.net.URI;
 import java.util.Collection;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-/**
- *
- * @author ehugonnet
- */
 /**
  * A REST Web resource representing a given subscription.
  * It is a web service that provides an access to a subscription referenced by its URL.
@@ -53,6 +46,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("request")
 @Path("subscriptions/{componentId}")
+@Authorized
 public class SubscriptionResource extends RESTWebService {
 
   @PathParam("componentId")
@@ -61,7 +55,6 @@ public class SubscriptionResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public SubscriptionEntity[] getComponentSubscriptions() {
-    checkUserPriviledges();
     try {
       Collection<? extends Subscription> subscriptions = SubscriptionServiceFactory.getFactory().
               getSubscribeService().getUserSubscriptionsByComponent(getUserDetail().getId(), 
@@ -78,7 +71,6 @@ public class SubscriptionResource extends RESTWebService {
   @Path("/subscribers/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String[] getSubscribers(@PathParam("id") String topicId) {
-    checkUserPriviledges();
     try {
       Collection<String> subscribers = SubscriptionServiceFactory.getFactory().
               getSubscribeService().getSubscribers(new ForeignPK(topicId, componentId));
@@ -111,7 +103,7 @@ public class SubscriptionResource extends RESTWebService {
   }
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return this.componentId;
   }
 }

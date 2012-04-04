@@ -60,7 +60,7 @@
         <p>Silverpeas users and groups management is based on <b>Domains</b>. You can create as much domains as you want, each with is own storage type or configuration.</p>
         <p>Each domain is configured using properties files, let's look at them on the next section.</p>
       </subsection>
-      <subsubsection name="Configuring the domain">
+      <subsection name="Configuring the domain">
         <p>First we need a configuration file to define how to connect to te LDAP server and how to synchronize it with Silverpeas.</p>
         <p>You would have to create a new  <i>domainOpenDJTutorial.properties</i> into <i>$SILVERPEAS_HOME/properties/com/stratelia/silverpeas/domains</i>.</p>
         <p>As it happens, you don't have to write this configuration file as it is provided with a default Silverpeas installation.</p>
@@ -92,7 +92,6 @@ database.LDAPOpAttributesUsed=true
         <p>The parameter <b>synchro.Threaded</b> indicates if the synchronization is manual or if it is automatic, launched regularly. The delay between each synchronization is defined in the file <i>com/stratelia/webactiv/beans/admin/admin.properties</i> in the property <b>AdminThreadedSynchroDelay</b>.</p>
         <p>The parameter <b>synchro.timeStampVar</b> indicates which attribute on the LDAP entries is used to check for modificationon the LDAP side.</p>
         <p>
-        <p>
           <code><pre>
 # Synchro parameters
 # ------------------
@@ -111,8 +110,8 @@ synchro.Threaded=false
 # ---------------
 users.ClassName=person
 # Note : the filter MUST be put between parentheses.
-#        there MUSTN'T have dummy parentheses levels ex : (&((Condition1))(Condition2)) will NOT works, (&(Condition1)(Condition2)) will works
-# (&(mail=*)(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=TSTEXCHANGE))
+#        there MUSTN'T have dummy parentheses levels ex : (&amp;((Condition1))(Condition2)) will NOT works, (&amp;(Condition1)(Condition2)) will works
+# (&amp;(mail=*)(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=TSTEXCHANGE))
 users.Filter=
 # Note : To make domains easiest to change, the Id must be set to the login field
 #        It's not an obligation but it's very strongly advised
@@ -132,8 +131,8 @@ users.EmailField=mail
 #Depend de l'implémentation
 groups.ClassName=groupOfUniqueNames
 # Note : the filter MUST be put between parentheses.
-#        there MUSTN'T have dummy parentheses levels ex : (&((Condition1))(Condition2)) will NOT works, (&(Condition1)(Condition2)) will works
-# (&(objectCategory=CN=group,CN=Schema,CN=Configuration,DC=TSTEXCHANGE)(member=*))
+#        there MUSTN'T have dummy parentheses levels ex : (&amp;((Condition1))(Condition2)) will NOT works, (&amp;(Condition1)(Condition2)) will works
+# (&amp;(objectCategory=CN=group,CN=Schema,CN=Configuration,DC=TSTEXCHANGE)(member=*))
 groups.Filter=(uniqueMember=*)
 # Set the id Field to the 'cn' insteed of the DN to allow groups to move in the LDAP database
 # Set to objectGUID to have a unique ID
@@ -173,11 +172,28 @@ groups.DescriptionField=description
 
           </pre></code>
         </p>
-        <p>
-          
+        <p>Most of the time, the users information are stored in the LDAP directory. So we have to define which are the attributes we are interested in obtaining from it.
+          You can define as many attributes as you want.</p>
+        <p>First, you have to define the number of attributes (<i>property.Number</i>) and the resources where Silverpeas will get the multilang labels for the user attributes using 
+          <i>property.ResourceFile</i>.          
+        </p>
+        <p>The, for each attribute you will provide 
+          <ul>
+            <li>
+              <i>property_#.Name</i>: which is the name of the property in the resource bundle.
+            </li>
+            <li>
+              <i>property_#.Type</i>: the type of the property (only 
+              <b>STRING</b> and 
+              <b>USERID</b> are currently supported).
+            </li>
+            <li>
+              <i>property_#.MapParameter</i>: the name of the attribute in the LDAP entry.
+            </li>
+          </ul>
         </p>
         <p>
-          <code><pre>          
+          <code><pre>    
 
 # USERS Specific Properties
 # -------------------------
@@ -226,7 +242,7 @@ property_9.Type = STRING
 property_9.MapParameter = streetAddress
           </pre></code>
         </p>
-      </subsubsection>
+      </subsection>
     </section>
   </body>
 </document>

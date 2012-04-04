@@ -25,7 +25,7 @@ package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.UserProfileTestResources.*;
 import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
-import com.silverpeas.rest.ResourceGettingTest;
+import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;

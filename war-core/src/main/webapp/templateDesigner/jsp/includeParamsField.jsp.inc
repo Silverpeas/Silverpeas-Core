@@ -12,8 +12,11 @@ boolean nameDisabled = false;
 String actionForm = "AddField";
 Map<String, String> parameters = null;
 
+<<<<<<< HEAD
 boolean showFacetParam = "listbox".equals(displayer) || "radio".equals(displayer) || "checkbox".equals(displayer);
 
+=======
+>>>>>>> master
 if (field != null) {
 	name 			= field.getFieldName();
 	actionForm 		= "UpdateField";

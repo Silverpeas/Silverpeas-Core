@@ -30,35 +30,32 @@
 <%@ include file="check.jsp" %>
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle basename="com.silverpeas.sharing.multilang.fileSharingBundle"/>
-<view:setBundle basename="com.silverpeas.sharing.settings.fileSharingIcons"
-                var="icons"/>
-<html>
+<view:setBundle basename="com.silverpeas.sharing.settings.fileSharingIcons" var="icons"/>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">     
 <head>
   <view:looknfeel/>
-  <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js' />" ></script>
-  <script language="javascript">
-  </script>
 </head>
 <body>
-<c:set var="browseBar"><fmt:message key="sharing.tickets"/> > <fmt:message
-    key="sharing.confirmTicket"/></c:set>
+<c:set var="browseBar"><fmt:message key="sharing.tickets"/> > <fmt:message key="sharing.confirmTicket"/></c:set>
 <fmt:message key="GML.ok" var="exitButtonMsg"/>
 <view:browseBar extraInformations="${browseBar}"/>
-<view:window> <view:frame>
-
+<view:window>
+<view:frame>
   <view:board>
-    <table CELLPADDING=5 WIDTH="100%">
+    <table cellpadding="5" width="100%">
       <tr>
-        <td class="txtlibform" nowrap><%=resource.getString("sharing.url")%>
-        </td>
-        <td><a href="<c:url value="${requestScope.Url}" />" target="_blank"><c:url
-            value="${requestScope.Url}"/></a></td>
+        <td class="txtlibform" nowrap><%=resource.getString("sharing.url")%></td>
+        <td><a href="<c:url value="${requestScope.Url}" />" target="_blank"><c:url value="${requestScope.Url}"/></a></td>
       </tr>
     </table>
   </view:board>
+  <center>
   <view:buttonPane>
     <view:button label="${exitButtonMsg}" action="javascript:window.close();"/>
   </view:buttonPane>
+  </center>
 </view:frame>
 </view:window>
 </body>

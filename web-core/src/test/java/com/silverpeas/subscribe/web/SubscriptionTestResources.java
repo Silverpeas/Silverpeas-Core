@@ -23,7 +23,7 @@
  */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.rest.TestResources;
+import com.silverpeas.web.TestResources;
 import com.silverpeas.subscribe.MockableSubscriptionService;
 import javax.inject.Inject;
 import javax.inject.Named;
