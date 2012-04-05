@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -63,12 +64,6 @@ public class HistoryObjectDAO {
 
   private static final String QUERY_STATISTIC_COUNT =
       "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ?";
-
-  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD =
-      "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ? AND datestat >= ? AND datestat < ?";
-
-  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER =
-      "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ? AND datestat >= ? AND datestat < ? AND userid = ?";
 
   /**
    * Method declaration
@@ -322,6 +317,9 @@ public class HistoryObjectDAO {
     }
   }
 
+  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD =
+      "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ? AND datestat >= ? AND datestat <= ?";
+
   public static int getCountByPeriod(Connection con, WAPrimaryKey primaryKey, String objectType,
       Date startDate, Date endDate) throws SQLException {
     int nb = 0;
@@ -347,10 +345,15 @@ public class HistoryObjectDAO {
     }
   }
 
-  public static int getCountByPeriodAndUser(Connection con, WAPrimaryKey primaryKey, String objectType,
+  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER =
+      "SELECT COUNT(objectId) FROM SB_Statistic_History WHERE ObjectId=? AND ComponentId =? AND objectType = ? AND datestat >= ? AND datestat <= ? AND userid = ?";
+
+  public static int getCountByPeriodAndUser(Connection con, WAPrimaryKey primaryKey,
+      String objectType,
       Date startDate, Date endDate, String userId) throws SQLException {
     int nb = 0;
-    SilverTrace.info("statistic", "HistoryObjectDAO.getCountBYPeriod", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("statistic", "HistoryObjectDAO.getCountByPeriodAndUser",
+        "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     String foreignId = primaryKey.getId();
@@ -373,7 +376,6 @@ public class HistoryObjectDAO {
     }
   }
 
-  
   public static void move(Connection con, String tableName, ForeignPK toForeignPK, int actionType,
       String objectType) throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.move", "root.MSG_GEN_ENTER_METHOD");
@@ -394,4 +396,92 @@ public class HistoryObjectDAO {
       DBUtil.close(prepStmt);
     }
   }
+
+  public static List<Integer> getListObjectAccessByPeriod(Connection con,
+      List<WAPrimaryKey> primaryKeys, String objectType, Date startDate, Date endDate)
+      throws SQLException {
+    StringBuilder query = new StringBuilder();
+    query
+        .append("SELECT objectId FROM SB_Statistic_History WHERE ComponentId =? AND objectType = ? AND datestat >= ? AND datestat <= ? ");
+    String instanceId = null;
+    if (primaryKeys != null && primaryKeys.size() > 0) {
+      query.append("AND objectId IN (");
+      for (WAPrimaryKey pk : primaryKeys) {
+        if (primaryKeys.indexOf(pk) != 0) {
+          query.append(",");
+        }
+        query.append(pk.getId());
+      }
+      query.append(")");
+      instanceId = primaryKeys.get(0).getInstanceId();
+    }
+
+    List<Integer> results = new ArrayList<Integer>();
+    SilverTrace.info("statistic", "HistoryObjectDAO.getListObjectAccessByPeriod",
+        "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query.toString());
+      prepStmt.setString(1, instanceId);
+      prepStmt.setString(2, objectType);
+      prepStmt.setString(3, DateUtil.date2SQLDate(startDate));
+      prepStmt.setString(4, DateUtil.date2SQLDate(endDate));
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        Integer objectId = rs.getInt(1);
+        results.add(objectId);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return results;
+  }
+
+  public static List<Integer> getListObjectAccessByPeriodAndUser(Connection con,
+      List<WAPrimaryKey> primaryKeys, String objectType, Date startDate, Date endDate,
+      String userId)
+      throws SQLException {
+    StringBuilder query = new StringBuilder();
+    query
+        .append("SELECT objectId FROM SB_Statistic_History WHERE ComponentId =? AND objectType = ? AND datestat >= ? AND datestat <= ? ");
+    String instanceId = null;
+    if (primaryKeys != null && primaryKeys.size() > 0) {
+      query.append("AND objectId IN (");
+      for (WAPrimaryKey pk : primaryKeys) {
+        if (primaryKeys.indexOf(pk) != 0) {
+          query.append(",");
+        }
+        query.append(pk.getId());
+      }
+      query.append(")");
+      instanceId = primaryKeys.get(0).getInstanceId();
+    }
+    if (StringUtil.isDefined(userId)) {
+      query.append(" AND userId = ?");
+    }
+
+    List<Integer> results = new ArrayList<Integer>();
+    SilverTrace.info("statistic", "HistoryObjectDAO.getListObjectAccessByPeriod",
+        "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query.toString());
+      prepStmt.setString(1, instanceId);
+      prepStmt.setString(2, objectType);
+      prepStmt.setString(3, DateUtil.date2SQLDate(startDate));
+      prepStmt.setString(4, DateUtil.date2SQLDate(endDate));
+      prepStmt.setString(5, userId);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        Integer objectId = rs.getInt(1);
+        results.add(objectId);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return results;
+  }
+
 }

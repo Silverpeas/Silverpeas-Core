@@ -24,15 +24,16 @@
 package com.stratelia.webactiv.util.statistic.control;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
@@ -384,14 +385,6 @@ public class StatisticBmEJB implements SessionBean {
     }
   }
 
-  /**
-   * @param primaryKeys
-   * @param action
-   * @param objectType
-   * @param startDate the starting time
-   * @param endDate then ending time
-   * @return number of accessed publications
-   */
   public int getCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
       Date startDate, Date endDate) {
     int nb = 0;
@@ -402,7 +395,7 @@ public class StatisticBmEJB implements SessionBean {
         nb += HistoryObjectDAO.getCountByPeriod(con, primaryKey, objectType, startDate, endDate);
       }
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getCount()",
+      throw new StatisticRuntimeException("StatisticBmEJB().getCountByPeriod()",
           SilverpeasRuntimeException.ERROR,
           "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
     } finally {
@@ -411,15 +404,6 @@ public class StatisticBmEJB implements SessionBean {
     return nb;
   }
 
-  /**
-   * @param primaryKey
-   * @param objectType
-   * @param startDate the starting time
-   * @param endDate then ending time
-   * @param userId
-   * @return
-   * @throws SQLException
-   */
   public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
       Date startDate, Date endDate, List<String> userIds) {
     int nb = 0;
@@ -436,13 +420,62 @@ public class StatisticBmEJB implements SessionBean {
         }
       }
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getCount()",
+      throw new StatisticRuntimeException("StatisticBmEJB().getCountByPeriodAndUser()",
           SilverpeasRuntimeException.ERROR,
           "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
     } finally {
       freeConnection(con);
     }
 
+    return nb;
+  }
+
+  public int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action,
+      String objectType, Date startDate, Date endDate) {
+    int nb = 0;
+    Connection con = null;
+    try {
+      con = getConnection();
+      List<Integer> objectIds =
+          HistoryObjectDAO.getListObjectAccessByPeriod(con, primaryKeys, objectType, startDate,
+              endDate);
+      Set<Integer> distinctObjectIds = new HashSet<Integer>(objectIds);
+      nb = distinctObjectIds.size();
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().getDistinctCountByPeriod()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
+    } finally {
+      freeConnection(con);
+    }
+    return nb;
+  }
+
+  public int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
+      String objectType, Date startDate, Date endDate, List<String> userIds) {
+    int nb = 0;
+    Connection con = null;
+    if (userIds != null && userIds.size() > 0) {
+      Set<Integer> distinctObjectIds = new HashSet<Integer>();
+      try {
+        con = getConnection();
+        for (String userId : userIds) {
+          List<Integer> objectIds =
+              HistoryObjectDAO.getListObjectAccessByPeriodAndUser(con, primaryKeys, objectType,
+                  startDate, endDate, userId);
+          distinctObjectIds.addAll(objectIds);
+        }
+        nb = distinctObjectIds.size();
+      } catch (Exception e) {
+        throw new StatisticRuntimeException("StatisticBmEJB().getDistinctCountByPeriod()",
+            SilverpeasRuntimeException.ERROR,
+            "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+            e);
+      } finally {
+        freeConnection(con);
+      }
+
+    }
     return nb;
   }
 

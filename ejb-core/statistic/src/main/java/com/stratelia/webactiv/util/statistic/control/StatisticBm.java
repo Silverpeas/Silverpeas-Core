@@ -118,7 +118,7 @@ public interface StatisticBm extends EJBObject {
       throws RemoteException;
 
   /**
-   * @param foreignPKs
+   * @param primaryKeys
    * @param objectType String representation of an object type
    * @param startDate the start date
    * @param endDate the end date
@@ -129,15 +129,42 @@ public interface StatisticBm extends EJBObject {
       Date startDate, Date endDate) throws RemoteException;
 
   /**
-   * @param primaryKey
+   * @param primaryKeys
    * @param objectType String representation of an object type
    * @param startDate the start date
    * @param endDate the end date
    * @param userId the user identifier
-   * @return the number of access over a list of publications between startDate and endDate for specific user 
+   * @return the number of access over a list of publications between startDate and endDate for
+   * specific user
    * @throws SQLException
    */
-  public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType, Date startDate,
+  public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
+      Date startDate,
       Date endDate, List<String> userIds) throws RemoteException;
+
+  /**
+   * @param primaryKeys
+   * @param objectType String representation of an object type
+   * @param startDate the start date
+   * @param endDate the end date
+   * @return the number of access over a list of publications between startDate and endDate
+   * @throws RemoteException
+   */
+  public int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action,
+      String objectType,
+      Date startDate, Date endDate) throws RemoteException;
+
+  /**
+   * @param primaryKeys
+   * @param action
+   * @param objectType
+   * @param startDate
+   * @param endDate
+   * @param userIds
+   * @return
+   * @throws RemoteException
+   */
+  public int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
+      String objectType, Date startDate, Date endDate, List<String> userIds) throws RemoteException;
 
 }
