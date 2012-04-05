@@ -50,6 +50,7 @@ ALTER TABLE sb_filesharing_history ADD id BIGINT;
 UPDATE sb_filesharing_history SET id = id_temp;
 ALTER TABLE sb_filesharing_history ALTER COLUMN id BIGINT NOT NULL;
 ALTER TABLE sb_filesharing_history DROP COLUMN id_temp;
+ALTER TABLE SB_fileSharing_history ADD CONSTRAINT PK_SB_fileSharing_history PRIMARY KEY (id);
 
 ALTER TABLE sb_filesharing_history ALTER COLUMN keyfile VARCHAR(255) NOT NULL;
 
