@@ -3403,7 +3403,7 @@ caption {
 #publicProfileContenu  address { font-style:normal;}
 
 /* IMAGE  bg_tri.png à chercher dans corps dans fleche */
-.sousNavBulle {
+.sousNavBulle, .container-filter {
   background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
   float:left;
   margin:0 auto;
@@ -3413,7 +3413,7 @@ caption {
   font-size:11px;
   padding:5px 0 14px;
 }
-.sousNavBulle p { 
+.sousNavBulle p, .content-container-filter { 
   margin:0; 
   padding:0 5px 0;
 }
@@ -3438,6 +3438,7 @@ caption {
   background-color:#BFBFBF;
   color:#FFF;
 }
+
 
 #publicProfile #publicProfileFiche #allContact, #publicProfile #publicProfileFiche #contactCommun {
   background-color:#E9E9E9;
