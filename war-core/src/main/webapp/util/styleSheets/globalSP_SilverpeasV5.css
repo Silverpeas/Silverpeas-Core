@@ -4439,7 +4439,7 @@ li.application {
   margin:5px 0 5px 12px;
   padding:0;
   width:400px;
-  height:72px;
+  height:92px;
   float:left;
   overflow:hidden;
   border:1px solid #dfdfdf;
@@ -4469,7 +4469,7 @@ li.application {
 li.application  a {
   padding:2px 10px 2px 72px;
   width:318px;
-  height:68px;
+  height:88px;
   display:table-cell;
   vertical-align:middle;
 }
@@ -4480,7 +4480,7 @@ li.application  a:hover{
 
 li.application  img {
   position:absolute;
-  bottom:7px;
+  bottom:17px;
   right:332px;
   border:0;
 }
@@ -4503,16 +4503,16 @@ li.application  .applicationName {
 }
 
 .type_01 li.application {
-  height:134px;
+  height:154px;
 }
 
 .type_01 li.application  a {
-  height:130px;
+  height:150px;
 }
 
 .type_01 li.application  img {
   position:absolute;
-  bottom:35px;
+  bottom:45px;
   right:332px;
 }
 
@@ -4542,7 +4542,7 @@ li.application  .applicationName {
   line-height:72px !zonecss;
 }
 .type_01 li.application  .applicationName {
-  line-height:130px !zonecss;
+  line-height:150px !zonecss;
 }
 /** end pour ie 7 **/
 
