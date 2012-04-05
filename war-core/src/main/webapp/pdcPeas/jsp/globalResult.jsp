@@ -736,7 +736,7 @@ function showExternalSearchError() {
 	  	       <% } %>
 	      		</ul>
 	      		<% if (displayToggle) { %>
-	      			<a href="#" onclick="javascript:toggleFacet('facet-author')" class="toggle more"><span><%=facetToggleShow %></span></a>
+	      			<a href="#" onclick="javascript:toggleFacet('facet-<%=facetId %>')" class="toggle more"><span><%=facetToggleShow %></span></a>
 	      		<% } %>
 	      		<input type="hidden" name="<%=facet.getId() %>" id="<%=facetId %>" value="<%=selectedEntryId%>"/>
 	      	  </div>
