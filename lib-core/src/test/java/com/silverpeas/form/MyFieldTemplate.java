@@ -112,4 +112,9 @@ public class MyFieldTemplate implements FieldTemplate {
     return MyFieldTemplate.class.getSimpleName();
   }
 
+  @Override
+  public boolean isUsedAsFacet() {
+    return false;
+  }
+
 }

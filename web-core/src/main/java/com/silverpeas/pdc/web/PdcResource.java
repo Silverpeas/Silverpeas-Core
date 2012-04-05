@@ -23,25 +23,21 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.annotation.Authorized;
+import static com.silverpeas.pdc.web.PdcEntity.*;
+import static com.silverpeas.pdc.web.PdcServiceProvider.inComponentOfId;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.rest.RESTWebService;
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.util.List;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import static com.silverpeas.util.StringUtil.*;
-import static com.silverpeas.pdc.web.PdcServiceProvider.*;
-import static com.silverpeas.pdc.web.PdcEntity.*;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC) as configured for a
@@ -63,6 +59,7 @@ import static com.silverpeas.pdc.web.PdcEntity.*;
 @Service
 @Scope("request")
 @Path("pdc/{componentId}")
+@Authorized
 public class PdcResource extends RESTWebService {
 
   @Inject
@@ -88,7 +85,6 @@ public class PdcResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public PdcEntity getPdcForClassification(@QueryParam("contentId") String content) {
-    checkUserPriviledges();
     try {
       List<UsedAxis> axis;
       if (isDefined(content)) {
@@ -118,7 +114,7 @@ public class PdcResource extends RESTWebService {
   }
   
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     int index = componentId.indexOf("?contentId");
     if (index > 0) {
       return componentId.substring(0, index);

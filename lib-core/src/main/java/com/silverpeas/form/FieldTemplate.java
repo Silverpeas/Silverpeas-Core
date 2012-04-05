@@ -87,12 +87,6 @@ public interface FieldTemplate {
    * Returns a Map (String -> String) of named parameters which can be used by the displayer
    * (max-size, length ...).
    */
-  // public Map getParameters();
-
-  /**
-   * Returns a Map (String -> String) of named parameters which can be used by the displayer
-   * (max-size, length ...).
-   */
   public Map<String, String> getParameters(String language);
 
   /**
@@ -103,5 +97,7 @@ public interface FieldTemplate {
   public boolean isSearchable();
 
   public String getTemplateName();
+  
+  public boolean isUsedAsFacet();
 
 }

@@ -58,6 +58,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
     StringBuilder result = new StringBuilder();
     List<Button> buttons = getButtons();
 
+    result.append("<div class=\"buttonPane\">");
     result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
     result.append("<td width=\"100\">&nbsp;</td>");
     if (buttons.size() > 0) {
@@ -73,6 +74,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
     }
     result.append("<td width=\"100\">&nbsp;</td>");
     result.append("</tr></table>");
+    result.append("</div>");
 
     return result.toString();
   }

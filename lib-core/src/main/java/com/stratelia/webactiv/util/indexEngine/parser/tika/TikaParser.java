@@ -31,11 +31,11 @@ import java.util.Map;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.mime.MediaType;
-import org.apache.tika.msoffice.OfficeParser;
-import org.apache.tika.msoffice.ooxml.OOXMLParser;
-import org.apache.tika.openoffice.OpenDocumentParser;
 import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.microsoft.OfficeParser;
+import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
+import org.apache.tika.parser.odf.OpenDocumentParser;
 
 /**
  *

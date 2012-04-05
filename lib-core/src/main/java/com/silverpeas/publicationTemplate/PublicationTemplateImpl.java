@@ -24,6 +24,23 @@
 
 package com.silverpeas.publicationTemplate;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.InputSource;
+
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -41,20 +58,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
 
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A
@@ -668,5 +671,20 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       searchResultForm = getForm(searchResultFileName, null);
     }
     return searchResultForm;
+  }
+  
+  public List<String> getFieldsForFacets() {
+    List<String> fieldNames = new ArrayList<String>();
+    try {
+      FieldTemplate[] fieldTemplates = getRecordTemplate().getFieldTemplates();
+      for (FieldTemplate fieldTemplate : fieldTemplates) {
+        if(fieldTemplate.isUsedAsFacet()) {
+          fieldNames.add(fieldTemplate.getFieldName());
+        }
+      }
+    } catch (Exception e) {
+      SilverTrace.warn("form", "PublicationTemplateImpl.getFieldsForFacets", "form.CANT_GET_FIELDS_FOR_FACETS", e);
+    }
+    return fieldNames;
   }
 }

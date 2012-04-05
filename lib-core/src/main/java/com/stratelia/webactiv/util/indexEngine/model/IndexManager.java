@@ -76,6 +76,7 @@ public class IndexManager {
   public static final String THUMBNAIL_DIRECTORY = "thumbnailDirectory";
   public static final String SERVER_NAME = "serverName";
   public static final String EMBEDDED_FILE_IDS = "embeddedFileIds";
+  public static final String FIELDS_FOR_FACETS = "fieldsForFacet";
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
    */
@@ -513,17 +514,25 @@ public class IndexManager {
 
     List<FieldDescription> list3 = indexEntry.getFields();
     Store storeAction;
+    List<String> fieldsForFacets = new ArrayList<String>();
     for (FieldDescription field : list3) {
       if (StringUtil.isDefined(field.getContent())) {
-        // if a field is used for the sort it's stored in the lucene index
-        if (SearchEnginePropertiesManager.getFieldsNameList().contains(field.getFieldName())) {
+        // if a field is used for the sort or to generate a facet, it's stored in the lucene index
+        String fieldName = getFieldName(field.getFieldName(), field.getLang());
+        if (field.isStored() ||
+            SearchEnginePropertiesManager.getFieldsNameList().contains(field.getFieldName())) {
           storeAction = Store.YES;
+          fieldsForFacets.add(fieldName);
         } else {
           storeAction = Store.NO;
         }
-        doc.add(new Field(getFieldName(field.getFieldName(), field.getLang()),
-            field.getContent(), storeAction, Index.ANALYZED));
+        doc.add(new Field(fieldName, field.getContent(), storeAction, Index.ANALYZED));
       }
+    }
+    if (!fieldsForFacets.isEmpty()) {
+      String sFieldsForFacet = list2String(fieldsForFacets);
+      // adds all fields which generate facets
+      doc.add(new Field(FIELDS_FOR_FACETS, sFieldsForFacet, Store.YES, Index.NO));
     }
 
     if (!isWysiwyg(indexEntry)) {
@@ -558,6 +567,19 @@ public class IndexManager {
     // Add server name inside Lucene doc
     doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, Index.NOT_ANALYZED));
     return doc;
+  }
+  
+  private String list2String(List<String> fieldsForFacets) {
+    boolean first = true;
+    String sFieldsForFacet = "";
+    for (String fieldForFacets : fieldsForFacets) {
+      if (!first) {
+        sFieldsForFacet += ",";
+      }
+      sFieldsForFacet += fieldForFacets;
+      first = false;
+    }
+    return sFieldsForFacet;
   }
   
   private String getFieldName(String name, String language) {

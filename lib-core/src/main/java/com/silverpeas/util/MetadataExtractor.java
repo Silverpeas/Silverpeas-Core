@@ -20,24 +20,23 @@
  */
 package com.silverpeas.util;
 
-import com.google.common.io.Closeables;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.apache.tika.Tika;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.msoffice.OfficeParser;
-import org.apache.tika.msoffice.ooxml.OOXMLParser;
-import org.apache.tika.openoffice.OpenDocumentParser;
-import org.apache.tika.parser.CompositeParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import org.apache.commons.io.IOUtils;
+import org.apache.tika.Tika;
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.CompositeParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.microsoft.OfficeParser;
+import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
+import org.apache.tika.parser.odf.OpenDocumentParser;
 
 public class MetadataExtractor {
 
@@ -61,7 +60,7 @@ public class MetadataExtractor {
               "util.EXE_CANT_GET_SUMMARY_INFORMATION" + ex.getMessage(), ex);
       return new MetaData(new Metadata());
     } finally {
-      Closeables.closeQuietly(inputStream);
+      IOUtils.closeQuietly(inputStream);
     }
   }
 
@@ -99,7 +98,7 @@ public class MetadataExtractor {
               "util.EXE_CANT_GET_SUMMARY_INFORMATION" + ex.getMessage(), ex);
       return new MetaData(new Metadata());
     } finally {
-      Closeables.closeQuietly(inputStream);
+      IOUtils.closeQuietly(inputStream);
     }
   }
 }

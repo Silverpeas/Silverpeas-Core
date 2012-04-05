@@ -23,8 +23,8 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.rest.TestResources;
-import com.silverpeas.rest.mock.OrganizationControllerMock;
+import com.silverpeas.web.TestResources;
+import com.silverpeas.web.mock.OrganizationControllerMock;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.*;
