@@ -460,14 +460,14 @@
               addClass('add').addClass('group').text('<fmt:message key="selection.AddToSelection"/>').click(function() {
               groupSelection.add(theGroup);
             });
-            if (groupSelection.isSelected(theGroup))
-              $operation.hide();
             
             var index = preselectedUserGroups.indexOf(theGroup.id);
             if (index > -1) {
               groupSelection.add(theGroup);
               preselectedUserGroups.splice(index, 1);
             }
+            if (groupSelection.isSelected(theGroup))
+              $operation.hide();
           } else {
             var id = 'selected_group_' + theGroup.id;
             $operation = $('<a>', {title: '<fmt:message key="selection.RemoveFromSelection"/>', href: '#'}).
