@@ -296,10 +296,10 @@
         
         function selectedGroupNamesToString() {
           var selection = '';
-          for (var i = 0; i < groupSelection.item.length - 1; i++)
-            selection += groupSelection.item[i].name + '\n';
-          if (groupSelection.item.length > 0)
-            selection += groupSelection.item[groupSelection.item.length - 1].name;
+          for (var i = 0; i < groupSelection.items.length - 1; i++)
+            selection += groupSelection.items[i].name + '\n';
+          if (groupSelection.items.length > 0)
+            selection += groupSelection.items[groupSelection.items.length - 1].name;
           return selection;
         }
         
