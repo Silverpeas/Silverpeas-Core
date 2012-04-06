@@ -43,8 +43,8 @@ public interface MimeTypes {
   public final String SHORT_ARCHIVE_MIME_TYPE = "application/zip";
   public final String JAVA_ARCHIVE_MIME_TYPE = "application/java-archive";
   public static final String BZ2_ARCHIVE_MIME_TYPE = "application/x-bzip";
-  public static final String GZ_ARCHIVE_MIME_TYPE = "application/x-gzip	";
-  public static final String GUNZIP_ARCHIVE_MIME_TYPE = "application/x-gunzip	";
+  public static final String GZ_ARCHIVE_MIME_TYPE = "application/x-gzip";
+  public static final String GUNZIP_ARCHIVE_MIME_TYPE = "application/x-gunzip";
   public static final String TARGZ_ARCHIVE_MIME_TYPE = "application/x-tar-gz";
   public final String WORD_2007_MIME_TYPE =
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
