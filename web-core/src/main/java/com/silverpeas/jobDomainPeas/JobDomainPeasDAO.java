@@ -60,7 +60,7 @@ public class JobDomainPeasDAO {
       throws SQLException {
     SilverTrace
         .info("jobDomainPeas", "JobDomainPeasDAO.createTableDomain_Group",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
 
     String createQuery = " CREATE TABLE Domain" + domainName + "_Group " + "("
         + "	id int NOT NULL ," + "	superGroupId int NULL ,"
@@ -316,10 +316,9 @@ public class JobDomainPeasDAO {
   /**
    * Sélection des utilisateurs à synchroniser en insert ou update de la table
    * Domain<domainName>_User
-   * @param domainName
+   * @param domain
    * @return Collection de UserFull
    * @throws SQLException
-   * @see
    */
   public static Collection<UserFull> selectUserSynchroInsertUpdateTableDomain_User(
       Domain domain) throws SQLException {
@@ -360,7 +359,6 @@ public class JobDomainPeasDAO {
     return listRes; // Collection de UserFull
   }
 
-  
   /**
    * Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
    * @param domainName

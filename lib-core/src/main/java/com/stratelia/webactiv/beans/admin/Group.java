@@ -41,7 +41,7 @@ public class Group implements Serializable, Comparable<Group> {
   private String name = "";
   private String description = "";
   private String rule = null;
-  private String[] m_sUserIds = ArrayUtil.EMPTY_STRING_ARRAY;
+  private String[] userIds = ArrayUtil.EMPTY_STRING_ARRAY;
 
   private int nbUsers = -1;
   
@@ -85,7 +85,7 @@ public class Group implements Serializable, Comparable<Group> {
     superGroupId = toClone.superGroupId;
     name = toClone.name;
     description = toClone.description;
-    m_sUserIds = toClone.m_sUserIds;
+    userIds = toClone.userIds;
     rule = toClone.rule;
   }
 
@@ -182,14 +182,14 @@ public class Group implements Serializable, Comparable<Group> {
    * Set the list of users in the group
    */
   public void setUserIds(String[] sUserIds) {
-    m_sUserIds = ArrayUtil.nullToEmpty(sUserIds);
+    userIds = ArrayUtil.nullToEmpty(sUserIds);
   }
 
   /**
    * Get the list of users in the group
    */
   public String[] getUserIds() {
-    return m_sUserIds;
+    return userIds;
   }
 
   /**
@@ -212,9 +212,9 @@ public class Group implements Serializable, Comparable<Group> {
         "description : " + description);
     SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
         "rule : " + rule);
-    for (i = 0; i < m_sUserIds.length; i++) {
+    for (i = 0; i < userIds.length; i++) {
       SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-          "userId " + Integer.toString(i) + " : " + m_sUserIds[i]);
+          "userId " + Integer.toString(i) + " : " + userIds[i]);
     }
   }
 
