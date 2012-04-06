@@ -28,9 +28,7 @@ import com.silverpeas.pdc.dao.PdcAxisValueRepository;
 import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import com.silverpeas.pdc.model.PdcPosition;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -42,14 +40,18 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityNotFoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
+
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The service aiming at classifying the contents in Silverpeas on the classification plan (named
@@ -278,7 +280,7 @@ public class PdcClassificationService {
    * <li>The value is a leaf in a branch: the value is replaced by its mother value in any positions
    * of the classification.</li>
    * </ul>
-   * @param deletedValue the value that is removed from a PdC's axis.
+   * @param deletedValues the values that are removed from a PdC's axis.
    */
   public void axisValuesDeleted(final List<PdcAxisValue> deletedValues) {
     List<PdcClassification> concernedClassifications = classificationRepository.
