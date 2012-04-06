@@ -24,29 +24,21 @@
  */
 package com.silverpeas.subscribe.web;
 
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.comment.CommentRuntimeException;
-import com.silverpeas.rest.RESTWebService;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import java.net.URI;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import java.net.URI;
-
-/**
- *
- * @author ehugonnet
- */
 /**
  * A REST Web resource representing a given subscription.
  * It is a web service that provides an access to a subscription referenced by its URL.
@@ -54,6 +46,7 @@ import java.net.URI;
 @Service
 @Scope("request")
 @Path("subscribe/{componentId}")
+@Authorized
 public class SubscribeResource extends RESTWebService {
 
   @PathParam("componentId")
@@ -62,7 +55,6 @@ public class SubscribeResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public String subscribeToComponent() {
-    checkUserPriviledges();
     try {
       Subscription subscription = new ComponentSubscription(getUserDetail().getId(), componentId);
       SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscription);
@@ -78,7 +70,6 @@ public class SubscribeResource extends RESTWebService {
   @Path("/topic/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String subscribeToTopic(@PathParam("id") String topicId) {
-    checkUserPriviledges();
     try {
       Subscription subscription = new NodeSubscription(getUserDetail().getId(), new NodePK(topicId,
               componentId));
@@ -96,7 +87,7 @@ public class SubscribeResource extends RESTWebService {
   }
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return this.componentId;
   }
 }

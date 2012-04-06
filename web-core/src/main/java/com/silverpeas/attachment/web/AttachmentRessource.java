@@ -44,7 +44,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.web.RESTWebService;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.services.SharingServiceFactory;
@@ -67,7 +67,7 @@ public class AttachmentRessource extends RESTWebService {
   private String token;
   
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return componentId;
   }
   

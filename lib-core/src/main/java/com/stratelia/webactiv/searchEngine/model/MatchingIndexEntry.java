@@ -33,6 +33,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -45,11 +46,12 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    */
   private List<String> embeddedFileIds;
 
-
   /**
    * list of XML form fields used to sort results
    */
   private HashMap<String, String> sortableXMLFormFields = null;
+  
+  private Hashtable<String, String> xmlFormFieldsForFacet = null;
 
   private static final long serialVersionUID = 5931254295396221458L;
 
@@ -91,7 +93,6 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    * Returns web'activ logic parameters for the URL used to displayed this entry.
    */
   public String getPageAndParams() {
-
     String type = "";
     String id = "";
     try {
@@ -146,8 +147,7 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
   public void setEmbeddedFileIds(String[] embeddedFileIds) {
     if ( embeddedFileIds == null ) {
       this.embeddedFileIds = new ArrayList<String>();
-    }
-    else {
+    } else {
       this.embeddedFileIds = Arrays.asList( embeddedFileIds );
     }
   }
@@ -157,5 +157,13 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    */
   public List<String> getEmbeddedFileIds() {
     return embeddedFileIds;
+  }
+  
+  public void setXMLFormFieldsForFacets(Hashtable<String, String> fields) {
+    xmlFormFieldsForFacet = fields;
+  }
+  
+  public Hashtable<String, String> getXMLFormFieldsForFacets() {
+    return xmlFormFieldsForFacet;
   }
 }

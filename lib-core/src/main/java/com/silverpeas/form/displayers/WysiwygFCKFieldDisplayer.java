@@ -30,6 +30,7 @@ import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -165,53 +166,66 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName));
         out.println("</td></tr>");
       }
+      
+      String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
 
       ResourceLocator resources = new ResourceLocator(
               "com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
 
       // storage file : HTML select building
-      List<ComponentInstLight> fileStorage =
-              WysiwygController.getStorageFile(pageContext.getUserId());
-      if (!fileStorage.isEmpty()) {
-        out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<select id=\"storageFile_").append(fieldName).append(
-                "\" name=\"componentId\" onchange=\"openStorageFilemanager").append(
-                FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-                "();this.selectedIndex=0\">");
-        stringBuilder.append("<option value=\"\">").append(
-                resources.getString("storageFile.select.title")).append("</option>");
-        for (ComponentInstLight component : fileStorage) {
-          stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
-                  component.getLabel(contentLanguage)).append("</option>");
+      List<ComponentInstLight> fileStorage = null;
+      boolean showFileStorages = true;
+      if (parameters.containsKey("fileStorages")) {
+        showFileStorages = StringUtil.getBooleanValue(parameters.get("fileStorages"));
+      }
+      if (showFileStorages) {
+        fileStorage = WysiwygController.getStorageFile(pageContext.getUserId());
+        if (!fileStorage.isEmpty()) {
+          out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
+          StringBuilder stringBuilder = new StringBuilder();
+          stringBuilder.append("<select id=\"storageFile_").append(fieldName).append(
+                  "\" name=\"componentId\" onchange=\"openStorageFilemanager").append(
+                  FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
+                  "();this.selectedIndex=0\">");
+          stringBuilder.append("<option value=\"\">").append(
+                  resources.getString("storageFile.select.title")).append("</option>");
+          for (ComponentInstLight component : fileStorage) {
+            stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
+                    component.getLabel(contentLanguage)).append("</option>");
+          }
+          stringBuilder.append("</select>");
+          out.println(stringBuilder.toString());
         }
-        stringBuilder.append("</select>");
-        out.println(stringBuilder.toString());
       }
 
       // Gallery file : HTML select building
-      List<ComponentInstLight> galleries = WysiwygController.getGalleries();
-      String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
-
-      if (galleries != null && !galleries.isEmpty()) {
-        if (fileStorage.isEmpty()) {
-          out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
+      List<ComponentInstLight> galleries = null;
+      boolean showGalleries = true;
+      if (parameters.containsKey("galleries")) {
+        showGalleries = StringUtil.getBooleanValue(parameters.get("galleries"));
+      }
+      if (showGalleries) {
+        galleries = WysiwygController.getGalleries();
+        if (galleries != null && !galleries.isEmpty()) {
+          if (fileStorage == null || fileStorage.isEmpty()) {
+            out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
+          }
+          StringBuilder stringBuilder = new StringBuilder();
+          stringBuilder.append("<select id=\"galleryFile_").append(fieldName).append(
+                  "\" name=\"componentId\" onchange=\"openGalleryFileManager").append(
+                  fieldNameFunction).append("();this.selectedIndex=0\">");
+          stringBuilder.append("<option value=\"\">").append(
+                  Util.getString("GML.galleries", contentLanguage)).append("</option>");
+          for (ComponentInstLight component : galleries) {
+            stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
+                    component.getLabel(contentLanguage)).append("</option>");
+          }
+          stringBuilder.append("</select>");
+          out.println(stringBuilder.toString());
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<select id=\"galleryFile_").append(fieldName).append(
-                "\" name=\"componentId\" onchange=\"openGalleryFileManager").append(
-                fieldNameFunction).append("();this.selectedIndex=0\">");
-        stringBuilder.append("<option value=\"\">").append(
-                Util.getString("GML.galleries", contentLanguage)).append("</option>");
-        for (ComponentInstLight component : galleries) {
-          stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
-                  component.getLabel(contentLanguage)).append("</option>");
-        }
-        stringBuilder.append("</select>");
-        out.println(stringBuilder.toString());
       }
 
-      if (!fileStorage.isEmpty() || (galleries != null && !galleries.isEmpty())) {
+      if ((fileStorage != null && !fileStorage.isEmpty()) || (galleries != null && !galleries.isEmpty())) {
         out.println("</td></tr>");
       }
 
@@ -361,15 +375,14 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, TextField field,
-          String language) {
+          String language, boolean store) {
     String fieldValue = field.getValue();
     String fieldValueIndex = "";
     if (fieldValue != null && fieldValue.trim().length() > 0) {
       if (fieldValue.startsWith(dbKey)) {
         String file =
                 WysiwygFCKFieldDisplayer.getFile(indexEntry.getComponent(), indexEntry.getObjectId(),
-                fieldName,
-                language);
+                fieldName, language);
         try {
           Source source = new Source(new FileInputStream(file));
           if (source != null) {
@@ -384,7 +397,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         indexEntry.addTextContent(fieldValue.trim(), language);
         fieldValueIndex = fieldValue.trim().replaceAll("##", " ");
       }
-      indexEntry.addField(key, fieldValueIndex, language);
+      indexEntry.addField(key, fieldValueIndex, language, false);
 
       // index embedded linked attachment (links presents in wysiwyg content)
       try {

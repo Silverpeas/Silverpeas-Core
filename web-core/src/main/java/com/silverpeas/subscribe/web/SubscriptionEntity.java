@@ -24,7 +24,7 @@
  */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.silverpeas.subscribe.Subscription;
 
 import java.net.URI;

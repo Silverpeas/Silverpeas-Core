@@ -639,7 +639,7 @@ td.milieuOngletOn {
 #facetSearchDivId {
 	border: none;
 }
-#facetAuthor, #facetInstance {
+.facet {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;

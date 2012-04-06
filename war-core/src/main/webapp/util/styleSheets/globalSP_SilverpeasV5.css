@@ -25,7 +25,7 @@
 /*************************************
 Redefinition des style de balises HTML
 *************************************/
-BODY {
+body {
   scrollbar-face-color: #FFFFFF;
   scrollbar-shadow-color: #FFFFFF;
   scrollbar-highlight-color: #FFFFFF;
@@ -38,28 +38,33 @@ BODY {
   margin: 0px;
 }
 
-TD,div {
+td,div {
   font-family: "Verdana", "Arial", sans-serif;
   font-size: 10px
 }
 
-A {
+a {
   font-family: "Verdana", "Arial", sans-serif;
   font-size: 10px;
   text-decoration: none;
   color: #000000
 }
 
-A:hover {
+a:hover {
   color: #666699;
 }
 
 input {
-  background-color: #FFFFFF;
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 10px;
-  color: #000000;
-  border: 1px solid #999999;
+	background-color: #FFFFFF;
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
+	border: 1px solid #999999;
+}
+
+input[type=radio],
+input[type=checkbox]{
+	border:0px;
 }
 
 .invisible {
@@ -89,15 +94,15 @@ Label,legend {
   font-weight: bold
 }
 
-TABLE.frame {
+table.frame {
   background-color: #CCCCCC
 }
 
-TR.frame {
+tr.frame {
   background-color: #CCCCCC
 }
 
-TD.frame {
+td.frame {
   background-color: #CCCCCC;
   color: #FFFFFF;
   text-align: left;
@@ -105,15 +110,15 @@ TD.frame {
   font-weight: bold
 }
 
-TABLE.title {
+table.title {
   background-color: #CCCCCC
 }
 
-TR.title {
+tr.title {
   background-color: #CCCCCC
 }
 
-TD.title {
+td.title {
   background-color: #CCCCCC;
   font-style: normal;
   font-size: 11pt;
@@ -121,17 +126,17 @@ TD.title {
   color: #000000
 }
 
-TD.sommaireTitle {
+td.sommaireTitle {
   font-size: 20pt;
   font-weight: bold
 }
 
-TD.sommaireDescription {
+td.sommaireDescription {
   font-size: 8pt;
   color: #000000
 }
 
-TD.sommaire {
+td.sommaire {
   font-size: 12pt;
   font-weight: bold
 }
@@ -1541,6 +1546,14 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   width: 5px;
 }
 
+/* pour encadrer les boutons et remplacer la balise center utilisée dans les anciennes pages */
+.buttonPane {
+	text-align:center;
+}
+.buttonPane table {
+	margin:0 auto;
+}
+
 /* Objet Tabs */
 #gef-tabs img {
   width: 5px;
@@ -1736,6 +1749,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   padding: 2px 5px;
   margin-right:2px;
   display:block;
+  float: left;
   height:1.3em;
   font-weight:100;
 }
@@ -2285,6 +2299,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   padding-bottom: 14px;
 }
 
+.lineResult .content a img{
+	border:0;
+}
+
 #globalResultFrame {
   width:80%;
   float:left;
@@ -2368,7 +2386,6 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 #searchGroupTitle span.author {
   background:url("/silverpeas/util/icons/user.gif") no-repeat scroll left top transparent;
-  color: #FFFFFF;
   display:block;
   font-weight:bold;
   height:16px;
@@ -2388,7 +2405,6 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 #searchGroupTitle span.component {
   background:url("/silverpeas/util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
-  color: #FFFFFF;
   display:block;
   font-weight:bold;
   height:16px;
@@ -2424,6 +2440,25 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 #searchGroupValues ul li.selected a:hover {
   text-decoration: line-through;
+}
+
+#searchGroupValues a.toggle {
+  text-align: right;
+  display: block;
+  padding-right: 15px;
+  color: #666;
+}
+
+#searchGroupValues a.toggle.less {
+	background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
+}
+
+#searchGroupValues a.toggle.more {
+	background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
+}
+
+#searchGroupValues ul li.otherEntry {
+  display: none;
 }
 
 .attachments {
@@ -4404,7 +4439,7 @@ li.application {
   margin:5px 0 5px 12px;
   padding:0;
   width:400px;
-  height:72px;
+  height:92px;
   float:left;
   overflow:hidden;
   border:1px solid #dfdfdf;
@@ -4434,7 +4469,7 @@ li.application {
 li.application  a {
   padding:2px 10px 2px 72px;
   width:318px;
-  height:68px;
+  height:88px;
   display:table-cell;
   vertical-align:middle;
 }
@@ -4445,7 +4480,7 @@ li.application  a:hover{
 
 li.application  img {
   position:absolute;
-  bottom:7px;
+  bottom:17px;
   right:332px;
   border:0;
 }
@@ -4468,16 +4503,16 @@ li.application  .applicationName {
 }
 
 .type_01 li.application {
-  height:134px;
+  height:154px;
 }
 
 .type_01 li.application  a {
-  height:130px;
+  height:150px;
 }
 
 .type_01 li.application  img {
   position:absolute;
-  bottom:35px;
+  bottom:45px;
   right:332px;
 }
 
@@ -4507,7 +4542,7 @@ li.application  .applicationName {
   line-height:72px !zonecss;
 }
 .type_01 li.application  .applicationName {
-  line-height:130px !zonecss;
+  line-height:150px !zonecss;
 }
 /** end pour ie 7 **/
 
