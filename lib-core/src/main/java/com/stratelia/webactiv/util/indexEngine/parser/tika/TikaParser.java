@@ -43,9 +43,9 @@ import org.apache.tika.parser.odf.OpenDocumentParser;
  */
 public class TikaParser implements Parser {
 
-  private final Tika _tika = initTika();
+  private final Tika tika = initTika();
 
-  private Tika initTika() {
+  private final Tika initTika() {
     TikaConfig configuration = TikaConfig.getDefaultConfig();
     ParseContext context = new ParseContext();
     CompositeParser parser = ((CompositeParser) configuration.getParser());
@@ -69,7 +69,7 @@ public class TikaParser implements Parser {
   @Override
   public Reader getReader(String path, String encoding) { 
     try {
-      return _tika.parse(new File(path));
+      return tika.parse(new File(path));
     } catch (IOException ex) {
       SilverTrace.error("util", "OpenxmlParser.getReader", "root.EX_LOAD_IO_EXCEPTION", ex);
     }
