@@ -17,3 +17,8 @@ target
 /ejb-core/calendar/src/main/resources/META-INF/MANIFEST.MF
 /ejb-core/questioncontainer/src/main/resources/META-INF/MANIFEST.MF
 web-core/@ErrorDir@/
+
+/ejb-core/formtemplate/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/searchengine/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/statistic/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/silverstatistics/src/main/resources/META-INF/MANIFEST.MF
