@@ -32,13 +32,14 @@ import javax.ws.rs.core.Response;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
 
 /**
  * An aspect to insert component existence checking in the web services so that it is performed
  * implicitly for each web resources managed by a given component instance. If a web resource
  * doesn't belong to any component instance, then nothing is done.
  */
-@Aspect
+@Component @Aspect
 public class ComponentExistenceAspect {
 
   @Pointcut("@within(javax.ws.rs.Path) && this(com.silverpeas.web.RESTWebService)")
