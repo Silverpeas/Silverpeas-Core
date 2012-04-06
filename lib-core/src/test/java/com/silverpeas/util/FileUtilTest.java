@@ -102,10 +102,11 @@ public class FileUtilTest {
   @Test
   public void testIsArchive() {
     assertTrue(FileUtil.isArchive("toto.zip"));
-    assertFalse(FileUtil.isArchive("toto.tar.gz"));
+    assertTrue(FileUtil.isArchive("toto.tar.gz"));
     assertTrue(FileUtil.isArchive("toto.jar"));
     assertFalse(FileUtil.isArchive("toto.war"));
     assertFalse(FileUtil.isArchive("toto.ear"));
-    assertFalse(FileUtil.isArchive("toto.txt"));
+    assertFalse(FileUtil.isArchive("toto.txt"));    
+    assertTrue(FileUtil.isArchive("toto.tgz"));
   }
 }

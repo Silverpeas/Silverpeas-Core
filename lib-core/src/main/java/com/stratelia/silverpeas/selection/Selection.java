@@ -69,6 +69,10 @@ public final class Selection {
   public void resetAll() {
     goBackURL = "";
     cancelURL = "";
+    
+    htmlFormName = "";
+    htmlFormElementId = "";
+    htmlFormElementName = "";
 
     firstPage = FIRST_PAGE_DEFAULT;
 
