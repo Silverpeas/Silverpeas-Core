@@ -21,10 +21,9 @@
  */
 package com.silverpeas.util;
 
-import org.junit.Test;
-
 import java.io.File;
 import java.util.Date;
+import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -66,8 +65,9 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFrom2007WordDocument() {
-    MetadataExtractor instance = new MetadataExtractor();
+    MetadataExtractor instance = new MetadataExtractor();    
     File file = new File(docxFile);
+    assertThat(file.exists(), is(true));
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Les donuts"));
