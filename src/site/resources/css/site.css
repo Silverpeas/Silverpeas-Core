@@ -262,7 +262,8 @@ ul.menu li {
 	}
 
 div#banner {
-   background: url("../images/bgheaderwinter.jpg") no-repeat scroll left top #FFFFFF;
+/* background: url("../images/bgheaderwinter.jpg") no-repeat scroll left top #FFFFFF; */
+background: url("../images/bgheadereasterjpg") no-repeat scroll left top #FFFFFF;
 }
 
 a.externalLink {
@@ -399,14 +400,6 @@ ul {
 	padding-bottom: 15px;
 
 }
-/*[class*="span"]{
-	display:inline;
-	margin-left:20px;
-	float:none;
-}*/
-
-
-/*logos well */
 
 #poweredBy iframe{
 	margin-left:50px;
@@ -431,7 +424,6 @@ img.poweredBy {
 
 
 /*** HOME PAGE **/
-
 
 .row-fluid > [class*="span"] {
 	float:none;
