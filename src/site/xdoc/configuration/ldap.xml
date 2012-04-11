@@ -136,7 +136,7 @@ users.EmailField=mail
         </p>
         </subsection>
         <subsection name="Synchronizing the groups">
-        <p>Next, is th groups synchronization parameters. It is almost the same as for users. We won't dwell into the parameters for now.</p>
+        <p>Next, are the groups synchronization parameters. It is almost the same as for users. We won't dwell into the parameters for now.</p>
         <p>
           <code><pre>          
 # Groups' settings
