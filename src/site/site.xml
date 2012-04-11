@@ -95,6 +95,7 @@
       <item name="Securing Jboss" href="configuration/securing_jboss.html" collapse="true"/>
       <item name="Security" href="configuration/securing.html" collapse="true"/>
       <item name="Migration" href="configuration/migration.html"  collapse="true"/>
+      <item name="LDAP Synchronization" href="configuration/ldap.html" collapse="true"/>
       <item name="Configuring a reverse-proxy" href="configuration/proxy.html"  collapse="true"/>
     </menu>
     <menu name="Product" inherit="none">
