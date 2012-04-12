@@ -51,7 +51,14 @@
         <p>Let's create some users in the OpenDJ server using OpenDJ's console. If you haven't launch it after the installation process, go to OpenDJ's installation directory. You'll find all the scripts under the bin directroy.
           To launch the administration console, launch the <i>control-panel</i> script.</p>
         <p>Now click the <i>Manage Entries</i> menu item on the left. And create a <i>Silverpeas</i> organizationnal unit.<br/> 
-        Add some users to it so we will synchronize some data. We provide a <a src="../opendj-silverpeas.ldif">ldiff file</a> to facilitate these operations.</p>
+        Add some users to it so we will synchronize some data. We provide a <a src="../../opendj-silverpeas.ldif" alt="Ldif file">ldif file</a> to facilitate these operations.</p>
+        <p>
+          <code>
+            <pre>
+ import-ldif -a -n userRoot -l &lt;fichierLDIF&gt; -h localhost -p 4444 -X -D "cn=directory manager" -w password
+            </pre>
+          </code>
+        </p>
         <p><img src="../images/configuration/opendj_data.png" alt="Users in OpenDJ"/></p>
       </subsection>
     </section>
@@ -136,11 +143,11 @@ users.EmailField=mail
 # Groups' settings
 # ----------------
 # Depends on implementation
-groups.ClassName=groupOfUniqueNames
+groups.ClassName=groupOfNames
 # Note : the filter MUST be put between parentheses.
 #        there MUSTN'T have dummy parentheses levels ex : (&amp;((Condition1))(Condition2)) will NOT works, (&amp;(Condition1)(Condition2)) will works
 # (&amp;(objectCategory=CN=group,CN=Schema,CN=Configuration,DC=TSTEXCHANGE)(member=*))
-groups.Filter=(uniqueMember=*)
+groups.Filter=(member=*)
 # Set the id Field to the 'cn' insteed of the DN to allow groups to move in the LDAP database
 # Set to objectGUID to have a unique ID
 groups.IdField=entryUUID
