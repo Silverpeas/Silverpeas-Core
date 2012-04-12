@@ -63,19 +63,20 @@
       </subsection>
     </section>
     <section name="What is a Domain ?">
-      <p>Silverpeas users and groups management is based on <b>Domains</b>. You can create as much domains as you want, each with is own storage type or configuration.</p>
+      <p>Silverpeas users and groups management is based on <b>Domains</b>. You can create as much domains as you want, each with its own storage type or configuration.</p>
       <p>Each domain is configured using properties files, let's look at them on the next section.</p>
     </section>
     <section name="Configuring the domain synchronization">
       <subsection name="Configuring the connection">
-        <p>First we need a configuration file to define how to connect to te LDAP server and how to synchronize it with Silverpeas.</p>
-        <p>You would have to create a new  <i>domainOpenDJTutorial.properties</i> into <i>$SILVERPEAS_HOME/properties/com/stratelia/silverpeas/domains</i>.</p>
+        <p>First we need a configuration file to define how to connect to the LDAP server and how to synchronize it with Silverpeas.</p>
+        <p>You would have to create a new <i>domainOpenDJTutorial.properties</i> into <i>$SILVERPEAS_HOME/properties/com/stratelia/silverpeas/domains</i>.</p>
         <p>As it happens, you don't have to write this configuration file as it is provided with a default Silverpeas installation.</p>
-        <p>The first section is the configuration of the connection. You'll find the ports and the address of the server, the user account used to open connections to the LDAP server and the Base DN.</p>
+        <p>The first section is the configuration of the connection. You'll find the port and the address of the server, the user account used to open connections to the LDAP server and the Base DN.</p>
         <p>
           <code>
             <pre>
 database.LDAPHost=localhost
+# if you are using MS Active Directory, set 'ad' on parameter below
 database.LDAPImpl=openldap
 database.LDAPPort=1389
 database.LDAPProtocolVer=3
@@ -141,7 +142,7 @@ users.EmailField=mail
           <code><pre>          
 # Groups' settings
 # ----------------
-#Depend de l'implémentation
+# Depends on implementation
 groups.ClassName=groupOfNames
 # Note : the filter MUST be put between parentheses.
 #        there MUSTN'T have dummy parentheses levels ex : (&amp;((Condition1))(Condition2)) will NOT works, (&amp;(Condition1)(Condition2)) will works
@@ -155,26 +156,21 @@ groups.IdField=entryUUID
 # Use com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupSubTree to access groups that are just node with users and sub-groups as sons
 # Use com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupUniqueDescriptor to access groups that contains an attribute containing DN of all there sons
 # Use com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupAllRoot to access groups that contains an attribute containing DN of all there sons AND to have ALL those groups at the root with all sub-users at the first level
-#Mettre com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupAllRoot par defaut
+# Using com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupAllRoot by default
 groups.Type=com.stratelia.silverpeas.domains.ldapdriver.LDAPGroupAllRoot
 
-# For LDAPGroupUniqueDescriptor, LDAPGroupCTI and LDAPGroupAllRoot only :
+# For LDAPGroupUniqueDescriptor and LDAPGroupAllRoot only :
 # ---------------------------------------------------------
 # The field that contains the child's DNs
 groups.MemberField=uniqueMember
 # If groups.SpecificGroupsBaseDN is not set, database.LDAPUserBaseDN is used as root for searchs
 groups.SpecificGroupsBaseDN=ou=silverpeas,dc=example,dc=com
 
-# For LDAPGroupAllRoot and LDAPGroupCTI only :
+# For LDAPGroupAllRoot only :
 # ---------------------------
 # ONLY PUT THIS VALUE TO TRUE FOR THE FIRST TIME THE SYNCHRO IS DONE WITH THE 'ALL ROOT' MODEL
 # This inherit the profiles from parent groups to child groups
 groups.InheritProfiles=false
-
-# For LDAPGroupCTI only :
-# ---------------------------
-# Give the deph for group naming : 0 = no naming depth (use the groups.NameField value), 1 = only use the first element of the DN, x = use the firt x elements of the DN
-groups.NamingDepth=2
 
 # For LDAPGroupSubTree only :
 # ---------------------------
@@ -182,17 +178,16 @@ groups.IncludeEmptyGroups=true
 
 groups.NameField=cn
 groups.DescriptionField=description
-
           </pre></code>
         </p>
         </subsection>        
         <subsection name="Getting users attributes">
         <p>Most of the time, the users information are stored in the LDAP directory. So we have to define which are the attributes we are interested in obtaining from it.
-          You can define as many attributes as you want.</p>
+          You can define as many attributes as you want. <b>This attributes won't be stored in Silverpeas database. It will be getting from your directory on-demand.</b></p>
         <p>First, you have to define the number of attributes (<i>property.Number</i>) and the resources where Silverpeas will get the multilang labels for the user attributes using 
           <i>property.ResourceFile</i>.          
         </p>
-        <p>The, for each attribute you will provide 
+        <p>For each attribute, you will provide :
           <ul>
             <li>
               <i>property_#.Name</i>: which is the name of the property in the resource bundle.
@@ -240,7 +235,7 @@ property_3.MapParameter = postalCode
       <section name="Configuring the domain for authentication">
         <p>
           Now we need to tell Silverpeas to use this domain for authentication. This is a little redundant and we hope to simplifiy this in the future.<br/>
-          This configuration is done with the <i>$SILVERPEAS_HOME/properties/com/stratelia/silverpeas/authentication/autDomainOpenDJ.properties</i> where you will find the connexion parameters for the authentication module.
+          This configuration is done with the <i>$SILVERPEAS_HOME/properties/com/stratelia/silverpeas/authentication/autDomainOpenDJ.properties</i> where you will find the connection parameters for the authentication module.
         </p> 
         <p>
           <code><pre>    
@@ -260,6 +255,7 @@ autServer0.type=com.stratelia.silverpeas.authentication.AuthenticationLDAP
 autServer0.enabled=true
 autServer0.LDAPHost=localhost
 autServer0.LDAPPort=1389
+# if you are using MS Active Directory, set 'ad' on parameter below 
 autServer0.LDAPImpl=opends
 autServer0.LDAPAccessLogin=cn=Directory Manager,cn=Root DNs,cn=config
 autServer0.LDAPAccessPasswd=password
@@ -272,13 +268,13 @@ autServer0.MustAlertPasswordExpiration=false
         </p>
       </section>
       <section name="Creating the domain">
-        <p>When Silverpeas has started, connect to it and go to the  <b>Back Office</b>.<br/>
-          Select  <b>Users &amp; groups</b>, and click on the menu item <b>Add an LDAP domain</b>.
+        <p>When Silverpeas has started, connect to it and go to the <b>Back Office</b>.<br/>
+          Select <b>Users &amp; groups</b>, and click on the menu item <b>Add an LDAP domain</b>.
         </p>
         <p><img src="../images/configuration/back-office.png" alt="Add a LDAP domain"/></p>
         <p>
           Now we need to fill the form for creating the domain.<br/>
-          While for the <i>Properties Settings</i> field you have to give the whome bundle name, in the <i>Authentication Properties</i> you just have to define the name of the file.<br/>
+          While for the <i>Properties Settings</i> field you have to give the whole bundle name, in the <i>Authentication Properties</i> you just have to define the name of the file.<br/>
           The field <i>Last LDAP index synchronized</i> is the timestamp of the latest synchronization. Per default, only users updated since this date will be synchronized.
           In our example you can set it to <b>20100400000000Z</b>.</p>
         <p><img src="../images/configuration/create_domain.png" alt="Create a LDAP domain in Silverpeas"/></p>
