@@ -368,7 +368,7 @@ function pdcValueExpand(valuePath) {
   document.getElementById("jsValue" + valuePath).setAttribute("href",
       "javaScript:pdcValueCollapse('" + valuePath + "')");
 
-  //Envoi de la requ�te pour afficher le contenu de la valeur de l'axe
+  //Envoi de la requete pour afficher le contenu de la valeur de l'axe
   if (isPDCContextual()) {
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
         'SpaceId=' + currentSpaceId, 'ComponentId=' + currentComponentId, 'AxisId=' + currentAxisId,
