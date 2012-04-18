@@ -29,13 +29,14 @@ import com.silverpeas.web.UserPriviledgeValidationFactory;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
 
 /**
  * A processor working on the classes that are annoted with the @Authenticated annotation. As the
  * annoted classes requires to be modified by adding to them some codes, the processor is actually
  * an aspect.
  */
-@Aspect
+@Component @Aspect
 public class AuthenticatedAnnotationProcessor {
 
   @Pointcut(
