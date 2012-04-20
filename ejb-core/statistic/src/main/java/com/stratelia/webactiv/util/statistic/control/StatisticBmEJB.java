@@ -23,22 +23,6 @@
  */
 package com.stratelia.webactiv.util.statistic.control;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -51,6 +35,21 @@ import com.stratelia.webactiv.util.statistic.ejb.HistoryObjectDAO;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class declaration
@@ -227,14 +226,12 @@ public class StatisticBmEJB implements SessionBean {
   }
 
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
-      String objectType,
-      List<String> userIds) {
+      String objectType, List<String> userIds) {
     if (userIds == null || userIds.isEmpty()) {
       return getHistoryByObject(foreignPK, action, objectType);
     } else {
       OrganizationController orga = new OrganizationController();
-      UserDetail[] users = orga.getUserDetails((String[]) userIds.toArray(new String[] {}));
-
+      UserDetail[] users = orga.getUserDetails(userIds.toArray(new String[userIds.size()]));
       return getHistoryByObject(foreignPK, action, objectType, users);
     }
   }

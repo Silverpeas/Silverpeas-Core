@@ -29,7 +29,7 @@ import com.silverpeas.workflow.api.user.*;
 import com.silverpeas.workflow.api.*;
 import com.silverpeas.form.*;
 
-public interface HistoryStep {
+public interface HistoryStep extends Comparable<HistoryStep> {
   /**
    * @return ProcessInstance
    */

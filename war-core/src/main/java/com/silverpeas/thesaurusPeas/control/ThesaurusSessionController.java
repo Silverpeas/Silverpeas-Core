@@ -44,6 +44,7 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
@@ -459,20 +460,16 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return
    * @throws ThesaurusException
-   * @see getJargons
    */
   public String initSelectedUserPanel() throws ThesaurusException {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(
         getString("thesaurus.componentName"), m_context
         + "/Rthesaurus/jsp/Main");
     PairObject[] hostPath = new PairObject[2];
-    hostPath[0] = new PairObject(getString("thesaurus.thesaurus") + " > ",
-        "/Rthesaurus/jsp/Back");
-    String nomVoca = EncodeHelper.javaStringToHtmlString(getCurrentVoca()
-        .getName());
+    hostPath[0] = new PairObject(getString("thesaurus.thesaurus") + " > ", "/Rthesaurus/jsp/Back");
+    String nomVoca = EncodeHelper.javaStringToHtmlString(getCurrentVoca().getName());
     hostPath[1] = new PairObject(getString("thesaurus.BBlistAffectations")
         + nomVoca, "/Rthesaurus/jsp/EditAssignments");
     String hostUrl = m_context + "/Rthesaurus/jsp/SaveAssignUser";
@@ -504,8 +501,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
           users.add(jargon.getIdUser());
         }
       }
-      sel.setSelectedElements((String[]) users.toArray(new String[0]));
-      sel.setSelectedSets((String[]) groups.toArray(new String[0]));
+      sel.setSelectedElements(users.toArray(new String[users.size()]));
+      sel.setSelectedSets(groups.toArray(new String[groups.size()]));
       sel.setFirstPage(Selection.FIRST_PAGE_CART);
     } else {
       sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
@@ -521,15 +518,12 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @see
    */
   public String initUserPanel() throws ThesaurusException {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostSpaceName = "";
-    PairObject hostComponentName = new PairObject(
-        getString("thesaurus.componentName"), m_context
+    PairObject hostComponentName = new PairObject(getString("thesaurus.componentName"), m_context
         + "/Rthesaurus/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("thesaurus.thesaurus"),
-        "/Rthesaurus/jsp/Back");
+    hostPath[0] = new PairObject(getString("thesaurus.thesaurus"), "/Rthesaurus/jsp/Back");
     String hostUrl = m_context + "/Rthesaurus/jsp/UserAssignments";
     String cancelUrl = m_context + "/Rthesaurus/jsp/Main";
 
@@ -645,12 +639,9 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return int
    * @throws ThesaurusException
-   * @see existJargonsConflict
-   * @see createNewJargons
    */
   public int assignVocabulary() throws ThesaurusException {
-    int nbConflict = existJargonsConflict(((IdPK) getCurrentVoca().getPK())
-        .getIdAsLong());
+    int nbConflict = existJargonsConflict(((IdPK) getCurrentVoca().getPK()).getIdAsLong());
     if (nbConflict == 0) {
       createJargons();
     }
@@ -719,7 +710,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return
    * @throws ThesaurusException
-   * @see getNewJargons
    */
   public void createNewJargons() throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
@@ -748,7 +738,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idVoca
    * @return
    * @throws ThesaurusException
-   * @see getNewJargons
    */
   public void createNewJargons(long idVoca) throws ThesaurusException {
     getThBm().createJargons(getNewJargons(idVoca));
@@ -823,10 +812,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @see
    */
   public void deleteJargons() throws ThesaurusException {
-    // jargons actuelles a supprimer
     Collection<Jargon> jargons = getUserSelectedJargons();
-    if (jargons.size() > 0) {
-      // supprime tous les jargons
+    if (!jargons.isEmpty()) {
       getThBm().deleteJargons(jargons);
     }
   }
