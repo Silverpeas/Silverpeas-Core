@@ -934,8 +934,6 @@ public class OrganizationController implements java.io.Serializable {
           GeneralPropertiesManager.getStringCollection("availableToolIds").contains(toolId);
     } catch (Exception e) {
       isToolAvailable = false;
-    }
-    if (!isToolAvailable) {
       SilverTrace.error("admin", "OrganizationController.isToolAvailable",
           "admin.MSG_ERR_GET_AVAILABLE_TOOL_IDS", "toolId: '" + toolId + "'");
     }

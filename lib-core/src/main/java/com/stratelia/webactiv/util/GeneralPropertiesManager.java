@@ -66,7 +66,7 @@ public class GeneralPropertiesManager {
   }
 
   static public Collection<String> getStringCollection(String property) {
-    return getStringCollection(property," ,;");
+    return getStringCollection(property,"[ ,;]");
   }
 
   static public Collection<String> getStringCollection(String property, String regexValueSeparator) {
@@ -77,7 +77,9 @@ public class GeneralPropertiesManager {
       final String stringValues = s_GeneralProperties.getString(property, null);
       if (stringValues != null && !"".equals(stringValues.trim())) {
         for (String value : stringValues.split(regexValueSeparator)) {
-          propertyValues.add(value);
+          if (value != null && !"".equals(value.trim())) {
+            propertyValues.add(value.trim());
+          }
         }
       }
     }

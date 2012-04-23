@@ -492,7 +492,7 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>clÃ© de l'icone a afficher</description>
+      <description>clé de l'icone a afficher</description>
       <name>iconName</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
@@ -513,7 +513,7 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>clÃ© de l'icone a afficher</description>
+      <description>clé de l'icone a afficher</description>
       <name>imagePath</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
