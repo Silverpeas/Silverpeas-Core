@@ -25,8 +25,10 @@ package com.silverpeas.authentication;
 
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -111,13 +113,21 @@ public class AuthenticationServlet extends HttpServlet {
     if (identificationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
-      String errorCode;
       if("Error_1".equals(authenticationKey)) {
-        errorCode = INCORRECT_LOGIN_PWD;
-      }else {
-        errorCode = TECHNICAL_ISSUE;
+        url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
       }
-      url = "/Login.jsp?ErrorCode=" + errorCode;
+      else if(LoginPasswordAuthentication.ERROR_PWD_EXPIRED.equals(authenticationKey)){
+          String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
+          if(StringUtil.getBooleanValue(allowPasswordChange)){
+            ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+            url = settings.getString("passwordExpiredURL")+"?login="+identificationParameters.getLogin()+"&domainId="+sDomainId;
+          } else {
+            url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
+          }
+      }
+      else {
+        url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
+      }
     }
     response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request) + url));
   }
