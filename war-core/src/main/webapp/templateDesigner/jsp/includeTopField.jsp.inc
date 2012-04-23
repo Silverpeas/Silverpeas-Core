@@ -6,8 +6,8 @@
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
-<form name="fieldForm" action="<%=m_context%>/RtemplateDesigner/jsp/<%=actionForm%>" method="POST">
-<table CELLSPACING="5" WIDTH="100%">
+<form name="fieldForm" action="<%=m_context%>/RtemplateDesigner/jsp/<%=actionForm%>" method="post">
+<table cellspacing="5" width="100%">
 <tr>
 <td class="txtlibform" width="10" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
 <td>
@@ -20,11 +20,11 @@
 </td>
 </tr>
 <% 
-	while (languages.hasNext()) {
-		String lang 	= (String) languages.next();
-		String label 	= "";
-		if (field != null)
+	for (String lang : languages) {
+		String label = "";
+		if (field != null) {
 			label = field.getLabel(lang);
+		}
 %>
 		<tr>
 			<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.label")%> (<%=lang%>) :</td><td><input type="text" name="Label_<%=lang%>" size="30" value="<%=label%>"/></td>
@@ -36,3 +36,8 @@
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.searchable")%> :</td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
 </tr>
+<% if (showFacetParam) { %>
+<tr>
+<td class="txtlibform"><%=resource.getString("templateDesigner.facet")%> :</td><td><input type="checkbox" id="UsedAsFacet" name="UsedAsFacet" value="true" <%=usedAsFacet%>/></td>
+</tr>
+<% } %>

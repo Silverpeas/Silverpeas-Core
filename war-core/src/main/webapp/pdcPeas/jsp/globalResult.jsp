@@ -45,7 +45,7 @@
 
 <%!
 void displayItemsListHeader(String query, Pagination pagination, ResourcesWrapper resource, JspWriter out) throws IOException {
-	out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
+	out.println("<tr valign=\"middle\">");
 	out.println("<td align=\"center\" class=\"ArrayNavigation\">");
 	out.println("<img align=\"absmiddle\" src=\""+resource.getIcon("pdcPeas.1px")+"\" height=\"20\">");
 	out.println(pagination.printCounter());
@@ -82,7 +82,7 @@ String sortImplementor = (String) request.getAttribute("sortImp");
 
 List	webTabs			= (List) request.getAttribute("WebTabs");
 // spelling words
-String [] spellingWords = (String []) request.getAttribute("spellingWords");
+List<String> spellingWords = (List<String>) request.getAttribute("spellingWords");
 
 // List of Group result filter (new function added by EBO)
 ResultGroupFilter resultGroup = (ResultGroupFilter) request.getAttribute("ResultGroup");
@@ -124,6 +124,9 @@ String pageId = (String) request.getAttribute("ResultPageId");
 if (!StringUtil.isDefined(pageId)) {
   pageId = "globalResult";
 }
+
+String facetToggleShow = resource.getString("pdcPeas.facet.toggle.show");
+String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 %>
 
 <html>
@@ -316,15 +319,16 @@ if (!StringUtil.isDefined(pageId)) {
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 
-	// This javascript method submit form in order to filter existing result
+	// This javascript method submit form in order to filter existing results
 	function filterResult(value, type) {
 		document.AdvancedSearch.action = "FilterSearchResult";
 		if (type == 'author') {
 			$("#userFilterId").val(value);
-		} else {
+		} else if (type == 'component'){
 			$("#componentFilterId").val(value);
+		} else {
+			$("#"+type).val(value);
 		}
-		$("#changeFilterId").val("change");
 		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
@@ -334,10 +338,11 @@ if (!StringUtil.isDefined(pageId)) {
 		document.AdvancedSearch.action = "FilterSearchResult";
 		if (type == 'author') {
 			$("#userFilterId").val("");
-		} else {
+		} else if (type == 'component'){
 			$("#componentFilterId").val("");
+		} else {
+			$("#"+type).val("");
 		}
-		$("#changeFilterId").val("change");
 		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
@@ -351,6 +356,19 @@ if (!StringUtil.isDefined(pageId)) {
 		document.AdvancedSearch.sortOrder.value = order;
 		document.AdvancedSearch.action = "SortResults";
 		document.AdvancedSearch.submit();
+	}
+	
+	function toggleFacet(facet) {
+		$("#"+facet+" .otherEntry").toggle();
+		if ($("#"+facet+" .otherEntry").css("display") == "none") {
+			$("#"+facet+" .toggle span").html("<%=facetToggleShow%>");
+			$("#"+facet+" .toggle").addClass("more");
+			$("#"+facet+" .toggle").removeClass("less");
+		} else {
+			$("#"+facet+" .toggle span").html("<%=facetToggleHide%>");
+			$("#"+facet+" .toggle").addClass("less");
+			$("#"+facet+" .toggle").removeClass("more");
+		}
 	}
 
 
@@ -380,9 +398,9 @@ function markAsRead(id) {
 
 <%}%>
 
-	<% if(spellingWords!= null && StringUtil.isDefined(spellingWords[0])){ %>
+	<% if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){ %>
 		function dymsend() {
-			document.AdvancedSearch.query.value = '<%=EncodeHelper.javaStringToJsString(spellingWords[0])%>';
+			document.AdvancedSearch.query.value = '<%=EncodeHelper.javaStringToJsString(spellingWords.get(0))%>';
 			document.AdvancedSearch.submit();
 		}
 	<% } %>
@@ -544,7 +562,7 @@ function showExternalSearchError() {
 		out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
 		displayItemsListHeader(keywords, pagination, resource, out);
 		out.println("<tr><td>");
-	if(spellingWords!= null && spellingWords[0]!= null && !spellingWords[0].equals("")){
+	if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){
 %>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="globalResultListDidYouMean">
 			<tr >
@@ -553,7 +571,7 @@ function showExternalSearchError() {
 						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%>
 
 					</span>
-					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords[0]%></span></b></a>
+					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords.get(0)%></span></b></a>
 					<p>&nbsp;</p>
 				</td>
 			</tr>
@@ -625,105 +643,149 @@ function showExternalSearchError() {
 
 	// Adding facet search group
   	int facetResultLength = Integer.parseInt(resource.getSetting("searchengine.facet.max.length", "30"));
-	String filteredUserId = (String) request.getAttribute("FilteredUserId");
-	String filteredComponentId = (String) request.getAttribute("FilteredComponentId");
-
+	int nbDefaultFacetEntries = Integer.parseInt(resource.getSetting("searchengine.facet.default.nbEntries", "5"));
   	if (resultGroup != null) {
     	%>
 	  <input type="hidden" name="changeFilter" id="changeFilterId" value="" />
-	  <input type="hidden" name="authorFilter" id="userFilterId" value="<%=filteredUserId%>"/>
-	  <input type="hidden" name="componentFilter" id="componentFilterId" value="<%=filteredComponentId%>"/>
-
       <div id="globalResultGroupDivId">
       	<div id="facetSearchDivId">
       	<%
-      	List authors = resultGroup.getAuthors();
-      	if (authors != null) {
+      	Facet authorFacet = resultGroup.getAuthorFacet();
+      	if (authorFacet != null) {
       	  %>
-      	  <div id="facetAuthor">
-      	  <div id="searchGroupTitle"><span class="author"><fmt:message key="pdcPeas.group.author" /></span></div>
+      	  <div class="facet" id="facet-author">
+      	  <div id="searchGroupTitle"><span class="author"><%=authorFacet.getName() %></span></div>
    		  <div id="searchGroupValues">
    			<ul>
       	  <%
-  	      for(int cpt=0; cpt < authors.size(); cpt++){
-  	        AuthorVO author = (AuthorVO) authors.get(cpt);
+      	  String selectedEntryId = "";
+      	  String entryClass = "mainEntry";
+      	  boolean displayToggle = authorFacet.getEntries().size() >= nbDefaultFacetEntries;
+  	      for(int cpt=0; cpt < authorFacet.getEntries().size(); cpt++){
+  	        FacetEntryVO author = authorFacet.getEntries().get(cpt);
   	        String authorName = author.getName();
   	        String authorId = author.getId();
   	        String displayAuthor = (authorName != null && authorName.length() > facetResultLength)? authorName.substring(0,facetResultLength) + "...":authorName;
   	        displayAuthor += "&nbsp;(" + author.getNbElt() + ")";
   	        String lastClass = "";
-  	        if (cpt == authors.size() - 1) {
+  	        if (cpt == authorFacet.getEntries().size() - 1) {
   	          lastClass = "last";
   	        }
-  	        String jsAction = "";
-  	        if (authorId.equalsIgnoreCase(filteredUserId)) {
+  	        if (cpt >= nbDefaultFacetEntries) {
+  	          entryClass = "otherEntry";
+  	        }
+  	        String jsAction = "filterResult('" + authorId + "', 'author')";
+  	        String linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.enable", authorName);
+  	        if (author.isSelected()) {
+  	          selectedEntryId = authorId;
   	          lastClass += " selected";
   	          jsAction = "clearFilter('author')";
+  	          linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.disable", authorName);
+  	        } 
   	        %>
-       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.disable">
-			<fmt:param value="<%=authorName%>"/>
-		  </fmt:message>
-  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
-  	        <%
-  	        } else {
-  	          jsAction = "filterResult('" + authorId + "', 'author')";
-    	    %>
-       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.enable">
-			<fmt:param value="<%=authorName%>"/>
-		  </fmt:message>
-  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
-  	        <%
-  	        }
-
-  	      }
-      	  %>
+				<li class="<%=lastClass%> <%=entryClass%>"><a href="javascript:<%=jsAction%>;" title="<%=linkTitle%>"><%=displayAuthor%></a></li>
+  	      <% } %>
       		</ul>
+      		<% if (displayToggle) { %>
+      			<a href="#" onclick="javascript:toggleFacet('facet-author')" class="toggle more"><span><%=facetToggleShow %></span></a>
+      		<% } %>
+      		<input type="hidden" name="authorFilter" id="userFilterId" value="<%=selectedEntryId%>"/>
       	  </div>
       	  </div>
       	  <%
       	}
       	%>
+      	
+      	<%
+      	List<Facet> fieldFacets = resultGroup.getFormFieldFacets();
+      	for (Facet facet : fieldFacets) {
+	      	if (facet != null) {
+	      	  String facetId = facet.getId().replace("$$", "__"); // $$ is not supported by jQuery
+	      	  %>
+	      	  <div class="facet" id="facet-<%=facetId %>">
+	      	  <div id="searchGroupTitle"><span class="formField"><%=facet.getName() %></span></div>
+	   		  <div id="searchGroupValues">
+	   			<ul>
+	      	  <%
+	      	  String selectedEntryId = "";
+	      	  String entryClass = "mainEntry";
+	      	  boolean displayToggle = facet.getEntries().size() >= nbDefaultFacetEntries;
+	  	      for(int cpt=0; cpt < facet.getEntries().size(); cpt++){
+	  	        FacetEntryVO entry = facet.getEntries().get(cpt);
+	  	        String entryName = entry.getName();
+	  	        String entryId = entry.getId();
+	  	        String displayEntry = (entryName != null && entryName.length() > facetResultLength)? entryName.substring(0,facetResultLength) + "...":entryName;
+	  	        displayEntry += "&nbsp;(" + entry.getNbElt() + ")";
+	  	        String lastClass = "";
+	  	        if (cpt == facet.getEntries().size() - 1) {
+	  	          lastClass = "last";
+	  	        }
+	  	        if (cpt >= nbDefaultFacetEntries) {
+	  	          entryClass = "otherEntry";
+	  	        }
+	  	        String jsAction = "filterResult('" + entryId + "', '"+facetId+"')";
+	  	        String linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.enable", entryName);
+	  	        if (entry.isSelected()) {
+	  	          selectedEntryId = entryId;
+	  	          lastClass += " selected";
+	  	          jsAction = "clearFilter('"+facetId+"')";
+	  	          linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.disable", entryName);
+	  	        }
+	  	        %>
+	  	  			<li class="<%=lastClass%> <%=entryClass%>"><a href="javascript:<%=jsAction%>;" title="<%=linkTitle%>"><%=displayEntry%></a></li>
+	  	       <% } %>
+	      		</ul>
+	      		<% if (displayToggle) { %>
+	      			<a href="#" onclick="javascript:toggleFacet('facet-<%=facetId %>')" class="toggle more"><span><%=facetToggleShow %></span></a>
+	      		<% } %>
+	      		<input type="hidden" name="<%=facet.getId() %>" id="<%=facetId %>" value="<%=selectedEntryId%>"/>
+	      	  </div>
+	      	  </div>
+	      	  <%
+	      	}
+      	}
+      	%>
 
       	<%
-      	List components = resultGroup.getComponents();
-      	if (components != null) {
+      	Facet componentFacet = resultGroup.getComponentFacet();
+      	if (componentFacet != null) {
       	  %>
-      	  <div id="facetInstance">
-      	  <div id="searchGroupTitle"><span class="component"><fmt:message key="pdcPeas.group.service" /></span></div>
+      	  <div class="facet" id="facet-component">
+      	  <div id="searchGroupTitle"><span class="component"><%=componentFacet.getName() %></span></div>
    		  <div id="searchGroupValues">
    			<ul>
       	  <%
-  	      for(int cpt=0; cpt < components.size(); cpt++){
-  	        ComponentVO comp = (ComponentVO) components.get(cpt);
+      	  String selectedEntryId = "";
+      	  String entryClass = "mainEntry";
+      	  boolean displayToggle = componentFacet.getEntries().size() >= nbDefaultFacetEntries;
+  	      for(int cpt=0; cpt < componentFacet.getEntries().size(); cpt++){
+  	        FacetEntryVO comp = componentFacet.getEntries().get(cpt);
   	        String compName = comp.getName();
   	        String compId = comp.getId();
   	        String displayComp = (compName != null && compName.length() > facetResultLength)? compName.substring(0,facetResultLength) + "...":compName;
   	        displayComp += "&nbsp;(" + comp.getNbElt() + ")";
   	        String lastClass = "";
-  	        if (cpt == components.size() - 1) {
+  	        if (cpt == componentFacet.getEntries().size() - 1) {
   	          lastClass = "last";
   	        }
-  	        String jsAction = "";
-  	        if (compId.equalsIgnoreCase(filteredComponentId)) {
+  	        if (cpt >= nbDefaultFacetEntries) {
+  	          entryClass = "otherEntry";
+  	        }
+  	        String jsAction = "filterResult('" + compId + "', 'component')";
+  	        String linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.enable", compName);
+  	        if (comp.isSelected()) {
+  	          selectedEntryId = compId;
   	          lastClass += " selected";
   	          jsAction = "clearFilter('component')";
-    	        %>
-           	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.disable">
-    			<fmt:param value="<%=compName%>"/>
-    		  </fmt:message>
-      	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayComp%></a></li>
-      	        <%
-  	        } else {
-  	          jsAction = "filterResult('" + compId + "', 'component')";
-  	    	    %>
-  	       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.enable">
-  				<fmt:param value="<%=compName%>"/>
-  			  </fmt:message>
-  	  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayComp%></a></li>
-  	  	        <%
+  	          linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.disable", compName);
   	        }
-  	      }
-      	  %>
+  	        %>
+  				<li class="<%=lastClass%> <%=entryClass%>"><a href="javascript:<%=jsAction%>;" title="<%=linkTitle%>"><%=displayComp%></a></li>
+  	      <% } %>
+      	  	<input type="hidden" name="componentFilter" id="componentFilterId" value="<%=selectedEntryId%>"/>
+      	  	<% if (displayToggle) { %>
+      			<a href="#" onclick="javascript:toggleFacet('facet-component')" class="toggle more"><span><%=facetToggleShow %></span></a>
+      		<% } %>
       		</ul>
       	  </div>
       	  </div>

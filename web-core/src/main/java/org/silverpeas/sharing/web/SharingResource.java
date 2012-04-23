@@ -39,7 +39,7 @@ import org.silverpeas.publication.web.PublicationResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.web.RESTWebService;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 
@@ -52,7 +52,7 @@ public class SharingResource extends RESTWebService {
   private String token;
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return null;
   }
   

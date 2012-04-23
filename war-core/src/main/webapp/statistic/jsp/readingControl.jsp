@@ -36,7 +36,7 @@
     String url 			= request.getParameter("url");
     String componentId 	= request.getParameter("componentId");
     String objectType	= request.getParameter("objectType");
-    List 	userIds 	= (List) request.getAttribute("UserIds");
+    List<String> 	userIds 	= (List<String>) request.getAttribute("UserIds");
     %>
     <script language="javascript">
     function editDetail(userId, actorName)
@@ -49,9 +49,9 @@
     StatisticBm statisticBm =  statisticHome.create();
     
     ForeignPK foreignPK = new ForeignPK(id, componentId);
-    Collection readingState = statisticBm.getHistoryByObject(foreignPK, 1, objectType, userIds);
+    Collection<HistoryByUser> readingState = statisticBm.getHistoryByObject(foreignPK, 1, objectType, userIds);
     
-    // affichage des contr�les de lecture
+    // displaying reading control
     ArrayPane arrayPane = gef.getArrayPane("readingControl", "ReadingControl", request, session);
 
     arrayPane.addArrayColumn(generalMessage.getString("GML.user"));

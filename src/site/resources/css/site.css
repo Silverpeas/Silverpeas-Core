@@ -1,6 +1,6 @@
 /* You can override this file with your own styles */
 
-body {
+body#topBarEnabled {
   padding-top: 38px;
   margin:0;
   color:#404040;
@@ -249,20 +249,22 @@ ul.menu li a:hover {
 }
 
 ul.menu  {
+	position:absolute;
 	list-style-type:none;
 	font-family: arial;
-    left: 333px;
-	top: 65px;
+	left: 222px; 
+	top: 0;
+	margin:0;
+	padding:0;
 }
 	
 ul.menu li {
-	display: block;
-    float: left;
-	
-	}
+  display: block;
+  float: left;
+}
 
 div#banner {
-   background: url("../images/bgheaderwinter.jpg") no-repeat scroll left top #FFFFFF;
+	background: url("../images/bg_header.jpg") no-repeat scroll left top #FFFFFF;
 }
 
 a.externalLink {
@@ -282,6 +284,23 @@ a.externalLink[href^="http"] {
 .composite {
    padding-top:0;
 }
+
+#___plusone_0 {
+	width:225px !important;
+}
+
+.composite .footer .container-fluid p{
+	clear:both;
+	content: "";
+	display:block;
+	border-top: 1px solid #DDDDDD;
+    float: none;
+    padding: 10px 0;
+    text-align: center;
+	background-color:#FFF;
+}
+
+
 #banner img {
 	position:absolute;
 	left:45px;
@@ -353,7 +372,7 @@ h2 {
 }
 
 tt {
-    background-color: #FEE9CC;
+    background-color: transparent;
     color: rgba(0, 0, 0, 0.75);
     padding: 1px 3px;
 }
@@ -399,14 +418,6 @@ ul {
 	padding-bottom: 15px;
 
 }
-/*[class*="span"]{
-	display:inline;
-	margin-left:20px;
-	float:none;
-}*/
-
-
-/*logos well */
 
 #poweredBy iframe{
 	margin-left:50px;
@@ -431,7 +442,6 @@ img.poweredBy {
 
 
 /*** HOME PAGE **/
-
 
 .row-fluid > [class*="span"] {
 	float:none;
@@ -588,15 +598,18 @@ margin:0 20px ;
 	font-weight:bold;
 }
 
-#twitter .twitter-follow-button {
-	background:url("../images/btn-twitt.png") no-repeat;
-	color:transparent;
-	width:200px;
-	height:50px;
-	margin-left:10px;
-	display:block;
-	padding-bottom:8px;
+#twitter {
+	background: url("../images/btn-twitt.png") no-repeat scroll 0pt 23px transparent;
+	color: transparent;
+	display: block;
+	height:82px;
+	margin-left: 10px;
+	padding: 0pt;
+	width: 200px;
+}
 
+#poweredBy #twitter iframe {
+    margin: 0 0 0 0;
 }
 
 /*.fb-like {

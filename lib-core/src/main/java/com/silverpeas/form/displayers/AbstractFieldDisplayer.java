@@ -53,12 +53,12 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
 
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, T field,
-          String language) {
+      String language, boolean stored) {
     if (field != null) {
       String value = field.getStringValue();
       if (value != null) {
         value = value.trim().replaceAll("##", " ");
-        indexEntry.addField(key, value, language); // add data in dedicated field
+        indexEntry.addField(key, value, language, stored); // add data in dedicated field
         indexEntry.addTextContent(value, language); // add data in global field
       }
     }

@@ -23,21 +23,19 @@
  */
 package com.silverpeas.comment.web;
 
-import java.util.logging.Logger;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
+import static com.silverpeas.util.StringUtil.isDefined;
+
 import java.net.URI;
-import java.util.List;
-import com.silverpeas.comment.CommentRuntimeException;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.rest.RESTWebService;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -46,9 +44,16 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import static com.silverpeas.util.StringUtil.*;
+
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.comment.CommentRuntimeException;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.web.RESTWebService;
 
 /**
  * A REST Web resource representing a given comment. It is a web service that provides an access to
@@ -57,6 +62,7 @@ import static com.silverpeas.util.StringUtil.*;
 @Service
 @Scope("request")
 @Path("comments/{componentId}/{contentType}/{contentId}")
+@Authorized
 public class CommentResource extends RESTWebService {
 
   @Inject
@@ -81,7 +87,6 @@ public class CommentResource extends RESTWebService {
   @Path("{commentId}")
   @Produces(MediaType.APPLICATION_JSON)
   public CommentEntity getComment(@PathParam("commentId") String onCommentId) {
-    checkUserPriviledges();
     try {
       Comment theComment = commentService().getComment(byPK(onCommentId, inComponentId()));
       URI commentURI = getUriInfo().getRequestUri();
@@ -104,7 +109,6 @@ public class CommentResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public CommentEntity[] getAllComments() {
-    checkUserPriviledges();
     try {
       List<Comment> theComments =
           commentService().getAllCommentsOnPublication(onContentType(),
@@ -132,7 +136,6 @@ public class CommentResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response saveNewComment(final CommentEntity commentToSave) {
-    checkUserPriviledges();
     checkIsValid(commentToSave);
     Comment comment = commentToSave.toComment();
     try {
@@ -172,7 +175,6 @@ public class CommentResource extends RESTWebService {
   @Path("{commentId}")
   public CommentEntity updateComment(@PathParam("commentId") String commentId,
       final CommentEntity commentToUpdate) {
-    checkUserPriviledges();
     checkIsValid(commentToUpdate);
     if (!commentToUpdate.getId().equals(commentId)) {
       throw new WebApplicationException(Status.BAD_REQUEST);
@@ -206,7 +208,6 @@ public class CommentResource extends RESTWebService {
   @DELETE
   @Path("{commentId}")
   public void deleteComment(@PathParam("commentId") String onCommentId) {
-    checkUserPriviledges();
     try {
       commentService().deleteComment(byPK(onCommentId, inComponentId()));
     } catch (CommentRuntimeException ex) {
@@ -293,7 +294,7 @@ public class CommentResource extends RESTWebService {
   }
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return this.componentId;
   }
 

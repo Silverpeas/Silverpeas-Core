@@ -27,7 +27,7 @@ import com.silverpeas.comment.BaseCommentTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.rest.ResourceGettingTest;
+import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Arrays;
 import java.util.List;

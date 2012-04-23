@@ -123,5 +123,5 @@ public interface FieldDisplayer<T extends Field> {
    * @param language
    */
   public void index(FullIndexEntry indexEntry, String key, String fieldName, T field,
-          String language);
+          String language, boolean stored);
 }

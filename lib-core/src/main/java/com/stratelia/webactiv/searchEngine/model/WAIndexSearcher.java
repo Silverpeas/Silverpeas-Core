@@ -153,8 +153,9 @@ public class WAIndexSearcher {
     try {
       TopDocs topDocs;
       BooleanQuery booleanQuery = new BooleanQuery();
-      booleanQuery.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
-      booleanQuery.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
+      BooleanQuery rangeClauses = new BooleanQuery();
+      rangeClauses.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
+      rangeClauses.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
 
       if (query.getXmlQuery() != null) {
         booleanQuery.add(getXMLQuery(query, searcher), BooleanClause.Occur.MUST);
@@ -175,11 +176,11 @@ public class WAIndexSearcher {
             rangeQuery = new RangeQuery(lowerTerm, upperTerm, true);
           }
           if (rangeQuery != null) {
-            booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
+            rangeClauses.add(rangeQuery, BooleanClause.Occur.MUST);
           }
           RangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
           if (rangeQueryOnLastUpdateDate != null) {
-            booleanQuery.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
+            rangeClauses.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
           }
           TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
           if (termQueryOnAuthor != null) {
@@ -198,7 +199,10 @@ public class WAIndexSearcher {
       }
       SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
               "Query = " + booleanQuery.toString());
-      topDocs = searcher.search(booleanQuery, maxNumberResult);
+
+      QueryWrapperFilter wrappedFilter = new QueryWrapperFilter(rangeClauses);
+
+      topDocs = searcher.search(booleanQuery, wrappedFilter, maxNumberResult);
 
       results = makeList(topDocs, query, searcher);
     } catch (IOException ioe) {
@@ -412,6 +416,18 @@ public class WAIndexSearcher {
       }
       indexEntry.setSortableXMLFormFields(sortableField);
     }
+    // adds fields and values used to generate facets
+    String fieldsForFacets = doc.get(IndexManager.FIELDS_FOR_FACETS);
+    if (StringUtil.isDefined(fieldsForFacets)) {
+      Hashtable<String, String> fieldsValueForFacets = new Hashtable<String, String>();
+      StringTokenizer tokenizer = new StringTokenizer(fieldsForFacets, ",");
+      while (tokenizer.hasMoreTokens()) {
+        String fieldName = tokenizer.nextToken();
+        fieldsValueForFacets.put(fieldName, doc.get(fieldName));
+      }
+      indexEntry.setXMLFormFieldsForFacets(fieldsValueForFacets);
+    }
+    
     // Set server name
     indexEntry.setServerName(doc.get(IndexManager.SERVER_NAME));
     return indexEntry;

@@ -36,6 +36,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
@@ -149,21 +150,20 @@ public class GenericRecordSet implements RecordSet, Serializable {
       for (String fieldName : fieldNames) {
         field = data.getField(fieldName);
         if (field != null) {
-          FieldTemplate fieldTemplate = recordTemplate
-              .getFieldTemplate(fieldName);
+          FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
           if (fieldTemplate != null) {
             String fieldType = fieldTemplate.getTypeName();
             String fieldDisplayerName = fieldTemplate.getDisplayerName();
             try {
-              if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
+              if (!StringUtil.isDefined(fieldDisplayerName)) {
                 fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
               }
               FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
                   fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
                 String key = formName + "$$" + fieldName;
-                fieldDisplayer.index(indexEntry, key, fieldName, field,
-                    language);
+                fieldDisplayer.index(indexEntry, key, fieldName, field, language,
+                    fieldTemplate.isUsedAsFacet());
               }
             } catch (FormException fe) {
               SilverTrace.error("form", "AbstractForm.update",

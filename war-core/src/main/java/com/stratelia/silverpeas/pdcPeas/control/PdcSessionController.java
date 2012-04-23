@@ -51,6 +51,7 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -65,9 +66,6 @@ public class PdcSessionController extends AbstractComponentSessionController {
   private String currentLanguage = null;
 
   private AdminController m_AdminCtrl = null;
-
-  private final static java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
-      "yyyy/MM/dd");
 
   /**
    * Constructor declaration
@@ -84,7 +82,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   private PdcBm getPdcBm() {
     if (pdcBm == null) {
-      pdcBm = (PdcBm) new PdcBmImpl();
+      pdcBm = new PdcBmImpl();
     }
     return pdcBm;
   }
@@ -171,7 +169,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   public int createAxis(AxisHeader axisHeader) throws PdcException {
     axisHeader.setCreatorId(getUserId());
-    axisHeader.setCreationDate(formatter.format(new Date()));
+    axisHeader.setCreationDate(DateUtil.formatDate(new Date()));
     return getPdcBm().createAxis(axisHeader);
   }
 
@@ -241,12 +239,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
     String currentValueId = getCurrentValue().getPK().getId();
     String currentAxisId = getCurrentAxis().getAxisHeader().getPK().getId();
     value.setCreatorId(getUserId());
-    value.setCreationDate(formatter.format(new Date()));
-    int motherId = getPdcBm().insertMotherValue(value, currentValueId,
-        currentAxisId);
-
-    refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK()
-        .getId()));
+    value.setCreationDate(DateUtil.formatDate(new Date()));
+    int motherId = getPdcBm().insertMotherValue(value, currentValueId, currentAxisId);
+    refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK().getId()));
     return motherId;
   }
 
@@ -260,11 +255,10 @@ public class PdcSessionController extends AbstractComponentSessionController {
   public int createDaughterValue(Value value) throws PdcException {
     String currentValueId = getCurrentValue().getPK().getId();
     value.setCreatorId(getUserId());
-    value.setCreationDate(formatter.format(new Date()));
+    value.setCreationDate(DateUtil.formatDate(new Date()));
     int status = getPdcBm().createDaughterValue(value, currentValueId,
-        new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
-    refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK()
-        .getId()));
+        String.valueOf(getCurrentAxis().getAxisHeader().getRootId()));
+    refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK().getId()));
 
     return status;
   }
@@ -317,8 +311,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
       con = getConnection();
 
       daughterValueName = getPdcBm().deleteValue(con, valueId,
-          getCurrentAxis().getAxisHeader().getPK().getId(),
-          new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
+          getCurrentAxis().getAxisHeader().getPK().getId(), String.valueOf(
+          getCurrentAxis().getAxisHeader().getRootId()));
       if (daughterValueName == null) {
         long treeId = getCurrentAxis().getAxisHeader().getRootId();
 

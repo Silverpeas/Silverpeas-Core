@@ -24,7 +24,7 @@
  */
 package com.silverpeas.attachment.web;
 
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;

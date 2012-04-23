@@ -34,11 +34,16 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:ctx="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <ctx:annotation-config/>
+  
+  <aop:aspectj-autoproxy/>
+  
   <ctx:component-scan base-package="com.silverpeas.scheduler"/>
   <ctx:component-scan base-package="com.silverpeas.calendar"/>
   <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>
@@ -52,6 +57,8 @@
   <ctx:component-scan base-package="com.silverpeas.admin.notification"/>
   <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" /> 
   <ctx:component-scan base-package="com.silverpeas.profile"/>
+  <ctx:component-scan base-package="com.silverpeas.web"/>
+  <ctx:component-scan base-package="com.silverpeas.annotation"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
   
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
@@ -113,6 +120,9 @@
   <!-- the factory of the statistics management services.
         It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
   <bean id="silverStatisticsFactory" class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
-        factory-method="getFactory"/>  
+        factory-method="getFactory"/> 
+        
+  <bean id="userPriviledgeValidationFactory" class="com.silverpeas.web.UserPriviledgeValidationFactory"
+        factory-method="getFactory"/>
 
 </beans>

@@ -1,12 +1,14 @@
 *.iws
 *.ipr
 *.iml
+*.merge*
 catalog.xml
 target
 .settings
 .classpath
 .project
 .sonar-ide.properties
+nb-configuration.xml
 /web-core/src/main/java/META-INF
 /war-core/src/main/webapp/META-INF
 /ejb-core/channels/src/main/resources/META-INF/MANIFEST.MF
@@ -17,3 +19,8 @@ target
 /ejb-core/calendar/src/main/resources/META-INF/MANIFEST.MF
 /ejb-core/questioncontainer/src/main/resources/META-INF/MANIFEST.MF
 web-core/@ErrorDir@/
+
+/ejb-core/formtemplate/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/searchengine/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/statistic/src/main/resources/META-INF/MANIFEST.MF
+/ejb-core/silverstatistics/src/main/resources/META-INF/MANIFEST.MF

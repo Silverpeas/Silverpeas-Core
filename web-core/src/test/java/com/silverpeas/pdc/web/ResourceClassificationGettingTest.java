@@ -25,7 +25,7 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
 import org.junit.Before;
-import com.silverpeas.rest.ResourceGettingTest;
+import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Test;
 import static org.junit.Assert.*;

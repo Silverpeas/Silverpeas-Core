@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 @XmlRootElement
