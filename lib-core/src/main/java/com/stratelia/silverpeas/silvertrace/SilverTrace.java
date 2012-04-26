@@ -290,7 +290,7 @@ public class SilverTrace {
       Throwable ex) {
     if (initFinished) {
       try {
-        Logger logger = getModuleLogger(module, classe);
+        Logger logger = getModuleLogger(module);
 
         if (logger != null && logger.isDebugEnabled()) {
           logger.debug(formatTraceMessage(module, classe, null, message, extraInfos), ex);
@@ -364,7 +364,7 @@ public class SilverTrace {
           String extraInfos, Throwable ex) {
     if (initFinished) {
       try {
-        Logger cat = getModuleLogger(module, classe);
+        Logger cat = getModuleLogger(module);
 
         if (cat != null) {
           if (cat.isInfoEnabled()) {
@@ -440,7 +440,7 @@ public class SilverTrace {
           Throwable ex) {
     if (initFinished) {
       try {
-        Logger cat = getModuleLogger(module, classe);
+        Logger cat = getModuleLogger(module);
 
         if (cat != null) {
           if (cat.isEnabledFor(Level.WARN)) {
@@ -518,7 +518,7 @@ public class SilverTrace {
     if (initFinished) {
       try {
         // Normal traces
-        Logger logger = getModuleLogger(module, classe);
+        Logger logger = getModuleLogger(module);
 
         if (logger != null) {
           if (logger.isEnabledFor(Level.ERROR)) {
@@ -527,7 +527,7 @@ public class SilverTrace {
           }
         }
         // Error and Fatal traces
-        logger = getModuleLogger(MODULE_ERROR_AND_FATAL, null);
+        logger = getModuleLogger(MODULE_ERROR_AND_FATAL);
         if (logger != null) {
           if (logger.isEnabledFor(Level.ERROR)) {
             logger.error(formatErrorAndFatalMessage(module, classe, messageID,
@@ -607,7 +607,7 @@ public class SilverTrace {
     if (initFinished) {
       try {
         // Normal traces
-        Logger cat = getModuleLogger(module, classe);
+        Logger cat = getModuleLogger(module);
 
         if (cat != null) {
           if (cat.isEnabledFor(Level.FATAL)) {
@@ -616,7 +616,7 @@ public class SilverTrace {
           }
         }
         // Error and Fatal traces
-        cat = getModuleLogger(MODULE_ERROR_AND_FATAL, null);
+        cat = getModuleLogger(MODULE_ERROR_AND_FATAL);
         if (cat != null) {
           if (cat.isEnabledFor(Level.FATAL)) {
             cat.fatal(formatErrorAndFatalMessage(module, classe, messageID,
@@ -651,7 +651,7 @@ public class SilverTrace {
           String instanceId, String objectId, String userId, String actionId) {
     if (initFinished) {
       try {
-        Logger cat = getModuleLogger(MODULE_SPY, null);
+        Logger cat = getModuleLogger(MODULE_SPY);
         if (cat != null) {
           if (cat.isEnabledFor(Level.FATAL)) {
             cat.fatal(formatSpyMessage(spaceId, instanceId, objectId, userId,
@@ -832,7 +832,7 @@ public class SilverTrace {
    *               TRACE_LEVEL_UNKNOWN to remove the level condition for the module.
    */
   static public void setTraceLevel(String module, int val) {
-    Logger logger = getModuleLogger(module, null);
+    Logger logger = getModuleLogger(module);
 
     if (logger != null) {
       switch (val) {
@@ -868,7 +868,7 @@ public class SilverTrace {
    * @return the trace level of the module or TRACE_LEVEL_UNKNOWN if the module was not found
    */
   static public int getTraceLevel(String module, boolean chained) {
-    Logger cat = getModuleLogger(module, null);
+    Logger cat = getModuleLogger(module);
     int log4jLevelInt;
     Level log4jLevel;
 
@@ -915,7 +915,7 @@ public class SilverTrace {
    * @param consoleName   Name of the console output. If null or "", "system.out" is used
    */
   static public void addAppenderConsole(String module, String patternLayout, String consoleName) {
-    Logger cat = getModuleLogger(module, null);
+    Logger cat = getModuleLogger(module);
     ConsoleAppender a1 = new ConsoleAppender();
 
     if (cat != null) {
@@ -953,7 +953,7 @@ public class SilverTrace {
    */
   static public void addAppenderFile(String module, String patternLayout,
           String fileName, boolean appendOnFile) {
-    Logger cat = getModuleLogger(module, null);
+    Logger cat = getModuleLogger(module);
     FileAppender a1 = new FileAppender();
 
     if (cat != null) {
@@ -990,7 +990,7 @@ public class SilverTrace {
    */
   static public void addAppenderRollingFile(String module, String patternLayout, String fileName, 
           String rollingMode) {
-    Logger logger = getModuleLogger(module, null);
+    Logger logger = getModuleLogger(module);
 
     if (logger != null) {
       try {
@@ -1030,7 +1030,7 @@ public class SilverTrace {
    */
   static public void addAppenderMail(String module, String patternLayout,
           String mailHost, String mailFrom, String mailTo, String mailSubject) {
-    Logger cat = getModuleLogger(module, null);
+    Logger cat = getModuleLogger(module);
     SMTPAppender a1 = new SMTPAppender();
 
     if (cat != null) {
@@ -1065,7 +1065,7 @@ public class SilverTrace {
    *                       appenders attached to the module
    */
   static public void removeAppender(String module, int typeOfAppender) {
-    Logger cat = getModuleLogger(module, null);
+    Logger cat = getModuleLogger(module);
 
     if (cat != null) {
       if ((typeOfAppender & APPENDER_CONSOLE) == APPENDER_CONSOLE) {
@@ -1103,7 +1103,7 @@ public class SilverTrace {
    * @return a mask of the appenders set to this module (not containing the herited ones)
    */
   static public int getAvailableAppenders(String module) {
-    Logger cat = getModuleLogger(module, null);
+    Logger cat = getModuleLogger(module);
     int valret = 0;
 
     if (cat != null) {
@@ -1134,7 +1134,7 @@ public class SilverTrace {
    *         appender attached to this module
    */
   static public Properties getAppender(String module, int typeOfAppender) {
-    Logger cat = getModuleLogger(module, null);
+    Logger cat = getModuleLogger(module);
 
     if (cat == null) {
       return (null);
@@ -1469,11 +1469,11 @@ public class SilverTrace {
   /**
    * Return the category associated to a module or to a module's class
    *
+   *
    * @param module
-   * @param classToAppend
    * @return
    */
-  static protected Logger getModuleLogger(String module, String classToAppend) {
+  static protected Logger getModuleLogger(String module) {
     if (MODULE_ROOT.equalsIgnoreCase(module)) {
       return Logger.getRootLogger();
     }
