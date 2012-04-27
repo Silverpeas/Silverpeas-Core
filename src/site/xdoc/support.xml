@@ -39,15 +39,15 @@
   <body>
     <p>
       The Silverpeas Collaborative Platform can be freely downloaded and deployed into your organization.
-      Because it is a professional business class product, you can need some helps, accompaniments or
-      have asks about the way to install, to use or to adapt it to your requirements. The Silverpeas team
+      Because it is a professional business class product, you may need some help, support or to be able
+      to ask questions about how to install it in your specific environement or how to tweak it for your requirements. The Silverpeas team
       provides several ways of support, from a simple mailing-list to a business active support.
     </p>
     <section name="Mailing-lists">
       <p>
-        If you don't have subscribed to any business support, and you have some questions, you can join us at the
-        mailing-list below. They are hosted in the Google Groups, then a Google account is required to post messages. 
-      </p>
+        If you don't have subscribed to any professional support and have some questions, you can join us at the
+        mailing-lists below. They are hosted by Google Groups, so you will have to create an account (but it doesn't require a gmail account).
+     </p>
       <ul>
         <li><a href="http://groups.google.com/group/silverpeas-users">The Silverpeas user list</a> for questions about the installation and the use of Silverpeas,</li>
         <li><a href="http://groups.google.com/group/silverpeas-dev">The Silverpeas development list</a> for questions or information on the development of Silverpeas.
@@ -60,13 +60,13 @@
         Collaborative Platform by submitting bug reports or by asking for new features.
       </p>
       <p>The feature asks are only treated within a business approach.</p>
-      <p>Our issue tracking system is available at <a href="https://www.silverpeas.org/redmine/">Silverpeas Redmine</a></p>
+      <p>Our issue tracking system is available at <a href="https://www.silverpeas.org/redmine/">Silverpeas Redmine</a>. To avoid spamming, accounts have read-only access per default. Please, send an email to support at silverpeas.com so that  we know your real person ;) and you 'll get writting rights.</p>
     </section>
     <section name="Business Support">
       <p>
-      If you whish to be accompanied in your use of the Silverpeas Collaborative Platform or if you need some additional features or
+      If you whish to be supported in your use of the Silverpeas Collaborative Platform or if you need some additional features or
       an adaptation of some of them to your requirements, we provides you with different levels of business supports.
-      Theses offers are casted by our <a href="http://www.silverpeas.com/">commercial entity</a> which provides also some SaaS offers (<a href="http://www.silverpeas.com/fr/30/silvercloud/">SilverCloud</a>).</p>
+      Theses offers are defined by our <a href="http://www.silverpeas.com/">commercial entity</a> which provides also some SaaS offers (<a href="http://www.silverpeas.com/fr/30/silvercloud/">SilverCloud</a>).</p>
       <p>Please consult our commercial site at <a href="http://www.silverpeas.com/">http://www.silverpeas.com/</a></p>
     </section>
   </body>
