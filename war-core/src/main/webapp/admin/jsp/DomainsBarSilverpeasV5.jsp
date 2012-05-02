@@ -366,17 +366,42 @@ out.println(gef.getLookStyleSheet());
                     // domains are used by 'selectDomain.jsp.inc'
                     // Get a LoginPasswordAuthentication object
                     LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-                    Hashtable<String, String> domains = lpAuth.getAllDomains();
+                    List<Domain> listDomains = lpAuth.getListDomains();
                     //------------------------------------------------------------------
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.login"), "javaScript:login();", false);
                 %>
                     <table border="0" cellpadding="0" cellspacing="2">
                         <tr><td><%=helper.getString("lookSilverpeasV5.login")%> : </td><td><%@ include file="../../inputLogin.jsp" %></td></tr>
                         <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><%@ include file="inputPasswordSilverpeasV5.jsp.inc" %></td></tr>
-                        <% if (domains.size() == 1) { %>
+                        <% if (listDomains.size() == 1) { %>
                             <tr><td colspan="2"><input type="hidden" name="DomainId" value="0"/></td></tr>
                         <% } else { %>
-                            <tr><td><fmt:message key="lookSilverpeasV5.domain" /> : </td><td><%@ include file="../../selectDomain.jsp.inc" %></td></tr>
+                            <tr><td><fmt:message key="lookSilverpeasV5.domain" /> : </td>
+                              <td>
+<select name="DomainId" size="1">
+<% if (listDomains==null || listDomains.isEmpty()) { %>
+  <option> --- </option>
+<%  } else {
+      String dId    = null;
+      String dName  = null;
+      String selected = "";
+      for (Domain curDomain : listDomains) {
+            dId = curDomain.getId();
+            dName = curDomain.getName();
+            selected  = "";
+            
+            if (dId.equals(request.getAttribute("Silverpeas_DomainId"))) {
+              selected = "selected=\"selected\"";
+            }
+        %>
+          <option value="<%=dId%>" <%=selected%>><%=dName%></option>
+        <%  
+      }
+    }
+%>
+</select>                              
+                              </td>
+                            </tr>
                         <% } %>
                         <tr>
                             <td colspan="2" align="right"><%=button.print()%></td>
