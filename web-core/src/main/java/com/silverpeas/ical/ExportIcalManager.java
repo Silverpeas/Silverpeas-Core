@@ -343,7 +343,7 @@ public class ExportIcalManager {
           StringUtil.isDefined(schedulable.getStartHour()));
       Datable<?> eventEndDate = DateUtil.asDatable(schedulable.getEndDate(),
           StringUtil.isDefined(schedulable.getEndHour()));
-      CalendarEvent event = anEventAt(eventStartDate, eventEndDate).
+      CalendarEvent event = anEventAt((Datable)eventStartDate, eventEndDate).
           withTitle(schedulable.getName()).
           withDescription(schedulable.getDescription());
 
