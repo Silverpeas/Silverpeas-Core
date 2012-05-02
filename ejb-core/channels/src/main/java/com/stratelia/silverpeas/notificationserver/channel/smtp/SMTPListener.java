@@ -37,6 +37,8 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Map;
@@ -134,16 +136,22 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
     session.setDebug(isDebug()); // print on the console all SMTP messages.
     try {
       InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom);
+      InternetAddress[] replyToAddress = null;
       InternetAddress[] toAddress = null;
       // parsing destination address for compliance with RFC822
       try {
         toAddress = InternetAddress.parse(pTo, false);
+        if (!AdminReference.getAdminService().getAdministratorEmail().equals(pFrom) &&
+            !fromAddress.getAddress().equals(pFrom)) {
+          replyToAddress = InternetAddress.parse(pFrom, false);
+        }
       } catch (AddressException e) {
         SilverTrace.warn("smtp", "SMTPListner.sendEmail()",
             "root.MSG_GEN_PARAM_VALUE", "From = " + pFrom + ", To = " + pTo);
       }
       MimeMessage email = new MimeMessage(session);
       email.setFrom(fromAddress);
+      email.setReplyTo(replyToAddress);
       email.setRecipients(javax.mail.Message.RecipientType.TO, toAddress);
       email.setHeader("Precedence", "list");
       email.setHeader("List-ID", fromAddress.getAddress());
