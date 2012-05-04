@@ -23,11 +23,14 @@
  */
 package com.silverpeas.pdc.web;
 
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.Value;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A value of a PdC's axis.
@@ -42,9 +45,9 @@ import static com.silverpeas.util.StringUtil.*;
 public class PdcAxisValueEntity extends PdcValueEntity {
   private static final long serialVersionUID = -1689709605873362349L;
   
-  @XmlElement(required=true)
+  @XmlElement(required=true) @NotNull @Size(min=1)
   private String term;
-  @XmlElement(required=true)
+  @XmlElement(required=true) @NotNull @Min(0)
   private int level;
   @XmlElement(defaultValue="false")
   private boolean ascendant = false;
