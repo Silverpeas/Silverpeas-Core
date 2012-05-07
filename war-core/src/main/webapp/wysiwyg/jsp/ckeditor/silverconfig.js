@@ -12,14 +12,14 @@ CKEDITOR.editorConfig = function( config )
 	config.contentsCss = '/silverpeas/util/styleSheets/globalSP_SilverpeasV5.css';
 	config.filebrowserImageBrowseUrl = config.baseHref+'../jsp/uploadFile.jsp';
 	config.filebrowserFlashBrowseUrl = config.baseHref+'../jsp/uploadFile.jsp';
-	config.skin = 'office2003';
-	//config.extraPlugins = 'imgmap';
+	config.filebrowserBrowseUrl = config.baseHref+'../jsp/uploadFile.jsp';
+	//config.extraPlugins = 'jwplayer';
 	
 	config.toolbar_Default = [
 	       { name: 'document',    items : [ 'Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates' ] },
 	       { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
 	       { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ] },
-	       //{ name: 'plugins',     items : [ 'imgmap' ] },
+	       //{ name: 'plugins',     items : [ 'jwplayer' ] },
 	       //{ name: 'forms',       items : [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ] },
 	       '/',
 	       { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
