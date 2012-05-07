@@ -1190,4 +1190,47 @@
     </tag-class>
     <body-content>JSP</body-content>
   </tag>
+  <tag>
+    <description>Tag that display javascript initialization of Wysiwyg editor</description>
+    <name>wysiwyg</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.wysiwyg.WysiwygTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Id of HTML element to replace by wysiwyg editor</description>
+      <name>replace</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Width of wysiwyg editor</description>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Height of wysiwyg editor</description>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Language of wysiwyg editor UI</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Toolbar used by wysiwyg editor</description>
+      <name>toolbar</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
 </taglib>
