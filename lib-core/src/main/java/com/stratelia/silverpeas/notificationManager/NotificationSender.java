@@ -388,6 +388,7 @@ public class NotificationSender implements java.io.Serializable {
       params.iFromUserId = -1;
       params.senderName = sender;
     }
+    params.eAction = metaData.getAction();
     return params;
   }
 

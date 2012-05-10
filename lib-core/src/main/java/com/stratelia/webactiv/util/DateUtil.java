@@ -727,7 +727,29 @@ public class DateUtil {
     cal.set(Calendar.MILLISECOND,0);    
     return cal.getTime();
   }
-  
+
+  /**
+   * Return the day index of the week from a given date.
+   * This index is that of Calendar monday, tuesday, ...
+   * Use Calendar.MONDAY, Calendar.TUESDAY, ...
+   * @param curDate
+   * @return String
+   */
+  public final static int getDayNumberInWeek(Date curDate) {
+    return DateUtil.convert(curDate).get(Calendar.DAY_OF_WEEK);
+  }
+
+  /**
+   * Convert Date to Calendar
+   * @param curDate
+   * @return Calendar
+   */
+  public static Calendar convert(Date curDate) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(curDate);
+    return cal;
+  }
+
   private DateUtil() {
   }
 }

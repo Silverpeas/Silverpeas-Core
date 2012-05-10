@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+
+  <!-- Commons -->
+  <sp_notificationresource id="1" resourceId="10" resourceType="publication" resourceName="Test resource name"
+    resourceDescription="Test resource description" resourceLocation="Test > Resource > Location" resourceUrl="Test resource URL" />
+  <sp_notificationresource id="2" resourceId="10" resourceType="publication" resourceName="Test resource name"
+    resourceDescription="Test resource description" resourceLocation="Test > Resource > Location" resourceUrl="Test resource URL" />
+  <sp_notificationresource id="10" resourceId="100" resourceType="publication" resourceName="Test resource name no desc"
+    resourceLocation="Test > Resource > Location no desc" resourceUrl="Test resource URL no desc" />
+  <sp_notificationresource id="20" resourceId="200" resourceType="publication" resourceName="Test resource name no desc"
+    resourceLocation="Test > Resource > Location no desc" resourceUrl="Test resource URL no desc" />
+
+  <uniqueId maxId="50" tablename="sp_notificationresource" />
+  <uniqueId maxId="1000" tablename="sp_delayednotification" />
+  <uniqueId maxId="100" tablename="sp_delayednotificationusersetting" />
+
+  <!-- A first set of data -->
+  <sp_delayednotificationusersetting id="10" userId="1" channel="1" frequency="D" />
+  <sp_delayednotificationusersetting id="20" userId="1" channel="4" frequency="M" />
+  <sp_delayednotificationusersetting id="30" userId="10" channel="1" frequency="N" />
+  <sp_delayednotificationusersetting id="50" userId="20" channel="1" frequency="W" />
+  
+  <sp_delayednotification id="100" userId="50" fromUserId="10" channel="1" action="1"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="200" userId="50" fromUserId="10" channel="4" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="300" userId="60" fromUserId="10" channel="1" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="400" userId="60" fromUserId="10" channel="1" action="3"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="500" userId="70" fromUserId="10" channel="1" action="4"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="600" userId="70" fromUserId="10" channel="1" action="4"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="700" userId="80" fromUserId="10" channel="1" action="1"
+     notificationResourceId="10" creationDate="2012-01-01 08:10:25.023" language="fr" message="bouh" />
+  
+  <!-- A second set of data -->
+  <sp_delayednotificationusersetting id="70" userId="51" channel="1" frequency="D" />
+  <sp_delayednotificationusersetting id="-70" userId="51" channel="4" frequency="N" />
+  <sp_delayednotificationusersetting id="71" userId="53" channel="1" frequency="M" />
+  <sp_delayednotificationusersetting id="-71" userId="53" channel="4" frequency="N" />
+  <sp_delayednotificationusersetting id="72" userId="54" channel="1" frequency="W" />
+  <sp_delayednotificationusersetting id="73" userId="55" channel="1" frequency="N" />
+  <sp_delayednotificationusersetting id="74" userId="56" channel="6" frequency="D" />
+  
+  <sp_delayednotification id="800" userId="51" fromUserId="500" channel="1" action="1"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="801" userId="51" fromUserId="500" channel="4" action="1"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="802" userId="51" fromUserId="500" channel="1" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  
+  <sp_delayednotification id="810" userId="52" fromUserId="500" channel="1" action="1"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="811" userId="52" fromUserId="500" channel="4" action="1"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="812" userId="52" fromUserId="500" channel="1" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="813" userId="52" fromUserId="500" channel="1" action="4"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" message="Message U2" />
+  
+  <sp_delayednotification id="820" userId="53" fromUserId="500" channel="1" action="1"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="821" userId="53" fromUserId="500" channel="4" action="1"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="822" userId="53" fromUserId="500" channel="1" action="4"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" message="Message U3" />
+  <sp_delayednotification id="823" userId="53" fromUserId="500" channel="1" action="2"
+     notificationResourceId="100" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="824" userId="53" fromUserId="500" channel="1" action="4"
+     notificationResourceId="100" creationDate="2012-01-01 08:10:25.023" language="fr" message="Message U3 (2ème)" />
+  
+  <sp_delayednotification id="830" userId="54" fromUserId="500" channel="1" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  <sp_delayednotification id="831" userId="54" fromUserId="500" channel="4" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  
+  <sp_delayednotification id="840" userId="55" fromUserId="500" channel="1" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+  
+  <sp_delayednotification id="850" userId="56" fromUserId="500" channel="6" action="2"
+     notificationResourceId="1" creationDate="2012-01-01 08:10:25.023" language="fr" />
+</dataset>

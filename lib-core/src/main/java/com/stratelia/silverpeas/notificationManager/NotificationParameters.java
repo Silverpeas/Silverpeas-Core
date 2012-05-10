@@ -29,6 +29,8 @@ package com.stratelia.silverpeas.notificationManager;
 
 import java.util.Date;
 
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
@@ -94,6 +96,9 @@ public class NotificationParameters {
 
   public Date dDate = new Date();
   public String sLanguage = null;
+  
+  public NotifAction eAction = null;  
+  public NotificationResourceData notificationResourceData = null;
 
   public void traceObject() {
     if (SilverTrace.getTraceLevel("notificationManager", true) <= SilverTrace.TRACE_LEVEL_INFO) {

@@ -26,6 +26,16 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkPersonalization.jsp"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<c:set var="sessionController">Silverpeas_MyTests_<c:out value="${componentId}" />
+</c:set>
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="componentId" value="${browseContext[1]}" />
 
 <%
   //Retrieve parameters
@@ -153,8 +163,8 @@ function getChannels()
   out.println(frame.printBefore());
 %>
 <!-- AFFICHAGE HEADER -->
-<center>
 <form name="channelForm">
+  <p align="left"><b>Choix du canal de notification :</b></p>
   <input type="hidden" name="SelectedChannels">
 <%
 
@@ -263,9 +273,21 @@ function getChannels()
     buttonPane.addButton(validateButton);
     out.println("<br><center>"+buttonPane.print()+"</center><br>");
   }
+%>
+  <br/>
+  <p align="left"><b>Fréquence de réception des mails :</b>
+  <select style="width:150px;">
+    <option value="0" selected="selected">Aucune</option>
+    <option value="1">Journalière</option>
+    <option value="2">Hebdomadaire</option>
+    <option value="3">Mensuelle</option>
+  </select>
+  </p>
+<%
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
+
 </form>
 </body>
 </html>
