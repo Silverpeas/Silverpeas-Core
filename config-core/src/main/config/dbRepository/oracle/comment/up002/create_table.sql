@@ -1,9 +1,17 @@
 ALTER TABLE SB_Comment_Comment
-RENAME COLUMN foreignId TO resourceId
+ADD (resourceId VARCHAR2(50))
+;
+
+UPDATE SB_Comment_Comment
+SET resourceId = foreignId
 ;
 
 ALTER TABLE SB_Comment_Comment
 MODIFY (resourceId VARCHAR2(50) NOT NULL)
+;
+
+ALTER TABLE SB_Comment_Comment
+DROP COLUMN foreignId
 ;
 
 ALTER TABLE SB_Comment_Comment
