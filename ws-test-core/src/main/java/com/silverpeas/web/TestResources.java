@@ -23,14 +23,15 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.mock.AccessControllerMock;
+import com.silverpeas.web.mock.MockablePersonalizationService;
 import com.silverpeas.web.mock.OrganizationControllerMock;
 import com.silverpeas.web.mock.SessionManagerMock;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Inject;
 import static org.junit.Assert.assertNotNull;
+import org.mockito.Mock;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -72,7 +73,7 @@ public abstract class TestResources implements ApplicationContextAware {
   @Inject
   private OrganizationControllerMock organizationController;
   @Inject
-  private MockablePersonalizationService personalizationService;
+  private PersonalizationService personalizationService;
   private static ApplicationContext context;
 
   /**

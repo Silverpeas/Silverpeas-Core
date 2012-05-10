@@ -101,11 +101,17 @@ public abstract class CommentWidget extends TagSupport {
     script autoresizePlugin = new script().setType("text/javascript").
             setSrc(URLManager.getApplicationURL()
             + "/util/javaScript/jquery/autoresize.jquery.min.js");
+    script userProfilePlugin = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-profile.js");
+    script userPresentialPlugin = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/userZoom.js");
     script commentJqueryScript = new script().setType("text/javascript").
             setSrc(URLManager.getApplicationURL() + "/util/javaScript/jquery/jquery-comment.js");
 
     xhtmlcontainer.addElement(checkForm).
             addElement(autoresizePlugin).
+            addElement(userProfilePlugin).
+            addElement(userPresentialPlugin).
             addElement(commentJqueryScript).
             addElement(comments).
             addElement(initCommentPlugin);

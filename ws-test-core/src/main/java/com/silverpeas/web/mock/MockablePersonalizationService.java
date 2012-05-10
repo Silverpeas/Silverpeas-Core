@@ -21,9 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.personalization.service;
+package com.silverpeas.web.mock;
 
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.util.Default;
 import javax.inject.Named;
 
@@ -31,7 +32,7 @@ import javax.inject.Named;
  *
  * @author emmanuel.hugonnet@silverpeas.org
  */
-@Named
+@Named("personalizationService")
 @Default
 public class MockablePersonalizationService implements PersonalizationService {
 private PersonalizationService service;

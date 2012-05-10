@@ -25,7 +25,7 @@ package com.silverpeas.web;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
+import com.silverpeas.web.mock.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.web.mock.AccessControllerMock;

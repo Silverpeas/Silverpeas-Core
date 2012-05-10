@@ -25,6 +25,8 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialNetwork.status.StatusService;
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -450,6 +452,16 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public final UserPreferences getUserPreferences() {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getId());
+  }
+  
+  /**
+   * Is this user connected to Silverpeas?
+   * @return true if the user is currently connected to Silverpeas, false otherwise.
+   */
+  public boolean isConnected() {
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    return sessionManagement.isUserConnected(this);
   }
 
   /**

@@ -241,7 +241,7 @@
       commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").appendTo($("#list-box")));
     }
     var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
-    $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
+    $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox).userZoom(comment.author));
     $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
     $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
 

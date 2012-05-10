@@ -69,4 +69,14 @@ public class SessionManagerMock implements SessionManagement {
     sessions.remove(sessionKey);
   }
 
+  @Override
+  public boolean isUserConnected(UserDetail user) {
+    for (SessionInfo session : sessions.values()) {
+      if (user.getId().equals(session.getUserDetail().getId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }

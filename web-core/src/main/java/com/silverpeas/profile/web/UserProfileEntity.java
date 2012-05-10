@@ -25,9 +25,9 @@ package com.silverpeas.profile.web;
 
 import com.silverpeas.personalization.UserPreferences;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-import com.silverpeas.web.Exposable;
 import com.silverpeas.ui.DisplayI18NHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
@@ -87,6 +87,8 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private String fullName = "";
   @XmlElement(defaultValue="")
   private String language = "";
+  @XmlElement(defaultValue="false")
+  private boolean connected = false;
 
   private UserProfileEntity(UserDetail user) {
     this.user = user;
@@ -100,6 +102,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
             getName();
     this.fullName = user.getDisplayedName();
     this.avatar = getAvatarURI();
+    this.connected = this.user.isConnected();
   }
 
   @Override
@@ -189,6 +192,15 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   public String getFullName() {
     return fullName;
   }
+  
+  /**
+   * Is this user connected to Silverpeas?
+   * @return true if the user is connected, false otherwise.
+   */
+  @Override
+  public boolean isConnected() {
+    return this.connected;
+  }
 
   @Override
   @XmlElement
@@ -210,6 +222,16 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   @Override
   public void setLogin(String sLogin) {
     this.user.setLogin(sLogin);
+  }
+
+  @Override
+  @XmlElement(defaultValue="")
+  public String getStatus() {
+    return user.getStatus();
+  }
+  
+  public void setStatus(String newStatus) {
+    
   }
 
   public String getDomainName() {

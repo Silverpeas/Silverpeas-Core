@@ -605,4 +605,14 @@ public class SessionManager
   public String openSession(com.silverpeas.session.SessionInfo sessionInfo) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public synchronized boolean isUserConnected(UserDetail user) {
+    for (SessionInfo session : userDataSessions.values()) {
+      if (user.getId().equals(session.getUserDetail().getId())) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
