@@ -55,6 +55,9 @@
 		<field name="isHidden" type="boolean" get-method="isHidden" set-method="setHidden">
 			<bind-xml name="isHidden" node="element"/>
 		</field>
+		<field name="usedAsFacet" type="boolean" get-method="isUsedAsFacet" set-method="setUsedAsFacet">
+			<bind-xml name="isFacet" node="element"/>
+		</field>
 		<field name="labelsObj" type="com.silverpeas.form.record.Label" collection="arraylist">
 			<bind-xml name="label" node="element"/>
 		</field>

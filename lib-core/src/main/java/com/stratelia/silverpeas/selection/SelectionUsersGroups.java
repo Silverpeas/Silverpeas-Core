@@ -52,6 +52,18 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     }
     return null;
   }
+  
+  public String getJoinedProfileNames() {
+    if (profileNames != null && !profileNames.isEmpty()) {
+      StringBuilder names = new StringBuilder();
+      for(int i = 0; i < profileNames.size() - 1; i++) {
+        names.append(profileNames.get(i)).append(",");
+      }
+      names.append(profileNames.get(profileNames.size() - 1));
+      return names.toString();
+    }
+    return null;
+  }
 
   public List<String> getProfileNames() {
     return profileNames;

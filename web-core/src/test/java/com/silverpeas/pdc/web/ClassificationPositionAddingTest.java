@@ -26,7 +26,7 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
-import com.silverpeas.rest.ResourceCreationTest;
+import com.silverpeas.web.ResourceCreationTest;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.ClientResponse;

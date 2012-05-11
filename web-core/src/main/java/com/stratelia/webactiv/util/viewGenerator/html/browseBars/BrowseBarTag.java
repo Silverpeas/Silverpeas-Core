@@ -24,11 +24,12 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
-import javax.servlet.jsp.JspException;
-
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
+
+import javax.servlet.jsp.JspException;
 
 public class BrowseBarTag extends NeedWindowTag {
 
@@ -73,6 +74,7 @@ public class BrowseBarTag extends NeedWindowTag {
   public int doStartTag() throws JspException {
     Window window = getWindow();
     browseBar = window.getBrowseBar();
+    browseBar.setLook((LookHelper) pageContext.getSession().getAttribute(LookHelper.SESSION_ATT));
     if (extraInformations != null) {
       browseBar.setExtraInformation(extraInformations);
     }

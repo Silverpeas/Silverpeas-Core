@@ -35,7 +35,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
+import javax.inject.Named;
 
+@Named
 public class RelationShipService {
 
   private final RelationShipDao relationShipDao;

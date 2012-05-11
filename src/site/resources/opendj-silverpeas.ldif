@@ -1,0 +1,333 @@
+dn: dc=example,dc=com
+objectClass: domain
+objectClass: top
+dc: example
+entryUUID: 54c89c45-327b-3d38-8a2e-b7814de651a4
+
+dn: ou=silverpeas,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: silverpeas
+entryUUID: 3fcf6320-78ff-4541-bee4-24762c62a106
+createTimestamp: 20120406154754Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Warty,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Warty
+uid: 4.10
+cn: Warty
+sn: Warthog
+userPassword: {SSHA}V88bL+YHPA2ek9mjz+6Tas6KLve25nTCbtso7Q==
+l: Grenoble
+mail: warty.wartog@silverpeas.org
+entryUUID: 01e80c15-64b0-453c-af4a-4e253d01365e
+createTimestamp: 20120319123947Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+pwdChangedTime: 20120319123947.230Z
+modifyTimestamp: 20120406155506Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Hoary,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Hoary
+uid: 5.04
+cn: Hoary
+sn: Hedgehog
+userPassword: {SSHA}mMW3n1aJvEKL11XgcMYnFM4lHHP+5+BNt03/Cw==
+mail: hoary.hedgehog@silverpeas.org
+l: Grenoble
+entryUUID: a013ce54-f9f4-487b-b439-8c1c932f3b33
+pwdChangedTime: 20120319124023.667Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124023Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Badger,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Breezy
+uid: 5.10
+cn: Badger
+sn: Badger
+userPassword: {SSHA}xm4thmoX+kk8ERJQZuVs4bdZszcBzRWNCJuNog==
+mail: breezy.badger@silverpeas.org
+l: Grenoble
+entryUUID: be8dee4e-8240-4dd0-95d4-f0766349722d
+pwdChangedTime: 20120319124130.730Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124130Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Dapper,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Dapper
+uid: 6.06
+cn: Dapper
+sn: Drake
+userPassword: {SSHA}Joh/6uoTWgQfK5xCHpy4GZBFX41uPTGvLZbk0Q==
+mail: dapper.drake@silverpeas.org
+l: Grenoble
+entryUUID: 1274be69-7d9e-42b5-a6bc-4a5a15964f72
+pwdChangedTime: 20120319124213.176Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124213Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Feisty,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Feisty
+uid: 7.04
+cn: Feisty
+sn: Fawn
+userPassword: {SSHA}EG2xHS08neMS4UGICHVVJKWVBfZiFOilvR2Brg==
+mail: feysty.fawn@silverpeas.org
+l: Grenoble
+entryUUID: 2b44fd9a-550e-417c-bdcc-bf8de0c3b38c
+pwdChangedTime: 20120319124256.221Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124256Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Edgy,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Edgy
+uid: 6.10
+cn: Edgy
+sn: Eft
+userPassword: {SSHA}FyWi+4oTFFjxeqGcpbSWHOHsduhj/hj4nkvEaQ==
+mail: edgy.edgy@silverpeas.org
+l: Grenoble
+entryUUID: edd63f07-bcd1-4cda-a299-cde14d56a9e1
+pwdChangedTime: 20120319124339.264Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124339Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Gutsy,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Gutsy
+uid: 7.10
+cn: Gutsy
+sn: Gibbon
+userPassword: {SSHA}vngGGmTRJvMzggnQpIyaVkommAlzKYcTgDUWgQ==
+mail: gutsy.gibbon@silverpeas.org
+l: Grenoble
+entryUUID: 664cc74a-b906-4bf7-b38b-4b294b81ff27
+pwdChangedTime: 20120319124407.695Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124407Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Hardy,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Hardy
+uid: 8.04
+cn: Hardy
+sn: Heron
+userPassword: {SSHA}DCpB5Wdckj9cxllMZ51FhyVMbkC9MZniLIoHuA==
+mail: hardy.heron@silverpeas.org
+l: Grenoble
+entryUUID: ef79dddc-95f9-4f9f-a9a0-86c96490525a
+pwdChangedTime: 20120319124441.928Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124441Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Intrepid,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Intrepid
+uid: 8.10
+cn: Intrepid
+sn: Ibex
+userPassword: {SSHA}rjpEJBuZcFAfEoZNoO0taVbPxjCtDBOR0z38rg==
+mail: intrepid.ibex@silverpeas.org
+l: Grenoble
+entryUUID: d842bbba-7ab8-4b02-9eeb-39d9e11ea369
+pwdChangedTime: 20120319124509.755Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124509Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Jaunty,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Jaunty
+uid: 9.04
+cn: Jaunty
+sn: Jackalope
+userPassword: {SSHA}eL16aTAID3uhAWYKqI5CAEIQ08lrPZLN0GcDXQ==
+mail: jaunty.jackalope@silverpeas.org
+l: Grenoble
+entryUUID: 5189be11-13e6-4fc7-af13-32e59c906ad7
+pwdChangedTime: 20120319124545.590Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124545Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Karmic,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Karmic
+uid: 9.10
+cn: Karmic
+sn: Koala
+userPassword: {SSHA}4H1S9H5neP5+gSFenW2Ye9T0HkgaaXj6an6G1g==
+mail: karmic.koala@silverpeas.org
+l: Grenoble
+entryUUID: 4ba30493-62c9-4264-9c6e-2f5653edbc6f
+pwdChangedTime: 20120319124611.815Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124611Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Lucid,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Lucid
+uid: 10.04
+cn: Lucid
+sn: Lynx
+userPassword: {SSHA}sBhFnFC0J0brO7bJkQ0pzs6EY15CPrgKoNFaPA==
+mail: lucid.lynx@silverpeas.org
+l: Grenoble
+entryUUID: 642d3505-aebb-48de-9a67-f554b70c52d6
+pwdChangedTime: 20120319124642.444Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124642Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Maverick,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Maverick
+uid: 10.10
+cn: Maverick
+sn: Meerkat
+userPassword: {SSHA}FLVU5UmwJsqci9z87PE+FLZHb5pO4pbQDZT0wg==
+mail: maverick.meerkat@silverpeas.org
+l: Grenoble
+entryUUID: a81e162d-d73b-4c1c-b244-21e4b444a901
+pwdChangedTime: 20120319124711.073Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124711Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Natty,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Natty
+uid: 11.04
+cn: Natty
+sn: Narwhal
+userPassword: {SSHA}xJOrqU/bvTBxc/6wpjzuAjvTB1QPidRcVHlKbw==
+mail: natty.narwhal@silverpeas.org
+l: Grenoble
+entryUUID: e4573074-313f-44c5-8784-8cec57c6d20d
+pwdChangedTime: 20120319124746.708Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124746Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Precise,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+givenName: Precise
+uid: 12.04
+cn: Precise
+sn: Pangolin
+userPassword: {SSHA}IwXSqn9/YwQrtMuJMXXvDOz+50vvqHUkBpeHtw==
+mail: precise.pangolin@silverpeas.org
+l: Grenoble
+entryUUID: 61a995e4-567f-416e-897b-961822d88c80
+pwdChangedTime: 20120319124845.773Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124845Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+
+dn: cn=Oneiric,ou=silverpeas,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+postalCode: 38000
+givenName: Oneiric
+uid: 11.10
+cn: Oneiric
+sn: Ocelot
+userPassword: {SSHA}zEZfxW1Xy77UXNhiqiGnE+sF3NBzyuavKlwhZA==
+mail: oneiric.ocelot@silverpeas.org
+l: Grenoble
+entryUUID: fd74a08b-5457-4c62-8c19-13ccc6953fef
+pwdChangedTime: 20120319124932.617Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+createTimestamp: 20120319124932Z
+modifyTimestamp: 20120406122142Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+

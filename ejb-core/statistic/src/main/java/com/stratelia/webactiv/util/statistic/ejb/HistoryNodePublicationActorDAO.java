@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,11 +58,10 @@ public class HistoryNodePublicationActorDAO {
    * @see
    */
   public static Collection<HistoryNodePublicationActorDetail> getHistoryDetails(ResultSet rs,
-      String space,
-      String componentName) throws SQLException {
+      String space, String componentName) throws SQLException {
     List<HistoryNodePublicationActorDetail> list =
         new ArrayList<HistoryNodePublicationActorDetail>();
-    java.util.Date date;
+    Date date;
     String actorId = "";
     String nodeId = "";
     String pubId = "";
@@ -118,7 +118,7 @@ public class HistoryNodePublicationActorDAO {
 
     try {
       prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setInt(1, new Integer(nodePK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(nodePK.getId()));
       prepStmt.setString(2, nodePK.getComponentName());
       rs = prepStmt.executeQuery();
       if (rs.next()) {
@@ -142,7 +142,7 @@ public class HistoryNodePublicationActorDAO {
         String nodeId = "";
 
         while (rs.next()) {
-          nodeId = new Integer(rs.getInt(1)).toString();
+          nodeId = Integer.toString(rs.getInt(1));
           NodePK n = new NodePK(nodeId, nodePK);
 
           a.add(n); /* Stockage du sous thème */
@@ -191,7 +191,7 @@ public class HistoryNodePublicationActorDAO {
         // SB_Publication_Histaory table
         for (; iterator.hasNext();) {
           nodeId = (iterator.next()).getId();
-          prepStmt.setInt(1, (new Integer(nodeId)).intValue());
+          prepStmt.setInt(1, Integer.parseInt(nodeId));
           rs = prepStmt.executeQuery();
           // get the result
           if (rs.next()) {
@@ -230,10 +230,10 @@ public class HistoryNodePublicationActorDAO {
 
     try {
       prepStmt = con.prepareStatement(insertStatement);
-      prepStmt.setString(1, formater.format(new java.util.Date()));
+      prepStmt.setString(1, formater.format(new Date()));
       prepStmt.setString(2, userId);
-      prepStmt.setInt(3, new Integer(nodePK.getId()).intValue());
-      prepStmt.setInt(4, new Integer(pubPK.getId()).intValue());
+      prepStmt.setInt(3, Integer.parseInt(nodePK.getId()));
+      prepStmt.setInt(4, Integer.parseInt(pubPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);

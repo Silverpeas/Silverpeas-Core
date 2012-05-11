@@ -92,11 +92,13 @@
      * If there is a component descriptor, confirm that you really want to overwrite it.
      */
     function editComponentDescription() {
-      if (<%=Boolean.toString( strComponentDescriptor != null )%>
-          &&
-      confirm('<%=resource.getString("workflowDesigner.confirmProcessReferencedJS")%>')
-    )
-      location.href = "EditComponentDescription";
+      if (<%=Boolean.toString(strComponentDescriptor != null)%>) {
+      	if (confirm('<%=resource.getString("workflowDesigner.confirmProcessReferencedJS")%>')) {
+      		location.href = "GenerateComponentDescription";
+      	}
+      } else {
+    	  location.href = "GenerateComponentDescription";  
+      }
     }
   </script>
 

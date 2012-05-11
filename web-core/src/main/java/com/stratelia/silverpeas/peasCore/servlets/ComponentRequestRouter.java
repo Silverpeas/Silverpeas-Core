@@ -26,35 +26,28 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
+import java.util.Date;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
     HttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
   private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
+  private UserAndGroupSelectionProcessor selectionProcessor = new UserAndGroupSelectionProcessor();
 
   /**
    * This method has to be implemented in the component request Router class. returns the session
@@ -99,7 +92,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   }
 
   private String computeDestination(HttpServletRequest request, HttpServletResponse response) {
-    String destination = null;
+    String destination;
     // get the main session controller
     HttpSession session = request.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
@@ -189,9 +182,22 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
             component.getSpaceId(), component.getComponentId());
       }
     }
+    
+    if (selectionProcessor.isSelectionDone(request)) {
+      destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
+      if (StringUtil.isDefined(destination)) {
+        return destination;
+      }
+    }
+    
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
     destination = getDestination(function, component, request);
+    
+    if (selectionProcessor.isSelectionAsked(destination)) {
+      selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
+    }
+    
     SilverTrace.info("couverture",
         "ComponentRequestRouter.computeDestination()", "couverture.MSG_RR_JSP",
         "destination = '" + destination + "'");
@@ -220,7 +226,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   // check if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
-    boolean isAllowed = false;
+    boolean isAllowed;
 
     if (componentId == null) { // Personal space
       isAllowed = true;

@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.pdcPeas.model;
 
 import java.io.File;
+import java.util.Hashtable;
 import java.util.List;
 
 import com.silverpeas.util.ImageUtil;
@@ -56,6 +57,8 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
    * List of all linked attachment in wysiwyg content
    */
   private List<String> embeddedFileIds;
+  
+  private Hashtable<String, String> formFieldsForFacets;
 
   public GlobalSilverResult(GlobalSilverContent gsc) {
     super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
@@ -76,6 +79,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setType(mie.getObjectType());
     super.setScore(mie.getScore());
     this.embeddedFileIds = mie.getEmbeddedFileIds();
+    this.setFormFieldsForFacets(mie.getXMLFormFieldsForFacets());
 
     if (mie.getThumbnail() != null) {
       String[] dimensions = null;
@@ -213,6 +217,14 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
    */
   public void setExternalUrl(String externalUrl) {
     this.externalUrl = externalUrl;
+  }
+
+  public void setFormFieldsForFacets(Hashtable<String, String> formFieldsForFacets) {
+    this.formFieldsForFacets = formFieldsForFacets;
+  }
+
+  public Hashtable<String, String> getFormFieldsForFacets() {
+    return formFieldsForFacets;
   }
 
   @Override

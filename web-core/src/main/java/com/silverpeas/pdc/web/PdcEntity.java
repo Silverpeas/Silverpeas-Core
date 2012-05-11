@@ -24,7 +24,7 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.rest.Exposable;
+import com.silverpeas.web.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import edu.emory.mathcs.backport.java.util.Collections;

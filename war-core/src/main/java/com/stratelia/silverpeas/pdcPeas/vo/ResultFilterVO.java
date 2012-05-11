@@ -24,10 +24,16 @@
 
 package com.stratelia.silverpeas.pdcPeas.vo;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.silverpeas.util.StringUtil;
+
 public class ResultFilterVO {
   private String authorId = null;
   private String componentId = null;
   private String year = null;
+  private Map<String, String> formFieldFacets;
 
   /**
    * Default constructor
@@ -58,5 +64,53 @@ public class ResultFilterVO {
 
   public void setYear(String year) {
     this.year = year;
+  }
+  
+  public void addFormFieldSelectedFacetEntry(String facetId, String value) {
+    if (formFieldFacets == null) {
+      formFieldFacets = new HashMap<String, String>();
+    }
+    formFieldFacets.put(facetId, value);
+  }
+  
+  public String getFormFieldSelectedFacetEntry(String facetId) {
+    if (formFieldFacets == null) {
+      return null;
+    }
+    return formFieldFacets.get(facetId);
+  }
+  
+  public boolean isSelectedFormFieldFacetsEmpty() {
+    if (formFieldFacets == null) {
+      return true;
+    }
+    return formFieldFacets.isEmpty();
+  }
+  
+  public boolean isEmpty() {
+    return !StringUtil.isDefined(authorId) && !StringUtil.isDefined(componentId) && isSelectedFormFieldFacetsEmpty();
+  }
+  
+  public Map<String, String> getFormFieldSelectedFacetEntries() {
+    return formFieldFacets;
+  }
+  
+  public String toString() {
+    StringBuilder str = new StringBuilder();
+    if (StringUtil.isDefined(authorId)) {
+      str.append("AuthorId=").append(authorId);
+    }
+    if (StringUtil.isDefined(componentId)) {
+      str.append(" ComponentId=").append(componentId);
+    }
+    if (!isSelectedFormFieldFacetsEmpty()) {
+      for (String facetId : formFieldFacets.keySet()) {
+        str.append(" ").append(facetId).append("=").append(formFieldFacets.get(facetId));
+      }
+    }
+    if (str.length() == 0) {
+      return "Facets filter is empty";
+    }
+    return str.toString();
   }
 }

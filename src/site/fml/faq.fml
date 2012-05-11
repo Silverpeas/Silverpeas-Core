@@ -180,7 +180,7 @@ For example to limit the size of an uploaded file to 15 Mo, the value should be 
         </p>
       </answer>
     </faq>
-    <faq id="files-workflow">
+    <faq id="silverpeas-log">
       <question>
         How to configure Silverpeas to use rolling log files?
       </question>
@@ -205,6 +205,49 @@ appender0.rollingMode=ROLLING_MODE_WEEK
         </p>
         <p> Thus the file 
           <i>traces.txt</i> will be renammed each week. 
+        </p>
+      </answer>
+    </faq>
+    <faq id="config-persistence">
+      <question>
+        How do I keep my specific properties configuration ?
+      </question>
+      <answer>
+        <p>
+You must pay attention not to manually change properties because you will lose them when you will upgrade Silverpeas.<br/>
+Silverpeas provides an XML file called "CustomerSettings.xml" which is dedicated to that.<br/>
+this file located in $SILVERPEAS_HOME/setup/settings contains all the specific settings.<br/>
+In the extract of this file below you will see how to change a simple properties file such as an XML configuration file.
+<br/>
+<source><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<silverpeas-settings product="Custom">
+  <!-- simple properties file -->
+  <!-- Change the property userSessionTimeout inside ${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/peasCore/SessionManager.properties file -->
+	<fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/peasCore/">
+    <!-- Path of the properties file is 
+		<configfile name="SessionManager.properties">
+			<!-- Change the session timeout in minute -->
+			<parameter key="adminSessionTimeout">360</parameter>
+			<parameter key="userSessionTimeout">180</parameter>
+		</configfile>
+  </fileset>
+  <!-- XML properties file -->
+  <!-- Change the XPath attribute "value" inside ${SILVERPEAS_DATA_HOME}/workflowRepository/myWorkflow.xml file -->
+  <fileset root="${SILVERPEAS_DATA_HOME}/workflowRepository/">
+    <xmlfile name="myWorkflow.xml">
+      <parameter key="/processModel/actions/action[@name='Archiver']/consequences/consequence/triggers/trigger/param[@name='targetComponentId']" mode="update">
+        <value location="@value">kmeliaXXX</value>
+      </parameter>
+    </xmlfile>
+  </fileset>
+  <!-- Copy file from ${SILVERPEAS_HOME}/path/to/source.txt to ${SILVERPEAS_DATA_HOME}/path/to/target.txt -->
+  <fileset root="${SILVERPEAS_HOME}/path/to/">
+    <copyfile name="source.txt">${SILVERPEAS_DATA_HOME}/path/to/target.txt</copyfile>
+  </fileset>  
+</silverpeas-settings>
+]]>
+</source>
+Be careful that all the paths are case sensitive (XPath and file Path).<br/>
         </p>
       </answer>
     </faq>

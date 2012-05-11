@@ -24,27 +24,27 @@
 
 package com.stratelia.silverpeas.peasCore;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpSession;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-public class SessionInfo extends com.silverpeas.session.SessionInfo {
-  private static final long millisPerHour = (long) 60 * (long) 60 * (long) 1000;
-  private static final long millisPerMinute = (long) 60 * (long) 1000;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
-  private HttpSession m_Session = null;
-  private String m_IP = null;
-  private long m_DateIsAlive = 0;
+public class SessionInfo extends com.silverpeas.session.SessionInfo {
+  private static final long millisPerHour = 60L * 60L * 1000L;
+  private static final long millisPerMinute = 60000L;
+
+  private HttpSession httpSession = null;
+  private String userIPAdress = null;
+  private long lastAliveDate = 0L;
 
   /**
    * Updates the isalive status of the session.
    */
   protected void updateIsAlive() {
-    m_DateIsAlive = System.currentTimeMillis();
+    lastAliveDate = System.currentTimeMillis();
   }
 
   /**
@@ -52,7 +52,7 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    * @return the isalive date
    */
   public long getIsAliveDate() {
-    return m_DateIsAlive;
+    return lastAliveDate;
   }
 
   /**
@@ -60,7 +60,7 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    * @return the session client host address IP.
    */
   public String getUserHostIP() {
-    return m_IP;
+    return userIPAdress;
   }
 
   /**
@@ -71,59 +71,53 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    */
   public SessionInfo(HttpSession session, String IP, UserDetail ud) {
     super(session.getId(), ud);
-    m_Session = session;
-    m_IP = IP;
-    m_DateIsAlive = System.currentTimeMillis();
+    httpSession = session;
+    userIPAdress = IP;
+    lastAliveDate = System.currentTimeMillis();
   }
 
   @SuppressWarnings("unchecked")
   public void cleanSession() {
-    if (m_Session != null) {
+    if (httpSession != null) {
       try {
-        Enumeration<String> spSessionAttNames = m_Session.getAttributeNames();
-        ArrayList<String> spNames = new ArrayList<String>();
-
+        Enumeration<String> spSessionAttNames = httpSession.getAttributeNames();
+        List<String> spNames = new ArrayList<String>();
         while (spSessionAttNames.hasMoreElements()) {
           String spName = spSessionAttNames.nextElement();
-          if ((spName != null)
-              && ((spName.startsWith("Silverpeas_")) || (spName.startsWith("WYSIWYG_")))) {
+          if ((spName != null) && ((spName.startsWith("Silverpeas_")) || (spName.startsWith("WYSIWYG_")))) {
             spNames.add(spName);
           }
         }
         for (String spName : spNames) {
           try {
-            Object element = m_Session.getAttribute(spName);
-            SilverTrace.debug("peasCore", "SessionInfo.cleanSession()",
-                "Remove=" + spName);
+            Object element = httpSession.getAttribute(spName);
+            SilverTrace.debug("peasCore", "SessionInfo.cleanSession()", "Remove=" + spName);
             if (element instanceof AbstractComponentSessionController) {
-              AbstractComponentSessionController controller =
-                  (AbstractComponentSessionController) element;
+              AbstractComponentSessionController controller = (AbstractComponentSessionController) element;
               controller.close();
-              SilverTrace.debug("peasCore", "SessionManager.cleanSession()",
-                  controller.getClass().getName());
+              SilverTrace.debug("peasCore", "SessionManager.cleanSession()", controller.getClass().getName());
             } else if (element instanceof MainSessionController) {
               MainSessionController controller = (MainSessionController) element;
               controller.close();
               SilverTrace.debug("peasCore", "SessionManager.cleanSession()",
                   "MainSessionController");
             }
-            m_Session.removeAttribute(spName);
+            httpSession.removeAttribute(spName);
           } catch (Exception ex) {
             SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
-                "root.MSG_GEN_PARAM_VALUE", "ERROR for parameter : " + spName,
-                ex);
+                "root.MSG_GEN_PARAM_VALUE", "ERROR for parameter : " + spName, ex);
           }
         }
-        m_Session.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-        m_Session.removeAttribute("SessionGraphicElementFactory");
-        m_Session.removeAttribute("spaceModel"); // For Portlets
-        m_Session.removeAttribute("quizzUnderConstruction"); // For Quizz
-        m_Session.removeAttribute("questionsVector"); // For Quizz
-        m_Session.removeAttribute("currentQuizzId"); // For Quizz
-        m_Session.removeAttribute("questionsResponses"); // For Quizz
-        m_Session.removeAttribute("currentParticipationId"); // For Quizz
+        httpSession.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        httpSession.removeAttribute("SessionGraphicElementFactory");
+        httpSession.removeAttribute("spaceModel"); // For Portlets
+        httpSession.removeAttribute("quizzUnderConstruction"); // For Quizz
+        httpSession.removeAttribute("questionsVector"); // For Quizz
+        httpSession.removeAttribute("currentQuizzId"); // For Quizz
+        httpSession.removeAttribute("questionsResponses"); // For Quizz
+        httpSession.removeAttribute("currentParticipationId"); // For Quizz
 
-        m_Session.removeAttribute("DomainsBarUtil");
+        httpSession.removeAttribute("DomainsBarUtil");
       } catch (Exception e) {
         SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
             "root.MSG_GEN_PARAM_VALUE", "ERROR !!!", e);
@@ -132,10 +126,10 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
   }
 
   public void terminateSession() {
-    if (m_Session != null) {
+    if (httpSession != null) {
       try {
-        m_Session.invalidate();
-        m_Session = null;
+        httpSession.invalidate();
+        httpSession = null;
       } catch (Exception e) {
         SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
             "root.MSG_GEN_PARAM_VALUE", "ERROR !!!", e);
@@ -151,7 +145,6 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    * Transform the milliseconds duration in hours, minutes and seconds.
    * @param duration in milliseconds
    * @return "xxHyymnzzs" where xx=hours, yy=minutes, zz=seconds
-   * @see getConnectedUsersList
    */
   public String formatDuration(long duration) {
     long hourDuration = duration / millisPerHour;
@@ -180,6 +173,6 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    * @return the backed HTTP session.
    */
   public HttpSession getHttpSession() {
-    return this.m_Session;
+    return this.httpSession;
   }
 }

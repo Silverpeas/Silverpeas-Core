@@ -24,9 +24,10 @@
 
 package com.silverpeas.workflow.engine.instance;
 
-import com.silverpeas.workflow.api.*;
-import com.silverpeas.workflow.api.user.*;
-import com.silverpeas.workflow.engine.*;
+import com.silverpeas.workflow.api.WorkflowException;
+import com.silverpeas.workflow.api.user.User;
+import com.silverpeas.workflow.engine.AbstractReferrableObject;
+import com.silverpeas.workflow.engine.WorkflowHub;
 
 /**
  * @table SB_Workflow_InterestedUser

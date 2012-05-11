@@ -33,6 +33,9 @@
 	response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 	response.setStatus( HttpServletResponse.SC_CREATED );
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
@@ -96,12 +99,17 @@ if (m_MainSessionCtrl == null) {
 		frameBottomParams += "&amp;Login=1";
 	}
 
-	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
-	{
+	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()) 
+    && ! "/admin/jsp/MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame())) {
 		session.setAttribute("RedirectToSpaceId", spaceIdFromRedirect);
+    String topLocation = gef.getLookFrame();
+    if(!topLocation.startsWith("/")) {
+      topLocation = "/admin/jsp/" + topLocation;
+    }
 		%>
+    <c:set var="topLocation"><%=topLocation%></c:set>
 			<script type="text/javascript">
-				top.location="<%=helper.getMainFrame()%>";
+				top.location="<c:url value="${topLocation}" />";
 			</script>
 		<%
 	}

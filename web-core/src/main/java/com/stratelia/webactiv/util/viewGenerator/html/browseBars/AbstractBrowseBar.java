@@ -30,15 +30,16 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The default implementation of ArrayPane interface
@@ -67,6 +68,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private String componentJavascriptCallback = null;
   private boolean clickable = true;
   private boolean ignoreComponentLink = true;
+  protected LookHelper look = null;
 
   /**
    * Constructor declaration
@@ -346,4 +348,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return ignoreComponentLink;
   }
 
+  public void setLook(LookHelper look) {
+    this.look = look;
+  }
 }

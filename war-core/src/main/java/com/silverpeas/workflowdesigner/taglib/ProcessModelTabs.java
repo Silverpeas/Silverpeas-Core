@@ -37,6 +37,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
  * Class implementing the tag &lt;processModelTabs&gt; from workflowEditor.tld
  */
 public class ProcessModelTabs extends TagSupport {
+
+  private static final long serialVersionUID = 5607804796452218902L;
   private String strCurrentTab;
 
   /**

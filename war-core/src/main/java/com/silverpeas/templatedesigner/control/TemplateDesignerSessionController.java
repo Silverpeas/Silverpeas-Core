@@ -25,7 +25,6 @@
 package com.silverpeas.templatedesigner.control;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,6 +36,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.templatedesigner.model.TemplateDesignerException;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -70,9 +70,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   public List<String> getLanguages() {
     if (languages == null) {
-      languages = new ArrayList<String>();
-      languages.add("fr");
-      languages.add("en");
+      languages = DisplayI18NHelper.getLanguages();
     }
     return languages;
   }
@@ -325,11 +323,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       getRecordTemplate(SCOPE_UPDATE).getFieldList().addAll(fields);
 
-      Iterator<FieldTemplate> it = fields.iterator();
-      FieldTemplate field = null;
-      while (it.hasNext()) {
-        field = it.next();
-
+      for (FieldTemplate field : fields) {
         // process search.xml
         if (field.isSearchable()) {
           getRecordTemplate(SCOPE_SEARCH).getFieldList().add(field);

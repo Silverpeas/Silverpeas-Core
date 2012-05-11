@@ -153,4 +153,8 @@ public class DummyFieldTemplate implements FieldTemplate {
   public String getTemplateName() {
     return "dummy";
   }
+  
+  public boolean isUsedAsFacet() {
+    return false;
+  }
 }

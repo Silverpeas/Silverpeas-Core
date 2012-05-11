@@ -55,13 +55,12 @@ public class TestVersioningDAO extends AbstractJndiCase {
 
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
-    baseTest = new SilverpeasJndiCase(
-        "com/stratelia/silverpeas/versioning/test-versioning-dataset.xml",
+    baseTest = new SilverpeasJndiCase("com/stratelia/silverpeas/versioning/test-versioning-dataset.xml",
         "create-database.ddl");
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
-    executeDDL(databaseConnection, baseTest.getDdlFile());
-    baseTest.getDatabaseTester().closeConnection(databaseConnection);
+    //executeDDL(databaseConnection, baseTest.getDdlFile());
+    databaseConnection.close();
   }
 
   @Before
@@ -97,7 +96,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
     assertEquals(new ForeignPK("4", INSTANCE_ID), doc.getForeignKey());
     assertEquals(0, doc.getTypeWorkList());
     assertEquals(0, doc.getCurrentWorkListOrder());
-    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
+    dataSetConnection.close();
   }
 
   @Test
@@ -118,7 +117,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
     assertEquals(0, doc.getTypeWorkList());
     assertEquals(0, doc.getCurrentWorkListOrder());
     assertEquals(INSTANCE_ID, doc.getInstanceId());
-    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
+    dataSetConnection.close();
   }
 
   @Test
@@ -176,8 +175,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
     assertThat("Result shoud contain the document 1", docs, hasItem(doc1));
     assertThat("Result shoud contain the document 2", docs, hasItem(doc2));
     assertThat("Result shoud contain the document 3", docs, hasItem(doc3));
-    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
-
+    dataSetConnection.close();
   }
 
   @Test
@@ -221,6 +219,6 @@ public class TestVersioningDAO extends AbstractJndiCase {
     Document result = VersioningDAO.getDocument(con, pk);
 
     assertEquals(doc, result);
-    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
+    dataSetConnection.close();
   }
 }

@@ -37,6 +37,15 @@ public class UserFull extends UserDetail {
   protected String m_password = "";
   protected boolean m_isPasswordValid = false;
   protected boolean m_isPasswordAvailable = false;
+  
+  /**
+   * Gets the full profile of the user with the specified identifier.
+   * @param userId the unique identifier of the user in Silverpeas.
+   * @return the full profile of the user.
+   */
+  public static UserFull getById(String userId) {
+    return getOrganizationController().getUserFull(userId);
+  }
 
   /** Creates new UserFull */
   public UserFull() {
@@ -233,9 +242,9 @@ public class UserFull extends UserDetail {
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 53 * hash + (this.m_hInfos != null ? this.m_hInfos.hashCode() : 0);
-    hash = 53 * super.hashCode();
+    //int hash = 3;
+    //hash = 53 * hash + (this.m_hInfos != null ? this.m_hInfos.hashCode() : 0);
+    int hash = 53 * super.hashCode();
     return hash;
   }
 

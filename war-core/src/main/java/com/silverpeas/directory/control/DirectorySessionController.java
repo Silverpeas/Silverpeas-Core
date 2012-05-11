@@ -1,27 +1,26 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.directory.control;
 
 import java.sql.SQLException;
@@ -37,7 +36,7 @@ import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.directory.model.UserFragmentVO;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -60,17 +59,17 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.search.SearchEngineFactory;
 
 /**
- * @author Nabil Bensalem
- */
+* @author Nabil Bensalem
+*/
 public class DirectorySessionController extends AbstractComponentSessionController {
 
   private List<UserDetail> lastAlllistUsersCalled;
@@ -79,8 +78,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String currentView = "tous";
   public static final int DIRECTORY_DEFAULT = 0; // all users
   public static final int DIRECTORY_MINE = 1; // contacts of online user
-  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another
-  // user
+  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
   public static final int DIRECTORY_OTHER = 3; // contact of another user
   public static final int DIRECTORY_GROUP = 4; // all users of group
   public static final int DIRECTORY_DOMAIN = 5; // all users of domain
@@ -96,24 +94,24 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String currentQuery;
 
   /**
-   * Standard Session Controller Constructeur
-   * @param mainSessionCtrl The user's profile
-   * @param componentContext The component's profile
-   * @see
-   */
+* Standard Session Controller Constructeur
+* @param mainSessionCtrl The user's profile
+* @param componentContext The component's profile
+* @see
+*/
   public DirectorySessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+          ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "com.silverpeas.directory.multilang.DirectoryBundle",
-        "com.silverpeas.directory.settings.DirectoryIcons",
-        "com.silverpeas.directory.settings.DirectorySettings");
+            "com.silverpeas.directory.settings.DirectoryIcons",
+            "com.silverpeas.directory.settings.DirectorySettings");
 
     elementsByPage = Integer.parseInt(getSettings().getString("ELEMENTS_PER_PAGE", "10"));
 
     stConfig = new Properties();
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings().getString(
-        "templatePath"));
+            "templatePath"));
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings().getString(
-        "customersTemplatePath"));
+            "customersTemplatePath"));
 
     relationShipService = new RelationShipService();
   }
@@ -123,9 +121,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * get All Users
-   * @see
-   */
+* get All Users
+* @see
+*/
   public List<UserDetail> getAllUsers() {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_DEFAULT);
@@ -167,10 +165,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *get all Users that their Last Name begin with 'Index'
-   * @param index:Alphabetical Index like A,B,C,E......
-   * @see
-   */
+*get all Users that their Last Name begin with 'Index'
+* @param index:Alphabetical Index like A,B,C,E......
+* @see
+*/
   public List<UserDetail> getUsersByIndex(String index) {
     setCurrentView(index);
     setCurrentQuery(null);
@@ -184,11 +182,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *get all User that heir lastname or first name Last Name like "Key"
-   * @param Key:the key of search
-   * @throws DirectoryException
-   * @see
-   */
+*get all User that heir lastname or first name Last Name like "Key"
+* @param Key:the key of search
+* @throws DirectoryException
+* @see
+*/
   public List<UserDetail> getUsersByQuery(String query) throws DirectoryException {
     setCurrentView("query");
     setCurrentQuery(query);
@@ -196,13 +194,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.addSpaceComponentPair(null, "users");
-
-    SearchEngineBm searchEngine = getSearchEngineBm();
     try {
-      searchEngine.search(queryDescription);
-
-      MatchingIndexEntry[] plainSearchResults =
-          searchEngine.getRange(0, searchEngine.getResultLength());
+      List<MatchingIndexEntry> plainSearchResults = SearchEngineFactory.getSearchEngine().search(
+        queryDescription).getEntries();
 
       for (MatchingIndexEntry result : plainSearchResults) {
         String userId = result.getObjectId();
@@ -213,19 +207,17 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         }
       }
     } catch (Exception e) {
-      throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH",
-          e);
+      throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH", e);
     }
-
     return lastListUsersCalled;
 
   }
 
   /**
-   *get all User of the Group who has Id="groupId"
-   * @param groupId:the ID of group
-   * @see
-   */
+*get all User of the Group who has Id="groupId"
+* @param groupId:the ID of group
+* @see
+*/
   public List<UserDetail> getAllUsersByGroup(String groupId) {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_GROUP);
@@ -237,9 +229,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *get all User "we keep the last list of All users"
-   * @see
-   */
+*get all User "we keep the last list of All users"
+* @see
+*/
   public List<UserDetail> getLastListOfAllUsers() {
     setCurrentView("tous");
     setCurrentQuery(null);
@@ -248,18 +240,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *get the last list of users colled " keep the session"
-   * @see
-   */
+*get the last list of users colled " keep the session"
+* @see
+*/
   public List<UserDetail> getLastListOfUsersCallded() {
     return lastListUsersCalled;
   }
 
   /**
-   *return All users of Space who has Id="spaceId"
-   * @param spaceId:the ID of Space
-   * @see
-   */
+*return All users of Space who has Id="spaceId"
+* @param spaceId:the ID of Space
+* @see
+*/
   public List<UserDetail> getAllUsersBySpace(String spaceId) {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_SPACE);
@@ -268,8 +260,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
     lastAlllistUsersCalled =
-        Arrays.asList(
-        getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
+            Arrays.asList(
+            getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
@@ -300,10 +292,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *return All user of Domaine who has Id="domainId"
-   * @param domainId:the ID of Domaine
-   * @see
-   */
+*return All user of Domaine who has Id="domainId"
+* @param domainId:the ID of Domaine
+* @see
+*/
   public List<UserDetail> getAllUsersByDomain(String domainId) {
     List<String> domainIds = new ArrayList<String>();
     domainIds.add(domainId);
@@ -357,8 +349,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastAlllistUsersCalled = new ArrayList<UserDetail>();
     try {
       List<String> contactsIds =
-          relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
-          parseInt(userId));
+              relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
+              parseInt(userId));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
       }
@@ -374,19 +366,20 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @param compoId
-   * @param txtTitle
-   * @param txtMessage
-   * @param selectedUsers
-   * @throws NotificationManagerException
-   */
+*
+* @param compoId
+* @param txtTitle
+* @param txtMessage
+* @param selectedUsers
+* @throws NotificationManagerException
+*/
   public void sendMessage(String compoId, String txtTitle, String txtMessage,
-      UserRecipient[] selectedUsers) throws NotificationManagerException {
+          UserRecipient[] selectedUsers) throws NotificationManagerException {
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_DEFAULT;
     int priorityId = 0;
     SilverTrace.debug("notificationUser", "NotificationUsersessionController.sendMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId=" + priorityId);
+            "root.MSG_GEN_PARAM_VALUE", " AVANT CONTROLE priorityId=" + priorityId);
     NotificationMetaData notifMetaData = new NotificationMetaData(priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
@@ -413,7 +406,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
     Collection<SessionInfo> sessions =
-        SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
+            SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
@@ -449,7 +442,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template.setAttribute("extra", extra);
 
       fragments.add(new UserFragmentVO(member.getId(), template.applyFileTemplate("user_"
-          + getLanguage())));
+              + getLanguage())));
     }
     return fragments;
 
@@ -459,23 +452,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     StringBuilder sb = new StringBuilder();
     String webcontext = URLManager.getApplicationURL();
     sb.append("<a href=\"").append(webcontext).append("/Rprofil/jsp/Main?userId=").append(
-        member.getId()).append("\">");
+            member.getId()).append("\">");
     sb.append("<img src=\"").append(webcontext).append(member.getUserDetail().getAvatar()).append(
-        "\" alt=\"viewUser\"");
+            "\" alt=\"viewUser\"");
     sb.append("class=\"avatar\"/></a>");
     return sb.toString();
   }
 
-  private SearchEngineBm getSearchEngineBm() throws DirectoryException {
-    try {
-      SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
-      return home.create();
-    } catch (Exception e) {
-      throw new DirectoryException(this.getClass().getSimpleName(), "root.EX_SEARCH_ENGINE_FAILED",
-          e);
-    }
-  }
 
   private void setCurrentDirectory(int currentDirectory) {
     this.currentDirectory = currentDirectory;

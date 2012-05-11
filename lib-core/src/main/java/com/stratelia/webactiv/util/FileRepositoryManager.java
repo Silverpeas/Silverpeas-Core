@@ -25,18 +25,14 @@
 package com.stratelia.webactiv.util;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.StringTokenizer;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -374,17 +370,7 @@ public class FileRepositoryManager {
    * @throws IOException
    */
   static public void copyFile(String from, String to) throws IOException {
-    BufferedInputStream input = new BufferedInputStream(new FileInputStream(
-        from));
-    BufferedOutputStream output = new BufferedOutputStream(
-        new FileOutputStream(to));
-    int data = input.read();
-    while (data != -1) {
-      output.write(data);
-      data = input.read();
-    }
-    input.close();
-    output.close();
+   FileUtils.copyFile(new File(from), new File(to));
   }
 
   static public String formatFileUploadTime(long size) {

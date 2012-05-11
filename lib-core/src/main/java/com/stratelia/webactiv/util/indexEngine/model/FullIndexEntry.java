@@ -24,14 +24,9 @@
 
 package com.stratelia.webactiv.util.indexEngine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.stratelia.webactiv.util.indexEngine.DateFormatter;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * A FullIndexEntry is an IndexEntry completed with data usefull uniquely at the index creation time
@@ -124,15 +119,15 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
    * @deprecated use addField(String fieldName, String value, String language) instead
    */
   public void addXMLField(String fieldName, String value, String language) {
-    getFields().add(new FieldDescription(fieldName, value, language));
+    getFields().add(new FieldDescription(fieldName, value, language, false));
   }
 
   public void addField(String fieldName, String value) {
-    addField(fieldName, value, null);
+    addField(fieldName, value, null, false);
   }
 
-  public void addField(String fieldName, String value, String language) {
-    getFields().add(new FieldDescription(fieldName, value, language));
+  public void addField(String fieldName, String value, String language, boolean stored) {
+    getFields().add(new FieldDescription(fieldName, value, language, stored));
   }
 
   public void addField(String fieldName, Date value) {
@@ -142,7 +137,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   public void addField(String fieldName, Date value, String language) {
     getFields().add(
         new FieldDescription(fieldName, DateFormatter.date2IndexFormat(value),
-        language));
+        language, false));
   }
 
   /**

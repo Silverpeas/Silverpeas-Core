@@ -25,7 +25,6 @@
 package com.stratelia.silverpeas.pdc.model;
 
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
-
 import java.util.List;
 
 public class Value extends TreeNode implements java.io.Serializable {
@@ -62,7 +61,7 @@ public class Value extends TreeNode implements java.io.Serializable {
     setValuePK(new ValuePK(id));
   }
 
-  public void setValuePK(ValuePK pk) {
+  public final void setValuePK(ValuePK pk) {
     this.pk = pk;
   }
 
@@ -121,8 +120,35 @@ public class Value extends TreeNode implements java.io.Serializable {
     return fullPath;
   }
 
+  @Override
   public String toString() {
     return "(pk = " + getValuePK().toString() + ")";
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Value other = (Value) obj;
+    if ((this.axisId == null) ? (other.axisId != null) : !this.axisId.equals(other.axisId)) {
+      return false;
+    }
+    if ((getFullPath() == null) ? (other.getFullPath() != null) : !getFullPath().equals(other.getFullPath())) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 97 * hash + (this.axisId != null ? this.axisId.hashCode() : 0);
+    hash = 97 * hash + (this.fullPath != null ? this.fullPath.hashCode() : 0);
+    return hash;
   }
 
 }

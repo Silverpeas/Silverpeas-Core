@@ -30,11 +30,11 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
+import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-import static com.silverpeas.util.ArrayUtil.EMPTY_STRING_ARRAY;
-import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import java.util.*;
+import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
@@ -450,6 +450,56 @@ public class OrganizationController implements java.io.Serializable {
     }
     return null;
   }
+  
+  /**
+   * Gets all the users that belong to the specified domain.
+   * @param domainId the unique identifier of the domain.
+   * @return an array of UserDetail objects or null if no such domain exists.
+   */
+  public UserDetail[] getAllUsersInDomain(String domainId) {
+    try {
+      if (domainId != null) {
+        return getAdminService().getUsersOfDomain(domainId);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getAllUsersInDomain",
+          "admin.EX_ERR_GET_USER_DETAILS", "domainId: '" + domainId, e);
+    }
+    return null;
+  }
+  
+   /**
+   * Searches the users that match the specified criteria.
+   * @param criteria the criteria in searching of user details.
+   * @return an array of user details matching the criteria or an empty array of no ones are found.
+   * @throws AdminException if an error occurs while getting the user details.
+   */
+  public UserDetail[] searchUsers(final SearchCriteria criteria) {
+    try {
+      return getAdminService().searchUsers(criteria);
+    } catch(AdminException ex) {
+      SilverTrace.error("admin", "OrganizationController.getUsersMatchingCriteria",
+          "admin.EX_ERR_GET_USER_DETAILS", "criteria: '" + criteria.toString(), ex);
+    }
+    return null;
+  }
+  
+  /**
+   * Gets all the user groups that belong to the specified domain.
+   * @param domainId the unique identifier of the domain.
+   * @return an array of Group objects or null if no such domain exists.
+   */
+  public Group[] getAllRootGroupsInDomain(String domainId) {
+    try {
+      if (domainId != null) {
+        return getAdminService().getRootGroupsOfDomain(domainId);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getAllUsersInDomain",
+          "admin.EX_ERR_GET_USER_DETAILS", "domainId: '" + domainId, e);
+    }
+    return null;
+  }
 
   /**
    * For use in userPanel : return the users that are direct child of a given group
@@ -585,6 +635,17 @@ public class OrganizationController implements java.io.Serializable {
       return null;
     }
   }
+  
+  public ProfileInst getUserProfile(String profileId) {
+    try {
+      return getAdminService().getProfileInst(profileId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getUserProfile",
+          "admin.MSG_ERR_GET_PROFILE", "profileId: '" +
+           profileId, e);
+      return null;
+    }
+  }
 
   /**
    * Return all administrators ids
@@ -653,16 +714,11 @@ public class OrganizationController implements java.io.Serializable {
   }
 
   /**
-   * Return all root groups of silverpeas
+   * Return all root groups of silverpeas or null if an error occured when getting the root groups.
    */
   public Group[] getAllRootGroups() {
     try {
-      Group[] aGroup = null;
-      String[] asGroupIds = getAdminService().getAllRootGroupIds();
-      if (asGroupIds != null) {
-        aGroup = getAdminService().getGroups(asGroupIds);
-      }
-      return aGroup;
+      return getAdminService().getAllRootGroups();
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllRootGroups",
           "admin.MSG_ERR_GET_ALL_GROUPS", e);

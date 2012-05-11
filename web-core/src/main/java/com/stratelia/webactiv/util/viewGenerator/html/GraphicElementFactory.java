@@ -112,6 +112,7 @@ public class GraphicElementFactory {
   private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
   private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
+  private static final String SILVERPEAS_JS = "silverpeas.js";
 
   /**
    * Constructor declaration
@@ -353,6 +354,8 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append(
         "';").append("</script>\n");
 
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/").append(SILVERPEAS_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(

@@ -28,7 +28,7 @@ import com.silverpeas.comment.BaseCommentTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.rest.ResourceCreationTest;
+import com.silverpeas.web.ResourceCreationTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.ClientResponse;
 import javax.ws.rs.core.Response.Status;

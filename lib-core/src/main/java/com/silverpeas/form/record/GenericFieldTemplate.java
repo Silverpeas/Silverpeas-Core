@@ -60,6 +60,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   private List<Parameter> parametersObj = new ArrayList<Parameter>();
   private boolean searchable = false;
   private String templateName = null;
+  private boolean usedAsFacet = false;
 
   /**
    * Builds a GenericFieldTemplate
@@ -71,8 +72,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Builds a GenericFieldTemplate from a field name and a field type name. The type name must be
    * known by the type manager. You must use the set and add methods to change any default value.
    */
-  public GenericFieldTemplate(String fieldName, String typeName)
-      throws FormException {
+  public GenericFieldTemplate(String fieldName, String typeName) throws FormException {
     this.fieldName = fieldName;
     this.typeName = typeName;
 
@@ -83,9 +83,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Builds a GenericFieldTemplate from a field name and a field implementation. You must use the
    * set and add methods to change any default value.
    */
-  @SuppressWarnings("unchecked")
-  public GenericFieldTemplate(String fieldName, Class fieldImpl)
-      throws FormException {
+  public GenericFieldTemplate(String fieldName, Class fieldImpl) throws FormException {
     this.fieldName = fieldName;
     this.fieldImpl = fieldImpl;
 
@@ -453,6 +451,14 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   public void setTemplateName(String templateName) {
     this.templateName = templateName;
   }
+  
+  public boolean isUsedAsFacet() {
+    return usedAsFacet;
+  }
+  
+  public void setUsedAsFacet(boolean usedAsFacet) {
+    this.usedAsFacet = usedAsFacet;
+  }
 
   @Override
   public GenericFieldTemplate clone() {
@@ -471,6 +477,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       clone.setSearchable(this.isSearchable());
       clone.setTemplateName(this.getTemplateName());
       clone.setTypeName(this.getTypeName());
+      clone.setUsedAsFacet(isUsedAsFacet());
     } catch (FormException e) {
       throw new RuntimeException(e);
     }

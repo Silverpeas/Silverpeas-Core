@@ -31,10 +31,10 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.workflow.api.model.ContextualDesignation;
 import com.silverpeas.workflow.api.model.ContextualDesignations;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;
@@ -46,6 +46,9 @@ import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
  * Class implementing the tag &lt;contextualDesignationList&gt; from workflowEditor.tld
  */
 public class ContextualDesignationList extends TagSupport {
+
+  private static final long serialVersionUID = 2510045275428248323L;
+
   private static final String UTF8 = "UTF-8"; // encoding
 
   private String strContext, // the context of the designation
@@ -71,7 +74,6 @@ public class ContextualDesignationList extends TagSupport {
     String strParametersEncoded, strEditURL, strPaneTitle, strColumnLabel;
     GraphicElementFactory gef;
     ResourcesWrapper resource;
-    Iterator iterDesignations;
 
     try {
       gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
@@ -95,11 +97,11 @@ public class ContextualDesignationList extends TagSupport {
           .getString("GML.operations"));
       column.setSortable(false);
 
-      iterDesignations = designations.iterateContextualDesignation();
+      Iterator<ContextualDesignation> iterDesignations = designations.iterateContextualDesignation();
       sb = new StringBuffer();
 
       while (iterDesignations.hasNext()) {
-        designation = (ContextualDesignation) iterDesignations.next();
+        designation = iterDesignations.next();
 
         // Create the parameters
         //
@@ -124,9 +126,9 @@ public class ContextualDesignationList extends TagSupport {
         sb.append("', '");
         sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
         sb.append(" ");
-        sb.append(Encode.javaStringToJsString(designation.getLanguage()));
+        sb.append(EncodeHelper.javaStringToJsString(designation.getLanguage()));
         sb.append(", ");
-        sb.append(Encode.javaStringToJsString(designation.getRole()));
+        sb.append(EncodeHelper.javaStringToJsString(designation.getRole()));
         sb.append(" ?');");
 
         iconPane = gef.getIconPane();

@@ -91,5 +91,13 @@ public class Space {
   public ComponentInstLight getComponent(String componentId) {
     return components.get(componentId);
   }
+  
+  public void updateSubspace(SpaceInstLight subspace) {
+    int index = subspaces.indexOf(subspace);
+    if (index != -1) {
+      subspaces.remove(index);
+      subspaces.add(index, subspace);
+    }
+  }
 
 }

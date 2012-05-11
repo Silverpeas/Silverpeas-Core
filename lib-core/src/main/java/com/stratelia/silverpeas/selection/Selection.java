@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.selection;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.PairObject;
 
-public class Selection {
+public final class Selection {
   final public static String TYPE_USERS_GROUPS = "UsersGroups";
   final public static String TYPE_SPACES_COMPONENTS = "SpacesComponents";
   final public static String TYPE_JDBC_CONNECTOR = "JdbcConnector";
@@ -37,10 +37,11 @@ public class Selection {
   final public static String FIRST_PAGE_SEARCH_ELEMENT = "DisplaySearchElement";
   final public static String FIRST_PAGE_SEARCH_SET = "DisplaySearchSet";
   final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
+  public static final String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
 
   protected String goBackURL;
   protected String cancelURL;
-
+  
   protected String htmlFormName;
   protected String htmlFormElementName;
   protected String htmlFormElementId;
@@ -68,6 +69,10 @@ public class Selection {
   public void resetAll() {
     goBackURL = "";
     cancelURL = "";
+    
+    htmlFormName = "";
+    htmlFormElementId = "";
+    htmlFormElementName = "";
 
     firstPage = FIRST_PAGE_DEFAULT;
 
@@ -87,9 +92,12 @@ public class Selection {
   }
 
   static public String getSelectionURL(String selectionType) {
+    if (Selection.TYPE_USERS_GROUPS.equals(selectionType)) {
+      return USER_SELECTION_PANEL_PATH;
+    }
     return "/RselectionPeas/jsp/Main?SelectionType=" + selectionType;
   }
-
+  
   public void setHostSpaceName(String hostSpaceName) {
     if (hostSpaceName != null) {
       this.hostSpaceName = hostSpaceName;
@@ -160,6 +168,17 @@ public class Selection {
 
   public void setPopupMode(boolean popupMode) {
     this.popupMode = popupMode;
+  }
+  
+  /**
+   * Is the set of fields with the selection could be done directly from the user panel?
+   * This is can be done only if the user panel is opened within a window popup and the information
+   * about HTML form of the opener is provided (see the setHtmlForm kind methods).
+   * @return true if the user panel should modify directly the opener with the result of the selection,
+   * false otherwise.
+   */
+  public boolean isHotSetting() {
+    return StringUtil.isDefined(htmlFormName);
   }
 
   public boolean isMultiSelect() {

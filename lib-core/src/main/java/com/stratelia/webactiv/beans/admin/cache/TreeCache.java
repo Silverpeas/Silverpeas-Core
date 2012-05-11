@@ -211,6 +211,11 @@ public class TreeCache {
       Space space = getSpace(spaceLight.getShortId());
       if (space != null) {
         space.setSpace(spaceLight);
+        if (!spaceLight.isRoot()) {
+          // update this space in parent space
+          Space parent = getSpace(spaceLight.getFatherId());
+          parent.updateSubspace(spaceLight);
+        }
       }
     }
   }

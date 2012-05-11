@@ -355,8 +355,10 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
       if (valueInfo.length() >= 3) {
         axisId = valueInfo.substring(0, valueInfo.indexOf("|"));
         valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo.length());
-        value = new ClassifyValue(new Integer(axisId).intValue(), valuePath);
-        values.add(value);
+        if (valuePath.startsWith("/")) {
+          value = new ClassifyValue(Integer.parseInt(axisId), valuePath);
+          values.add(value);
+        }
       }
     }
 

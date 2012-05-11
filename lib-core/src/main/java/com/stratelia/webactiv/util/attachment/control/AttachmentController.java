@@ -1302,17 +1302,6 @@ public class AttachmentController {
       if (attachmentDetail.isReadOnly()) {
         return attachmentDetail.getWorkerId().equals(userId);
       }
-      // Check if user haven't check out another file with same name to prevent overwriting
-      Iterator<AttachmentDetail> checkOutFiles = attachmentBm.getAttachmentsByWorkerId(
-          userId).iterator();
-      AttachmentDetail checkOutFile = null;
-      while (checkOutFiles.hasNext()) {
-        checkOutFile = checkOutFiles.next();
-        if (checkOutFile.getLogicalName(language).equalsIgnoreCase(
-            attachmentDetail.getLogicalName(language))) {
-          return false;
-        }
-      }
       attachmentDetail.setWorkerId(userId);
       if (attachmentDetail.isOpenOfficeCompatible()) {
         RepositoryHelper.getJcrAttachmentService().createAttachment(attachmentDetail, language);

@@ -1,42 +1,51 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.webactiv.util.publication.model;
 
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.base.Objects;
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
@@ -44,6 +53,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -63,12 +73,12 @@ import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
 /**
- * This object contains the description of a publication
- * @author Nicolas Eysseric
- * @version 1.0
- */
-public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface,
-    SilverpeasContent, Serializable, Cloneable {
+* This object contains the description of a publication
+* @author Nicolas Eysseric
+* @version 1.0
+*/
+public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface, SilverpeasContent,
+    Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
@@ -118,12 +128,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
-
+  
   public static final String TYPE = "Publication";
 
   /**
-   * Constructeur par dÃ©faut: nÃ©cÃ©ssaire au mapping castor du module d'importExport
-   */
+* Constructeur par dÃ©faut: nÃ©cÃ©ssaire au mapping castor du module d'importExport
+*/
   public PublicationDetail() {
   }
 
@@ -144,18 +154,18 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   */
+* @param id
+* @param name
+* @param description
+* @param creationDate
+* @param beginDate
+* @param endDate
+* @param creatorId
+* @param importance
+* @param version
+* @param keywords
+* @param content
+*/
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content) {
@@ -210,22 +220,22 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * @deprecated
-   * @param pk
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   * @param status
-   * @param updateDate
-   * @param updaterId
-   */
+* @deprecated
+* @param pk
+* @param name
+* @param description
+* @param creationDate
+* @param beginDate
+* @param endDate
+* @param creatorId
+* @param importance
+* @param version
+* @param keywords
+* @param content
+* @param status
+* @param updateDate
+* @param updaterId
+*/
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
@@ -270,20 +280,20 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * @deprecated
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   * @param status
-   */
+* @deprecated
+* @param id
+* @param name
+* @param description
+* @param creationDate
+* @param beginDate
+* @param endDate
+* @param creatorId
+* @param importance
+* @param version
+* @param keywords
+* @param content
+* @param status
+*/
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content,
@@ -387,24 +397,26 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * @param pk
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   * @param status
-   * @param updateDate
-   * @param updaterId
-   * @param validateDate
-   * @param validatorId
-   * @deprecated
-   */
+*
+* @param pk
+* @param name
+* @param description
+* @param creationDate
+* @param beginDate
+* @param endDate
+* @param creatorId
+* @param importance
+* @param version
+* @param keywords
+* @param content
+* @param status
+* @param updateDate
+* @param updaterId
+* @param validateDate
+* @param validatorId
+*
+* @deprecated
+*/
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
@@ -574,7 +586,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getCreatorId() {
     return creatorId;
   }
-
+  
   @Override
   public UserDetail getCreator() {
     return UserDetail.getById(getCreatorId());
@@ -635,8 +647,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public ThumbnailDetail getThumbnail() {
     if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
-      ThumbnailDetail thumbDetail =
-          new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
+      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
           getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       return ThumbnailController.getCompleteThumbnail(thumbDetail);
     }
@@ -660,29 +671,29 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     StringBuilder result = new StringBuilder();
     result.append("PublicationDetail {").append("\n");
     if (getPK() != null) {
-      result.append("  getPK().getId() = ").append(getPK().getId()).append("\n");
-      result.append("  getPK().getEd() = ").append(getPK().getSpace()).append("\n");
-      result.append("  getPK().getCo() = ").append(getPK().getComponentName()).append("\n");
+      result.append(" getPK().getId() = ").append(getPK().getId()).append("\n");
+      result.append(" getPK().getEd() = ").append(getPK().getSpace()).append("\n");
+      result.append(" getPK().getCo() = ").append(getPK().getComponentName()).append("\n");
     }
-    result.append("  getName() = ").append(getName()).append("\n");
-    result.append("  getDescription() = ").append(getDescription()).append("\n");
-    result.append("  getCreationDate() = ").append(getCreationDate()).append("\n");
-    result.append("  getBeginDate() = ").append(getBeginDate()).append("\n");
-    result.append("  getBeginHour()  = ").append(getBeginHour()).append("\n");
-    result.append("  getEndDate() = ").append(getEndDate()).append("\n");
-    result.append("  getEndHour()  = ").append(getEndHour()).append("\n");
-    result.append("  getCreatorId() = ").append(getCreatorId()).append("\n");
-    result.append("  getImportance() = ").append(getImportance()).append("\n");
-    result.append("  getVersion() = ").append(getVersion()).append("\n");
-    result.append("  getKeywords() = ").append(getKeywords()).append("\n");
-    result.append("  getContent() = ").append(getContent()).append("\n");
-    result.append("  getStatus() = ").append(getStatus()).append("\n");
-    result.append("  getUpdateDate() = ").append(getUpdateDate()).append("\n");
-    result.append("  getUpdaterId()  = ").append(getUpdaterId()).append("\n");
-    result.append("  getValidateDate() = ").append(getValidateDate()).append("\n");
-    result.append("  getValidatorId()  = ").append(getValidatorId()).append("\n");
-    result.append("  getSilverObjectId()  = ").append(getSilverObjectId()).append("\n");
-    result.append("  getAuthor()  = ").append(getAuthor()).append("\n");
+    result.append(" getName() = ").append(getName()).append("\n");
+    result.append(" getDescription() = ").append(getDescription()).append("\n");
+    result.append(" getCreationDate() = ").append(getCreationDate()).append("\n");
+    result.append(" getBeginDate() = ").append(getBeginDate()).append("\n");
+    result.append(" getBeginHour() = ").append(getBeginHour()).append("\n");
+    result.append(" getEndDate() = ").append(getEndDate()).append("\n");
+    result.append(" getEndHour() = ").append(getEndHour()).append("\n");
+    result.append(" getCreatorId() = ").append(getCreatorId()).append("\n");
+    result.append(" getImportance() = ").append(getImportance()).append("\n");
+    result.append(" getVersion() = ").append(getVersion()).append("\n");
+    result.append(" getKeywords() = ").append(getKeywords()).append("\n");
+    result.append(" getContent() = ").append(getContent()).append("\n");
+    result.append(" getStatus() = ").append(getStatus()).append("\n");
+    result.append(" getUpdateDate() = ").append(getUpdateDate()).append("\n");
+    result.append(" getUpdaterId() = ").append(getUpdaterId()).append("\n");
+    result.append(" getValidateDate() = ").append(getValidateDate()).append("\n");
+    result.append(" getValidatorId() = ").append(getValidatorId()).append("\n");
+    result.append(" getSilverObjectId() = ").append(getSilverObjectId()).append("\n");
+    result.append(" getAuthor() = ").append(getAuthor()).append("\n");
     result.append("}");
     return result.toString();
   }
@@ -787,14 +798,15 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   /****************************************************************************************/
   /** FormTemplate exposition for taglibs */
   /****************************************************************************************/
-  /**
-   * @return
-   */
   public List<XMLField> getXmlFields() {
     return getXmlFields(null);
   }
 
   public List<XMLField> getXmlFields(String language) {
+    if ("0".equals(getInfoId())) {
+      // this publication does not use a form
+      return new ArrayList<XMLField>();
+    }
     if (xmlFields == null) {
       try {
         xmlFields = getFormTemplateBm().getXMLFieldsForExport(
@@ -807,6 +819,52 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       }
     }
     return xmlFields;
+  }
+  
+  public HashMap<String, String> getFormValues(String language) {
+    HashMap<String, String> formValues = new HashMap<String, String>();
+    if ("0".equals(getInfoId())) {
+      // this publication does not use a form
+      return formValues;
+    }
+
+    DataRecord data = null;
+    PublicationTemplate pub = null;
+    try {
+      pub =
+          PublicationTemplateManager.getInstance().getPublicationTemplate(
+              getPK().getInstanceId() + ":" + getInfoId());
+      data = pub.getRecordSet().getRecord(pk.getId());
+    } catch (Exception e) {
+      SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FORM_RECORD",
+          "pubId = " + getPK().getId() + "infoId = " + getInfoId());
+    }
+
+    if (data == null) {
+      return formValues;
+    }
+
+    String fieldNames[] = data.getFieldNames();
+    PagesContext pageContext = new PagesContext();
+    pageContext.setLanguage(language);
+    for (String fieldName : fieldNames) {
+      try {
+        Field field = data.getField(fieldName);
+        GenericFieldTemplate fieldTemplate =
+            (GenericFieldTemplate) pub.getRecordTemplate().getFieldTemplate(fieldName);
+        FieldDisplayer fieldDisplayer =
+            TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
+        fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+        formValues.put(fieldName, sw.toString());
+      } catch (Exception e) {
+        SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FIELD_VALUE",
+            "pubId = " + getPK().getId() + "fieldName = " + fieldName, e);
+      }
+
+    }
+    return formValues;
   }
 
   public String getFieldValue(String fieldNameAndLanguage) {
@@ -824,80 +882,71 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
     String fieldValue = "";
 
-    try {
-      List<XMLField> theXmlFields = getXmlFields(language);
-      XMLField xmlField = null;
-      for (int x = 0; x < theXmlFields.size(); x++) {
-        xmlField = theXmlFields.get(x);
-        if (fieldName.equals(xmlField.getName())) {
-          fieldValue = xmlField.getValue();
-          if (fieldValue == null) {
-            fieldValue = "";
-          } else {
-            if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
-              String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
-                  length());
-              if (StringUtil.isDefined(attachmentId)) {
-                if (attachmentId.startsWith("/")) {
-                  // case of an image provided by a gallery
-                  fieldValue = attachmentId;
-                } else {
-                  AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
-                      new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
-                  if (attachment != null) {
-                    attachment.setLogicalName(attachment.getLogicalName(language));
-                    attachment.setPhysicalName(attachment.getPhysicalName(language));
-                    attachment.setType(attachment.getType(language));
-                    fieldValue = attachment.getWebURL();
-                  }
-                }
-              } else {
-                fieldValue = "";
-              }
-            } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
-              fieldValue =
-                  WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
-                  getId(), fieldName, language);
-            } else {
-              fieldValue = EncodeHelper.javaStringToHtmlParagraphe(fieldValue);
-            }
-          }
-        }
+    List<XMLField> xmlFields = getXmlFields(language);
+    for (XMLField xmlField : xmlFields) {
+      if (fieldName.equals(xmlField.getName())) {
+        fieldValue = getValueOfField(xmlField, language);
       }
-    } catch (Exception e) {
-      throw new PublicationRuntimeException(
-          "PublicationDetail.getModelContent('" + fieldName + "')",
-          SilverpeasRuntimeException.ERROR,
-          "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
     }
 
     SilverTrace.info("publication", "PublicationDetail.getModelContent('" + fieldName + "')",
         "root.MSG_GEN_EXIT_METHOD", "fieldValue = " + fieldValue);
     return fieldValue;
   }
-
-  private FormTemplateBm getFormTemplateBm() {
-    FormTemplateBm formTemplateBm = null;
-
-    if (formTemplateBm == null) {
-      try {
-        FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
-        formTemplateBm = formTemplateBmHome.create();
-      } catch (Exception e) {
-        throw new PublicationRuntimeException(
-            "PublicationDetail.getFormTemplateBm()",
-            SilverpeasRuntimeException.ERROR,
-            "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
+  
+  private String getValueOfField(XMLField xmlField, String language) {
+    String fieldValue = xmlField.getValue();
+    if (fieldValue == null) {
+      fieldValue = "";
+    } else {
+      if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
+        String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
+            length());
+        if (StringUtil.isDefined(attachmentId)) {
+          if (attachmentId.startsWith("/")) {
+            // case of an image provided by a gallery
+            fieldValue = attachmentId;
+          } else {
+            AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
+                new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
+            if (attachment != null) {
+              attachment.setLogicalName(attachment.getLogicalName(language));
+              attachment.setPhysicalName(attachment.getPhysicalName(language));
+              attachment.setType(attachment.getType(language));
+              fieldValue = attachment.getWebURL();
+            }
+          }
+        } else {
+          fieldValue = "";
+        }
+      } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+        fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
+            getId(), xmlField.getName(), language);
+      } else {
+        fieldValue = EncodeHelper.javaStringToHtmlParagraphe(fieldValue);
       }
     }
-    return formTemplateBm;
+    return fieldValue;
+  }
+
+  private FormTemplateBm getFormTemplateBm() {
+    try {
+      FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
+      return formTemplateBmHome.create();
+    } catch (Exception e) {
+      throw new PublicationRuntimeException(
+          "PublicationDetail.getFormTemplateBm()",
+          SilverpeasRuntimeException.ERROR,
+          "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
+    }
   }
 
   /****************************************************************************************/
   /**
-   * @return
-   */
+*
+* @return
+*/
   public InfoDetail getInfoDetail() {
     if (infoDetail == null) {
       try {
@@ -994,7 +1043,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     }
     return wysiwygContent;
   }
-
   private PublicationBm publicationBm = null;
 
   public void setImportance(int importance) {
@@ -1202,7 +1250,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public boolean isIndexable() {
     return VALID.equals(this.status);
   }
-
+  
   public boolean isPublicationEditor(String userId) {
     return Objects.equal(creatorId, userId) || Objects.equal(updaterId, userId);
   }

@@ -24,26 +24,6 @@
 
 package com.silverpeas.workflow.engine.instance;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryResults;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.Field;
@@ -52,10 +32,11 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.TextField;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -86,6 +67,25 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
+import org.exolab.castor.jdo.QueryResults;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * This class is one implementation of interface UpdatableProcessInstance. It uses Castor library to
@@ -93,9 +93,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  * @table SB_Workflow_ProcessInstance
  * @key-generator MAX
  */
-public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
-// TimeStampable
-{
+public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
   /**
    * Abstract process model
@@ -142,7 +140,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @set-method castor_setHistorySteps
    * @get-method castor_getHistorySteps
    */
-  private Vector historySteps = null;
+  private Vector<HistoryStep> historySteps = null;
   /**
    * Vector of all questions asked on this process instance
    * @field-name questions
@@ -246,7 +244,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * Set the workflow model id
-   * @param instanceId model id
+   * @param modelId model id
    */
   public void setModelId(String modelId) {
     this.modelId = modelId;
@@ -407,9 +405,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     if (activeStates == null || activeStates.isEmpty()) {
       return;
     }
-
     for (int i = 0; (!found) && i < activeStates.size(); i++) {
-      ActiveState activeState = (ActiveState) activeStates.get(i);
+      ActiveState activeState = activeStates.get(i);
       if (activeState.getState().equals(state.getName())) {
         found = true;
         activeState.setTimeoutStatus(activeState.getTimeoutStatus() + 1);
@@ -431,8 +428,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     if (activeStates == null || activeStates.isEmpty()) {
       return;
     }
-    for (int i = 0; i < activeStates.size(); i++) {
-      ActiveState activeState = activeStates.get(i);
+    for (ActiveState activeState : activeStates) {
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.removeTimeout",
           "root.MSG_GEN_ENTER_METHOD", "activeState ="
           + activeState.getState());
@@ -745,10 +741,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   public HistoryStep[] getHistorySteps() {
     if (historySteps != null) {
       Collections.sort(historySteps);
-      return (HistoryStep[]) historySteps.toArray(new HistoryStep[historySteps.size()]);
-    } else {
-      return null;
+      return historySteps.toArray(new HistoryStep[historySteps.size()]);
     }
+    return null;
   }
 
   /**
@@ -756,9 +751,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @throws WorkflowException
    */
   public HistoryStep getHistoryStep(String stepId) throws WorkflowException {
-    for (int i = 0; i < historySteps.size(); i++) {
-      if (((HistoryStep) historySteps.get(i)).getId().equals(stepId)) {
-        return (HistoryStep) historySteps.get(i);
+    for (HistoryStep historyStep : historySteps) {
+      if (historyStep.getId().equals(stepId)) {
+        return historyStep;
       }
     }
 
@@ -1017,8 +1012,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       }
       // RecordSet formSet = getProcessModel().getFormRecordSet(form.getName());
 
-      DataRecord data = getProcessModel().getNewActionRecord(actionName, "",
-          "", this.getAllDataRecord("", ""));
+      DataRecord data = getProcessModel().getNewActionRecord(actionName, "", "",
+          getAllDataRecord("", ""));
 
       // String[] fieldNames = formSet.getRecordTemplate().getFieldNames();
       Input[] inputs = form.getInputs();
@@ -1028,8 +1023,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
           fNames.add(inputs[i].getItem().getName());
         }
       }
-      DataRecordUtil.updateFields((String[]) fNames.toArray(new String[0]),
-          data, getFolder());
+      DataRecordUtil.updateFields(fNames.toArray(new String[fNames.size()]), data, getFolder());
 
       return data;
     } catch (FormException e) {
@@ -1040,7 +1034,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * Set the form associated to the given action
-   * @param actionName action name
+   * @param step
+   * @param actionData
    */
   public void saveActionRecord(HistoryStep step, DataRecord actionData)
       throws WorkflowException {
@@ -1323,8 +1318,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getActiveStates",
         "root.MSG_GEN_ENTER_METHOD");
 
-    if (activeStates == null || activeStates.size() == 0) {
-      states = new String[0];
+    if (activeStates == null || activeStates.isEmpty()) {
+      states = ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
       states = new String[activeStates.size()];
       for (int i = 0; i < activeStates.size(); i++) {
@@ -1360,14 +1355,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return Actor[]
    */
   public Actor[] getWorkingUsers() throws WorkflowException {
-    Vector<Actor> actors = new Vector<Actor>();
-
+    List<Actor> actors = new ArrayList<Actor>(workingUsers.size());
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = workingUsers.get(i);
       actors.addAll(wkUser.toActors());
     }
-
-    return (Actor[]) actors.toArray(new Actor[0]);
+    return actors.toArray(new Actor[actors.size()]);
   }
 
   /**
@@ -1375,7 +1368,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return Actor[]
    */
   public Actor[] getWorkingUsers(String state) throws WorkflowException {
-    Vector<Actor> actors = new Vector<Actor>();
+    List<Actor> actors = new ArrayList<Actor>(workingUsers.size());
 
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = workingUsers.get(i);
@@ -1383,8 +1376,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         actors.addAll(wkUser.toActors());
       }
     }
-
-    return (Actor[]) actors.toArray(new Actor[0]);
+    return actors.toArray(new Actor[actors.size()]);
   }
 
   @Override
@@ -1438,16 +1430,13 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public Actor[] getWorkingUsers(String state, String role)
       throws WorkflowException {
-    Vector<Actor> actors = new Vector<Actor>();
-
-    for (int i = 0; i < workingUsers.size(); i++) {
-      WorkingUser wkUser = workingUsers.get(i);
+    List<Actor> actors = new ArrayList<Actor>(workingUsers.size());
+    for (WorkingUser wkUser : workingUsers) {
       if (wkUser.getState().equals(state) && wkUser.getRoles().contains(role)) {
         actors.addAll(wkUser.toActors());
       }
     }
-
-    return (Actor[]) actors.toArray(new Actor[0]);
+    return actors.toArray(new Actor[actors.size()]);
   }
 
   /**
@@ -1457,16 +1446,13 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       throws WorkflowException {
     SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
         "root.MSG_GEN_ENTER_METHOD", "user : " + user.getUserId() + ", roleName=" + roleName);
-    Vector<String> stateNames = new Vector<String>();
+    List<String> stateNames = new ArrayList<String>();
     String userId = user.getUserId();
 
-    for (int i = 0; i < workingUsers.size(); i++) {
-      WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
-
-      SilverTrace.debug("workflowEngine",
-          "ProcessInstanceImpl.getAssignedStates",
-          "root.MSG_GEN_PARAM_VALUE", "processing working user no : " + i + ", role:" + wkUser.
-          getRole());
+    for ( WorkingUser wkUser : workingUsers) {
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
+          "root.MSG_GEN_PARAM_VALUE", "processing working user : " + wkUser.getId() + ", " +
+          "role:" + wkUser.getRole());
 
       boolean userMatch = wkUser.getUserId() != null && wkUser.getUserId().equals(userId);
       boolean usersRoleMatch =
@@ -1497,7 +1483,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     }
 
-    return stateNames.toArray(new String[0]);
+    return stateNames.toArray(new String[stateNames.size()]);
   }
 
   /**
@@ -2065,7 +2051,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         }
       }
 
-      return (HistoryStep[]) steps.toArray(new HistoryStep[0]);
+      return steps.toArray(new HistoryStep[steps.size()]);
     } catch (WorkflowException we) {
       throw new WorkflowException("ProcessInstanceImpl.getBackSteps",
           "workflowEngine.EX_ERR_GET_BACKSTEPS", we);
@@ -2183,8 +2169,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         questionsAsked.add(question);
       }
     }
-
-    return (Question[]) questionsAsked.toArray(new QuestionImpl[0]);
+    return questionsAsked.toArray(new QuestionImpl[questionsAsked.size()]);
   }
 
   /**
@@ -2203,8 +2188,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         questionsAsked.add(question);
       }
     }
-
-    return (Question[]) questionsAsked.toArray(new QuestionImpl[0]);
+    return questionsAsked.toArray(new QuestionImpl[questionsAsked.size()]);
   }
 
   /**
@@ -2235,7 +2219,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return all the questions
    */
   public Question[] getQuestions() {
-    return (Question[]) questions.toArray(new QuestionImpl[0]);
+    return questions.toArray(new QuestionImpl[questions.size()]);
   }
 
   // METHODS FOR CASTOR

@@ -31,7 +31,7 @@ import java.util.List;
 import org.junit.Test;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
-import com.silverpeas.rest.ResourceGettingTest;
+import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.net.URI;
 import static org.junit.Assert.*;

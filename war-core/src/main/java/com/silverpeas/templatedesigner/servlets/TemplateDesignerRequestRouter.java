@@ -99,7 +99,7 @@ public class TemplateDesignerRequestRouter extends
       } else if (function.equals("ViewTemplate")) {
         String fileName = request.getParameter("Template");
         PublicationTemplate template = null;
-        if (!isDefined(fileName)) {
+        if (!StringUtil.isDefined(fileName)) {
           template = templateDesignerSC.reloadCurrentTemplate();
         } else {
           template = templateDesignerSC.setTemplate(fileName);
@@ -118,7 +118,7 @@ public class TemplateDesignerRequestRouter extends
       } else if (function.equals("EditTemplate")) {
         String fileName = request.getParameter("FileName");
         PublicationTemplate template;
-        if (isDefined(fileName)) {
+        if (StringUtil.isDefined(fileName)) {
           template = templateDesignerSC.setTemplate(fileName);
         } else {
           template = templateDesignerSC.getCurrentTemplate();
@@ -309,6 +309,7 @@ public class TemplateDesignerRequestRouter extends
     boolean hidden = StringUtil.getBooleanValue(request.getParameter("Hidden"));
     boolean disabled = StringUtil.getBooleanValue(request.getParameter("Disabled"));
     boolean searchable = StringUtil.getBooleanValue(request.getParameter("Searchable"));
+    boolean usedAsFacet = StringUtil.getBooleanValue(request.getParameter("UsedAsFacet"));
 
     String fieldType = "text";
     if (displayer.equals("user")) {
@@ -344,6 +345,7 @@ public class TemplateDesignerRequestRouter extends
     field.setReadOnly(readOnly);
     field.setTypeName(fieldType);
     field.setSearchable(searchable);
+    field.setUsedAsFacet(usedAsFacet);
 
     @SuppressWarnings("unchecked")
     Enumeration<String> paramNames = request.getParameterNames();
@@ -352,7 +354,7 @@ public class TemplateDesignerRequestRouter extends
       if (paramName.startsWith("Param_")) {
         String xmlParameterName = paramName.substring(6);
         String xmlParameterValue = request.getParameter(paramName);
-        if (isDefined(xmlParameterValue)) {
+        if (StringUtil.isDefined(xmlParameterValue)) {
           Parameter parameter = new Parameter(xmlParameterName, "dummy");
           parameter.getParameterValuesObj().add(new ParameterValue("fr", xmlParameterValue));
           field.getParametersObj().add(parameter);
@@ -360,16 +362,12 @@ public class TemplateDesignerRequestRouter extends
       } else if (paramName.startsWith("Label_")) {
         String lang = paramName.substring(6);
         String sLabel = request.getParameter(paramName);
-        if (isDefined(sLabel)) {
+        if (StringUtil.isDefined(sLabel)) {
           Label label = new Label(sLabel, lang);
           field.getLabelsObj().add(label);
         }
       }
     }
     return field;
-  }
-
-  private static boolean isDefined(String parameter) {
-    return (parameter != null && parameter.length() > 0 && !parameter.equals("null"));
   }
 }

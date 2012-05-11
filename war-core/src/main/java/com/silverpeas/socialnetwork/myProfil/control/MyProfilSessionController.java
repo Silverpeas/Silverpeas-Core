@@ -60,6 +60,7 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
@@ -320,6 +321,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       UserDetail senderUser = getUserDetail();
       notifMetaData.setSource(senderUser.getDisplayedName());
+      notifMetaData.setLink(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null) + "MyInvitations");
 
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {

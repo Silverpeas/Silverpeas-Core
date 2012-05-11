@@ -27,11 +27,6 @@ package com.silverpeas.bootstrap;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.SilverpeasSSLSocketFactory;
-import org.apache.commons.io.IOUtils;
-import org.springframework.web.context.ContextLoaderListener;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,7 +38,11 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.web.context.ContextLoaderListener;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
 

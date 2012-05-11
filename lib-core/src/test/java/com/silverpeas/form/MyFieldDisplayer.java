@@ -72,7 +72,7 @@ public class MyFieldDisplayer implements FieldDisplayer<Field> {
 
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, Field field,
-          String language) {
+          String language, boolean stored) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
   

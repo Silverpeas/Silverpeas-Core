@@ -37,7 +37,7 @@ public class GeneralPropertiesManager {
       "com.stratelia.webactiv.multilang.generalMultilang";
   static final ResourceLocator s_GeneralProperties = new ResourceLocator(
       "com.stratelia.webactiv.general", "");
-  final static int dvis = Integer.parseInt(s_GeneralProperties.getString("domainVisibility", "0"));
+  static int dvis = Integer.parseInt(s_GeneralProperties.getString("domainVisibility", "0"));
 
   static public ResourceLocator getGeneralResourceLocator() {
     return s_GeneralProperties;

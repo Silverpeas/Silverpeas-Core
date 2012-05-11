@@ -24,31 +24,33 @@
 
 package com.stratelia.webactiv.util.statistic.control;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.statistic.ejb.HistoryObjectDAO;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class declaration
@@ -225,14 +227,12 @@ public class StatisticBmEJB implements SessionBean {
   }
 
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
-      String objectType,
-      List<String> userIds) {
+      String objectType, List<String> userIds) {
     if (userIds == null || userIds.isEmpty()) {
       return getHistoryByObject(foreignPK, action, objectType);
     } else {
       OrganizationController orga = new OrganizationController();
-      UserDetail[] users = orga.getUserDetails((String[]) userIds.toArray(new String[] {}));
-
+      UserDetail[] users = orga.getUserDetails(userIds.toArray(new String[userIds.size()]));
       return getHistoryByObject(foreignPK, action, objectType, users);
     }
   }
@@ -246,10 +246,9 @@ public class StatisticBmEJB implements SessionBean {
     try {
       list = getHistoryByAction(foreignPK, action, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException(
-          "StatisticBmEJB.getHistoryByObject()",
-          SilverpeasRuntimeException.ERROR,
-          "statistic.EX_IMPOSSIBLE_DOBTENIR_LETAT_DES_LECTURES", e);
+      throw new StatisticRuntimeException("StatisticBmEJB.getHistoryByObject()",
+          SilverpeasRuntimeException.ERROR, "statistic.EX_IMPOSSIBLE_DOBTENIR_LETAT_DES_LECTURES",
+          e);
     }
     String[] readerIds = new String[list.size()];
     Date[] date = new Date[list.size()];
@@ -274,8 +273,9 @@ public class StatisticBmEJB implements SessionBean {
       compteur = j + 1;
     }
     for (int j = compteur; j < controlledUsers.length; j++) {
-      if (!allUsers.contains(controlledUsers[j]))
+      if (!allUsers.contains(controlledUsers[j])) {
         allUsers.add(controlledUsers[j]);
+      }
     }
 
     // création de la liste de tous les utilisateur ayant le droit de lecture
@@ -306,10 +306,10 @@ public class StatisticBmEJB implements SessionBean {
             nbAccess = nb.intValue();
             nbAccess = nbAccess + 1;
           }
-          nbAccessbyUser.put(controlledUsers[j], new Integer(nbAccess));
+          nbAccessbyUser.put(controlledUsers[j], Integer.valueOf(nbAccess));
         } else {
           byUser.put(controlledUsers[j], date[j]);
-          nbAccessbyUser.put(controlledUsers[j], new Integer(1));
+          nbAccessbyUser.put(controlledUsers[j], Integer.valueOf(1));
         }
       }
     }
@@ -322,12 +322,14 @@ public class StatisticBmEJB implements SessionBean {
       UserDetail user = historyByUser.getUser();
       // recherche de la date de dernier accès
       Date lastAccess = (Date) byUser.get(user);
-      if (lastAccess != null)
+      if (lastAccess != null) {
         historyByUser.setLastAccess(lastAccess);
+      }
       // recherche du nombre d'accès
       Integer nbAccess = (Integer) nbAccessbyUser.get(user);
-      if (nbAccess != null)
+      if (nbAccess != null) {
         historyByUser.setNbAccess(nbAccess.intValue());
+      }
     }
 
     // tri de la liste pour mettre en premier les users ayant consulté
@@ -381,17 +383,109 @@ public class StatisticBmEJB implements SessionBean {
     }
   }
 
+  public int getCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
+      Date startDate, Date endDate) {
+    int nb = 0;
+    Connection con = null;
+    try {
+      con = getConnection();
+      for (WAPrimaryKey primaryKey : primaryKeys) {
+        nb += HistoryObjectDAO.getCountByPeriod(con, primaryKey, objectType, startDate, endDate);
+      }
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().getCountByPeriod()",
+          SilverpeasRuntimeException.ERROR,
+          "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+    } finally {
+      freeConnection(con);
+    }
+    return nb;
+  }
+
+  public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
+      Date startDate, Date endDate, List<String> userIds) {
+    int nb = 0;
+    Connection con = null;
+    try {
+      con = getConnection();
+      if (!userIds.isEmpty()) {
+        for (String userId : userIds) {
+          for (WAPrimaryKey primaryKey : primaryKeys) {
+            nb +=
+                HistoryObjectDAO.getCountByPeriodAndUser(con, primaryKey, objectType, startDate,
+                    endDate, userId);
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().getCountByPeriodAndUser()",
+          SilverpeasRuntimeException.ERROR,
+          "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+    } finally {
+      freeConnection(con);
+    }
+
+    return nb;
+  }
+
+  public int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action,
+      String objectType, Date startDate, Date endDate) {
+    int nb = 0;
+    Connection con = null;
+    try {
+      con = getConnection();
+      List<Integer> objectIds =
+          HistoryObjectDAO.getListObjectAccessByPeriod(con, primaryKeys, objectType, startDate,
+              endDate);
+      Set<Integer> distinctObjectIds = new HashSet<Integer>(objectIds);
+      nb = distinctObjectIds.size();
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().getDistinctCountByPeriod()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
+    } finally {
+      freeConnection(con);
+    }
+    return nb;
+  }
+
+  public int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
+      String objectType, Date startDate, Date endDate, List<String> userIds) {
+    int nb = 0;
+    Connection con = null;
+    if (userIds != null && userIds.size() > 0) {
+      Set<Integer> distinctObjectIds = new HashSet<Integer>();
+      try {
+        con = getConnection();
+        for (String userId : userIds) {
+          List<Integer> objectIds =
+              HistoryObjectDAO.getListObjectAccessByPeriodAndUser(con, primaryKeys, objectType,
+                  startDate, endDate, userId);
+          distinctObjectIds.addAll(objectIds);
+        }
+        nb = distinctObjectIds.size();
+      } catch (Exception e) {
+        throw new StatisticRuntimeException("StatisticBmEJB().getDistinctCountByPeriod()",
+            SilverpeasRuntimeException.ERROR,
+            "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+            e);
+      } finally {
+        freeConnection(con);
+      }
+
+    }
+    return nb;
+  }
+
   /**
    * Method declaration
    * @throws CreateException
-   * @see
    */
   public void ejbCreate() throws CreateException {
   }
 
   /**
    * Method declaration
-   * @see
    */
   @Override
   public void ejbRemove() {
@@ -399,7 +493,6 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * @see
    */
   @Override
   public void ejbActivate() {
@@ -407,7 +500,6 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * @see
    */
   @Override
   public void ejbPassivate() {
@@ -416,7 +508,6 @@ public class StatisticBmEJB implements SessionBean {
   /**
    * Method declaration
    * @param sc
-   * @see
    */
   @Override
   public void setSessionContext(SessionContext sc) {

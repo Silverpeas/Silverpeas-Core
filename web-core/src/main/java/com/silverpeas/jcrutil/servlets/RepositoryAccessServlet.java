@@ -27,7 +27,6 @@ package com.silverpeas.jcrutil.servlets;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.IOException;
-import java.rmi.Remote;
 import javax.jcr.NamespaceException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;

@@ -661,7 +661,7 @@ public class PublicationDAO {
     if (description == null) {
       description = "";
     }
-    java.util.Date creationDate;
+    Date creationDate;
     try {
       creationDate = DateUtil.parseDate(rs.getString("pubCreationDate"));
     } catch (java.text.ParseException e) {
@@ -670,7 +670,7 @@ public class PublicationDAO {
           + "creationDate format unknown for publication.pk = " + pk
           + " : " + e.toString());
     }
-    java.util.Date beginDate;
+    Date beginDate;
     String d = rs.getString("pubBeginDate");
 
     if (d.equals(nullBeginDate)) {
@@ -685,7 +685,7 @@ public class PublicationDAO {
             + pk.toString() + " : " + e.toString());
       }
     }
-    java.util.Date endDate;
+    Date endDate;
 
     d = rs.getString("pubEndDate");
     if (d.equals(nullEndDate)) {
@@ -707,7 +707,7 @@ public class PublicationDAO {
     String content = rs.getString("pubContent");
     String status = rs.getString("pubStatus");
 
-    java.util.Date updateDate;
+    Date updateDate;
     String u = rs.getString("pubUpdateDate");
     if (u != null) {
       try {
@@ -729,7 +729,7 @@ public class PublicationDAO {
       updaterId = creatorId;
     }
 
-    java.util.Date validateDate = null;
+    Date validateDate = null;
     String strValDate = rs.getString("pubValidateDate");
     try {
       validateDate = DateUtil.parseDate(strValDate);
@@ -749,7 +749,7 @@ public class PublicationDAO {
     String cloneStatus = rs.getString("pubCloneStatus");
     String lang = rs.getString("lang");
 
-    java.util.Date draftOutDate = null;
+    Date draftOutDate = null;
     try {
       draftOutDate = DateUtil.parseDate(rs.getString("pubdraftoutdate"));
     } catch (java.text.ParseException e) {

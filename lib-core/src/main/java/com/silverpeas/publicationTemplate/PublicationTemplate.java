@@ -24,6 +24,8 @@
 
 package com.silverpeas.publicationTemplate;
 
+import java.util.List;
+
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
@@ -99,5 +101,11 @@ public interface PublicationTemplate {
    * Returns the Form used to view the search result records built from this template.
    */
   public Form getSearchResultForm() throws PublicationTemplateException;
+  
+  /**
+   * Returns all field names which can generate a search facet
+   * @return a List of field name
+   */
+  public List<String> getFieldsForFacets();
 
 }

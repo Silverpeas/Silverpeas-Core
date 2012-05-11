@@ -25,7 +25,6 @@
 package com.stratelia.webactiv.util.indexEngine.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public class IndexerThread extends Thread {
    */
   @Override
   public void run() {
-    Request request = null;
+    Request request;
 
     while (true) {
       /*
@@ -206,6 +205,7 @@ class AddIndexEntryRequest implements Request {
    * Method declaration
    * @param indexManager
    */
+  @Override
   public void process(IndexManager indexManager) {
     SilverTrace.debug("indexEngine", "IndexerThread",
         "indexEngine.INFO_PROCESS_ADD_REQUEST", indexEntry.toString());
@@ -232,6 +232,7 @@ class RemoveIndexEntryRequest implements Request {
    * Method declaration
    * @param indexManager
    */
+  @Override
   public void process(IndexManager indexManager) {
     SilverTrace.debug("indexEngine", "IndexerThread",
         "indexEngine.INFO_PROCESS_REMOVE_REQUEST", indexEntry.toString());

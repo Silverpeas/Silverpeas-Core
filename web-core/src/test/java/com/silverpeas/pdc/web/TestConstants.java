@@ -24,7 +24,7 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.rest.TestResources;
+import com.silverpeas.web.TestResources;
 
 /**
  * All the constants dedicated to be used in unit tests.
@@ -44,7 +44,7 @@ public interface TestConstants {
           + "/classification?nodeId=" + NODE_ID;
   static final String COMPONENT_DEFAULT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID
           + "/classification";
-  static final String UNKNOWN_DEFAULT_CLASSIFICATION_PATH = "pdc/kmelia3/classification";
+  static final String UNKNOWN_DEFAULT_CLASSIFICATION_PATH = "pdc/kmelia1003/classification";
   static final String UNKNOWN_CONTENT_PDC_PATH = "pdc/kmelia3?contentId=2";
   static final String UNKNOWN_CONTENT_CLASSIFICATION_PATH = "pdc/kmelia3/2";
   static final String FRENCH = "fr";

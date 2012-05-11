@@ -393,7 +393,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
             destination = "/versioningPeas/jsp/documentLocked.jsp";
           }
         }
-      } else if (function.equals("Checkout")) {
+      } else if ("Checkout".equals(function)) {
         String documentId = request.getParameter("DocId");
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
             versioningSC.getSpaceId(), versioningSC.getComponentId());
@@ -406,7 +406,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
         versioningSC.setEditingDocument(document);
         request.setAttribute("Document", document);
         destination = rootDestination + "versions.jsp";
-      } else if (function.equals("DeleteDocumentRequest")) {
+      } else if ("DeleteDocumentRequest".equals(function)) {
         String documentId = request.getParameter("DocId");
         String url = request.getParameter("Url");
         request.setAttribute("DocId", documentId);
@@ -418,8 +418,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
             versioningSC.getSpaceId(), versioningSC.getComponentId());
         versioningSC.deleteDocument(documentPK);
-        SilverTrace.info("versioningPeas",
-            "VersioningRequestRouter.getDestination()",
+        SilverTrace.info("versioningPeas", "VersioningRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "url=" + url);
         request.setAttribute("urlToReload", url);
         destination = rootDestination + "closeWindow.jsp";

@@ -99,14 +99,14 @@ public class URLManager {
       GeneralPropertiesManager.getString("ApplicationURL", "/silverpeas");
   static Properties specialsURL = null;
   static String httpMode = null;
-  static boolean displayUniversalLinks = false;
+  static boolean universalLinksUsed = false;
 
   static {
     ResourceLocator resources = new ResourceLocator("com.stratelia.silverpeas.peasCore.URLManager",
         "");
     specialsURL = resources.getProperties();
     httpMode = resources.getString("httpMode");
-    displayUniversalLinks = resources.getBoolean("displayUniversalLinks", false);
+    universalLinksUsed = resources.getBoolean("displayUniversalLinks", false);
   }
 
   /**
@@ -204,7 +204,7 @@ public class URLManager {
    * @return
    */
   public static boolean displayUniversalLinks() {
-    return displayUniversalLinks;
+    return universalLinksUsed;
   }
 
   public static String getSimpleURL(int type, String id, String componentId) {

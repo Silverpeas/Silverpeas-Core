@@ -505,6 +505,7 @@ public class GenericRecordSetManager {
       fieldTemplate.setSearchable(field.isSearchable());
       fieldTemplate.setDisplayerName((displayName != null) ? displayName : "");
       fieldTemplate.setLabel(field.getLabel());
+      fieldTemplate.setUsedAsFacet(field.isUsedAsFacet());
 
       wrapped.addFieldTemplate(fieldTemplate);
     }

@@ -1,34 +1,31 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+* GNU Affero General Public License as published by the Free Software Foundation, either version 3
+* of the License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+* text describing the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License along with this program.
+* If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.util;
 
-import com.google.common.collect.Sets;
-
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 public interface MimeTypes {
+
   public final String SERVLET_HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
   public final String DEFAULT_MIME_TYPE = "application/octet-stream";
   public final String RTF_MIME_TYPE = "application/rtf";
@@ -45,20 +42,24 @@ public interface MimeTypes {
   public final String ARCHIVE_MIME_TYPE = "application/x-zip-compressed";
   public final String SHORT_ARCHIVE_MIME_TYPE = "application/zip";
   public final String JAVA_ARCHIVE_MIME_TYPE = "application/java-archive";
+  public static final String BZ2_ARCHIVE_MIME_TYPE = "application/x-bzip";
+  public static final String GZ_ARCHIVE_MIME_TYPE = "application/x-gzip";
+  public static final String GUNZIP_ARCHIVE_MIME_TYPE = "application/x-gunzip";
+  public static final String TARGZ_ARCHIVE_MIME_TYPE = "application/x-tar-gz";
   public final String WORD_2007_MIME_TYPE =
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   public final String WORD_2007_TEMPLATE_MIME_TYPE =
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
   public final String WORD_2007_EXTENSION = "application/vnd.ms-word";
   public final String EXCEL_2007_MIME_TYPE =
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
   public final String EXCEL_2007_TEMPLATE_MIME_TYPE =
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
   public final String EXCEL_2007_EXTENSION = "application/vnd.ms-excel";
   public final String POWERPOINT_2007_MIME_TYPE =
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation";
   public final String POWERPOINT_2007_TEMPLATE_MIME_TYPE =
-      "application/vnd.openxmlformats-officedocument.presentationml.template";
+    "application/vnd.openxmlformats-officedocument.presentationml.template";
   public final String POWERPOINT_2007_EXTENSION = "application/vnd.ms-powerpoint";
   public final String RSS_MIME_TYPE = "application/rss+xml";
   public final String JAR_EXTENSION = "jar";
@@ -83,18 +84,20 @@ public interface MimeTypes {
   public final String MIME_TYPE_OO_IMAGE = "application/vnd.oasis.opendocument.image";
   // Extension .odm (Document principal)
   public final String MIME_TYPE_OO_MASTER = "application/vnd.oasis.opendocument.text-master";
-  public static final Set<String> MS_OFFICE_MIME_TYPES =
-      Sets.newHashSet(
-      WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1,
-      POWERPOINT_MIME_TYPE2);
-  public static final Set<String> OPEN_OFFICE_MIME_TYPES = Sets.newHashSet(
-      WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
+  public static final Set<String> MS_OFFICE_MIME_TYPES = new HashSet<String>(Arrays
+    .asList(new String[]{WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1,
+      POWERPOINT_MIME_TYPE2}));
+  public static final Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<String>(Arrays.asList(
+    new String[]{WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
       EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
       POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
       POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
       MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA,
-      MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER);
-  public static final Set<String> IMAGE_EXTENTIONS = Sets.newHashSet(
-      "gif", "GIF", "jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP", "pcd", "PCD", "tga",
-      "TGA", "tif", "TIF");
+      MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER}));
+  public static final Set<String> IMAGE_EXTENTIONS = new HashSet<String>(Arrays.asList(
+    new String[]{"gif", "GIF", "jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP", "pcd",
+      "PCD", "tga", "TGA", "tif", "TIF"}));
+  public static final Set<String> ARCHIVE_MIME_TYPES = new HashSet<String>(Arrays.asList(
+    new String[]{BZ2_ARCHIVE_MIME_TYPE, GZ_ARCHIVE_MIME_TYPE, GUNZIP_ARCHIVE_MIME_TYPE,
+      TARGZ_ARCHIVE_MIME_TYPE, ARCHIVE_MIME_TYPE, SHORT_ARCHIVE_MIME_TYPE, JAVA_ARCHIVE_MIME_TYPE}));
 }

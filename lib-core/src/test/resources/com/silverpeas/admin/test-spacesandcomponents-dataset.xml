@@ -43,6 +43,12 @@
   <st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0"/>
   <st_space id="2" domainfatherid="1" name="Space 1-2" firstpagetype="0" />
   <st_space id="3" domainfatherid="[NULL]" name="Space 2" firstpagetype="0"/>
+  
+  <st_space id="4" domainfatherid="[NULL]" name="Space 4" firstpagetype="0"/>
+  <st_space id="5" domainfatherid="4" name="4.1 (Inheritance blocked)" firstpagetype="0" isinheritanceblocked="1"/>
+  <st_space id="6" domainfatherid="4" name="4.2 (Inheritance enabled)" firstpagetype="0" isinheritanceblocked="0"/>
+  
+  
   <st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia"/>
   <st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach"/>
   
@@ -67,7 +73,7 @@
   <uniqueid maxid="2" tablename="domainsp_user"/>
   <uniqueid maxid="1" tablename="st_group"/>
   <uniqueid maxid="1" tablename="domainsp_group"/>
-  <uniqueid maxid="3" tablename="st_space"/>
+  <uniqueid maxid="6" tablename="st_space"/>
   <uniqueid maxid="2" tablename="st_componentinstance"/>
   <uniqueid maxid="3" tablename="st_spaceuserrole"/>
   <uniqueid maxid="2" tablename="st_userrole"/>

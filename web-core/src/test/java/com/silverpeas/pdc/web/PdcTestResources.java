@@ -33,7 +33,7 @@ import static com.silverpeas.pdc.web.UserThesaurusHolder.forUser;
 import com.silverpeas.pdc.web.mock.ContentManagerMock;
 import com.silverpeas.pdc.web.mock.PdcBmMock;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.rest.TestResources;
+import com.silverpeas.web.TestResources;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -228,7 +228,7 @@ public class PdcTestResources extends TestResources {
    * value of the PdC axis will be fetched from the users thesaurus.
    */
   public void enableThesaurus() {
-    UserPreferences preferences = getMockedPersonalizationService().getUserSettings(
+    UserPreferences preferences = getPersonalizationServiceMock().getUserSettings(
             USER_ID);
     preferences.enableThesaurus(true);
   }

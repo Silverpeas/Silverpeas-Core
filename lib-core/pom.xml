@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.9-SNAPSHOT</version>
+    <version>5.10-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
@@ -149,10 +149,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-rmi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-server</artifactId>
     </dependency>
     <dependency>
@@ -251,10 +247,6 @@
       <artifactId>jericho-html</artifactId>
     </dependency>
     <dependency>
-      <groupId>pdfbox</groupId>
-      <artifactId>pdfbox</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
     </dependency>
@@ -340,7 +332,7 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
-      <classifier>silverpeas</classifier>
+      <!--<classifier>silverpeas</classifier>-->
     </dependency>
     <dependency>
       <groupId>com.drewnoakes</groupId>
@@ -386,6 +378,8 @@
           <exclude>**/*.doc</exclude>
           <exclude>**/*.docx</exclude>
           <exclude>**/*.zip</exclude>
+          <exclude>**/*.tar.gz</exclude>
+          <exclude>**/*.tar.bz2</exclude>
           <exclude>**/*.sql</exclude>
         </excludes>
       </testResource>
@@ -399,6 +393,8 @@
           <include>**/*.doc</include>
           <include>**/*.docx</include>
           <include>**/*.zip</include>
+          <include>**/*.tar.gz</include>
+          <include>**/*.tar.bz2</include>
           <include>**/*.sql</include>
         </includes>
       </testResource>

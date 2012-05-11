@@ -24,16 +24,6 @@
 
 package com.stratelia.webactiv.searchEngine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Set;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -41,11 +31,13 @@ import com.stratelia.webactiv.util.indexEngine.model.CharReplacer;
 import com.stratelia.webactiv.util.indexEngine.model.ExternalComponent;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * A QueryDescription packs a query with the different spaces and components to be searched.
  */
-public class QueryDescription implements Serializable {
+public final class QueryDescription implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -78,7 +70,7 @@ public class QueryDescription implements Serializable {
   private String requestedCreatedAfter = null;
   private String requestedUpdatedBefore = null;
   private String requestedUpdatedAfter = null;
-  private Hashtable<String, String> xmlQuery = null;
+  private Map<String, String> xmlQuery = null;
   private String xmlTitle = null;
   private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
@@ -111,7 +103,7 @@ public class QueryDescription implements Serializable {
    */
   public void setQuery(String query) {
 
-    CharReplacer charReplacer = null;
+    CharReplacer charReplacer;
 
     this.query = (query == null) ? "" : query.toLowerCase();
 
@@ -237,11 +229,11 @@ public class QueryDescription implements Serializable {
     return requestedCreatedAfter;
   }
 
-  public void setXmlQuery(Hashtable<String, String> xmlQuery) {
+  public void setXmlQuery(Map<String, String> xmlQuery) {
     this.xmlQuery = xmlQuery;
   }
 
-  public Hashtable<String, String> getXmlQuery() {
+  public Map<String, String> getXmlQuery() {
     return xmlQuery;
   }
 

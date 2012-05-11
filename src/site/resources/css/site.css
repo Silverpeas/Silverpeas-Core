@@ -24,10 +24,20 @@
 
 /* You can override this file with your own styles */
 
-body {
+body#topBarEnabled {
   padding-top: 38px;
   margin:0;
   color:#404040;
+  padding-left:0;
+  font-family:arial;
+  position:relative;
+}
+
+
+p {
+	color:#444;
+	font-family: Arial, Helvetica, sans-serif;
+	margin-bottom:8px;
 }
 
 .typ {
@@ -50,6 +60,7 @@ pre.prettyprint {
 li {
     color: #808080;
     line-height: 18px;
+	font-size:13px;
 }
 
 .tag {
@@ -65,28 +76,52 @@ li {
 	display: inline-block;
 	height:0;
 }
+.navbar-fixed-top, .navbar-fixed-bottom {
+	z-index:90; 
+}
 
-.topbar div >ul a:hover, .nav a:hover{
+.navbar-fixed-top {
+	position:relative;
+	min-width:980px;
+}
+
+.navbar .btn, .navbar .btn-group {
+	margin-right:160px;
+}
+
+.navbar div >ul a:hover, .nav a:hover{
 	color:#ECFFBF;
 }
 
+.navbar .nav > li > a {
+	color:#BFBFBF;
+}
 
 .open .menu, .dropdown.open .menu, .open .dropdown-toggle, .dropdown.open .dropdown-toggle {
 	color:#ECFFBF;
 }
-.topbar div>ul a:hover,.nav a:hover{
-	color:#ECFFBF;
+.navbar div>ul a:hover,.nav a:hover{
+	color:#ECFFBF ;
 	text-decoration:none;
 }
 
-.topbar div>ul .menu-dropdown a.menu,.nav .menu-dropdown a.menu,.topbar div>ul .dropdown-menu a.menu,.nav .dropdown-menu a.menu,.topbar div>ul .menu-dropdown .dropdown-toggle,.nav .menu-dropdown .dropdown-toggle,.topbar div>ul .dropdown-menu .dropdown-toggle,.nav .dropdown-menu .dropdown-toggle{
+.dropdown-menu li > a:hover, .dropdown-menu .active > a, .dropdown-menu .active > a:hover {
+	background-color:#ecffbf;
+}
+
+.navbar .nav > li > a:hover {
+	color:#ecffbf;
+	background-color:#393939;
+}
+
+.navbar div>ul .menu-dropdown a.menu,.nav .menu-dropdown a.menu,.navbar div>ul .dropdown-menu a.menu,.nav .dropdown-menu a.menu,.navbar div>ul .menu-dropdown .dropdown-toggle,.nav .menu-dropdown .dropdown-toggle,.navbar div>ul .dropdown-menu .dropdown-toggle,.nav .dropdown-menu .dropdown-toggle{
 	color:#ECFFBF;
 }
 
-.topbar div>ul .menu-dropdown li a:hover,.nav .menu-dropdown li a:hover,.topbar div>ul .dropdown-menu li a:hover,.nav .dropdown-menu li a:hover{
-	color:#ECFFBF;
+.navbar div>ul .menu-dropdown li a:hover,.nav .menu-dropdown li a:hover,.navbar div>ul .dropdown-menu li a:hover,.nav .dropdown-menu li a:hover{
+	color:#BFBFBF;
 }
-.topbar div>ul .menu-dropdown .active a,.nav .menu-dropdown .active a,.topbar div>ul .dropdown-menu .active a,.nav .dropdown-menu .active a{
+.navbar div>ul .menu-dropdown .active a,.nav .menu-dropdown .active a,.navbar div>ul .dropdown-menu .active a,.nav .dropdown-menu .active a{
 	color:#ECFFBF;
 }
 
@@ -115,8 +150,23 @@ table {
   width: 100%;
   margin-left: -2px;
   margin-right: -2px;
-  height: 140px;
+  height: 100px;
+  border:1px solid #ddd;
+  margin-top:12px;
 }
+table td, table tr .zebra-striped{
+	border-top:1px solid #ddd;
+	border-left:1px solid #ddd;
+	padding-left:10px;
+	padding:14px;
+}
+table th {
+	border-top:1px solid #ddd;
+	border-left:1px solid #ddd;
+	padding-right:237px;
+	padding-left:8px;
+}
+
 acronym {
   cursor: help;
   border-bottom: 1px dotted #feb;
@@ -143,6 +193,16 @@ div.clear hr{
 #bannerLeft img, #bannerRight img {
   margin: 0px;
 }
+
+body.topBarEnabled {
+	min-width:960px;
+	padding-top:0px;
+}
+
+
+
+
+
 .xleft, #bannerLeft img {
   float:left;
 }
@@ -152,6 +212,7 @@ div.clear hr{
 #banner {
   padding: 0px;
   height:108px;
+  min-width:980px;
 }
 #banner img {
   border: none;
@@ -188,7 +249,7 @@ ul.menu li a span {
 }
 
 
-.topbar div > ul > li, .nav > li {
+.navbar div > ul > li, .nav > li {
 	float:left;
 }
 
@@ -212,20 +273,22 @@ ul.menu li a:hover {
 }
 
 ul.menu  {
+	position:absolute;
 	list-style-type:none;
 	font-family: arial;
-    left: 333px;
-	top: 65px;
+	left: 222px; 
+	top: 0;
+	margin:0;
+	padding:0;
 }
 	
 ul.menu li {
-	display: block;
-    float: left;
-	
-	}
+  display: block;
+  float: left;
+}
 
 div#banner {
-   background: url("../images/bgheaderwinter.jpg") no-repeat scroll left top #FFFFFF;
+	background: url("../images/bg_header.jpg") no-repeat scroll left top #FFFFFF;
 }
 
 a.externalLink {
@@ -245,6 +308,23 @@ a.externalLink[href^="http"] {
 .composite {
    padding-top:0;
 }
+
+#___plusone_0 {
+	width:225px !important;
+}
+
+.composite .footer .container-fluid p{
+	clear:both;
+	content: "";
+	display:block;
+	border-top: 1px solid #DDDDDD;
+    float: none;
+    padding: 10px 0;
+    text-align: center;
+	background-color:#FFF;
+}
+
+
 #banner img {
 	position:absolute;
 	left:45px;
@@ -265,6 +345,7 @@ a.externalLink[href^="http"] {
     margin: 8px 0 4px 0;
 	list-style: disc outside none;
 	padding: 0.1px 0 2.2px 2em;
+	font-family: Arial, Helvetica, sans-serif;
 
 }
 
@@ -285,32 +366,37 @@ a:hover {
     color: #777777;
 }
 
+.row-fluid .span9 {
+	margin-left:260px;
+	width:auto;
+}
+
 h2 {
     background: url("../images/puce-pate.gif") no-repeat scroll 0 4px transparent;
     border-bottom: 1px solid #CCCCCC;
-    color: #777777;
+    color: #aaa;
     font-family: Arial,Helvetica,sans-serif;
     font-size: 24px;
     line-height: 36px;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     margin-top: 28px;
     padding: 0 0 0 38px;
 }
-h3 {
-    background-color: #F5F5F5;
-    font-size: 17px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    padding-left: 10px;
+
+
+
+.span9, h3 {
+	color:#888;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:15px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    color: #AAAAAA;
-    font-weight: bold;
+.section p, .section p, .section dt, .section dt {
+	margin-top:15px;
 }
 
 tt {
-    background-color: #FEE9CC;
+    background-color: transparent;
     color: rgba(0, 0, 0, 0.75);
     padding: 1px 3px;
 }
@@ -318,6 +404,8 @@ tt {
 .container-fluid {
     padding-left: 0;
     padding-right: 0;
+	position:relative;
+	min-width:940px;
 }
 
 #breadcrumbs {
@@ -328,43 +416,40 @@ tt {
 
 #leftColumn {
 	margin-left:20px;
+	width:220px;
+	float:left;
 }
 
 #bodyColumn {
 	margin-right:20px;
+	margin-top:-29px;
 }
 
 .container-fluid > .content {
     margin-left: 260px;
 }
 
+ul {
+	list-style-type:disc;
+}
 .content ul ul {
-	list-style-type:circle;
+	list-style:circle;
 }
 
-.footer {
-	text-align:center;
+.row span16 {
+	text-align:center !important;
 	border-top: 1px solid #e1e1e1;
 	padding-bottom: 15px;
 
 }
-[class*="span"]{
-	display:inline;
-	margin-left:20px;
-	float:none;
-}
 
-
-/*logos well */
-
-#poweredBy {
-	padding-top: 20px;
-	text-align:center;
+#poweredBy iframe{
+	margin-left:50px;
 }
 a.poweredBy {
 	border-radius:10px 10px 10px 10px;
-	border:1px solid #ddd;
-	width:180px;
+	border:1px solid #ccc;
+	width:188px;
 	display:block;
 	margin: 0 auto 10px auto;
 	padding:3px;
@@ -375,14 +460,28 @@ img.poweredBy {
 	max-height:70px;
 }
 
+.poweredBy {
+	margin-top:0;
+}
 
 
 /*** HOME PAGE **/
 
+.row-fluid > [class*="span"] {
+	float:none;
+}
+
+
+#leftColumn li.none {
+	margin-left:0 !important;
+	text-indent:0px !important;
+}
+
+
 .well, h5 {
     background-color: #fff;
-    color: #444444;
-    font-size: 15px;
+    color: #444444 ;
+    font-size: 12px;
     line-height: 30px;
     margin-bottom: -4px;
     margin-top: 4px;
@@ -523,9 +622,40 @@ margin:0 20px ;
 	font-weight:bold;
 }
 
+#twitter {
+	background: url("../images/btn-twitt.png") no-repeat scroll 0pt 23px transparent;
+	color: transparent;
+	display: block;
+	height:82px;
+	margin-left: 10px;
+	padding: 0pt;
+	width: 200px;
+}
+
+#poweredBy #twitter iframe {
+    margin: 0 0 0 0;
+}
+
+/*.fb-like {
+	background:url("../images/btn-fb.png") no-repeat transparent;
+	margin-left:10px;
+	padding-left:157px;
+	padding-top:14px;
+}*/
+
 fieldset legend {
 	font-size:17.5px;
 	padding-top: 10px;
 	padding-left: 60px;
+	margin-bottom:6px;
 }
 
+[class*="span16"] {
+	border-top:1px solid #ddd;
+	float:none;
+	margin-bottom:10px;
+	margin-left:20px;
+	padding-top:10px;
+	text-align:center;
+	margin-top:-25px;
+}

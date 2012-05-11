@@ -24,11 +24,8 @@
 
 package com.silverpeas.look;
 
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import java.util.ArrayList;
-import java.util.List;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import javax.inject.Inject;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,9 +33,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import static org.mockito.Mockito.*;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests on the SilverpeasLook operations.
@@ -84,9 +87,8 @@ public class SilverpeasLookTest {
   public void getWallpaperOfARootSpace() {
     prepareSpaces("WA1");
     String wallpaper = look.getWallpaperOfSpace("WA1");
-    assertThat(wallpaper,
-        equalTo(
-        "/silverpeas/OnlineFileServer/wallPaper.png?ComponentId=Space1&SourceFile=wallPaper.png&MimeType=image/png&Directory=look"));
+    assertThat(wallpaper, is("/silverpeas/OnlineFileServer/wallPaper.png?ComponentId=" +
+        "Space1&SourceFile=wallPaper.png&MimeType=image/png&Directory=look"));
   }
 
   /**
@@ -97,9 +99,8 @@ public class SilverpeasLookTest {
   public void getWallpaperOfTheCurrentSpace() {
     prepareSpaces("WA3", "WA2", "WA1");
     String wallpaper = look.getWallpaperOfSpace("WA1");
-    assertThat(wallpaper,
-        equalTo(
-        "/silverpeas/OnlineFileServer/wallPaper.png?ComponentId=Space1&SourceFile=wallPaper.png&MimeType=image/png&Directory=look"));
+    assertThat(wallpaper,is("/silverpeas/OnlineFileServer/wallPaper.png?ComponentId=Space1" +
+        "&SourceFile=wallPaper.png&MimeType=image/png&Directory=look"));
   }
 
   /**
@@ -110,9 +111,8 @@ public class SilverpeasLookTest {
   public void getWallpaperOfTheFirstParentSpace() {
     prepareSpaces("WA1", "WA11", "WA111");
     String wallpaper = look.getWallpaperOfSpace("WA111");
-    assertThat(wallpaper,
-        equalTo(
-        "/silverpeas/OnlineFileServer/wallPaper.png?ComponentId=Space1&SourceFile=wallPaper.png&MimeType=image/png&Directory=look"));
+    assertThat(wallpaper, is("/silverpeas/OnlineFileServer/wallPaper.png?ComponentId=Space1" +
+        "&SourceFile=wallPaper.png&MimeType=image/png&Directory=look"));
   }
 
   /**

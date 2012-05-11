@@ -29,7 +29,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
 public class ApplicationIndexer extends AbstractIndexer {
@@ -98,7 +97,7 @@ public class ApplicationIndexer extends AbstractIndexer {
           .newInstance();
       componentIndexer.index(mainSessionController, componentContext);
     } catch (ClassNotFoundException ce) {
-      SilverTrace.error("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
+      SilverTrace.warn("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
           "applicationIndexer.EX_INDEXER_PERSONAL_COMPONENT_NOT_FOUND",
           "personalComponent = " + personalComponent);
     } catch (Exception e) {
@@ -132,8 +131,8 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   ComponentIndexerInterface getIndexer(ComponentInstLight compoInst) {
-    ComponentIndexerInterface componentIndexer = null;
-    String compoName = firstLetterToUpperCase(compoInst.getName());
+    ComponentIndexerInterface componentIndexer;
+    String compoName= firstLetterToUpperCase(compoInst.getName());
     String className = getClassName(compoInst);
     String packageName = getPackage(compoInst);
     try {
@@ -148,18 +147,16 @@ public class ApplicationIndexer extends AbstractIndexer {
             loadIndexer("org.silverpeas." + packageName + '.' + className + "Indexer");
       }
     } catch (InstantiationException e) {
-      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName,
-          e);
+      SilverTrace.warn("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
       componentIndexer = new ComponentIndexerAdapter();
     } catch (IllegalAccessException e) {
-      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName,
-          e);
+      SilverTrace.warn("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
       componentIndexer = new ComponentIndexerAdapter();
     }
     if (componentIndexer == null) {
-      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
+      SilverTrace.warn("applicationIndexer", "ApplicationIndexer.getIndexer()",
           "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
           "component = " + compoName + " with classes com.stratelia.webactiv." + packageName + "."
           + className + "Indexer and com.silverpeas." + packageName + "." + className +
@@ -223,14 +220,10 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   public void indexUsers() {
-    AdminController admin = new AdminController(null);
     admin.indexAllUsers();
-    admin = null;
   }
 
   public void indexGroups() {
-    AdminController admin = new AdminController(null);
     admin.indexAllGroups();
-    admin = null;
   }
 }

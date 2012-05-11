@@ -22,16 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * IconWA.java
- * 
- * @author  neysseri
- * Created on 12 decembre 2000, 11:37
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
 /*

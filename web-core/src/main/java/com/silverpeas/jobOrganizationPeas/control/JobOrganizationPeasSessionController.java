@@ -33,14 +33,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -101,7 +95,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       resetCurrentUser();
     }
     currentUserId = userId;
-    resetCurrentGroup();
+    if (currentUserId != null) {
+      resetCurrentGroup();
+    }
   }
 
   private void resetCurrentUser() {
@@ -114,7 +110,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       resetCurrentGroup();
     }
     currentGroupId = groupId;
-    resetCurrentUser();
+    if (currentGroupId != null) {
+      resetCurrentUser();
+    }
   }
 
   public void resetCurrentGroup() {
@@ -144,13 +142,12 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
         return null;
       }
       currentGroups = new String[groupIds.length][4];
-      Group currentGroup = null;
       for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-        currentGroup = getOrganizationController().getGroup(groupIds[iGrp]);
-        currentGroups[iGrp][0] = currentGroup.getId();
-        currentGroups[iGrp][1] = currentGroup.getName();
-        currentGroups[iGrp][2] = String.valueOf(currentGroup.getUserIds().length);
-        currentGroups[iGrp][3] = currentGroup.getDescription();
+        Group theCurrentGroup = getOrganizationController().getGroup(groupIds[iGrp]);
+        currentGroups[iGrp][0] = theCurrentGroup.getId();
+        currentGroups[iGrp][1] = theCurrentGroup.getName();
+        currentGroups[iGrp][2] = String.valueOf(theCurrentGroup.getUserIds().length);
+        currentGroups[iGrp][3] = theCurrentGroup.getDescription();
       }
     }
     if (currentGroups == null) {
@@ -258,8 +255,8 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
         return null;
       }
       currentProfiles = new ArrayList<String[]>();
-      ProfileInst currentProfile = null;
-      ComponentInst currentComponent = null;
+      ProfileInst currentProfile;
+      ComponentInst currentComponent;
       List<String> spaceIds = new ArrayList<String>();
       for (String profileId : profileIds) {
         currentProfile = getAdminController().getProfileInst(profileId);
@@ -354,15 +351,17 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    */
   public void retourSelectionPeas() {
     Selection sel = getSelection();
-    String id = "";
+    String id;
 
     id = sel.getFirstSelectedElement();
-    if ((id != null) && (id.length() > 0)) {
-      setCurrentUserId(id);
-    }
+    setCurrentUserId(id);
+//    if ((id != null) && (id.length() > 0)) {
+//      setCurrentUserId(id);
+//    }
     id = sel.getFirstSelectedSet();
-    if ((id != null) && (id.length() > 0)) {
-      setCurrentGroupId(id);
-    }
+    setCurrentGroupId(id);
+//    if ((id != null) && (id.length() > 0)) {
+//      setCurrentGroupId(id);
+//    }
   }
 }
