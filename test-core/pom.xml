@@ -53,8 +53,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
