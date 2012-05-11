@@ -25,6 +25,7 @@ import com.silverpeas.admin.components.*;
 import com.silverpeas.admin.notification.AdminNotificationService;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -3059,13 +3060,26 @@ public final class Admin {
   }
 
   /**
-* Get the user Id corresponding to Domain/Login
-*
-* @param sLogin
-* @param sDomainId
-* @return
-* @throws AdminException
-*/
+   * Checks if an existing user already have the given email
+   *
+   * @param email email to check
+   *
+   * @return true if at least one user with given email is found
+   * @throws AdminException
+   */
+  public boolean isEmailExisting(String email) throws AdminException {
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    return userManager.isEmailExisting(domainDriverManager, email);
+  }
+
+  /**
+   * Get the user Id corresponding to Domain/Login
+   * @param sLogin
+   * @param sDomainId
+   * @return
+   * @throws AdminException
+   */
   public String getUserIdByLoginAndDomain(String sLogin, String sDomainId) throws AdminException {
     Domain[] theDomains;
     String valret = null;
@@ -3201,6 +3215,38 @@ public final class Admin {
     }
   }
 
+  public void migrateUser(UserDetail userDetail, String targetDomainId) throws AdminException {
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    try {
+      // Start transaction
+      domainDriverManager.startTransaction(false);
+      domainDriverManager.startTransaction(targetDomainId, false);
+
+      // migrate user
+      userManager.migrateUser(domainDriverManager, userDetail, targetDomainId);
+
+      // Commit the transaction
+      domainDriverManager.commit();
+      domainDriverManager.commit(targetDomainId);
+
+      cache.opUpdateUser(userDetail);
+    } catch (Exception e) {
+      try {
+        // Roll back the transactions
+        domainDriverManager.rollback();
+        domainDriverManager.rollback(targetDomainId);
+      } catch (Exception e1) {
+        SilverTrace.error("admin", "Admin.migrateUserFromSilverpeasToAnotherDomain", "root.EX_ERR_ROLLBACK", e1);
+      }
+      throw new AdminException("Admin.migrateUserFromSilverpeasToAnotherDomain", SilverpeasException.ERROR,
+          "admin.EX_ERR_M_USER", userDetail.getFirstName() + " " +
+          userDetail.getLastName(), e);
+    } finally {
+      domainDriverManager.releaseOrganizationSchema();
+    }
+   }
+
   /**
 * Delete the given user from silverpeas and specific domain
 */
@@ -3211,6 +3257,7 @@ public final class Admin {
                 "admin.MSG_WARN_TRY_TO_DELETE_GENERALADMIN");
         return null;
       }
+
       return deleteUser(sUserId, false);
 
     } catch (Exception e) {
@@ -3228,7 +3275,9 @@ public final class Admin {
     DomainDriverManager domainDriverManager =
             DomainDriverManagerFactory.getCurrentDomainDriverManager();
     try {
-      // Get user information from Silverpeas database only
+      // removes all social network external account associated to this user account
+      SocialNetworkService.getInstance().removeAllExternalAccount(sUserId);
+
       user = getUserDetail(sUserId);
       if (user == null) {
         throw new AdminException("Admin.deleteUser", SilverpeasException.ERROR,

@@ -1,4 +1,4 @@
-package com.silverpeas.socialNetwork.myProfil.servlets;
+package com.silverpeas.socialnetwork.myProfil.servlets;
 
 import java.net.URLEncoder;
 

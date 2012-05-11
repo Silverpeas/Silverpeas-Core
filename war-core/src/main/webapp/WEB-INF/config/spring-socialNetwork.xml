@@ -32,8 +32,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.socialNetwork.relationShip"/>
+  <ctx:component-scan base-package="com.silverpeas.socialnetwork.model"/>
+  <ctx:component-scan base-package="com.silverpeas.socialnetwork.connectors"/>
+  <ctx:component-scan base-package="com.silverpeas.admin.service"/>
 
-  <bean id="providerSwitch" class="com.silverpeas.socialNetwork.provider.ProviderSwitch">
+  <bean id="socialNetworkService"  factory-method="getInstance" class="com.silverpeas.socialnetwork.service.SocialNetworkService"/>
+
+  <bean id="providerSwitch" class="com.silverpeas.socialnetwork.provider.ProviderSwitch">
     <property name="socialEventsInterface">
       <ref bean="socialEvents" />
     </property>
@@ -51,15 +56,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     </property>
   </bean>
 
-  <bean id="socialEvents" class="com.stratelia.webactiv.calendar.socialNetwork.SocialEvent">
+  <bean id="socialEvents" class="com.stratelia.webactiv.calendar.socialnetwork.SocialEvent">
   </bean>
   <bean id="socialGallery" class="com.silverpeas.gallery.socialNetwork.SocialGallery">
   </bean>
-  <bean id="socialPublications" class="com.stratelia.webactiv.publication.socialNetwork.SocialPublications">
+  <bean id="socialPublications" class="com.stratelia.webactiv.publication.socialnetwork.SocialPublications">
   </bean>
-  <bean id="socialStatus" class="com.silverpeas.socialNetwork.status.SocialStatus">
+  <bean id="socialStatus" class="com.silverpeas.socialnetwork.status.SocialStatus">
   </bean>
-  <bean id="socialRelationShips" class="com.silverpeas.socialNetwork.relationShip.SocialRelationShips">
+  <bean id="socialRelationShips" class="com.silverpeas.socialnetwork.relationShip.SocialRelationShips">
   </bean>
 
 </beans>

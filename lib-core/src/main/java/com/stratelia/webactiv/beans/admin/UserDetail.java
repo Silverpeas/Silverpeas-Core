@@ -25,7 +25,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.socialNetwork.status.StatusService;
+import com.silverpeas.socialnetwork.status.StatusService;
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -74,7 +74,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static UserDetail getById(String userId) {
     return getOrganizationController().getUserDetail(userId);
   }
-  
+
   /**
 * Gets the detail about all the users in Silverpeas, whatever their domain.
 * @return a list with all the users in Silverpeas.
@@ -82,7 +82,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static List<UserDetail> getAll() {
     return Arrays.asList(getOrganizationController().getAllUsers());
   }
-  
+
   /**
 * Gets the detail about all the users belonging in the specified domain.
 * @param domainId the unique identifier of the domain.
@@ -290,7 +290,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
 
   }
-  
+
   /**
 * Is the specified user is restricted to access the resource in its own domain?
 * @return true if he's restricted in its own domain, false otherwise.
@@ -389,7 +389,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     hash = 41 * hash + (this.accessLevel != null ? this.accessLevel.hashCode() : 0);
     return hash;
   }
-  
+
   /**
 * Dump user values to the trace system
 */
@@ -443,7 +443,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
     return "";
   }
-  
+
   /**
 * Gets the preferences of this user.
 * @return the user preferences.

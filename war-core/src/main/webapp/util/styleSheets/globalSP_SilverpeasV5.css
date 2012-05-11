@@ -4883,3 +4883,34 @@ display: block;
 #sharing-overview a.Versionned {
 background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
 }
+
+#socialNetwork {
+	border-bottom: 1px solid gray;
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+#socialNetworkLogo {
+	float: left;
+}
+
+#socialNetworkInfos {
+	font-weight: bold;
+    padding-top: 10px;
+}
+
+#FBpublishButton {
+	display: none;
+}
+
+#FBloginButton {
+	display: none;
+}
+
+#LinkedInPublishButton {
+	display: none;
+}
+
+#LinkedInLoginButton {
+	display: none;
+}

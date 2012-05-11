@@ -36,7 +36,7 @@ import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.directory.model.UserFragmentVO;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
