@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.util.security;
 
 import com.silverpeas.util.StringUtil;
@@ -33,9 +34,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 /**
- * This is our own implementation of SSLSocketFactory using the default one but specifying our own 
- * truststore file thus enabling Silverpeas to configure this system element.
- * The TrustStore is the one declared in Silverpeas, not the one in the default System.properties at launch time.
+ * This is our own implementation of SSLSocketFactory using the default one but specifying our own
+ * truststore file thus enabling Silverpeas to configure this system element. The TrustStore is the
+ * one declared in Silverpeas, not the one in the default System.properties at launch time.
  * @author ehugonnet
  */
 public class SilverpeasSSLSocketFactory extends SSLSocketFactory {
@@ -56,8 +57,8 @@ public class SilverpeasSSLSocketFactory extends SSLSocketFactory {
     try {
       SSLContext sslcontext = SSLContext.getInstance("TLS");
       sslcontext.init(null,
-          new TrustManager[]{new SilverpeasX509TrustManager(System.getProperty(TRUSTSTORE_KEY),
-            getTrustorePassword())}, null);
+          new TrustManager[] { new SilverpeasX509TrustManager(System.getProperty(TRUSTSTORE_KEY),
+          getTrustorePassword()) }, null);
       factory = sslcontext.getSocketFactory();
     } catch (Exception ex) {
       // ignore

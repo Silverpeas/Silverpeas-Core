@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,10 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.publication.socialNetwork;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
+package com.stratelia.webactiv.publication.socialnetwork;
+
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import java.util.Date;
@@ -50,8 +51,10 @@ public class SocialInformationPublication implements SocialInformation {
       this.author = publication.getPublication().getCreatorId();
       this.date = publication.getPublication().getCreationDate();
     }
-    this.url = URLManager.getURL("kmelia", null,
-        publication.getPublication().getPK().getInstanceId()) + publication.getPublication().getURL();
+    this.url =
+        URLManager.getURL("kmelia", null,
+        publication.getPublication().getPK().getInstanceId()) +
+        publication.getPublication().getURL();
 
   }
 
@@ -159,7 +162,8 @@ public class SocialInformationPublication implements SocialInformation {
         getTitle())) {
       return false;
     }
-    if ((this.getDescription() == null) ? (other.getDescription() != null) : !this.getDescription().
+    if ((this.getDescription() == null) ? (other.getDescription() != null) : !this.getDescription()
+        .
         equals(other.getDescription())) {
       return false;
     }
@@ -178,7 +182,7 @@ public class SocialInformationPublication implements SocialInformation {
 
   /**
    *Indicates whether some other SocialInformation date is befor the date of this one.
-   *@param   obj   the reference object with which to compare.
+   *@param obj the reference object with which to compare.
    * @return int
    */
   @Override

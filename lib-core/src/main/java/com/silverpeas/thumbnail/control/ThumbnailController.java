@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.thumbnail.control;
 
 import java.awt.Graphics2D;
@@ -52,7 +53,7 @@ public class ThumbnailController {
 
   private static final ThumbnailService thumbnailService = new ThumbnailServiceImpl();
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-          "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
+      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
 
   /**
    * the constructor.
@@ -72,10 +73,11 @@ public class ThumbnailController {
 
     try {
       ThumbnailDetail completeThumbnail = thumbnailService.getCompleteThumbnail(thumbDetail);
-      //first, delete former thumbnail
+      // first, delete former thumbnail
       if (completeThumbnail != null) {
         if (completeThumbnail.getCropFileName() != null) {
-          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail.getCropFileName());
+          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
+              .getCropFileName());
         }
         thumbnailService.deleteThumbnail(thumbDetail);
       }
@@ -84,10 +86,10 @@ public class ThumbnailController {
       thumbDetail.setXStart(-1);
       thumbDetail.setYLength(-1);
       thumbDetail.setYStart(-1);
-      thumbnailService.createThumbnail(thumbDetail);     
+      thumbnailService.createThumbnail(thumbDetail);
     } catch (Exception e) {
       throw new ThumbnailRuntimeException("ThumbnailController.updateThumbnail()",
-              SilverpeasRuntimeException.ERROR, "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
+          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
     }
   }
 
@@ -109,13 +111,13 @@ public class ThumbnailController {
       }
     } catch (Exception fe) {
       throw new ThumbnailRuntimeException(
-              "ThumbnailController.deleteThumbnail(ThumbnailDetail thumbDetail)",
-              SilverpeasRuntimeException.ERROR, "thumbnail_MSG_DELETE_THUMBNAIL_KO", fe);
+          "ThumbnailController.deleteThumbnail(ThumbnailDetail thumbDetail)",
+          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_DELETE_THUMBNAIL_KO", fe);
     }
   }
 
   public static ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail, int thumbnailWidth,
-          int thumbnailHeight) {
+      int thumbnailHeight) {
     try {
       // create line in db
       ThumbnailDetail thumdAdded = thumbnailService.createThumbnail(thumbDetail);
@@ -142,7 +144,7 @@ public class ThumbnailController {
 
   protected static void createCropThumbnailFileOnServer(String pathOriginalFile,
       String pathCropdir,
-          String pathCropFile, ThumbnailDetail thumbnail, int thumbnailWidth, int thumbnailHeight) {
+      String pathCropFile, ThumbnailDetail thumbnail, int thumbnailWidth, int thumbnailHeight) {
     try {
       // Creates folder if not exists
       File dir = new File(pathCropdir);
@@ -159,9 +161,9 @@ public class ThumbnailController {
       BufferedImage bufferOriginal = ImageIO.read(originalFile);
       // crop image
       BufferedImage cropPicture = bufferOriginal.getSubimage(thumbnail.getXStart(),
-              thumbnail.getYStart(), thumbnail.getXLength(), thumbnail.getYLength());
+          thumbnail.getYStart(), thumbnail.getXLength(), thumbnail.getYLength());
       BufferedImage cropPictureFinal = new BufferedImage(thumbnailWidth, thumbnailHeight,
-              BufferedImage.TYPE_INT_RGB);
+          BufferedImage.TYPE_INT_RGB);
       // Redimensionnement de l'image
       Graphics2D g2 = cropPictureFinal.createGraphics();
       g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
@@ -175,8 +177,8 @@ public class ThumbnailController {
     } catch (Exception e) {
       SilverTrace.warn("thumbnail", "ThumbnailController.createThumbnailFileOnServer()",
           "thumbnail_MSG_CREATE_CROP_FILE_KO", "originalFileName=" +
-              thumbnail.getOriginalFileName()
-              + " cropFileName = " + thumbnail.getCropFileName(), e);
+          thumbnail.getOriginalFileName()
+          + " cropFileName = " + thumbnail.getCropFileName(), e);
     }
   }
 
@@ -235,9 +237,9 @@ public class ThumbnailController {
       }
     } catch (Exception e) {
       throw new ThumbnailRuntimeException(
-              "ThumbnailController.getCompleteThumbnail()",
-              SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_IMAGE_KO",
-              e);
+          "ThumbnailController.getCompleteThumbnail()",
+          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_IMAGE_KO",
+          e);
     }
   }
 
@@ -248,7 +250,8 @@ public class ThumbnailController {
       if (thumbDetailComplete.getCropFileName() != null) {
         // on garde toujours le meme nom de fichier par contre on le supprime
         // puis le recreer avec les nouvelles coordonnees
-        deleteThumbnailFileOnServer(thumbnail.getInstanceId(), thumbDetailComplete.getCropFileName());
+        deleteThumbnailFileOnServer(thumbnail.getInstanceId(), thumbDetailComplete
+            .getCropFileName());
       } else {
         // case creation
         String extension = FilenameUtils.getExtension(thumbDetailComplete.getOriginalFileName());
@@ -259,7 +262,7 @@ public class ThumbnailController {
       String pathOriginalFile = pathCropdir + thumbDetailComplete.getOriginalFileName();
       String pathCropFile = pathCropdir + thumbDetailComplete.getCropFileName();
       createCropThumbnailFileOnServer(pathOriginalFile, pathCropdir, pathCropFile,
-              thumbnail, thumbnailWidth, thumbnailHeight);
+          thumbnail, thumbnailWidth, thumbnailHeight);
       thumbDetailComplete.setXStart(thumbnail.getXStart());
       thumbDetailComplete.setXLength(thumbnail.getXLength());
       thumbDetailComplete.setYStart(thumbnail.getYStart());
@@ -275,8 +278,8 @@ public class ThumbnailController {
   }
 
   private static void createCropFile(int thumbnailWidth, int thumbnailHeight,
-          ThumbnailDetail thumbDetailComplete) throws IOException,
-          ThumbnailException {
+      ThumbnailDetail thumbDetailComplete) throws IOException,
+      ThumbnailException {
 
     String pathOriginalFile = getImageDirectory(thumbDetailComplete.getInstanceId())
         + thumbDetailComplete.getOriginalFileName();
@@ -317,7 +320,7 @@ public class ThumbnailController {
           + "int thumbnailHeight,ThumbnailDetail thumbDetailComplete)",
           "thumbnail.EX_MSG_NOT_AN_IMAGE", "pathOriginalFile=" + pathOriginalFile);
       throw new ThumbnailException("ThumbnailBmImpl.cropFromPath()",
-              SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_AN_IMAGE");
+          SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_AN_IMAGE");
     } else {
       thumbDetailComplete.setXStart(0);
       thumbDetailComplete.setYStart(0);

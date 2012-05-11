@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.node.servlets;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
@@ -59,7 +83,7 @@ public class GetNodes extends HttpServlet {
       writer.write("This service required to be logged in !");
       return;
     }
-    
+
     RestRequest req = new RestRequest(request, null);
 
     String scope = req.getElementValue("scope");
@@ -147,7 +171,7 @@ public class GetNodes extends HttpServlet {
         int rightsDependsOn = child.getRightsDependsOn();
         boolean nodeAvailable =
             session.getOrganizationController().isObjectAvailable(rightsDependsOn, ObjectType.NODE,
-                child.getNodePK().getInstanceId(), session.getUserId());
+            child.getNodePK().getInstanceId(), session.getUserId());
         if (nodeAvailable) {
           availableChildren.add(child);
         } else { // check if at least one descendant is available
@@ -162,7 +186,7 @@ public class GetNodes extends HttpServlet {
               // different rights of father check if it is available
               if (session.getOrganizationController().isObjectAvailable(
                   descendant.getRightsDependsOn(), ObjectType.NODE, child.getNodePK().
-                      getInstanceId(), session.getUserId())) {
+                  getInstanceId(), session.getUserId())) {
                 childAllowed = true;
                 if (!availableChildren.contains(child)) {
                   availableChildren.add(child);
@@ -258,7 +282,7 @@ public class GetNodes extends HttpServlet {
 
   private NodeBm getNodeBm() throws RemoteException, CreateException {
     NodeBmHome nodeBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+        EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
     return nodeBmHome.create();
   }
 

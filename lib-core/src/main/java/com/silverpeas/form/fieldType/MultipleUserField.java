@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,6 @@
  */
 
 package com.silverpeas.form.fieldType;
-
 
 import com.google.common.base.Joiner;
 import com.silverpeas.form.Field;
@@ -52,7 +51,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the type name.
-   * @return 
+   * @return
    */
   @Override
   public String getTypeName() {
@@ -67,20 +66,20 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the user id referenced by this field.
-   * @return 
+   * @return
    */
   public String[] getUserIds() {
-    return  userIds;
+    return userIds;
   }
 
   /**
    * Set the user ids referenced by this field.
-   * @param currentUserIds 
+   * @param currentUserIds
    */
   public void setUserIds(String[] currentUserIds) {
     SilverTrace.info("form", "MultipleUserField.setUserIds",
         "root.MSG_GEN_ENTER_METHOD", "userIds = " + Arrays.toString(currentUserIds));
-    if(currentUserIds != null) {
+    if (currentUserIds != null) {
       this.userIds = Arrays.copyOf(currentUserIds, currentUserIds.length);
     } else {
       this.userIds = null;
@@ -89,7 +88,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns true if the value is read only.
-   * @return 
+   * @return
    */
   public boolean isReadOnly() {
     return false;
@@ -97,7 +96,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the string value of this field : aka the user name.
-   * @return 
+   * @return
    */
   @Override
   public String getValue() {
@@ -129,8 +128,8 @@ public class MultipleUserField implements Field {
   /**
    * Returns the local value of this field. There is no local format for a user field, so the
    * language parameter is unused.
-   * @param language 
-   * @return 
+   * @param language
+   * @return
    */
   @Override
   public String getValue(String language) {
@@ -140,7 +139,7 @@ public class MultipleUserField implements Field {
   /**
    * Does nothing since a user reference can't be computed from a user name.
    * @param value
-   * @throws FormException 
+   * @throws FormException
    */
   @Override
   public void setValue(String value) throws FormException {
@@ -150,7 +149,7 @@ public class MultipleUserField implements Field {
    * Does nothing since a user reference can't be computed from a user name.
    * @param value
    * @param language
-   * @throws FormException 
+   * @throws FormException
    */
   @Override
   public void setValue(String value, String language) throws FormException {
@@ -159,7 +158,7 @@ public class MultipleUserField implements Field {
   /**
    * Always returns false since a user reference can't be computed from a user name.
    * @param value
-   * @return 
+   * @return
    */
   @Override
   public boolean acceptValue(String value) {
@@ -170,7 +169,7 @@ public class MultipleUserField implements Field {
    * Always returns false since a user reference can't be computed from a user name.
    * @param value
    * @param language
-   * @return 
+   * @return
    */
   @Override
   public boolean acceptValue(String value, String language) {
@@ -179,7 +178,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the User referenced by this field.
-   * @return 
+   * @return
    */
   @Override
   public Object getObjectValue() {
@@ -192,7 +191,7 @@ public class MultipleUserField implements Field {
   /**
    * Set user referenced by this field.
    * @param value
-   * @throws FormException 
+   * @throws FormException
    */
   @Override
   public void setObjectValue(Object value) throws FormException {
@@ -212,7 +211,7 @@ public class MultipleUserField implements Field {
   /**
    * Returns true if the value is a String and this field isn't read only.
    * @param value
-   * @return 
+   * @return
    */
   @Override
   public boolean acceptObjectValue(Object value) {
@@ -224,7 +223,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns this field value as a normalized String : a user id
-   * @return 
+   * @return
    */
   @Override
   public String getStringValue() {
@@ -237,7 +236,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Set this field value from a normalized String : a user id
-   * @param value 
+   * @param value
    */
   @Override
   public void setStringValue(String value) {
@@ -258,7 +257,7 @@ public class MultipleUserField implements Field {
   /**
    * Returns true if this field isn't read only.
    * @param value
-   * @return 
+   * @return
    */
   @Override
   public boolean acceptStringValue(String value) {
@@ -267,7 +266,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns true if this field is not set.
-   * @return 
+   * @return
    */
   @Override
   public boolean isNull() {
@@ -276,7 +275,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Set to null this field.
-   * @throws FormException  when the field is read only or when the field is mandatory.
+   * @throws FormException when the field is read only or when the field is mandatory.
    */
   @Override
   public void setNull() throws FormException {
@@ -286,7 +285,7 @@ public class MultipleUserField implements Field {
   /**
    * Tests equality beetwen this field and the specified field.
    * @param o
-   * @return 
+   * @return
    */
   @Override
   public boolean equals(Object o) {
@@ -313,10 +312,9 @@ public class MultipleUserField implements Field {
   }
 
   /**
-   * Compares this field with the specified field.
-   * This is nonsense to compare arrays.
+   * Compares this field with the specified field. This is nonsense to compare arrays.
    * @param o
-   * @return 
+   * @return
    */
   @Override
   public int compareTo(Object o) {

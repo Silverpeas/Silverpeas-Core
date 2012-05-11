@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -137,10 +137,9 @@ public class SQLRequest {
 
   /**
    * Returns the complete SQL query which allows the administrator to create a table.
-   *
    * @param tableName (String) the name of the created table
    * @param tableType (String) the type of the table which must be created (forum, rights, message,
-   *                  event, ...)
+   * event, ...)
    * @return the complete SQL query to create a table
    */
   protected String getCreateQuery(String tableName, String tableType) {
@@ -155,10 +154,9 @@ public class SQLRequest {
 
   /**
    * Returns the complete SQL query which allows the administrator to delete some rows into table.
-   *
    * @param instanceId (String) the name of the created table
-   * @param tableType  (String) the type of the table which must be created (forum, rights, message,
-   *                   event, ...)
+   * @param tableType (String) the type of the table which must be created (forum, rights, message,
+   * event, ...)
    * @return the complete SQL query to delete a table
    */
   protected String getDeleteQuery(String instanceId, String tableType) {
@@ -170,11 +168,10 @@ public class SQLRequest {
 
   /**
    * Returns the complete SQL query which allows the administrator to update a table.
-   *
    * @param instanceId (String) the id of the component where their data must be updated into
-   *                   tables.
-   * @param tableType  (String) the type of the table which must be created (forum, rights, message,
-   *                   event, ...)
+   * tables.
+   * @param tableType (String) the type of the table which must be created (forum, rights, message,
+   * event, ...)
    * @return the complete SQL query to update a table
    */
   protected String getUpdateQuery(String instanceId, String tableType) {
@@ -189,11 +186,10 @@ public class SQLRequest {
 
   /**
    * Returns the complete SQL query which allows the administrator to insert data into tables.
-   *
    * @param instanceId (String) the id of the component where their data must be inserted into
-   *                   tables.
-   * @param tableType  (String) the type of the table which must be created (forum, rights, message,
-   *                   event, ...)
+   * tables.
+   * @param tableType (String) the type of the table which must be created (forum, rights, message,
+   * event, ...)
    * @return the complete SQL query to insert a table
    */
   protected String getInsertQuery(String instanceId, String tableType) {
@@ -230,7 +226,6 @@ public class SQLRequest {
   /**
    * Substitute all intern tag of the file. These tags ( __tableName__, ... ) will be replaced by
    * values received or read into the DBUtil.
-   *
    * @param createQueries (String) creation requests of tables
    * @return the complet request to allows the creation of a table.
    */
@@ -241,7 +236,7 @@ public class SQLRequest {
     String queryAfterTag = "";
 
     // for each element tag, we replace them by their values
-    for (Enumeration<String> e = internalTag.keys(); e.hasMoreElements(); ) {
+    for (Enumeration<String> e = internalTag.keys(); e.hasMoreElements();) {
       String currentTag = e.nextElement();
       int posTag = localQuery.indexOf(currentTag);
       while (posTag != -1) {
@@ -249,7 +244,7 @@ public class SQLRequest {
         int endPosition = posTag + currentTag.length();
         queryBeforeTag = localQuery.substring(0, posTag);
         queryAfterTag = localQuery.substring(endPosition);
-        localQuery = queryBeforeTag + internalTag.get(currentTag)  + queryAfterTag;
+        localQuery = queryBeforeTag + internalTag.get(currentTag) + queryAfterTag;
 
         posTag = localQuery.indexOf(currentTag);
       }
@@ -262,7 +257,6 @@ public class SQLRequest {
 
   /**
    * Returns a specific SQL query from the properties file.
-   *
    * @param tableType (String) the specific word which allows us to separate the right SQL code
    * @return a part of the SQL query whished
    */

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,8 +29,6 @@ import com.silverpeas.scheduler.SchedulerException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
-
-
 
 /**
  * This class extends the class 'SchedulerJob' for the functionality of a scheduled execution of a
@@ -81,7 +79,7 @@ public class SchedulerMethodJob extends SchedulerJob {
 
     // Get the execution method
     try {
-      Class argumentTypes[] = new Class[]{ java.util.Date.class };
+      Class argumentTypes[] = new Class[] { java.util.Date.class };
       executionMethod = methodOwner.getClass().getMethod(aExecutionMethodName, argumentTypes);
       if (executionMethod == null) {
         throw new Exception("There is no method '" + aExecutionMethodName

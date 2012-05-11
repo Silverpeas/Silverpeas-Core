@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 /**
  * The default implementation of Window interface
- *
  * @author neysseri
  * @version 1.0
  */
@@ -34,7 +33,6 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Constructor declaration
-   *
    * @see
    */
   public WindowWeb20V5() {
@@ -43,7 +41,6 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -77,13 +74,13 @@ public class WindowWeb20V5 extends AbstractWindow {
     }
     result.append("</tr>");
     result.append("<tr><td width=\"100%\" valign=\"top\" colspan=\"2\" class=\"cellBodyWindows\">");
-    result.append("<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
+    result
+        .append("<table border=\"0\" width=\"100%\" cellpadding=\"5\" cellspacing=\"5\"><tr><td valign=\"top\">");
     return result.toString();
   }
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -103,7 +100,7 @@ public class WindowWeb20V5 extends AbstractWindow {
     result.append("</td><td class=\"basMilieuWindow\">");
     result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td><td class=\"basDroiteWindow\">");
-    result.append("<img src=\"").append(iconsPath).append( "/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td></tr></table>");
 
     result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
@@ -116,15 +113,14 @@ public class WindowWeb20V5 extends AbstractWindow {
     result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"");
     result.append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td></tr></table>");
-    
+
     result.append(displayWelcomeMessage());
-    
+
     return result.toString();
   }
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */

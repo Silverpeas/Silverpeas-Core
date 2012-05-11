@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.templatedesigner.servlets;
 
 import com.silverpeas.form.DataRecord;
@@ -45,7 +46,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.List;
 
-public class TemplateDesignerRequestRouter extends ComponentRequestRouter<TemplateDesignerSessionController> {
+public class TemplateDesignerRequestRouter extends
+    ComponentRequestRouter<TemplateDesignerSessionController> {
 
   private static final long serialVersionUID = 1117593114737219878L;
 
@@ -81,12 +83,14 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter<Templa
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, TemplateDesignerSessionController templateDesignerSC,
+  public String getDestination(String function,
+      TemplateDesignerSessionController templateDesignerSC,
       HttpServletRequest request) {
     String destination = "";
     String root = "/templateDesigner/jsp/";
     SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + templateDesignerSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + templateDesignerSC.getUserId() + " Function=" +
+        function);
     try {
       if (function.startsWith("Main")) {
         List<PublicationTemplate> templates = templateDesignerSC.getTemplates();
@@ -157,7 +161,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter<Templa
         GenericFieldTemplate field = request2Field(request);
 
         templateDesignerSC.addField(field);
-        
+
         request.setAttribute("UrlToReload", "ViewFields");
         destination = root + "closeWindow.jsp";
       } else if (function.equals("EditField")) {
@@ -175,7 +179,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter<Templa
         GenericFieldTemplate field = request2Field(request);
 
         templateDesignerSC.updateField(field);
-        
+
         request.setAttribute("UrlToReload", "ViewFields");
         destination = root + "closeWindow.jsp";
       } else if (function.equals("DeleteField")) {
@@ -212,43 +216,62 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter<Templa
   private String getDestinationFromDisplayer(String displayer) {
     if (displayer.equals("wysiwyg")) {
       return "fieldWysiwyg.jsp";
-    }  if (displayer.equals("textarea")) {
+    }
+    if (displayer.equals("textarea")) {
       return "fieldTextarea.jsp";
-    }  if (displayer.equals("listbox")) {
+    }
+    if (displayer.equals("listbox")) {
       return "fieldMultivalues.jsp";
-    }  if (displayer.equals("checkbox")) {
+    }
+    if (displayer.equals("checkbox")) {
       return "fieldMultivalues.jsp";
-    } if (displayer.equals("radio")) {
+    }
+    if (displayer.equals("radio")) {
       return "fieldMultivalues.jsp";
-    } if (displayer.equals("url")) {
+    }
+    if (displayer.equals("url")) {
       return "fieldURL.jsp";
-    } if (displayer.equals("date")) {
+    }
+    if (displayer.equals("date")) {
       return "fieldDate.jsp";
-    } if (displayer.equals("file")) {
+    }
+    if (displayer.equals("file")) {
       return "fieldFile.jsp";
-    } if (displayer.equals("image")) {
+    }
+    if (displayer.equals("image")) {
       return "fieldImage.jsp";
-    } if (displayer.equals("video")) {
+    }
+    if (displayer.equals("video")) {
       return "fieldVideo.jsp";
-    } if (displayer.equals("user")) {
+    }
+    if (displayer.equals("user")) {
       return "fieldUser.jsp";
-    } if (displayer.equals("multipleUser")) {
+    }
+    if (displayer.equals("multipleUser")) {
       return "fieldMultipleUser.jsp";
-    } if (displayer.equals("ldap")) {
+    }
+    if (displayer.equals("ldap")) {
       return "fieldLdap.jsp";
-    } if (displayer.equals("accessPath")) {
+    }
+    if (displayer.equals("accessPath")) {
       return "fieldAccessPath.jsp";
-    } if (displayer.equals("jdbc")) {
+    }
+    if (displayer.equals("jdbc")) {
       return "fieldJdbc.jsp";
-    } if (displayer.equals("pdc")) {
+    }
+    if (displayer.equals("pdc")) {
       return "fieldPdc.jsp";
-    } if (displayer.equals("group")) {
+    }
+    if (displayer.equals("group")) {
       return "fieldGroup.jsp";
-    } if (displayer.equals("sequence")) {
+    }
+    if (displayer.equals("sequence")) {
       return "fieldSequence.jsp";
-    } if (displayer.equals("time")) {
+    }
+    if (displayer.equals("time")) {
       return "fieldTime.jsp";
-    } if (displayer.equals("explorer")) {
+    }
+    if (displayer.equals("explorer")) {
       return "fieldExplorer.jsp";
     } else {
       return "fieldText.jsp";

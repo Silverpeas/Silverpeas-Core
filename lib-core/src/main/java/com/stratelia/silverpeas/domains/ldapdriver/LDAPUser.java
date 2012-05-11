@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,7 +58,8 @@ public class LDAPUser {
    * Initialize the settings from the read ones
    * @param driverSettings the settings retreived from the property file
    */
-  public void init(LDAPSettings driverSettings, DomainDriver driverParent, LDAPSynchroCache synchroCache) {
+  public void init(LDAPSettings driverSettings, DomainDriver driverParent,
+      LDAPSynchroCache synchroCache) {
     this.driverSettings = driverSettings;
     this.driverParent = driverParent;
     this.synchroCache = synchroCache;
@@ -164,7 +165,8 @@ public class LDAPUser {
         driverSettings.getUsersIdFilter(id));
     theEntry =
         LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings
-        .getScope(), driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[lAttrs.size()]));
+        .getScope(), driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[lAttrs
+        .size()]));
     return translateUserFull(lds, theEntry);
   }
 
@@ -328,8 +330,8 @@ public class LDAPUser {
         .getUsersLoginField());
     return theTimeStamp;
   }
-  
-  public String[] getUserAttributes(){
+
+  public String[] getUserAttributes() {
     List<String> lAttrs = new ArrayList<String>();
     String[] userAttributes = driverSettings.getUserAttributes();
     if (userAttributes != null) {

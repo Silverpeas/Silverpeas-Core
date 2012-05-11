@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html.result;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -86,7 +87,6 @@ public class HtmlSearchResultTag extends TagSupport {
 
   /**
    * Get user identifier.
-   *
    * @return the user identifier.
    */
   public String getUserId() {
@@ -95,7 +95,6 @@ public class HtmlSearchResultTag extends TagSupport {
 
   /**
    * Set user idenfier.
-   *
    * @param userId the user identifier.
    */
   public void setUserId(String userId) {
@@ -187,7 +186,7 @@ public class HtmlSearchResultTag extends TagSupport {
               ResultDisplayerFactory.getResultDisplayerFactory().getResultDisplayer(componentName);
           SilverTrace.debug("viewgenerator", HtmlSearchResultTag.class.getName(),
               "load specific for current result: instanceid=" + instanceId + ", contentid=" +
-                  gsr.getId());
+              gsr.getId());
           if (resultDisplayer != null) {
             addedInformation = resultDisplayer.getResultContent(new SearchResultContentVO(
                 this.userId, this.gsr, this.sortValue, this.activeSelection, this.exportEnabled,
@@ -202,8 +201,7 @@ public class HtmlSearchResultTag extends TagSupport {
   /**
    * Check if a component instance must process a specific result template. Then this method adds
    * the result of this check inside a cache.
-   *
-   * @param instanceId    : the component instance identifier
+   * @param instanceId : the component instance identifier
    * @param componentName : the component name
    * @return true if this instance need to generate a specific result template, false else if
    * @throws JspTagException
@@ -243,8 +241,8 @@ public class HtmlSearchResultTag extends TagSupport {
     StringBuilder result = new StringBuilder();
 
     String downloadSrc = "<img src=\"" + settings.getIcon("pdcPeas.download") +
-            "\" class=\"fileDownload\" alt=\"" + settings.getString("pdcPeas.DownloadInfo") +
-            "\"/>";
+        "\" class=\"fileDownload\" alt=\"" + settings.getString("pdcPeas.DownloadInfo") +
+        "\"/>";
 
     String sName = EncodeHelper.javaStringToHtmlString(gsr.getName());
     String sDescription = gsr.getDescription();
@@ -270,7 +268,7 @@ public class HtmlSearchResultTag extends TagSupport {
     if (settings.getSetting("external.search.enable", false) && gsr.getIndexEntry() != null) {
       serverName = "external_server_" +
           (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ? gsr.getIndexEntry()
-                  .getServerName() : "unknown");
+          .getServerName() : "unknown");
     }
 
     result.append("<tr class=\"lineResult ").append(gsr.getSpaceId()).append(" ");
@@ -293,15 +291,17 @@ public class HtmlSearchResultTag extends TagSupport {
             " name=\"resultObjects\" value=\"").append(gsr.getId()).append("-").append(
             gsr.getInstanceId()).append("\"></td>");
       } else {
-        result.append(
-            "<td class=\"selection\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\"").append(
-            gsr.getId()).append("-").append(gsr.getInstanceId()).append("\"></td>");
+        result
+            .append(
+                "<td class=\"selection\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\"")
+            .append(
+                gsr.getId()).append("-").append(gsr.getInstanceId()).append("\"></td>");
       }
     }
 
     if (gsr.getType() != null &&
         (gsr.getType().startsWith("Attachment") || gsr.getType().startsWith("Versioning") || gsr
-            .getType().equals("LinkedFile"))) {
+        .getType().equals("LinkedFile"))) {
       String fileType = sName.substring(sName.lastIndexOf(".") + 1, sName.length());
       String fileIcon = FileRepositoryManager.getFileIcon(fileType);
       sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
@@ -364,7 +364,7 @@ public class HtmlSearchResultTag extends TagSupport {
     if (sortValue == 7 && gsr.getHits() >= 0) {
       result.append("<br/><span class=\"popularity\">").append(
           settings.getStringWithParam("pdcPeas.popularity",
-              Integer.toString(gsr.getHits()))).append("</span>");
+          Integer.toString(gsr.getHits()))).append("</span>");
     }
 
     if (StringUtil.isDefined(sLocation)) {
@@ -403,9 +403,9 @@ public class HtmlSearchResultTag extends TagSupport {
           "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
       settings =
           new ResourcesWrapper(messages,
-              new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
-              new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
-              language);
+          new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
+          new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
+          language);
     }
     return settings;
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,11 +63,12 @@ public class PortletWindowInvoker extends WindowInvoker {
   public static final String JAVAX_PORTLET_TITLE = "javax.portlet.title";
   private WindowRequestReader windowRequestReader = null;
 
-  private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
+  private static final Logger logger =
+      Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
       "com.silverpeas.portlets.PCDLogMessages");
   private final static ResourceLocator messages =
-          new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle",
-          "");
+      new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle",
+      "");
 
   @Override
   public void init(ServletContext servletContext, HttpServletRequest request,
@@ -174,16 +175,15 @@ public class PortletWindowInvoker extends WindowInvoker {
   @Override
   public String getTitle() throws InvokerException {
     if (!isDefined(super.getTitle()) || super.getTitle().equals(getDefaultTitle())) {
-      MainSessionController sessionController = (MainSessionController) getOriginalRequest().getSession().
-            getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      MainSessionController sessionController =
+          (MainSessionController) getOriginalRequest().getSession().
+          getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       messages.setLanguage(sessionController.getFavoriteLanguage());
       String portletTitle = getDefaultTitle();
       setTitle(messages.getString(portletTitle, portletTitle));
     }
     return super.getTitle();
   }
-  
-  
 
   /**
    * Implementation of the abstract method defined in the base class. Get the list of logical roles

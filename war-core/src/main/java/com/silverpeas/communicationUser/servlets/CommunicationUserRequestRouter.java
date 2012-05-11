@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.communicationUser.servlets;
 
 import com.silverpeas.communicationUser.control.CommunicationUserSessionController;
@@ -37,17 +38,15 @@ import java.util.Iterator;
 
 /**
  * Class declaration
- *
  * @author
  */
-public class CommunicationUserRequestRouter
-    extends ComponentRequestRouter<CommunicationUserSessionController> {
+public class CommunicationUserRequestRouter extends
+    ComponentRequestRouter<CommunicationUserSessionController> {
 
   private static final long serialVersionUID = 3353765477159128428L;
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -72,11 +71,11 @@ public class CommunicationUserRequestRouter
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   * @param function   The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param commUserSC The component Session Control, build and initialised.
-   * @param request    The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex : "/communicationUser/jsp/communicationUser.jsp?flag=user")
+   * @param request The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   * "/communicationUser/jsp/communicationUser.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, CommunicationUserSessionController commUserSC,
@@ -99,7 +98,8 @@ public class CommunicationUserRequestRouter
           commUserSC.addCurrentDiscussion(fileDiscussion);
           request.setAttribute("UserName", commUserSC.getUserDetail().getDisplayedName());
           request.setAttribute("UserIdDest", userId);
-          request.setAttribute("UserNameDest", commUserSC.getOrganizationController().getUserDetail(
+          request.setAttribute("UserNameDest", commUserSC.getOrganizationController()
+              .getUserDetail(
               userId).getDisplayedName());
           destination = "/communicationUser/jsp/discussion.jsp";
         }

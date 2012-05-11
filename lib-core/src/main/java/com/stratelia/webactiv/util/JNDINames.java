@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util;
 
 /**
@@ -190,7 +191,7 @@ public class JNDINames {
     QUIZZBM_EJBHOME = rs.getString("QUIZZBM_EJBHOME", "ejb/QuizzBm");
     SCOREBM_EJBHOME = rs.getString("SCOREBM_EJBHOME", "ejb/ScoreBm");
     QUESTIONCONTAINERBM_EJBHOME = rs.getString("QUESTIONCONTAINERBM_EJBHOME",
-            "ejb/QuestionContainerBm");
+        "ejb/QuestionContainerBm");
     ATTACHMENT_EJBHOME = rs.getString("ATTACHMENT_EJBHOME", "ejb/Attachment");
     VERSIONING_EJBHOME = rs.getString("VERSIONING_EJBHOME", "ejb/Versioning");
     TASKMBM_EJBHOME = rs.getString("TASKMBM_EJBHOME", "ejb/TaskmBm");
@@ -227,69 +228,98 @@ public class JNDINames {
     NOTATIONBM_EJBHOME = rs.getString("NOTATIONBM_EJBHOME", "ejb/NotationBm");
     CLASSIFIEDSBM_EJBHOME = rs.getString("CLASSIFIEDSBM_EJBHOME", "ejb/ClassifiedsBm");
     SILVERSTATISTICS_JMS_QUEUE = rs.getString("SILVERSTATISTICS_JMS_QUEUE",
-            "com.stratelia.silverpeas.silverstatistics.jms.SilverStatisticsJMSQUEUE");
+        "com.stratelia.silverpeas.silverstatistics.jms.SilverStatisticsJMSQUEUE");
     SILVERSTATISTICS_JMS_FACTORY = rs.getString("SILVERSTATISTICS_JMS_FACTORY",
-            "com.stratelia.silverpeas.silverstatistics.jms.QueueConnectionFactory");
-    SILVERPEAS_DATASOURCE = rs.getString("SILVERPEAS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    PUBLICATION_DATASOURCE = rs.getString("PUBLICATION_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    INTEREST_CENTER_DATASOURCE = rs.getString("INTEREST_CENTER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    VERSIONING_DATASOURCE = rs.getString("VERSIONING_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+        "com.stratelia.silverpeas.silverstatistics.jms.QueueConnectionFactory");
+    SILVERPEAS_DATASOURCE =
+        rs.getString("SILVERPEAS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    PUBLICATION_DATASOURCE =
+        rs.getString("PUBLICATION_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    INTEREST_CENTER_DATASOURCE =
+        rs.getString("INTEREST_CENTER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    VERSIONING_DATASOURCE =
+        rs.getString("VERSIONING_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     CONTACT_DATASOURCE = rs.getString("CONTACT_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     NODE_DATASOURCE = rs.getString("NODE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     FAVORIT_DATASOURCE = rs.getString("FAVORIT_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    SUBSCRIBE_DATASOURCE = rs.getString("SUBSCRIBE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    STATISTIC_DATASOURCE = rs.getString("STATISTIC_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    SUBSCRIBE_DATASOURCE =
+        rs.getString("SUBSCRIBE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    STATISTIC_DATASOURCE =
+        rs.getString("STATISTIC_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     CALENDAR_DATASOURCE = rs.getString("CALENDAR_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     ALMANACH_DATASOURCE = rs.getString("ALMANACH_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     FORUMS_DATASOURCE = rs.getString("FORUMS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     QUESTION_DATASOURCE = rs.getString("QUESTION_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     ANSWER_DATASOURCE = rs.getString("ANSWER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     SURVEY_DATASOURCE = rs.getString("SURVEY_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    PERSONALIZATION_DATASOURCE = rs.getString("PERSONALIZATION_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    PERSONALIZATION_DATASOURCE =
+        rs.getString("PERSONALIZATION_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     SCORE_DATASOURCE = rs.getString("SCORE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    QUESTIONCONTAINER_DATASOURCE = rs.getString("QUESTIONCONTAINER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    QUESTIONCONTAINER_DATASOURCE =
+        rs.getString("QUESTIONCONTAINER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     BOOKMARK_DATASOURCE = rs.getString("BOOKMARK_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     WEBSITES_DATASOURCE = rs.getString("WEBSITES_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    ATTACHMENT_DATASOURCE = rs.getString("ATTACHMENT_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    ATTACHMENT_DATASOURCE =
+        rs.getString("ATTACHMENT_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     TASKM_DATASOURCE = rs.getString("TASKM_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    FORMDESIGNER_DATASOURCE = rs.getString("FORMDESIGNER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    PDC_SUBSCRIPTION_DATASOURCE = rs.getString("PDC_SUBSCRIPTION_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    FORMDESIGNER_DATASOURCE =
+        rs.getString("FORMDESIGNER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    PDC_SUBSCRIPTION_DATASOURCE =
+        rs.getString("PDC_SUBSCRIPTION_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     PUZZLE_DATASOURCE = rs.getString("PUZZLE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    SILVERSTATISTICS_DATASOURCE = rs.getString("SILVERSTATISTICS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    SILVERSTATISTICS_DATASOURCE =
+        rs.getString("SILVERSTATISTICS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     CRM_DATASOURCE = rs.getString("CRM_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    DATAWARNING_DATASOURCE = rs.getString("DATAWARNING_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    THESAURUS_DATASOURCE = rs.getString("THESAURUS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    PDC_BUSIHM_DATASOURCE = rs.getString("PDC_BUSIHM_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    FILEBOXPLUS_DATASOURCE = rs.getString("FILEBOXPLUS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    QUESTIONREPLY_DATASOURCE = rs.getString("QUESTIONREPLY_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    WHITEPAGES_DATASOURCE = rs.getString("WHITEPAGES_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    PERSISTENCE_EJB_DATASOURCE = rs.getString("PERSISTENCE_EJB_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    WEBPUBMANAGER_DATASOURCE = rs.getString("WEBPUBMANAGER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    CONTAINERMANAGER_DATASOURCE = rs.getString("CONTAINERMANAGER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    CONTENTMANAGER_DATASOURCE = rs.getString("CONTENTMANAGER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    CLASSIFYENGINE_DATASOURCE = rs.getString("CLASSIFYENGINE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    DATAWARNING_DATASOURCE =
+        rs.getString("DATAWARNING_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    THESAURUS_DATASOURCE =
+        rs.getString("THESAURUS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    PDC_BUSIHM_DATASOURCE =
+        rs.getString("PDC_BUSIHM_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    FILEBOXPLUS_DATASOURCE =
+        rs.getString("FILEBOXPLUS_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    QUESTIONREPLY_DATASOURCE =
+        rs.getString("QUESTIONREPLY_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    WHITEPAGES_DATASOURCE =
+        rs.getString("WHITEPAGES_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    PERSISTENCE_EJB_DATASOURCE =
+        rs.getString("PERSISTENCE_EJB_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    WEBPUBMANAGER_DATASOURCE =
+        rs.getString("WEBPUBMANAGER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    CONTAINERMANAGER_DATASOURCE =
+        rs.getString("CONTAINERMANAGER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    CONTENTMANAGER_DATASOURCE =
+        rs.getString("CONTENTMANAGER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    CLASSIFYENGINE_DATASOURCE =
+        rs.getString("CLASSIFYENGINE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     PDC_DATASOURCE = rs.getString("PDC_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     ADMIN_DATASOURCE = rs.getString("ADMIN_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    FORMTEMPLATE_DATASOURCE = rs.getString("FORMTEMPLATE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    FORMTEMPLATE_DATASOURCE =
+        rs.getString("FORMTEMPLATE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     WORKFLOW_DATASOURCE = rs.getString("WORKFLOW_DATASOURCE", "jdbc/Silverpeas");
     CHAT_DATASOURCE = rs.getString("CHAT_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    INFOLETTER_DATASOURCE = rs.getString("INFOLETTER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    INFOLETTER_DATASOURCE =
+        rs.getString("INFOLETTER_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     OUTLOOK_DATASOURCE = rs.getString("OUTLOOK_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    GENERATOR_DATASOURCE = rs.getString("GENERATOR_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    FORMDESIGNER_DB_DATASOURCE = rs.getString("FORMDESIGNER_DB_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    GENERATOR_DATASOURCE =
+        rs.getString("GENERATOR_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    FORMDESIGNER_DB_DATASOURCE =
+        rs.getString("FORMDESIGNER_DB_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     DATABASE_DATASOURCE = rs.getString("DATABASE_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    PERSISTENCE_DB_DATASOURCE = rs.getString("PERSISTENCE_DB_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    PERSISTENCE_DB_DATASOURCE =
+        rs.getString("PERSISTENCE_DB_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     WIKI_DATASOURCE = rs.getString("WIKI_DATASOURCE", "java:/datasources/silverpeas-jdbc");
-    THUMBNAIL_DATASOURCE = rs.getString("THUMBNAIL_DATASOURCE", "java:/datasources/silverpeas-jdbc");
+    THUMBNAIL_DATASOURCE =
+        rs.getString("THUMBNAIL_DATASOURCE", "java:/datasources/silverpeas-jdbc");
     DIRECT_DATASOURCE = rs.getString("DIRECT_DATASOURCE", "serial://datasources/Silverpeas");
     MAIL_SESSION = rs.getString("MAIL_SESSION", "java:comp/env/MailSession");
     USE_CATALOG_EJB = rs.getString("USE_CATALOG_EJB", "java:comp/env/useCatalogEJB");
     SECURITY_ADAPTER_CLASSNAME = rs.getString("SECURITY_ADAPTER_CLASSNAME",
-            "java:comp/env/securityAdapterClassName");
+        "java:comp/env/securityAdapterClassName");
     SEND_CONFIRMATION_MAIL = rs.getString("SEND_CONFIRMATION_MAIL",
-            "java:comp/env/sendConfirmationMail");
+        "java:comp/env/sendConfirmationMail");
     JMS_FACTORY = rs.getString("JMS_FACTORY",
-            "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
+        "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
     JMS_QUEUE = rs.getString("JMS_QUEUE", "com.stratelia.silverpeas.notificationserver.jms.Queue");
     JMS_HEADER_CHANNEL = rs.getString("JMS_HEADER_CHANNEL", "CHANNEL");
   }

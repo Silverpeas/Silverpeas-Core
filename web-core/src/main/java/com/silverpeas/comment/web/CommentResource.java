@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -19,8 +19,9 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.comment.web;
 
 import com.silverpeas.annotation.Authenticated;
@@ -53,8 +54,8 @@ import org.springframework.stereotype.Service;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
- * A REST Web resource representing a given comment.
- * It is a web service that provides an access to a comment referenced by its URL.
+ * A REST Web resource representing a given comment. It is a web service that provides an access to
+ * a comment referenced by its URL.
  */
 @Service
 @Scope("request")
@@ -70,11 +71,10 @@ public class CommentResource extends RESTWebService {
   private String contentId;
 
   /**
-   * Gets the JSON representation of the specified existing comment.
-   * If the comment doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the comment, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of the specified existing comment. If the comment doesn't exist, a
+   * 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the
+   * user isn't authorized to access the comment, a 403 is returned. If a problem occurs when
+   * processing the request, a 503 HTTP code is returned.
    * @param onCommentId the unique identifier of the comment.
    * @return the response to the HTTP GET request with the JSON representation of the asked comment.
    */
@@ -94,10 +94,10 @@ public class CommentResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of all the comments on refered the resource.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the comment, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of all the comments on refered the resource. If the user isn't
+   * authentified, a 401 HTTP code is returned. If the user isn't authorized to access the comment,
+   * a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
+   * returned.
    * @return the response to the HTTP GET request with the JSON representation of the comments on
    * the refered resource.
    */
@@ -117,14 +117,13 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Creates a new comment from its JSON representation and returns it with its URI identifying it
-   * in Silverpeas.
-   * The unique identifier of the comment isn't taken into account, so if the comment already exist,
-   * it is then cloned with a new identifier (thus with a new URI).
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to save the comment, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * in Silverpeas. The unique identifier of the comment isn't taken into account, so if the comment
+   * already exist, it is then cloned with a new identifier (thus with a new URI). If the user isn't
+   * authentified, a 401 HTTP code is returned. If the user isn't authorized to save the comment, a
+   * 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param commentToSave the comment to save in Silverpeas.
-   * @return the response to the HTTP POST request with the JSON representation of the saved comment.
+   * @return the response to the HTTP POST request with the JSON representation of the saved
+   * comment.
    */
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -139,7 +138,8 @@ public class CommentResource extends RESTWebService {
         commentService().createComment(comment);
       }
       Comment savedComment = commentService().getComment(comment.getCommentPK());
-      URI commentURI = getUriInfo().getRequestUriBuilder().path(savedComment.getCommentPK().getId()).
+      URI commentURI =
+          getUriInfo().getRequestUriBuilder().path(savedComment.getCommentPK().getId()).
           build();
       return Response.created(commentURI).
           entity(asWebEntity(savedComment, identifiedBy(commentURI))).build();
@@ -151,12 +151,11 @@ public class CommentResource extends RESTWebService {
   }
 
   /**
-   * Updates the comment from its JSON representation and returns it once updated.
-   * If the comment to update doesn't match with the requested one, a 400 HTTP code is returned.
-   * If the comment doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to save the comment, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Updates the comment from its JSON representation and returns it once updated. If the comment to
+   * update doesn't match with the requested one, a 400 HTTP code is returned. If the comment
+   * doesn't exist, a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is
+   * returned. If the user isn't authorized to save the comment, a 403 is returned. If a problem
+   * occurs when processing the request, a 503 HTTP code is returned.
    * @param commentId the unique identifier of the comment to update.
    * @param commentToUpdate the comment to update in Silverpeas.
    * @return the response to the HTTP PUT request with the JSON representation of the updated
@@ -190,12 +189,11 @@ public class CommentResource extends RESTWebService {
   }
 
   /**
-   * Deletes the specified existing comment.
-   * If the comment doesn't exist, nothing is done, so that the HTTP DELETE request remains
-   * indempotent as defined in the HTTP specification..
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the comment, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Deletes the specified existing comment. If the comment doesn't exist, nothing is done, so that
+   * the HTTP DELETE request remains indempotent as defined in the HTTP specification.. If the user
+   * isn't authentified, a 401 HTTP code is returned. If the user isn't authorized to access the
+   * comment, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
+   * returned.
    * @param onCommentId the unique identifier of the comment to delete.
    */
   @DELETE
@@ -269,8 +267,8 @@ public class CommentResource extends RESTWebService {
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
     CommentEntity entity = CommentEntity.fromComment(comment).withURI(commentURI);
-    //CommentAuthorEntity author = entity.getAuthor();
-    //author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    // CommentAuthorEntity author = entity.getAuthor();
+    // author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
     return entity;
   }
 
@@ -282,14 +280,14 @@ public class CommentResource extends RESTWebService {
   public String getComponentId() {
     return this.componentId;
   }
-  
+
   protected String getContentId() {
     return this.contentId;
   }
 
   /**
-   * Check the specified comment is valid. A comment is valid if the following attributes are
-   * set: componentId, resourceId, text and its author identifier.
+   * Check the specified comment is valid. A comment is valid if the following attributes are set:
+   * componentId, resourceId, text and its author identifier.
    * @param theComment the comment to validate.
    */
   protected void checkIsValid(final CommentEntity theComment) {
@@ -297,8 +295,9 @@ public class CommentResource extends RESTWebService {
         !isDefined(theComment.getText()) || !isDefined(theComment.getAuthor().getId())) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
-    if (!theComment.getComponentId().equals(getComponentId()) || !theComment.getResourceId().equals(
-            getContentId())) {
+    if (!theComment.getComponentId().equals(getComponentId()) ||
+        !theComment.getResourceId().equals(
+        getContentId())) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
   }

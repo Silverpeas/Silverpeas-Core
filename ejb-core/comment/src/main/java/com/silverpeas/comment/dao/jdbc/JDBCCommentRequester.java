@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.comment.dao.jdbc;
 
 import java.util.Date;
@@ -99,8 +100,8 @@ public class JDBCCommentRequester {
   }
 
   /**
-   * Deletes the comment identified by the specified primary key from the data source onto which
-   * the given connection is opened.
+   * Deletes the comment identified by the specified primary key from the data source onto which the
+   * given connection is opened.
    * @param con the connection to the data source.
    * @param pk the unique identifier of the comment in the data source.
    * @throws SQLException if an error occurs while removing the comment from the data source.
@@ -124,7 +125,8 @@ public class JDBCCommentRequester {
    * @throws SQLException if an error occurs while updating the comment in the data source.
    */
   public void updateComment(Connection con, Comment cmt) throws SQLException {
-    String update_query = "UPDATE sb_comment_comment SET commentOwnerId=?, commentModificationDate=?, "
+    String update_query =
+        "UPDATE sb_comment_comment SET commentOwnerId=?, commentModificationDate=?, "
         + "commentComment=?, foreignId=?, instanceId=? WHERE commentId= ?";
     PreparedStatement prep_stmt = null;
     try {
@@ -210,7 +212,8 @@ public class JDBCCommentRequester {
         + "sb_comment_comment GROUP BY foreignId, instanceId ORDER BY nb_comment desc;";
     Statement prep_stmt = null;
     ResultSet rs = null;
-    List<CommentedPublicationInfo> listPublisCommentsCount = new ArrayList<CommentedPublicationInfo>();
+    List<CommentedPublicationInfo> listPublisCommentsCount =
+        new ArrayList<CommentedPublicationInfo>();
     try {
       prep_stmt = con.createStatement();
       rs = prep_stmt.executeQuery(select_query);
@@ -273,7 +276,8 @@ public class JDBCCommentRequester {
       while (rs.next()) {
         pk = new CommentPK(String.valueOf(rs.getInt("commentId")));
         pk.setComponentName(rs.getString("instanceId"));
-        WAPrimaryKey father_id = (WAPrimaryKey) new CommentPK(String.valueOf(rs.getInt("foreignId")));
+        WAPrimaryKey father_id =
+            (WAPrimaryKey) new CommentPK(String.valueOf(rs.getInt("foreignId")));
         try {
           cmt = new Comment(pk, father_id, rs.getInt("commentOwnerId"), "", rs.getString(
               "commentComment"), parseDate(rs.getString("commentCreationDate")),

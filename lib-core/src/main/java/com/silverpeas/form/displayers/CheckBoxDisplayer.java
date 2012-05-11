@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import com.silverpeas.form.Field;
@@ -61,7 +65,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[]{TextField.TYPE};
+    String[] s = new String[] { TextField.TYPE };
     return s;
   }
 
@@ -69,9 +73,11 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when : <ul> <li>the fieldName is unknown by the
-   * template. <li>the field type is not a managed type. </ul>
-   *
+   * log a silvertrace and writes an empty string when :
+   * <ul>
+   * <li>the fieldName is unknown by the template.
+   * <li>the field type is not a managed type.
+   * </ul>
    * @param out
    * @param template
    * @param pagesContext
@@ -79,21 +85,21 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-          throws IOException {
+      throws IOException {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println(" var checked = false;\n");
       out.println(" for (var i = 0; i < " + getNbHtmlObjectsDisplayed(template, pagesContext)
-              + "; i++) {\n");
+          + "; i++) {\n");
       out.println("   if (document.getElementsByName('" + fieldName + "')[i].checked) {\n");
       out.println("     checked = true;\n");
       out.println("   }\n");
       out.println(" }\n");
       out.println(" if(checked == false) {\n");
       out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' "
-              + Util.getString("GML.MustBeFilled",
-              language) + "\\n \";");
+          + Util.getString("GML.MustBeFilled",
+          language) + "\\n \";");
       out.println("   errorNb++;");
       out.println(" }");
     }
@@ -104,8 +110,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <ul> <li>the field type is not a managed type.</li> </ul>
-   *
+   * <ul>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
    * @param out
    * @param field
    * @param template
@@ -114,7 +121,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
-          PagesContext PagesContext) throws FormException {
+      PagesContext PagesContext) throws FormException {
     String selectedValues = "";
     List<String> valuesFromDB = new ArrayList<String>();
     String keys = "";
@@ -152,7 +159,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
-              parameters.get("cols"));
+          parameters.get("cols"));
       cols = 1;
     }
 
@@ -168,12 +175,11 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     StringTokenizer stKeys = new StringTokenizer(keys, "##");
     StringTokenizer stValues = new StringTokenizer(values, "##");
 
-
     int nbTokens = getNbHtmlObjectsDisplayed(template, PagesContext);
 
     if (stKeys.countTokens() != stValues.countTokens()) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
-              "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
+          "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
     } else {
       html.append("<table border=\"0\">");
       int col = 0;
@@ -188,8 +194,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
         String optValue = stValues.nextToken();
         html.append("<input type=\"checkbox\" id=\"").append(fieldName).append("_").append(i);
         html.append("\" name=\"").append(fieldName).append("\" value=\"").append(optKey).append(
-                "\" ");
-        if(StringUtil.isDefined(cssClass)) {
+            "\" ");
+        if (StringUtil.isDefined(cssClass)) {
           html.append(cssClass);
         }
         if (template.isDisabled() || template.isReadOnly()) {
@@ -197,13 +203,13 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
         }
         if (valuesFromDB.contains(optKey)) {
           html.append(" checked=\"checked\" ");
-        }        
+        }
         html.append("/>&nbsp;").append(optValue);
 
         // last checkBox
         if (i == nbTokens - 1) {
           if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-                  && !template.isHidden() && PagesContext.useMandatory()) {
+              && !template.isHidden() && PagesContext.useMandatory()) {
             html.append(Util.getMandatorySnippet());
           }
         }
@@ -224,9 +230,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
   @Override
   public List<String> update(List<FileItem> items, TextField field, FieldTemplate template,
-          PagesContext pageContext) throws FormException {
+      PagesContext pageContext) throws FormException {
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
-            "parameterName = " + template.getFieldName());
+        "parameterName = " + template.getFieldName());
     String value = "";
     Iterator<FileItem> iter = items.iterator();
     String parameterName = template.getFieldName();
@@ -240,9 +246,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       }
     }
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_EXIT_METHOD",
-            "parameterValue = " + value);
+        "parameterValue = " + value);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-            && !StringUtil.isDefined(value)) {
+        && !StringUtil.isDefined(value)) {
       return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
@@ -250,10 +256,10 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
 
   @Override
   public List<String> update(String values, TextField field, FieldTemplate template,
-          PagesContext PagesContext) throws FormException {
+      PagesContext PagesContext) throws FormException {
     if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-              TextField.TYPE);
+          TextField.TYPE);
     }
     String valuesToInsert = values;
 
@@ -261,7 +267,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       field.setValue(valuesToInsert, PagesContext.getLanguage());
     } else {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-              TextField.TYPE);
+          TextField.TYPE);
     }
     return new ArrayList<String>();
   }

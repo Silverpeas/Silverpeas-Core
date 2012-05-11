@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -67,8 +67,8 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   private long size;
   private String instanceId;
   private String xmlForm = null;
-  //following attributes are used by import/export XML
-  private String creatorName; 
+  // following attributes are used by import/export XML
+  private String creatorName;
   private XMLModelContentType xmlModelContentType = null;
   private boolean removeAfterImport = false;
   private String originalPath;
@@ -224,7 +224,8 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   /**
    * Return if a document is an Office file
    * @return true or false
-   * @deprecated Use isOpenOfficeCompatibleDocument instead as Ms office is no longer a special case.
+   * @deprecated Use isOpenOfficeCompatibleDocument instead as Ms office is no longer a special
+   * case.
    */
   @Deprecated
   public boolean isOfficeDocument() {
@@ -250,7 +251,8 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     if (!webAppContext.endsWith("/")) {
       webAppContext += '/';
     }
-    url.append(webAppContext).append(messages.getString("webdav.respository")).append('/').append(messages.
+    url.append(webAppContext).append(messages.getString("webdav.respository")).append('/').append(
+        messages.
         getString("webdav.workspace")).append('/').append(getJcrPath());
     return url.toString();
   }
@@ -315,7 +317,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
    */
   public String getDocumentPath() {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
-        new String[]{CONTEXT});
+        new String[] { CONTEXT });
     if (!directory.endsWith(File.separator)) {
       directory += File.separator;
     }
@@ -356,7 +358,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     }
     return icon;
   }
-  
+
   public boolean isRemoveAfterImport() {
     return removeAfterImport;
   }

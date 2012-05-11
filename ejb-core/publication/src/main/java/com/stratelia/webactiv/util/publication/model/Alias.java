@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,7 @@ public class Alias extends NodePK {
 
   private String userId = null;
   private Date date = null;
-	private int pubOrder = 0;
+  private int pubOrder = 0;
 
   private String userName = null; // Not persistent
 
@@ -60,7 +60,6 @@ public class Alias extends NodePK {
 
   /**
    * Return the value of the pubOrder property.
-   *
    * @return the value of pubOrder.
    */
   public int getPubOrder() {
@@ -69,7 +68,6 @@ public class Alias extends NodePK {
 
   /**
    * Set the value of the pubOrder property.
-   *
    * @param pubOrder the new value of pubOrder.
    */
   public void setPubOrder(int pubOrder) {

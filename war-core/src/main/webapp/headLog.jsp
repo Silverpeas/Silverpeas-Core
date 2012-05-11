@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
+<%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -54,9 +56,14 @@ String logo = general.getString("logo", m_context+"/images/logo.jpg");
 String styleSheet = general.getString("defaultLoginStyleSheet", m_context+"/style.css");
 
 // Is "forgotten password" feature active ?
-String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");    
+String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
 boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
 boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
+boolean newRegistrationActive = authenticationSettings.getBoolean("newRegistrationEnabled", false);
+
+// active social networks
+boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
+boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
 
 // Get a LoginPasswordAuthentication object
 LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();

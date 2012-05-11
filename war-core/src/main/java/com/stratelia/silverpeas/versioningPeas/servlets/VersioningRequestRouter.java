@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import com.silverpeas.form.DataRecord;
@@ -589,7 +590,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
    * @param request
    * @param versioningSC
    * @return
-   * @throws Exception 
+   * @throws Exception
    * @throws IOException
    */
   private void saveNewDocument(HttpServletRequest request,
@@ -649,7 +650,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
     }
     DocumentVersion documentVersion =
         new DocumentVersion(null, docPK, majorNumber, minorNumber, Integer.parseInt(versioningSC.
-        getUserId()), new Date(), comments, versionType, DocumentVersion.STATUS_VALIDATION_NOT_REQ, 
+        getUserId()), new Date(), comments, versionType, DocumentVersion.STATUS_VALIDATION_NOT_REQ,
         physicalName, logicalName, mimeType, size, versioningSC.getComponentId());
 
     boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
@@ -699,8 +700,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
       PublicationTemplateException {
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName) && newVersionPK != null) {
-      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, 
-              xmlFormName.indexOf('.'));
+      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1,
+          xmlFormName.indexOf('.'));
       String objectId = newVersionPK.getId();
       String objectType = "Versioning";
       String externalId = versioningSC.getComponentId() + ":" + objectType + ":" + xmlFormShortName;
@@ -735,8 +736,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
     boolean isEmpty = true;
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName)) {
-      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, 
-              xmlFormName.indexOf('.'));
+      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1,
+          xmlFormName.indexOf('.'));
       String objectId = "unknown";
       String objectType = "Versioning";
 
@@ -781,7 +782,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
         + objectType + ":" + xmlFormShortName, xmlFormName);
 
     PublicationTemplateImpl pubTemplate =
-        (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(componentId
+        (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+        componentId
         + ":" + objectType + ":" + xmlFormShortName, xmlFormName);
     Form formUpdate = pubTemplate.getUpdateForm();
     RecordSet recordSet = pubTemplate.getRecordSet();

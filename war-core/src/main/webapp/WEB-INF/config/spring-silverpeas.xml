@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+Copyright (C) 2000 - 2011 Silverpeas
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+As a special exception to the terms and conditions of version 3.0 of
+the GPL, you may redistribute this Program in connection with Free/Libre
+Open Source Software ("FLOSS") applications as described in Silverpeas's
+FLOSS exception. You should have received a copy of the text describing
+the FLOSS exception, and it is also available here:
+"http://repository.silverpeas.com/legal/licensing"
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -->
 
 <!--
- This Spring context configuration file sets up all of the core components required for bootstrapping
- the Silverpeas application. Theses components then can be then refered and used by others
- Silverpeas components.
+This Spring context configuration file sets up all of the core components required for bootstrapping
+the Silverpeas application. Theses components then can be then refered and used by others
+Silverpeas components.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -36,9 +36,9 @@
        xmlns:ctx="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <ctx:annotation-config/>
   
@@ -55,7 +55,7 @@
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
   <ctx:component-scan base-package="com.silverpeas.admin.notification"/>
-  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" /> 
+  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" />
   <ctx:component-scan base-package="com.silverpeas.profile"/>
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
@@ -67,7 +67,7 @@
   <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
   <!-- Silverpeas context initializer. It depends upon some others components to do its job.
-       Let's Spring to initialize the Silverpeas application context ;-) -->
+Let's Spring to initialize the Silverpeas application context ;-) -->
   <bean class="com.stratelia.silverpeas.silverpeasinitialize.SilverpeasInitializer"
         init-method="startInitialize" depends-on="schedulerFactory"/>
 
@@ -99,7 +99,7 @@
          factory-method="getInstance"/>
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
-       the actual scheduling backend -->
+the actual scheduling backend -->
   <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerFactory"
         factory-method="getFactory"/>
 
@@ -108,21 +108,23 @@
         factory-method="getSilverpeasLook" depends-on="organizationController"/>
         
   <!-- the factory of the document format converters available in Silverpeas.
-        It wraps and provides an access to the actual converter implementations -->
+It wraps and provides an access to the actual converter implementations -->
   <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterFactory"
         factory-method="getFactory"/>
         
   <!-- the factory of the content management services.
-        It wraps and provides an access to the actual content manager managed by the IoC container -->
+It wraps and provides an access to the actual content manager managed by the IoC container -->
   <bean id="contentManagerFactory" class="com.stratelia.silverpeas.contentManager.ContentManagerFactory"
         factory-method="getFactory"/>
         
   <!-- the factory of the statistics management services.
-        It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
+It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
   <bean id="silverStatisticsFactory" class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
-        factory-method="getFactory"/> 
+        factory-method="getFactory"/>
         
   <bean id="userPriviledgeValidationFactory" class="com.silverpeas.web.UserPriviledgeValidationFactory"
         factory-method="getFactory"/>
 
+  <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/>
+  <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/>
 </beans>

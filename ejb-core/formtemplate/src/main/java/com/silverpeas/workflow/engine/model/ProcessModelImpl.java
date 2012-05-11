@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -592,7 +592,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   public RecordSet getFormRecordSet(String formName) throws WorkflowException {
     try {
       RecordSet recordSet =
-              getGenericRecordSetManager().getRecordSet(getFormRecordSetName(formName));
+          getGenericRecordSetManager().getRecordSet(getFormRecordSetName(formName));
 
       /*
        * If recordset cannot be found, form is a new Form declared after peas instanciation : add it
@@ -604,7 +604,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
             template);
         recordSet = getGenericRecordSetManager().getRecordSet(getFormRecordSetName(formName));
       }
-      
+
       IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) recordSet
           .getRecordTemplate();
 
@@ -665,7 +665,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
         // Retrieve roles allowed to do this action
         QualifiedUsers creators = action.getAllowedUsers();
         UserInRole[] usersInRoles = creators.getUserInRoles();
-        
+
         for (UserInRole usersInRole : usersInRoles) {
           if (role.equals(usersInRole.getRoleName())) {
             return action;
@@ -688,7 +688,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     if (action == null || action.getForm() == null) {
       return null;
     }
-    
+
     try {
       if (StringUtil.isDefined(action.getForm().getHTMLFileName())) {
         HtmlForm form = new HtmlForm(action.getForm().toRecordTemplate(roleName, lang));
@@ -787,7 +787,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   public String[] getCreationRoles() throws WorkflowException {
     try {
       List<String> roles = new ArrayList<String>();
-      
+
       // Search for actions of kind create
       Action[] actions = getActions();
       for (Action action : actions) {
@@ -795,7 +795,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
           // Retrieve roles allowed to do this action
           QualifiedUsers creators = action.getAllowedUsers();
           UserInRole[] usersInRoles = creators.getUserInRoles();
-          
+
           for (UserInRole usersInRole : usersInRoles) {
             if (!roles.contains(usersInRole.getRoleName())) {
               roles.add(usersInRole.getRoleName());
@@ -826,7 +826,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     return template;
   }
 
-  private HashMap<String, RecordTemplate> instanceDataTemplates = new HashMap<String, RecordTemplate>();
+  private HashMap<String, RecordTemplate> instanceDataTemplates =
+      new HashMap<String, RecordTemplate>();
 
   /**
    * Returns the recordTemplate which describes the data record used to show process instance as a
@@ -889,7 +890,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
   public boolean hasId() {
     return hasId;
   }
-  
+
   /**
    * Gets an instance of a GenericRecordSet objects manager.
    * @return a GenericRecordSetManager instance.

@@ -1,25 +1,25 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*************************************
@@ -55,16 +55,16 @@ a:hover {
 }
 
 input {
-	background-color: #FFFFFF;
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	color: #000000;
-	border: 1px solid #999999;
+background-color: #FFFFFF;
+font-family: "Verdana", "Arial", sans-serif;
+font-size: 10px;
+color: #000000;
+border: 1px solid #999999;
 }
 
 input[type=radio],
 input[type=checkbox]{
-	border:0px;
+border:0px;
 }
 
 .invisible {
@@ -204,10 +204,10 @@ Definition des class de style Silverpeas
   min-width:300px;
 }
 
-* html 	.bgDegradeGris {
+* html .bgDegradeGris {
   background-color:#e9e9e9;
 }
-* html 	.bgDegradeGris.header {
+* html .bgDegradeGris.header {
   background-color:#efefef;
 }
 
@@ -550,7 +550,7 @@ Definition des class de style Silverpeas
   white-space: nowrap;
 }
 .portlet-content .intfdcolor {
-	white-space: normal;
+white-space: normal;
 }
 
 #outilsAdmin {
@@ -1273,8 +1273,8 @@ td.browsebar a:hover {
 
 #spaceTransverse {
   /*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
-  background-repeat: repeat-x;
-  background-position: top;*/
+background-repeat: repeat-x;
+background-position: top;*/
   background-color: #8BD039;
   border-width: 0px;
   border-style: solid;
@@ -1351,7 +1351,7 @@ td.browsebar a:hover {
   color: #FFF;
 }
 
-#spacePerso  a img {
+#spacePerso a img {
   border:0;
 }
 
@@ -1467,7 +1467,7 @@ td.browsebar a:hover {
 
 /****************************************/
 /****** Look V5 - ViewGenerator *********/
-/****************************************/ 
+/****************************************/
 /* objet window */
 .cellBrowseBar {
   border-bottom-width: 1px;
@@ -1548,10 +1548,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /* pour encadrer les boutons et remplacer la balise center utilisée dans les anciennes pages */
 .buttonPane {
-	text-align:center;
+text-align:center;
 }
 .buttonPane table {
-	margin:0 auto;
+margin:0 auto;
 }
 
 /* Objet Tabs */
@@ -1731,7 +1731,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   float: left;
   padding: 2px 3px;
   margin-right: 0.5em;
-  font-size:95%;    
+  font-size:95%;
   line-height: 1.6em;
 }
 
@@ -1784,7 +1784,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   margin-left:0.5em;
   height:1.3em;
 }
-.pageNav .pageJumper  a {
+.pageNav .pageJumper a {
   color:#FFF !important;
 }
 
@@ -1846,7 +1846,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /*- [ admin ] --------------------------- */
-#admin-treeview  img{ 
+#admin-treeview img{
   border:none;
 }
 
@@ -2040,7 +2040,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   border: 0px solid #DDD;
   color: #222;
   /*margin:0 15px 15px 0;
-  padding:0 10px 10px;*/
+padding:0 10px 10px;*/
   margin: 0;
   padding: 0;
   width: 175px;
@@ -2052,12 +2052,12 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 #portletPages dl.sort dt { /*background-color:#B3BFD1;
-    color:#000000; */
+color:#000000; */
   cursor: move;
   /*height:2em;
-  line-height:2;
-  padding:0 6px;
-  position:relative;*/
+line-height:2;
+padding:0 6px;
+position:relative;*/
   float: left;
   /*height: 2em;*/
   line-height: 2;
@@ -2252,14 +2252,14 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 #browseBar #breadCrumb a:link,
 #browseBar #breadCrumb a:hover
 {
-  font-size :  11px;
+  font-size : 11px;
 }
 
 #browseBar .information {
-  font-size :  11px;
+  font-size : 11px;
 }
 
-/* class used to mark as read the link of results page  */
+/* class used to mark as read the link of results page */
 .markedkAsRead {
   font-size: 11px;
   font-weight: bold;
@@ -2300,7 +2300,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 .lineResult .content a img{
-	border:0;
+border:0;
 }
 
 #globalResultFrame {
@@ -2450,11 +2450,11 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 #searchGroupValues a.toggle.less {
-	background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
+background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
 }
 
 #searchGroupValues a.toggle.more {
-	background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
+background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
 #searchGroupValues ul li.otherEntry {
@@ -2469,7 +2469,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 .attachments h4 {
-  background:transparent url(/silverpeas/util/icons/attachedFiles.gif)  top right no-repeat;
+  background:transparent url(/silverpeas/util/icons/attachedFiles.gif) top right no-repeat;
   height:16px;
 }
 
@@ -2530,7 +2530,7 @@ caption {
   width: 100%;
 }
 
-#directory .message_list li.intfdcolor  {
+#directory .message_list li.intfdcolor {
   padding: 0px;
   margin: 3px;
   position:relative;
@@ -2540,7 +2540,7 @@ caption {
 /*
 -- Pour affichage 1 seule colonne
 #directory .aff_colonnes li {
-    width:100%;
+width:100%;
 }
 */
 
@@ -2555,9 +2555,9 @@ caption {
 /*
 -- Pour affichage 3 colonnes
 #directory .aff_colonnes li {
-    float:left;
-    margin-right:0.4%;
-    width:32.6%;
+float:left;
+margin-right:0.4%;
+width:32.6%;
 }
 */
 
@@ -2624,7 +2624,7 @@ caption {
   padding:5px;
   text-align:left;
   width:100%;
-  background:transparent url(images_annuaire/sep-2-tiraits.gif)  15% bottom no-repeat;
+  background:transparent url(images_annuaire/sep-2-tiraits.gif) 15% bottom no-repeat;
   height:25px;
 }
 #directory #indexAndSearch #search input, #indexAndSearch #search table {
@@ -2690,7 +2690,7 @@ caption {
 
 #directory .info ul {
   margin:10px 10px 0 104px;
-  color:#909090; 
+  color:#909090;
   font-size:11px;
 }
 
@@ -2940,7 +2940,7 @@ caption {
 
 .SocialInformations .profilPhoto {
   float: left;
-  width:  45px;
+  width: 45px;
 }
 
 .SocialInformations .profilPhoto img {
@@ -3063,14 +3063,14 @@ caption {
   width: 70px;
 }
 /*****************************************Header and content*******************************/
-#privateProfile #contentAndHeader  {
+#privateProfile #contentAndHeader {
   float: left;
   width: 75%;
   margin: 0px;
   padding: 0px;
 }
 /*****************************************Header*******************************/
-#privateProfile #contentAndHeader #header  {
+#privateProfile #contentAndHeader #header {
   float: left;
   width: 100%;
   margin: 2px;
@@ -3111,7 +3111,7 @@ caption {
   padding-top: 10px;
 }
 /*****************************************content*******************************/
-#privateProfile #content  {
+#privateProfile #content {
   float: left;
   width: 100%;
   margin: 2px;
@@ -3161,11 +3161,11 @@ caption {
 }
 
 
-#myProfileFiche  .action {
+#myProfileFiche .action {
   margin-top:5px;
 }
 
-#myProfileFiche  .action .link ,   #contactCommun .link,   #allContact .link{
+#myProfileFiche .action .link , #contactCommun .link, #allContact .link{
   color:#333366;
   border-bottom:1px solid #9E9ECF;
   padding:0 0 3px 0;
@@ -3174,13 +3174,13 @@ caption {
   margin-bottom:8px;
   float:right; clear:right;
 }
-#myProfileFiche  .action .link:hover, #publicProfileFiche  .action .link:focus , #publicProfileFiche  #allContact .link:focus, #publicProfileFiche  #allContact .link:hover,
-#myProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus {
+#myProfileFiche .action .link:hover, #publicProfileFiche .action .link:focus , #publicProfileFiche #allContact .link:focus, #publicProfileFiche #allContact .link:hover,
+#myProfileFiche #contactCommun .link:hover, #publicProfileFiche #contactCommun .link:focus {
   color:#000;
   border-bottom:1px solid #000;
 
 }
-#myProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
+#myProfileFiche #allContact .link, #publicProfileFiche #contactCommun .link {
   clear:both;
   float:right;
   margin-top:10px;
@@ -3251,7 +3251,7 @@ caption {
 }
 
 #myProfileFiche .statut {
-  background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
+  background:transparent url(images_annuaire/sep-2-tiraits.gif) 50% top no-repeat;
   color:#333333; font-size:10px;
   padding:10px 0 0;
   margin:0;
@@ -3266,7 +3266,7 @@ caption {
   margin-left:15px;
   float:left;
 }
-#myProfileContenu  address { font-style:normal;}
+#myProfileContenu address { font-style:normal;}
 
 #myProfileFiche #allContact, #myProfileFiche #contactCommun {
   background-color:#E9E9E9;
@@ -3321,11 +3321,11 @@ caption {
   color:#333366;
 }
 
-#publicProfileFiche  .action {
+#publicProfileFiche .action {
   margin-top:5px;
 }
 
-#publicProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
+#publicProfileFiche .action .link , #publicProfileFiche #contactCommun .link, #publicProfileFiche #allContact .link{
   color:#333366;
   border-bottom:1px solid #9E9ECF;
   padding:0 0 3px 0;
@@ -3334,13 +3334,13 @@ caption {
   margin-bottom:8px;
   float:right; clear:right;
 }
-#publicProfileFiche  .action .link:hover, #publicProfileFiche  .action .link:focus , #publicProfileFiche  #allContact .link:focus, #publicProfileFiche  #allContact .link:hover,
-#publicProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus {
+#publicProfileFiche .action .link:hover, #publicProfileFiche .action .link:focus , #publicProfileFiche #allContact .link:focus, #publicProfileFiche #allContact .link:hover,
+#publicProfileFiche #contactCommun .link:hover, #publicProfileFiche #contactCommun .link:focus {
   color:#000;
   border-bottom:1px solid #000;
 
 }
-#publicProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
+#publicProfileFiche #allContact .link, #publicProfileFiche #contactCommun .link {
   clear:both;
   float:right;
   margin-top:10px;
@@ -3415,7 +3415,7 @@ caption {
 }
 
 #publicProfileFiche .statut {
-  background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
+  background:transparent url(images_annuaire/sep-2-tiraits.gif) 50% top no-repeat;
   color:#333333; font-size:10px;
   padding:10px 0 0;
   margin:0;
@@ -3435,9 +3435,9 @@ caption {
   float:left;
   width:100%;}
 
-#publicProfileContenu  address { font-style:normal;}
+#publicProfileContenu address { font-style:normal;}
 
-/* IMAGE  bg_tri.png à chercher dans corps dans fleche */
+/* IMAGE bg_tri.png à chercher dans corps dans fleche */
 .sousNavBulle, .container-filter {
   background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
   float:left;
@@ -3448,8 +3448,8 @@ caption {
   font-size:11px;
   padding:5px 0 14px;
 }
-.sousNavBulle p, .content-container-filter { 
-  margin:0; 
+.sousNavBulle p, .content-container-filter {
+  margin:0;
   padding:0 5px 0;
 }
 
@@ -3502,11 +3502,11 @@ caption {
   background-color:#FFF;
   text-align:center;
 }
-#publicProfile #publicProfileFiche  .profilPhotoContact img {
+#publicProfile #publicProfileFiche .profilPhotoContact img {
   height:62px;
 }
 
-/* News feed  */
+/* News feed */
 #publicProfileContenu p {
   margin:0;
   padding:0;}
@@ -3535,7 +3535,7 @@ caption {
   color:#727272;
 }
 
-#newsFeedProfil .txt .detail  {
+#newsFeedProfil .txt .detail {
   color:#333;
   line-height:16px;
   background-color:transparent;
@@ -3581,10 +3581,10 @@ caption {
   color:#26334A;
 }
 
-#newsFeedProfil	.a_new {
+#newsFeedProfil .a_new {
   height:50px;
 }
-html > body #newsFeedProfil	.a_new {
+html > body #newsFeedProfil .a_new {
   min-height:50px;
   height:auto;
 }
@@ -3615,7 +3615,7 @@ html > body #newsFeedProfil	.a_new {
   margin: 0px 15px;
 }
 
-/* Invitation  et contact*/
+/* Invitation et contact*/
 #ReceiveInvitation, #SendInvitation , #contactProfil{
   float:left;
   width:100%;
@@ -3630,7 +3630,7 @@ html > body #newsFeedProfil	.a_new {
 
 }
 
-html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_contact{
+html > body #invitationProfil .a_invitation , html > body #contactProfil .a_contact{
   min-height:84px;
   height:auto;
 }
@@ -3645,20 +3645,20 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 /*
 -- Pour affichage2 colonnes
 #contactProfil .aff_colonnes .a_contact {
-    width:46%;
-    float:right;
+width:46%;
+float:right;
 }*/
 
 /*
 -- Pour affichage 3 colonnes
 .aff_colonnes .a_contact {
 
-    width:30%;
-    float:right;
+width:30%;
+float:right;
 }
 */
 
-#invitationProfil .profilPhoto, #contactProfil  .profilPhoto{
+#invitationProfil .profilPhoto, #contactProfil .profilPhoto{
   float: left;
   height: auto;
   margin: 7px;
@@ -3678,7 +3678,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
   color:#000;
   font-weight:bold;
 }
-#invitationProfil a.name:hover,  #contactProfil .userName a:hover {
+#invitationProfil a.name:hover, #contactProfil .userName a:hover {
   color:#333;
 }
 #invitationProfil .txt, #contactProfil .txt{
@@ -3726,7 +3726,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
     position: absolute;
     right: 10px;
     top: 10px;
-	border:0;
+border:0;
 }
 
 #contactProfil .info li.userType {
@@ -3737,7 +3737,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 }
 
 /* general Style */
-hr.sep  {
+hr.sep {
   clear:both;
   height:0px;
   line-height:0px;
@@ -3769,7 +3769,7 @@ hr.sep  {
   padding: 0 15px;
 }
 
-.linkMore:hover, .linkMore:focus  {
+.linkMore:hover, .linkMore:focus {
   background-color:#E9F7D7;
 }
 
@@ -3930,7 +3930,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   webkit-border-radius:10px;
   padding:10px;
   position:relative;
-  margin:70px 2em 0;    
+  margin:70px 2em 0;
 }
 
 .commentaires #edition-box {
@@ -3970,7 +3970,7 @@ html>/**/body .commentaires .oneComment{
 
 .commentaires #edition-box .title , .commentaires .oneComment p.author{
   font-size: 8pt;
-  color: #111111;    
+  color: #111111;
   height: 20px;
   margin:0;
   position:absolute;
@@ -3988,7 +3988,7 @@ html>/**/body .commentaires .oneComment{
   font-size:11px;
 }
 
-.commentaires .oneComment .text {      
+.commentaires .oneComment .text {
   color: #888888;
   font-family: Arial;
   font-size: 13px;
@@ -4236,7 +4236,7 @@ html:not([lang*=""]) .add_position:hover {
   background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
 }
 
-#classification-modification  legend {
+#classification-modification legend {
   background:transparent url('/silverpeas/util/icons/update.gif') 11px 0px no-repeat;
 }
 
@@ -4258,11 +4258,11 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 .pdc-edition-box .valid_position {
-  margin:10px 10px 10px  180px;
+  margin:10px 10px 10px 180px;
   line-height: 20px;
   float:left;
 }
-.classification .legende { 
+.classification .legende {
   margin:10px 0 0;
   float:left;
   line-height:18px
@@ -4304,7 +4304,7 @@ html:not([lang*=""]) .add_position:hover {
   width:auto;
   line-height:220%;
 }
-#validation  input, #modification input{
+#validation input, #modification input{
   vertical-align:text-bottom;
   vertical-align:middle\9;
   border:0;
@@ -4314,12 +4314,12 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #classification-modification span.header {
-  display:block;  
+  display:block;
   background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
   background-color:#F0F0F0;
   border:1px solid #CDCDCD;
   border-left:0;
-  border-right:0;	
+  border-right:0;
   line-height:100%;
   padding:8px 0 6px 26px;
   margin:10px 12px 0;
@@ -4348,7 +4348,7 @@ html:not([lang*=""]) .add_position:hover {
   font-size:12px;
   color:#333;
 }
-#spaces-welcome-message  p {
+#spaces-welcome-message p {
   font-size:12px;
   line-height:140%;
   margin:10px 0 20px;
@@ -4423,7 +4423,7 @@ li.applicationsType a.linkSee.select {
 }
 
 ul.applicationList {
-  position:absolute; 
+  position:absolute;
   top:0;
   left:0;
   background-color:#FFF;
@@ -4467,7 +4467,7 @@ li.application {
   behavior: url();
 }
 
-li.application  a {
+li.application a {
   padding:2px 10px 2px 72px;
   width:318px;
   height:88px;
@@ -4475,11 +4475,11 @@ li.application  a {
   vertical-align:middle;
 }
 
-li.application  a:hover{
+li.application a:hover{
   background:transparent url(../icons/arrow/type_fleche.png) 380px -63px no-repeat;
 }
 
-li.application  img {
+li.application img {
   position:absolute;
   bottom:17px;
   right:332px;
@@ -4487,7 +4487,7 @@ li.application  img {
 }
 
 
-li.application  .applicationDescription {
+li.application .applicationDescription {
   font-size:11px;
   color:#666666;
   line-height:14px;
@@ -4496,7 +4496,7 @@ li.application  .applicationDescription {
   padding-right:15px;
 }
 
-li.application  .applicationName {
+li.application .applicationName {
   font-size:14px;
   font-weight:100;
   color:#444444;
@@ -4507,52 +4507,52 @@ li.application  .applicationName {
   height:154px;
 }
 
-.type_01 li.application  a {
+.type_01 li.application a {
   height:150px;
 }
 
-.type_01 li.application  img {
+.type_01 li.application img {
   position:absolute;
   bottom:45px;
   right:332px;
 }
 
-.type_01 li.application  .applicationName {
+.type_01 li.application .applicationName {
   font-size:14px;
   font-weight:100;
   color:#444444;
   padding-left:12px
 }
 
-.type_01 li.application  .applicationDescription {
+.type_01 li.application .applicationDescription {
   line-height:13px;
   display:none;
   text-align:justify;
   padding-right:15px;
 }
 
-.type_01  li.application  a:hover{
+.type_01 li.application a:hover{
   background:transparent url(../icons/arrow/type_fleche.png) 380px -40px no-repeat;
 }
 
 /** pour ie7 qui ne comprend pas le vertical-align **/
-li.application  a {
+li.application a {
   display:block !zonecss;
 }
-li.application  .applicationName {
+li.application .applicationName {
   line-height:72px !zonecss;
 }
-.type_01 li.application  .applicationName {
+.type_01 li.application .applicationName {
   line-height:150px !zonecss;
 }
 /** end pour ie 7 **/
 
-.type_01 a  span{background:transparent url(../icons/component/groupe_Type_gestionDocumentaire.png) 18px 3px no-repeat;}
-.type_02 a  span{background:transparent url(../icons/component/groupe_Type_gestionCollaborative.png) 18px 3px no-repeat;}
-.type_03  a  span{background:transparent url(../icons/component/groupe_Type_gestionConnaissance.png) 18px 3px no-repeat;}
-.type_04 a  span{background:transparent url(../icons/component/groupe_Type_gestionContenu.png) 18px 3px no-repeat;}
-.type_05 a  span{background:transparent url(../icons/component/groupe_Type_workflow.png) 18px 3px no-repeat;}
-.type_06 a  span {background:transparent url(../icons/component/groupe_Type_connecteur.png) 18px 3px no-repeat;}
+.type_01 a span{background:transparent url(../icons/component/groupe_Type_gestionDocumentaire.png) 18px 3px no-repeat;}
+.type_02 a span{background:transparent url(../icons/component/groupe_Type_gestionCollaborative.png) 18px 3px no-repeat;}
+.type_03 a span{background:transparent url(../icons/component/groupe_Type_gestionConnaissance.png) 18px 3px no-repeat;}
+.type_04 a span{background:transparent url(../icons/component/groupe_Type_gestionContenu.png) 18px 3px no-repeat;}
+.type_05 a span{background:transparent url(../icons/component/groupe_Type_workflow.png) 18px 3px no-repeat;}
+.type_06 a span {background:transparent url(../icons/component/groupe_Type_connecteur.png) 18px 3px no-repeat;}
 
 /*************************************/
 /** BackEnd Applications List - End */
@@ -4584,7 +4584,7 @@ li.application  .applicationName {
 
 
 /*************************************/
-/** BackEnd & FrontEnd User Panel   */
+/** BackEnd & FrontEnd User Panel */
 /***********************************/
 
 
@@ -4621,21 +4621,21 @@ li.application  .applicationName {
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   color:#FFF;
 }
-.userPanel .users_results_userPanel, 
+.userPanel .users_results_userPanel,
 .userPanel .groups_results_userPanel,
-.userPanel .users_selected_userPanel, 
-.userPanel .groups_selected_userPanel  {
+.userPanel .users_selected_userPanel,
+.userPanel .groups_selected_userPanel {
   margin:8px 3% 16px;
   clear:both;
   position:relative;
 }
 
-.userPanel .users_selected_userPanel, 
-.userPanel .groups_selected_userPanel  {
+.userPanel .users_selected_userPanel,
+.userPanel .groups_selected_userPanel {
   margin:2px 3% 16px 3%;
 }
-.userPanel .users_results_userPanel, 
-.userPanel .users_selected_userPanel  {
+.userPanel .users_results_userPanel,
+.userPanel .users_selected_userPanel {
   margin:2px 3% 0 3%;
 }
 #results_userPanel, #selected_userPanel{
@@ -4670,8 +4670,8 @@ li.application  .applicationName {
 }
 
 
-#filter_userPanel .listing_filter ul .filter{	    
-	background-image: url("../icons/puce-group.png");
+#filter_userPanel .listing_filter ul .filter{
+background-image: url("../icons/puce-group.png");
     background-position: 26px 11px;
     padding: 6px 0 1px 43px;
 }
@@ -4692,8 +4692,8 @@ li.application  .applicationName {
   color:#444;
 }
 
-#filter_userPanel .filter:hover, 
-#filter_userPanel .filter:focus , 
+#filter_userPanel .filter:hover,
+#filter_userPanel .filter:focus ,
 #filter_userPanel .filter.select,
 #filter_userPanel .filter:hover a,
 #filter_userPanel .filter:focus a{
@@ -4731,7 +4731,7 @@ li.application  .applicationName {
 }
 
 input.search {
-  background:transparent  url(../icons/magnifying-glass.png) 12px 4px no-repeat;
+  background:transparent url(../icons/magnifying-glass.png) 12px 4px no-repeat;
   *background-position: 0px 2px;
   border:0;
   color: #939393;
@@ -4745,7 +4745,7 @@ input.search {
 input.search:focus {
   color: #444444;
 }
-.userPanel .listing_users, .userPanel .listing_groups  {
+.userPanel .listing_users, .userPanel .listing_groups {
   position:relative;
 }
 
@@ -4820,7 +4820,7 @@ input.search:focus {
   color:#000;
 }
 .userPanel .add ,
-.userPanel .remove  {
+.userPanel .remove {
   text-indent:-3000px;
   width:16px;
   height:16px;
@@ -4829,10 +4829,10 @@ input.search:focus {
   top:12px;
   right:12px;
 }
-.userPanel .remove  {
+.userPanel .remove {
   background:transparent url(../icons/deleteFiche.png) top left;
 }
-.userPanel  .avatar {
+.userPanel .avatar {
   width:30px;
   height:30px;
   border:1px solid #bcbcbc;
@@ -4842,7 +4842,7 @@ input.search:focus {
   left:6px;
 }
 
-.userPanel  .avatar img{
+.userPanel .avatar img{
   width:30px;
   height:auto;
 }
@@ -4872,14 +4872,45 @@ input.search:focus {
 
 #sharing-overview a.Node,
 #sharing-overview a.Attachment,
-#sharing-overview a.Versionned  {
-	background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
-	padding: 2px 0px 0px 20px;
-	display: block;
+#sharing-overview a.Versionned {
+background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
+padding: 2px 0px 0px 20px;
+display: block;
     line-height: 16px;
 }
 
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned {
-	background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+}
+
+#socialNetwork {
+	border-bottom: 1px solid gray;
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+#socialNetworkLogo {
+	float: left;
+}
+
+#socialNetworkInfos {
+	font-weight: bold;
+    padding-top: 10px;
+}
+
+#FBpublishButton {
+	display: none;
+}
+
+#FBloginButton {
+	display: none;
+}
+
+#LinkedInPublishButton {
+	display: none;
+}
+
+#LinkedInLoginButton {
+	display: none;
 }

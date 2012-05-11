@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import java.io.IOException;
@@ -231,7 +232,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     // Header
     TR headerLine = new TR();
     ResourceLocator resource = GeneralPropertiesManager.getGeneralMultilang(language);
-    ResourcesWrapper pdcResource = new ResourcesWrapper(new ResourceLocator(MULTILANG_RESOURCE_PATH, language), new ResourceLocator(ICONS_RESOURCE_PATH, language), language);
+    ResourcesWrapper pdcResource =
+        new ResourcesWrapper(new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
+        new ResourceLocator(ICONS_RESOURCE_PATH, language), language);
     String[] headerLabelsData = {
         "GML.type", "GML.name", "pdcPeas.baseValue", "GML.requiredField", "pdcPeas.variant" };
     for (String headerLabelKey : headerLabelsData) {
@@ -426,8 +429,8 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
         language);
 
     Div div = new Div();
-    div.setID("pdcPositions_"+fieldName);
-    
+    div.setID("pdcPositions_" + fieldName);
+
     result.addElement(div);
     div.addElement(getPositionsDivContent(fieldName, pattern, readOnly, pdcResource));
 
@@ -438,14 +441,14 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
       addPositionLink.setTitle(pdcResource.getString("pdcPeas.addPosition"));
       addPositionLink.addElement(pdcResource.getString("pdcPeas.addPosition"));
       result.addElement(addPositionLink);
-      
+
       if (mandatory) {
-    	result.addElement(Util.getMandatorySnippet());
+        result.addElement(Util.getMandatorySnippet());
       }
-      
+
       result.addElement(getPositionsScript(fieldName, axis, language, pdcResource));
     }
-    
+
     return result.toString();
   }
 
@@ -609,7 +612,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     StringBuilder path = new StringBuilder();
     for (int i = 0; i < values.size(); i++) {
       if (i != 0) {
-    	path.append(pathSeparator);	
+        path.append(pathSeparator);
       }
       path.append(values.get(i).getName(language));
     }

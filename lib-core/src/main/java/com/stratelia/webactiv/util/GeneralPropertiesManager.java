@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util;
 
 /**
@@ -32,7 +33,8 @@ public class GeneralPropertiesManager {
   public static final int DVIS_ALL = 0;
   public static final int DVIS_ONE = 1;
   public static final int DVIS_EACH = 2;
-  public static final String GENERAL_PROPERTIES_FILE = "com.stratelia.webactiv.multilang.generalMultilang";
+  public static final String GENERAL_PROPERTIES_FILE =
+      "com.stratelia.webactiv.multilang.generalMultilang";
   static final ResourceLocator s_GeneralProperties = new ResourceLocator(
       "com.stratelia.webactiv.general", "");
   static int dvis = Integer.parseInt(s_GeneralProperties.getString("domainVisibility", "0"));
@@ -40,21 +42,19 @@ public class GeneralPropertiesManager {
   static public ResourceLocator getGeneralResourceLocator() {
     return s_GeneralProperties;
   }
-  
-  
+
   static public int getInteger(String property, int defaultValue) {
     return s_GeneralProperties.getInteger(property, defaultValue);
   }
-  
-  
+
   static public String getString(String property, String defaultValue) {
     return s_GeneralProperties.getString(property, defaultValue);
   }
-  
+
   static public String getString(String property) {
     return s_GeneralProperties.getString(property);
   }
-  
+
   static public boolean getBoolean(String property, boolean defaultValue) {
     return s_GeneralProperties.getBoolean(property, defaultValue);
   }

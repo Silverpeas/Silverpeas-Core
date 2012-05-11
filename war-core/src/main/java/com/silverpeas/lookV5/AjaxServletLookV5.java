@@ -1,26 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.lookV5;
 
 import com.silverpeas.admin.components.Instanciateur;
@@ -251,11 +251,11 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   /**
-   * @param spaceId : space identifier
-   * @param listUFS : the list of user favorite space
-   * @param orgaController : the OrganizationController object
-   * @return true if the current space contains user favorites sub space, false else if
-   */
+* @param spaceId : space identifier
+* @param listUFS : the list of user favorite space
+* @param orgaController : the OrganizationController object
+* @return true if the current space contains user favorites sub space, false else if
+*/
   private boolean containsFavoriteSubSpace(String spaceId, List<UserFavoriteSpaceVO> listUFS,
           OrganizationController orgaController, String userId) {
     return UserFavoriteSpaceManager.containsFavoriteSubSpace(spaceId, listUFS, orgaController,
@@ -263,31 +263,31 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   /**
-   * @param listUFS : the list of user favorite space
-   * @param spaceId : space identifier
-   * @return true if list of user favorites space contains spaceId identifier, false else if
-   */
+* @param listUFS : the list of user favorite space
+* @param spaceId : space identifier
+* @return true if list of user favorites space contains spaceId identifier, false else if
+*/
   private boolean isUserFavoriteSpace(List<UserFavoriteSpaceVO> listUFS, String spaceId) {
     return UserFavoriteSpaceManager.isUserFavoriteSpace(listUFS, spaceId);
   }
 
   /**
-   * displaySpace build XML response tree of current spaceId
-   * @param spaceId
-   * @param componentId
-   * @param spacePath
-   * @param userId
-   * @param language
-   * @param defaultLook
-   * @param displayPDC
-   * @param displayTransverse
-   * @param orgaController
-   * @param helper
-   * @param writer
-   * @param listUFS
-   * @param userMenuDisplayMode
-   * @throws IOException
-   */
+* displaySpace build XML response tree of current spaceId
+* @param spaceId
+* @param componentId
+* @param spacePath
+* @param userId
+* @param language
+* @param defaultLook
+* @param displayPDC
+* @param displayTransverse
+* @param orgaController
+* @param helper
+* @param writer
+* @param listUFS
+* @param userMenuDisplayMode
+* @throws IOException
+*/
   private void displaySpace(String spaceId, String componentId, List<String> spacePath,
           String userId, String language, String defaultLook,
           boolean displayPDC, boolean displayTransverse,
@@ -342,13 +342,13 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   /**
-   * @param userId
-   * @param orgaController
-   * @param listUFS
-   * @param space
-   * @param helper
-   * @return an XML user favorite space attribute only if User Favorite Space is enable
-   */
+* @param userId
+* @param orgaController
+* @param listUFS
+* @param space
+* @param helper
+* @return an XML user favorite space attribute only if User Favorite Space is enable
+*/
   private String getFavoriteSpaceAttribute(String userId, OrganizationController orgaController,
           List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space, LookHelper helper) {
     StringBuilder favSpace = new StringBuilder(20);
@@ -417,12 +417,12 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   /**
-   * Recursive method to get the right look.
-   * @param space
-   * @param defaultLook : current default look name
-   * @param orga : the organization controller
-   * @return the space style according to the space hierarchy
-   */
+* Recursive method to get the right look.
+* @param space
+* @param defaultLook : current default look name
+* @param orga : the organization controller
+* @return the space style according to the space hierarchy
+*/
   private String getSpaceLookAttribute(SpaceInstLight space, String defaultLook,
           OrganizationController orga) {
     String spaceLook = space.getLook();
@@ -886,13 +886,13 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   /**
-   * a Space is visible if at least one of its items is visible for the currentUser
-   * @param userId
-   * @param spaceId
-   * @param orgaController
-   * @param helper
-   * @return true or false
-   */
+* a Space is visible if at least one of its items is visible for the currentUser
+* @param userId
+* @param spaceId
+* @param orgaController
+* @param helper
+* @return true or false
+*/
   protected boolean isSpaceVisible(String userId, String spaceId,
           OrganizationController orgaController, LookHelper helper) {
     if (helper.getSettings("displaySpaceContainingOnlyHiddenComponents", true)) {

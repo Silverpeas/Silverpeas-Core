@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.attachment.importExport;
 
 import java.io.File;
@@ -62,7 +63,7 @@ public class AttachmentImportExport {
    * chemin physique du fichier importe)
    * @param attachmentDetail - objet contenant les details necessaires a la creation du fichier
    * importe et a sa liaison avec la publication
-   * @param indexIt 
+   * @param indexIt
    */
   public void importAttachment(String pubId, String componentId, AttachmentDetail attachmentDetail,
       boolean indexIt) {
@@ -116,7 +117,8 @@ public class AttachmentImportExport {
             xmlIE = new FormTemplateImportExport();
           }
 
-          ForeignPK pk = new ForeignPK(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
+          ForeignPK pk =
+              new ForeignPK(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
           xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent,
               attDetail.getAuthor());
         }
@@ -125,7 +127,7 @@ public class AttachmentImportExport {
             "AttachmentImportExport.importAttachments()",
             "root.MSG_GEN_PARAM_VALUE", e);
       }
-      
+
       if (attDetail.isRemoveAfterImport()) {
         boolean removed = FileUtils.deleteQuietly(new File(attDetail.getOriginalPath()));
         if (!removed) {
@@ -302,14 +304,15 @@ public class AttachmentImportExport {
    * @param pk - PrimaryKey de l'obijet dont on veut les attachments?
    * @param exportPath - Repertoire dans lequel copier les fichiers
    * @param relativeExportPath chemin relatif du fichier copie
-   * @param extensionFilter 
+   * @param extensionFilter
    * @return une liste des attachmentDetail trouves
    */
   public List<AttachmentDetail> getAttachments(WAPrimaryKey pk, String exportPath,
       String relativeExportPath, String extensionFilter) {
 
     // Recuperation des attachments
-    Collection<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByCustomerPK(
+    Collection<AttachmentDetail> listAttachment =
+        AttachmentController.searchAttachmentByCustomerPK(
         pk);
     List<AttachmentDetail> listToReturn = new ArrayList<AttachmentDetail>();
     if (listAttachment != null && listAttachment.isEmpty()) {
@@ -345,7 +348,8 @@ public class AttachmentImportExport {
           try {
             copyAttachment(attDetail, pk, exportPath);
             // Le nom physique correspond maintenant au fichier copi
-            attDetail.setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
+            attDetail
+                .setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (Exception ex) {
             // TODO: gerer ou ne pas gerer telle est la question

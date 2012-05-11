@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -19,8 +19,9 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.sun.jersey.api.json.JSONConfiguration;
@@ -56,13 +57,12 @@ import static com.silverpeas.util.StringUtil.isDefined;
 /**
  * The PdC classification entity represents the web entity of the classification of a Silverpeas's
  * resource on the classification plan (PdC). As such, it publishes only some of the business
- * classification attributes.
- * The PdC classificiation is identified in the web by its unique identifier, its URI.
- * 
- * The PdC is a semantic referential that is made up of one or more axis, each of them representing
- * a semantic concept. A classification on the PdC is then a set of positions of the resource content
- * on the different axis; each position provides an atomic semantic information about the resource.
- * A position can be a semantic value of an axis as well a set of values on different axis.
+ * classification attributes. The PdC classificiation is identified in the web by its unique
+ * identifier, its URI. The PdC is a semantic referential that is made up of one or more axis, each
+ * of them representing a semantic concept. A classification on the PdC is then a set of positions
+ * of the resource content on the different axis; each position provides an atomic semantic
+ * information about the resource. A position can be a semantic value of an axis as well a set of
+ * values on different axis.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -77,9 +77,8 @@ public class PdcClassificationEntity implements Exposable {
   private boolean modifiable = true;
 
   /**
-   * Creates a non-defined PdC classification.
-   * Resources that are not classified on the PdC have a such undefined classification as they have
-   * no classification positions on the PdC axis.
+   * Creates a non-defined PdC classification. Resources that are not classified on the PdC have a
+   * such undefined classification as they have no classification positions on the PdC axis.
    * @return a web entity representing an undefined PdC classification.
    */
   public static PdcClassificationEntity undefinedClassification() {
@@ -95,12 +94,12 @@ public class PdcClassificationEntity implements Exposable {
    * @return a PdcClassificationEntity instance.
    */
   public static PdcClassificationEntity aPdcClassificationEntity(
-          final List<ClassifyPosition> fromPositions,
-          String inLanguage,
-          final URI atURI) {
+      final List<ClassifyPosition> fromPositions,
+      String inLanguage,
+      final URI atURI) {
     PdcClassificationEntity entity = new PdcClassificationEntity(atURI);
     entity.setClassificationPositions(
-            fromClassifyPositions(fromPositions, inLanguage, atURI));
+        fromClassifyPositions(fromPositions, inLanguage, atURI));
     return entity;
   }
 
@@ -113,45 +112,45 @@ public class PdcClassificationEntity implements Exposable {
    * @return a PdcClassificationEntity instance.
    */
   public static PdcClassificationEntity aPdcClassificationEntity(
-          final PdcClassification classification,
-          String inLanguage,
-          final URI atURI) {
+      final PdcClassification classification,
+      String inLanguage,
+      final URI atURI) {
     PdcClassificationEntity entity = new PdcClassificationEntity(atURI);
     entity.setClassificationPositions(
-            fromPdcPositions(classification.getPositions(), inLanguage, atURI));
+        fromPdcPositions(classification.getPositions(), inLanguage, atURI));
     entity.setModifiable(classification.isModifiable());
     return entity;
   }
 
   /**
-   * Converts the specified JSON representation of a classification on the PdC into an instance of
-   * a classification entity.
+   * Converts the specified JSON representation of a classification on the PdC into an instance of a
+   * classification entity.
    * @param classification the JSON representation of a classification on the PdC.
    * @return a PdcClassificationEntity instance.
    * @throws JAXBException if an error occurs during the conversion.
    */
   public static PdcClassificationEntity fromJSON(String classification) throws JAXBException {
     JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
-            PdcPositionEntity.class, PdcPositionValueEntity.class);
+        PdcPositionEntity.class, PdcPositionValueEntity.class);
     JSONUnmarshaller unmarshaller = new JSONUnmarshallerImpl(context, JSONConfiguration.DEFAULT);
     try {
       return unmarshaller.unmarshalFromJSON(new StringReader(classification),
-              PdcClassificationEntity.class);
+          PdcClassificationEntity.class);
     } catch (Error ex) {
       throw new JAXBException(ex.getMessage(), ex);
     }
   }
 
   /**
-   * Converts this entity into its JSON representation. Actually, the marshalling of the web entities
-   * are managed by the JAX-RS framework. This method is dedicated to be used in some particular
-   * circumstances in which there is an explicit need to have a JSON representation of this entity out
-   * of the JAX-RS context.
+   * Converts this entity into its JSON representation. Actually, the marshalling of the web
+   * entities are managed by the JAX-RS framework. This method is dedicated to be used in some
+   * particular circumstances in which there is an explicit need to have a JSON representation of
+   * this entity out of the JAX-RS context.
    * @return a JSON representation of this classification entity (as string).
    */
   public String toJSON() throws JAXBException {
     JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
-            PdcPositionEntity.class, PdcPositionValueEntity.class);
+        PdcPositionEntity.class, PdcPositionValueEntity.class);
     JSONMarshaller marshaller = new JSONMarshallerImpl(context, JSONConfiguration.DEFAULT);
     try {
       StringWriter writer = new StringWriter();
@@ -223,7 +222,7 @@ public class PdcClassificationEntity implements Exposable {
    * different classification positions.
    */
   public PdcClassificationEntity withSynonymsFrom(final UserThesaurusHolder userThesaurus) throws
-          ThesaurusException {
+      ThesaurusException {
     for (PdcPositionEntity pdcPositionEntity : positions) {
       pdcPositionEntity.setSynonymsFrom(userThesaurus);
     }
@@ -274,8 +273,8 @@ public class PdcClassificationEntity implements Exposable {
     if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
       return false;
     }
-    return !(this.positions != other.positions && (this.positions == null
-            || !this.positions.equals(other.positions)));
+    return !(this.positions != other.positions && (this.positions == null || !this.positions
+        .equals(other.positions)));
   }
 
   @Override
@@ -298,15 +297,15 @@ public class PdcClassificationEntity implements Exposable {
       positionArray.append("]");
     }
     return "PdcClassificationEntity{" + "uri=" + uri + ", positions=" + positionArray.toString()
-            + '}';
+        + '}';
   }
 
   private static List<PdcPositionEntity> fromClassifyPositions(
-          final List<ClassifyPosition> positions,
-          String inLanguage,
-          final URI atBaseURI) {
+      final List<ClassifyPosition> positions,
+      String inLanguage,
+      final URI atBaseURI) {
     SortedSet<PdcPositionEntity> positionEntities =
-            new TreeSet<PdcPositionEntity>(new PositionComparator());
+        new TreeSet<PdcPositionEntity>(new PositionComparator());
     for (ClassifyPosition position : positions) {
       positionEntities.add(PdcPositionEntity.fromClassifyPosition(position, inLanguage, atBaseURI));
     }
@@ -314,9 +313,9 @@ public class PdcClassificationEntity implements Exposable {
   }
 
   private static List<PdcPositionEntity> fromPdcPositions(final Collection<PdcPosition> positions,
-          String inLanguage, final URI atBaseURI) {
+      String inLanguage, final URI atBaseURI) {
     SortedSet<PdcPositionEntity> positionEntities =
-            new TreeSet<PdcPositionEntity>(new PositionComparator());
+        new TreeSet<PdcPositionEntity>(new PositionComparator());
     for (PdcPosition position : positions) {
       positionEntities.add(PdcPositionEntity.fromPdcPosition(position, inLanguage, atBaseURI));
     }

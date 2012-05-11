@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,7 +47,7 @@ import javax.servlet.http.HttpServletRequest;
  * @version %I%, %G%
  */
 public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionController> {
-  
+
   private static final long serialVersionUID = -240502612963231503L;
   /**
    * Name of the session bean that will be used for this application. This must be matched by the
@@ -71,7 +71,8 @@ public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionContr
     return SESSION_BEAN_NAME;
   }
 
-  public String getDestination(String function,POPUPSessionController popupSC, HttpServletRequest request) {
+  public String getDestination(String function, POPUPSessionController popupSC,
+      HttpServletRequest request) {
     String destination = "/POPUP/jsp/" + function;
     SilverTrace.info("popup", "POPUPRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function=" + function);

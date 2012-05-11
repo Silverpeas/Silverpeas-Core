@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,7 +54,8 @@ public class TreeDAO {
       throw new SQLException("DBUtil.getNextId() failed !");
     }
 
-    String insertQuery = "INSERT INTO SB_Tree_Tree VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? )";
+    String insertQuery =
+        "INSERT INTO SB_Tree_Tree VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? )";
     PreparedStatement prepStmt = null;
 
     try {
@@ -88,7 +89,8 @@ public class TreeDAO {
       throw new SQLException("DBUtil.getNextValueIdToTree() failed !");
     }
 
-    String insertQuery = "INSERT INTO SB_Tree_Tree VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
+    String insertQuery =
+        "INSERT INTO SB_Tree_Tree VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
     PreparedStatement prepStmt = null;
 
     try {
@@ -114,7 +116,8 @@ public class TreeDAO {
 
   public static void updateNode(Connection con, TreeNode node)
       throws SQLException {
-    String updateQuery = "UPDATE SB_Tree_Tree SET name = ? , description = ? , path = ? , levelNumber = ? , fatherId = ? , orderNumber = ? , lang = ? WHERE treeId = ? AND id = ? ";
+    String updateQuery =
+        "UPDATE SB_Tree_Tree SET name = ? , description = ? , path = ? , levelNumber = ? , fatherId = ? , orderNumber = ? , lang = ? WHERE treeId = ? AND id = ? ";
     PreparedStatement prepStmt = null;
 
     try {
@@ -202,7 +205,7 @@ public class TreeDAO {
    * Update path of decendante nodes of the deleted node.
    * @param con - the connection to the database
    * @param oldFather - the deleted node
-   * @throws SQLException  
+   * @throws SQLException
    */
   public static void updatePath(Connection con, String oldFather, String treeId)
       throws SQLException {

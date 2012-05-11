@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.thumbnail.model;
 
+package com.silverpeas.thumbnail.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -35,16 +35,18 @@ import java.sql.Types;
 public class ThumbnailDAO {
 
   private static final String INSERT_THUMBNAIL = "INSERT INTO sb_thumbnail_thumbnail "
-          + "(instanceid, objectid, objecttype, originalattachmentname, modifiedattachmentname,"
-          + "mimetype, xstart, ystart, xlength, ylength) "
-          + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
+      + "(instanceid, objectid, objecttype, originalattachmentname, modifiedattachmentname,"
+      + "mimetype, xstart, ystart, xlength, ylength) "
+      + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
   private static final String UPDATE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail "
-          + "SET xstart = ?, ystart = ?, xlength = ?, ylength = ?, originalattachmentname = ?, "
-          + "modifiedattachmentname = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
+      + "SET xstart = ?, ystart = ?, xlength = ?, ylength = ?, originalattachmentname = ?, "
+      + "modifiedattachmentname = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
   private static final String DELETE_THUMBNAIL = "DELETE FROM sb_thumbnail_thumbnail "
-          + "WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
-  private static final String DELETE_COMPONENT_THUMBNAILS = "DELETE FROM sb_thumbnail_thumbnail WHERE instanceId = ?";
-  private static final String SELECT_THUMBNAIL_BY_PK = "SELECT instanceid, objectid, objecttype, "
+      + "WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
+  private static final String DELETE_COMPONENT_THUMBNAILS =
+      "DELETE FROM sb_thumbnail_thumbnail WHERE instanceId = ?";
+  private static final String SELECT_THUMBNAIL_BY_PK =
+      "SELECT instanceid, objectid, objecttype, "
           + "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, "
           + "ylength FROM sb_thumbnail_thumbnail WHERE objectId = ? AND objectType = ? AND instanceId = ?";
 
@@ -52,7 +54,7 @@ public class ThumbnailDAO {
   }
 
   public ThumbnailDetail insertThumbnail(Connection con, ThumbnailDetail thumbnailDetail) throws
-          SQLException {
+      SQLException {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(INSERT_THUMBNAIL);
@@ -117,7 +119,7 @@ public class ThumbnailDAO {
   }
 
   public void deleteThumbnail(Connection con, int objectId, int objectType, String instanceId)
-          throws SQLException {
+      throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(DELETE_THUMBNAIL);
@@ -143,9 +145,9 @@ public class ThumbnailDAO {
   }
 
   public ThumbnailDetail selectByKey(Connection con, String instanceId, int objectId, int objectType)
-          throws SQLException {
+      throws SQLException {
     SilverTrace.info("publication", "ThumbnailDAO.selectByPubId()", "root.MSG_GEN_ENTER_METHOD",
-            "objectId = " + objectId + "objectType" + objectType + "instanceId" + instanceId);
+        "objectId = " + objectId + "objectType" + objectType + "instanceId" + instanceId);
     ResultSet rs = null;
     ThumbnailDetail thumbnailDetail = null;
     PreparedStatement prepStmt = null;
@@ -167,7 +169,7 @@ public class ThumbnailDAO {
 
   ThumbnailDetail resultSet2ThumbDetail(ResultSet rs) throws SQLException {
     ThumbnailDetail thumbnailDetail = new ThumbnailDetail(rs.getString("instanceid"), rs.getInt(
-            "objectid"), rs.getInt("objecttype"));
+        "objectid"), rs.getInt("objecttype"));
     thumbnailDetail.setOriginalFileName(rs.getString("originalattachmentname"));
     thumbnailDetail.setCropFileName(rs.getString("modifiedattachmentname"));
     thumbnailDetail.setMimeType(rs.getString("mimetype"));

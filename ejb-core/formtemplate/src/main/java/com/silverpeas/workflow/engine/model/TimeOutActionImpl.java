@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,10 +39,11 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
   private static final long serialVersionUID = -7434214806057433378L;
   private Action action = null;
   private String delay = null;
-  private int order= 0;
+  private int order = 0;
   private Item dateItem = null;
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.TimeOutAction#getAction()
    */
   @Override
@@ -69,7 +70,8 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
     this.dateItem = dateItem;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.TimeOutAction#getDelay()
    */
   @Override
@@ -77,7 +79,8 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
     return delay;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.TimeOutAction#getOrder()
    */
   @Override
@@ -85,7 +88,8 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
     return order;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.TimeOutAction#getDateItem()
    */
   @Override
@@ -115,6 +119,5 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
       this.order = 0;
     }
   }
-
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,15 +34,15 @@ public class ElisionFilter extends TokenFilter {
 
   public void setArticles(Set<String> newArticles) {
     this.articles = new HashSet<String>();
-    for (String article :  newArticles){
-        this.articles.add(article.toLowerCase());
+    for (String article : newArticles) {
+      this.articles.add(article.toLowerCase());
     }
   }
 
   public ElisionFilter(TokenStream input) {
     super(input);
     articles = null;
-    articles = new HashSet(Arrays.asList("l", "m", "t", "qu","n", "s", "j", "d", "c"));
+    articles = new HashSet(Arrays.asList("l", "m", "t", "qu", "n", "s", "j", "d", "c"));
   }
 
   public ElisionFilter(TokenStream input, Set articles) {

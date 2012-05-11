@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,17 +44,17 @@ import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioningPeas.control.VersioningSessionController;
 
 public class AjaxServlet extends HttpServlet {
-  
+
   private static final long serialVersionUID = 1972204681347444151L;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, 
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, 
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
     String action = getAction(req);
     String result = null;
@@ -81,7 +81,8 @@ public class AjaxServlet extends HttpServlet {
 
   private String getUserId(HttpServletRequest req) {
     MainSessionController msc =
-        (MainSessionController) req.getSession().getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        (MainSessionController) req.getSession().getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return msc.getCurrentUserDetail().getId();
   }
 
@@ -94,7 +95,7 @@ public class AjaxServlet extends HttpServlet {
           versioningSC.getSpaceId(), versioningSC.getComponentId());
       Document document = versioningSC.getDocument(documentPK);
       if (document.getStatus() == Document.STATUS_CHECKOUTED) {
-        if(document.getOwnerId() == Integer.parseInt(userId)) {
+        if (document.getOwnerId() == Integer.parseInt(userId)) {
           return "ok";
         }
         return "alreadyCheckouted";
@@ -137,7 +138,8 @@ public class AjaxServlet extends HttpServlet {
     String docId = req.getParameter("DocId");
     boolean force = StringUtil.getBooleanValue(req.getParameter("force_release"));
     try {
-      DocumentPK documentPK = new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
+      DocumentPK documentPK =
+          new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
       Document document = versioningSC.getEditingDocument();
       if (document == null) {
         document = versioningSC.getDocument(documentPK);

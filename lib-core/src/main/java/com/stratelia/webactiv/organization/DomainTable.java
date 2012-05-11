@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.organization;
 
 import java.sql.PreparedStatement;
@@ -36,6 +37,7 @@ public class DomainTable extends Table<DomainRow> {
   public DomainTable(OrganizationSchema schema) {
     super(schema, "ST_Domain");
   }
+
   static final private String DOMAIN_COLUMNS =
       "id,name,description,propFileName,className,authenticationServer,theTimeStamp,silverpeasServerURL";
 
@@ -43,7 +45,7 @@ public class DomainTable extends Table<DomainRow> {
    * Fetch the current domain row from a resultSet.
    * @param rs
    * @return the current domain row from a resultSet.
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected DomainRow fetchDomain(ResultSet rs) throws SQLException {
     DomainRow d = new DomainRow();
@@ -63,35 +65,38 @@ public class DomainTable extends Table<DomainRow> {
    * Returns the domain whith the given id.
    * @param id
    * @return the domain whith the given id.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public DomainRow getDomain(int id) throws AdminPersistenceException {
     return getUniqueRow(SELECT_DOMAIN_BY_ID, id);
   }
+
   static final private String SELECT_DOMAIN_BY_ID = "select " + DOMAIN_COLUMNS
       + " from ST_Domain where id = ?";
 
   /**
    * Returns all the Domains.
    * @return all the Domains.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public DomainRow[] getAllDomains() throws AdminPersistenceException {
     List<DomainRow> rows = getRows(SELECT_ALL_DOMAINS);
     return rows.toArray(new DomainRow[rows.size()]);
   }
+
   static final private String SELECT_ALL_DOMAINS = "select " + DOMAIN_COLUMNS
       + " from ST_Domain where not id=-1 order by name asc";
 
   /**
    * Insert a new domain row.
    * @param domain
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void createDomain(DomainRow domain) throws AdminPersistenceException {
     insertRow(INSERT_DOMAIN, domain);
   }
-  static final private String INSERT_DOMAIN ="INSERT INTO ST_Domain (id, name, description, " +
+
+  static final private String INSERT_DOMAIN = "INSERT INTO ST_Domain (id, name, description, " +
       "propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL) VALUES " +
       " (? ,? ,?, ? ,?, ?, ?, ?)";
 
@@ -99,7 +104,8 @@ public class DomainTable extends Table<DomainRow> {
   protected void prepareInsert(String insertQuery, PreparedStatement insert, DomainRow row) throws
       SQLException {
     if (row.id == -1) {
-      row.id = getNextId();    }
+      row.id = getNextId();
+    }
 
     insert.setInt(1, row.id);
     insert.setString(2, truncate(row.name, 100));
@@ -114,11 +120,12 @@ public class DomainTable extends Table<DomainRow> {
   /**
    * Updates a domain row.
    * @param domain
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void updateDomain(DomainRow domain) throws AdminPersistenceException {
     updateRow(UPDATE_DOMAIN, domain);
   }
+
   static final private String UPDATE_DOMAIN = "update ST_Domain set"
       + " name = ?," + " description = ?," + " propFileName = ?,"
       + " className = ?," + " authenticationServer = ?," + " theTimeStamp = ?,"
@@ -140,7 +147,7 @@ public class DomainTable extends Table<DomainRow> {
   /**
    * Delete the domain
    * @param id
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void removeDomain(int id) throws AdminPersistenceException {
     DomainRow domain = getDomain(id);
@@ -149,6 +156,7 @@ public class DomainTable extends Table<DomainRow> {
     }
     updateRelation(DELETE_DOMAIN, id);
   }
+
   static final private String DELETE_DOMAIN = "delete from ST_Domain where id = ?";
 
   /**

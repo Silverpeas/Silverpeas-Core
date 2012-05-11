@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.jobDomainPeas.control;
 
 import java.io.BufferedReader;
@@ -47,6 +48,12 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.admin.domain.DomainService;
+import org.silverpeas.admin.domain.DomainServiceFactory;
+import org.silverpeas.admin.domain.DomainType;
+import org.silverpeas.admin.domain.exception.DomainConflictException;
+import org.silverpeas.admin.domain.exception.DomainCreationException;
+import org.silverpeas.admin.domain.exception.DomainDeletionException;
 
 import com.silverpeas.jobDomainPeas.DomainNavigationStock;
 import com.silverpeas.jobDomainPeas.GroupNavigationStock;
@@ -159,7 +166,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public boolean isAccessGranted() {
     return !getUserManageableGroupIds().isEmpty() || getUserDetail().isAccessAdmin() ||
         getUserDetail().
-            isAccessDomainManager();
+        isAccessDomainManager();
   }
 
   public void setRefreshDomain(boolean refreshDomain) {
@@ -195,7 +202,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (valret == null) {
         throw new JobDomainPeasException("JobDomainPeasSessionController.getTargetUserFull()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_USER_NOT_AVAILABLE", "UserId=" +
-                m_TargetUserId);
+            m_TargetUserId);
       }
     }
     return valret;
@@ -228,14 +235,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createUser()",
         "root.MSG_GEN_ENTER_METHOD", "userLogin=" + userLogin + " userLastName=" + userLastName +
-            " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel=" +
-            userAccessLevel);
+        " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel=" +
+        userAccessLevel);
 
     existingUser = m_AdminCtrl.getUserIdByLoginAndDomain(userLogin, targetDomainId);
     if ((existingUser != null) && (existingUser.length() > 0)) {
       JobDomainPeasTrappedException te =
           new JobDomainPeasTrappedException("JobDomainPeasSessionController.createUser()",
-              SilverpeasException.ERROR, "admin.EX_ERR_LOGIN_ALREADY_USED");
+          SilverpeasException.ERROR, "admin.EX_ERR_LOGIN_ALREADY_USED");
       te.setGoBackPage("displayUserCreate");
       throw te;
     }
@@ -319,8 +326,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL,
-              getString("JDP.createAccountNotifTitle"),
-              templates, USER_ACCOUNT_TEMPLATE_FILE);
+          getString("JDP.createAccountNotifTitle"),
+          templates, USER_ACCOUNT_TEMPLATE_FILE);
       notifMetaData.addUserRecipient(new UserRecipient(user.getId()));
       NotificationSender sender = new NotificationSender(null);
       try {
@@ -384,7 +391,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (!"-1".equals(getTargetDomain().getId())
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
-            "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
+        "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
 
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
       int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
@@ -589,7 +596,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
               JobDomainSettings.m_MinLengthPwd).append(" ").append(getString("JDP.caracteres")).
               append(
-                  "<br/>");
+              "<br/>");
         } else if (motDePasse.length() > 32) {// verifier 32 char max
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
           listErrors.append(getString("JDP.nbCarMax")).append(" 32 ").append(getString(
@@ -814,7 +821,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (!"-1".equals(getTargetDomain().getId())
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
-            "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
+        "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
       int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomLastGroup = null;
@@ -875,8 +882,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throws JobDomainPeasException {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName +
-            " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel=" +
-            userAccessLevel);
+        " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel=" +
+        userAccessLevel);
 
     UserFull theModifiedUser = m_AdminCtrl.getUserFull(idUser);
     if (theModifiedUser == null) {
@@ -933,7 +940,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifySynchronizedUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-              + idUser);
+          + idUser);
     }
     refresh();
     setTargetUser(idRet);
@@ -965,7 +972,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyUserFull()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-              + idUser);
+          + idUser);
     }
     refresh();
     setTargetUser(idRet);
@@ -1026,7 +1033,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (!StringUtil.isDefined(idRet)) {
         throw new JobDomainPeasException("JobDomainPeasSessionController.deleteUser()",
             SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "UserId="
-                + idUser);
+            + idUser);
       }
       if (m_TargetUserId.equals(idUser)) {
         m_TargetUserId = null;
@@ -1160,7 +1167,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (StringUtil.isDefined(groupId)) {
       if (getTargetGroup() == null
           || (getTargetGroup() != null && !getTargetGroup().getId().equals(
-              groupId))) {
+          groupId))) {
         Group targetGroup = m_AdminCtrl.getGroupById(groupId);
         if (GroupNavigationStock.isGroupValid(targetGroup)) {
           List<String> manageableGroupIds = null;
@@ -1380,7 +1387,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     Group theNewGroup = new Group();
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createGroup()",
         "root.MSG_GEN_ENTER_METHOD", "ParentId=" + idParent + " Name="
-            + groupName + " Desc=" + groupDescription);
+        + groupName + " Desc=" + groupDescription);
     theNewGroup.setId("-1");
     if (StringUtil.isDefined(targetDomainId)
         && !"-1".equals(targetDomainId)) {
@@ -1692,462 +1699,68 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public String createDomain(String domainName, String domainDescription, String domainDriver,
       String domainProperties, String domainAuthentication, String silverpeasServerURL,
       String domainTimeStamp) throws JobDomainPeasException, JobDomainPeasTrappedException {
-    // Vérif domainName
-    verifCreateDomain(domainName, false);
-    Domain theNewDomain = new Domain();
+
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createDomain()",
         "root.MSG_GEN_ENTER_METHOD", "domainName=" + domainName);
-    theNewDomain.setId("-1");
-    theNewDomain.setName(domainName);
-    theNewDomain.setDescription(domainDescription);
-    theNewDomain.setDriverClassName(domainDriver);
-    theNewDomain.setPropFileName(domainProperties);
-    theNewDomain.setAuthenticationServer(domainAuthentication);
-    theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
-    theNewDomain.setTheTimeStamp(domainTimeStamp);
 
-    String idRet = m_AdminCtrl.addDomain(theNewDomain);
-    if (!StringUtil.isDefined(idRet)) {
+    String newDomainId = null;
+
+    try {
+      Domain theNewDomain = new Domain();
+      theNewDomain.setId("-1");
+      theNewDomain.setName(domainName);
+      theNewDomain.setDescription(domainDescription);
+      theNewDomain.setDriverClassName(domainDriver);
+      theNewDomain.setPropFileName(domainProperties);
+      theNewDomain.setAuthenticationServer(domainAuthentication);
+      theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
+      theNewDomain.setTheTimeStamp(domainTimeStamp);
+
+      DomainServiceFactory.getFactory().getDomainService(DomainType.EXTERNAL).createDomain(
+          theNewDomain);
+      refresh();
+    } catch (DomainCreationException e) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.createDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN");
-    }
-    refresh();
-    return idRet;
-  }
-
-  private void verifCreateDomain(String domainName, boolean domainSql)
-      throws JobDomainPeasTrappedException {
-    JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
-        "JobDomainPeasSessionController", SilverpeasException.WARNING,
-        "jobDomainPeas.WARN_DOMAIN_SQL_NAME");
-    if (domainSql) {
-      trappedException.setGoBackPage("displayDomainSQLCreate");
-    } else {
+          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+    } catch (DomainConflictException e) {
+      JobDomainPeasTrappedException trappedException =
+          new JobDomainPeasTrappedException("JobDomainPeasSessionController.createDomain()",
+          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
       trappedException.setGoBackPage("displayDomainCreate");
-    }
-
-    // 1-Vérif non présence d'espaces
-    int indexOfSpace = domainName.indexOf(" ");
-    if (indexOfSpace > -1) {
       throw trappedException;
     }
-    // 2-Vérif caractères alphanumériques
-    int i = 0;
-    char car;
-    while (i < domainName.length()) {
-      car = domainName.charAt(i);
-      if (!Character.isLetterOrDigit(car)) {
-        throw trappedException;
-      }
-      i++;
-    }
 
-    // 3-Vérif domainName unique dans la table ST_Domain
-    Domain[] tabDomain = m_AdminCtrl.getAllDomains();
-    Domain domain;
-    for (Domain aTabDomain : tabDomain) {
-      domain = aTabDomain;
-      if (domain.getName().toLowerCase().equals(domainName.toLowerCase())) {
-        throw trappedException;
-      }
-    }
-
-    if (domainSql) {
-      // 4-Vérif domainName unique dans le fileSystem
-      // pour les properties
-      // com.stratelia.silverpeas.domains.domain<domainName>.properties
-      // et
-      // com.stratelia.silverpeas.authentication.autDomain<domainName>.properties
-      ResourceLocator propInitialize = new ResourceLocator(
-          "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
-          "");
-      String pathInitialize = propInitialize.getString("pathInitialize");
-      int indexOfInitialize = pathInitialize.indexOf("initialize");
-      StringBuilder cheminFichierDomain = new StringBuilder(pathInitialize.substring(0,
-          indexOfInitialize));
-      cheminFichierDomain.append("properties").append(File.separator).append("com").append(
-          File.separator).append("stratelia").append(File.separator).append("silverpeas").append(
-          File.separator).append("domains");
-      String nomFichierDomain = "domain" + domainName + ".properties";
-
-      File directoryDomain = new File(cheminFichierDomain.toString());
-      File fileDomain = new File(directoryDomain, nomFichierDomain);
-      if (fileDomain.exists()) {
-        throw trappedException;
-      }
-
-      StringBuilder cheminFichierAutDomain = new StringBuilder(pathInitialize.substring(0,
-          indexOfInitialize));
-      cheminFichierAutDomain.append("properties").append(File.separator).append("com").append(
-          File.separator).append("stratelia").append(File.separator).append("silverpeas").append(
-          File.separator).append("authentication");
-      String nomFichierAutDomain = "autDomain" + domainName + ".properties";
-      File directoryAutDomain = new File(cheminFichierAutDomain.toString());
-      File fileAutDomain = new File(directoryAutDomain, nomFichierAutDomain);
-      if (fileAutDomain.exists()) {
-        throw trappedException;
-      }
-    }
+    return newDomainId;
   }
 
   public String createSQLDomain(String domainName, String domainDescription,
       String silverpeasServerURL) throws JobDomainPeasException, JobDomainPeasTrappedException {
-    // 0- Vérif domainName
-    verifCreateDomain(domainName, true);
-    // 1-Création sur le fileSystem du properties
-    // com.stratelia.silverpeas.domains.domain<domainName>
-    SilverTrace
-        .info(
-            "jobDomainPeas",
-            "JobDomainPeasSessionController.createSQLDomain()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "Création sur le fileSystem du properties com.stratelia.silverpeas.domains.domain<domainName>");
 
-    ResourceLocator propInitialize = new ResourceLocator(
-        "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
-        "");
-    String pathInitialize = propInitialize.getString("pathInitialize");
-    int indexOfInitialize = pathInitialize.indexOf("initialize");
+    // build Domain object
+    Domain domainToCreate = new Domain();
+    domainToCreate.setName(domainName);
+    domainToCreate.setDescription(domainDescription);
+    domainToCreate.setSilverpeasServerURL(silverpeasServerURL);
 
-    String cheminFichierDomain = pathInitialize.substring(0, indexOfInitialize)
-        + "properties" + File.separator + "com" + File.separator + "stratelia"
-        + File.separator + "silverpeas" + File.separator + "domains";
-    String nomFichierDomain = "domain" + domainName + ".properties";
-
-    File directoryDomain = new File(cheminFichierDomain);
-    File fileDomain = new File(directoryDomain, nomFichierDomain);
-    PrintWriter sortie = null;
+    // launch domain creation process
+    String domainId = null;
     try {
-      sortie = new PrintWriter(new FileWriter(fileDomain));
-    } catch (IOException e) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-      throw new JobDomainPeasException("JobDomainPeasSessionController.createSQLDomain()",
+      DomainService domainService =
+          DomainServiceFactory.getFactory().getDomainService(DomainType.SQL);
+      domainId = domainService.createDomain(domainToCreate);
+    } catch (DomainCreationException e) {
+      throw new JobDomainPeasException("JobDomainPeasSessionController.createDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
-    }
-
-    // properties templateDomainSQL
-    ResourceLocator templateDomainSql =
-        new ResourceLocator("com.stratelia.silverpeas.domains.templateDomainSQL", "");
-    String cryptMethod =
-        templateDomainSql.getString("database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
-    boolean allowPasswordChange = templateDomainSql.getBoolean("allowPasswordChange", true);
-
-    BufferedReader readerTemplateDomainSQL = null;
-    try {
-      String cheminFichierTemplateDomainSQL = pathInitialize.substring(0,
-          indexOfInitialize)
-          + "properties"
-          + File.separator
-          + "com"
-          + File.separator
-          + "stratelia"
-          + File.separator
-          + "silverpeas"
-          + File.separator
-          + "domains" + File.separator + "templateDomainSQL.properties";
-      File fileTemplateDomainSQL = new File(cheminFichierTemplateDomainSQL);
-      readerTemplateDomainSQL = new BufferedReader(new FileReader(
-          fileTemplateDomainSQL));
-    } catch (FileNotFoundException e) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createSQLDomain()",
+    } catch (DomainConflictException e) {
+      JobDomainPeasTrappedException trappedException =
+          new JobDomainPeasTrappedException("JobDomainPeasSessionController.createDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
-    }
-    String currentLine;
+      trappedException.setGoBackPage("displayDomainSQLCreate");
 
-    sortie.println("# SQL driver");
-    sortie.println("");
-    sortie.println("# DataBase Access");
-    sortie.println("# ----------------");
-    sortie.println("");
-    ResourceLocator propAdmin = new ResourceLocator(
-        "com.stratelia.webactiv.beans.admin.admin", "");
-    sortie.println("database.SQLClassName					= "
-        + propAdmin.getString("AdminDBDriver"));
-    sortie.println("database.SQLJDBCUrl						= "
-        + propAdmin.getString("WaProductionDb"));
-    sortie.println("database.SQLAccessLogin					= "
-        + propAdmin.getString("WaProductionUser"));
-    sortie.println("database.SQLAccessPasswd				= "
-        + propAdmin.getString("WaProductionPswd"));
-    sortie.println("");
-    sortie.println("database.SQLUserTableName				= Domain" + domainName
-        + "_User");
-    sortie.println("database.SQLGroupTableName				= Domain" + domainName
-        + "_Group");
-    sortie.println("database.SQLUserGroupTableName			= Domain" + domainName
-        + "_Group_User_Rel");
-    sortie.println("");
-    sortie.println("# Generic Properties");
-    sortie.println("# ----------------");
-    sortie.println("");
-    sortie.println("# For Users");
-    sortie.println("database.SQLUserSpecificIdColumnName	= id");
-    sortie.println("database.SQLUserLoginColumnName			= login");
-    sortie.println("database.SQLUserFirstNameColumnName		= firstName");
-    sortie.println("database.SQLUserLastNameColumnName		= lastName");
-    sortie.println("database.SQLUserEMailColumnName			= email");
-    sortie.println("database.SQLUserPasswordColumnName		= password");
-    sortie.println("database.SQLUserPasswordValidColumnName	= passwordValid");
-    sortie.println("");
-    sortie.println("# For Groups");
-    sortie.println("database.SQLGroupSpecificIdColumnName	= id");
-    sortie.println("database.SQLGroupNameColumnName			= name");
-    sortie.println("database.SQLGroupDescriptionColumnName	= description");
-    sortie.println("database.SQLGroupParentIdColumnName		= superGroupId");
-    sortie.println("");
-    sortie.println("# For Users-Groups relations");
-    sortie.println("database.SQLUserGroupUIDColumnName		= userId");
-    sortie.println("database.SQLUserGroupGIDColumnName		= groupId");
-    sortie.println("");
-    try {
-      while ((currentLine = readerTemplateDomainSQL.readLine()) != null) {
-        if (!currentLine.startsWith("allowPasswordChange")) {
-          sortie.println(currentLine);
-        }
-      }
-    } catch (IOException e) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
-    }
-    sortie.close();
-
-    // 2-Création sur le fileSystem du properties
-    // com.stratelia.silverpeas.authentication.autDomain<domainName>
-    SilverTrace
-        .info(
-            "jobDomainPeas",
-            "JobDomainPeasSessionController.createSQLDomain()",
-            "root.MSG_GEN_ENTER_METHOD",
-            "Création sur le fileSystem du properties com.stratelia.silverpeas.authentication.autDomain<domainName>");
-    String cheminFichierAutDomain = pathInitialize.substring(0,
-        indexOfInitialize)
-        + "properties"
-        + File.separator
-        + "com"
-        + File.separator
-        + "stratelia"
-        + File.separator + "silverpeas" + File.separator + "authentication";
-    String nomFichierAutDomain = "autDomain" + domainName + ".properties";
-
-    File directoryAutDomain = new File(cheminFichierAutDomain);
-    File fileAutDomain = new File(directoryAutDomain, nomFichierAutDomain);
-    try {
-      sortie = new PrintWriter(new FileWriter(fileAutDomain));
-    } catch (IOException e) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-
-      // suppression du fichier domain<domainName>.properties
-      fileAutDomain.delete();
-
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+      throw trappedException;
     }
 
-    sortie.println("# Silverpeas default driver authentication");
-    sortie.println("# ----------------------------------------");
-    sortie.println("");
-    sortie.println(
-        "# Fallback type : could be one of the following values : none, ifNotRejected, always");
-    sortie.println("fallbackType							= none");
-    sortie.println("");
-    sortie.println("allowPasswordChange						= " + allowPasswordChange);
-    sortie.println("");
-    sortie.println("# Authentication servers");
-    sortie
-        .println(
-        "# Available types are : com.stratelia.silverpeas.authentication.AuthenticationNT, com.stratelia.silverpeas.authentication.AuthenticationSQL and com.stratelia.silverpeas.authentication.AuthenticationLDAP");
-    sortie.println("");
-    sortie.println("autServersCount							= 1");
-    sortie.println("");
-    sortie.println(
-        "autServer0.type							= com.stratelia.silverpeas.authentication.AuthenticationSQL");
-    sortie.println("autServer0.enabled						= true");
-    sortie.println("autServer0.SQLJDBCUrl 					= "
-        + propAdmin.getString("WaProductionDb"));
-    sortie.println("autServer0.SQLAccessLogin  				= "
-        + propAdmin.getString("WaProductionUser"));
-    sortie.println("autServer0.SQLAccessPasswd 				= "
-        + propAdmin.getString("WaProductionPswd"));
-    sortie.println("autServer0.SQLDriverClass  				= "
-        + propAdmin.getString("AdminDBDriver"));
-    sortie.println("autServer0.SQLUserTableName 			= Domain" + domainName
-        + "_User");
-    sortie.println("autServer0.SQLUserLoginColumnName 		= login");
-    sortie.println("autServer0.SQLUserPasswordColumnName 	= password");
-    sortie.println("autServer0.SQLUserPasswordAvailableColumnName = passwordValid");
-    sortie.println("autServer0.SQLPasswordEncryption 		= " + cryptMethod);
-    sortie.close();
-
-    // 3-Création en base de données des 3 nouvelles tables du domaine :
-    // Domain<domainName>_Group, Domain<domainName>_Group_User_Rel et
-    // Domain<domainName>_User
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.createSQLDomain()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "Création en base de données des 3 tablse du Domain");
-    try {
-      JobDomainPeasDAO.createTableDomain_Group(domainName);
-    } catch (SQLException e) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-
-      // suppression du fichier domain<domainName>.properties
-      fileAutDomain.delete();
-
-      // suppresion de la table Domain<domainName>_Group
-      try {
-        JobDomainPeasDAO.dropTableDomain_Group(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
-    }
-
-    try {
-      JobDomainPeasDAO.createTableDomain_User(domainName);
-    } catch (SQLException e) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-
-      // suppression du fichier domain<domainName>.properties
-      fileAutDomain.delete();
-
-      // suppresion de la table Domain<domainName>_Group
-      try {
-        JobDomainPeasDAO.dropTableDomain_Group(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      // suppresion de la table Domain<domainName>_User
-      try {
-        JobDomainPeasDAO.dropTableDomain_User(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
-    }
-
-    try {
-      JobDomainPeasDAO.createTableDomain_Group_User_Rel(domainName);
-    } catch (SQLException e) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-
-      // suppression du fichier domain<domainName>.properties
-      fileAutDomain.delete();
-
-      // suppresion de la table Domain<domainName>_Group
-      try {
-        JobDomainPeasDAO.dropTableDomain_Group(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      // suppresion de la table Domain<domainName>_User
-      try {
-        JobDomainPeasDAO.dropTableDomain_User(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      // suppresion de la table Domain<domainName>_Group_User_Rel
-      try {
-        JobDomainPeasDAO.dropTableDomain_Group_User_Rel(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
-    }
-
-    // 4-Enregistrement en base de données du nouveau Domaine dans ST_Domain
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.createSQLDomain()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "Insertion d'une entrée dans la table ST_Domain");
-    Domain theNewDomain = new Domain();
-    String idRet = null;
-    theNewDomain.setId("-1");
-    theNewDomain.setName(domainName);
-    theNewDomain.setDescription(domainDescription);
-    theNewDomain.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
-    theNewDomain.setPropFileName("com.stratelia.silverpeas.domains.domain"
-        + domainName);
-    theNewDomain.setAuthenticationServer("autDomain" + domainName);
-    theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
-    theNewDomain.setTheTimeStamp("0");
-    idRet = m_AdminCtrl.addDomain(theNewDomain);
-    if ((idRet == null) || (idRet.length() <= 0)) {
-      // suppression du fichier domain<domainName>.properties
-      fileDomain.delete();
-
-      // suppression du fichier domain<domainName>.properties
-      fileAutDomain.delete();
-
-      // suppresion de la table Domain<domainName>_Group
-      try {
-        JobDomainPeasDAO.dropTableDomain_Group(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      // suppresion de la table Domain<domainName>_User
-      try {
-        JobDomainPeasDAO.dropTableDomain_User(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      // suppresion de la table Domain<domainName>_Group_User_Rel
-      try {
-        JobDomainPeasDAO.dropTableDomain_Group_User_Rel(domainName);
-      } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.createSQLDomain()",
-            SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e1);
-      }
-
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.createSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN");
-    }
-    return idRet;
+    return domainId;
   }
 
   public String modifyDomain(String domainName, String domainDescription,
@@ -2245,95 +1858,26 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void deleteDomain() throws JobDomainPeasException {
-    String idRet = null;
-
-    if ((targetDomainId == null) || (targetDomainId.equals("-1"))
-        || (targetDomainId.equals("0")) || (targetDomainId.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN");
+    try {
+      DomainService domainService =
+          DomainServiceFactory.getFactory().getDomainService(DomainType.EXTERNAL);
+      domainService.deleteDomain(getTargetDomain());
+    } catch (DomainDeletionException e) {
+      throw new JobDomainPeasException("JobDomainPeasSessionController.deleteDomain()",
+          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e);
     }
-    idRet = m_AdminCtrl.removeDomain(getTargetDomain().getId());
-    if ((idRet == null) || (idRet.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN");
-    }
-    returnIntoGroup(null);
-    m_TargetDomain = null;
   }
 
   public void deleteSQLDomain() throws JobDomainPeasException {
-    String cheminProperties = getTargetDomain().getPropFileName();
-    String domainName = cheminProperties.substring(39);
 
-    // 1-Suppression en base de données du Domaine dans ST_Domain
-    if ((targetDomainId == null) || (targetDomainId.equals("-1"))
-        || (targetDomainId.equals("0")) || (targetDomainId.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN");
-    }
-    String idRet = m_AdminCtrl.removeDomain(getTargetDomain().getId());
-    if ((idRet == null) || (idRet.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN");
-    }
-    returnIntoGroup(null);
-    m_TargetDomain = null;
-
-    // 2-Suppresion de la table Domain<domainName>_Group
     try {
-      JobDomainPeasDAO.dropTableDomain_Group(domainName);
-    } catch (SQLException e1) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e1);
+      DomainService domainService =
+          DomainServiceFactory.getFactory().getDomainService(DomainType.SQL);
+      domainService.deleteDomain(getTargetDomain());
+    } catch (DomainDeletionException e) {
+      throw new JobDomainPeasException("JobDomainPeasSessionController.deleteSQLDomain()",
+          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e);
     }
-
-    // 3-Suppresion de la table Domain<domainName>_User
-    try {
-      JobDomainPeasDAO.dropTableDomain_User(domainName);
-    } catch (SQLException e1) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e1);
-    }
-
-    // 4-Suppresion de la table Domain<domainName>_Group_User_Rel
-    try {
-      JobDomainPeasDAO.dropTableDomain_Group_User_Rel(domainName);
-    } catch (SQLException e1) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteSQLDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e1);
-    }
-
-    // 5-Suppression du fichier domain<domainName>.properties
-    ResourceLocator propInitialize = new ResourceLocator(
-        "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
-        "");
-    String pathInitialize = propInitialize.getString("pathInitialize");
-    int indexOfInitialize = pathInitialize.indexOf("initialize");
-    String cheminFichierDomain = pathInitialize.substring(0, indexOfInitialize)
-        + "properties" + File.separator + "com" + File.separator + "stratelia"
-        + File.separator + "silverpeas" + File.separator + "domains";
-    String nomFichierDomain = "domain" + domainName + ".properties";
-
-    File directoryDomain = new File(cheminFichierDomain);
-    File fileDomain = new File(directoryDomain, nomFichierDomain);
-    fileDomain.delete();
-
-    // 6-Suppression du fichier domain<domainName>.properties
-    String cheminFichierAutDomain = pathInitialize.substring(0, indexOfInitialize)
-        + "properties" + File.separatorChar + "com" + File.separatorChar
-        + "stratelia" + File.separatorChar + "silverpeas" + File.separatorChar + "authentication";
-    String nomFichierAutDomain = "autDomain" + domainName + ".properties";
-
-    File directoryAutDomain = new File(cheminFichierAutDomain);
-    File fileAutDomain = new File(directoryAutDomain, nomFichierAutDomain);
-    fileAutDomain.delete();
   }
 
   protected String getSureString(String s) {
@@ -2448,7 +1992,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "JobDomainPeasSessionController.synchroSQLDomain()",
         "root.MSG_GEN_PARAM_VALUE",
         "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-            + targetDomainId);
+        + targetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_INFO);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
@@ -2471,7 +2015,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   protected String synchronizeSilverpeasViaWebService() {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.synchroSQLDomain()",
         "root.MSG_GEN_PARAM_VALUE", "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-            + targetDomainId);
+        + targetDomainId);
     StringBuilder sReport = new StringBuilder();
     SynchroUserWebServiceItf synchroUserWebService = null;
     try {
@@ -2550,7 +2094,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Insertion / Update des users
       if (listUserToInsertUpdate != null && !listUserToInsertUpdate.isEmpty()) {
         sReport.append(synchroUserWebService.insertUpdateListUserWebService(theDomain.getId(),
-                listUserToInsertUpdate, listGroupToInsertUpdate));
+            listUserToInsertUpdate, listGroupToInsertUpdate));
       }
 
       sReport.append("\n\nFin de la synchronisation...");
@@ -2576,7 +2120,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "JobDomainPeasSessionController.synchroDomain()",
         "root.MSG_GEN_PARAM_VALUE",
         "------------SYNCHRO DOMAIN APPELE----------- domainId="
-            + targetDomainId);
+        + targetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(traceLevel);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
@@ -2653,7 +2197,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public List<String> getListSelectedUsers() {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.getListUsersSelected()", "",
         "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
-            + listSelectedUsers.toString());
+        + listSelectedUsers.toString());
     return listSelectedUsers;
   }
 
@@ -2665,7 +2209,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     listSelectedUsers = list;
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.setListSelectedUsers()", "",
         "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
-            + listSelectedUsers.toString());
+        + listSelectedUsers.toString());
   }
 
   public void setIndexOfFirstItemToDisplay(String index) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
@@ -122,14 +123,15 @@ public class DataFolderImpl implements DataFolder, Serializable {
     Item item = createItem();
     item.setName(strItemName);
     if (!itemList.remove(item)) {
-      throw new WorkflowException("DataFolderImpl.removeItem()", "workflowEngine.EX_ITEM_NOT_FOUND",
+      throw new WorkflowException("DataFolderImpl.removeItem()",
+          "workflowEngine.EX_ITEM_NOT_FOUND",
           strItemName == null ? "<null>" : strItemName);
     }
   }
 
   /**
    * Converts this object in a RecordTemplate object
-   * @param readonly 
+   * @param readonly
    * @return the resulting RecordTemplate
    */
   @Override
@@ -151,7 +153,7 @@ public class DataFolderImpl implements DataFolder, Serializable {
           // add parameters to new FieldTemplate
           Iterator<Parameter> parameters = item.iterateParameter();
           while (parameters.hasNext()) {
-            Parameter parameter =  parameters.next();
+            Parameter parameter = parameters.next();
             if (parameter != null) {
               ft.addParameter(parameter.getName(), parameter.getValue());
             }

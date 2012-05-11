@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.admin.components;
 
 import java.util.HashMap;
@@ -31,30 +32,26 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * <p>Java class for ParameterOptionType complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for ParameterOptionType complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ParameterOptionType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="name" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *         &lt;element name="value" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name=&quot;ParameterOptionType&quot;&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name=&quot;name&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;value&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ParameterOptionType", propOrder = {
-  "name",
-  "value"
-})
+@XmlType(name = "ParameterOptionType", propOrder = { "name", "value" })
 public class Option implements Cloneable {
 
   @XmlElement(required = true)
@@ -65,14 +62,10 @@ public class Option implements Cloneable {
 
   /**
    * Gets the value of the name property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link Multilang }
-   *     
+   * @return possible object is {@link Multilang }
    */
   public HashMap<String, String> getName() {
-    if(name == null) {
+    if (name == null) {
       name = new HashMap<String, String>();
     }
     return name;
@@ -80,11 +73,7 @@ public class Option implements Cloneable {
 
   /**
    * Sets the value of the name property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link Multilang }
-   *     
+   * @param value allowed object is {@link Multilang }
    */
   public void setName(HashMap<String, String> value) {
     this.name = value;
@@ -92,11 +81,7 @@ public class Option implements Cloneable {
 
   /**
    * Gets the value of the value property.
-   * 
-   * @return
-   *     possible object is
-   *     {@link String }
-   *     
+   * @return possible object is {@link String }
    */
   public String getValue() {
     return value;
@@ -104,21 +89,17 @@ public class Option implements Cloneable {
 
   /**
    * Sets the value of the value property.
-   * 
-   * @param value
-   *     allowed object is
-   *     {@link String }
-   *     
+   * @param value allowed object is {@link String }
    */
   public void setValue(String value) {
     this.value = value;
   }
-  
+
   @Override
-  @SuppressWarnings({"unchecked"})
+  @SuppressWarnings( { "unchecked" })
   public Option clone() {
     Option option = new Option();
-    option.setName((HashMap<String, String>)getName().clone());
+    option.setName((HashMap<String, String>) getName().clone());
     option.setValue(value);
     return option;
   }

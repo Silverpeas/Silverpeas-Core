@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.importExportPeas.servlets;
 
 import com.silverpeas.importExport.control.MassiveDocumentImport;
@@ -50,7 +54,6 @@ import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class ImportDragAndDrop extends HttpServlet {
@@ -99,8 +102,8 @@ public class ImportDragAndDrop extends HttpServlet {
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId + " topicId = " + topicId
-              + " userId = " + userId + " ignoreFolders = " + ignoreFolders
-              + ", draftMode = " + draftMode);
+          + " userId = " + userId + " ignoreFolders = " + ignoreFolders
+          + ", draftMode = " + draftMode);
 
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
           + File.separator + topicId + System.currentTimeMillis() + File.separator;
@@ -155,7 +158,7 @@ public class ImportDragAndDrop extends HttpServlet {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
         List<PublicationDetail> importedPublications = massiveImporter
             .importDocuments(userDetail, componentId, savePath, Integer.parseInt(topicId),
-                isDraftUsed, true, massiveReport);
+            isDraftUsed, true, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
           for (PublicationDetail publicationDetail : importedPublications) {
@@ -185,11 +188,10 @@ public class ImportDragAndDrop extends HttpServlet {
    * specified topic of the specified component instance can be modified during the
    * multi-publications import process? If no default classification is defined for the specified
    * topic (and for any of its parent topics), then false is returned.
-   *
-   * @param topicId     the unique identifier of the topic.
+   * @param topicId the unique identifier of the topic.
    * @param componentId the unique identifier of the component instance.
    * @return true if the default classification can be modified during the automatical
-   *         classification of the imported publications. False otherwise.
+   * classification of the imported publications. False otherwise.
    */
   protected boolean isDefaultClassificationModifiable(String topicId, String componentId) {
     PdcClassificationService classificationService = PdcServiceFactory.getFactory().

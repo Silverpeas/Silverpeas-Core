@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -258,13 +258,15 @@ public class Document implements java.io.Serializable, Cloneable {
     if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
       return false;
     }
-    if (this.foreignKey != other.foreignKey && (this.foreignKey == null || !this.foreignKey.equals(other.foreignKey))) {
+    if (this.foreignKey != other.foreignKey &&
+        (this.foreignKey == null || !this.foreignKey.equals(other.foreignKey))) {
       return false;
     }
     if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
       return false;
     }
-    if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+    if ((this.description == null) ? (other.description != null) : !this.description
+        .equals(other.description)) {
       return false;
     }
     if (this.status != other.status) {
@@ -273,19 +275,24 @@ public class Document implements java.io.Serializable, Cloneable {
     if (this.ownerId != other.ownerId) {
       return false;
     }
-    if (this.lastCheckOutDate != other.lastCheckOutDate && (this.lastCheckOutDate == null || !this.lastCheckOutDate.equals(other.lastCheckOutDate))) {
+    if (this.lastCheckOutDate != other.lastCheckOutDate &&
+        (this.lastCheckOutDate == null || !this.lastCheckOutDate.equals(other.lastCheckOutDate))) {
       return false;
     }
-    if ((this.additionalInfo == null) ? (other.additionalInfo != null) : !this.additionalInfo.equals(other.additionalInfo)) {
+    if ((this.additionalInfo == null) ? (other.additionalInfo != null) : !this.additionalInfo
+        .equals(other.additionalInfo)) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(other.instanceId)) {
+    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId
+        .equals(other.instanceId)) {
       return false;
     }
-    if (this.workList != other.workList && (this.workList == null || !this.workList.equals(other.workList))) {
+    if (this.workList != other.workList &&
+        (this.workList == null || !this.workList.equals(other.workList))) {
       return false;
     }
-    if (this.readList != other.readList && (this.readList == null || !this.readList.equals(other.readList))) {
+    if (this.readList != other.readList &&
+        (this.readList == null || !this.readList.equals(other.readList))) {
       return false;
     }
     if (this.typeWorkList != other.typeWorkList) {
@@ -297,10 +304,12 @@ public class Document implements java.io.Serializable, Cloneable {
     if (this.orderNumber != other.orderNumber) {
       return false;
     }
-    if (this.alertDate != other.alertDate && (this.alertDate == null || !this.alertDate.equals(other.alertDate))) {
+    if (this.alertDate != other.alertDate &&
+        (this.alertDate == null || !this.alertDate.equals(other.alertDate))) {
       return false;
     }
-    if (this.expiryDate != other.expiryDate && (this.expiryDate == null || !this.expiryDate.equals(other.expiryDate))) {
+    if (this.expiryDate != other.expiryDate &&
+        (this.expiryDate == null || !this.expiryDate.equals(other.expiryDate))) {
       return false;
     }
     return true;
@@ -327,6 +336,5 @@ public class Document implements java.io.Serializable, Cloneable {
     hash = 41 * hash + (this.expiryDate != null ? this.expiryDate.hashCode() : 0);
     return hash;
   }
-
 
 }

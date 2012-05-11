@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.thumbnail.model;
 
 import java.io.Serializable;
@@ -34,9 +35,8 @@ import com.silverpeas.util.StringUtil;
  */
 public class ThumbnailDetail implements Serializable, MimeTypes {
 
-	
   public static final int THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE = 1;
-	
+
   private static final long serialVersionUID = 1L;
 
   private int objectId;
@@ -49,97 +49,97 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
   private int yStart = -1;
   private int xLength = -1;
   private int yLength = -1;
-  
+
   private String mimeType = null;
-  
+
   public ThumbnailDetail(String instanceId, int objectId, int objectType) {
-	  this.instanceId = instanceId;
-	  this.objectId = objectId;
-	  this.objectType = objectType;
+    this.instanceId = instanceId;
+    this.objectId = objectId;
+    this.objectType = objectType;
   }
 
   public String getOriginalFileName() {
-		return originalFileName;
-	}
+    return originalFileName;
+  }
 
-	public String getCropFileName() {
-		return cropFileName;
-	}
-  
-	public String getInstanceId() {
-		return instanceId;
-	}
+  public String getCropFileName() {
+    return cropFileName;
+  }
 
-	public int getXStart() {
-		return xStart;
-	}
+  public String getInstanceId() {
+    return instanceId;
+  }
 
-	public int getYStart() {
-		return yStart;
-	}
+  public int getXStart() {
+    return xStart;
+  }
 
-	public int getXLength() {
-		return xLength;
-	}
+  public int getYStart() {
+    return yStart;
+  }
 
-	public int getYLength() {
-		return yLength;
-	}
+  public int getXLength() {
+    return xLength;
+  }
 
-	public void setObjectId(int objectId) {
-		this.objectId = objectId;
-	}
+  public int getYLength() {
+    return yLength;
+  }
 
-	public int getObjectId() {
-		return objectId;
-	}
-	
-	public int getObjectType() {
-		return objectType;
-	}
+  public void setObjectId(int objectId) {
+    this.objectId = objectId;
+  }
 
-	public void setObjectType(int objectType) {
-		this.objectType = objectType;
-	}
-	
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
+  public int getObjectId() {
+    return objectId;
+  }
 
-	public void setOriginalFileName(String originalFileName) {
-		this.originalFileName = originalFileName;
-	}
+  public int getObjectType() {
+    return objectType;
+  }
 
-	public void setCropFileName(String cropFileName) {
-		this.cropFileName = cropFileName;
-	}
+  public void setObjectType(int objectType) {
+    this.objectType = objectType;
+  }
 
-	public void setXStart(int xStart) {
-		this.xStart = xStart;
-	}
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
 
-	public void setYStart(int yStart) {
-		this.yStart = yStart;
-	}
+  public void setOriginalFileName(String originalFileName) {
+    this.originalFileName = originalFileName;
+  }
 
-	public void setXLength(int xLength) {
-		this.xLength = xLength;
-	}
+  public void setCropFileName(String cropFileName) {
+    this.cropFileName = cropFileName;
+  }
 
-	public void setYLength(int yLength) {
-		this.yLength = yLength;
-	}
+  public void setXStart(int xStart) {
+    this.xStart = xStart;
+  }
 
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
+  public void setYStart(int yStart) {
+    this.yStart = yStart;
+  }
 
-	public String getMimeType() {
-		return mimeType;
-	}
-	
-	public boolean isCropable() {
-	  return StringUtil.isDefined(getOriginalFileName()) && !getOriginalFileName().startsWith("/");  
-	}
-	
+  public void setXLength(int xLength) {
+    this.xLength = xLength;
+  }
+
+  public void setYLength(int yLength) {
+    this.yLength = yLength;
+  }
+
+  public void setMimeType(String mimeType) {
+    this.mimeType = mimeType;
+  }
+
+  public String getMimeType() {
+    return mimeType;
+  }
+
+  public boolean isCropable() {
+    return StringUtil.isDefined(getOriginalFileName()) && !getOriginalFileName().startsWith("/");
+  }
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -134,13 +134,13 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       if ((rs != null) && !(rs instanceof DummyRecordSet)) {
         recordSet = rs;
       }
-      if(template != null && rs instanceof DummyRecordSet) {
+      if (template != null && rs instanceof DummyRecordSet) {
         rs = new DummyRecordSet(template);
       }
       return rs;
     } catch (FormException e) {
-      throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm", 
-              "form.EX_CANT_GET_RECORDSET", null, e);
+      throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
+          "form.EX_CANT_GET_RECORDSET", null, e);
     }
   }
 
@@ -212,7 +212,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         searchForm = new XmlSearchForm(templateForm);
       } catch (FormException e) {
         throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
-              "form.EX_CANT_GET_FORM", null, e);
+            "form.EX_CANT_GET_FORM", null, e);
       }
     }
     // }
@@ -278,7 +278,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     }
     return form;
   }
-
 
   /**
    * Merge the data template with the form template
@@ -432,8 +431,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       return recordTemplate;
     } catch (MappingException me) {
       throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : " 
-              + xmlFileName, me);
+          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : "
+          + xmlFileName, me);
     } catch (MarshalException me) {
       throw new PublicationTemplateException("PublicationTemplateImpl.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE",
@@ -496,7 +495,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
           throw new PublicationTemplateException(
               "PublicationTemplateImpl.saveRecordTemplate",
               "form.EX_ERR_CASTOR_SAVE_PUBLICATION_TEMPLATE", "xmlDirPath = "
-                  + xmlDirPath, e);
+              + xmlDirPath, e);
         }
       }
       String xmlFilePath = PublicationTemplateManager.makePath(
@@ -621,7 +620,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   public boolean isSearchable() {
     return (searchFileName != null && searchFileName.trim().length() > 0);
   }
-  
+
   /**
    * @return the searchResultTemplate
    */

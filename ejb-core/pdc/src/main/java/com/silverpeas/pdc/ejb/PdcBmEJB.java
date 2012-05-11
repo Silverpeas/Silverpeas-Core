@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,6 @@
  */
 
 package com.silverpeas.pdc.ejb;
-
 
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
@@ -116,26 +115,26 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
   }
 
   public String createDaughterValueWithId(String axisId, Value value) {
-      String daughterId = null;
-      try{
-          daughterId = getPdcBm().createDaughterValueWithId(value, value.getFatherId(), axisId);
-      } catch (PdcException e) {
-          throw new PdcBmRuntimeException("PdcBmEJB.createDaughterValueWithId",
-              SilverpeasRuntimeException.ERROR, "Pdc.CANNOT_CREATE_AXE", e);
-      }
-      return daughterId;
+    String daughterId = null;
+    try {
+      daughterId = getPdcBm().createDaughterValueWithId(value, value.getFatherId(), axisId);
+    } catch (PdcException e) {
+      throw new PdcBmRuntimeException("PdcBmEJB.createDaughterValueWithId",
+          SilverpeasRuntimeException.ERROR, "Pdc.CANNOT_CREATE_AXE", e);
+    }
+    return daughterId;
   }
 
   public int addPosition(int pubId, ClassifyPosition position, String componentId,
       boolean alertSubscribers) {
-      int positionId = -1;
-      try{
-          positionId = getPdcBm().addPosition(pubId, position, componentId, alertSubscribers);
-      } catch (PdcException e) {
-          throw new PdcBmRuntimeException("PdcBmEJB.addPosition",
-              SilverpeasRuntimeException.ERROR, "Pdc.CANNOT_CREATE_VALUE", e);
-      }
-      return positionId;
+    int positionId = -1;
+    try {
+      positionId = getPdcBm().addPosition(pubId, position, componentId, alertSubscribers);
+    } catch (PdcException e) {
+      throw new PdcBmRuntimeException("PdcBmEJB.addPosition",
+          SilverpeasRuntimeException.ERROR, "Pdc.CANNOT_CREATE_VALUE", e);
+    }
+    return positionId;
   }
 
   public List<Value> getDaughters(String axisId, String valueId) {
@@ -201,37 +200,37 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
   }
 
   public void removeAllPositions(int silverContentId, String componentId) {
-	  List<ClassifyPosition> positions = getPositions(silverContentId, componentId);
-	  if (positions != null) {
-		  for (ClassifyPosition position : positions) {
-		    try {
-		    	getPdcBm().deletePosition(position.getPositionId(), componentId);
-		    } catch (Exception e) {
-		        throw new PdcBmRuntimeException("PdcBmEJB.getAxisHeader",
-		            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-		    }
-		  }
-	  }
+    List<ClassifyPosition> positions = getPositions(silverContentId, componentId);
+    if (positions != null) {
+      for (ClassifyPosition position : positions) {
+        try {
+          getPdcBm().deletePosition(position.getPositionId(), componentId);
+        } catch (Exception e) {
+          throw new PdcBmRuntimeException("PdcBmEJB.getAxisHeader",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        }
+      }
+    }
   }
-  
+
   public List<Value> getAxisValues(int treeId) {
     try {
       return getPdcBm().getAxisValues(treeId);
     } catch (PdcException e) {
       throw new PdcBmRuntimeException("PdcBmEJB.getAxisValues",
-        SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
-  
+
   public int addUsedAxis(UsedAxis usedAxis) {
     try {
       return getPdcBm().addUsedAxis(usedAxis);
     } catch (PdcException e) {
       throw new PdcBmRuntimeException("PdcBmEJB.usedAxis",
-        SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
-  
+
   private List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds) {
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
         "root.MSG_GEN_PARAM_VALUE", "silverContentIds = " + silverContentIds);

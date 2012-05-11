@@ -1,23 +1,23 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+* GNU Affero General Public License as published by the Free Software Foundation, either version 3
+* of the License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+* text describing the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License along with this program.
+* If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.webactiv.util.attachment.model;
 
 import java.sql.Connection;
@@ -302,7 +302,7 @@ public class SimpleAttachmentDao implements AttachmentDao {
     PreparedStatement prepStmt = null;
     AttachmentDetail attachDetail = null;
     try {
-      SilverTrace.info("attachment", "AttachmentDAO.loadRow()","root.MSG_GEN_PARAM_VALUE", 
+      SilverTrace.info("attachment", "AttachmentDAO.loadRow()","root.MSG_GEN_PARAM_VALUE",
         "selectQuery = " + SELECT_BY_PRIMARY_KEY + " with attachmentId = " + pk.getId());
       prepStmt = con.prepareStatement(SELECT_BY_PRIMARY_KEY);
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
@@ -319,14 +319,14 @@ public class SimpleAttachmentDao implements AttachmentDao {
   }
 
   /**
-   * Method declaration
-   *
-   * @param con
-   * @param foreignKey
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+*
+* @param con
+* @param foreignKey
+* @return
+* @throws SQLException
+* @see
+*/
   @Override
   public Vector<AttachmentDetail> findByForeignKey(Connection con, WAPrimaryKey foreignKey)
     throws SQLException {
@@ -406,16 +406,16 @@ public class SimpleAttachmentDao implements AttachmentDao {
   }
 
   /**
-   * Method declaration
-   *
-   * @param con
-   * @param foreignKey
-   * @param nameAttribut
-   * @param valueAttribut
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+*
+* @param con
+* @param foreignKey
+* @param nameAttribut
+* @param valueAttribut
+* @return
+* @throws SQLException
+* @see
+*/
   @Override
   public Vector<AttachmentDetail> findByPKAndParam(Connection con,
     WAPrimaryKey foreignKey, String nameAttribut, String valueAttribut)
@@ -447,15 +447,15 @@ public class SimpleAttachmentDao implements AttachmentDao {
   }
 
   /**
-   * Method declaration
-   *
-   * @param con
-   * @param foreignKey
-   * @param context
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+*
+* @param con
+* @param foreignKey
+* @param context
+* @return
+* @throws SQLException
+* @see
+*/
   @Override
   public Vector<AttachmentDetail> findByPKAndContext(Connection con,
     WAPrimaryKey foreignKey, String context) throws SQLException {
@@ -480,7 +480,7 @@ public class SimpleAttachmentDao implements AttachmentDao {
       prepStmt.setString(2, foreignKey.getComponentName());
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        AttachmentDetail attachmentDetail = result2AttachmentDetail(rs);        setTranslations(con, attachmentDetail);
+        AttachmentDetail attachmentDetail = result2AttachmentDetail(rs); setTranslations(con, attachmentDetail);
 
         if (attachmentDetail.getOrderNum() != i) {
           attachmentDetail.setOrderNum(i);
@@ -535,7 +535,7 @@ public class SimpleAttachmentDao implements AttachmentDao {
     WAPrimaryKey foreignKey = ad.getForeignKey();
     StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("SELECT ").append(attachmentTableColumns);
-    selectQuery.append(" FROM  sb_attachment_attachment WHERE attachmentForeignKey = ? ");
+    selectQuery.append(" FROM sb_attachment_attachment WHERE attachmentForeignKey = ? ");
     if (ad.getContext() != null) {
       selectQuery.append(" AND attachmentContext like '").append(
         ad.getContext()).append("%'");

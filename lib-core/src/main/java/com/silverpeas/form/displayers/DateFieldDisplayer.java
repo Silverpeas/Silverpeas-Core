@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[]{DateField.TYPE};
+    return new String[] { DateField.TYPE };
   }
 
   /**
@@ -84,30 +85,30 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-          throws IOException {
+      throws IOException {
     String language = pagesContext.getLanguage();
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("			errorMsg+=\"  - '"
-              + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
-              + Util.getString("GML.MustBeFilled", language) + "\\n \";");
+          + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+          + Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("			errorNb++;");
       out.println("		}");
     }
     out.println("		if (! isWhitespace(stripInitialWhitespace(field.value))) {");
     out.println("			if (! isCorrectDate(extractYear(field.value, '" + language
-            + "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language
-            + "'))) {");
+        + "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language
+        + "'))) {");
     out.println("				errorMsg+=\"  - '"
-            + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
-            + Util.getString("GML.MustContainsCorrectDate", language) + "\\n \";");
+        + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+        + Util.getString("GML.MustContainsCorrectDate", language) + "\\n \";");
     out.println("				errorNb++;");
     out.println("		}}");
 
     out.println("		if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
     out.println("			errorMsg+=\"  - '" + template.getLabel(language) + "' "
-            + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
-            + Util.getString("Characters", language) + "\\n \";");
+        + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
+        + Util.getString("Characters", language) + "\\n \";");
     out.println("			errorNb++;");
     out.println("		}");
 
@@ -124,7 +125,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
    */
   @Override
   public void display(PrintWriter out, DateField field, FieldTemplate template,
-          PagesContext pagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
     String language = pagesContext.getLanguage();
     Map<String, String> parameters = template.getParameters(language);
     String fieldName = template.getFieldName();
@@ -154,7 +155,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
     inputField.setType(template.isHidden() ? input.hidden : input.text);
     inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
-            : "10");
+        : "10");
     inputField.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
     if (parameters.containsKey("border")) {
       inputField.setBorder(Integer.parseInt(parameters.get("border")));
@@ -205,12 +206,12 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
    */
   @Override
   public List<String> update(String newValue, DateField field, FieldTemplate template,
-          PagesContext pagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
       throw new FormException("DateFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-              DateField.TYPE);
+          DateField.TYPE);
     }
     return new ArrayList<String>();
   }

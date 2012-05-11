@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.notificationManager;
 
 /**
@@ -69,12 +70,10 @@ import java.util.Properties;
 
 /**
  * Class declaration
- *
  * @author
  * @version %I%, %G%
  */
-public class NotificationManager
-    implements NotificationParameterNames {
+public class NotificationManager implements NotificationParameterNames {
 
   static public final String FROM_NO = " ";
   static public final String FROM_UID = "I";
@@ -99,7 +98,6 @@ public class NotificationManager
 
   /**
    * get the notifications addresses of a user
-   *
    * @param aUserId : id of the user as in the "id" field of "ST_USER" table.
    * @return an ArrayList of properties containing "name", "type", "usage" and "address" keys
    * @throws NotificationManagerException
@@ -159,7 +157,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aNotificationAddressId
    * @return
    * @throws NotificationManagerException
@@ -240,7 +237,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aUserId
    * @return The user's default address Id
    * @throws NotificationManagerException
@@ -275,7 +271,6 @@ public class NotificationManager
 
   /**
    * get All the priorities types
-   *
    * @return an ArrayList of properties containing "id" and "name" keys
    */
   public ArrayList<Properties> getNotifPriorities() {
@@ -301,7 +296,6 @@ public class NotificationManager
 
   /**
    * get All the usage types
-   *
    * @return an ArrayList of properties containing "id" and "name" keys
    */
   public ArrayList<Properties> getNotifUsages() {
@@ -330,7 +324,6 @@ public class NotificationManager
 
   /**
    * get All the channel types from the database.
-   *
    * @return an ArrayList of properties containing "id" and "name" keys
    * @throws NotificationManagerException
    */
@@ -365,7 +358,6 @@ public class NotificationManager
 
   /**
    * get the notifications preferences of a user
-   *
    * @param aUserId : id of the user as in the "id" field of "ST_USER" table.
    * @return an ArrayList of properties containing "name", "type", "usage" and "address" keys
    * @throws NotificationManagerException
@@ -399,7 +391,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aUserId
    * @return
    * @throws NotificationManagerException
@@ -418,8 +409,8 @@ public class NotificationManager
 
     } catch (UtilException e) {
       throw new NotificationManagerException("NotificationManager.getNotifPreference()",
-          SilverpeasException.ERROR,  "notificationManager.EX_CANT_GET_NOTIF_PREF", "UserId="
-          + aUserId + ",prefID="  + aPrefId, e);
+          SilverpeasException.ERROR, "notificationManager.EX_CANT_GET_NOTIF_PREF", "UserId="
+          + aUserId + ",prefID=" + aPrefId, e);
     } finally {
       closeSchema(schema);
     }
@@ -427,7 +418,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aNotificationAddressId
    * @param aUserId
    * @throws NotificationManagerException
@@ -479,7 +469,8 @@ public class NotificationManager
     try {
       schema = new NotifSchema();
       NotifDefaultAddressTable ndat = schema.notifDefaultAddress;
-      NotifDefaultAddressRow newRow = new NotifDefaultAddressRow(-1, aUserId, aNotificationAddressId);
+      NotifDefaultAddressRow newRow =
+          new NotifDefaultAddressRow(-1, aUserId, aNotificationAddressId);
       ndat.create(newRow);
       schema.commit();
     } catch (UtilException e) {
@@ -504,7 +495,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aUserId
    * @param aInstanceId
    * @param aMessageType
@@ -572,7 +562,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aNotificationAddressId
    * @param aUserId
    * @param aNotifName
@@ -626,7 +615,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aPreferenceId
    * @throws NotificationManagerException
    * @see
@@ -662,7 +650,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aNotificationAddressId
    * @throws NotificationManagerException
    * @see
@@ -697,7 +684,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param userId
    * @throws NotificationManagerException
    * @see
@@ -734,7 +720,6 @@ public class NotificationManager
 
   /**
    * Send a test message to the given notification address Id
-   *
    * @param aNotificationAddressId of the table ST_NotifAddress row to send notification to.
    */
   public void testNotifAddress(int aNotificationAddressId, int aUserId)
@@ -775,7 +760,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param params
    * @param aUserIds
    * @throws NotificationManagerException
@@ -850,7 +834,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param groupId
    * @return
    * @throws NotificationManagerException
@@ -874,7 +857,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param compInst
    * @return
    * @throws NotificationManagerException
@@ -883,10 +865,11 @@ public class NotificationManager
   public String getComponentFullName(String compInst) throws NotificationManagerException {
     try {
       ComponentInst instance = AdminReference.getAdminService().getComponentInst(compInst);
-      SpaceInst space = AdminReference.getAdminService().getSpaceInstById(instance.getDomainFatherId());
+      SpaceInst space =
+          AdminReference.getAdminService().getSpaceInstById(instance.getDomainFatherId());
       return (space.getName() + " - " + instance.getLabel());
     } catch (AdminException e) {
-      throw new NotificationManagerException( "NotificationManager.getComponentFullName()",
+      throw new NotificationManagerException("NotificationManager.getComponentFullName()",
           SilverpeasException.ERROR, "notificationManager.EX_CANT_GET_COMPONENT_FULL_NAME",
           "CompInstId" + compInst, e);
     }
@@ -896,7 +879,8 @@ public class NotificationManager
     String valret = "";
     if (userId > -1) {
       try {
-        UserDetail uDetail = AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
+        UserDetail uDetail =
+            AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
         valret = uDetail.geteMail();
       } catch (AdminException e) {
         SilverTrace.warn("notificationManager", "NotificationManager.getUserEmail()",
@@ -911,7 +895,8 @@ public class NotificationManager
 
     if (userId > -1) {
       try {
-        UserDetail uDetail = AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
+        UserDetail uDetail =
+            AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
         valret = uDetail.getAccessLevel();
       } catch (AdminException e) {
         SilverTrace.warn("notificationManager", "NotificationManager.getUserAccessLevel()",
@@ -925,7 +910,8 @@ public class NotificationManager
     String valret = "";
     if (userId > -1) {
       try {
-        UserDetail uDetail = AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
+        UserDetail uDetail =
+            AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
         valret = uDetail.getDisplayedName();
       } catch (AdminException e) {
         SilverTrace.warn("notificationManager",
@@ -939,7 +925,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param aUserId
    * @param npr
    * @param canEdit
@@ -970,7 +955,7 @@ public class NotificationManager
     p.setProperty("priorityId", String.valueOf(npr.getMessageType()));
     p.setProperty("priority",
         getSureString(m_Multilang.getString("messagePriority" + String.valueOf(npr.
-            getMessageType()))));
+        getMessageType()))));
 
     p.setProperty("canEdit", String.valueOf(canEdit));
     p.setProperty("canDelete", String.valueOf(canDelete));
@@ -982,7 +967,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param nar
    * @param canEdit
    * @param canDelete
@@ -1037,7 +1021,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param params
    * @param aUserId
    * @param schema
@@ -1307,7 +1290,6 @@ public class NotificationManager
 
   /**
    * Method declaration
-   *
    * @param params
    * @param aUserId
    * @param schema
@@ -1344,7 +1326,7 @@ public class NotificationManager
     } else if (params.iFromUserId < 0) {
       theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle)
           .append(
-              "\n\n");
+          "\n\n");
     }
 
     String senderName;
@@ -1629,7 +1611,6 @@ public class NotificationManager
 
   /**
    * Is the multichannel notification supported?
-   *
    * @return true if notifications can be done through several channels, false otherwise.
    */
   public boolean isMultiChannelNotification() {
@@ -1641,7 +1622,6 @@ public class NotificationManager
    * Gets the addresses as default notification channels. If the multi channel isn't supported, then
    * returns only one among the channels set up as default. In the case no default channels are set
    * up, then the previous behaviour is used; the SMTP is used as default channel.
-   *
    * @return a set of default notification channels.
    */
   protected List<Integer> getDefaultNotificationAddresses() {
@@ -1681,7 +1661,6 @@ public class NotificationManager
 
   /**
    * Gets the resources locator used for settings some notification parameters.
-   *
    * @return the locator of the resource with the notification parameters.
    */
   protected ResourceLocator getNotificationResources() {
@@ -1691,7 +1670,6 @@ public class NotificationManager
   /**
    * Sets the resource locator to be used by this NotificationManager instance in order to sets the
    * notification parameters.
-   *
    * @param resourceLocator the locator of the resource with the notification parameters.
    */
   public void setNotificationResources(final ResourceLocator resourceLocator) {

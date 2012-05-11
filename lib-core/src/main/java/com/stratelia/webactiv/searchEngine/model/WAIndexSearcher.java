@@ -1,26 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.webactiv.searchEngine.model;
 
 import com.silverpeas.util.StringUtil;
@@ -42,28 +42,28 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 
 /**
- * The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
- * manages a set of cached lucene IndexSearcher.
- */
+* The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
+* manages a set of cached lucene IndexSearcher.
+*/
 public class WAIndexSearcher {
 
   /**
-   * The primary and secondary factor are used to give a better score to entries whose title or
-   * abstract match the query.
-   * @see #merge
-   */
+* The primary and secondary factor are used to give a better score to entries whose title or
+* abstract match the query.
+* @see #merge
+*/
   private int primaryFactor = 3;
   private int secondaryFactor = 1;
   private QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
   /**
-   * indicates the number maximum of results returned by the search
-   */
+* indicates the number maximum of results returned by the search
+*/
   private int maxNumberResult = 0;
 
   /**
-   * The no parameters constructor retrieves all the needed data from the IndexEngine.properties
-   * file.
-   */
+* The no parameters constructor retrieves all the needed data from the IndexEngine.properties
+* file.
+*/
   public WAIndexSearcher() {
     indexManager = new IndexManager();
     primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
@@ -85,14 +85,14 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Get the primary factor from the IndexEngine.properties file.
-   */
+* Get the primary factor from the IndexEngine.properties file.
+*/
   /**
-   * 
-   * @param propertyName
-   * @param defaultValue
-   * @return 
-   */
+*
+* @param propertyName
+* @param defaultValue
+* @return
+*/
   public static int getFactorFromProperties(String propertyName, int defaultValue) {
     ResourceLocator resource = new ResourceLocator(
             "com.stratelia.webactiv.util.indexEngine.IndexEngine", "");
@@ -100,12 +100,12 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Searches the Lucene index for a specific object, by giving the PK of the index entry
-   * @param component
-   * @param objectId
-   * @param objectType
-   * @return MatchingIndexEntry wrapping the result, else null
-   */
+* Searches the Lucene index for a specific object, by giving the PK of the index entry
+* @param component
+* @param objectId
+* @param objectType
+* @return MatchingIndexEntry wrapping the result, else null
+*/
   public MatchingIndexEntry search(String component, String objectId, String objectType) {
     SpaceComponentPair pair = new SpaceComponentPair(null, component);
     HashSet<SpaceComponentPair> set = new HashSet<SpaceComponentPair>();
@@ -140,9 +140,9 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Search the documents of the given component's set. All entries found whose startDate is not
-   * reached or whose endDate is passed are pruned from the results set.
-   */
+* Search the documents of the given component's set. All entries found whose startDate is not
+* reached or whose endDate is passed are pruned from the results set.
+*/
   public MatchingIndexEntry[] search(QueryDescription query)
           throws com.stratelia.webactiv.searchEngine.model.ParseException {
     long startTime = System.nanoTime();
@@ -361,12 +361,12 @@ public class WAIndexSearcher {
   }
 
   /**
-   * @param scoreDoc occurence of Lucene search result
-   * @param requestedLanguage
-   * @param searcher
-   * @return MatchingIndexEntry wraps the Lucene search result
-   * @throws IOException if there is a problem when searching Lucene index
-   */
+* @param scoreDoc occurence of Lucene search result
+* @param requestedLanguage
+* @param searcher
+* @return MatchingIndexEntry wraps the Lucene search result
+* @throws IOException if there is a problem when searching Lucene index
+*/
   private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
           Searcher searcher) throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
@@ -434,9 +434,9 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
-   * reached or whose endDate is passed are pruned from the results list.
-   */
+* Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
+* reached or whose endDate is passed are pruned from the results list.
+*/
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
           Searcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
@@ -454,13 +454,13 @@ public class WAIndexSearcher {
     return results;
   }
   /**
-   * The manager of all the Web'Activ index.
-   */
+* The manager of all the Web'Activ index.
+*/
   private final IndexManager indexManager;
 
   /**
-   * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
-   */
+* Return a multi-searcher built on the searchers list matching the (space, component) pair set.
+*/
   private Searcher getSearcher(Set<SpaceComponentPair> spaceComponentPairSet) {
     List<Searcher> searcherList = new ArrayList<Searcher>();
     Set<String> indexPathSet = getIndexPathSet(spaceComponentPairSet);
@@ -482,8 +482,8 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
-   */
+* Return a multi-searcher built on the searchers list matching the (space, component) pair set.
+*/
   private Searcher getSearcher(QueryDescription query) {
     List<Searcher> searcherList = new ArrayList<Searcher>();
     Set<String> indexPathSet = getIndexPathSet(query.getSpaceComponentPairSet());
@@ -523,9 +523,9 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Build the set of all the path to the directories index corresponding the given (space,
-   * component) pairs.
-   */
+* Build the set of all the path to the directories index corresponding the given (space,
+* component) pairs.
+*/
   public Set<String> getIndexPathSet(Set<SpaceComponentPair> spaceComponentPairSet) {
     Set<String> pathSet = new HashSet<String>();
 
@@ -545,12 +545,12 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Retrieve the index searcher over the specified index directory. The index readers are cached in
-   * a Map (path -> (timestamp, reader)). If a reader is found in the cache but appear to be too old
-   * (according to the timestamp) then it is re-open. If the index files are not found, null is
-   * returned without any error (as this case comes each time a request is made on a space/component
-   * without any indexed documents).
-   */
+* Retrieve the index searcher over the specified index directory. The index readers are cached in
+* a Map (path -> (timestamp, reader)). If a reader is found in the cache but appear to be too old
+* (according to the timestamp) then it is re-open. If the index files are not found, null is
+* returned without any error (as this case comes each time a request is made on a space/component
+* without any indexed documents).
+*/
   private Searcher getSearcher(String path) {
     return IndexSearchersCache.getIndexSearcher(path);
   }

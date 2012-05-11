@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.coordinates.importExport;
 
 import java.rmi.RemoteException;
@@ -110,7 +111,7 @@ public class CoordinateImportExport {
    * @param name
    * @param nodeRootId
    * @param componentId
-   * @return 
+   * @return
    */
   public NodeDetail getNodeDetailByName(String name, int nodeRootId, String componentId) {
     SilverTrace.debug("coordinates", "CoordinateImportExport.getNodeDetailByName()",
@@ -145,10 +146,10 @@ public class CoordinateImportExport {
   /**
    * Get ArrayList of valuePath labels (/xx/yyy, /xx/yyy/zzzz/ to arrayList with Axe1 > value15 then
    * Axe2 > value5)
-   * @param combination 
-   * @param componentId 
+   * @param combination
+   * @param componentId
    * @return a List of displayName: Axe1 > value15
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public List<String> getCombinationLabels(List<String> combination, String componentId)
       throws RemoteException {
@@ -222,7 +223,8 @@ public class CoordinateImportExport {
    * @param componentId
    * @return
    */
-  public List<NodeDetail> getAxisHeadersWithChildren(String componentId, boolean includeUnclassified,
+  public List<NodeDetail> getAxisHeadersWithChildren(String componentId,
+      boolean includeUnclassified,
       boolean takeAxisInChildrenList) {
     ResourceLocator nodeSettings = new ResourceLocator(
         "com.stratelia.webactiv.util.node.nodeSettings", "");
@@ -268,7 +270,8 @@ public class CoordinateImportExport {
       }
     } catch (Exception e) {
       throw new CoordinateRuntimeException("CoordinateImportExport.getAxisChildren()",
-          SilverpeasRuntimeException.ERROR, "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_VALEURS_DUN_AXE",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_VALEURS_DUN_AXE",
           e);
     }
     return children;
@@ -412,9 +415,9 @@ public class CoordinateImportExport {
    * @return
    */
   public List<String> coupleIds(List<String> filesNames, List<String> nodeIds, int cur, int loop,
-      int nTuple, String prefixeId, int nbAxis) {    
+      int nTuple, String prefixeId, int nbAxis) {
     for (int i = cur; i < nodeIds.size(); i++) {
-      String terme =  nodeIds.get(i);
+      String terme = nodeIds.get(i);
       String tmp;
       if (prefixeId == null) {
         tmp = "" + terme;

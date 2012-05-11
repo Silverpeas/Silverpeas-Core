@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.organization;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
@@ -44,6 +45,7 @@ public class SpaceTable extends Table<SpaceRow> {
     super(organization, "ST_Space");
     this.organization = organization;
   }
+
   static final private String SPACE_COLUMNS = "id,domainFatherId,name,description,createdBy,"
       + "firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,"
       + "updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
@@ -53,7 +55,7 @@ public class SpaceTable extends Table<SpaceRow> {
    * Fetch the current space row from a resultSet.
    * @param rs
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected SpaceRow fetchSpace(ResultSet rs) throws SQLException {
     SpaceRow s = new SpaceRow();
@@ -113,12 +115,14 @@ public class SpaceTable extends Table<SpaceRow> {
    * Returns the Space whith the given id.
    * @param id
    * @return
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public SpaceRow getSpace(int id) throws AdminPersistenceException {
     return getUniqueRow(SELECT_SPACE_BY_ID, id);
   }
-  static final private String SELECT_SPACE_BY_ID = "select " + SPACE_COLUMNS + " from ST_Space where id = ?";
+
+  static final private String SELECT_SPACE_BY_ID =
+      "select " + SPACE_COLUMNS + " from ST_Space where id = ?";
 
   public SpaceRow getPersonalSpace(String userId) throws AdminPersistenceException {
     int[] ids = new int[2];
@@ -130,14 +134,15 @@ public class SpaceTable extends Table<SpaceRow> {
     }
     return null;
   }
+
   static final private String SELECT_PERSONALSPACE = "select " + SPACE_COLUMNS
       + " from ST_Space where isPersonal = ? and createdBy = ? ";
 
   /**
-   * Tests if a space with given space id exists 
+   * Tests if a space with given space id exists
    * @param id
    * @return true if the given space instance name is an existing space
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public boolean isSpaceInstExist(int id) throws AdminPersistenceException {
     return (this.getSpace(id) != null);
@@ -146,48 +151,52 @@ public class SpaceTable extends Table<SpaceRow> {
   /**
    * Returns all the Spaces.
    * @return all the Spaces.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public SpaceRow[] getAllSpaces() throws AdminPersistenceException {
     List<SpaceRow> rows = getRows(SELECT_ALL_SPACES);
     return rows.toArray(new SpaceRow[rows.size()]);
   }
+
   static final private String SELECT_ALL_SPACES = "select " + SPACE_COLUMNS
       + " from ST_Space" + " order by orderNum";
 
   /**
    * Returns all the Space ids.
    * @return all the Space ids.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getAllSpaceIds() throws AdminPersistenceException {
     List<String> ids = getIds(SELECT_ALL_SPACE_IDS);
     return ids.toArray(new String[ids.size()]);
   }
+
   static final private String SELECT_ALL_SPACE_IDS = "select id from ST_Space"
       + " order by orderNum";
 
   /**
    * Returns all the root Space ids.
    * @return all the root Space ids.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getAllRootSpaceIds() throws AdminPersistenceException {
     List<String> ids = getIds(SELECT_ALL_ROOT_SPACE_IDS);
     return ids.toArray(new String[ids.size()]);
   }
+
   static final private String SELECT_ALL_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE "
       + "domainFatherId IS NULL AND spaceStatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
 
   /**
    * Returns all the Root Spaces.
    * @return all the Root Spaces.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public SpaceRow[] getAllRootSpaces() throws AdminPersistenceException {
     List<SpaceRow> rows = getRows(SELECT_ALL_ROOT_SPACES);
     return rows.toArray(new SpaceRow[rows.size()]);
   }
+
   static final private String SELECT_ALL_ROOT_SPACES = "select "
       + SPACE_COLUMNS + " from ST_Space" + " where domainFatherId is null"
       + " AND spaceStatus is null AND isPersonal is null" + " order by orderNum";
@@ -195,12 +204,13 @@ public class SpaceTable extends Table<SpaceRow> {
   /**
    * Returns all spaces which has been removed but not definitely deleted
    * @return all spaces which has been removed but not definitely deleted
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public SpaceRow[] getRemovedSpaces() throws AdminPersistenceException {
     List<SpaceRow> rows = getRows(SELECT_REMOVED_SPACES);
     return rows.toArray(new SpaceRow[rows.size()]);
   }
+
   static final private String SELECT_REMOVED_SPACES = "select " + SPACE_COLUMNS
       + " from ST_Space" + " where spaceStatus = '" + SpaceInst.STATUS_REMOVED
       + "'" + " order by removeTime desc";
@@ -209,11 +219,12 @@ public class SpaceTable extends Table<SpaceRow> {
    * Returns the Space of a given component instance.
    * @param instanceId
    * @return the Space of a given component instance.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public SpaceRow getSpaceOfInstance(int instanceId) throws AdminPersistenceException {
     return getUniqueRow(SELECT_INSTANCE_SPACE, instanceId);
   }
+
   static final private String SELECT_INSTANCE_SPACE = "select " + aliasColumns("s", SPACE_COLUMNS)
       + " from ST_Space s, ST_ComponentInstance i where s.id = i.spaceId and i.id = ?";
 
@@ -221,19 +232,21 @@ public class SpaceTable extends Table<SpaceRow> {
    * Returns all the space ids having a given superSpace.
    * @param superSpaceId
    * @return all the space ids having a given superSpace.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public String[] getDirectSubSpaceIds(int superSpaceId) throws AdminPersistenceException {
     List<String> ids = getIds(SELECT_SUBSPACE_IDS, superSpaceId);
     return ids.toArray(new String[ids.size()]);
   }
-  static final private String SELECT_SUBSPACE_IDS = "select id from ST_Space where domainFatherId = ? "
+
+  static final private String SELECT_SUBSPACE_IDS =
+      "select id from ST_Space where domainFatherId = ? "
       + "and spaceStatus is null order by orderNum";
 
   /**
    * Inserts in the database a new space row.
    * @param space
-   * @throws AdminPersistenceException  
+   * @throws AdminPersistenceException
    */
   public void createSpace(SpaceRow space) throws AdminPersistenceException {
     SpaceRow superSpace = null;
@@ -250,6 +263,7 @@ public class SpaceTable extends Table<SpaceRow> {
     callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_SPACE, space.id,
         null, null);
   }
+
   static final private String INSERT_SPACE = "insert into" + " ST_Space(" + SPACE_COLUMNS + ")"
       + " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -306,7 +320,7 @@ public class SpaceTable extends Table<SpaceRow> {
   }
 
   public void updateSpaceOrder(int spaceId, int orderNum) throws AdminPersistenceException {
-    int[] values = new int[]{orderNum, spaceId};
+    int[] values = new int[] { orderNum, spaceId };
     updateRelation(UPDATE_SPACE_ORDER, values);
   }
 
@@ -316,9 +330,10 @@ public class SpaceTable extends Table<SpaceRow> {
     if (inheritanceBlocked) {
       iInheritance = 1;
     }
-    int[] values = new int[]{iInheritance, spaceId};
+    int[] values = new int[] { iInheritance, spaceId };
     updateRelation(UPDATE_SPACE_INHERITANCE, values);
   }
+
   static final private String UPDATE_SPACE_INHERITANCE = "update ST_Space set "
       + "isInheritanceBlocked = ? where id = ?";
   static final private String UPDATE_SPACE_ORDER = "update ST_Space set"
@@ -327,11 +342,12 @@ public class SpaceTable extends Table<SpaceRow> {
   /**
    * Updates a space row.
    * @param space
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void updateSpace(SpaceRow space) throws AdminPersistenceException {
     updateRow(UPDATE_SPACE, space);
   }
+
   static final private String UPDATE_SPACE = "update ST_Space set"
       + " domainFatherId = ?," + " name = ?," + " description = ?,"
       + " createdBy = ?," + " firstPageType = ?," + " firstPageExtraParam = ?,"
@@ -383,7 +399,7 @@ public class SpaceTable extends Table<SpaceRow> {
   /**
    * Delete the space and all his component instances.
    * @param id
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void removeSpace(int id) throws AdminPersistenceException {
     callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_SPACE, id, null, null);
@@ -404,6 +420,7 @@ public class SpaceTable extends Table<SpaceRow> {
     }
     updateRelation(DELETE_SPACE, id);
   }
+
   static final private String DELETE_SPACE = "delete from ST_Space where id = ?";
 
   /**
@@ -411,7 +428,7 @@ public class SpaceTable extends Table<SpaceRow> {
    * @param id
    * @param newName
    * @param userId
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void sendSpaceToBasket(int id, String newName, String userId) throws
       AdminPersistenceException {
@@ -425,19 +442,21 @@ public class SpaceTable extends Table<SpaceRow> {
       statement.setInt(5, id);
       statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("SpaceTable.sendSpaceToBasket", SilverpeasException.ERROR,
+      throw new AdminPersistenceException("SpaceTable.sendSpaceToBasket",
+          SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE", e);
     } finally {
       DBUtil.close(statement);
     }
   }
+
   static final private String SEND_SPACE_IN_BASKET =
       "update ST_Space set name = ?, removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
   /**
    * Remove the space from the basket Space will be available again
    * @param id
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public void removeSpaceFromBasket(int id) throws AdminPersistenceException {
     PreparedStatement statement = null;
@@ -455,6 +474,7 @@ public class SpaceTable extends Table<SpaceRow> {
       DBUtil.close(statement);
     }
   }
+
   static final private String REMOVE_SPACE_FROM_BASKET =
       "update ST_Space set removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
@@ -462,11 +482,12 @@ public class SpaceTable extends Table<SpaceRow> {
    * Returns the Space of a given space user role.
    * @param spaceUserRoleId
    * @return the Space of a given space user role.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public SpaceRow getSpaceOfSpaceUserRole(int spaceUserRoleId) throws AdminPersistenceException {
     return getUniqueRow(SELECT_SPACEUSERROLE_SPACE, spaceUserRoleId);
   }
+
   static final private String SELECT_SPACEUSERROLE_SPACE = "select " + aliasColumns("i",
       SPACE_COLUMNS)
       + " from ST_Space i, ST_SpaceUserRole us" + " where i.id = us.spaceId and   us.id = ?";
@@ -478,5 +499,6 @@ public class SpaceTable extends Table<SpaceRow> {
   protected SpaceRow fetchRow(ResultSet rs) throws SQLException {
     return fetchSpace(rs);
   }
+
   private OrganizationSchema organization = null;
 }

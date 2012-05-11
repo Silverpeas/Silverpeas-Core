@@ -23,8 +23,8 @@
  */
 package com.silverpeas.profile.web.mock;
 
-import com.silverpeas.socialNetwork.relationShip.RelationShip;
-import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.socialnetwork.relationShip.RelationShip;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,9 +37,9 @@ import javax.inject.Named;
  */
 @Named("relationShipService")
 public class MockedRelationShipService extends RelationShipService {
-  
+
   private List<RelationShip> relationShips = new ArrayList<RelationShip>();
-  
+
   public void setRelationShipsBetween(String userId, final UserDetail ... users) {
     int userId1 = Integer.valueOf(userId);
     for (UserDetail userDetail : users) {
@@ -52,5 +52,5 @@ public class MockedRelationShipService extends RelationShipService {
   public List<RelationShip> getAllMyRelationShips(int myId) throws SQLException {
     return relationShips;
   }
-  
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.selectionPeas;
 
+package com.stratelia.silverpeas.selectionPeas;
 
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
@@ -69,11 +69,13 @@ abstract public class CacheManager {
     resetAll();
   }
 
-  abstract public BrowsePanelProvider getSearchPanelProvider(CacheType what, SelectionExtraParams sep);
+  abstract public BrowsePanelProvider getSearchPanelProvider(CacheType what,
+      SelectionExtraParams sep);
 
-  abstract public BrowsePanelProvider getBrowsePanelProvider(CacheType what, SelectionExtraParams sep);
+  abstract public BrowsePanelProvider getBrowsePanelProvider(CacheType what,
+      SelectionExtraParams sep);
 
-  abstract public PanelProvider getCartPanelProvider(CacheType what,  SelectionExtraParams sep);
+  abstract public PanelProvider getCartPanelProvider(CacheType what, SelectionExtraParams sep);
 
   abstract public PanelOperation getPanelOperation(String operation);
 
@@ -105,7 +107,8 @@ abstract public class CacheManager {
 
   public void setInfos(CacheType what, String id, PanelLine pl) {
     SilverTrace.info("selectionPeas", "CacheManager.setInfos", "root.MSG_GEN_PARAM_VALUE",
-        "What = " + what + ", Id=" + id + ", Name = " + pl.m_Values[0] + ", Selected=" + pl.m_Selected);
+        "What = " + what + ", Id=" + id + ", Name = " + pl.m_Values[0] + ", Selected=" +
+        pl.m_Selected);
     getCache(what).put(id, pl);
   }
 
@@ -115,12 +118,12 @@ abstract public class CacheManager {
     if (valret != null) {
       SilverTrace.info("selectionPeas", "CacheManager.getInfos",
           "root.MSG_GEN_PARAM_VALUE", "What = " + what + ", Id=" + id
-              + ", Name = " + valret.m_Values[0] + ", Selected="
-              + valret.m_Selected);
+          + ", Name = " + valret.m_Values[0] + ", Selected="
+          + valret.m_Selected);
     } else {
       SilverTrace.info("selectionPeas", "CacheManager.getInfos",
           "root.MSG_GEN_PARAM_VALUE", "What = " + what + ", Id=" + id
-              + ", NULL");
+          + ", NULL");
       valret = getLineFromId(what, id);
       setInfos(what, id, valret);
     }
@@ -166,7 +169,7 @@ abstract public class CacheManager {
   }
 
   public String[] getSelectedIds(CacheType what) {
-    Set<String> selectedStrings =  getSelected(what);
+    Set<String> selectedStrings = getSelected(what);
     return getSelected(what).toArray(new String[getSelected(what).size()]);
   }
 
@@ -177,12 +180,12 @@ abstract public class CacheManager {
   public PanelLine[] getSelectedLines(CacheType what) {
     List<PanelLine> en = new ArrayList<PanelLine>(getCache(what).values());
     Collections.sort(en, new Comparator<PanelLine>() {
-      @Override
+        @Override
       public int compare(PanelLine o1, PanelLine o2) {
         return o1.m_Values[0].toUpperCase().compareTo(
             o2.m_Values[0].toUpperCase());
-      }
-    });
+        }
+            });
     return en.toArray(new PanelLine[en.size()]);
   }
 

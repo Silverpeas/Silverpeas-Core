@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflow.engine.instance;
 
 import com.silverpeas.form.DataRecord;
@@ -303,7 +304,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           else {
             String delay = timeOutAction.getDelay();
             if ((StringUtil.isDefined(delay)) && (delay.endsWith("d"))) {
-              now.add(Calendar.DAY_OF_YEAR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+              now.add(Calendar.DAY_OF_YEAR, Integer
+                  .parseInt(delay.substring(0, delay.length() - 1)));
               timeOutDate = now.getTime();
             } else if ((StringUtil.isDefined(delay)) && (delay.endsWith("h"))) {
               now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
@@ -381,8 +383,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   private void computeTimeOutStatus() {
     if (this.activeStates == null || this.activeStates.isEmpty()) {
       this.timeoutStatus = false;
-    }
-    else {
+    } else {
       boolean oneTimeOutExists = false;
       for (ActiveState state : this.activeStates) {
         if (state.getTimeoutStatus() > 0) {
@@ -1055,13 +1056,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   }
 
   /**
-   * Parse fields values and check ones that have wysiwyg displayer.
-   * In case of new process instance, txt files may not have been created yet.
-   * if yes, value must start with "xmlWysiwygField_"
-   *
+   * Parse fields values and check ones that have wysiwyg displayer. In case of new process
+   * instance, txt files may not have been created yet. if yes, value must start with
+   * "xmlWysiwygField_"
    * @param step
    * @param actionData
-   *
    * @throws WorkflowException
    * @throws FormException
    */
@@ -1087,7 +1086,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           PagesContext context = new PagesContext("dummy", "0", actionData.getLanguage(), false,
               getModelId(), "dummy");
           context.setObjectId(instanceId);
-          displayer.update(updatedField.getStringValue(), (TextField)updatedField, tmpl,
+          displayer.update(updatedField.getStringValue(), (TextField) updatedField, tmpl,
               context);
         }
       }
@@ -1095,13 +1094,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   }
 
   /**
-   * Parse fields values and check ones that have wysiwyg displayer.
-   * In case of new process instance, txt files may not have been created yet.
-   * if yes, value must start with "xmlWysiwygField_"
-   *
+   * Parse fields values and check ones that have wysiwyg displayer. In case of new process
+   * instance, txt files may not have been created yet. if yes, value must start with
+   * "xmlWysiwygField_"
    * @param step
    * @param actionData
-   *
    * @throws WorkflowException
    * @throws FormException
    */
@@ -1277,10 +1274,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       db = WorkflowJDOManager.getDatabase();
       db.begin();
       query =
-          db.getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
-          + "WHERE undoStep.instanceId = $1 "
-          + "AND undoStep.action = \"addActiveState\" "
-          + "AND undoStep.parameters = $2");
+          db
+              .getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
+                  + "WHERE undoStep.instanceId = $1 "
+                  + "AND undoStep.action = \"addActiveState\" "
+                  + "AND undoStep.parameters = $2");
 
       // Execute the query
       query.bind((Integer.parseInt(instanceId)));
@@ -1504,7 +1502,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     if (indexUser != -1) {
       LockingUser foundUser = lockingUsers.get(indexUser);
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
-          "root.MSG_GEN_ENTER_METHOD", "Locking user found for state : " + state + ", userId = " + foundUser.
+          "root.MSG_GEN_ENTER_METHOD", "Locking user found for state : " + state + ", userId = " +
+          foundUser.
           getUserId());
       return foundUser;
     } else {
@@ -1856,8 +1855,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       db = WorkflowJDOManager.getDatabase();
       db.begin();
       query =
-          db.getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
-          + "WHERE undoStep.stepId = $1 ");
+          db
+              .getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
+                  + "WHERE undoStep.stepId = $1 ");
 
       // Execute the query
       query.bind((Integer.parseInt(((HistoryStepImpl) historyStep).getId())));
@@ -2009,10 +2009,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       db = WorkflowJDOManager.getDatabase();
       db.begin();
       query =
-          db.getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
-          + "WHERE undoStep.instanceId = $1 "
-          + "AND undoStep.action = $2 "
-          + "AND undoStep.parameters = $3 ");
+          db
+              .getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
+                  + "WHERE undoStep.instanceId = $1 "
+                  + "AND undoStep.action = $2 "
+                  + "AND undoStep.parameters = $3 ");
 
       // Search for all steps that activates the given state
 
@@ -2144,7 +2145,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     List<Question> questionsAsked = new ArrayList<Question>();
     for (int i = 0; i < questions.size(); i++) {
       Question question = questions.get(i);
-      if (question.getTargetState().getName().equals(stateName) && question.getResponseDate() == null) {
+      if (question.getTargetState().getName().equals(stateName) &&
+          question.getResponseDate() == null) {
         questionsAsked.add(question);
       }
     }
@@ -2366,7 +2368,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           // found, now look which timeout is concerned
           int timeoutStatus = activeState.getTimeoutStatus();
 
-          // then parse all timeoutAction to return the right one (the one with order = timeoutstatus+1)
+          // then parse all timeoutAction to return the right one (the one with order =
+          // timeoutstatus+1)
           State state = getProcessModel().getState(activeState.getState());
           TimeOutAction[] actions = state.getTimeOutActions();
           for (int i = 0; actions != null && i < actions.length; i++) {

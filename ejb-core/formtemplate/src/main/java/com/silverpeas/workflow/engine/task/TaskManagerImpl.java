@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,7 +53,8 @@ import java.util.Vector;
  * The workflow engine services relate to task management.
  */
 public class TaskManagerImpl extends AbstractTaskManager {
-  static Hashtable<String, NotificationSender> notificationSenders = new Hashtable<String, NotificationSender>();
+  static Hashtable<String, NotificationSender> notificationSenders =
+      new Hashtable<String, NotificationSender>();
 
   /**
    * Adds a new task in the user's todos. Returns the external id given by the external todo system.
@@ -201,8 +202,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
             NotificationParameters.NORMAL, title, text);
         if (sender != null) {
           notifMetaData.setSender(sender.getUserId());
-        }
-        else {
+        } else {
           notifMetaData.setSender(userId);
         }
         notifMetaData.addUserRecipient(new UserRecipient(userId));

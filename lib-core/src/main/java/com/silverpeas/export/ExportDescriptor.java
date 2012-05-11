@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.export;
@@ -30,10 +30,10 @@ import java.io.Writer;
 import org.apache.commons.io.output.WriterOutputStream;
 
 /**
- * It represents a descriptor about the export of resources into a writer or an output stream.
- * As such it defines the writer, the output stream and the format into which the resources have to
- * be exported. With the descriptor parameters, additional information about the export process can
- * be passed to the exporter.
+ * It represents a descriptor about the export of resources into a writer or an output stream. As
+ * such it defines the writer, the output stream and the format into which the resources have to be
+ * exported. With the descriptor parameters, additional information about the export process can be
+ * passed to the exporter.
  */
 public class ExportDescriptor extends ImportExportDescriptor {
 
@@ -41,8 +41,8 @@ public class ExportDescriptor extends ImportExportDescriptor {
   private OutputStream outputStream = null;
 
   /**
-   * Creates and initializes a new descriptor on an export process with the specified writer.
-   * The output stream is initialized with the specified writer.
+   * Creates and initializes a new descriptor on an export process with the specified writer. The
+   * output stream is initialized with the specified writer.
    * @param writer the writer to use for exporting the serializable resources.
    * @return an export descriptor.
    */
@@ -55,7 +55,7 @@ public class ExportDescriptor extends ImportExportDescriptor {
     descriptor.setOutputStream(new WriterOutputStream(writer));
     return descriptor;
   }
-  
+
   /**
    * Creates and initializes a new descriptor on an export process with the specified output stream.
    * The writer is initialized with the specified output stream.
@@ -79,7 +79,7 @@ public class ExportDescriptor extends ImportExportDescriptor {
   public Writer getWriter() {
     return this.writer;
   }
-  
+
   /**
    * Gets the output stream with which the resources have to be exported.
    * @return the output stream.
@@ -87,7 +87,7 @@ public class ExportDescriptor extends ImportExportDescriptor {
   public OutputStream getOutputStream() {
     return this.outputStream;
   }
-  
+
   private void setWriter(final Writer writer) {
     this.writer = writer;
   }

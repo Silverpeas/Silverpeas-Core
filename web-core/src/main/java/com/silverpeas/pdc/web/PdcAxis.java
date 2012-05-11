@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
@@ -37,14 +38,12 @@ import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * An axis of the classification plan (named PdC). A PdC axis is defined by an identifier and it is
- * made up of a set of values.
- * 
- * An axis in the PdC generally defines a concept (a meaning) or a categorization of contents in
- * Silverpeas. An axis of the PdC is a tree whose the leaves are the values. The axis can have several
- * branches, each of them representing then an hierarchic semantic tree carrying a refinement of a
- * meaning (of a value).
- * For example, the values in the concept 'geography' can be a tree in which each geographic area are
- * divided into countries -> regions or states -> departments or regions -> towns.
+ * made up of a set of values. An axis in the PdC generally defines a concept (a meaning) or a
+ * categorization of contents in Silverpeas. An axis of the PdC is a tree whose the leaves are the
+ * values. The axis can have several branches, each of them representing then an hierarchic semantic
+ * tree carrying a refinement of a meaning (of a value). For example, the values in the concept
+ * 'geography' can be a tree in which each geographic area are divided into countries -> regions or
+ * states -> departments or regions -> towns.
  */
 @XmlRootElement
 public class PdcAxis {
@@ -68,23 +67,24 @@ public class PdcAxis {
    * Creates a PdC axis from the specified configured axis for a specific component instance and in
    * which the terms are expressed in the specified language and whose synonyms are set with the
    * specified user thesaurus.
-   * @param axis an axis of the PdC potentially configured for a given Silverpeas component instance.
+   * @param axis an axis of the PdC potentially configured for a given Silverpeas component
+   * instance.
    * @param inLanguage the language to use to translate the terms of the axis.
    * @param withThesaurus the thesaurus to use to set the synonyms of the axis values. Null if no
    * thesaurus are available or if no synonyms require to be set.
    * @return the PdcAxis instance corresponding to the specified business axis.
-   * @throws ThesaurusException if an error occurs while using the thesaurus when setting up the
-   * PdC axis.
+   * @throws ThesaurusException if an error occurs while using the thesaurus when setting up the PdC
+   * axis.
    */
   public static PdcAxis fromTheUsedAxis(final UsedAxis axis, String inLanguage,
-          final UserThesaurusHolder withThesaurus) throws ThesaurusException {
+      final UserThesaurusHolder withThesaurus) throws ThesaurusException {
     String andOriginValue = axis._getBaseValuePath() + axis.getBaseValue() + "/";
     List<PdcAxisValueEntity> theAxisValues =
-            fromValues(axis._getAxisValues(), andOriginValue, inLanguage, withThesaurus);
+        fromValues(axis._getAxisValues(), andOriginValue, inLanguage, withThesaurus);
     PdcAxis pdcAxis = new PdcAxis(axis.getAxisId(), axis._getAxisName(inLanguage)).
-            withAsPdcAxisValues(theAxisValues, andOriginValue).
-            withInvariance(axis.getVariant() == 0).
-            withObligation(axis.getMandatory() == 1);
+        withAsPdcAxisValues(theAxisValues, andOriginValue).
+        withInvariance(axis.getVariant() == 0).
+        withObligation(axis.getMandatory() == 1);
     if (isDefined(axis._getInvariantValue())) {
       pdcAxis.setInvariantValue(axis._getInvariantValue());
     }
@@ -109,7 +109,7 @@ public class PdcAxis {
 
   /**
    * Is this axis is invariant in the classification on the PdC. An invariant axis in a
-   * classification is an axis that can have only a single possible value per classification, 
+   * classification is an axis that can have only a single possible value per classification,
    * whatever the positions onto the PdC.
    * @return true if this axis in an invariant one when classifying a content onto the PdC.
    */
@@ -181,11 +181,11 @@ public class PdcAxis {
       return false;
     }
     if ((this.originValue == null) ? (other.originValue != null)
-            : !this.originValue.equals(other.originValue)) {
+        : !this.originValue.equals(other.originValue)) {
       return false;
     }
     if ((this.invariantValue == null) ? (other.invariantValue != null)
-            : !this.invariantValue.equals(other.invariantValue)) {
+        : !this.invariantValue.equals(other.invariantValue)) {
       return false;
     }
     return !(this.values != other.values && (this.values == null || !this.values.equals(
@@ -216,12 +216,13 @@ public class PdcAxis {
       axisValuesArray.append("]");
     }
     return "PdcAxis{id=" + getId() + ", name=" + getName() + ", mandatory=" + isMandatory()
-            + ", originValue=" + getOriginValue() + ", invariantValue=" + getInvariantValue()
-            + ", values=" + axisValuesArray.toString() + '}';
+        + ", originValue=" + getOriginValue() + ", invariantValue=" + getInvariantValue()
+        + ", values=" + axisValuesArray.toString() + '}';
   }
 
-  private static List<PdcAxisValueEntity> fromValues(final List<Value> values, String originValueId,
-          String inLanguage, final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
+  private static List<PdcAxisValueEntity> fromValues(final List<Value> values,
+      String originValueId,
+      String inLanguage, final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
     List<PdcAxisValueEntity> axisValues = new ArrayList<PdcAxisValueEntity>();
     for (Value value : values) {
       PdcAxisValueEntity axisValue = PdcAxisValueEntity.fromValue(value, inLanguage);
@@ -230,7 +231,7 @@ public class PdcAxis {
         if (axisValue.getId().equals(originValueId)) {
           axisValue.setAsOriginValue();
         }
-      } else if(!isChild(axisValue.getId(), originValueId)) {
+      } else if (!isChild(axisValue.getId(), originValueId)) {
         continue;
       }
       if (usingThesaurus != null) {
@@ -243,7 +244,7 @@ public class PdcAxis {
   }
 
   private static PdcAxisValueEntity withSynonym(final PdcAxisValueEntity axisValue,
-          final UserThesaurusHolder thesaurus) throws ThesaurusException {
+      final UserThesaurusHolder thesaurus) throws ThesaurusException {
     axisValue.setSynonyms(thesaurus.getSynonymsOf(axisValue));
     return axisValue;
   }
@@ -251,7 +252,7 @@ public class PdcAxis {
   private static boolean isChild(String path, String anotherPath) {
     return path.startsWith(anotherPath);
   }
-  
+
   private static boolean isFather(String path, String anotherPath) {
     return anotherPath.startsWith(path);
   }
@@ -268,7 +269,7 @@ public class PdcAxis {
     this.mandatory = mandatory;
     return this;
   }
-  
+
   private PdcAxis withInvariance(boolean invariant) {
     this.invariant = invariant;
     return this;
