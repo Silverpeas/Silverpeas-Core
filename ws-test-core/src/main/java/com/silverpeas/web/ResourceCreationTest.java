@@ -98,6 +98,15 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
     int forbidden = Status.FORBIDDEN.getStatusCode();
     assertThat(receivedStatus, is(forbidden));
   }
+  
+  @Test
+  public void postAnInvalidResourceState() {
+    ClientResponse response = post("{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}",
+            at(aResourceURI()));
+    int recievedStatus = response.getStatus();
+    int badRequest = Status.BAD_REQUEST.getStatusCode();
+    assertThat(recievedStatus, is(badRequest));
+  }
 
   private <T> ClientResponse post(final T entity, String atURI, String withSessionKey) {
     String thePath = atURI;
@@ -117,4 +126,6 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
     }
     return resourcePoster.post(ClientResponse.class, entity);
   }
+  
+  
 }

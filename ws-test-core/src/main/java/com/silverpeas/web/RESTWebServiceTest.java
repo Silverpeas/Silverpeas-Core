@@ -47,6 +47,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
 
 /**
  * The base class for testing REST web services in Silverpeas.
@@ -71,8 +72,8 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     super(new WebAppDescriptor.Builder(webServicePackage).contextPath(CONTEXT_NAME).
             contextParam("contextConfigLocation", "classpath:/" + springContext).
             initParam(JSONConfiguration.FEATURE_POJO_MAPPING, "true").
-            requestListenerClass(
-            org.springframework.web.context.request.RequestContextListener.class).
+            initParam("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;com.silverpeas.web.mappers").
+            requestListenerClass(RequestContextListener.class).
             servletClass(SpringServlet.class).
             contextListenerClass(ContextLoaderListener.class).
             build());
