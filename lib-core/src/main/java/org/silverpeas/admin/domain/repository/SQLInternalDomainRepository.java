@@ -36,6 +36,7 @@ import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -53,7 +54,7 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
   }
 
   @Override
-  @Transactional
+  @Transactional(propagation=Propagation.REQUIRES_NEW)
   public void createDomainStorage(Domain domain) throws SQLDomainDAOException {
     String domainName = domain.getName();
 
@@ -130,7 +131,7 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     // Common columns
     createStatement.append("id int NOT NULL , firstName varchar(100) NULL , ");
     createStatement.append("lastName varchar(100) NULL ," + "email varchar(200) NULL , ");
-    createStatement.append("login varchar(20) NOT NULL ," + "password varchar(32) NULL , ");
+    createStatement.append("login varchar(50) NOT NULL ," + "password varchar(32) NULL , ");
     createStatement.append("passwordValid char(1) NULL , ");
 
     // Domain specific columns

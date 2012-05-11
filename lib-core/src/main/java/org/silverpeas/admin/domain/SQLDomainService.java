@@ -40,7 +40,8 @@ import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.repository.SQLDomainRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -52,7 +53,6 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-@Service
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {
   ResourceLocator templateSettings;
@@ -125,6 +125,7 @@ public class SQLDomainService extends AbstractDomainService {
     }
 
     // register new Domain
+    // SQL Driver might be override for some purpose
     if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
       domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
     }
