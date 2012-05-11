@@ -160,4 +160,16 @@ public class SocialNetworkService {
 
   }
 
+  @Transactional
+  public void removeAllExternalAccount(String userId) {
+    List<ExternalAccount> accounts = dao.findBySilverpeasUserId(userId);
+
+    if (accounts != null) {
+      for (ExternalAccount account : accounts) {
+          dao.delete(account);
+      }
+    }
+
+  }
+
 }

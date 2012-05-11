@@ -101,7 +101,7 @@
 	<listener>
 		<listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
 	</listener>
-	<!-- <listener> <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> 
+	<!-- <listener> <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 		</listener> -->
 	<listener>
 		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
@@ -452,8 +452,8 @@
 		<servlet-name>VersioningAjaxServlet</servlet-name>
 		<servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.AjaxServlet</servlet-class>
 	</servlet>
-	<!-- <servlet> <servlet-name>AjaxFileUploadServlet</servlet-name> <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class> 
-		<init-param> <param-name>UPLOAD_DIRECTORY</param-name> <param-value>C:/tmp/ajax</param-value> 
+	<!-- <servlet> <servlet-name>AjaxFileUploadServlet</servlet-name> <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
+		<init-param> <param-name>UPLOAD_DIRECTORY</param-name> <param-value>C:/tmp/ajax</param-value>
 		</init-param> </servlet> -->
 	<servlet>
 		<servlet-name>AutocompleteServlet</servlet-name>
@@ -534,6 +534,14 @@
 	<servlet>
 		<servlet-name>SocialNetworkLoginController</servlet-name>
 		<servlet-class>com.silverpeas.socialnetwork.authentication.SocialNetworkLoginController</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MailExistsServlet</servlet-name>
+		<servlet-class>com.silverpeas.admin.MailExistsServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>QaptchaServlet</servlet-name>
+		<servlet-class>com.silverpeas.admin.QaptchaServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>REST Container</servlet-name>
@@ -840,7 +848,7 @@
 		<servlet-name>VersioningAjaxServlet</servlet-name>
 		<url-pattern>/AjaxVersioning/*</url-pattern>
 	</servlet-mapping>
-	<!-- <servlet-mapping> <servlet-name>AjaxFileUploadServlet</servlet-name> 
+	<!-- <servlet-mapping> <servlet-name>AjaxFileUploadServlet</servlet-name>
 		<url-pattern>/ajaxupload/*</url-pattern> </servlet-mapping> -->
 	<servlet-mapping>
 		<servlet-name>AutocompleteServlet</servlet-name>
@@ -922,6 +930,15 @@
 		<servlet-name>SocialNetworkLoginController</servlet-name>
 		<url-pattern>/SocialNetworkLogin</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MailExistsServlet</servlet-name>
+		<url-pattern>/MailExists</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>QaptchaServlet</servlet-name>
+		<url-pattern>/Qaptcha</url-pattern>
+	</servlet-mapping>
+
 	<error-page>
 		<error-code>404</error-code>
 		<location>/Error404.jsp</location>

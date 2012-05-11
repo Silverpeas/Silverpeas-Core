@@ -51,6 +51,7 @@
 	</c:if>
 
 	<c:forEach items="${availableNetworks}" var="network">
+		<c:if test="${network.enabled}">
 		<div id="socialNetwork">
 			<div id="socialNetworkLogo">
 				<img border="0" width="70" align="middle" src="/weblib/look/icons/${network}.png">
@@ -69,6 +70,7 @@
 				</c:choose>
 			</div>
 		</div>
+		</c:if>
 	</c:forEach>
 </form>
 <form id="unlinkForm" action="UnlinkFromSVP" method="post">

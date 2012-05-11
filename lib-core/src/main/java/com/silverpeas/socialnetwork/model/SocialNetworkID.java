@@ -24,6 +24,33 @@
 
 package com.silverpeas.socialnetwork.model;
 
+import com.stratelia.webactiv.util.ResourceLocator;
+
 public enum SocialNetworkID {
   FACEBOOK, LINKEDIN;
+
+  private static ResourceLocator settings = new ResourceLocator("com.silverpeas.socialnetwork.settings.socialNetworkSettings", "");
+
+  public boolean isEnabled() {
+    switch (this) {
+      case FACEBOOK:
+        return settings.getBoolean("facebook.enable", false);
+
+      case LINKEDIN:
+        return settings.getBoolean("linkedIn.enable", false);
+
+      default:
+        return false;
+    }
+  }
+
+  static public boolean oneIsEnable() {
+    for (SocialNetworkID socialNetworkId : values()) {
+      if (socialNetworkId.isEnabled()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

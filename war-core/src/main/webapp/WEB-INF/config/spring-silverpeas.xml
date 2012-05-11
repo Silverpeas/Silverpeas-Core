@@ -50,8 +50,8 @@
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
   <ctx:component-scan base-package="com.silverpeas.admin.notification"/>
-  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" /> 
-  
+  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" />
+
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
 
   <!-- The Bean Validator (JSR-303) bootstrapping through Spring. The Hibernate implementation is used -->
@@ -76,7 +76,7 @@
   <bean id="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController"
         depends-on="schedulerFactory" />
-        
+
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <bean id="organizationControllerFactory"
         class="com.stratelia.webactiv.beans.admin.OrganizationControllerFactory"
@@ -85,7 +85,7 @@
   <!-- The administration module -->
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
         depends-on="schedulerFactory"/>
-  
+
   <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
          factory-method="getInstance"/>
 
@@ -97,20 +97,24 @@
   <!-- the Silverpeas look context gathering all of the look aspects -->
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"
         factory-method="getSilverpeasLook" depends-on="organizationController"/>
-        
+
   <!-- the factory of the document format converters available in Silverpeas.
         It wraps and provides an access to the actual converter implementations -->
   <bean id="converterFactory" class="com.silverpeas.converter.DocumentFormatConverterFactory"
         factory-method="getFactory"/>
-        
+
   <!-- the factory of the content management services.
         It wraps and provides an access to the actual content manager managed by the IoC container -->
   <bean id="contentManagerFactory" class="com.stratelia.silverpeas.contentManager.ContentManagerFactory"
         factory-method="getFactory"/>
-        
+
   <!-- the factory of the statistics management services.
         It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
   <bean id="silverStatisticsFactory" class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
-        factory-method="getFactory"/>  
+        factory-method="getFactory"/>
+
+  <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/>
+  <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/>
+
 
 </beans>

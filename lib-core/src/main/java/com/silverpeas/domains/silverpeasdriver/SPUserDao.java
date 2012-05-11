@@ -52,4 +52,6 @@ public interface SPUserDao extends JpaRepository<SPUser, Integer> {
   List<SPUser> findByCompany(@Param("company") String company);
 
   List<SPUser> findByPosition(@Param("position") String position);
+
+  List<SPUser> findByEmail(@Param("email") String email);
 }

@@ -91,6 +91,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = valueOf(function);
+    SocialNetworkHelper socialNetworkHelper = new SocialNetworkHelper();
 
     try {
       if (route == MyInfos) {
@@ -131,7 +132,26 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         updateUserSettings(request, myProfilSC);
 
         return getDestination(MySettings.toString(), myProfilSC, request);
-      } else if (route == MyInvitations) {
+      } else if (route == MyNetworks) {
+        request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == UnlinkFromSVP) {
+        socialNetworkHelper.unlinkFromSilverpeas(myProfilSC, request);
+        request.setAttribute("View", MyNetworks.name());
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == LinkToSVP) {
+        return socialNetworkHelper.buildAuthenticationURL(request, route);
+      } else if (route == CreateLinkToSVP) {
+        socialNetworkHelper.linkToSilverpeas(myProfilSC, request);
+        request.setAttribute("View", MyNetworks.name());
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == PublishStatus) {
+        return socialNetworkHelper.buildAuthenticationURL(request, route);
+      } else if (route == DoPublishStatus) {
+        socialNetworkHelper.publishStatus(myProfilSC, request);
+        request.setAttribute("View", MyNetworks.name());
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      }  else if (route == MyInvitations) {
         MyInvitationsHelper helper = new MyInvitationsHelper();
         helper.getAllInvitationsReceived(myProfilSC, request);
         request.setAttribute("View", function);
@@ -168,6 +188,10 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
+
+    socialNetworkHelper.getAllMyNetworks(myProfilSC, request);
+    socialNetworkHelper.setupJSAttributes(myProfilSC, request);
+
     request.setAttribute("UserFull", snUserFull.getUserFull());
     List<String> contactIds = myProfilSC.getContactsIdsForUser(myProfilSC.getUserId());
     request.setAttribute("Contacts", getContactsToDisplay(contactIds, myProfilSC));

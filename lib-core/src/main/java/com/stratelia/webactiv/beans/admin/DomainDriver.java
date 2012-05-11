@@ -240,4 +240,9 @@ public interface DomainDriver {
   void rollback() throws Exception;
 
   List<String> getUserAttributes() throws Exception;
+
+  void resetPassword(UserDetail user, String password) throws Exception;
+
+  void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception;
+
 }

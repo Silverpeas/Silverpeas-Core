@@ -542,4 +542,30 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     detail.seteMail(user.getEmail());
     return detail;
   }
+
+  @Override
+  public void resetPassword(UserDetail userDetail, String password) throws Exception {
+    SPUser user = userDao.findOne(Integer.valueOf(userDetail.getId()));
+    user.setPassword( encrypt(password) );
+    user.setPasswordValid(true);
+    userDao.saveAndFlush(user);
+  }
+
+  private String encrypt(String password) {
+    if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) ) {
+      return UnixMD5Crypt.crypt(password);
+    } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)) {
+      return CryptMD5.crypt(password);
+    } else {
+      return password;
+    }
+  }
+
+  @Override
+  public void resetEncryptedPassword(UserDetail userDetail, String encryptedPassword) throws Exception {
+    SPUser user = userDao.findOne(Integer.valueOf(userDetail.getId()));
+    user.setPassword( encryptedPassword );
+    user.setPasswordValid(true);
+    userDao.saveAndFlush(user);
+  }
 }

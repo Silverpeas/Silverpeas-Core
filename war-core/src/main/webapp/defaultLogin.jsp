@@ -60,7 +60,7 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 input{
 	background-color:#FAFAFA;
 	border:1px solid #DAD9D9;
-	width:448px;
+	width:248px;
 	text-align:left;
     margin-left:-10px;
     height:26px;
@@ -72,34 +72,58 @@ input{
 </style>
 <![endif]-->
 
+<style>
+.titre {
+    left: 375px;
+    top: 15px;
+}
+
+input{
+	width:248px;
+	display: table-cell;
+}
+
+p label{
+	display: table-cell;
+	width: 150px;
+	vertical-align: middle;
+}
+
+#copyright {
+    display: inline-block;
+    margin-top: 10px;
+    text-align: left;
+}
+</style>
+
 <script type="text/javascript">
 <!---
-// Public domain cookie code written by: 
+// Public domain cookie code written by:
 // Bill Dortch, hIdaho Design
-// (bdortch@netw.com) 
+// (bdortch@netw.com)
 function getCookieVal (offset) {
-	var endstr = document.cookie.indexOf (";", offset); 
+	var endstr = document.cookie.indexOf (";", offset);
     if (endstr == -1)
-    { 
+    {
     	endstr = document.cookie.length;
-    } 
-    return unescape(document.cookie.substring(offset, endstr)); 
+    }
+    return unescape(document.cookie.substring(offset, endstr));
 }
 
 function GetCookie (name) {
          var arg = name + "=";
-         var alen = arg.length; 
-         var clen = document.cookie.length; 
-         var i = 0; 
+         var alen = arg.length;
+         var clen = document.cookie.length;
+         var i = 0;
          while (i < clen) {
-         var j = i + alen; 
-             if (document.cookie.substring(i, j) == arg) 
-             return getCookieVal(j); 
-         i = document.cookie.indexOf(" ", i) + 1; 
-             if (i == 0) break; 
+         var j = i + alen;
+             if (document.cookie.substring(i, j) == arg)
+             return getCookieVal(j);
+         i = document.cookie.indexOf(" ", i) + 1;
+             if (i == 0) break;
              }
 
-     return null; 
+     return null;
      }
 
 function checkForm()
@@ -114,8 +138,8 @@ function checkForm()
 		{
 			if (form.storePassword.checked) {
               form.storePassword.click();
-            }				
-		}		
+            }
+		}
 	<% } %>
     form.action='<c:url value="/AuthenticationServlet" />';
 	form.submit();
@@ -141,6 +165,12 @@ function resetPassword() {
     }
 }
 
+function newRegistration() {
+	var form = document.getElementById("formLogin");
+    form.action ='<c:url value="/CredentialsServlet/NewRegistration" />';
+    form.submit();
+}
+
 function checkSubmit(ev)
 {
 	var touche = ev.keyCode;
@@ -157,13 +187,13 @@ function checkSubmit(ev)
         <div id="top"></div> <!-- Backgroud fonce -->
         <div class="page"> <!-- Centrage horizontal des elements (960px) -->
           <div class="titre"><fmt:message key="authentication.logon.title"/></div>
-            <div id="background"> <!-- image de fond du formulaire -->    	
-                <div class="cadre">   
+            <div id="background"> <!-- image de fond du formulaire -->
+                <div class="cadre">
                     <div id="header">
                         <img src="<%=logo%>" class="logo" alt="logo"/>
                         <p class="information">
                           <c:choose>
-                            <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">                              
+                            <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
                               <c:set var="erroMessageKey">authentication.logon.<c:out value="${param.ErrorCode}"/></c:set>
                                 <span><fmt:message key="${erroMessageKey}" /></span>
                             </c:when><c:otherwise>
@@ -172,27 +202,56 @@ function checkSubmit(ev)
                           </c:choose>
                         </p>
                         <div class="clear"></div>
-                    </div>   
-                    <p><label><span><fmt:message key="authentication.logon.login" /></span><input autofocus="autofocus"  type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
-                    <p><label><span><fmt:message key="authentication.logon.password" /></span><input autocomplete="on" type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
-                    <c:choose>
+                    </div>
+
+                    <div style="margin: 0pt; padding: 0pt; width: 460px; float:left">
+						<p style="vertical-align: middle; display: table-row;">
+							<label for="Login"><fmt:message key="authentication.logon.login" /></label>
+							<input autofocus="autofocus" id="Login" type="text" name="Login">
+							<input class="noDisplay" type="hidden" name="cryptedPassword">
+						</p>
+						<p style="display: table-row;">
+							<label for="password"><fmt:message key="authentication.logon.password" /></label>
+							<input autocomplete="on" name="Password" id="Password" type="password" onkeydown="checkSubmit(event)">
+						</p>
+					<c:choose>
                       <c:when test="${!pageScope.multipleDomains}">
                         <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
                       </c:when>
                       <c:otherwise>
-                        <p><label><span><fmt:message key="authentication.logon.domain" /></span>
+                      	<p style="display: table-row;">
+                        <label for="DomainId"><fmt:message key="authentication.logon.domain" /></label>
 								<select id="DomainId" name="DomainId" size="1">
                                   <c:forEach var="domain" items="${pageScope.listDomains}">
                                       <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if> ><c:out value="${domain.name}"/></option>
                                   </c:forEach>
 								</select>
-                          </label></p> 		
+                          </p>
                       </c:otherwise>
-                    </c:choose>            
+                    </c:choose>
+                     <p>&nbsp;</p><p>&nbsp;</p>
+
                      <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="submit" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
+
+					 <% if (facebookEnabled || linkedInEnabled) {%>
+                     <p>
+						<fmt:message key="authentication.logon.socialNetworkLogin" /> :
+                     	<% if (linkedInEnabled) { %>
+							<a title="LinkedIn" href="/silverpeas/SocialNetworkLogin?networkId=LINKEDIN">
+							<img width="30" border="0" align="middle" src="/weblib/look/icons/LINKEDIN.png">
+							</a>
+						<% } %>
+                     	<% if (facebookEnabled) { %>
+							<a title="Facebook" href="/silverpeas/SocialNetworkLogin?networkId=FACEBOOK">
+							<img width="30" border="0" align="middle" src="/weblib/look/icons/FACEBOOK.png">
+							</a>
+						<% } %>
+					</p>
+					<% } %>
+
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
-						 <p>
 						 <% if (forgottenPwdActive) { %>
+						 <p>
 							<span class="forgottenPwd">
 							<% if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) { %>
 								<a href="javascript:loginQuestion()"><fmt:message key="authentication.logon.passwordForgotten" /></a>
@@ -200,29 +259,41 @@ function checkSubmit(ev)
 							 	<a href="javascript:resetPassword()"><fmt:message key="authentication.logon.passwordReinit" /></a>
 							<%} %>
 							</span>
+						</p>
 						 <% } %>
+
+						<% if (newRegistrationActive) { %>
+						 <p>
+							<span class="forgottenPwd">
+							 	<a href="javascript:newRegistration()"><fmt:message key="authentication.logon.newRegistration" /></a>
+							</span>
+						 </p>
+						<%	} %>
+
 						 <% if (rememberPwdActive) { %>
+						 		<p>
 								<span class="rememberPwd">
 								<% if (forgottenPwdActive) { %>
-									 | 
+									 |
 								<% } %>
 								<fmt:message key="authentication.logon.passwordRemember" /> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
+								</p>
 						<%	} %>
 						</p>
 					<% } %>
-                </div>  
+                </div>
             </div>
             <div id="copyright"><fmt:message key="GML.trademark" /></div>
         </div>
         </form><!-- Fin class="page" -->
-							  
+
 		<script type="text/javascript">
 			nbCookiesFound=0;
 			var domainId = <%=domainId%>;
-		
+
 			/* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
 			if(domainId == null && GetCookie("defaultDomain") != null)
-			{ 
+			{
 				<% for (int i = 0 ; i < listDomains.size() && listDomains.size() > 1; i++) { %>
 					if (GetCookie("defaultDomain").toString() == "<%=(listDomains.get(i).getId())%>")
 					{
@@ -230,19 +301,19 @@ function checkSubmit(ev)
 					}
 				<% } %>
 			}
-		
+
 			if(GetCookie("svpLogin") != null)
 			{
 				nbCookiesFound = nbCookiesFound + 1;
 				document.getElementById("Login").value = GetCookie("svpLogin").toString();
-			}    
-		
+			}
+
 			<%	if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
 				if(GetCookie("svpPassword") != null)
 				{
 					nbCookiesFound = nbCookiesFound + 1;
 					document.getElementById("Password").value = GetCookie("svpPassword").toString();
-				}    
+				}
 			<%	} %>
 
 			if (nbCookiesFound==2)
@@ -259,6 +330,6 @@ function checkSubmit(ev)
 			}
 			document.getElementById("formLogin").Login.focus();
 		</script>
-                    
-</body>  
+
+</body>
 </html>

@@ -45,6 +45,7 @@ import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Controller to log remote social network users into Silverpeas
@@ -55,6 +56,7 @@ public class SocialNetworkLoginController extends HttpServlet {
   private static final long serialVersionUID = 3019716885114707069L;
 
   private UserService userService = null;
+  private ResourceLocator authenticationSettings = null;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -72,6 +74,7 @@ public class SocialNetworkLoginController extends HttpServlet {
   public void init() throws ServletException {
     super.init();
     userService = UserServiceProvider.getInstance().getService();
+    authenticationSettings = new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
   }
 
   /**
@@ -117,11 +120,20 @@ public class SocialNetworkLoginController extends HttpServlet {
 
       // no Silverpeas account yet
       if (account == null) {
-        UserProfile profile = connector.getUserProfile(authorizationToken);
-        req.setAttribute("userProfile", profile);
-        req.setAttribute("networkId", networkId);
-        req.getRequestDispatcher("/admin/jsp/registerFromRemoteSocialNetwork.jsp").forward(req,
-            resp);
+
+        // if new registration is enabled on platform, redirects user to registration
+        if ( authenticationSettings.getBoolean("newRegistrationEnabled", false) ) {
+          UserProfile profile = connector.getUserProfile(authorizationToken);
+          req.setAttribute("userProfile", profile);
+          req.setAttribute("networkId", networkId);
+          req.getRequestDispatcher("/admin/jsp/registerFromRemoteSocialNetwork.jsp").forward(req,
+              resp);
+        }
+
+        // new registration is disabled : redirect user to Login
+        else {
+          resp.sendRedirect(URLManager.getFullApplicationURL(req) +"/Login.jsp?ErrorCode=5");
+        }
       }
 
       // Silverpeas account found, log user
@@ -141,7 +153,7 @@ public class SocialNetworkLoginController extends HttpServlet {
       String email = req.getParameter("email");
 
       try {
-        String userId = userService.registerUser(firstName, lastName, email);
+        String userId = userService.registerUser(firstName, lastName, email, "0");
         AccessToken authorizationToken =
             SocialNetworkService.getInstance().getStoredAuthorizationToken(req.getSession(true),
             networkId);

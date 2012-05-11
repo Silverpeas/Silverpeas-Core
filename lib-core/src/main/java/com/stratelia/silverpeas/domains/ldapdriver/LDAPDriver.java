@@ -625,4 +625,16 @@ public class LDAPDriver extends AbstractDomainDriver {
     return Arrays.asList(userTranslator.getUserAttributes());
   }
 
+  @Override
+  public void resetPassword(UserDetail user, String password) throws Exception {
+    // Access in read only
+  }
+
+  @Override
+  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
+    // Access in read only
+  }
+
+
+
 }

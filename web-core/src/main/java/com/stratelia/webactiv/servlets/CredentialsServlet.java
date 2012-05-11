@@ -32,6 +32,8 @@ import com.stratelia.webactiv.servlets.credentials.ForcePasswordChangeHandler;
 import com.stratelia.webactiv.servlets.credentials.ForgotPasswordHandler;
 import com.stratelia.webactiv.servlets.credentials.FunctionHandler;
 import com.stratelia.webactiv.servlets.credentials.LoginQuestionHandler;
+import com.stratelia.webactiv.servlets.credentials.NewRegistrationHandler;
+import com.stratelia.webactiv.servlets.credentials.RegisterHandler;
 import com.stratelia.webactiv.servlets.credentials.ResetLoginPasswordHandler;
 import com.stratelia.webactiv.servlets.credentials.ResetPasswordHandler;
 import com.stratelia.webactiv.servlets.credentials.SendMessageHandler;
@@ -81,6 +83,9 @@ public class CredentialsServlet extends HttpServlet {
     handlers.put("ResetPassword", new ResetPasswordHandler());
     handlers.put("ResetLoginPassword", new ResetLoginPasswordHandler());
     handlers.put("SendMessage", new SendMessageHandler());
+    // User Registration
+    handlers.put("NewRegistration", new NewRegistrationHandler());
+    handlers.put("Register", new RegisterHandler());
   }
 
   /*

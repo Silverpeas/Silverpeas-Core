@@ -22,15 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.admin.service;
+package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import javax.servlet.http.HttpServletRequest;
 
-public interface UserService {
-  UserDetail findUser(String userId) throws AdminException;
-  String registerUser(String firstName, String lastName, String email, String domainId) throws AdminException;
-  String registerUser(String firstName, String lastName, String email, String domainId, String accessLevel) throws AdminException;
-  void migrateUserToDomain(UserDetail userDetail, String targetDomainId) throws AdminException;
-  void updateUser(UserDetail userDetail) throws AdminException;
+/**
+ * Navigation case : user has not an account yet and registers itself to silverpeas.
+ */
+public class NewRegistrationHandler extends FunctionHandler {
+
+  @Override
+  public String doAction(HttpServletRequest request) {
+      return "/admin/jsp/newRegistration.jsp";
+  }
 }

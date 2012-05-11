@@ -34,7 +34,6 @@ import javax.inject.Named;
 
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -45,13 +44,11 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -79,19 +76,28 @@ public class UserServiceLegacy implements UserService {
 
   @Override
   public String registerUser(String firstName, String lastName,
-      String email) throws AdminException {
+      String email, String domainId) throws AdminException {
+    return registerUser(firstName, lastName, email, domainId, UserDetail.USER_ACCESS);
+  }
+
+  @Override
+  public String registerUser(String firstName, String lastName,
+      String email, String domainId, String accessLevel) throws AdminException {
 
     Admin admin = AdminReference.getAdminService();
 
-    String domainId = settings.getString("authentication.justRegisteredDomainId", "0");
+    // Generate user login
     String login = generateLogin(admin, domainId, email);
     if (login == null) {
       throw new AdminException(
           "SilverpeasAdminServiceLegacy.createGuestUser",
           SilverpeasException.ERROR, "admin.EX_NO_LOGIN_AVAILABLE");
     }
+
+    // Generate password
     String password = generatePassword();
 
+    // Add user
     UserDetail user = new UserDetail();
     user.setId("-1");
     user.setFirstName(firstName);
@@ -99,8 +105,7 @@ public class UserServiceLegacy implements UserService {
     user.seteMail(email);
     user.setLogin(login);
     user.setDomainId(domainId);
-    user.setAccessLevel("U");
-
+    user.setAccessLevel(accessLevel);
     String userId = admin.addUser(user);
 
     if (!StringUtil.isDefined(userId)) {
@@ -122,9 +127,17 @@ public class UserServiceLegacy implements UserService {
       }
     }
 
+    // Send credentials to user
     Domain domain = admin.getDomain(domainId);
     sendCredentialsToUser(uf, password, domain.getSilverpeasServerURL());
+
     return userId;
+  }
+
+  @Override
+  public UserDetail findUser(String userId) throws AdminException {
+    Admin admin = AdminReference.getAdminService();
+    return admin.getUserDetail(userId);
   }
 
   private String generatePassword() {
@@ -200,5 +213,20 @@ public class UserServiceLegacy implements UserService {
           SilverpeasException.ERROR, "EX_SEND_NOTIFICATION_FAILED", e);
     }
   }
+
+  @Override
+  public void migrateUserToDomain(UserDetail userDetail, String targetDomainId)
+      throws AdminException {
+    Admin admin = AdminReference.getAdminService();
+    admin.migrateUser(userDetail, targetDomainId);
+  }
+
+  @Override
+  public void updateUser(UserDetail userDetail) throws AdminException {
+    Admin admin = AdminReference.getAdminService();
+    admin.updateUser(userDetail);
+  }
+
+
 
 }

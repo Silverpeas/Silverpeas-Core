@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -55,9 +56,14 @@ String logo = general.getString("logo", m_context+"/images/logo.jpg");
 String styleSheet = general.getString("defaultLoginStyleSheet", m_context+"/style.css");
 
 // Is "forgotten password" feature active ?
-String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");    
+String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
 boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
 boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
+boolean newRegistrationActive = authenticationSettings.getBoolean("newRegistrationEnabled", false);
+
+// active social networks
+boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
+boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
 
 // Get a LoginPasswordAuthentication object
 LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();

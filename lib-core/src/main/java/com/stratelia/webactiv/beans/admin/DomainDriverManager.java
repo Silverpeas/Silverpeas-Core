@@ -439,7 +439,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       userFull = getUserFull(userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AbstractDomainDriver.indexUserFull", "admin.CANT_GET_USERFULL",
-          "userId=" + userId);
+          "userId=" + userId, e);
     }
     if (userFull != null) {
       FullIndexEntry indexEntry = new FullIndexEntry("users", "UserFull", userId);
@@ -1259,5 +1259,31 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   public OrganizationSchema getOrganization() {
     return organization;
+  }
+
+  @Override
+  public void resetPassword(UserDetail user, String password) throws Exception {
+    try {
+      // Get a DomainDriver instance
+      DomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
+      // Update User detail in specific domain
+      domainDriver.resetPassword(user, password);
+    } catch (AdminException e) {
+      throw new AdminException("DomainDriverManager.resetPassword", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_USER", "userId : "+user.getId(), e);
+    }
+  }
+
+  @Override
+  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
+    try {
+      // Get a DomainDriver instance
+      DomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
+      // Update User detail in specific domain
+      domainDriver.resetEncryptedPassword(user, encryptedPassword);
+    } catch (AdminException e) {
+      throw new AdminException("DomainDriverManager.resetEncryptedPassword", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_USER", "userId : "+user.getId(), e);
+    }
   }
 }

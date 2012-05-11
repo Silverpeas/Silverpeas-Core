@@ -24,13 +24,29 @@
 
 package com.silverpeas.admin.service;
 
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-public interface UserService {
-  UserDetail findUser(String userId) throws AdminException;
-  String registerUser(String firstName, String lastName, String email, String domainId) throws AdminException;
-  String registerUser(String firstName, String lastName, String email, String domainId, String accessLevel) throws AdminException;
-  void migrateUserToDomain(UserDetail userDetail, String targetDomainId) throws AdminException;
-  void updateUser(UserDetail userDetail) throws AdminException;
+public class SpaceServiceProvider {
+
+  @Inject
+  @Named("silverpeasSpaceService")
+  private SpaceService spaceService = null;
+
+  private static SpaceServiceProvider instance = null;
+
+  private SpaceServiceProvider() {
+  }
+
+  static public SpaceServiceProvider getInstance() {
+    if (instance == null) {
+      instance = new SpaceServiceProvider();
+    }
+    return instance;
+  }
+
+  public SpaceService getService() {
+    return spaceService;
+  }
+
 }

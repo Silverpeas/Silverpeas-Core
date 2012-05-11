@@ -25,12 +25,8 @@
 package com.silverpeas.admin.service;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 
-public interface UserService {
-  UserDetail findUser(String userId) throws AdminException;
-  String registerUser(String firstName, String lastName, String email, String domainId) throws AdminException;
-  String registerUser(String firstName, String lastName, String email, String domainId, String accessLevel) throws AdminException;
-  void migrateUserToDomain(UserDetail userDetail, String targetDomainId) throws AdminException;
-  void updateUser(UserDetail userDetail) throws AdminException;
+public interface SpaceService {
+  String createSpace(SpaceInst space, String creatorId) throws AdminException;
 }

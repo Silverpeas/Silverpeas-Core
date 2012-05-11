@@ -545,6 +545,21 @@ public class UserTable extends Table<UserRow> {
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS
       + ", UPPER(lastName) from ST_User";
 
+  private static final String SELECT_SEARCH_BY_EMAIL = "select " + USER_COLUMNS
+      + ", UPPER(lastName) from ST_User where accessLevel <> 'R' AND email = ?";
+
+  /**
+   * Returns the users whose fields match those of the given sample space fields.
+   * @param sampleUser
+   * @return the users whose fields match those of the given sample space fields.
+   * @throws AdminPersistenceException
+   */
+  public UserRow[] getUsersByEmail(String email) throws AdminPersistenceException {
+    List<UserRow> users = getRows(SELECT_SEARCH_BY_EMAIL, new String[] { email });
+
+    return users.toArray(new UserRow[users.size()]);
+  }
+
   /**
    * Returns the users whose fields match those of the given sample space fields.
    * @param sampleUser

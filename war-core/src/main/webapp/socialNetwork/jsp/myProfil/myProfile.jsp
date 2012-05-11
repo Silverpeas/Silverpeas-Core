@@ -189,12 +189,12 @@ $(document).ready(function(){
 <view:window>
 
 <div id="myProfileFiche" >
-  
+
 	<div class="info tableBoard">
  		<h2 class="userName"><%=userFull.getFirstName() %> <br /><%=userFull.getLastName() %></h2>
        	<p class="statut">
 			<%=userFull.getStatus() %>
-        </p>  
+        </p>
 	    <div class="action">
         	<a href="#" class="link updateStatus" onclick="editStatus();"><fmt:message key="profil.actions.changeStatus" /></a>
             <br />
@@ -208,10 +208,10 @@ $(document).ready(function(){
         </div>
         <div class="profilPhoto">
 			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
-        </div>  
+        </div>
         <br clear="all" />
  	</div>
- 	
+
  	<div id="statusDialog">
 		<form>
 	    	<textarea id="newStatus" cols="49" rows="4"></textarea><br/>
@@ -236,13 +236,13 @@ $(document).ready(function(){
 	</div>
 	<% if (nbContacts > 0) { %>
 	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
-	<!-- allContact  -->  
+	<!-- allContact  -->
 	<div id="allContact">
-  	<% 
+  	<%
   		for (int i=0; i<contacts.size(); i++) {
   		  UserDetail contact = (UserDetail) contacts.get(i);
   	%>
-		<!-- unContact  -->  
+		<!-- unContact  -->
      	<div class="unContact">
         	<div class="profilPhotoContact">
         		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
@@ -250,15 +250,15 @@ $(document).ready(function(){
 	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
 	   	</div> <!-- /unContact  -->
   	<% } %>
-    
+
     <% if (showAllContactLink) { %>
 	     <br clear="all" />
 	     <a href="<%=m_context %>/Rdirectory/jsp/Main?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
-	     <br clear="all" />  
+	     <br clear="all" />
     <% } %>
 	</div><!-- /allContact  -->
-	<% } %>  
-      
+	<% } %>
+
 </div>
 
 
@@ -275,7 +275,9 @@ $(document).ready(function(){
 		<view:tab label="${feed}" action="<%=MyProfileRoutes.MyFeed.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyFeed.toString().equals(view)) %>" />
 		<view:tab label="${wall}" action="<%=MyProfileRoutes.MyWall.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyWall.toString().equals(view)) %>" />
     	<view:tab label="${profile}" action="<%=MyProfileRoutes.MyInfos.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInfos.toString().equals(view)) %>" />
-    	<view:tab label="${networks}" action="<%=MyProfileRoutes.MyNetworks.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyNetworks.toString().equals(view)) %>" />
+		<% if (SocialNetworkID.oneIsEnable()) {%>
+	    	<view:tab label="${networks}" action="<%=MyProfileRoutes.MyNetworks.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyNetworks.toString().equals(view)) %>" />
+		<%}%>
     	<view:tab label="${invitations}" action="<%=MyProfileRoutes.MyInvitations.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) %>" />
     	<view:tab label="${settings}" action="<%=MyProfileRoutes.MySettings.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MySettings.toString().equals(view)) %>" />
 	</view:tabs>
@@ -291,9 +293,9 @@ $(document).ready(function(){
 	<% } else if (MyProfileRoutes.MyWall.toString().equals(view) || MyProfileRoutes.MyFeed.toString().equals(view)) { %>
 		<%@include file="myProfileTabWall.jsp" %>
 	<% } %>
-              
-</div>   
+
+</div>
 </view:window>
-    
+
 </body>
 </html>

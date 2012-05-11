@@ -32,7 +32,7 @@
 <fmt:setLocale value="${pageContext.request.locale.language}" />
 <%@ include file="../../headLog.jsp" %>
 
-<view:setBundle basename="com.silverpeas.socialnetwork.multilang.registration" />
+<view:setBundle basename="com.silverpeas.authentication.multilang.authentication" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -55,6 +55,7 @@ input{
     display:block;
     padding:0px;
 }
+
 </style>
 <![endif]-->
 
@@ -63,12 +64,26 @@ input{
     left: 375px;
     top: 15px;
 }
+
+.submit {
+	width: 95px;
+    background-color: transparent;
+    border: 0;
+}
 </style>
 
 <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.7.1.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.json-2.2.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-include.js"/>"></script>
+
+<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen">
+<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.css"/>" media="screen">
+
+<!-- jQuery files -->
+<script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>" type="text/javascript" charset="utf-8"></script>
+<script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.js"/>" type="text/javascript" charset="utf-8"></script>
+<script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.js"/>" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
 
@@ -198,7 +213,7 @@ function checkForm()
     }
 
     else if (emailExists(email)) {
-		errorMsg+=" - <fmt:message key="registration.alreadyRegistered"/>\n<fmt:message key="registration.pleaseConnectWithSvpAccount"/>";
+		errorMsg+=" - <fmt:message key="registration.alreadyRegistered"/>\n";
         errorNb++;
     }
 
@@ -207,7 +222,7 @@ function checkForm()
         return false;
     }
 
-    form.action='<c:url value="/SocialNetworkLogin" />';
+    form.action='<c:url value="/CredentialsServlet/Register" />';
 	form.submit();
 }
 
@@ -218,14 +233,22 @@ function checkSubmit(ev)
       checkForm();
     }
 }
+
+$(document).ready(function(){
+		// More complex call
+		$('#QapTcha').QapTcha({
+			autoSubmit : false,
+			submitFn : checkForm,
+			autoRevert : true,
+			PHPfile : '<c:url value="/Qaptcha"/>'
+		});
+});
 -->
 </script>
 
 </head>
 <body>
       <form id="EDform" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
-      	<input type="hidden" name="command" value="register"/>
-      	<input type="hidden" name="networkId" value="${networkId}"/>
         <div id="top"></div> <!-- Backgroud fonce -->
         <div class="page"> <!-- Centrage horizontal des elements (960px) -->
           <div class="titre"><fmt:message key="registration.title"/></div>
@@ -245,8 +268,8 @@ function checkSubmit(ev)
        				<p>&nbsp;</p>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
-
-                    <p><a href="#" class="submit" onclick="checkForm();"><img src='<c:url value="/images/bt-ok.png" />' alt="register"/></a></p>
+					<div id="QapTcha"></div>
+                    <p><input type="image" class="submit" width="95" src='<c:url value="/images/bt-ok.png" />' alt="register"/></p>
 
                 </div>
             </div>

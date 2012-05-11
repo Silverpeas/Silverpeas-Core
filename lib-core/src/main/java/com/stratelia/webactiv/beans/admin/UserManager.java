@@ -422,6 +422,45 @@ public class UserManager {
     }
   }
 
+  public void migrateUser(DomainDriverManager ddManager, UserDetail userDetail, String targetDomainId) throws AdminException {
+    if (userDetail == null || !StringUtil.isDefined(userDetail.getDomainId())) {
+      throw new AdminException("UserManager.migrateUser",
+          SilverpeasException.ERROR, "admin.EX_MIGRATE_USER", "User detail : "+userDetail);
+    }
+
+    try {
+      ddManager.getOrganizationSchema();
+
+      // create user in target Domain
+      String oldDomainId = userDetail.getDomainId();
+      UserFull userFull = getUserFull(ddManager, userDetail.getId());
+      userFull.setDomainId(targetDomainId);
+      String specificId = ddManager.createUser(userFull);
+      userFull.setSpecificId(specificId);
+
+      // User creation may reset password, force reset to old one
+      userDetail.setDomainId(targetDomainId);
+      userDetail.setSpecificId(specificId);
+      ddManager.resetEncryptedPassword(userDetail, userFull.getPassword());
+
+      // remove user from domainSilverpeas
+      userFull.setDomainId(oldDomainId);
+      ddManager.deleteUser(userFull.getId());
+
+      // associates new user to silverpeas user
+      userFull.setDomainId(targetDomainId);
+      userFull.setSpecificId(specificId);
+
+      // update user
+      updateUser(ddManager, userFull);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.migrateUser",
+          SilverpeasException.ERROR, "admin.EX_ERR_MIGRATE_USER", e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+
   /**
    * Add the given user in Silverpeas and specific domain
    * @param ddManager
@@ -610,6 +649,29 @@ public class UserManager {
   }
 
   /**
+   * Checks if an existing user already have the given email
+   *
+   * @param email email to check
+   *
+   * @return true if at least one user with given email is found
+   * @throws AdminException
+   */
+  public boolean isEmailExisting(DomainDriverManager ddManager, String email) throws AdminException {
+    try {
+      ddManager.getOrganizationSchema();
+
+      UserRow[] users = ddManager.getOrganization().user.getUsersByEmail(email);
+
+      return ((users!=null) && (users.length>0));
+    } catch (Exception e) {
+      throw new AdminException("UserManager.isEmailExisting", SilverpeasException.ERROR,
+          "admin.CANT_CHECK_EMAIL", "email: '" + email + "'", e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+
+  /**
    * Convert UserDetail to UserRow
    */
   private UserRow userDetail2UserRow(UserDetail user) {
@@ -668,4 +730,5 @@ public class UserManager {
   private String idAsString(int id) {
     return java.lang.Integer.toString(id);
   }
+
 }

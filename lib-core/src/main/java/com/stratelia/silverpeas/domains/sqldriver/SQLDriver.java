@@ -167,6 +167,37 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
+
+  @Override
+  public void resetPassword(UserDetail user, String password) throws Exception {
+    String encryptedPassword = password;
+
+    if ( Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) ) {
+      encryptedPassword = UnixMD5Crypt.crypt(password);
+    } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption) ) {
+      encryptedPassword = CryptMD5.crypt(password);
+    }
+
+    effectiveResetPassword(user, encryptedPassword);
+  }
+
+  @Override
+  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
+    effectiveResetPassword(user, encryptedPassword);
+  }
+
+  private void effectiveResetPassword(UserDetail user, String password) throws Exception {
+    try {
+      this.openConnection();
+      localUserMgr.updateUserPassword(openedConnection, idAsInt(user.getSpecificId()), password);
+      localUserMgr.updateUserPasswordValid(openedConnection, idAsInt(user.getSpecificId()), true);
+    } catch (Exception e) {
+      throw new AdminException("SQLDriver.effectiveResetPassword",
+          SilverpeasException.ERROR, "admin.EX_ERR_RESET_PASSWORD", "userSpecificId : " + user.getSpecificId(), e);
+    } finally {
+      this.closeConnection();
+    }  }
+
   /**
    * @param userId
    */
