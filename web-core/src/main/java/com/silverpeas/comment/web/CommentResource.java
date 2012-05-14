@@ -23,8 +23,6 @@
  */
 package com.silverpeas.comment.web;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
@@ -137,8 +135,8 @@ public class CommentResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response saveNewComment(final CommentEntity commentToSave) {
     checkIsValid(commentToSave);
-    Comment comment = commentToSave.toComment();
     try {
+      Comment comment = commentToSave.toComment();
       if (commentToSave.isIndexed()) {
         commentService().createAndIndexComment(comment);
       } else {
@@ -283,10 +281,7 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    CommentEntity entity = CommentEntity.fromComment(comment).withURI(commentURI);
-    // CommentAuthorEntity author = entity.getAuthor();
-    // author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
-    return entity;
+    return CommentEntity.fromComment(comment).withURI(commentURI);
   }
 
   protected URI identifiedBy(URI uri) {
@@ -312,11 +307,6 @@ public class CommentResource extends RESTWebService {
    * @param theComment the comment to validate.
    */
   protected void checkIsValid(final CommentEntity theComment) {
-    if (!isDefined(theComment.getComponentId()) || !isDefined(theComment.getResourceType()) ||
-        !isDefined(theComment.getResourceId()) ||
-        !isDefined(theComment.getText()) || !isDefined(theComment.getAuthor().getId())) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
     if (!theComment.getComponentId().equals(getComponentId()) ||
         !theComment.getResourceType().equals(
             getContentType()) || !theComment.getResourceId().equals(

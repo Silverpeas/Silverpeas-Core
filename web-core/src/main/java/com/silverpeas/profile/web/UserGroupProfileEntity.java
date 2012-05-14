@@ -24,11 +24,13 @@
 package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.*;
-import com.silverpeas.web.Exposable;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
 import java.util.List;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -83,7 +85,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
   private URI usersUri;
   @XmlElement
   private int userCount = -1;
-  @XmlElement
+  @XmlElement @NotNull @Size(min=1)
   private String domainName;
   private final Group group;
 

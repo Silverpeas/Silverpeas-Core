@@ -23,6 +23,7 @@
  */
 package com.silverpeas.comment.web;
 
+
 import static com.silverpeas.util.StringUtil.isDefined;
 
 import java.net.URI;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -60,14 +63,19 @@ public class CommentEntity implements Exposable {
   @XmlElement(defaultValue = "")
   private String id;
   @XmlElement(required = true)
+  @NotNull @Size(min=2)
   private String componentId;
-  @XmlElement(required = false)
+  @XmlElement(required = true)
+  @NotNull @Size(min=1)
   private String resourceType;
   @XmlElement(required = true)
+  @NotNull @Size(min=1)
   private String resourceId;
   @XmlElement(required = true)
+  @NotNull
   private String text;
   @XmlElement(required = true)
+  @NotNull
   private UserProfileEntity author;
   @XmlElement(required = true, defaultValue = "")
   private String creationDate;
@@ -242,6 +250,8 @@ public class CommentEntity implements Exposable {
 
   @Override
   public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
     if (obj == null) {
       return false;
     }

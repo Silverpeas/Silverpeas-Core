@@ -24,18 +24,18 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.BaseCommentTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import com.silverpeas.comment.model.Comment;
+import static com.silverpeas.comment.web.CommentTestResources.*;
 import com.silverpeas.web.ResourceCreationTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.ClientResponse;
 import javax.ws.rs.core.Response.Status;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.comment.web.CommentTestResources.*;
+import org.junit.AfterClass;
+import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Unit tests on the creation of a comment through the CommentResource web service.
@@ -97,7 +97,7 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
   @Test
   public void postAnAlreadyExistingComment() {
     Comment existingComment = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).
-        inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou");
+            inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou");
     getTestResources().save(existingComment);
     CommentEntity aComment = CommentEntity.fromComment(existingComment);
 
@@ -164,7 +164,7 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[] { COMPONENT_INSTANCE_ID };
+    return new String[]{COMPONENT_INSTANCE_ID};
   }
 
   @Override

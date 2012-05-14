@@ -25,12 +25,14 @@ package com.silverpeas.profile.web;
 
 import com.silverpeas.personalization.UserPreferences;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-import com.silverpeas.web.Exposable;
 import com.silverpeas.ui.DisplayI18NHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -79,11 +81,11 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private UserDetail user = null;
   @XmlElement(required=true)
   private URI uri;
-  @XmlElement(required=true)
+  @XmlElement(required=true) @NotNull @Size(min=1)
   private String avatar;
   @XmlElement
   private String domainName;
-  @XmlElement(required=true, defaultValue="")
+  @XmlElement(required=true, defaultValue="") @NotNull
   private String fullName = "";
   @XmlElement(defaultValue="")
   private String language = "";
