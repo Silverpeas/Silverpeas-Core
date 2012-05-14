@@ -622,9 +622,11 @@ public class OrganizationController implements java.io.Serializable {
     try {
       return getAdminService().getCurrentProfiles(userId, componentId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.getUserProfiles",
-          "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '" +
-           userId + "', componentId: '" + componentId + "'", e);
+      if (!isToolAvailable(componentId)) {
+        SilverTrace.error("admin", "OrganizationController.getUserProfiles",
+            "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '" +
+                userId + "', componentId: '" + componentId + "'", e);
+      }
       return null;
     }
   }
