@@ -90,7 +90,7 @@ public abstract class RESTWebService {
           WebApplicationException {
     validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
   }
-
+  
   /**
    * Gets information about the URI with which this web service was invoked.
    *

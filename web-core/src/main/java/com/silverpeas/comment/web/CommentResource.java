@@ -23,34 +23,24 @@
  */
 package com.silverpeas.comment.web;
 
-import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.Authorized;
-import java.util.logging.Logger;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import java.net.URI;
-import java.util.List;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.web.RESTWebService;
+import java.net.URI;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A REST Web resource representing a given comment.
@@ -131,8 +121,8 @@ public class CommentResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response saveNewComment(final CommentEntity commentToSave) {
     checkIsValid(commentToSave);
-    Comment comment = commentToSave.toComment();
     try {
+      Comment comment = commentToSave.toComment();
       if (commentToSave.isIndexed()) {
         commentService().createAndIndexComment(comment);
       } else {
@@ -293,10 +283,10 @@ public class CommentResource extends RESTWebService {
    * @param theComment the comment to validate.
    */
   protected void checkIsValid(final CommentEntity theComment) {
-    if (!isDefined(theComment.getComponentId()) || !isDefined(theComment.getResourceId()) ||
-        !isDefined(theComment.getText()) || !isDefined(theComment.getAuthor().getId())) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
+//    if (!isDefined(theComment.getComponentId()) || !isDefined(theComment.getResourceId()) ||
+//        !isDefined(theComment.getText()) || !isDefined(theComment.getAuthor().getId())) {
+//      throw new WebApplicationException(Status.BAD_REQUEST);
+//    }
     if (!theComment.getComponentId().equals(getComponentId()) || !theComment.getResourceId().equals(
             getContentId())) {
       throw new WebApplicationException(Status.NOT_FOUND);
