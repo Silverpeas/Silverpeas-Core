@@ -32,6 +32,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -82,11 +84,11 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private URI uri;
   @XmlElement
   private String webPage;
-  @XmlElement(required=true)
+  @XmlElement(required=true) @NotNull @Size(min=1)
   private String avatar;
   @XmlElement
   private String domainName;
-  @XmlElement(required=true, defaultValue="")
+  @XmlElement(required=true, defaultValue="") @NotNull
   private String fullName = "";
   @XmlElement(defaultValue="")
   private String language = "";
