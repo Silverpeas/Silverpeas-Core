@@ -25,8 +25,6 @@ package com.silverpeas.bundle.web;
 
 import static com.silverpeas.bundle.web.BundleTestResources.JAVA_PACKAGE;
 import static com.silverpeas.bundle.web.BundleTestResources.SPRING_CONTEXT;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -34,12 +32,11 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 
 /**
  * The bundle resource represents in the WEB a localized bundle of messages. This WEB service is an
@@ -117,7 +114,14 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
     String messages = getAt(aResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
   }
-  
+
+  @Test
+  public void getAnExistingBundleByItsNameAndExtension() {
+    String messages = getAt(aResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE,
+            getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
+  }
+
   @Test
   public void getAnExistingBundleInEnglish() {
     PersonalizationService p = getMockedPersonalizationService();
@@ -125,7 +129,13 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
     String messages = getAt(aResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
   }
-  
+
+  @Test
+  public void getAnExistingBundleExplicitlyInEnglish() {
+    String messages = getAt(aResourceURI() + "_en", MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
+  }
+
   @Test
   public void getAComponentSettings() {
     try {

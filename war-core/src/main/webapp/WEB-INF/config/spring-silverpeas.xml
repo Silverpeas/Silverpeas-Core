@@ -60,7 +60,7 @@
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
-  <ctx:component-scan base-package="org.silverpeas.bundle.web" />
+  <ctx:component-scan base-package="com.silverpeas.bundle.web" />
   
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
 

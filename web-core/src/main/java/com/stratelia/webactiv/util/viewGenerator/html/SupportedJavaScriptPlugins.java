@@ -32,5 +32,6 @@ public enum SupportedJavaScriptPlugins {
   qtip,
   datepicker,
   pagination,
-  breadcrumb;
+  breadcrumb,
+  userZoom;
 }

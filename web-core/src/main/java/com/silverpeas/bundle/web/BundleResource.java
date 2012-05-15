@@ -27,7 +27,6 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -42,7 +41,8 @@ import org.springframework.stereotype.Service;
  * entry point to access the different bundles in use in Silverpeas. It can be accessed only by
  * authenticated users. Ony the localized texts can be actually accessed, no settings.
  *
- * The localized bundled is refered in the URI by its absolute classpath location and only the one
+ * The localized bundled is refered in the URI by its absolute classpath location. Its suffix can
+ * .properties can be omitted. and only the one
  * that matches the prefered language of the current user in the session is taken into account. If
  * no bunble exists in the language of the current user, then the default one is sent back.
  */
@@ -58,11 +58,19 @@ public class BundleResource extends RESTWebService {
   }
 
   @GET
-  @Path("{bundle: com/[a-zA-Z0-9/]+}")
+  @Path("{bundle: com/[a-zA-Z0-9/._]+}")
   @Produces(MediaType.TEXT_PLAIN)
   public Response getBundle(@PathParam("bundle") final String bundle) throws IOException {
     String language = getUserPreferences().getLanguage();
-    ResourceLocator resource = new ResourceLocator(bundle, language);
+    String localizedBundle = bundle;
+    if (bundle.endsWith(".properties")) {
+      localizedBundle = bundle.substring(0, bundle.indexOf(".properties"));
+    }
+    if (bundle.lastIndexOf("_") == bundle.length() - 3) {
+      language = localizedBundle.substring(bundle.lastIndexOf("_") + 1);
+      localizedBundle = localizedBundle.substring(0, bundle.lastIndexOf("_"));
+    }
+    ResourceLocator resource = new ResourceLocator(localizedBundle, language);
     try {
       Properties translations = resource.getProperties();
       if (!bundle.trim().isEmpty() && bundle.contains("multilang")) {

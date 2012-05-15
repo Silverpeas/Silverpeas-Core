@@ -30,7 +30,6 @@ import com.silverpeas.socialNetwork.relationShip.RelationShip;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserDetail;

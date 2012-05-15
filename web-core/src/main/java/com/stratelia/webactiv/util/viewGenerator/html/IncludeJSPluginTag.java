@@ -52,7 +52,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   private static final String SILVERPEAS_DATEPICKER = "silverpeas-defaultDatePicker.js";
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
-  private static final String JQUERY_BREADCRUMB = "silverpeas-breadcrumb.js";
+  private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
+  private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -93,8 +94,11 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       xhtml.addElement(css);
       xhtml.addElement(pagination);
     } else if (breadcrumb.name().equals(getName())) {
-      script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + JQUERY_BREADCRUMB);
+      script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_BREADCRUMB);
       xhtml.addElement(breadcrumb);
+    } else if (userZoom.name().equals(getName())) {
+      script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_USERZOOM);
+      xhtml.addElement(userZoom);
     }
     xhtml.output(getJspContext().getOut());
   }

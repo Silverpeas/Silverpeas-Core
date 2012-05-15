@@ -28,6 +28,7 @@ import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
@@ -79,6 +80,8 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private UserDetail user = null;
   @XmlElement(required=true)
   private URI uri;
+  @XmlElement
+  private String webPage;
   @XmlElement(required=true)
   private String avatar;
   @XmlElement
@@ -103,6 +106,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     this.fullName = user.getDisplayedName();
     this.avatar = getAvatarURI();
     this.connected = this.user.isConnected();
+    this.webPage = getUserProfileWebPageURI();
   }
 
   @Override
@@ -183,6 +187,17 @@ public class UserProfileEntity extends UserDetail implements Exposable {
       avatar = getAvatarURI();
     }
     return avatar;
+  }
+  
+  /**
+   * Gets the URL of the WEB page in which is presented the profile of this user.
+   * @return the URL of the user profile WEB page.
+   */
+  public String getWebPage() {
+    if (!isDefined(webPage)) {
+      webPage = getUserProfileWebPageURI();
+    }
+    return webPage;
   }
 
   /**
@@ -282,5 +297,16 @@ public class UserProfileEntity extends UserDetail implements Exposable {
       avatarURI =  context.getServletContext().getContextPath() + avatarURI;
     }
     return avatarURI;
+  }
+  
+  private String getUserProfileWebPageURI() {
+    String pageUri = "/Rprofil/jsp/Main?userId=" + this.user.getId();
+    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
+    if (context != null) {
+      pageUri =  context.getServletContext().getContextPath() + pageUri;
+    } else {
+      pageUri = URLManager.getApplicationURL() + pageUri;
+    }
+    return pageUri;
   }
 }
