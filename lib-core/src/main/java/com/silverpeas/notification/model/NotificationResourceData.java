@@ -23,6 +23,8 @@
  */
 package com.silverpeas.notification.model;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,21 +33,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-import com.silverpeas.util.StringUtil;
-
 /**
  * @author Yohann Chastagnier
  */
 @Entity
-@Table(name = "sp_notificationresource")
+@Table(name = "st_notificationresource")
 public class NotificationResourceData {
 
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "sp_notificationresource", allocationSize = 1)
+      valueColumnName = "maxId", pkColumnValue = "st_notificationresource", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   @Column(name = "id")
-  private Long id;
+  private Integer id;
 
   @Column(name = "resourceId", nullable = false)
   private String resourceId;
@@ -65,6 +65,9 @@ public class NotificationResourceData {
   @Column(name = "resourceUrl", nullable = false)
   private String resourceUrl;
 
+  @Column(name = "componentInstanceId", nullable = false)
+  private int componentInstanceId = -1;
+
   /**
    * Simple constructor
    */
@@ -73,19 +76,15 @@ public class NotificationResourceData {
   }
 
   public boolean isValid() {
-    return isDefined(resourceId) && isDefined(resourceType) && isDefined(resourceName) &&
-        isDefined(resourceLocation) && isDefined(resourceUrl);
+    return isNotBlank(resourceId) && isNotBlank(resourceType) && isNotBlank(resourceName) &&
+        isNotBlank(resourceLocation) && isNotBlank(resourceUrl);
   }
 
-  private static boolean isDefined(final String string) {
-    return string != null && StringUtil.isDefined(string.trim());
-  }
-
-  public Long getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(final Long id) {
+  public void setId(final Integer id) {
     this.id = id;
   }
 
@@ -147,5 +146,13 @@ public class NotificationResourceData {
 
   public void setResourceUrl(final String resourceUrl) {
     this.resourceUrl = resourceUrl;
+  }
+
+  public int getComponentInstanceId() {
+    return componentInstanceId;
+  }
+
+  public void setComponentInstanceId(final int componentInstanceId) {
+    this.componentInstanceId = componentInstanceId;
   }
 }

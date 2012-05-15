@@ -1,0 +1,1 @@
+$first(resources):notification/delayed/messageBodyResourceItem_fr(resource=it)$$rest(resources):{$\n$$\n$$notification/delayed/messageBodyResourceItem_fr(resource=it)$}$

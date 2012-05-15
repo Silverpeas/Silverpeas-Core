@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -38,9 +39,14 @@ import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 public interface DelayedNotificationRepository extends
     JpaRepository<DelayedNotificationData, Integer>, DelayedNotificationRepositoryCustom {
 
-  @Query("select distinct d.userId from DelayedNotificationData d where d.channel in (:channels)")
+  @Query("select distinct userId from DelayedNotificationData where channel in (:channels)")
   List<Integer> findAllUsersToBeNotified(@Param("channels") Collection<Integer> aimedChannels);
 
   @Query("from DelayedNotificationData where userId = :userId and channel in (:channels) order by channel")
-  List<DelayedNotificationData> findByUserId(@Param("userId") int userId, @Param("channels") Collection<Integer> aimedChannels);
+  List<DelayedNotificationData> findByUserId(@Param("userId") int userId,
+      @Param("channels") Collection<Integer> aimedChannels);
+
+  @Modifying
+  @Query("delete from DelayedNotificationData where id in (:ids)")
+  public int deleteByIds(@Param("ids") Collection<Integer> ids);
 }

@@ -23,11 +23,11 @@
  */
 package com.silverpeas.notification.delayed.model;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,16 +38,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.silverpeas.notification.delayed.DelayedNotificationFactory;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -58,13 +55,13 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
  * @author Yohann Chastagnier
  */
 @Entity
-@Table(name = "sp_delayednotification")
+@Table(name = "st_delayednotification")
 public class DelayedNotificationData implements Serializable {
   private static final long serialVersionUID = 3477090528448919931L;
 
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "sp_delayednotification", allocationSize = 1)
+      valueColumnName = "maxId", pkColumnValue = "st_delayednotification", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   @Column(name = "id")
   private Integer id;
@@ -81,9 +78,6 @@ public class DelayedNotificationData implements Serializable {
   @Column(name = "action", nullable = false)
   private Integer action;
 
-  @Column(name = "componentInstanceId", nullable = false)
-  private int componentInstanceId = -1;
-
   @Column(name = "language", nullable = false)
   private String language;
 
@@ -94,7 +88,7 @@ public class DelayedNotificationData implements Serializable {
   @Column(name = "message", nullable = true)
   private String message;
 
-  @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "notificationResourceId", referencedColumnName = "id", nullable = false)
   private NotificationResourceData resource;
 
@@ -123,38 +117,15 @@ public class DelayedNotificationData implements Serializable {
    */
   public boolean isValid() {
     return getUserId() != null && getFromUserId() != null && getChannel() != null &&
-        getAction() != null && isDefined(getLanguage()) && getResource() != null &&
+        getAction() != null && isNotBlank(getLanguage()) && getResource() != null &&
         getResource().isValid();
-  }
-
-  private static boolean isDefined(final String string) {
-    return string != null && StringUtil.isDefined(string.trim());
   }
 
   @PrePersist
   public void beforePersist() {
-    loadResourceIfExists();
     creationDate = new Date();
-    if (!isDefined(language)) {
+    if (!isNotBlank(language)) {
       language = I18NHelper.defaultLanguage;
-    }
-  }
-
-  @PreUpdate
-  public void beforeUpdate() {
-    loadResourceIfExists();
-  }
-
-  /**
-   * Centralizes the resource loading before save
-   */
-  private void loadResourceIfExists() {
-    if (getResource() != null && getResource().getId() == null) {
-      final List<NotificationResourceData> resources =
-          DelayedNotificationFactory.getDelayedNotification().findResource(getResource());
-      if (resources.size() == 1) {
-        setResource(resources.get(0));
-      }
     }
   }
 
@@ -208,14 +179,6 @@ public class DelayedNotificationData implements Serializable {
     } else {
       this.action = null;
     }
-  }
-
-  public int getComponentInstanceId() {
-    return componentInstanceId;
-  }
-
-  public void setComponentInstanceId(final int componentInstanceId) {
-    this.componentInstanceId = componentInstanceId;
   }
 
   public Date getCreationDate() {

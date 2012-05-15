@@ -1,0 +1,19 @@
+DROP INDEX ST_NotifAddress.IN_NotifAddress_1;
+
+DROP INDEX ST_NotifPreference.IN_NotifPreference_1;
+
+DROP INDEX ST_NotifSended.IN_NotifSended;
+
+DROP INDEX ST_NotifSendedReceiver.IN_NotifSendedReceiver;
+
+DROP INDEX st_delayednotification.idx_st_delayednotification_id;
+DROP INDEX st_delayednotification.idx_st_delayednotification_userId;
+DROP INDEX st_delayednotification.idx_st_delayednotification_channel;
+
+DROP INDEX st_notificationresource.idx_st_notificationresource_id;
+DROP INDEX st_notificationresource.idx_st_notificationresource_resourceId;
+
+DROP INDEX st_delayednotificationusersetting.idx_st_delayednotificationusersetting_id;
+DROP INDEX st_delayednotificationusersetting.idx_st_delayednotificationusersetting_userId;
+DROP INDEX st_delayednotificationusersetting.idx_st_delayednotificationusersetting_channel;
+DROP INDEX st_delayednotificationusersetting.idx_st_delayednotificationusersetting_uc;

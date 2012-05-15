@@ -118,6 +118,24 @@ public class DateUtil {
     return getOutputDate(date, language);
   }
 
+  public static String getOutputHour(Date date, String language) {
+    String result = "";
+    if (date == null) {
+      return result;
+    }
+    FastDateFormat formatter = getHourOutputFormat(language);
+    return formatter.format(date);
+  }
+
+  public static String getOutputHour(String dateDB, String language)
+      throws ParseException {
+    if (!StringUtil.isDefined(dateDB)) {
+      return "";
+    }
+    Date date = parse(dateDB);
+    return getOutputHour(date, language);
+  }
+
   public static String getOutputDateAndHour(String dateDB, String language) throws ParseException {
     if (!StringUtil.isDefined(dateDB)) {
       return "";
@@ -248,6 +266,26 @@ public class DateUtil {
    */
   public static SimpleDateFormat getDateInputFormat(String language) {
     return new SimpleDateFormat(getMultilangProperties(language).getString("dateInputFormat"));
+  }
+
+  /**
+   * Get the hour (from a date) language specific standard output format.
+   *
+   * @param lang The current user's language
+   * @return A SimpleDateFormat initialized with the language specific output format.
+   */
+  public static FastDateFormat getHourOutputFormat(String lang) {
+    return FastDateFormat.getInstance(getMultilangProperties(lang).getString("hourOutputFormat"));
+  }
+
+  /**
+   * Get the hour (from a date) language specific standard input format.
+   *
+   * @param language The current user's language
+   * @return A SimpleDateFormat initialized with the language specific input format.
+   */
+  public static SimpleDateFormat getHourInputFormat(String language) {
+    return new SimpleDateFormat(getMultilangProperties(language).getString("hourInputFormat"));
   }
 
   /**

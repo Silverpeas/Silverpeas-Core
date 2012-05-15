@@ -27,16 +27,22 @@ package com.stratelia.silverpeas.notificationManager.constant;
  * @author Yohann Chastagnier
  */
 public enum NotifAction {
-  CREATE(1), UPDATE(2), DELETE(3), REPORT(4);
+  CREATE(1, 1), UPDATE(2, 2), DELETE(3, 3), REPORT(4, 4);
 
   private int id;
+  private int priority;
 
-  private NotifAction(final int id) {
+  private NotifAction(final int id, final int priority) {
     this.id = id;
+    this.priority = priority;
   }
 
   public int getId() {
     return id;
+  }
+
+  public int getPriority() {
+    return priority;
   }
 
   public static NotifAction decode(final Integer id) {

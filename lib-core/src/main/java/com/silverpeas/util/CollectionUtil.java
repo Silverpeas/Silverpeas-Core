@@ -24,6 +24,7 @@
 package com.silverpeas.util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +33,8 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author Yohann Chastagnier
@@ -56,6 +59,70 @@ public class CollectionUtil {
    */
   public static <T> boolean isNotEmpty(final Collection<T> collection) {
     return collection != null && collection.size() > 0;
+  }
+
+  /**
+   * Splits a collection into several collections. (Particularly useful for limitations of database
+   * around the "in" clause)
+   * @param collection
+   * @return
+   */
+  public static <T> Collection<Collection<T>> split(final Collection<T> collection) {
+    return split(collection, 5000);
+  }
+
+  /**
+   * Splits a collection into several collections. (Particularly useful for limitations of database
+   * around the "in" clause)
+   * @param collection
+   * @param collectionSizeMax
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Collection<Collection<T>> split(final Collection<T> collection,
+      final int collectionSizeMax) {
+    Collection<Collection<T>> result = null;
+
+    try {
+      if (isNotEmpty(collection)) {
+        if (collectionSizeMax > 0 && collection.size() > collectionSizeMax) {
+
+          // Guessing the result size and initializing the result
+          int size = (collection.size() / collectionSizeMax);
+          if ((collection.size() % collectionSizeMax) != 0) {
+            size++;
+          }
+          result = new ArrayList<Collection<T>>(size);
+
+          // Browsing the collection
+          Collection<T> curLot = null;
+          for (final T element : collection) {
+
+            // If necessary, initializing a lot
+            if (curLot == null || curLot.size() >= collectionSizeMax) {
+              curLot = new ArrayList<T>(collectionSizeMax);
+
+              // Adding the new lot
+              result.add(curLot);
+            }
+
+            // Adding an element into the current lot
+            curLot.add(element);
+          }
+        } else {
+          result = Collections.singletonList(collection);
+        }
+      }
+    } catch (final Exception e) {
+      throw new RuntimeException(e);
+    } finally {
+      if (result == null) {
+        result = new ArrayList<Collection<T>>();
+      }
+    }
+
+    // Retour du r�sultat
+    return result;
   }
 
   /**

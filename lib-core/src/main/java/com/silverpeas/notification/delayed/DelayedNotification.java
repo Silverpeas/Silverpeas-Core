@@ -23,6 +23,7 @@
  */
 package com.silverpeas.notification.delayed;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -39,46 +40,68 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
  */
 public interface DelayedNotification {
 
-  public List<Integer> findAllUsersToBeNotified(Set<NotifChannel> aimedChannels);
+  /*
+   * Delayed Notification
+   */
 
-  public List<Integer> findUsersToBeNotified(Date date, Set<NotifChannel> aimedChannels,
+  List<Integer> findAllUsersToBeNotified(Set<NotifChannel> aimedChannels);
+
+  List<Integer> findUsersToBeNotified(Date date, Set<NotifChannel> aimedChannels,
       DelayedNotificationFrequency defaultDelayedNotificationFrequency);
 
-  public Map<NotifChannel, List<DelayedNotificationData>> findDelayedNotificationByUserIdGroupByChannel(
+  Map<NotifChannel, List<DelayedNotificationData>> findDelayedNotificationByUserIdGroupByChannel(
       int userId, Set<NotifChannel> aimedChannels);
 
-  public void saveDelayedNotification(DelayedNotificationData delayedNotificationData);
+  void saveDelayedNotification(DelayedNotificationData delayedNotificationData);
 
-  public void deleteDelayedNotification(int id);
-
-  public void deleteDelayedNotification(DelayedNotificationData delayedNotificationData);
+  int deleteDelayedNotifications(Collection<Integer> ids);
 
   /*
    * Resource Data
    */
 
-  public List<NotificationResourceData> findResource(
-      NotificationResourceData notificationResourceData);
-
-  public int deleteResources();
+  List<NotificationResourceData> findResource(NotificationResourceData notificationResourceData);
 
   /*
    * User settings
    */
 
-  public DelayedNotificationUserSetting getDelayedNotificationUserSetting(int id);
+  DelayedNotificationUserSetting getDelayedNotificationUserSetting(int id);
 
-  public List<DelayedNotificationUserSetting> findDelayedNotificationUserSettingByUserId(
-      int userId);
+  List<DelayedNotificationUserSetting> findDelayedNotificationUserSettingByUserId(int userId);
 
-  public DelayedNotificationUserSetting getDelayedNotificationUserSettingByUserIdAndChannel(
-      int userId, NotifChannel channel);
+  DelayedNotificationUserSetting getDelayedNotificationUserSettingByUserIdAndChannel(int userId,
+      NotifChannel channel);
 
-  public void saveDelayedNotificationUserSetting(
+  DelayedNotificationUserSetting saveDelayedNotificationUserSetting(final int userId,
+      final NotifChannel channel, final DelayedNotificationFrequency frequency);
+
+  void deleteDelayedNotificationUserSetting(int id);
+
+  void deleteDelayedNotificationUserSetting(
       DelayedNotificationUserSetting delayedNotificationUserSetting);
 
-  public void deleteDelayedNotificationUserSetting(int id);
+  /*
+   * Commons
+   */
 
-  public void deleteDelayedNotificationUserSetting(
-      DelayedNotificationUserSetting delayedNotificationUserSetting);
+  /**
+   * For now, only the SMTP channel can be delayed (mail)
+   * @return
+   */
+  Set<NotifChannel> getWiredChannels();
+
+  /**
+   * Gets the default frequency from the file of notification manager settings. If that not exists,
+   * DelayedNotificationFrequency.NONE is returned.
+   * @return
+   */
+  DelayedNotificationFrequency getDefaultDelayedNotificationFrequency();
+
+  /**
+   * Gets the user notification frequency
+   * @param userId
+   * @return
+   */
+  DelayedNotificationFrequency getUserFrequency(final Integer userId, final NotifChannel channel);
 }

@@ -1,47 +1,19 @@
+/* Tables */
 CREATE TABLE uniqueId (
 	maxId int NOT NULL ,
 	tableName varchar(100) NOT NULL
 );
 
-CREATE TABLE sp_delayednotificationusersetting (
+CREATE TABLE st_delayednotificationusersetting (
    id 			int NOT NULL ,
    userId		int NOT NULL ,
    channel		int NOT NULL ,
    frequency	varchar (4) NOT NULL
 );
 
-CREATE INDEX idx_sp_delayednotificationusersetting_1 ON sp_delayednotificationusersetting(id);
-CREATE INDEX idx_sp_delayednotificationusersetting_2 ON sp_delayednotificationusersetting(userId);
-CREATE INDEX idx_sp_delayednotificationusersetting_3 ON sp_delayednotificationusersetting(channel);
-CREATE UNIQUE INDEX idx_sp_delayednotificationusersetting_u1 ON sp_delayednotificationusersetting(userId, channel);
-
-ALTER TABLE sp_delayednotificationusersetting
-        add constraint const_st_delayednotificationusersetting
-        primary key (id);
-
-CREATE TABLE sp_delayednotification (
-   id 						int NOT NULL ,
-   userId					int NOT NULL ,
-   fromUserId				int NOT NULL ,
-   channel					int NOT NULL ,
-   action					int NOT NULL ,
-   componentInstanceId		int NOT NULL default -1 ,
-   notificationResourceId	int8 NOT NULL ,
-   language					varchar(2) NOT NULL ,
-   creationDate				timestamp NOT NULL ,
-   message					varchar(2000) NULL
-);
-
-ALTER TABLE sp_delayednotification
-        add constraint const_sp_delayednotification
-        primary key (id);
-
-CREATE INDEX idx_sp_delayednotification_1 ON sp_delayednotification(id);
-CREATE INDEX idx_sp_delayednotification_2 ON sp_delayednotification(userId);
-CREATE INDEX idx_sp_delayednotification_3 ON sp_delayednotification(channel);
-
-CREATE TABLE sp_notificationresource (
-   id 					int8 NOT NULL ,
+CREATE TABLE st_notificationresource (
+   id 					int NOT NULL ,
+   componentInstanceId	int NOT NULL default -1 ,
    resourceId			varchar(50) NOT NULL ,
    resourceType			varchar(50) NOT NULL ,
    resourceName			varchar(500) NOT NULL ,
@@ -50,9 +22,49 @@ CREATE TABLE sp_notificationresource (
    resourceUrl			varchar(1000) NULL
 );
 
-ALTER TABLE sp_notificationresource
-        add constraint const_sp_notificationresource
-        primary key (id);
+CREATE TABLE st_delayednotification (
+   id 						int NOT NULL ,
+   userId					int NOT NULL ,
+   fromUserId				int NOT NULL ,
+   channel					int NOT NULL ,
+   action					int NOT NULL ,
+   notificationResourceId	int NOT NULL ,
+   language					varchar(2) NOT NULL ,
+   creationDate				timestamp NOT NULL ,
+   message					varchar(2000) NULL
+);
 
-CREATE INDEX idx_sp_notificationresource_1 ON sp_notificationresource(id);
-CREATE INDEX idx_sp_notificationresource_2 ON sp_notificationresource(resourceId);
+/* Indexes */
+CREATE INDEX idx_st_delayednotificationusersetting_id ON st_delayednotificationusersetting(id);
+CREATE INDEX idx_st_delayednotificationusersetting_userId ON st_delayednotificationusersetting(userId);
+CREATE INDEX idx_st_delayednotificationusersetting_channel ON st_delayednotificationusersetting(channel);
+CREATE UNIQUE INDEX idx_st_delayednotificationusersetting_uc ON st_delayednotificationusersetting(userId, channel);
+
+CREATE INDEX idx_st_notificationresource_id ON st_notificationresource(id);
+CREATE INDEX idx_st_notificationresource_resourceId ON st_notificationresource(resourceId);
+
+CREATE INDEX idx_st_delayednotification_id ON st_delayednotification(id);
+CREATE INDEX idx_st_delayednotification_userId ON st_delayednotification(userId);
+CREATE INDEX idx_st_delayednotification_channel ON st_delayednotification(channel);
+
+/* Constraints */
+ALTER TABLE st_delayednotificationusersetting
+        ADD CONSTRAINT const_st_delayednotificationusersetting_pk
+        PRIMARY KEY (id);
+-- ALTER TABLE st_delayednotificationusersetting
+--		ADD CONSTRAINT const_st_delayednotificationusersetting_fk_userId
+--		FOREIGN KEY (userId) REFERENCES ST_User(id);
+
+ALTER TABLE st_notificationresource
+        ADD CONSTRAINT const_st_notificationresource_pk
+        PRIMARY KEY (id);
+
+ALTER TABLE st_delayednotification
+        ADD CONSTRAINT const_st_delayednotification_pk
+        PRIMARY KEY (id);
+ALTER TABLE st_delayednotification
+		ADD CONSTRAINT const_st_delayednotification_fk_notificationResourceId
+		FOREIGN KEY (notificationResourceId) REFERENCES st_notificationresource(id);
+--ALTER TABLE st_delayednotification
+--		ADD CONSTRAINT const_st_delayednotification_fk_userId
+--		FOREIGN KEY (userId) REFERENCES ST_User(id);

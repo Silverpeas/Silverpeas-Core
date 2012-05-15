@@ -23,6 +23,7 @@
  */
 package com.silverpeas.notification.delayed;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -43,9 +44,11 @@ import com.silverpeas.notification.delayed.repository.DelayedNotificationReposit
 import com.silverpeas.notification.delayed.repository.DelayedNotificationUserSettingRepository;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.notification.repository.NotificationResourceRepository;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.MapUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier
@@ -53,6 +56,16 @@ import com.stratelia.webactiv.util.DateUtil;
 @Service
 @Transactional
 public class DelayedNotificationManager implements DelayedNotification {
+
+  /** Settings location */
+  private final ResourceLocator settings = new ResourceLocator(
+      "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
+
+  /** For now, only the SMTP channel can be delayed (mail) */
+  private static final Set<NotifChannel> WIRED_CHANNELS = new HashSet<NotifChannel>();
+  static {
+    WIRED_CHANNELS.add(NotifChannel.SMTP);
+  }
 
   @Inject
   private DelayedNotificationRepository dnRepository;
@@ -83,12 +96,6 @@ public class DelayedNotificationManager implements DelayedNotification {
     return dnRepository.findAllUsersToBeNotified(NotifChannel.toIds(aimedChannels));
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.delayed.DelayedNotification#findUsersToBeNotified(java.util.Date,
-   * java.util.Set, com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency)
-   */
   @Override
   @Transactional(readOnly = true)
   public List<Integer> findUsersToBeNotified(final Date date,
@@ -121,19 +128,30 @@ public class DelayedNotificationManager implements DelayedNotification {
 
   @Override
   public void saveDelayedNotification(final DelayedNotificationData delayedNotificationData) {
+    if (delayedNotificationData.getResource() != null &&
+        delayedNotificationData.getResource().getId() == null) {
+      final List<NotificationResourceData> resources =
+          findResource(delayedNotificationData.getResource());
+      if (resources.size() == 1) {
+        delayedNotificationData.setResource(resources.get(0));
+      } else {
+        nrRepository.saveAndFlush(delayedNotificationData.getResource());
+      }
+    }
     dnRepository.saveAndFlush(delayedNotificationData);
   }
 
   @Override
-  public void deleteDelayedNotification(final int id) {
-    dnRepository.delete(id);
-    dnRepository.flush();
-  }
-
-  @Override
-  public void deleteDelayedNotification(final DelayedNotificationData delayedNotificationData) {
-    dnRepository.delete(delayedNotificationData);
-    dnRepository.flush();
+  public int deleteDelayedNotifications(final Collection<Integer> ids) {
+    int nbDeletes = 0;
+    if (CollectionUtil.isNotEmpty(ids)) {
+      for (final Collection<Integer> idLot : CollectionUtil.split(ids)) {
+        nbDeletes += dnRepository.deleteByIds(idLot);
+      }
+      nrRepository.deleteResources();
+      dnRepository.flush();
+    }
+    return nbDeletes;
   }
 
   /*
@@ -145,13 +163,6 @@ public class DelayedNotificationManager implements DelayedNotification {
   public List<NotificationResourceData> findResource(
       final NotificationResourceData notificationResourceData) {
     return nrRepository.findResource(notificationResourceData);
-  }
-
-  @Override
-  public int deleteResources() {
-    final int nbDeletes = nrRepository.deleteResources();
-    nrRepository.flush();
-    return nbDeletes;
   }
 
   /*
@@ -184,9 +195,18 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
-  public void saveDelayedNotificationUserSetting(
-      final DelayedNotificationUserSetting delayedNotificationUserSetting) {
-    dnUserSettingRepository.saveAndFlush(delayedNotificationUserSetting);
+  public DelayedNotificationUserSetting saveDelayedNotificationUserSetting(final int userId,
+      final NotifChannel channel, final DelayedNotificationFrequency frequency) {
+    DelayedNotificationUserSetting userSettings =
+        getDelayedNotificationUserSettingByUserIdAndChannel(userId, channel);
+    if (userSettings == null) {
+      userSettings = new DelayedNotificationUserSetting();
+      userSettings.setUserId(userId);
+      userSettings.setChannel(channel);
+    }
+    userSettings.setFrequency(frequency);
+    dnUserSettingRepository.saveAndFlush(userSettings);
+    return userSettings;
   }
 
   @Override
@@ -200,5 +220,44 @@ public class DelayedNotificationManager implements DelayedNotification {
       final DelayedNotificationUserSetting delayedNotificationUserSetting) {
     dnUserSettingRepository.delete(delayedNotificationUserSetting);
     dnUserSettingRepository.flush();
+  }
+
+  /*
+   * Commons
+   */
+
+  @Override
+  public Set<NotifChannel> getWiredChannels() {
+    return WIRED_CHANNELS;
+  }
+
+  @Override
+  public DelayedNotificationFrequency getDefaultDelayedNotificationFrequency() {
+    return DelayedNotificationFrequency.decode(settings.getString(
+        "DEFAULT_DELAYED_NOTIFICATION_FREQUENCY"));
+  }
+
+  @Override
+  public DelayedNotificationFrequency getUserFrequency(final Integer userId,
+      final NotifChannel channel) {
+    DelayedNotificationFrequency result = DelayedNotificationFrequency.NONE;
+
+    // For now, only the SMTP channel can be delayed (mail)
+    if (getWiredChannels().contains(channel)) {
+
+      // Search in the database the user's setting
+      final DelayedNotificationUserSetting dnus =
+          (userId != null) ? getDelayedNotificationUserSettingByUserIdAndChannel(userId, channel)
+              : null;
+
+      // If no user setting data, the default frequency is retrieved
+      if (dnus == null) {
+        result = getDefaultDelayedNotificationFrequency();
+      } else {
+        result = dnus.getFrequency();
+      }
+    }
+
+    return result;
   }
 }

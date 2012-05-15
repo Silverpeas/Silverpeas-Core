@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -32,11 +33,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
@@ -46,11 +45,9 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.webactiv.util.DBUtil;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-delayed-notification.xml" })
-@Transactional
+@ContextConfiguration(locations = { "/spring-delayed-notification.xml",
+    "/spring-delayed-notification-datasource.xml" })
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class DelayedNotificationManagerTest {
 
@@ -87,9 +84,6 @@ public class DelayedNotificationManagerTest {
                         "com/silverpeas/notification/delayed/delayed-notification-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
   }
-
-  @Inject
-  private JpaTransactionManager jtm;
 
   @Inject
   private DelayedNotification manager;
@@ -134,17 +128,6 @@ public class DelayedNotificationManagerTest {
         manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());
     assertThat(notificationResourceDataList.size(), is(0));
-  }
-
-  @Test
-  public void testDeleteResources() throws Exception {
-    final NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
-    final List<NotificationResourceData> notificationResourceDataList =
-        manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(2));
-    final int nbDeletes = manager.deleteResources();
-    assertThat(nbDeletes, is(2));
   }
 
   private static NotificationResourceData buildNotificationResourceData(final int testCase) {
@@ -413,12 +396,10 @@ public class DelayedNotificationManagerTest {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private Set<NotifChannel> getAimedChannelsBase() {
     return new HashSet<NotifChannel>(Arrays.asList(new NotifChannel[] { NotifChannel.SMTP }));
   }
 
-  @SuppressWarnings("unchecked")
   private Set<NotifChannel> getAimedChannelsAll() {
     return new HashSet<NotifChannel>(Arrays.asList(NotifChannel.values()));
   }
@@ -463,7 +444,6 @@ public class DelayedNotificationManagerTest {
         newDelayedNotificationData.setFromUserId(2 * userIdTest);
         newDelayedNotificationData.setChannel(channels[i]);
         newDelayedNotificationData.setAction(action);
-        newDelayedNotificationData.setComponentInstanceId(count);
         newDelayedNotificationData.setResource(notificationResourceData);
         if ((count % 2) == 0) {
           newDelayedNotificationData.setMessage("message" + count);
@@ -471,8 +451,6 @@ public class DelayedNotificationManagerTest {
         manager.saveDelayedNotification(newDelayedNotificationData);
         count++;
       }
-
-      clearCache();
 
       delayedNotificationDataMap =
           manager.findDelayedNotificationByUserIdGroupByChannel(userIdTest, getAimedChannelsAll());
@@ -488,8 +466,7 @@ public class DelayedNotificationManagerTest {
           assertThat(delayedNotificationData.getFromUserId(), is(2 * userIdTest));
           assertThat(delayedNotificationData.getChannel(), is(channels[i]));
           assertThat(delayedNotificationData.getAction(), is(actions[j]));
-          assertThat(delayedNotificationData.getComponentInstanceId(), is(count2));
-          assertThat(delayedNotificationData.getResource().getId(), is(new Long(50)));
+          assertThat(delayedNotificationData.getResource().getId(), is(50));
           assertThat(delayedNotificationData.getCreationDate(), notNullValue());
           assertThat(delayedNotificationData.getCreationDate(),
               greaterThanOrEqualTo(dateBeforeSave));
@@ -502,6 +479,46 @@ public class DelayedNotificationManagerTest {
         }
       }
     }
+  }
+
+  @Test
+  public void testDeleteDelayedNotifications() throws Exception {
+    final NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
+    List<NotificationResourceData> notificationResourceDataList = manager.findResource(query);
+    assertThat(notificationResourceDataList, notNullValue());
+    assertThat(notificationResourceDataList.size(), is(2));
+
+    int nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Integer[] {}));
+    assertThat(nbDeletes, is(0));
+    notificationResourceDataList = manager.findResource(query);
+    assertThat(notificationResourceDataList, notNullValue());
+    assertThat(notificationResourceDataList.size(), is(2));
+
+    nbDeletes =
+        manager
+            .deleteDelayedNotifications(Arrays.asList(new Integer[] { 100, 200, 300, 400, 500 }));
+    assertThat(nbDeletes, is(5));
+    notificationResourceDataList = manager.findResource(query);
+    assertThat(notificationResourceDataList, notNullValue());
+    assertThat(notificationResourceDataList.size(), is(1));
+
+  }
+
+  @Test
+  public void testDeleteDelayedNotifications2() throws Exception {
+    final NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
+    List<NotificationResourceData> notificationResourceDataList = manager.findResource(query);
+    assertThat(notificationResourceDataList, notNullValue());
+    assertThat(notificationResourceDataList.size(), is(2));
+
+    final int nbDeletes =
+        manager.deleteDelayedNotifications(Arrays.asList(new Integer[] { 100, 200, 300, 400, 500,
+            600 }));
+    assertThat(nbDeletes, is(6));
+    notificationResourceDataList = manager.findResource(query);
+    assertThat(notificationResourceDataList, notNullValue());
+    assertThat(notificationResourceDataList.size(), is(0));
+
   }
 
   /*
@@ -572,11 +589,7 @@ public class DelayedNotificationManagerTest {
       for (final NotifChannel channel : channels) {
         userIdTest += count;
 
-        final DelayedNotificationUserSetting newDelayedNotificationUserSetting =
-            new DelayedNotificationUserSetting(userIdTest, channel, code);
-        manager.saveDelayedNotificationUserSetting(newDelayedNotificationUserSetting);
-
-        clearCache();
+        manager.saveDelayedNotificationUserSetting(userIdTest, channel, code);
 
         myDelayedNotificationUserSettings =
             manager.findDelayedNotificationUserSettingByUserId(userIdTest);
@@ -604,18 +617,20 @@ public class DelayedNotificationManagerTest {
     assertThat(delayedNotificationUserSettingTest.getFrequency(),
         is(DelayedNotificationFrequency.NONE));
 
-    delayedNotificationUserSettingTest.setChannel(NotifChannel.POPUP);
-    delayedNotificationUserSettingTest.setFrequency(DelayedNotificationFrequency.MONTHLY);
-    manager.saveDelayedNotificationUserSetting(delayedNotificationUserSettingTest);
-
-    clearCache();
+    manager.saveDelayedNotificationUserSetting(10, NotifChannel.SMTP,
+        DelayedNotificationFrequency.MONTHLY);
 
     final DelayedNotificationUserSetting myDelayedNotificationUserSettingReloaded =
         manager.getDelayedNotificationUserSetting(30);
     assertThat("DelayedNotificationUserSetting not found in db",
         myDelayedNotificationUserSettingReloaded, notNullValue());
     assertThat("Same", myDelayedNotificationUserSettingReloaded,
-        is(delayedNotificationUserSettingTest));
+        not(is(delayedNotificationUserSettingTest)));
+    assertThat(myDelayedNotificationUserSettingReloaded.getId(), is(30));
+    assertThat(myDelayedNotificationUserSettingReloaded.getUserId(), is(10));
+    assertThat(myDelayedNotificationUserSettingReloaded.getChannel(), is(NotifChannel.SMTP));
+    assertThat(myDelayedNotificationUserSettingReloaded.getFrequency(),
+        is(DelayedNotificationFrequency.MONTHLY));
   }
 
   @Test
@@ -629,9 +644,5 @@ public class DelayedNotificationManagerTest {
         manager.findDelayedNotificationUserSettingByUserId(10);
     assertThat(myDelayedNotificationUserSettings, notNullValue());
     assertThat(myDelayedNotificationUserSettings.size(), is(0));
-  }
-
-  private void clearCache() {
-    jtm.getEntityManagerFactory().getCache().evictAll();
   }
 }

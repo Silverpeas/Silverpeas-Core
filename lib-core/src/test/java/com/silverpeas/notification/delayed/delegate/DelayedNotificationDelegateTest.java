@@ -8,12 +8,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -26,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.model.NotificationResourceData;
@@ -35,13 +40,12 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-delayed-notification.xml" })
-@Transactional
+@ContextConfiguration(locations = { "/spring-delayed-notification.xml",
+    "/spring-delayed-notification-datasource.xml" })
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class DelayedNotificationDelegateTest {
 
@@ -85,7 +89,6 @@ public class DelayedNotificationDelegateTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void testNewNotification() throws Exception {
 
     // Has to be delayed
@@ -227,6 +230,68 @@ public class DelayedNotificationDelegateTest {
     return data;
   }
 
+  @Test
+  public void testDelayedNotifications_1() throws Exception {
+    // Forcings
+    assertDelayedNotifications(1, 53);
+    assertDelayedNotifications(1, 55);
+  }
+
+  @Test
+  public void testDelayedNotifications_2() throws Exception {
+    // Forcings
+    assertDelayedNotifications(9, null);
+    assertDelayedNotifications(0, 53);
+    assertDelayedNotifications(0, 55);
+  }
+
+  @Test
+  public void testDelayedNotifications_3() throws Exception {
+    // Weekly
+    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[] {
+        51, 53, 54 });
+    // Checks
+    assertDelayedNotifications(0, 53);
+    assertDelayedNotifications(1, 55);
+  }
+
+  private DelayedNotificationDelegateMock assertDelayedNotifications(final int nbExpectedSendings,
+      final Integer userId)
+      throws Exception {
+    final DelayedNotificationDelegateMock mock = new DelayedNotificationDelegateMock();
+    if (userId != null) {
+      mock.forceDelayedNotificationsSending(Collections.singletonList(userId),
+          getAimedChannelsBase());
+    } else {
+      mock.forceDelayedNotificationsSending();
+    }
+    assertThat(mock.sendedList.size(), is(nbExpectedSendings));
+    return mock;
+  }
+
+  private DelayedNotificationDelegateMock assertDelayedNotifications(
+      final Date date,
+      final int[] userIds)
+      throws Exception {
+    final DelayedNotificationDelegateMock mock = new DelayedNotificationDelegateMock();
+    mock.performDelayedNotificationsSending(date, getAimedChannelsBase());
+    assertThat(mock.sendedList.size(), is(userIds.length));
+    for (int i = 0; i < userIds.length; i++) {
+      assertThat(
+          mock.sendedList.get(i).getMessage().replaceAll("\r", ""),
+          is(IOUtils.toString(
+              DelayedNotificationDelegateTest.class.getClassLoader().getResourceAsStream(
+                  "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + ".txt"),
+              "UTF-8")
+              .replaceAll("\r", "")));
+    }
+    return mock;
+  }
+
+  private Set<NotifChannel> getAimedChannelsBase() {
+    return new HashSet<NotifChannel>(Arrays.asList(new NotifChannel[] { NotifChannel.SMTP }));
+  }
+
   /**
    * Mock
    * @author Yohann Chastagnier
@@ -241,6 +306,18 @@ public class DelayedNotificationDelegateTest {
      */
     private DelayedNotificationDelegateMock() {
       super();
+    }
+
+    @Override
+    protected UserDetail getUserDetail(final Integer userId) throws Exception {
+      final UserDetail userDetailMock = new UserDetail();
+      userDetailMock.setId(userId.toString());
+      if (userId >= 0) {
+        userDetailMock.setFirstName("User");
+        userDetailMock.setLastName("" + userId);
+        userDetailMock.seteMail("user" + userId + "@tests.com");
+      }
+      return userDetailMock;
     }
 
     @Override

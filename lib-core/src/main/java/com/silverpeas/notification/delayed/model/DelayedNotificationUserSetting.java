@@ -43,13 +43,13 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
  * @author Yohann Chastagnier
  */
 @Entity
-@Table(name = "sp_delayednotificationusersetting")
+@Table(name = "st_delayednotificationusersetting")
 public class DelayedNotificationUserSetting implements Serializable {
   private static final long serialVersionUID = 3477090528448919931L;
 
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "sp_delayednotificationusersetting", allocationSize = 1)
+      valueColumnName = "maxId", pkColumnValue = "st_delayednotificationusersetting", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   @Column(name = "id")
   private Integer id;
@@ -77,13 +77,13 @@ public class DelayedNotificationUserSetting implements Serializable {
    * Default constructor
    * @param userId
    * @param channelId
-   * @param frequencyCode
+   * @param frequency
    */
   public DelayedNotificationUserSetting(final int userId, final NotifChannel channelId,
-      final DelayedNotificationFrequency frequencyCode) {
+      final DelayedNotificationFrequency frequency) {
     setUserId(userId);
     setChannel(channelId);
-    setFrequency(frequencyCode);
+    setFrequency(frequency);
   }
 
   public Integer getId() {
@@ -114,8 +114,8 @@ public class DelayedNotificationUserSetting implements Serializable {
     return DelayedNotificationFrequency.decode(frequency);
   }
 
-  public void setFrequency(DelayedNotificationFrequency frequencyCode) {
-    this.frequency = frequencyCode.getCode();
+  public void setFrequency(DelayedNotificationFrequency frequency) {
+    this.frequency = frequency.getCode();
   }
 
   public List<DelayedNotificationData> getDelayedNotifications() {

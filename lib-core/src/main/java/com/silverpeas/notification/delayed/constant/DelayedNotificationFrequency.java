@@ -42,6 +42,10 @@ public enum DelayedNotificationFrequency {
     return code;
   }
 
+  public String getName() {
+    return name();
+  }
+
   @Override
   public String toString() {
     return code;

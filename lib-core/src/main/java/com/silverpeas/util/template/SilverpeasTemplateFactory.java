@@ -36,6 +36,13 @@ public class SilverpeasTemplateFactory {
     Properties config = new Properties();
     config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, SilverpeasStringTemplateUtil.defaultComponentsDir);
     config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, SilverpeasStringTemplateUtil.customComponentsDir);
-    return new SilverpeasStringTemplate(config);
+    return createSilverpeasTemplate(config);
+  }
+  
+  public static SilverpeasTemplate createSilverpeasTemplateOnCore() {
+    Properties config = new Properties();
+    config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, SilverpeasStringTemplateUtil.defaultCoreDir);
+    config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, SilverpeasStringTemplateUtil.customCoreDir);
+    return createSilverpeasTemplate(config);
   }
 }
