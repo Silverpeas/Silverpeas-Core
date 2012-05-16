@@ -38,7 +38,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 
-import org.apache.ecs.xhtml.sub;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

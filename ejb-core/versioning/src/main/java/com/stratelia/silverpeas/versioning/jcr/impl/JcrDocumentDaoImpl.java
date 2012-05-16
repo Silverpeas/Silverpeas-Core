@@ -225,7 +225,7 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
       contentNode.setProperty(JcrConstants.JCR_DATA, in);
       Calendar lastModified = Calendar.getInstance();
       lastModified.setTimeInMillis(file.lastModified());
-      contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
+      contentNode.setProperty(JcrConstants.JCR_LAST_MODIFIED, lastModified);
     } finally {
       if (in != null) {
         in.close();

@@ -1,41 +1,35 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil.converter;
-
-import junit.framework.TestCase;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-public class TestConverterUtil extends TestCase {
+public class TestConverterUtil {
 
-  public TestConverterUtil(String name) {
-    super(name);
-  }
-
+  @Test
   public void testConvertToJcrPath() {
     assertEquals("/", ConverterUtil.convertToJcrPath("/"));
     assertEquals("/toto", ConverterUtil.convertToJcrPath("/toto"));
@@ -56,6 +50,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals("/theme%3Atest", ConverterUtil.convertToJcrPath("/theme:test"));
   }
 
+  @Test
   public void testConvertFromJcrPath() {
     assertEquals("/", ConverterUtil.convertFromJcrPath("/"));
     assertEquals("/toto", ConverterUtil.convertFromJcrPath("/toto"));
@@ -76,6 +71,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals("/theme:test", ConverterUtil.convertFromJcrPath("/theme%3Atest"));
   }
 
+  @Test
   public void testParseDate() throws Exception {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.HOUR_OF_DAY, 0);
@@ -90,10 +86,10 @@ public class TestConverterUtil extends TestCase {
       ConverterUtil.parseDate("1986/15/17");
       fail();
     } catch (ParseException pex) {
-
     }
   }
 
+  @Test
   public void testFormatDateDate() {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.HOUR_OF_DAY, 0);
@@ -110,6 +106,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals("1986/12/17", ConverterUtil.formatDate(calend.getTime()));
   }
 
+  @Test
   public void testFormatDateCalendar() {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.HOUR_OF_DAY, 0);
@@ -126,6 +123,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals("1986/12/17", ConverterUtil.formatDate(calend));
   }
 
+  @Test
   public void testFormatTimeCalendar() {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.HOUR_OF_DAY, 8);
@@ -142,6 +140,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals("08:05", ConverterUtil.formatTime(calend));
   }
 
+  @Test
   public void testFormatTimeDate() {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.HOUR_OF_DAY, 8);
@@ -158,6 +157,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals("08:05", ConverterUtil.formatTime(calend.getTime()));
   }
 
+  @Test
   public void testSetTime() throws Exception {
     Calendar reference = Calendar.getInstance();
     reference.set(Calendar.HOUR_OF_DAY, 9);
@@ -187,6 +187,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals(reference, calend);
   }
 
+  @Test
   public void testFormatCalendarForXpath() {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.HOUR_OF_DAY, 8);
@@ -196,16 +197,17 @@ public class TestConverterUtil extends TestCase {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", ConverterUtil
-        .formatDateForXpath(calend.getTime()));
+    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", ConverterUtil.
+        formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MINUTE, 5);
-    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", ConverterUtil
-        .formatDateForXpath(calend.getTime()));
+    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", ConverterUtil.
+        formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", ConverterUtil
-        .formatDateForXpath(calend.getTime()));
+    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", ConverterUtil.
+        formatDateForXpath(calend.getTime()));
   }
 
+  @Test
   public void testFormatDateForXpath() {
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.HOUR_OF_DAY, 8);
@@ -215,13 +217,13 @@ public class TestConverterUtil extends TestCase {
     calend.set(Calendar.DAY_OF_MONTH, 17);
     calend.set(Calendar.MONTH, Calendar.FEBRUARY);
     calend.set(Calendar.YEAR, 1986);
-    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", ConverterUtil
-        .formatDateForXpath(calend.getTime()));
+    assertEquals("xs:dateTime('1986-02-17T08:15:00.000+01:00')", ConverterUtil.
+        formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MINUTE, 5);
-    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", ConverterUtil
-        .formatDateForXpath(calend.getTime()));
+    assertEquals("xs:dateTime('1986-02-17T08:05:00.000+01:00')", ConverterUtil.
+        formatDateForXpath(calend.getTime()));
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
-    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", ConverterUtil
-        .formatDateForXpath(calend.getTime()));
+    assertEquals("xs:dateTime('1986-12-17T08:05:00.000+01:00')", ConverterUtil.
+        formatDateForXpath(calend.getTime()));
   }
 }

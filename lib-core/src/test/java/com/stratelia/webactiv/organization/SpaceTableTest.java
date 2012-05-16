@@ -43,7 +43,6 @@ public class SpaceTableTest extends AbstractTestDao {
    */
   @Test
   public void testGetAllSpaceIds() throws Exception {
-    System.out.println("getAllRootSpaceIds");
     OrganizationSchema schema = new OrganizationSchema(getConnection().getConnection());
     SpaceTable instance = schema.space;
     String[] expResult = new String[]{"1", "2", "3", "4", "5"};

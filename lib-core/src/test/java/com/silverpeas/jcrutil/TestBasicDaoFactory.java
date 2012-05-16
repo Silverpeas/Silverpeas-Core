@@ -25,19 +25,17 @@ package com.silverpeas.jcrutil;
 
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import org.apache.jackrabbit.value.ValueFactoryImpl;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-
+import java.util.Calendar;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.Session;
 import javax.jcr.Value;
-import java.util.Calendar;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.Assert.*;
 
@@ -207,8 +205,9 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
-      Calendar calend = RandomGenerator.getRandomCalendar();
-      Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
+      Calendar calend = RandomGenerator.getFuturCalendar();
+      Value value = session.getValueFactory().createValue(calend);
+      Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, value);
       assertEquals(calend.getTime(), BasicDaoFactory.getDateProperty(node,
           JcrConstants.SLV_PROPERTY_CREATION_DATE));
       dateProperty.remove();
@@ -260,11 +259,12 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     String uuid2 = RandomGenerator.getRandomString();
     String uuid3 = RandomGenerator.getRandomString();
     String uuid4 = RandomGenerator.getRandomString();
-    Value[] references = new Value[]{
-        ValueFactoryImpl.getInstance().createValue(uuid1),
-        ValueFactoryImpl.getInstance().createValue(uuid2),
-        ValueFactoryImpl.getInstance().createValue(uuid3),
-        ValueFactoryImpl.getInstance().createValue(uuid4)};
+    Session session = BasicDaoFactory.getSystemSession();
+    Value[] references = new Value[]{session.getValueFactory().createValue(uuid1),
+        session.getValueFactory().createValue(uuid2),
+        session.getValueFactory().createValue(uuid3),
+        session.getValueFactory().createValue(uuid4)};
+    session.logout();
     Value[] result = BasicDaoFactory.removeReference(references, uuid3);
     assertNotNull(result);
     assertEquals(3, result.length);

@@ -23,31 +23,6 @@ package com.silverpeas.jcrutil.model.impl;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.PathTestUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import org.apache.commons.dbcp.BasicDataSourceFactory;
-import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.JcrConstants;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.inject.Inject;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,6 +36,31 @@ import java.io.Writer;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import javax.inject.Inject;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.ValueFormatException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.JcrConstants;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractJcrTestCase {
@@ -106,31 +106,16 @@ public abstract class AbstractJcrTestCase {
   }
 
   protected String readFile(String path) throws IOException {
-    CharArrayWriter writer = null;
-    InputStream in = null;
-    Reader reader = null;
+    CharArrayWriter writer = new CharArrayWriter();
+    Reader reader = new InputStreamReader(new FileInputStream(path));
     try {
-      in = new FileInputStream(path);
-      writer = new CharArrayWriter();
-      reader = new InputStreamReader(in);
-      char[] buffer = new char[8];
-      int c = 0;
-      while ((c = reader.read(buffer)) != -1) {
-        writer.write(buffer, 0, c);
-      }
+      IOUtils.copy(reader, writer);
       return new String(writer.toCharArray());
     } catch (IOException ioex) {
       return null;
     } finally {
-      if (reader != null) {
-        reader.close();
-      }
-      if (in != null) {
-        in.close();
-      }
-      if (writer != null) {
-        writer.close();
-      }
+      IOUtils.closeQuietly(reader);
+      IOUtils.closeQuietly(writer);
     }
   }
 
@@ -139,19 +124,11 @@ public abstract class AbstractJcrTestCase {
     if (!attachmentFile.getParentFile().exists()) {
       attachmentFile.getParentFile().mkdirs();
     }
-    FileOutputStream out = null;
-    Writer writer = null;
+    Writer writer = new OutputStreamWriter(new FileOutputStream(attachmentFile));
     try {
-      out = new FileOutputStream(attachmentFile);
-      writer = new OutputStreamWriter(out);
       writer.write(content);
     } finally {
-      if (writer != null) {
-        writer.close();
-      }
-      if (out != null) {
-        out.close();
-      }
+      IOUtils.closeQuietly(writer);
     }
   }
 

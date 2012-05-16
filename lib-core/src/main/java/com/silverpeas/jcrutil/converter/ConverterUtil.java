@@ -25,15 +25,14 @@
 package com.silverpeas.jcrutil.converter;
 
 import com.stratelia.webactiv.util.DateUtil;
-import org.apache.jackrabbit.util.ISO9075;
-import org.apache.jackrabbit.util.Text;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
+import org.apache.jackrabbit.util.ISO9075;
+import org.apache.jackrabbit.util.Text;
 
 /**
  * Utility class for path and date conversions between JCR and Slverpeas Pojo.

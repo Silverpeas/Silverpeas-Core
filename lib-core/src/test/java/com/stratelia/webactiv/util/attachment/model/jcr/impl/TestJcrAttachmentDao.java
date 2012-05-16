@@ -23,30 +23,31 @@
  */
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
-import org.springframework.test.context.ContextConfiguration;
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.JcrConstants;
 import com.silverpeas.jcrutil.model.impl.AbstractJcrTestCase;
+import com.silverpeas.util.MimeTypes;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
-
+import javax.annotation.Resource;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.JcrConstants;
-import com.silverpeas.util.MimeTypes;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
-import javax.annotation.Resource;
+import javax.jcr.nodetype.NodeType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static com.silverpeas.util.PathTestUtil.*;
+import org.springframework.test.context.ContextConfiguration;
+
+import static com.silverpeas.util.PathTestUtil.BUILD_PATH;
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
 import static org.junit.Assert.*;
 
 @ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
@@ -257,7 +258,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       Node fileNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt");
-      fileNode.addMixin(JcrConstants.MIX_LOCKABLE);
+      fileNode.addMixin(NodeType.MIX_LOCKABLE);
       session.save();
       fileNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt");

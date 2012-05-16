@@ -212,6 +212,7 @@ public abstract class WAPrimaryKey implements Serializable {
     return buffer.toString();
   }
 
+
   /**
    * Returns a hash code for the key
    * @return A hash code for this object

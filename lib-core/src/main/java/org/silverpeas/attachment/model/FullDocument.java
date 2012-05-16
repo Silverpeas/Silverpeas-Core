@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2011 Silverpeas
+/*
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,21 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.attachment.model;
 
-package com.silverpeas.jcrutil.model;
+import java.util.List;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.version.VersionException;
+/**
+ *
+ * @author ehugonnet
+ */
+public class FullDocument extends SimpleDocument {
+  private List<SimpleAttachment> history;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-
-public class AbstractJcrDao {
-  public static void addProperty(Node node, String propertyName, String value)
-      throws VersionException, LockException, ConstraintViolationException,
-      RepositoryException {
-    BasicDaoFactory.addStringProperty(node, propertyName, value);
+  public FullDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
+      SimpleAttachment file) {
+    super(pk, foreignId, order, versioned, file);
   }
+
+  public FullDocument() {
+  }
+  
+  
+  public List<SimpleAttachment> getHistory() {
+    return history;
+  }
+
+  public void setHistory(List<SimpleAttachment> history) {
+    this.history = history;
+  }
+  
 }

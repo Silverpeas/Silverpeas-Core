@@ -26,10 +26,11 @@ package com.silverpeas.admin;
 import com.silverpeas.components.model.AbstractSpringJndiDaoTest;
 import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = {"classpath:/spring-jpa-datasource.xml",
   "classpath:/spring-domains.xml"})

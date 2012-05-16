@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil;
 
 import java.util.Calendar;
@@ -30,13 +26,14 @@ import java.util.Random;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class RandomGenerator {
-  protected static final String[] LANGUAGES = new String[] { "fr", "en", "de",
-      "ru", "cn", "se" };
 
+  protected static final String[] LANGUAGES = new String[]{"fr", "en", "de",
+    "ru", "cn", "se"};
   protected static final Random random = new Random(10);
 
   /**
    * Generate a random int between 0 and 23.
+   *
    * @return a random int between 0 and 23.
    */
   public static int getRandomHour() {
@@ -45,6 +42,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 0 and 59.
+   *
    * @return a random int between 0 and 59.
    */
   public static int getRandomMinutes() {
@@ -53,6 +51,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 0 and 11.
+   *
    * @return a random int between 0 and 11.
    */
   public static int getRandomMonth() {
@@ -61,6 +60,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 2019 and 2019.
+   *
    * @return a random int between 2019 and 2019.
    */
   public static int getRandomYear() {
@@ -69,6 +69,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 0 and 31.
+   *
    * @return a random int between 0 and 31.
    */
   public static int getRandomDay() {
@@ -77,15 +78,16 @@ public class RandomGenerator {
 
   /**
    * Generate a random long.
+   *
    * @return a random long.
    */
   public static long getRandomLong() {
     return random.nextLong();
   }
 
-
   /**
    * Generate a random float.
+   *
    * @return a random float.
    */
   public static float getRandomFloat() {
@@ -94,6 +96,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random String of size 32.
+   *
    * @return a random String of 32 chars.
    */
   public static String getRandomString() {
@@ -102,6 +105,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random language
+   *
    * @return a random valid language.
    */
   public static String getRandomLanguage() {
@@ -110,6 +114,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random boolean.
+   *
    * @return a random boolean.
    */
   public static boolean getRandomBoolean() {
@@ -118,6 +123,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random int.
+   *
    * @return a random int.
    */
   public static int getRandomInt() {
@@ -126,6 +132,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random int in the 0 inclusive max exclusive.
+   *
    * @param max the exclusive maximum of the random int.
    * @return a random int.
    */
@@ -140,6 +147,12 @@ public class RandomGenerator {
     calendar.set(Calendar.MINUTE, getRandomMinutes());
     calendar.set(Calendar.SECOND, 0);
     calendar.set(Calendar.MILLISECOND, 0);
+    calendar.setLenient(false);
+    try {
+      calendar.getTime();
+    } catch (IllegalArgumentException ie) {
+      return getOutdatedCalendar();
+    }
     return calendar;
   }
 
@@ -150,6 +163,12 @@ public class RandomGenerator {
     calendar.set(Calendar.MINUTE, getRandomMinutes());
     calendar.set(Calendar.SECOND, 0);
     calendar.set(Calendar.MILLISECOND, 0);
+    calendar.setLenient(false);
+    try {
+      calendar.getTime();
+    } catch (IllegalArgumentException ie) {
+      return getFuturCalendar();
+    }
     return calendar;
   }
 
@@ -163,6 +182,11 @@ public class RandomGenerator {
     calendar.set(Calendar.SECOND, 0);
     calendar.set(Calendar.MILLISECOND, 0);
     calendar.setLenient(false);
+    try {
+      calendar.getTime();
+    } catch (IllegalArgumentException ie) {
+      return getRandomCalendar();
+    }
     return calendar;
   }
 

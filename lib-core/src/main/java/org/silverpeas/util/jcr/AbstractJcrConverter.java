@@ -1,49 +1,33 @@
-/**
- * Copyright (C) 2000 - 2011 Silverpeas
+/*
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.jcrutil;
+package org.silverpeas.util.jcr;
 
 import com.silverpeas.jcrutil.converter.ConverterUtil;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.LoginException;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.version.VersionException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,76 +41,43 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import javax.jcr.AccessDeniedException;
+import javax.jcr.Binary;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.version.VersionException;
 import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.JcrConstants;
+
+import static com.silverpeas.jcrutil.JcrConstants.*;
 
 /**
- * He
  *
- * @author Emmanuel Hugonnet
+ * @author ehugonnet
  */
-public class BasicDaoFactory implements ApplicationContextAware {
-
-  public static final String JRC_REPOSITORY = "repository";
-  private ApplicationContext context;
-  private static final BasicDaoFactory instance = new BasicDaoFactory();
-
-  private BasicDaoFactory() {
-  }
-
-  protected ApplicationContext getApplicationContext() {
-    return context;
-  }
-
-  @Override
-  public void setApplicationContext(ApplicationContext context) throws BeansException {
-    this.context = context;
-  }
-
-  public static BasicDaoFactory getInstance() {
-    return BasicDaoFactory.instance;
-  }
-
-  public static Object getBean(String name) {
-    return getInstance().getApplicationContext().getBean(name);
-  }
-
+public abstract class AbstractJcrConverter {
+  
   /**
-   * Create a system JCR session
+   * Return the property value as String for a JCR Node. If the property doesn't exist return null.
    *
-   * @return a jcrSession with System rights.
-   * @throws LoginException
+   * @param node the node whose property is required.
+   * @param propertyName the name of the property required.
+   * @return the String value of the property - null if the property doesn't exist.
    * @throws RepositoryException
+   * @throws ValueFormatException
    */
-  public static Session getSystemSession() throws LoginException,
-      RepositoryException {
-    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY)).
-        login(new SilverpeasSystemCredentials());
-  }
-
-  /**
-   * Create a system JCR session
-   *
-   * @param login the user's login.
-   * @param password the user's password.
-   * @return a jcrSession with user's rights.
-   * @throws LoginException
-   * @throws RepositoryException
-   */
-  public static Session getAuthentifiedSession(String login, String password)
-      throws LoginException, RepositoryException {
-    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY)).
-        login(new SimpleCredentials(login, password.toCharArray()));
-  }
-
-  /**
-   * Logout of the JCR session
-   *
-   * @param session the session to be closed.
-   */
-  public static void logout(Session session) {
-    if (session != null) {
-      session.logout();
+  protected String getStringProperty(Node node, String propertyName)
+      throws ValueFormatException, RepositoryException {
+    if (node.hasProperty(propertyName)) {
+      return node.getProperty(propertyName).getString();
     }
+    return null;
   }
 
   /**
@@ -139,7 +90,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws AccessDeniedException
    * @throws RepositoryException
    */
-  public static String getComponentId(Node node) throws ItemNotFoundException,
+  protected String getComponentId(Node node) throws ItemNotFoundException,
       AccessDeniedException, RepositoryException {
     return ConverterUtil.convertFromJcrPath(node.getAncestor(1).getName());
   }
@@ -156,7 +107,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws ConstraintViolationException
    * @throws RepositoryException
    */
-  public static void addStringProperty(Node node, String propertyName,
+  protected void addStringProperty(Node node, String propertyName,
       String value) throws VersionException, LockException,
       ConstraintViolationException, RepositoryException {
     if (value == null) {
@@ -181,7 +132,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws ConstraintViolationException
    * @throws RepositoryException
    */
-  public static void addDateProperty(Node node, String propertyName, Date value)
+  protected void addDateProperty(Node node, String propertyName, Date value)
       throws VersionException, LockException, ConstraintViolationException,
       RepositoryException {
     if (value == null) {
@@ -209,7 +160,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws ConstraintViolationException
    * @throws RepositoryException
    */
-  public static void addCalendarProperty(Node node, String propertyName,
+  protected void addCalendarProperty(Node node, String propertyName,
       Calendar value) throws VersionException, LockException,
       ConstraintViolationException, RepositoryException {
     if (value == null) {
@@ -224,24 +175,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Return the property value as String for a JCR Node. If the property doesn't exist return null.
-   *
-   * @param node the node whose property is required.
-   * @param propertyName the name of the property required.
-   * @return the String value of the property - null if the property doesn't exist.
-   * @throws RepositoryException
-   * @throws ValueFormatException
-   */
-  public static String getStringProperty(Node node, String propertyName)
-      throws ValueFormatException, RepositoryException {
-    if (node.hasProperty(propertyName)) {
-      return node.getProperty(propertyName).getString();
-    }
-    // property may not exist
-    return null;
-  }
-
-  /**
    * Return the property value as Calendar for a JCR Node. If the property doesn't exist return
    * null.
    *
@@ -251,12 +184,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws RepositoryException
    * @throws ValueFormatException
    */
-  public static Calendar getCalendarProperty(Node node, String propertyName)
+  protected Calendar getCalendarProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getDate();
     }
-    // property may not exist
     return null;
   }
 
@@ -270,12 +202,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws RepositoryException
    * @throws ValueFormatException
    */
-  public static Date getDateProperty(Node node, String propertyName)
+  protected Date getDateProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getDate().getTime();
     }
-    // property may not exist
     return null;
   }
 
@@ -288,13 +219,29 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws RepositoryException
    * @throws ValueFormatException
    */
-  public static int getIntProperty(Node node, String propertyName)
-      throws ValueFormatException, RepositoryException {
+  protected int getIntProperty(Node node, String propertyName) throws ValueFormatException,
+      RepositoryException {
     if (node.hasProperty(propertyName)) {
       return Long.valueOf(node.getProperty(propertyName).getLong()).intValue();
     }
-    // property may not exist
     return 0;
+  }
+  
+  /**
+   * Return the property value as a boolean for a JCR Node. If the property doesn't exist return false.
+   *
+   * @param node the node whose property is required.
+   * @param propertyName the name of the property required.
+   * @return the boolean value of the property - false if the property doesn't exist.
+   * @throws RepositoryException
+   * @throws ValueFormatException
+   */
+  protected boolean getBooleanProperty(Node node, String propertyName) throws ValueFormatException,
+      RepositoryException {
+    if (node.hasProperty(propertyName)) {
+      return node.getProperty(propertyName).getBoolean();
+    }
+    return false;
   }
 
   /**
@@ -306,12 +253,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws RepositoryException
    * @throws ValueFormatException
    */
-  public static long getLongProperty(Node node, String propertyName)
+  protected long getLongProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getLong();
     }
-    // property may not exist
     return 0;
   }
 
@@ -326,8 +272,8 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws IllegalStateException
    * @throws RepositoryException
    */
-  public static Value[] removeReference(Value[] values, String uuid)
-      throws ValueFormatException, IllegalStateException, RepositoryException {
+  protected Value[] removeReference(Value[] values, String uuid) throws ValueFormatException,
+      IllegalStateException, RepositoryException {
     List<Value> references = new ArrayList<Value>(Arrays.asList(values));
     Iterator<Value> iter = references.iterator();
     while (iter.hasNext()) {
@@ -349,96 +295,166 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @return the name of the node.
    * @throws UtilException
    */
-  public static String computeUniqueName(String prefix, String tableName)
+  protected String computeUniqueName(String prefix, String tableName)
       throws UtilException {
     return prefix + DBUtil.getNextId(tableName, null);
   }
 
-  public static void setContent(Node fileNode, InputStream content,
-      String mimeType) throws RepositoryException, IOException {
+  /**
+   *
+   * @param fileNode
+   * @param content
+   * @param mimeType
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  protected void setContent(Node fileNode, InputStream content, String mimeType) throws
+      RepositoryException, IOException {
     Node contentNode;
-    if (fileNode.hasNode(JcrConstants.JCR_CONTENT)) {
-      contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
+    if (fileNode.hasNode(JCR_CONTENT)) {
+      contentNode = fileNode.getNode(JCR_CONTENT);
     } else {
-      contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT,
-          JcrConstants.NT_RESOURCE);
+      contentNode = fileNode.addNode(JCR_CONTENT, JcrConstants.NT_RESOURCE);
     }
-    contentNode.setProperty(JcrConstants.JCR_DATA, content);
+    Binary binaryContent = fileNode.getSession().getValueFactory().createBinary(content);
+    contentNode.setProperty(JCR_DATA, binaryContent);
+    binaryContent.dispose();
     String fileMimeType = mimeType;
     if (fileMimeType == null) {
-      fileMimeType = FileUtil.getMimeType(fileNode.getProperty(
-          JcrConstants.SLV_PROPERTY_NAME).getString());
+      fileMimeType = FileUtil.getMimeType(fileNode.getProperty(SLV_PROPERTY_NAME).getString());
     }
-    contentNode.setProperty(JcrConstants.JCR_MIMETYPE, fileMimeType);
+    contentNode.setProperty(JCR_MIMETYPE, fileMimeType);
     Calendar lastModified = Calendar.getInstance();
-    contentNode.setProperty(JcrConstants.JCR_LAST_MODIFIED, lastModified);
+    contentNode.setProperty(JCR_LAST_MODIFIED, lastModified);
   }
-
-  public static void setContent(Node fileNode, File file, String mimeType)
-      throws RepositoryException, IOException {
-    InputStream in = null;
-    try {
-      in = new FileInputStream(file);
-      setContent(fileNode, in, mimeType);
-    } finally {
-      if (in != null) {
-        in.close();
-      }
+  
+  
+  /**
+   * Returns the mime-type of the jcr:content node stored in the fileNode.
+   * @param fileNode
+   * @return the mime-type of the jcr:content node stored in the fileNode.
+   * @throws RepositoryException
+   */
+  protected String getContentMimeType(Node fileNode) throws RepositoryException {
+    if (fileNode.hasNode(JCR_CONTENT)) {
+      Node contentNode = fileNode.getNode(JCR_CONTENT);
+      return getStringProperty(contentNode, JCR_MIMETYPE);
     }
+    return null;
   }
-
-  public static void setContent(Node fileNode, byte[] content, String mimeType)
-      throws RepositoryException, IOException {
-    ByteArrayInputStream in = null;
-    try {
-      in = new ByteArrayInputStream(content);
-      setContent(fileNode, in, mimeType);
-    } finally {
-      if (in != null) {
-        in.close();
-      }
+  
+  /**
+   *
+   * @param fileNode
+   * @param content
+   * @param mimeType
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  protected long getContentSize(Node fileNode) throws RepositoryException {
+    if (fileNode.hasNode(JCR_CONTENT)) {
+      Node contentNode = fileNode.getNode(JCR_CONTENT);
+      return getSize(contentNode);
     }
+    return 0L;
   }
 
-  public static byte[] getContent(Node fileNode) throws RepositoryException,
+  /**
+   *
+   * @param fileNode
+   * @param file
+   * @param mimeType
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  protected void setContent(Node fileNode, File file, String mimeType) throws RepositoryException,
       IOException {
+    InputStream in = new FileInputStream(file);
+    try {
+      setContent(fileNode, in, mimeType);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
+  }
+
+  /**
+   *
+   * @param fileNode
+   * @param content
+   * @param mimeType
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  protected void setContent(Node fileNode, byte[] content, String mimeType) throws
+      RepositoryException, IOException {
+    ByteArrayInputStream in = new ByteArrayInputStream(content);
+    try {
+      setContent(fileNode, in, mimeType);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
+  }
+
+  /**
+   *
+   * @param fileNode
+   * @return
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  protected byte[] getContent(Node fileNode) throws RepositoryException, IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    InputStream in = null;
-    try {
-      Node contentNode;
-      if (fileNode.hasNode(JcrConstants.JCR_CONTENT)) {
-        contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
-        in = contentNode.getProperty(JcrConstants.JCR_DATA).getStream();
+    Node contentNode;
+    if (fileNode.hasNode(JCR_CONTENT)) {
+      contentNode = fileNode.getNode(JCR_CONTENT);
+      InputStream in = contentNode.getProperty(JCR_DATA).getBinary().getStream();
+      try {
         IOUtils.copy(in, out);
-        return out.toByteArray();
+      } finally {
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(out);
       }
-      return ArrayUtil.EMPTY_BYTE_ARRAY;
-    } finally {
-      IOUtils.closeQuietly(out);
-      IOUtils.closeQuietly(in);
+      return out.toByteArray();
     }
+    return ArrayUtil.EMPTY_BYTE_ARRAY;
+
   }
 
-  public static void getContent(Node fileNode, OutputStream out)
-      throws RepositoryException, IOException {
-    InputStream in = null;
-    try {
-      Node contentNode;
-      if (fileNode.hasNode(JcrConstants.JCR_CONTENT)) {
-        contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
-        in = contentNode.getProperty(JcrConstants.JCR_DATA).getStream();
+  /**
+   *
+   * @param fileNode
+   * @param out
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  protected void getContent(Node fileNode, OutputStream out) throws RepositoryException, IOException {
+    if (fileNode.hasNode(JCR_CONTENT)) {
+      Node contentNode = fileNode.getNode(JCR_CONTENT);
+      Binary content = contentNode.getProperty(JCR_DATA).getBinary();
+      InputStream in = content.getStream();
+      try {
         IOUtils.copy(in, out);
+      } finally {
+        IOUtils.closeQuietly(in);
+        content.dispose();
       }
-    } finally {
-      IOUtils.closeQuietly(in);
     }
+
   }
 
-  public static long getSize(Node contentNode) throws ValueFormatException,
-      PathNotFoundException, RepositoryException {
-    if (contentNode.hasProperty(JcrConstants.JCR_DATA)) {
-      return contentNode.getProperty(JcrConstants.JCR_DATA).getLength();
+  /**
+   *
+   * @param contentNode
+   * @return
+   * @throws ValueFormatException
+   * @throws PathNotFoundException
+   * @throws RepositoryException
+   */
+  private long getSize(Node contentNode) throws ValueFormatException, PathNotFoundException,
+      RepositoryException {
+    if (contentNode.hasProperty(JCR_DATA)) {
+      return contentNode.getProperty(JCR_DATA).getBinary().getSize();
     }
-    return 0;
+    return 0L;
   }
 }
