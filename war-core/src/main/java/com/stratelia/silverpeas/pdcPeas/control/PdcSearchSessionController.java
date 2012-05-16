@@ -513,7 +513,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String fileName = file.getName();
     List<String> filteredComponents = extServerCfg.getComponents();
     for (String authorizedComp : filteredComponents) {
-      if (fileName.indexOf(authorizedComp) >= 0) {
+      if (fileName.indexOf(authorizedComp) >= 0 && isDataTypeSearch(fileName)) {
         query.addExternalComponents(extServerCfg.getName(), fileName, extServerCfg.getDataPath(),
           extServerCfg.getUrl());
       }

@@ -494,16 +494,19 @@ public class WAIndexSearcher {
         searcherList.add(searcher);
       }
     }
-
-    // Add searcher from external silverpeas server
-    Set<ExternalComponent> extSearchers = query.getExtComponents();
-    for (ExternalComponent externalComponent : extSearchers) {
-      String externalComponentPath = getExternalComponentPath(externalComponent);
-      Searcher searcher = getSearcher(externalComponentPath);
-      if (searcher != null) {
-        searcherList.add(searcher);
+    
+    if (!query.isSearchBySpace()) {
+      // Add searcher from external silverpeas server
+      Set<ExternalComponent> extSearchers = query.getExtComponents();
+      for (ExternalComponent externalComponent : extSearchers) {
+        String externalComponentPath = getExternalComponentPath(externalComponent);
+        Searcher searcher = getSearcher(externalComponentPath);
+        if (searcher != null) {
+          searcherList.add(searcher);
+        }
       }
     }
+
 
     try {
       return new MultiSearcher(searcherList.toArray(new Searcher[searcherList.size()]));
