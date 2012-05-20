@@ -366,18 +366,30 @@ out.println(gef.getLookStyleSheet());
                     // domains are used by 'selectDomain.jsp.inc'
                     // Get a LoginPasswordAuthentication object
                     LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-                    Hashtable<String, String> domains = lpAuth.getAllDomains();
+                    List<Domain> listDomains = lpAuth.getListDomains();
+                    pageContext.setAttribute("listDomains", listDomains);
+                    pageContext.setAttribute("multipleDomains", listDomains != null && listDomains.size() > 1);
                     //------------------------------------------------------------------
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.login"), "javaScript:login();", false);
                 %>
                     <table border="0" cellpadding="0" cellspacing="2">
                         <tr><td><%=helper.getString("lookSilverpeasV5.login")%> : </td><td><%@ include file="../../inputLogin.jsp" %></td></tr>
                         <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><%@ include file="inputPasswordSilverpeasV5.jsp.inc" %></td></tr>
-                        <% if (domains.size() == 1) { %>
-                            <tr><td colspan="2"><input type="hidden" name="DomainId" value="0"/></td></tr>
-                        <% } else { %>
-                            <tr><td><fmt:message key="lookSilverpeasV5.domain" /> : </td><td><%@ include file="../../selectDomain.jsp.inc" %></td></tr>
-                        <% } %>
+                        <c:choose>
+                      		<c:when test="${!pageScope.multipleDomains}">
+                            	<tr><td colspan="2"><input type="hidden" name="DomainId" value="<%=listDomains.get(0).getId()%>"/></td></tr>
+                        	</c:when>
+                      		<c:otherwise>
+	                            <tr>
+	                            	<td><fmt:message key="lookSilverpeasV5.domain" /> : </td>
+	                            	<td><select id="DomainId" name="DomainId" size="1">
+	                                  		<c:forEach var="domain" items="${pageScope.listDomains}">
+	                                      		<option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected="selected"</c:if> ><c:out value="${domain.name}"/></option>
+	                                  		</c:forEach>
+										</select></td>
+	                            </tr>
+                        	</c:otherwise>
+                        </c:choose>
                         <tr>
                             <td colspan="2" align="right"><%=button.print()%></td>
                         </tr>

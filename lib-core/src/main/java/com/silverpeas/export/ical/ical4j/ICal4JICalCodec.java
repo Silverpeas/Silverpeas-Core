@@ -29,6 +29,8 @@ import net.fortuna.ical4j.model.Property;
 import java.util.TimeZone;
 import com.silverpeas.export.EncodingException;
 import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.CalendarEventRecurrence;
+import com.silverpeas.calendar.Datable;
 import com.silverpeas.export.ical.ICalCodec;
 import java.io.StringWriter;
 import java.net.SocketException;
@@ -59,6 +61,8 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.UidGenerator;
 import static com.silverpeas.export.ical.ical4j.ICal4JDateCodec.*;
 import static com.silverpeas.export.ical.ical4j.ICal4JRecurrenceCodec.*;
+import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.property.ExDate;
 
 /**
  * An iCal encoder/decoder by using the iCal4J library.
@@ -99,8 +103,10 @@ public class ICal4JICalCodec implements ICalCodec {
 
       // Add recurring data if any
       if (event.isRecurring()) {
-        Recur recur = anICal4JRecurrenceCodec().encode(event.getRecurrence());
+        CalendarEventRecurrence eventRecurrence = event.getRecurrence();
+        Recur recur = anICal4JRecurrenceCodec().encode(eventRecurrence);
         iCalEvent.getProperties().add(new RRule(recur));
+        iCalEvent.getProperties().add(exceptionDatesFrom(eventRecurrence));
       }
       // Add Description
       iCalEvent.getProperties().add(new Description(event.getDescription()));
@@ -145,7 +151,7 @@ public class ICal4JICalCodec implements ICalCodec {
       outputter.output(calendarIcs, output);
     } catch (Exception ex) {
       throw new EncodingException("The encoding of the events in iCal formatted text has failed!",
-          ex);
+              ex);
     }
     return output.toString();
   }
@@ -155,5 +161,15 @@ public class ICal4JICalCodec implements ICalCodec {
     VTimeZone tz = timeZoneRegistry.getTimeZone(timeZone.getID()).getVTimeZone();
     TzId tzId = new TzId(tz.getProperties().getProperty(Property.TZID).getValue());
     return tzId;
+  }
+
+  private ExDate exceptionDatesFrom(final CalendarEventRecurrence recurrence) {
+    List<Datable<?>> exceptionDates = recurrence.getExceptionDates();
+    DateList exDatesList = new DateList();
+    ICal4JDateCodec dateCodec = ICal4JDateCodec.anICal4JDateCodec();
+    for (Datable<?> anExceptionDate : exceptionDates) {
+      exDatesList.add(dateCodec.encode(anExceptionDate));
+    }
+    return new ExDate(exDatesList);
   }
 }
