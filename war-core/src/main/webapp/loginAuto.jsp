@@ -100,7 +100,7 @@ else
 
 <% if (!isAnonymousAccessAuthorized) { %>
 <title><%=generalMultilang.getString("GML.popupTitle")%></title>
-<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico" />
+<link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico" />
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 <!--[if lt IE 8]>
 <style>
@@ -220,30 +220,28 @@ if (isAnonymousAccessAuthorized) { %>
                     <div id="header">
                         <img src="<%=logo%>" class="logo" />
                         <p class="information">
-                        <%=mesLook.getString("lookSilverpeasV5.anonymousUnauthorized")%>
-								<% if (!errorCode.equals("") && !errorCode.equals("4")) { %>
-									<br/><span><%=authenticationBundle.getString("authentication.logon."+errorCode)%></span>
-								<% } else { %>
-									<%=authenticationBundle.getString("authentication.logon.subtitle") %>
-								<% } %>
+                        	<%=mesLook.getString("lookSilverpeasV5.anonymousUnauthorized")%>
+							<% if (!errorCode.equals("") && !errorCode.equals("4")) { %>
+								<br/><span><%=authenticationBundle.getString("authentication.logon."+errorCode)%></span>
+							<% } %>
                         </p>
                         <div class="clear"></div>
                     </div>
                     <p><label><span><%=authenticationBundle.getString("authentication.logon.login") %></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
                     <p><label><span><%=authenticationBundle.getString("authentication.logon.password") %></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
 
-					 <% if (listDomains != null && listDomains.size() == 1) { %>
-                            <input class="noDisplay"type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
+					 <% if (!multipleDomains) { %>
+                          <input class="noDisplay"type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
                      <%	} else { %>
                           <p><label><span><fmt:message key="authentication.logon.domain" /></span>
-                <select id="DomainId" name="DomainId" size="1">
-                  <c:forEach var="domain" items="${pageScope.listDomains}">
-                      <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if> ><c:out value="${domain.name}"/></option>
-                  </c:forEach>
-                </select>
+			                <select id="DomainId" name="DomainId" size="1">
+			                  <c:forEach var="domain" items="${pageScope.listDomains}">
+			                      <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if> ><c:out value="${domain.name}"/></option>
+			                  </c:forEach>
+			                </select>
                           </label></p>
                      <% } %>
-                     <p><a href="#" class="submit" onclick="checkForm();"><img src="<%=request.getContextPath()%>/images/bt-login.png" /></a></p>
+                     <p class="button"><a href="#" class="<%=submitClass%>" onclick="checkForm();"><img src="<%=request.getContextPath()%>/images/bt-login.png" /></a></p>
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
 						 <p>
 						 <% if (forgottenPwdActive) { %>
