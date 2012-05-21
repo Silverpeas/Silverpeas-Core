@@ -67,7 +67,8 @@ public class ComponentAccessController implements AccessController<String> {
 
   @Override
   public boolean isUserAuthorized(String userId, String componentId) {
-    if (componentId == null) { // Personal space
+    // Personal space or user tool
+    if (componentId == null || getOrganizationController().isToolAvailable(componentId)) {
       return true;
     }
     if (StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(

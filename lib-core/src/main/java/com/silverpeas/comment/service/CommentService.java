@@ -41,13 +41,15 @@ public interface CommentService extends SilverpeasComponentService {
 
   void deleteComment(CommentPK pk);
 
-  void deleteAllCommentsOnPublication(WAPrimaryKey pk);
+  void deleteAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
+
+  void deleteAllCommentsByComponentInstanceId(final String instanceId);
 
   void deleteComment(Comment comment);
 
-  void moveComments(WAPrimaryKey fromPK, WAPrimaryKey toPK);
+  void moveComments(final String resourceType, WAPrimaryKey fromPK, WAPrimaryKey toPK);
 
-  void moveAndReindexComments(WAPrimaryKey fromPK, WAPrimaryKey toPK);
+  void moveAndReindexComments(final String resourceType, WAPrimaryKey fromPK, WAPrimaryKey toPK);
 
   void updateComment(Comment cmt);
 
@@ -55,16 +57,16 @@ public interface CommentService extends SilverpeasComponentService {
 
   Comment getComment(CommentPK pk);
 
-  List<Comment> getAllCommentsOnPublication(WAPrimaryKey pk);
+  List<Comment> getAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 
-  List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(
+  List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType,
       List<WAPrimaryKey> pks);
 
   List<CommentedPublicationInfo> getAllMostCommentedPublicationsInfo();
 
-  int getCommentsCountOnPublication(WAPrimaryKey pk);
+  int getCommentsCountOnPublication(final String resourceType, WAPrimaryKey pk);
 
-  void indexAllCommentsOnPublication(WAPrimaryKey pk);
+  void indexAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 
-  void unindexAllCommentsOnPublication(WAPrimaryKey pk);
+  void unindexAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 }

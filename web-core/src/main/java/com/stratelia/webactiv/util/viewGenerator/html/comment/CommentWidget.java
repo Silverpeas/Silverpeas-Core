@@ -23,6 +23,18 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
+import java.util.Arrays;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.div;
+import org.apache.ecs.xhtml.script;
+
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -31,16 +43,6 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.div;
-import org.apache.ecs.xhtml.script;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-import java.util.Arrays;
-
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It defines the base class of a widget for the rendering and handling of comments in Silverpeas.
@@ -58,6 +60,7 @@ public abstract class CommentWidget extends TagSupport {
   public static final String COMMENT_WIDGET_DIV_CLASS = "commentaires";
   private String componentId;
   private String resourceId;
+  private String resourceType;
   private String userId;
   private String callback;
 
@@ -152,6 +155,15 @@ public abstract class CommentWidget extends TagSupport {
   }
 
   /**
+   * Sets the type of the resource that is commented out.
+   * 
+   * @param resourceType the type of the commented resource.
+   */
+  public void setResourceType(String resourceType) {
+    this.resourceType = resourceType;
+  }
+
+  /**
    * Gets the identifier of the Silverpeas component instance to which the resource belongs.
    *
    * @return the component identifier.
@@ -167,6 +179,15 @@ public abstract class CommentWidget extends TagSupport {
    */
   public String getResourceId() {
     return resourceId;
+  }
+
+  /**
+   * Gets the type of the commented resource.
+   * 
+   * @return
+   */
+  public String getResourceType() {
+    return resourceType;
   }
 
   private UserPreferences getUserPreferences() throws JspTagException {
@@ -211,14 +232,16 @@ public abstract class CommentWidget extends TagSupport {
     ResourcesWrapper settings = getSettings();
     UserDetail currentUser = controller.getUserDetail(getUserId());
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());
-    boolean isAdmin = false;
-    if (Arrays.asList(profiles).contains(SilverpeasRole.admin.name())) {
-      isAdmin = true;
+    final boolean isAdmin;
+    if (profiles != null) {
+      isAdmin = Arrays.asList(profiles).contains(SilverpeasRole.admin.name());
+    } else {
+      isAdmin = currentUser.isAccessAdmin();
     }
     boolean canBeUpdated = settings.getSetting("AdminAllowedToUpdate", true) && isAdmin;
 
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
-            + getComponentId() + "/" + getResourceId()
+            + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
             + "', avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
             + "', update: { activated: function( comment ) {"
             + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"

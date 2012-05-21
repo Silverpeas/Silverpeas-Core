@@ -74,7 +74,7 @@ public class ComponentExistenceAspect {
     if (isDefined(instanceId)) {
       OrganizationController controller = OrganizationControllerFactory.getFactory().
               getOrganizationController();
-      if (!controller.isComponentExist(instanceId)) {
+      if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId)) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
     }

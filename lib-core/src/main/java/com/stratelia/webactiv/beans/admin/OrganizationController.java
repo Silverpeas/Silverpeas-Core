@@ -29,6 +29,8 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.WAComponent;
 import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 import java.util.*;
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
@@ -620,9 +622,11 @@ public class OrganizationController implements java.io.Serializable {
     try {
       return getAdminService().getCurrentProfiles(userId, componentId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.getUserProfiles",
-          "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '" +
-           userId + "', componentId: '" + componentId + "'", e);
+      if (!isToolAvailable(componentId)) {
+        SilverTrace.error("admin", "OrganizationController.getUserProfiles",
+            "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '" +
+                userId + "', componentId: '" + componentId + "'", e);
+      }
       return null;
     }
   }
@@ -923,6 +927,19 @@ public class OrganizationController implements java.io.Serializable {
            ", componentName = " + componentName, e);
       return new ArrayList<SpaceInstLight>();
     }
+  }
+
+  public boolean isToolAvailable(String toolId) {
+    boolean isToolAvailable = false;
+    try {
+      isToolAvailable =
+          GeneralPropertiesManager.getStringCollection("availableToolIds").contains(toolId);
+    } catch (Exception e) {
+      isToolAvailable = false;
+      SilverTrace.error("admin", "OrganizationController.isToolAvailable",
+          "admin.MSG_ERR_GET_AVAILABLE_TOOL_IDS", "toolId: '" + toolId + "'");
+    }
+    return isToolAvailable;
   }
 
   public boolean isComponentAvailable(String componentId, String userId) {

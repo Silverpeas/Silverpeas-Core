@@ -360,9 +360,20 @@
     </attribute>
     <attribute>
       <description>
-         The identifier of the Silverpeas component instance to which the commented resource belongs
+         The identifier of the Silverpeas component instance or the tool to which the commented resource belongs
       </description>
       <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+         The type of the resource in Silverpeas that is commented out and for which the
+         comments must be printed. Usually this value is that of the getContributionType
+         method from SilverpeasContent interface implemented by the resource.
+      </description>
+      <name>resourceType</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
