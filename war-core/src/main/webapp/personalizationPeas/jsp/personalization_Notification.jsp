@@ -31,11 +31,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<c:set var="sessionController">Silverpeas_MyTests_<c:out value="${componentId}" />
-</c:set>
-<c:set var="browseContext" value="${requestScope.browseContext}" />
-<c:set var="componentId" value="${browseContext[1]}" />
+<c:set var="isMultiChannelNotif" value="<%=personalizationScc.isMultiChannelNotification()%>" />
 
 <%
   //Retrieve parameters
@@ -46,7 +42,7 @@
   boolean isMultiChannelNotif = personalizationScc.isMultiChannelNotification();
   
   // Liste des adresses de notification pour ce user.
-  ArrayList notifAddresses = null;
+  ArrayList<Properties> notifAddresses = null;
   
   //Mise a jour de l'espace
   if (action != null) {
@@ -68,6 +64,10 @@
   		personalizationScc.setDefaultAddress(id);  
   		action = "NotificationView";
   	}
+    if (action.equals("setFrequency")) {
+      personalizationScc.saveDelayedUserNotificationFrequency(id);  
+      action = "NotificationView";
+    }
   	if (action.equals("delete")) {
   		personalizationScc.deleteNotifAddress(id);
   		action = "NotificationView";
@@ -99,6 +99,7 @@ function deleteCanal(id){
 
 function sendChoiceChannel() {
     document.channelForm.SelectedChannels.value = getChannels();
+    document.channelForm.SelectedFrequency.value = getFrequency();
     document.channelForm.action = "SaveChannels";
     document.channelForm.submit();
 }
@@ -128,6 +129,16 @@ function getChannels()
     //Checkboxes are not displayed 
   }
   return items;
+}
+
+function getFrequency()
+{
+  return $("#SelectFrequency").val();
+}
+
+function onChangeFrequency()
+{
+  location.href = "personalization_Notification.jsp?id=" + getFrequency() + "&Action=setFrequency";
 }
 
 </script>
@@ -164,8 +175,9 @@ function getChannels()
 %>
 <!-- AFFICHAGE HEADER -->
 <form name="channelForm">
-  <p align="left"><b>Choix du canal de notification :</b></p>
+  <p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
   <input type="hidden" name="SelectedChannels">
+  <input type="hidden" name="SelectedFrequency">
 <%
 
   if (testExplanation.length() > 0) {
@@ -220,10 +232,10 @@ function getChannels()
   		if (p.getProperty("isDefault").equalsIgnoreCase("true")) {
   			usedCheck = "checked";
   		}
-  			arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"SelectChannel\" value=\""
-  							+ EncodeHelper.javaStringToHtmlString(p.getProperty("id")) + "\" "
-  							+ usedCheck
-  							+ ">");
+		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"SelectChannel\" value=\""
+						+ EncodeHelper.javaStringToHtmlString(p.getProperty("id")) + "\" "
+						+ usedCheck
+						+ ">");
   	}
   	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(p.getProperty("name")));
   	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(p.getProperty("address")));
@@ -266,6 +278,38 @@ function getChannels()
   }
   
   out.println(notif.print());
+%>
+  <br/>
+  <p align="left"><b><fmt:message key="frequencyChoiceLabel" /></b>
+  <fmt:message key="frequency${requestScope.delayedNotification.defaultFrequency.name}" var="defaultFrequencyLabel" />
+  <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
+  <c:set var="frequencyOnChange" value="" />
+  <c:if test="${!isMultiChannelNotif}">
+    <c:set var="frequencyOnChange" value="javascript:onChangeFrequency();" />
+  </c:if>
+  <select id="SelectFrequency" name="SelectFrequency" onchange="${frequencyOnChange}">
+    <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
+    <c:choose>
+      <c:when test="${empty currentUserFrequencyCode}">
+        <option value="" selected="selected"><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
+      </c:when>
+      <c:otherwise>
+        <option value=""><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
+      </c:otherwise>
+    </c:choose>
+    <c:forEach items="${requestScope.delayedNotification.frequencies}" var="frequency">
+      <c:choose>
+        <c:when test="${frequency.code eq currentUserFrequencyCode}">
+          <option value="${frequency.code}" selected="selected"><fmt:message key="frequency${frequency.name}" /></option>
+        </c:when>
+        <c:otherwise>
+          <option value="${frequency.code}"><fmt:message key="frequency${frequency.name}" /></option>
+        </c:otherwise>
+      </c:choose>
+    </c:forEach>
+  </select>
+  </p>
+<%
   if (isMultiChannelNotif) {
     // ajout bouton de validation des choix des canaux
     Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendChoiceChannel();", false);
@@ -273,17 +317,6 @@ function getChannels()
     buttonPane.addButton(validateButton);
     out.println("<br><center>"+buttonPane.print()+"</center><br>");
   }
-%>
-  <br/>
-  <p align="left"><b>Fréquence de réception des mails :</b>
-  <select style="width:150px;">
-    <option value="0" selected="selected">Aucune</option>
-    <option value="1">Journalière</option>
-    <option value="2">Hebdomadaire</option>
-    <option value="3">Mensuelle</option>
-  </select>
-  </p>
-<%
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
