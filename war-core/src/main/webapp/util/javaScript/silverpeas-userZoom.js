@@ -36,8 +36,7 @@
   }
   
   function tchatWith(user) {
-    openWindow(webContext + '/RcommunicationUser/jsp/OpenDiscussion?userId=' + user.id,
-      'popupDiscussion' + user.id, '650', '460', 'menubar=no,scrollbars=no,statusbar=no');
+    openWindow(user.tchatPage, 'popupDiscussion' + user.id, '650', '460', 'menubar=no,scrollbars=no,statusbar=no');
   }
   
   function connectionStatus(user) {
@@ -52,12 +51,15 @@
   }
   
   /**
-   * The user presential JQuery plugin.
+   * The user presential Silverpeas plugin based on JQuery.
    * This JQuery plugin renders a tooltip with status information about the user and from which 
    * anyone can establish a communication with him. The tooltip is displayed when the mouse hovers
    * above the HTML element.
    */
   $.fn.userZoom = function( user ) {
+    
+    if (! this.length)
+      return this;
     
     if (! $.userZoom.initialized) {
       $.i18n.properties({
@@ -68,9 +70,6 @@
       });
       $.userZoom.initialized = true;
     }
-    
-    if (! this.length)
-      return this;
     
     return this.each(function() {
       var profile = user, $this = $(this);
@@ -95,9 +94,7 @@
   function render( target, user ) {
     var status = connectionStatus(user);
     target.append('&nbsp;').append(status.css('width', '8px')).hover(function() {
-      //$('.userzoom-tooltip').dialog('close');
       $('.userzoom-tooltip').hide();
-      //element.dialog({stack: false});
       var element = tooltip(target, user);
       element.show();
       $.userZoom.currentTooltip = element;
@@ -107,7 +104,6 @@
         return;
       var target = $(event.target);
       if (!target.hasClass('userzoom-tooltip') && target.parents('.userzoom-tooltip').length == 0) {
-        //$('.userzoom-tooltip').dialog('close');
         $('.userzoom-tooltip').hide();
         $.userZoom.currentTooltip = null;
       }

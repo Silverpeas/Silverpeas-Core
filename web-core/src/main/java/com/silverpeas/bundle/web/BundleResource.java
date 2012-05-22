@@ -25,11 +25,11 @@ package com.silverpeas.bundle.web;
 
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,14 +37,22 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
- * The bundle resource represents in the WEB a localized bundle of messages. This WEB service is an
- * entry point to access the different bundles in use in Silverpeas. It can be accessed only by
- * authenticated users. Ony the localized texts can be actually accessed, no settings.
+ * The bundle resource represents an i18n bundle of translated messages.
+ * 
+ * This WEB service is an entry point to access the different bundles in use in Silverpeas. It can
+ * be accessed only by authenticated users so that is is easy to know the language of the bundle to
+ * sent back. Yet, ony the i18n properties can be accessed, no application settings or icons.
  *
- * The localized bundled is refered in the URI by its absolute classpath location. Its suffix can
- * .properties can be omitted. and only the one
- * that matches the prefered language of the current user in the session is taken into account. If
- * no bunble exists in the language of the current user, then the default one is sent back.
+ * The i18n bundled is refered in the URI by its absolute location in the classpath of the Silverpeas
+ * portal with as well / or . as path separators, and it can be or not suffixed with properties. The
+ * language can be indicated with the resource bundle name, otherwise the language of the current 
+ * user underlying at the HTTP request is taken. If the specified language isn't supported by
+ * Silverpeas, then the default language in Silverpeas (yet the French), is taken.
+ * 
+ * In order to add some flexibility, particularly with client-side scripts, the language of the user
+ * can be explictly indicated with the resource bundle name, whatever it is and without knowing it,
+ * by using the wildcard $$ as language code; this wildcard means whatever the language
+ * (then takes the prefered language of the current user in the session).
  */
 @Service
 @Scope("request")
@@ -57,8 +65,27 @@ public class BundleResource extends RESTWebService {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  /**
+   * Asks for an i18n resource bundle either in the language of the current user in the session or
+   * in the specified language. The returned bundle is a merge of both the asked i18n properties and
+   * the general Silverpeas i18n texts.
+   * 
+   * The resource bundle is specified by its absolute path in the classpath of the WEB service.
+   * 
+   * If the language is specified with the name of the bundle, it will be considered in place of
+   * the language of the current user in the underlying WEB session. For doing, the langage has to be
+   * indicated as expected with localized resource bundles. If the language isn't supported by
+   * Silverpeas, the default language will be taken. In order to work with some javascript plugins
+   * in charge of i18n texts, the method accepts also the particular wildcard $$ to specify explicitly
+   * the language of the current user.
+   * 
+   * @see java.util.ResourceBundle
+   * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
+   * @return an HTTP response with the asked properties or an HTTP error.
+   * @throws IOException if an error occurs while accessing the resource bundle.
+   */
   @GET
-  @Path("{bundle: com/[a-zA-Z0-9/._]+}")
+  @Path("{bundle: com/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
   public Response getBundle(@PathParam("bundle") final String bundle) throws IOException {
     String language = getUserPreferences().getLanguage();
@@ -66,16 +93,22 @@ public class BundleResource extends RESTWebService {
     if (bundle.endsWith(".properties")) {
       localizedBundle = bundle.substring(0, bundle.indexOf(".properties"));
     }
-    if (bundle.lastIndexOf("_") == bundle.length() - 3) {
-      language = localizedBundle.substring(bundle.lastIndexOf("_") + 1);
+    if (localizedBundle.lastIndexOf("_") == localizedBundle.length() - 3) {
+      String askedLanguage = localizedBundle.substring(bundle.lastIndexOf("_") + 1);
+      if (!askedLanguage.equals("$$")) {
+        language = askedLanguage;
+      }
       localizedBundle = localizedBundle.substring(0, bundle.lastIndexOf("_"));
     }
+    localizedBundle = localizedBundle.replaceAll("/", ".");
+    ResourceLocator generalResource = GeneralPropertiesManager.getGeneralMultilang(language);
     ResourceLocator resource = new ResourceLocator(localizedBundle, language);
     try {
-      Properties translations = resource.getProperties();
       if (!bundle.trim().isEmpty() && bundle.contains("multilang")) {
         StringWriter messages = new StringWriter();
-        translations.store(messages, bundle + " - " + language);
+        resource.getProperties().store(messages, localizedBundle + " - " + resource.getLanguage());
+        generalResource.getProperties().store(messages, GeneralPropertiesManager.GENERAL_PROPERTIES_FILE
+                + " - " + generalResource.getLanguage());
         return Response.ok(messages.toString()).build();
       } else {
         return Response.status(Response.Status.FORBIDDEN).entity(

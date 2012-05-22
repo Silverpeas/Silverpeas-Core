@@ -61,13 +61,10 @@
   <head>
   	<title></title>
     <view:looknfeel />
+    <view:includePlugin name="invitme"/>
     <script type="text/javascript">
       function OpenPopup(userId, name){
     	initNotification(userId, name);
-      }
-      
-      function OpenPopupInvitaion(userId,name){
-		initInvitation(userId,name);
       }
 
       function viewIndex(index) {
@@ -194,7 +191,6 @@
     </view:window>
 
 	<%@include file="../../socialNetwork/jsp/notificationDialog.jsp" %>
-	<%@include file="../../socialNetwork/jsp/invitationDialog.jsp" %>
 	
 	<view:progressMessage/>
 	

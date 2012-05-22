@@ -33,5 +33,6 @@ public enum SupportedJavaScriptPlugins {
   datepicker,
   pagination,
   breadcrumb,
-  userZoom;
+  userZoom,
+  invitme;
 }

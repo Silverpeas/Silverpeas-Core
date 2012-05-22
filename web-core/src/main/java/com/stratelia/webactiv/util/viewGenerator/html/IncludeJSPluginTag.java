@@ -53,7 +53,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
   private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
+  private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
+  private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -97,7 +99,14 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_BREADCRUMB);
       xhtml.addElement(breadcrumb);
     } else if (userZoom.name().equals(getName())) {
+      script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
       script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_USERZOOM);
+      xhtml.addElement(profile);
+      xhtml.addElement(userZoom);
+    } else if (invitme.name().equals(getName())) {
+      script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
+      script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_INVITME);
+      xhtml.addElement(profile);
       xhtml.addElement(userZoom);
     }
     xhtml.output(getJspContext().getOut());

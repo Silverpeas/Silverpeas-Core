@@ -42,7 +42,7 @@
 <div class="action">
   $if(notMyself)$
   	$if(notAContact)$
-	  <a href="#" class="link invitation" onclick="OpenPopupInvitaion($user.id$,'$user.lastName$ $user.firstName$');">Send an invitation</a>
+	  <a href="#" rel="$user.id$,$user.lastName$ $user.firstName$" class="link invitation">Send an invitation</a>
 	$endif$
 	<a href="#" class="link notification" onclick="OpenPopup($user.id$,'$user.lastName$ $user.firstName$')">Send a message</a>
   $endif$

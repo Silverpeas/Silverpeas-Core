@@ -84,6 +84,8 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private URI uri;
   @XmlElement
   private String webPage;
+  @XmlElement
+  private String tchatPage;
   @XmlElement(required=true) @NotNull @Size(min=1)
   private String avatar;
   @XmlElement
@@ -109,6 +111,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     this.avatar = getAvatarURI();
     this.connected = this.user.isConnected();
     this.webPage = getUserProfileWebPageURI();
+    this.tchatPage = getTchatWebPageURI();
   }
 
   @Override
@@ -200,6 +203,17 @@ public class UserProfileEntity extends UserDetail implements Exposable {
       webPage = getUserProfileWebPageURI();
     }
     return webPage;
+  }
+  
+  /**
+   * Gets the URL of the tchat WEB page opened to discuss with this user.
+   * @return the URL of the user tchat page.
+   */
+  public String getTchatPage() {
+    if (!isDefined(tchatPage)) {
+      tchatPage = getUserProfileWebPageURI();
+    }
+    return tchatPage;
   }
 
   /**
@@ -303,6 +317,17 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   
   private String getUserProfileWebPageURI() {
     String pageUri = "/Rprofil/jsp/Main?userId=" + this.user.getId();
+    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
+    if (context != null) {
+      pageUri =  context.getServletContext().getContextPath() + pageUri;
+    } else {
+      pageUri = URLManager.getApplicationURL() + pageUri;
+    }
+    return pageUri;
+  }
+  
+  private String getTchatWebPageURI() {
+    String pageUri = "/RcommunicationUser/jsp/OpenDiscussion?userId=" + this.user.getId();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
       pageUri =  context.getServletContext().getContextPath() + pageUri;

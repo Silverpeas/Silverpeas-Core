@@ -54,6 +54,7 @@
 <html>
   <head>
     <view:looknfeel />
+    <view:includePlugin name="invitme"/>
   </head>
   <body id="publicProfile">
     <view:window>
@@ -74,7 +75,7 @@
                
 	    <!-- action  -->
         <div class="action">
-        	<a href="#" class="link invitation" onclick="initInvitation(<%=member.getId() %>,'<%=member.getUserDetail().getDisplayedName() %>');"><fmt:message key="invitation.send" /></a>
+        	<a href="#" class="link invitation" rel="<%=member.getId() %>,<%=member.getUserDetail().getDisplayedName() %>"><fmt:message key="invitation.send" /></a>
             <br />
             <a href="#" class="link notification" onclick="initNotification(<%=member.getId() %>,'<%=member.getUserDetail().getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
         </div> <!-- /action  -->
@@ -137,7 +138,6 @@
 </view:window>
     
     <%@include file="../notificationDialog.jsp" %>
-    <%@include file="../invitationDialog.jsp" %>
     
   </body>
 </html>
