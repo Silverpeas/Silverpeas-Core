@@ -169,7 +169,7 @@ public class Comment implements SilverpeasContent {
 
   @Override
   public UserDetail getCreator() {
-    if (ownerDetail == null) {
+    if (ownerDetail == null || !ownerDetail.isFullyDefined()) {
       ownerDetail = UserDetail.getById(String.valueOf(owner_id));
     }
     return ownerDetail;
