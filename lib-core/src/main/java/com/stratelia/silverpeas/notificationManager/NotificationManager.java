@@ -1435,6 +1435,7 @@ public class NotificationManager extends AbstractNotification
       delayedNotificationData.setUserId(aUserId);
       delayedNotificationData.setChannel(NotifChannel.decode(curAddresseRow.getNotifChannelId()));
       delayedNotificationData.setAction(params.eAction);
+      delayedNotificationData.setSendImmediately(params.sSendImmediately);
       delayedNotificationData.setNotificationData(notificationData);
       delayedNotificationData.setNotificationParameters(params);
       dnds.add(delayedNotificationData);

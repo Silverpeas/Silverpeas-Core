@@ -21,12 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.helper;
+package com.stratelia.silverpeas.notificationManager.constant;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+import org.junit.Test;
 
 /**
  * @author Yohann Chastagnier
- *
  */
-public class NotificationResourceHelper {
+public class NotifChannelTest {
 
+  @Test
+  public void testDecode() {
+    assertThat(NotifChannel.decode(null), nullValue());
+    assertThat(NotifChannel.decode(-1000), nullValue());
+    for (final NotifChannel channel : NotifChannel.values()) {
+      assertThat(NotifChannel.decode(channel.getId()), is(channel));
+    }
+  }
 }

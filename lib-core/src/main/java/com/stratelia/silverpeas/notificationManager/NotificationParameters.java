@@ -93,6 +93,7 @@ public class NotificationParameters {
   public String sSource = "";
   public String sSessionId = "";
   public boolean bAnswerAllowed = false;
+  public boolean sSendImmediately = false;
 
   public Date dDate = new Date();
   public String sLanguage = null;

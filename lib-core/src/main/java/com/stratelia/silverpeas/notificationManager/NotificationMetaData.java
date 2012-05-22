@@ -24,13 +24,6 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +32,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class NotificationMetaData implements java.io.Serializable {
 
@@ -54,6 +54,7 @@ public class NotificationMetaData implements java.io.Serializable {
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
+  private boolean sendImmediately = false;
   private NotifAction action;
   private Map<String, NotificationResourceData> notificationResourceData =
       new HashMap<String, NotificationResourceData>();
@@ -432,19 +433,27 @@ public class NotificationMetaData implements java.io.Serializable {
     this.fileName = fileName;
   }
 
+  public boolean isSendImmediately() {
+    return sendImmediately;
+  }
+
+  public void setSendImmediately(boolean sendImmediately) {
+    this.sendImmediately = sendImmediately;
+  }
+
   public NotifAction getAction() {
     return action;
   }
 
-  public NotificationResourceData getNotificationResourceData(final String lang) {
-    return notificationResourceData.get(lang);
+  public void setAction(NotifAction action) {
+    this.action = action;
   }
 
-  public void setAction(final NotifAction action,
-      final Map<String, NotificationResourceData> notificationResourceData) {
-    this.notificationResourceData.clear();
-    if (notificationResourceData != null && notificationResourceData.isEmpty()) {
-      this.notificationResourceData.putAll(notificationResourceData);
-    }
+  public Map<String, NotificationResourceData> getNotificationResourceData() {
+    return notificationResourceData;
+  }
+
+  public NotificationResourceData getNotificationResourceData(final String lang) {
+    return notificationResourceData.get(lang);
   }
 }

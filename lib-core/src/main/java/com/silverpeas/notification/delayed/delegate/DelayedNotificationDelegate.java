@@ -104,9 +104,10 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @param frequency
    * @throws Exception
    */
-  public static DelayedNotificationUserSetting executeUserSettingsUpdating(final int userId, final NotifChannel channel,
+  public static DelayedNotificationUserSetting executeUserSettingsUpdating(final int userId,
+      final NotifChannel channel,
       final DelayedNotificationFrequency frequency) throws Exception {
-    
+
     DelayedNotificationUserSetting result = null;
 
     // Getting old settings
@@ -131,7 +132,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
         (oldSettings != null && !oldSettings.getFrequency().equals(frequency))) {
       executeForceDelayedNotificationsSending(userId, Collections.singleton(channel));
     }
-    
+
     return result;
   }
 
@@ -170,6 +171,11 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @return
    */
   private boolean isThatToBeDelayed(final DelayedNotificationData delayedNotificationData) {
+
+    // The notification have to be sent immediately
+    if (delayedNotificationData.isSendImmediately()) {
+      return false;
+    }
 
     // The notification action has to be defined
     if (delayedNotificationData.getAction() == null) {

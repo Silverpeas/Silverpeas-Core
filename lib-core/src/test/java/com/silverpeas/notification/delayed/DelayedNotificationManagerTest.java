@@ -146,6 +146,7 @@ public class DelayedNotificationManagerTest {
         data.setResourceDescription(RESOURCE_DATA_DESCRIPTION_1);
       }
     }
+    data.setComponentInstanceId("aComponentInstanceId");
     return data;
   }
 

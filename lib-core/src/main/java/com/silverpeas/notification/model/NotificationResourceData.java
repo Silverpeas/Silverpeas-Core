@@ -38,7 +38,7 @@ import javax.persistence.TableGenerator;
  */
 @Entity
 @Table(name = "st_notificationresource")
-public class NotificationResourceData {
+public class NotificationResourceData implements Cloneable {
 
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
@@ -66,7 +66,7 @@ public class NotificationResourceData {
   private String resourceUrl;
 
   @Column(name = "componentInstanceId", nullable = false)
-  private int componentInstanceId = -1;
+  private String componentInstanceId;
 
   /**
    * Simple constructor
@@ -77,7 +77,7 @@ public class NotificationResourceData {
 
   public boolean isValid() {
     return isNotBlank(resourceId) && isNotBlank(resourceType) && isNotBlank(resourceName) &&
-        isNotBlank(resourceLocation) && isNotBlank(resourceUrl);
+        isNotBlank(resourceLocation) && isNotBlank(resourceUrl) && isNotBlank(componentInstanceId);
   }
 
   public Integer getId() {
@@ -148,11 +148,23 @@ public class NotificationResourceData {
     this.resourceUrl = resourceUrl;
   }
 
-  public int getComponentInstanceId() {
+  public String getComponentInstanceId() {
     return componentInstanceId;
   }
 
-  public void setComponentInstanceId(final int componentInstanceId) {
+  public void setComponentInstanceId(final String componentInstanceId) {
     this.componentInstanceId = componentInstanceId;
+  }
+
+  @Override
+  protected NotificationResourceData clone() {
+    NotificationResourceData clone;
+    try {
+      clone = (NotificationResourceData) super.clone();
+      clone.setId(null);
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e.getCause());
+    }
+    return clone;
   }
 }

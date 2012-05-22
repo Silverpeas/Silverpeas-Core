@@ -7,7 +7,7 @@ CREATE TABLE st_delayednotificationusersetting (
 
 CREATE TABLE st_notificationresource (
    id 					int NOT NULL ,
-   componentInstanceId	int NOT NULL default -1 ,
+   componentInstanceId	varchar(50) NOT NULL ,
    resourceId			varchar(50) NOT NULL ,
    resourceType			varchar(50) NOT NULL ,
    resourceName			varchar(500) NOT NULL ,

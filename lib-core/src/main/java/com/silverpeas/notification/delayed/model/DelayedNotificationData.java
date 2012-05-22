@@ -99,6 +99,9 @@ public class DelayedNotificationData implements Serializable {
   private DelayedNotificationUserSetting delayedNotificationUserSetting;
 
   @Transient
+  private boolean sendImmediately = false;
+
+  @Transient
   private NotificationData notificationData;
 
   @Transient
@@ -220,6 +223,14 @@ public class DelayedNotificationData implements Serializable {
   public void setDelayedNotificationUserSetting(
       final DelayedNotificationUserSetting delayedNotificationUserSetting) {
     this.delayedNotificationUserSetting = delayedNotificationUserSetting;
+  }
+
+  public boolean isSendImmediately() {
+    return sendImmediately;
+  }
+
+  public void setSendImmediately(boolean sendImmediately) {
+    this.sendImmediately = sendImmediately;
   }
 
   public NotificationData getNotificationData() {

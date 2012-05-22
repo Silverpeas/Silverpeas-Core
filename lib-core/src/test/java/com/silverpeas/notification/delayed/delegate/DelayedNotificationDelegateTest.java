@@ -95,6 +95,11 @@ public class DelayedNotificationDelegateTest {
     DelayedNotificationData dndTest = buildValidDelayedNotificationData();
     assertNewNotification(dndTest, 0);
 
+    // Has to be sent because is flagged to be sent immediately
+    dndTest = buildValidDelayedNotificationData();
+    dndTest.setSendImmediately(true);
+    assertNewNotification(dndTest, 1);
+
     // Has to be sent because of a bad user id
     dndTest = buildValidDelayedNotificationData();
     dndTest.setUserId((Integer) null);
@@ -179,6 +184,13 @@ public class DelayedNotificationDelegateTest {
       dndTest.getResource().setResourceUrl(resourceUrl);
       assertNewNotification(dndTest, 1);
     }
+
+    // Has to be sent because of a bad resource component instance id
+    dndTest = buildValidDelayedNotificationData();
+    for (final String componentInstanceId : new String[] { null, "", "       " }) {
+      dndTest.getResource().setComponentInstanceId(componentInstanceId);
+      assertNewNotification(dndTest, 1);
+    }
   }
 
   private DelayedNotificationDelegateMock assertNewNotification(
@@ -227,6 +239,7 @@ public class DelayedNotificationDelegateTest {
     data.setResourceDescription(resourceDescription);
     data.setResourceLocation(resourceLocation);
     data.setResourceUrl(resourceUrl);
+    data.setComponentInstanceId("aComponentInstanceId");
     return data;
   }
 

@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.notificationManager;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
 import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -77,7 +78,7 @@ public class NotificationSender implements java.io.Serializable {
    */
   public void notifyUser(NotificationMetaData metaData)
           throws NotificationManagerException {
-    notifyUser(NotificationParameters.ADDRESS_COMPONENT_DEFINED, metaData);
+    notifyUser(NotifMediaType.COMPONENT_DEFINED.getId(), metaData);
   }
 
   /**
@@ -366,6 +367,7 @@ public class NotificationSender implements java.io.Serializable {
     params.sSource = metaData.getSource();
     params.sURL = metaData.getLink();
     params.sSessionId = metaData.getSessionId();
+    params.sSendImmediately = metaData.isSendImmediately();
     if (instanceId != -1) {
       params.iComponentInstance = instanceId;
     } else {
