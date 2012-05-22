@@ -55,38 +55,34 @@ import javax.inject.Named;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
- * It is a service dedicated to notify the concerning users about the adding or the removal of
- * the comments on a resource managed by a given Silverpeas component instance.
- * 
- * This service is managed by the IoC container.
- * 
- * All Silverpeas components interested to provide this feature should register themselves with this
- * service. The registration is done by specifying the name of the component and by passing a
- * ResourceInfoGetter object dedicated to the registered component. So, each time an event about
- * a comment is received, from the component instance within which the comment is added or removed,
- * the name of the Silverpeas component can be get and then the ResourceInfoGetter object can be
- * retrieved amoung which enough information about the commented resource can be get to send a
- * notification to the interested users.
+ * It is a service dedicated to notify the concerning users about the adding or the removal of the
+ * comments on a resource managed by a given Silverpeas component instance. This service is managed
+ * by the IoC container. All Silverpeas components interested to provide this feature should
+ * register themselves with this service. The registration is done by specifying the name of the
+ * component and by passing a ResourceInfoGetter object dedicated to the registered component. So,
+ * each time an event about a comment is received, from the component instance within which the
+ * comment is added or removed, the name of the Silverpeas component can be get and then the
+ * ResourceInfoGetter object can be retrieved amoung which enough information about the commented
+ * resource can be get to send a notification to the interested users.
  */
 @Named
 public class CommentUserNotificationService extends CommentActionListener {
 
   /**
    * The suffix of the property valued with the subject of the notification message to send to the
-   * users.
-   * This property must be defined in the resources of the Silverpeas component module.
-   * For example, for a Silverpeas component classifieds, a property classifieds.commentAddingSubject
+   * users. This property must be defined in the resources of the Silverpeas component module. For
+   * example, for a Silverpeas component classifieds, a property classifieds.commentAddingSubject
    * must be defined with the subject of the notification.
    */
   public static final String SUBJECT_COMMENT_ADDING = "commentAddingSubject";
   /**
-   * If no property with the subject of the notification message is defined in a Silverpeas component,
-   * then the below default property is taken.
+   * If no property with the subject of the notification message is defined in a Silverpeas
+   * component, then the below default property is taken.
    */
   protected static final String DEFAULT_SUBJECT_COMMENT_ADDING = "comments.commentAddingSubject";
   /**
-   * The name of the attribute in a notification message that refers the comment responsable of
-   * the triggering of this service.
+   * The name of the attribute in a notification message that refers the comment responsable of the
+   * triggering of this service.
    */
   protected static final String NOTIFICATION_COMMENT_ATTRIBUTE = "comment";
   /**
@@ -97,33 +93,31 @@ public class CommentUserNotificationService extends CommentActionListener {
   @Inject
   private CommentService commentService;
   private Map<String, SilverpeasComponentService> register =
-          new ConcurrentHashMap<String, SilverpeasComponentService>();
+      new ConcurrentHashMap<String, SilverpeasComponentService>();
 
   /**
    * Registers the specified Silverpeas component so that the comments created or removed in an
    * instance of the component will be treated by this service. The registration is done by
    * specifying the unique name of the Silverpeas component and a ResourceInfoGetter object from
-   * which information about the commented resource can be get.
-   * 
-   * A ResourceInfoGetter object, specific to the Silverpeas component, must be passed so that for
-   * each received event about a comment handled in an instance of the component, information about
-   * the commented resource can be get in order to send a well-formed notification to the users
-   * interested by the event about the comment.
+   * which information about the commented resource can be get. A ResourceInfoGetter object,
+   * specific to the Silverpeas component, must be passed so that for each received event about a
+   * comment handled in an instance of the component, information about the commented resource can
+   * be get in order to send a well-formed notification to the users interested by the event about
+   * the comment.
    * @param component the name of the Silverpeas component (it must be unique).
-   * @param getter the ResourceInfoGetter object specific to the registered Silverpeas Component 
+   * @param getter the ResourceInfoGetter object specific to the registered Silverpeas Component
    */
   public void register(String component, final SilverpeasComponentService service) {
     if (!isDefined(component) || service == null) {
       throw new IllegalArgumentException(
-              "Either the component name or the component service is null or invalid");
+          "Either the component name or the component service is null or invalid");
     }
     register.put(component, service);
   }
 
   /**
-   * Unregisters the specified component.
-   * The comments handled within the specified comment won't be more treated by this service. The
-   * users won't be any more notified about them.
+   * Unregisters the specified component. The comments handled within the specified comment won't be
+   * more treated by this service. The users won't be any more notified about them.
    * @param component the name of the Silverpeas component to unregister (it must be unique).
    */
   public void unregister(String component) {
@@ -132,10 +126,9 @@ public class CommentUserNotificationService extends CommentActionListener {
 
   /**
    * Sends a notification to the users that are concerned by the specified new comment on a given
-   * resource (publication, blog article, ...).
-   * The concerned users are thoses that commented the resource plus the author of the resource (in
-   * the case he's not the author of this new comment); the author of the comment isn't notified by
-   * its own comment.
+   * resource (publication, blog article, ...). The concerned users are thoses that commented the
+   * resource plus the author of the resource (in the case he's not the author of this new comment);
+   * the author of the comment isn't notified by its own comment.
    * @param newComment the new comment.
    */
   @Override
@@ -147,13 +140,13 @@ public class CommentUserNotificationService extends CommentActionListener {
         SilverpeasComponentService service = register.get(component);
         try {
           SilverpeasContent commentedContent =
-                  service.getContentById(newComment.getForeignKey().getId());
+              service.getContentById(newComment.getForeignKey().getId());
           Set<String> recipients = getInterestedUsers(newComment.getCreator(), commentedContent);
           NotificationMetaData notification = createNotification(
-                  component + "." + SUBJECT_COMMENT_ADDING,
-                  newComment,
-                  commentedContent,
-                  service.getComponentMessages(""));
+              component + "." + SUBJECT_COMMENT_ADDING,
+              newComment,
+              commentedContent,
+              service.getComponentMessages(""));
           notifyUsers(recipients, notification);
         } catch (Exception ex) {
           Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
@@ -181,11 +174,10 @@ public class CommentUserNotificationService extends CommentActionListener {
   }
 
   /**
-   * Gets the users that are interested by the adding or the removing of the specified comment.
-   *
-   * The interested users are the authors of the others comments on the content and the
-   * creator of this content. The author of the added or removed comment isn't considered
-   * as interested by the comment.
+   * Gets the users that are interested by the adding or the removing of the specified comment. The
+   * interested users are the authors of the others comments on the content and the creator of this
+   * content. The author of the added or removed comment isn't considered as interested by the
+   * comment.
    * @param theComment the comment that is added or removed.
    * @param getter an object with which the service can ask for information about the commented
    * resource.
@@ -194,7 +186,8 @@ public class CommentUserNotificationService extends CommentActionListener {
   private Set<String> getInterestedUsers(final UserDetail commentAuthor, SilverpeasContent content) {
     Set<String> interestedUsers = new LinkedHashSet<String>();
     WAPrimaryKey pk = new ForeignPK(content.getId(), content.getComponentInstanceId());
-    List<Comment> comments = getCommentService().getAllCommentsOnPublication(pk);
+    List<Comment> comments =
+        getCommentService().getAllCommentsOnPublication(content.getContributionType(), pk);
     for (Comment aComment : comments) {
       UserDetail author = aComment.getCreator();
       if (!author.getId().equals(commentAuthor.getId())) {
@@ -216,7 +209,7 @@ public class CommentUserNotificationService extends CommentActionListener {
    * @throws NotificationManagerException if the notification of the recipients fail.
    */
   protected void notifyUsers(final Set<String> recipients, final NotificationMetaData notification)
-          throws NotificationManagerException {
+      throws NotificationManagerException {
     for (String recipient : recipients) {
       notification.addUserRecipient(new UserRecipient(recipient));
     }
@@ -233,10 +226,10 @@ public class CommentUserNotificationService extends CommentActionListener {
   }
 
   private NotificationMetaData createNotification(String subjectKey, final Comment aComment,
-          final SilverpeasContent content, final ResourceLocator messages) {
+      final SilverpeasContent content, final ResourceLocator messages) {
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-            getNotificationSubject(subjectKey, messages), templates, "commented");
+        getNotificationSubject(subjectKey, messages), templates, "commented");
     for (String language : I18NHelper.getAllSupportedLanguages()) {
       messages.setLanguage(language);
       SilverpeasTemplate template = aNotificationTemplate(aComment, content);
@@ -253,7 +246,8 @@ public class CommentUserNotificationService extends CommentActionListener {
   private String getNotificationSubject(String subjectKey, final ResourceLocator componentMessages) {
     String subject = componentMessages.getString(subjectKey);
     if (!isDefined(subject)) {
-      subject = getCommentService().getComponentMessages(componentMessages.getLanguage()).getString(
+      subject =
+          getCommentService().getComponentMessages(componentMessages.getLanguage()).getString(
               DEFAULT_SUBJECT_COMMENT_ADDING);
     }
     return subject;
@@ -266,16 +260,16 @@ public class CommentUserNotificationService extends CommentActionListener {
    * @return a SilverpeasTemplate instance.
    */
   private SilverpeasTemplate aNotificationTemplate(final Comment comment,
-          final SilverpeasContent commentedContent) {
+      final SilverpeasContent commentedContent) {
     ResourceLocator settings = getCommentService().getComponentSettings();
     Properties templateConfiguration = new Properties();
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
-            settings.getString("templatePath"));
+        settings.getString("templatePath"));
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
-            settings.getString("customersTemplatePath"));
+        settings.getString("customersTemplatePath"));
 
     SilverpeasTemplate template =
-            SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+        SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
     template.setAttribute(NOTIFICATION_CONTENT_ATTRIBUTE, commentedContent);
     template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, comment);
     return template;
