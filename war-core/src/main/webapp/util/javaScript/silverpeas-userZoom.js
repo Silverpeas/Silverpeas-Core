@@ -131,7 +131,7 @@
       append($('<p>').addClass('name').append(user.fullName)).
       append($('<p>').addClass('message').append(user.status)).
       append($('<p>').addClass('connection').append(connectionStatus(user))).
-      append($('<p>').append("")).
+      append($('<a>', {href: '#'}).addClass('link invitation').append($.i18n.prop('invitation.send')).invitMe(user)).
       append($('<button>').append($.i18n.prop('myProfile.tab.profile')).click(function() {
         document.location.href = user.webPage;
       })).

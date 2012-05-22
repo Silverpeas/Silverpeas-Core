@@ -183,7 +183,7 @@ function showEmptyListMessage() {
 								<a onclick="confirmAccept(<%=id %>)" class="link invitation" href="#"><fmt:message key="myProfile.invitations.accept" /></a>
 	                    		<a onclick="confirmIgnore(<%=id %>)" class="link notification" href="#"><fmt:message key="myProfile.invitations.ignore" /></a>
 	                    	<% } %>
-	                    	<a onclick="initNotification(<%=senderId %>,'<%=invitation.getUserDetail().getDisplayedName() %>')" class="link notification" href="#"><fmt:message key="GML.notification.send" /></a>
+	                    	<a rel="<%=senderId %>,<%=invitation.getUserDetail().getDisplayedName()%>" class="link notification" href="#"><fmt:message key="GML.notification.send" /></a>
 					</div>
 					<div class="txt">
 	                	<p>
@@ -213,5 +213,3 @@ function showEmptyListMessage() {
 	<p><fmt:message key="myProfile.invitations.dialog.ignore.message" /> <span class="userName"></span> ?</p>
 </div>
 </div>
-
-<%@include file="../notificationDialog.jsp" %>

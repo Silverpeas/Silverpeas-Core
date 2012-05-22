@@ -56,6 +56,7 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
+  private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -100,14 +101,21 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       xhtml.addElement(breadcrumb);
     } else if (userZoom.name().equals(getName())) {
       script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
+      script invitMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_INVITME);
       script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_USERZOOM);
       xhtml.addElement(profile);
+      xhtml.addElement(invitMe);
       xhtml.addElement(userZoom);
     } else if (invitme.name().equals(getName())) {
       script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
-      script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_INVITME);
+      script invitMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_INVITME);
       xhtml.addElement(profile);
-      xhtml.addElement(userZoom);
+      xhtml.addElement(invitMe);
+    } else if (messageme.name().equals(getName())) {
+      script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
+      script messageMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_MESSAGEME);
+      xhtml.addElement(profile);
+      xhtml.addElement(messageMe);
     }
     xhtml.output(getJspContext().getOut());
   }

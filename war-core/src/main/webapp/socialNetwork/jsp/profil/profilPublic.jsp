@@ -55,6 +55,7 @@
   <head>
     <view:looknfeel />
     <view:includePlugin name="invitme"/>
+    <view:includePlugin name="messageme"/>
   </head>
   <body id="publicProfile">
     <view:window>
@@ -136,8 +137,5 @@
 	</div>
 </div><!-- /publicProfileContenu  -->   
 </view:window>
-    
-    <%@include file="../notificationDialog.jsp" %>
-    
   </body>
 </html>
