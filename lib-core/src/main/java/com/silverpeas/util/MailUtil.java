@@ -53,6 +53,7 @@ public class MailUtil {
   private static final String login;
   private static final String password;
   private static final String notificationAddress;
+  private static final String notificationPersonalName;
   private static Iterable<String> domains;
   public static final ResourceLocator configuration = new ResourceLocator(
       "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
@@ -67,6 +68,7 @@ public class MailUtil {
     debug = configuration.getBoolean(SMTP_DEBUG, false);
     secure = configuration.getBoolean(SMTP_SECURE, false);
     notificationAddress = configuration.getString("NotificationAddress");
+    notificationPersonalName = configuration.getString("NotificationPersonalName");
     reloadConfiguration(configuration.getString("AuthorizedDomains", ""));
   }
 
@@ -85,8 +87,7 @@ public class MailUtil {
   public synchronized static boolean isDomainAuthorized(String email) {
     if (StringUtil.isDefined(email)) {
       String emailAddress = email.toLowerCase();
-      for (String domain :
-          domains) {
+      for (String domain : domains) {
         if (emailAddress.endsWith(domain.toLowerCase())) {
           return true;
         }
@@ -100,6 +101,21 @@ public class MailUtil {
     String senderAddress = getAuthorizedEmail(pFrom);
     return new InternetAddress(emailFormatter.format(new String[]{pFrom.substring(0, pFrom.indexOf(
           '@')), senderAddress}), true);
+  }
+  
+  public static synchronized InternetAddress getAuthorizedEmailAddress(String pFrom,
+      String personalName) throws AddressException, UnsupportedEncodingException {
+    String senderAddress = getAuthorizedEmail(pFrom);
+    if (senderAddress.equals(pFrom)) {
+      // email is authorized, use it as it
+      InternetAddress address = new InternetAddress(pFrom, true);
+      address.setPersonal(personalName, "UTF-8");
+      return address;
+    }
+    // email is not authorized, use default one and default personal name too
+    InternetAddress address = new InternetAddress(senderAddress, true);
+    address.setPersonal(notificationPersonalName, "UTF-8");
+    return address;
   }
 
   public synchronized static String getAuthorizedEmail(String email) {

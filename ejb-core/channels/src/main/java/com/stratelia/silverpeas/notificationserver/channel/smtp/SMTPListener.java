@@ -32,12 +32,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import static com.silverpeas.util.MailUtil.*;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -83,7 +83,7 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
     String tmpAttachmentIdString = (String) keyValue.get("ATTACHMENTID");
     String tmpSourceString = (String) keyValue.get("SOURCE");
 
-    if (tmpSourceString != null && tmpSourceString.length() > 0) {
+    if (StringUtil.isDefined(tmpSourceString)) {
       tmpSubjectString = tmpSourceString + " : " + tmpSubjectString;
     }
 
@@ -108,10 +108,12 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
       }
 
       if (tmpAttachmentIdString == null) {
-        sendEmail(tmpFromString, p_Message.getTargetReceipt(), tmpSubjectString, body, true);
+        sendEmail(tmpFromString, p_Message.getSenderName(), p_Message.getTargetReceipt(),
+            tmpSubjectString, body, true);
       } else {
         // For the moment, send the email without attachment
-        sendEmail(tmpFromString, p_Message.getTargetReceipt(), tmpSubjectString, body, false);
+        sendEmail(tmpFromString, p_Message.getSenderName(), p_Message.getTargetReceipt(),
+            tmpSubjectString, body, false);
       }
     }
   }
@@ -120,11 +122,12 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
    * send email to destination using SMTP protocol and JavaMail 1.3 API (compliant with MIME
    * format).
    * @param pFrom : from field that will appear in the email header.
+   * @param personalName : @see {@link InternetAddress}
    * @param pTo : the email target destination.
    * @param pSubject : the subject of the email.
    * @param pMessage : the message or payload of the email.
    */
-  private void sendEmail(String pFrom, String pTo, String pSubject,
+  private void sendEmail(String pFrom, String personalName, String pTo, String pSubject,
       String pMessage, boolean htmlFormat) throws NotificationServerException {
     // retrieves system properties and set up Delivery Status Notification
     // @see RFC1891
@@ -135,15 +138,18 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
     javax.mail.Session session = javax.mail.Session.getInstance(properties, null);
     session.setDebug(isDebug()); // print on the console all SMTP messages.
     try {
-      InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom);
-      InternetAddress[] replyToAddress = null;
+      InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom, personalName);
+      InternetAddress replyToAddress = null;
       InternetAddress[] toAddress = null;
       // parsing destination address for compliance with RFC822
       try {
         toAddress = InternetAddress.parse(pTo, false);
         if (!AdminReference.getAdminService().getAdministratorEmail().equals(pFrom) &&
             !fromAddress.getAddress().equals(pFrom)) {
-          replyToAddress = InternetAddress.parse(pFrom, false);
+          replyToAddress = new InternetAddress(pFrom, false);
+          if (StringUtil.isDefined(personalName)) {
+            replyToAddress.setPersonal(personalName, "UTF-8");
+          }
         }
       } catch (AddressException e) {
         SilverTrace.warn("smtp", "SMTPListner.sendEmail()",
@@ -151,7 +157,9 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
       }
       MimeMessage email = new MimeMessage(session);
       email.setFrom(fromAddress);
-      email.setReplyTo(replyToAddress);
+      if (replyToAddress != null) {
+        email.setReplyTo(new InternetAddress[]{replyToAddress});
+      }
       email.setRecipients(javax.mail.Message.RecipientType.TO, toAddress);
       email.setHeader("Precedence", "list");
       email.setHeader("List-ID", fromAddress.getAddress());
