@@ -78,8 +78,7 @@ public class ZipManagerTest {
       assertNotNull(zipFile.getEntry("ZipSample/level1/simple.txt"));
       assertNotNull(zipFile.getEntry("ZipSample/level1/level2b/simple.txt"));
       assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/simple.txt"));
-      assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/"
-        + new String("sïmplifié.txt".getBytes("UTF-8"), Charset.defaultCharset())));
+      assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/sïmplifié.txt"));
       assertNull(zipFile.getEntry("ZipSample/level1/level2c/"));
     } finally {
       zipFile.close();
