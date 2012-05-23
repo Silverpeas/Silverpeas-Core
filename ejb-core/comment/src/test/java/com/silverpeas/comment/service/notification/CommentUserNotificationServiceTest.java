@@ -23,33 +23,55 @@
  */
 package com.silverpeas.comment.service.notification;
 
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import java.util.List;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.DefaultCommentService;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static com.silverpeas.comment.service.notification.NotificationMatchers.isSetIn;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
-import static org.mockito.Mockito.*;
-import static com.silverpeas.comment.service.notification.NotificationMatchers.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.silverpeas.comment.mock.OrganizationControllerMocking;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.DefaultCommentService;
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Unit tests notification of the users at comment adding on a given Silverpeas content.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/spring-comment-user-notification.xml")
 public class CommentUserNotificationServiceTest {
 
   /**
@@ -98,6 +120,9 @@ public class CommentUserNotificationServiceTest {
   private ArgumentCaptor<NotificationMetaData> notifInfoCaptor =
       ArgumentCaptor.forClass(NotificationMetaData.class);
 
+  @Inject
+  private OrganizationControllerMocking organizationController;
+
   public CommentUserNotificationServiceTest() {
   }
 
@@ -131,6 +156,7 @@ public class CommentUserNotificationServiceTest {
    */
   @Test
   public void commentAddedShouldNotifyClassifiedAndCommentAuthors() throws Exception {
+    mockGetUserDetailReturnedValue();
     notificationService.commentAdded(concernedComment);
     verify(notificationService).getNotificationSender(CLASSIFIED_INSTANCEID);
     verify(notificationSender).notifyUser(notifInfoCaptor.capture());
@@ -227,6 +253,17 @@ public class CommentUserNotificationServiceTest {
   protected NotificationSender mockNotificationSender() throws Exception {
     notificationSender = mock(NotificationSender.class);
     return notificationSender;
+  }
+
+  protected void mockGetUserDetailReturnedValue() {
+    doAnswer(new Answer<UserDetail>() {
+      public UserDetail answer(InvocationOnMock invocation) {
+        Object[] args = invocation.getArguments();
+        UserDetail userDetail = new UserDetail();
+        userDetail.setId((String) args[0]);
+        return userDetail;
+      }
+    }).when(organizationController.getMock()).getUserDetail(anyString());
   }
 
   /**
