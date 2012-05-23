@@ -61,8 +61,8 @@ public class InterestCentersHelper {
       ic.setQuery(request.getParameter("query"));
       ic.setWorkSpaceID(request.getParameter("spaces"));
       ic.setPeasID(request.getParameter("componentSearch"));
-      ic.setAfterDate(getDate(request.getParameter("afterdate"), pdcSC));
-      ic.setBeforeDate(getDate(request.getParameter("beforedate"), pdcSC));
+      ic.setAfterDate(getDate(request.getParameter("createafterdate"), pdcSC));
+      ic.setBeforeDate(getDate(request.getParameter("createbeforedate"), pdcSC));
       ic.setAuthorID(request.getParameter("authorSearch"));
 
       List<Criteria> criteria = PdcSubscriptionHelper.getCriteriasFromRequest(request);
@@ -78,11 +78,10 @@ public class InterestCentersHelper {
       Exception {
     SilverTrace.info("pdcPeas", "InterestCentersHelper.getDate()", "root.MSG_GEN_PARAM_VALUE",
         "date= " + date);
-    java.util.Date utilDate = null;
     if (StringUtil.isDefined(date)) {
-      utilDate = DateUtil.stringToDate(date, pdcSC.getLanguage());
+      return DateUtil.stringToDate(date, pdcSC.getLanguage());
     }
-    return utilDate;
+    return null;
   }
 
   private InterestCentersHelper() {
