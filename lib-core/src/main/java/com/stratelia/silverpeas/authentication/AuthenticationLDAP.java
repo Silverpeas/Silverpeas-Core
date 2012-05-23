@@ -30,16 +30,7 @@
 
 package com.stratelia.silverpeas.authentication;
 
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
 
-import com.google.common.base.Charsets;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
@@ -52,6 +43,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+import org.silverpeas.util.Charsets;
 
 /**
  * This class performs the LDAP authentification
@@ -80,6 +80,7 @@ public class AuthenticationLDAP extends Authentication {
   protected String m_UserLoginFieldName;
   protected LDAPConnection m_LDAPConnection = null;
 
+  @Override
   public void init(String authenticationServerName, ResourceLocator propFile) {
     // Lecture du fichier de proprietes
     m_IsSecured = getBooleanProperty(propFile, authenticationServerName + ".LDAPSecured", false);

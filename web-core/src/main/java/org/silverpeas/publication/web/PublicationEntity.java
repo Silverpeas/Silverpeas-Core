@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.publication.web;
 
@@ -42,11 +39,11 @@ import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.apache.commons.lang3.CharEncoding;
 
 public class PublicationEntity implements Exposable {
 
   private static final long serialVersionUID = 7746081841765736096L;
-  
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -61,20 +58,22 @@ public class PublicationEntity implements Exposable {
   private UserProfileEntity creator;
   @XmlElement
   private UserProfileEntity lastUpdater;
+
   @Override
   public URI getURI() {
     return uri;
   }
-  
+
   /**
    * Creates a new publication entity from the specified publication.
+   *
    * @param node the node to entitify.
    * @return the entity representing the specified node.
    */
   public static PublicationEntity fromPublicationDetail(final PublicationDetail publication, URI uri) {
     return new PublicationEntity(publication, uri);
   }
-  
+
   private PublicationEntity(final PublicationDetail publication, URI uri) {
     this.setName(publication.getName());
     this.setDescription(publication.getDescription());
@@ -83,12 +82,12 @@ public class PublicationEntity implements Exposable {
     this.creator = UserProfileEntity.fromUser(publication.getCreator());
     this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
   }
-  
+
   public PublicationEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails,
       String baseURI, String token) {
-    if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
+    if (attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
-      for(AttachmentDetail attachment : attachmentDetails) {
+      for (AttachmentDetail attachment : attachmentDetails) {
         AttachmentEntity entity = AttachmentEntity.fromAttachment(attachment);
         URI sharedUri = getAttachmentSharedURI(attachment, baseURI, token);
         entity.setSharedUri(sharedUri);
@@ -98,13 +97,13 @@ public class PublicationEntity implements Exposable {
     }
     return this;
   }
-  
+
   private URI getAttachmentSharedURI(AttachmentDetail attachment, String baseURI, String token) {
     URI sharedUri;
     try {
-      sharedUri =
-          new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" +
-              token + "/" + attachment.getPK().getId() + "/" + URLEncoder.encode(attachment.getLogicalName(), "utf-8"));
+      sharedUri = new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" + token + "/"
+          + attachment.getPK().getId() + "/" + URLEncoder.encode(attachment.getLogicalName(),
+          CharEncoding.UTF_8));
     } catch (Exception e) {
       Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, e);
       throw new RuntimeException(e.getMessage(), e);
@@ -139,5 +138,4 @@ public class PublicationEntity implements Exposable {
   public Date getUpdateDate() {
     return updateDate;
   }
-
 }

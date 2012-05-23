@@ -60,7 +60,6 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 /**
- * He
  *
  * @author Emmanuel Hugonnet
  */
@@ -97,8 +96,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @throws LoginException
    * @throws RepositoryException
    */
-  public static Session getSystemSession() throws LoginException,
-      RepositoryException {
+  public static Session getSystemSession() throws LoginException, RepositoryException {
     return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY)).
         login(new SilverpeasSystemCredentials());
   }

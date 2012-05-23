@@ -95,6 +95,9 @@ public class DBUtil {
 
   public static void clearTestInstance() {
     synchronized (DBUtil.class) {
+      if(instance != null) {
+        DBUtil.close(instance.connectionForTest);
+      }
       instance = new DBUtil(null);
       dsStock.clear();
     }
@@ -223,11 +226,10 @@ public class DBUtil {
 
   protected static int getMaxId(Connection privateConnection, String tableName, String idName)
           throws SQLException {
-    int max = 0;
     // tentative d'update
     SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
     try {
-      max = updateMaxFromTable(privateConnection, tableName);
+      int max = updateMaxFromTable(privateConnection, tableName);
       privateConnection.commit();
       return max;
     } catch (Exception e) {
@@ -236,7 +238,7 @@ public class DBUtil {
       SilverTrace.debug("util", "DBUtil.getNextId",
               "impossible d'updater, if faut recuperer la valeur initiale", e);
     }
-    max = getMaxFromTable(privateConnection, tableName, idName);
+    int max = getMaxFromTable(privateConnection, tableName, idName);
     PreparedStatement createStmt = null;
     try {
       // on enregistre le max

@@ -35,7 +35,6 @@ public class SimpleDocument {
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
   public final static String FILE_PREFIX = "file_";
-  
   private SimpleDocumentPK pk;
   private String foreignId;
   private int order;
@@ -44,6 +43,7 @@ public class SimpleDocument {
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       SimpleAttachment file) {
+    this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
     this.versioned = versioned;
@@ -206,19 +206,26 @@ public class SimpleDocument {
   }
 
   public String getId() {
-    return pk.getId();
+    if (pk != null) {
+      return pk.getId();
+    }
+    return null;
   }
 
   public void setId(String id) {
-    this.pk.setId(id);
+    if (pk != null) {
+      this.pk.setId(id);
+    } else {
+      this.pk = new SimpleDocumentPK(id);
+    }
+  }
+
+  public void setPK(SimpleDocumentPK pk) {
+    this.pk = pk;
   }
 
   public String getInstanceId() {
     return this.pk.getInstanceId();
-  }
-
-  public void setInstanceId(String instanceId) {
-    this.pk.setComponentName(instanceId);
   }
 
   public long getOldSilverpeasId() {
@@ -256,7 +263,7 @@ public class SimpleDocument {
   public SimpleAttachment getFile() {
     return file;
   }
-  
+
   public SimpleDocumentPK getPk() {
     return this.pk;
   }
@@ -283,5 +290,27 @@ public class SimpleDocument {
   public String toString() {
     return "SimpleDocument{" + "pk=" + pk + ", foreignId=" + foreignId + ", order=" + order
         + ", versioned=" + versioned + ", file=" + file + '}';
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 31 * hash + (this.pk != null ? this.pk.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final SimpleDocument other = (SimpleDocument) obj;
+    if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
+      return false;
+    }
+    return true;
   }
 }

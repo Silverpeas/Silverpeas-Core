@@ -23,8 +23,9 @@
  */
 package org.silverpeas.attachment.repository;
 
-
 import com.silverpeas.util.i18n.I18NHelper;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -73,19 +74,53 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     return null;
   }
 
-  public void fillNode(SimpleDocument document, Node documentNode) throws
+  public void fillNode(SimpleDocument document, Node documentNode) throws RepositoryException {
+    setDocumentNodeProperties(document, documentNode);
+    Node attachmentNode = getAttachmentNode(document.getFile().getNodeName(), documentNode);
+    attachmentConverter.fillNode(document.getFile(), attachmentNode);
+  }
+
+  private void setDocumentNodeProperties(SimpleDocument document, Node documentNode) throws
       RepositoryException {
     documentNode.setProperty(SLV_PROPERTY_FOREIGN_KEY, document.getForeignId());
     documentNode.setProperty(SLV_PROPERTY_VERSIONED, document.isVersioned());
     documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
     documentNode.setProperty(SLV_PROPERTY_OLD_ID, document.getOldSilverpeasId());
     documentNode.setProperty(SLV_PROPERTY_INSTANCEID, document.getInstanceId());
+  }
+
+  private Node getAttachmentNode(String attachmentNodeName, Node documentNode) throws
+      RepositoryException {
     Node attachmentNode;
-    if(documentNode.hasNode(document.getFile().getNodeName())) {
-      attachmentNode = documentNode.getNode(document.getFile().getNodeName());
+    if (documentNode.hasNode(attachmentNodeName)) {
+      attachmentNode = documentNode.getNode(attachmentNodeName);
     } else {
-      attachmentNode = documentNode.addNode(document.getFile().getNodeName());
+      attachmentNode = documentNode.addNode(attachmentNodeName, SLV_SIMPLE_ATTACHMENT);
     }
-    attachmentConverter.fillNode(document.getFile(), attachmentNode);
+    return attachmentNode;
+  }
+
+  void fillNode(SimpleDocument document, InputStream content, Node documentNode) throws
+      RepositoryException {
+    setDocumentNodeProperties(document, documentNode);
+    if (content != null) {
+      Node attachmentNode = getAttachmentNode(document.getFile().getNodeName(), documentNode);
+      attachmentConverter.fillNode(document.getFile(), attachmentNode);
+      attachmentConverter.setContent(attachmentNode, content, document.getContentType());
+    }
+  }
+
+  public void addAttachment(Node documentNode, SimpleAttachment attachment, InputStream content)
+      throws RepositoryException {
+    if (content != null) {
+      Node attachmentNode = getAttachmentNode(attachment.getNodeName(), documentNode);
+      attachmentConverter.fillNode(attachment, attachmentNode);
+      attachmentConverter.setContent(attachmentNode, content, attachment.getContentType());
+    }
+  }
+
+  public void removeAttachment(Node documentNode, String  language) throws RepositoryException {
+    Node attachmentNode = getAttachmentNode(SimpleDocument.FILE_PREFIX + language, documentNode);
+    attachmentNode.remove();
   }
 }

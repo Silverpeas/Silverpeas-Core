@@ -23,8 +23,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -72,6 +70,9 @@ import java.util.List;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.CharEncoding;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -293,7 +294,7 @@ public class GraphicElementFactory {
     String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
     String contextPath = getGeneralSettings().getString("ApplicationURL");
-    String charset = getGeneralSettings().getString("charset", "UTF-8");
+    String charset = getGeneralSettings().getString("charset", CharEncoding.UTF_8);
     StringBuilder code = new StringBuilder();
     code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
     code.append(charset);

@@ -31,7 +31,6 @@ import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.util.DateUtil;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.Date;
@@ -111,8 +110,7 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       Node node = session.getRootNode().getNode(instanceId).addNode(nodeName, SLV_SIMPLE_ATTACHMENT);
       SimpleAttachment expResult = new SimpleAttachment(fileName, language, title,
           description, 15L, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate, reservationDate,
-          alertDate,
-          expiryDate, status, formId);
+          alertDate, expiryDate, status, formId);
       expResult.setUpdated(updateDate);
       expResult.setUpdatedBy(updatedBy);
       assertThat(expResult.equals(expResult), is(true));

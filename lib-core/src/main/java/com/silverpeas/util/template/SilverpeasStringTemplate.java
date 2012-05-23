@@ -24,16 +24,15 @@
 
 package com.silverpeas.util.template;
 
+import com.silverpeas.util.template.renderer.DateRenderer;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
-
-import com.silverpeas.util.template.renderer.DateRenderer;
+import org.apache.commons.lang3.CharEncoding;
 
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
@@ -53,7 +52,7 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     if (!file.exists() || !file.isFile()) {
       group = new StringTemplateGroup(fileName, templateConfig.getProperty(TEMPLATE_ROOT_DIR));
     }
-    group.setFileCharEncoding("UTF-8");
+    group.setFileCharEncoding(CharEncoding.UTF_8);
     StringTemplate template = group.getInstanceOf(fileName);
     return applyAttributes(template);
   }

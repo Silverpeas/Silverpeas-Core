@@ -23,10 +23,6 @@ package com.silverpeas.util;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import com.silverpeas.util.i18n.I18NHelper;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
@@ -36,18 +32,22 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
 
 public class StringUtil extends StringUtils {
 
-  private static final char[] PUNCTUATION = new char[]{'&', '\"', '\'', '{', '(', '[', '-', '|', '`',
+  private static final char[] PUNCTUATION =
+      new char[]{'&', '\"', '\'', '{', '(', '[', '-', '|', '`',
     '_', '\\', '^', '@', ')', ']', '=', '+', '}', '?', ',', '.', ';', '/', ':', '!', '§',
     '%', '*', '$', '£', '€', '©', '²'};
   private static final String PATTERN_START = "{";
   private static final String PATTERN_END = "}";
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
   private static final String EMAIL_PATTERN =
-    "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
+      "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
 
   public static boolean isDefined(String parameter) {
     return (parameter != null && parameter.length() > 0 && !"null".equalsIgnoreCase(parameter));
@@ -139,7 +139,7 @@ public class StringUtil extends StringUtils {
         if (values.containsKey(patternKey)) {
           value = values.get(patternKey);
           sb.append(label.substring(0, startIndex)).append(
-            value != null ? value.toString() : "");
+              value != null ? value.toString() : "");
         } else {
           sb.append(label.substring(0, endIndex + 1));
         }
@@ -174,11 +174,13 @@ public class StringUtil extends StringUtils {
 
   /**
    * Validate the form of an email address. <P> Return <tt>true</tt> only if <ul> <li>
-   * <tt>aEmailAddress</tt> can successfully construct an {@link javax.mail.internet.InternetAddress}
-   * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two tokens which satisfy {@link hirondelle.web4j.util.Util#textHasContent}.
-   * </ul> <P> The second condition arises since local email addresses, simply of the form
-   * "<tt>albert</tt>", for example, are valid for {@link javax.mail.internet.InternetAddress}, but
-   * almost always undesired.
+   * <tt>aEmailAddress</tt> can successfully construct an
+   * {@link javax.mail.internet.InternetAddress} <li>when parsed with "
+   *
+   * @" as delimiter, <tt>aEmailAddress</tt> contains two tokens which satisfy
+   * {@link hirondelle.web4j.util.Util#textHasContent}. </ul> <P> The second condition arises since
+   * local email addresses, simply of the form "<tt>albert</tt>", for example, are valid for
+   * {@link javax.mail.internet.InternetAddress}, but almost always undesired.
    *
    * @param aEmailAddress the address to be validated
    * @return true is the address is a valid email address - false otherwise.
@@ -213,8 +215,8 @@ public class StringUtil extends StringUtils {
    */
   public static boolean getBooleanValue(final String expression) {
     return "true".equalsIgnoreCase(expression) || "yes".equalsIgnoreCase(expression)
-      || "y".equalsIgnoreCase(expression) || "oui".equalsIgnoreCase(expression)
-      || "1".equalsIgnoreCase(expression);
+        || "y".equalsIgnoreCase(expression) || "oui".equalsIgnoreCase(expression)
+        || "1".equalsIgnoreCase(expression);
   }
 
   /**
@@ -227,7 +229,7 @@ public class StringUtil extends StringUtils {
   public static String detectEncoding(byte[] data, String declaredEncoding) {
     CharsetDetector detector = new CharsetDetector();
     if (!StringUtil.isDefined(declaredEncoding)) {
-      detector.setDeclaredEncoding("ISO-8859-1");
+      detector.setDeclaredEncoding(CharEncoding.ISO_8859_1);
     } else {
       detector.setDeclaredEncoding(declaredEncoding);
     }
@@ -244,7 +246,7 @@ public class StringUtil extends StringUtils {
    * @return
    */
   public static String detectStringEncoding(byte[] data, String declaredEncoding) throws
-    UnsupportedEncodingException {
+      UnsupportedEncodingException {
     if (data != null) {
       String value = new String(data, declaredEncoding);
       if (!checkEncoding(value)) {
@@ -265,7 +267,7 @@ public class StringUtil extends StringUtils {
       char[] chars = value.toCharArray();
       for (char currentChar : chars) {
         if (!Character.isLetterOrDigit(currentChar) && !Character.isWhitespace(currentChar)
-          && !ArrayUtil.contains(PUNCTUATION, currentChar)) {
+            && !ArrayUtil.contains(PUNCTUATION, currentChar)) {
           return false;
         }
       }
@@ -274,14 +276,15 @@ public class StringUtil extends StringUtils {
 
   }
 
-  private static String reencode(byte[] data, Set<String> encodings, String declaredEncoding) throws UnsupportedEncodingException {
-    if(!encodings.isEmpty()) {
+  private static String reencode(byte[] data, Set<String> encodings, String declaredEncoding) throws
+      UnsupportedEncodingException {
+    if (!encodings.isEmpty()) {
       String encoding = encodings.iterator().next();
       String value = new String(data, encoding);
       if (!checkEncoding(value)) {
         encodings.remove(encoding);
         return reencode(data, encodings, declaredEncoding);
-      }    
+      }
       return encoding;
     }
     return declaredEncoding;
@@ -297,7 +300,7 @@ public class StringUtil extends StringUtils {
   public static Set<String> detectMaybeEncoding(byte[] data, String declaredEncoding) {
     CharsetDetector detector = new CharsetDetector();
     if (!StringUtil.isDefined(declaredEncoding)) {
-      detector.setDeclaredEncoding("ISO-8859-1");
+      detector.setDeclaredEncoding(CharEncoding.ISO_8859_1);
     } else {
       detector.setDeclaredEncoding(declaredEncoding);
     }

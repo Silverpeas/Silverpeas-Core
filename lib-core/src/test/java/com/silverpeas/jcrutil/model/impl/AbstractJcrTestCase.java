@@ -53,7 +53,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -99,8 +99,8 @@ public abstract class AbstractJcrTestCase {
   }
 
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        this.getClass().getResourceAsStream("test-attachment-dataset.xml")));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(this.
+        getClass().getResourceAsStream("test-attachment-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
@@ -142,8 +142,7 @@ public abstract class AbstractJcrTestCase {
     InputStream in = null;
     Reader reader = null;
     try {
-      in = fileNode.getNode(JcrConstants.JCR_CONTENT).getProperty(
-          JcrConstants.JCR_DATA).getStream();
+      in = fileNode.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getStream();
       writer = new CharArrayWriter();
       reader = new InputStreamReader(in);
       char[] buffer = new char[8];
@@ -208,9 +207,9 @@ public abstract class AbstractJcrTestCase {
   /**
    * Workaround to be able to use Sun's JNDI file system provider on Unix
    *
-   * @param ic       : the JNDI initial context
+   * @param ic : the JNDI initial context
    * @param jndiName : the binding name
-   * @param ref      : the reference to be bound
+   * @param ref : the reference to be bound
    * @throws NamingException
    */
   protected void rebind(InitialContext ic, String jndiName, Object ref) throws NamingException {

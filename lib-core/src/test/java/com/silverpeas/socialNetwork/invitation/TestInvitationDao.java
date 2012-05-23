@@ -21,7 +21,6 @@
 package com.silverpeas.socialNetwork.invitation;
 
 import com.stratelia.webactiv.util.DBUtil;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -33,7 +32,7 @@ import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +40,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 
 import static org.junit.Assert.*;
 
@@ -54,7 +52,6 @@ public class TestInvitationDao {
 
   @Inject
   private DataSource dataSource;
-  
   private InvitationDao dao = new InvitationDao();
 
   @Before
@@ -63,15 +60,14 @@ public class TestInvitationDao {
     DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
     DBUtil.getInstanceForTest(dataSource.getConnection());
   }
-  
-  
+
   protected ReplacementDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-            TestInvitationDao.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/socialNetwork/invitation/socialNetwork_Invitation-dataset.xml")));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
+        TestInvitationDao.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/socialNetwork/invitation/socialNetwork_Invitation-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
-    
+
   }
 
   @After
@@ -117,7 +113,7 @@ public class TestInvitationDao {
     Connection connexion = null;
 
     Invitation expectedLisaInviteMartha = new Invitation(2, 3, "lisa to martha", toDate(2010, 4, 3,
-            11, 23, 15));
+        11, 23, 15));
     expectedLisaInviteMartha.setId(2);
     try {
       connexion = getConnection();
@@ -139,10 +135,10 @@ public class TestInvitationDao {
     Connection connexion = null;
 
     Invitation expectedLisaInviteBart =
-            new Invitation(2, 6, "lisa to bart", toDate(2011, 5, 2, 10, 8, 00));
+        new Invitation(2, 6, "lisa to bart", toDate(2011, 5, 2, 10, 8, 00));
     expectedLisaInviteBart.setId(7);
     Invitation expectedBartInviteLisa =
-            new Invitation(3, 2, "bart to lisa", toDate(2011, 5, 2, 10, 5, 00));
+        new Invitation(3, 2, "bart to lisa", toDate(2011, 5, 2, 10, 5, 00));
     expectedBartInviteLisa.setId(6);
     try {
       connexion = getConnection();
@@ -168,7 +164,7 @@ public class TestInvitationDao {
     Connection connexion = null;
 
     Invitation simpsonInviteLisa = new Invitation(1, 2, "simpson to lisa", toDate(2010,
-            Calendar.FEBRUARY, 1, 10, 34, 15));
+        Calendar.FEBRUARY, 1, 10, 34, 15));
     int id = 1;
     simpsonInviteLisa.setId(1);
     try {
@@ -178,11 +174,11 @@ public class TestInvitationDao {
       // assertEquals("Invitation in db not as expected", simpsonInviteLisa, dbInvitation);
       assertEquals("Contact in db not as expected", simpsonInviteLisa.getId(), dbInvitation.getId());
       assertEquals("Contact in db not as expected", simpsonInviteLisa.getSenderId(), dbInvitation.
-              getSenderId());
+          getSenderId());
       assertEquals("Contact in db not as expected", simpsonInviteLisa.getReceiverId(), dbInvitation.
-              getReceiverId());
+          getReceiverId());
       assertEquals("Contact in db not as expected", simpsonInviteLisa.getInvitationDate(),
-              dbInvitation.getInvitationDate());
+          dbInvitation.getInvitationDate());
     } finally {
       DBUtil.close(connexion);
     }
@@ -195,9 +191,9 @@ public class TestInvitationDao {
   public void testGetAllMyInvitationsSent() throws Exception {
     Connection connexion = null;
     Invitation simpsonInviteLisa = new Invitation(1, 2, "simpson to lisa", toDate(2010,
-            Calendar.FEBRUARY, 1, 10, 34, 15));
+        Calendar.FEBRUARY, 1, 10, 34, 15));
     Invitation simpsonInviteNabil = new Invitation(1, 4, "simpson to nabil", toDate(2010,
-            Calendar.JULY, 2, 10, 33, 10));
+        Calendar.JULY, 2, 10, 33, 10));
     int myId = 1;
     try {
       connexion = getConnection();
@@ -222,15 +218,15 @@ public class TestInvitationDao {
     Connection connexion = null;
 
     Invitation marthanviteSimpson = new Invitation(3, 1, "martha to simpson", toDate(2010,
-            Calendar.MAY, 11, 15, 25, 32));
+        Calendar.MAY, 11, 15, 25, 32));
 
     Invitation jacquesinviteSimpson = new Invitation(5, 1, "jacques to simpson", toDate(2010,
-            Calendar.JULY, 2, 10, 33, 10));
+        Calendar.JULY, 2, 10, 33, 10));
     int myId = 1;
     try {
       connexion = getConnection();
       List<Invitation> invitations =
-              dao.getAllMyInvitationsReceive(connexion, myId);
+          dao.getAllMyInvitationsReceive(connexion, myId);
       assertNotNull("Invitation should exist", invitations);
       assertEquals("Should have 2 invitations in db", 2, invitations.size());
       marthanviteSimpson.setId(invitations.get(0).getId());

@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,14 +56,15 @@ import javax.jcr.version.VersionException;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.JcrConstants;
 
-import static com.silverpeas.jcrutil.JcrConstants.*;
+import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_NAME;
+import static javax.jcr.Property.*;
 
 /**
  *
  * @author ehugonnet
  */
 public abstract class AbstractJcrConverter {
-  
+
   /**
    * Return the property value as String for a JCR Node. If the property doesn't exist return null.
    *
@@ -107,7 +109,7 @@ public abstract class AbstractJcrConverter {
    * @throws ConstraintViolationException
    * @throws RepositoryException
    */
-  protected void addStringProperty(Node node, String propertyName,
+  public void addStringProperty(Node node, String propertyName,
       String value) throws VersionException, LockException,
       ConstraintViolationException, RepositoryException {
     if (value == null) {
@@ -132,7 +134,7 @@ public abstract class AbstractJcrConverter {
    * @throws ConstraintViolationException
    * @throws RepositoryException
    */
-  protected void addDateProperty(Node node, String propertyName, Date value)
+  public void addDateProperty(Node node, String propertyName, Date value)
       throws VersionException, LockException, ConstraintViolationException,
       RepositoryException {
     if (value == null) {
@@ -160,7 +162,7 @@ public abstract class AbstractJcrConverter {
    * @throws ConstraintViolationException
    * @throws RepositoryException
    */
-  protected void addCalendarProperty(Node node, String propertyName,
+  public void addCalendarProperty(Node node, String propertyName,
       Calendar value) throws VersionException, LockException,
       ConstraintViolationException, RepositoryException {
     if (value == null) {
@@ -226,9 +228,10 @@ public abstract class AbstractJcrConverter {
     }
     return 0;
   }
-  
+
   /**
-   * Return the property value as a boolean for a JCR Node. If the property doesn't exist return false.
+   * Return the property value as a boolean for a JCR Node. If the property doesn't exist return
+   * false.
    *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
@@ -295,8 +298,7 @@ public abstract class AbstractJcrConverter {
    * @return the name of the node.
    * @throws UtilException
    */
-  protected String computeUniqueName(String prefix, String tableName)
-      throws UtilException {
+  protected String computeUniqueName(String prefix, String tableName) throws UtilException {
     return prefix + DBUtil.getNextId(tableName, null);
   }
 
@@ -306,10 +308,9 @@ public abstract class AbstractJcrConverter {
    * @param content
    * @param mimeType
    * @throws RepositoryException
-   * @throws IOException
    */
-  protected void setContent(Node fileNode, InputStream content, String mimeType) throws
-      RepositoryException, IOException {
+  public void setContent(Node fileNode, InputStream content, String mimeType) throws
+      RepositoryException {
     Node contentNode;
     if (fileNode.hasNode(JCR_CONTENT)) {
       contentNode = fileNode.getNode(JCR_CONTENT);
@@ -327,31 +328,30 @@ public abstract class AbstractJcrConverter {
     Calendar lastModified = Calendar.getInstance();
     contentNode.setProperty(JCR_LAST_MODIFIED, lastModified);
   }
-  
-  
+
   /**
    * Returns the mime-type of the jcr:content node stored in the fileNode.
+   *
    * @param fileNode
    * @return the mime-type of the jcr:content node stored in the fileNode.
    * @throws RepositoryException
    */
-  protected String getContentMimeType(Node fileNode) throws RepositoryException {
+  public String getContentMimeType(Node fileNode) throws RepositoryException {
     if (fileNode.hasNode(JCR_CONTENT)) {
       Node contentNode = fileNode.getNode(JCR_CONTENT);
       return getStringProperty(contentNode, JCR_MIMETYPE);
     }
     return null;
   }
-  
+
   /**
    *
    * @param fileNode
    * @param content
    * @param mimeType
    * @throws RepositoryException
-   * @throws IOException
    */
-  protected long getContentSize(Node fileNode) throws RepositoryException {
+  public long getContentSize(Node fileNode) throws RepositoryException {
     if (fileNode.hasNode(JCR_CONTENT)) {
       Node contentNode = fileNode.getNode(JCR_CONTENT);
       return getSize(contentNode);
@@ -365,13 +365,14 @@ public abstract class AbstractJcrConverter {
    * @param file
    * @param mimeType
    * @throws RepositoryException
-   * @throws IOException
    */
-  protected void setContent(Node fileNode, File file, String mimeType) throws RepositoryException,
-      IOException {
-    InputStream in = new FileInputStream(file);
+  public void setContent(Node fileNode, File file, String mimeType) throws RepositoryException {
+    InputStream in = null;
     try {
+      in = new FileInputStream(file);
       setContent(fileNode, in, mimeType);
+    } catch (FileNotFoundException ex) {
+      throw new RepositoryException(ex);
     } finally {
       IOUtils.closeQuietly(in);
     }
@@ -382,11 +383,9 @@ public abstract class AbstractJcrConverter {
    * @param fileNode
    * @param content
    * @param mimeType
-   * @throws RepositoryException
-   * @throws IOException
+   * @throws RepositoryExceptio
    */
-  protected void setContent(Node fileNode, byte[] content, String mimeType) throws
-      RepositoryException, IOException {
+  public void setContent(Node fileNode, byte[] content, String mimeType) throws RepositoryException {
     ByteArrayInputStream in = new ByteArrayInputStream(content);
     try {
       setContent(fileNode, in, mimeType);
@@ -400,9 +399,8 @@ public abstract class AbstractJcrConverter {
    * @param fileNode
    * @return
    * @throws RepositoryException
-   * @throws IOException
    */
-  protected byte[] getContent(Node fileNode) throws RepositoryException, IOException {
+  public byte[] getContent(Node fileNode) throws RepositoryException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     Node contentNode;
     if (fileNode.hasNode(JCR_CONTENT)) {
@@ -410,6 +408,8 @@ public abstract class AbstractJcrConverter {
       InputStream in = contentNode.getProperty(JCR_DATA).getBinary().getStream();
       try {
         IOUtils.copy(in, out);
+      } catch (IOException ioex) {
+        throw new RepositoryException(ioex);
       } finally {
         IOUtils.closeQuietly(in);
         IOUtils.closeQuietly(out);
@@ -425,9 +425,8 @@ public abstract class AbstractJcrConverter {
    * @param fileNode
    * @param out
    * @throws RepositoryException
-   * @throws IOException
    */
-  protected void getContent(Node fileNode, OutputStream out) throws RepositoryException, IOException {
+  public void getContent(Node fileNode, OutputStream out) throws RepositoryException, IOException {
     if (fileNode.hasNode(JCR_CONTENT)) {
       Node contentNode = fileNode.getNode(JCR_CONTENT);
       Binary content = contentNode.getProperty(JCR_DATA).getBinary();

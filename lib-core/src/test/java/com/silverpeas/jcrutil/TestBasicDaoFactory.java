@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.jcrutil;
 
@@ -34,6 +31,7 @@ import javax.jcr.Value;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -47,8 +45,8 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this.getClass().
-        getResourceAsStream("test-jcrutil-dataset.xml")));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(this.
+        getClass().getResourceAsStream("test-jcrutil-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
@@ -124,8 +122,8 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       Calendar calend = RandomGenerator.getRandomCalendar();
-      BasicDaoFactory
-          .addDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, calend.getTime());
+      BasicDaoFactory.addDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, calend.
+          getTime());
       assertTrue(node.hasProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE));
       assertEquals(calend.getTime(),
           node.getProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE).getDate().getTime());
@@ -187,8 +185,8 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       Calendar calend = RandomGenerator.getRandomCalendar();
       Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
       assertEquals(calend.getTimeInMillis(),
-          BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE)
-              .getTimeInMillis());
+          BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE).
+          getTimeInMillis());
       dateProperty.remove();
       assertNull(
           BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE));
@@ -261,9 +259,9 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     String uuid4 = RandomGenerator.getRandomString();
     Session session = BasicDaoFactory.getSystemSession();
     Value[] references = new Value[]{session.getValueFactory().createValue(uuid1),
-        session.getValueFactory().createValue(uuid2),
-        session.getValueFactory().createValue(uuid3),
-        session.getValueFactory().createValue(uuid4)};
+      session.getValueFactory().createValue(uuid2),
+      session.getValueFactory().createValue(uuid3),
+      session.getValueFactory().createValue(uuid4)};
     session.logout();
     Value[] result = BasicDaoFactory.removeReference(references, uuid3);
     assertNotNull(result);
