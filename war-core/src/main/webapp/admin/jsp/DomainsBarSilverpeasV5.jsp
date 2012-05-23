@@ -56,10 +56,13 @@ GraphicElementFactory   gef         = (GraphicElementFactory) session.getAttribu
 LookHelper  helper        = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 
 String spaceId    = request.getParameter("privateDomain");
+String subSpaceId    = request.getParameter("privateSubDomain");
 String componentId  = request.getParameter("component_id");
 
-if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId))
-{
+if (StringUtil.isDefined(subSpaceId)) {
+  spaceId = subSpaceId;
+}
+if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId)){
   spaceId = helper.getSpaceId(componentId);
 }
 
