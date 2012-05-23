@@ -64,6 +64,8 @@ public class NotificationMetaData implements java.io.Serializable {
 
   private Map<String, SilverpeasTemplate> templates;
 
+  private String originalExtraMessage = null;
+
   /**
    * Default Constructor
    */
@@ -216,7 +218,6 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message content
    */
   public String getContent() {
-    // return content;
     return getContent(I18NHelper.defaultLanguage);
   }
 
@@ -414,6 +415,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public void addExtraMessage(String message, String label, String language) {
+    originalExtraMessage = message;
     if (templates != null && !templates.isEmpty()) {
       templates.get(language).setAttribute("senderMessage", message);
     } else {
@@ -425,6 +427,10 @@ public class NotificationMetaData implements java.io.Serializable {
     }
   }
   
+  public String getOriginalExtraMessage() {
+    return originalExtraMessage;
+  }
+
   public String getFileName() {
     return fileName;
   }
@@ -449,8 +455,16 @@ public class NotificationMetaData implements java.io.Serializable {
     this.action = action;
   }
 
-  public Map<String, NotificationResourceData> getNotificationResourceData() {
-    return notificationResourceData;
+  public void setNotificationResourceData(final NotificationResourceData notificationResourceData) {
+    setNotificationResourceData(I18NHelper.defaultLanguage, notificationResourceData);
+  }
+
+  public void setNotificationResourceData(final String lang, final NotificationResourceData notificationResourceData) {
+    this.notificationResourceData.put(lang, notificationResourceData);
+  }
+
+  public NotificationResourceData getNotificationResourceData() {
+    return getNotificationResourceData(I18NHelper.defaultLanguage);
   }
 
   public NotificationResourceData getNotificationResourceData(final String lang) {

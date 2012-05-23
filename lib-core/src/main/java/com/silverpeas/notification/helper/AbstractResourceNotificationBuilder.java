@@ -1,0 +1,158 @@
+/*
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.silverpeas.notification.helper;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+/**
+ * @author Yohann Chastagnier
+ */
+public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNotificationBuilder {
+
+  private final T resource;
+
+  /**
+   * Default constructor
+   * @param resource
+   * @param title
+   * @param content
+   */
+  public AbstractResourceNotificationBuilder(final T resource, final String title, final String content) {
+    super(title, content);
+    this.resource = resource;
+  }
+
+  /**
+   * Default constructor
+   * @param resource
+   */
+  public AbstractResourceNotificationBuilder(final T resource) {
+    this(resource, null);
+  }
+
+  /**
+   * Default constructor
+   * @param resource
+   * @param notification
+   */
+  protected AbstractResourceNotificationBuilder(final T resource, final NotificationMetaData notification) {
+    super(notification);
+    this.resource = resource;
+  }
+
+  /**
+   * Performs common initializations from a given resource
+   */
+  protected final void initialize(final T resource) {
+    super.initialize();
+    getNotification().setLink(getResourceURL(resource));
+  }
+
+  /**
+   * Builds the notification data container
+   */
+  @Override
+  protected final void performBuild() {
+    initialize(resource);
+    performBuild(resource);
+    performNotificationResource(resource);
+  }
+
+  /**
+   * Builds the notification data container
+   */
+  protected abstract void performBuild(T resource);
+
+  /**
+   * Handling notification resource data (Used by delayed notifications for example)
+   * @param resource
+   */
+  protected void performNotificationResource(final T resource) {
+    final NotificationResourceData notificationResourceData = initializeNotificationResourceData();
+    performNotificationResource(resource, notificationResourceData);
+    getNotification().setNotificationResourceData(notificationResourceData);
+  }
+
+  /**
+   * Initializes from notification meta data already filled the container of notification resource data
+   * @return
+   */
+  protected NotificationResourceData initializeNotificationResourceData() {
+    final NotificationResourceData notificationResourceData = new NotificationResourceData();
+    notificationResourceData.setComponentInstanceId(getNotification().getComponentId());
+    notificationResourceData.setResourceUrl(getNotification().getLink());
+    if (resource instanceof SilverpeasContent) {
+      fill(notificationResourceData, (SilverpeasContent) resource);
+    }
+    return notificationResourceData;
+  }
+
+  /**
+   * Builds the notification resource data container. Don't forget to fill resourceId, resourceType, resourceName,
+   * resourceDescription (optional), resourceLocation (optional). If ResourceLocation is empty , it will be filled by
+   * the NotificationManager with the given componentInstanceId of NotificationMetaData
+   * @param resource
+   * @param notificationResourceData
+   */
+  protected abstract void performNotificationResource(T resource,
+      NotificationResourceData notificationResourceData);
+
+  /**
+   * Gets the URL of the resource
+   * @return
+   */
+  public String getResourceURL(final T resource) {
+    String resourceUrl = null;
+    if (resource instanceof SilverpeasContent) {
+      resourceUrl = URLManager.getSearchResultURL((SilverpeasContent) resource);
+    }
+    if (StringUtils.isBlank(resourceUrl)) {
+      resourceUrl = "";
+      SilverTrace.warn("NotificationBuider", "AbstractResourceNotificationBuilder.getResourceURL(T resource)",
+          "notificationBuider.RESOURCE_URL_IS_EMPTY");
+    }
+    return resourceUrl;
+  }
+
+  /*
+   * Tools
+   */
+
+  /**
+   * Fills notificationResourceData with silverpeasContent container
+   * @param notificationResourceData
+   * @param silverpeasContent
+   */
+  private final void fill(final NotificationResourceData notificationResourceData,
+      final SilverpeasContent silverpeasContent) {
+    notificationResourceData.setResourceId(silverpeasContent.getId());
+    notificationResourceData.setResourceType(silverpeasContent.getContributionType());
+  }
+}

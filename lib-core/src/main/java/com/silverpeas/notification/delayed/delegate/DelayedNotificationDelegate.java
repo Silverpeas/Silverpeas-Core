@@ -97,8 +97,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    */
 
   /**
-   * When user settings change, if the new frequency is NONE then the delayed notifications saved
-   * have to be sent
+   * When user settings change, if the new frequency is NONE then the delayed notifications saved have to be sent
    * @param userId
    * @param channel
    * @param frequency
@@ -214,8 +213,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   }
 
   /**
-   * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
-   * saved for all users
+   * Easy call of delayed notifications process. Forces the sending of all the delayed notifications saved for all users
    * @throws Exception
    */
   public static void executeForceDelayedNotificationsSending() throws Exception {
@@ -223,8 +221,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   }
 
   /**
-   * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
-   * saved for a given user
+   * Easy call of delayed notifications process. Forces the sending of all the delayed notifications saved for a given
+   * user
    * @param userId
    * @param channels
    * @throws Exception
@@ -235,8 +233,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   }
 
   /**
-   * Easy call of delayed notifications process. Forces the sending of all the delayed notifications
-   * saved for given users and channels
+   * Easy call of delayed notifications process. Forces the sending of all the delayed notifications saved for given
+   * users and channels
    * @param userIds
    * @param channels
    * @throws Exception
@@ -472,8 +470,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     getTemplate().setAttribute("nbNotifications", synthese.getNbNotifications());
     getTemplate().setAttribute("severalNotifications", (synthese.getNbNotifications() > 1));
     getTemplate().setAttribute("resources", synthese.getResources());
-    return getTemplate().applyFileTemplate(
-        "notification/delayed/messageLayout_" + synthese.getLanguage());
+    return getTemplate().applyFileTemplate("messageLayout_" + synthese.getLanguage());
   }
 
   /**
@@ -485,8 +482,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     clearTemplate();
     getTemplate().setAttribute("frequency",
         getStringTranslation("frequency" + synthese.getFrequency().name(), synthese.getLanguage()));
-    return getTemplate()
-        .applyFileTemplate("notification/delayed/subject_" + synthese.getLanguage());
+    return getTemplate().applyFileTemplate("subject_" + synthese.getLanguage());
   }
 
   /**
@@ -503,7 +499,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    */
   private SilverpeasTemplate getTemplate() {
     if (template == null) {
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore();
+      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification/delayed");
     }
     return template;
   }
@@ -526,8 +522,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   }
 
   /**
-   * Creating the notification data from a given channel, a given delayed notification and with the
-   * final message. Currently, only the SMTP channel is managed
+   * Creating the notification data from a given channel, a given delayed notification and with the final message.
+   * Currently, only the SMTP channel is managed
    * @param channel
    * @param synthese
    * @return
@@ -579,6 +575,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
     // Set the message
     notificationData.setMessage(synthese.getMessage());
+    notificationData.setSkipJavaToHtml(synthese.isHtmlMessage());
 
     // Set that the answer is not allowed
     notificationData.setAnswerAllowed(false);

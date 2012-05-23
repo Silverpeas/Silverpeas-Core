@@ -96,8 +96,8 @@ public class CommentUserNotificationService extends CommentActionListener {
   protected static final String NOTIFICATION_CONTENT_ATTRIBUTE = "content";
   @Inject
   private CommentService commentService;
-  private Map<String, SilverpeasComponentService> register =
-          new ConcurrentHashMap<String, SilverpeasComponentService>();
+  private Map<String, SilverpeasComponentService<? extends SilverpeasContent>> register =
+          new ConcurrentHashMap<String, SilverpeasComponentService<? extends SilverpeasContent>>();
 
   /**
    * Registers the specified Silverpeas component so that the comments created or removed in an
@@ -112,7 +112,7 @@ public class CommentUserNotificationService extends CommentActionListener {
    * @param component the name of the Silverpeas component (it must be unique).
    * @param getter the ResourceInfoGetter object specific to the registered Silverpeas Component 
    */
-  public void register(String component, final SilverpeasComponentService service) {
+  public void register(String component, final SilverpeasComponentService<? extends SilverpeasContent> service) {
     if (!isDefined(component) || service == null) {
       throw new IllegalArgumentException(
               "Either the component name or the component service is null or invalid");
@@ -144,7 +144,7 @@ public class CommentUserNotificationService extends CommentActionListener {
     if (isDefined(componentInstanceId)) {
       String component = getComponentName(componentInstanceId);
       if (register.containsKey(component)) {
-        SilverpeasComponentService service = register.get(component);
+        SilverpeasComponentService<? extends SilverpeasContent> service = register.get(component);
         try {
           SilverpeasContent commentedContent =
                   service.getContentById(newComment.getForeignKey().getId());

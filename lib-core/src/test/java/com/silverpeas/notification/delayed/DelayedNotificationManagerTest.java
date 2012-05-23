@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -445,11 +446,35 @@ public class DelayedNotificationManagerTest {
         newDelayedNotificationData.setFromUserId(2 * userIdTest);
         newDelayedNotificationData.setChannel(channels[i]);
         newDelayedNotificationData.setAction(action);
-        newDelayedNotificationData.setResource(notificationResourceData);
+        newDelayedNotificationData.setLanguage("fr");
+        if ((count % 3) == 0) {
+          newDelayedNotificationData.setResource(notificationResourceData);
+        } else {
+          newDelayedNotificationData.setResource(buildNotificationResourceData(TEST_CASE_3));
+        }
         if ((count % 2) == 0) {
           newDelayedNotificationData.setMessage("message" + count);
         }
+        if ((count % 4) == 0) {
+          newDelayedNotificationData.setCreationDate(dateBeforeSave);
+        }
+        assertThat(newDelayedNotificationData.isValid(), is(true));
         manager.saveDelayedNotification(newDelayedNotificationData);
+        manager.saveDelayedNotification(newDelayedNotificationData);
+        if ((count % 4) == 0) {
+          final Integer idTest = newDelayedNotificationData.getId();
+          if (count == 0) {
+            newDelayedNotificationData.setId(null);
+          }
+          newDelayedNotificationData.getResource().setId(null);
+          manager.saveDelayedNotification(newDelayedNotificationData);
+          if (count == 0) {
+            assertThat(idTest, not(sameInstance(newDelayedNotificationData.getId())));
+          } else {
+            assertThat(idTest, sameInstance(newDelayedNotificationData.getId()));
+          }
+          assertThat(idTest, is(newDelayedNotificationData.getId()));
+        }
         count++;
       }
 

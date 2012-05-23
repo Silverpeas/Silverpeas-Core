@@ -157,7 +157,7 @@ public class NotificationResourceData implements Cloneable {
   }
 
   @Override
-  protected NotificationResourceData clone() {
+  public NotificationResourceData clone() {
     NotificationResourceData clone;
     try {
       clone = (NotificationResourceData) super.clone();

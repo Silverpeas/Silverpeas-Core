@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.util.StringUtil;
@@ -1433,9 +1435,14 @@ public class NotificationManager extends AbstractNotification
       notificationData = new NotificationData();
       delayedNotificationData = new DelayedNotificationData();
       delayedNotificationData.setUserId(aUserId);
-      delayedNotificationData.setChannel(NotifChannel.decode(curAddresseRow.getNotifChannelId()));
       delayedNotificationData.setAction(params.eAction);
-      delayedNotificationData.setSendImmediately(params.sSendImmediately);
+      delayedNotificationData.setChannel(NotifChannel.decode(curAddresseRow.getNotifChannelId()));
+      delayedNotificationData.setCreationDate(params.dDate);
+      delayedNotificationData.setFromUserId(params.iFromUserId);
+      delayedNotificationData.setLanguage(params.sLanguage);
+      delayedNotificationData.setMessage(params.sOriginalExtraMessage);
+      delayedNotificationData.setResource(params.nNotificationResourceData);
+      delayedNotificationData.setSendImmediately(params.bSendImmediately);
       delayedNotificationData.setNotificationData(notificationData);
       delayedNotificationData.setNotificationParameters(params);
       dnds.add(delayedNotificationData);
@@ -1507,8 +1514,12 @@ public class NotificationManager extends AbstractNotification
         if (params.iComponentInstance != -1) {
           try {
             // New feature : if source is not set, we display space's name and component's label
-            theExtraParams.put(NotificationParameterNames.SOURCE,
-                getComponentFullName("" + params.iComponentInstance));
+            final String componentFullName = getComponentFullName("" + params.iComponentInstance);
+            theExtraParams.put(NotificationParameterNames.SOURCE, componentFullName);
+            if (delayedNotificationData.getResource() != null &&
+                StringUtils.isBlank(delayedNotificationData.getResource().getResourceLocation())) {
+              delayedNotificationData.getResource().setResourceLocation(componentFullName);
+            }
           } catch (Exception e) {
             SilverTrace.warn("notificationManager", "NotificationManager.createNotificationData()",
                 "notificationManager.EX_CANT_GET_INSTANCE_INFO", "instanceId = "
@@ -1543,11 +1554,10 @@ public class NotificationManager extends AbstractNotification
       notificationData.setMessage(theMessage.toString());
       notificationData.setAnswerAllowed(params.bAnswerAllowed);
 
-      // Cas de la messagerie instatanée
+      // Cas de la messagerie instantanée
       if (params.iMediaType == NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
-        notificationData.setComment(NotificationParameterNames.COMMUNICATION);// attribut
-        // comment non
-        // utilisé
+        // attribut comment non utilisé
+        notificationData.setComment(NotificationParameterNames.COMMUNICATION);
       }
 
       SilverTrace.info("notificationManager",

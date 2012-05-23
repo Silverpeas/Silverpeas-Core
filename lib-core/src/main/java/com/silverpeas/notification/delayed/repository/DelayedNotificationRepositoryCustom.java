@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
+import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 
 /**
@@ -37,4 +38,6 @@ public interface DelayedNotificationRepositoryCustom {
   List<Integer> findUsersToBeNotified(Set<NotifChannel> aimedChannels,
       Set<DelayedNotificationFrequency> aimedFrequencies,
       boolean isThatUsersWithNoSettingHaveToBeNotified);
+
+  List<DelayedNotificationData> findDelayedNotification(DelayedNotificationData delayedNotification);
 }

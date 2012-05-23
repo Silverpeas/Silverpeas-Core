@@ -1,7 +1,9 @@
-<div style="font-family:Arial;font-size:11px">
-	$notification/delayed/messageHeader_fr()$
-	
-	$notification/delayed/messageBody_fr()$
-	
-	$notification/delayed/messageFooter_fr()$
-</div>
+<html>
+	<body>
+		<div id="layout" style="font-family:Arial;font-size:11px">
+			$messageHeader_fr()$
+			$messageBody_fr()$
+			$messageFooter_fr()$
+		</div>
+	</body>
+</html>

@@ -1,5 +1,11 @@
-Ressource : $resource.name$
-	- emplacement : $resource.location$
-	- accès : <a href="$resource.url$" target=_blank>Cliquer ici ...</a>
-	- notification$if(resource.severalNotifications)$s$endif$ :
-		$first(resource.notifications):notification/delayed/messageBodyResourceNotificationItem_fr(notification=it)$$rest(resource.notifications):{$\n$$notification/delayed/messageBodyResourceNotificationItem_fr(notification=it)$}$
+<div id="resource">
+Ressource : $resource.name$<br/>
+	<div id="resource_body" style="margin-left:15px;">
+		- emplacement : $resource.location$<br/>
+		- accès : <a href="$resource.url$" target=_blank>Cliquer ici ...</a><br/>
+		- notification$if(resource.severalNotifications)$s$endif$ :
+		<div id="resource_item" style="margin-left:25px;">
+			$first(resource.notifications):messageBodyResourceNotificationItem_fr(notification=it)$$rest(resource.notifications):{<br/>$messageBodyResourceNotificationItem_fr(notification=it)$}$
+		</div>
+	</div>
+</div>

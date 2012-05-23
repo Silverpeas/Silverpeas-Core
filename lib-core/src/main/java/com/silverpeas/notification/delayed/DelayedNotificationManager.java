@@ -128,17 +128,29 @@ public class DelayedNotificationManager implements DelayedNotification {
 
   @Override
   public void saveDelayedNotification(final DelayedNotificationData delayedNotificationData) {
-    if (delayedNotificationData.getResource() != null &&
-        delayedNotificationData.getResource().getId() == null) {
+    if (delayedNotificationData.getResource().getId() == null) {
       final List<NotificationResourceData> resources =
           findResource(delayedNotificationData.getResource());
       if (resources.size() == 1) {
         delayedNotificationData.setResource(resources.get(0));
+        if (delayedNotificationData.getId() == null) {
+          final List<DelayedNotificationData> exists =
+              dnRepository.findDelayedNotification(delayedNotificationData);
+          if (exists.size() == 1) {
+            delayedNotificationData.setId(exists.get(0).getId());
+          } else {
+            dnRepository.saveAndFlush(delayedNotificationData);
+          }
+        } else {
+          dnRepository.saveAndFlush(delayedNotificationData);
+        }
       } else {
-        nrRepository.saveAndFlush(delayedNotificationData.getResource());
+        nrRepository.save(delayedNotificationData.getResource());
+        dnRepository.saveAndFlush(delayedNotificationData);
       }
+    } else {
+      dnRepository.saveAndFlush(delayedNotificationData);
     }
-    dnRepository.saveAndFlush(delayedNotificationData);
   }
 
   @Override

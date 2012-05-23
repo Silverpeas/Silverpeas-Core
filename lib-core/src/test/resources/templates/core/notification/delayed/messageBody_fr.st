@@ -1,1 +1,3 @@
-$first(resources):notification/delayed/messageBodyResourceItem_fr(resource=it)$$rest(resources):{$\n$$\n$$notification/delayed/messageBodyResourceItem_fr(resource=it)$}$
+<div id="body">
+$first(resources):messageBodyResourceItem_fr(resource=it)$$rest(resources):{<br/>$messageBodyResourceItem_fr(resource=it)$}$
+</div><br/>

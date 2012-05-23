@@ -1,0 +1,587 @@
+/*
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.silverpeas.notification.helper;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.reset;
+
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.silverpeas.notification.helper.mock.OrganizationControllerMock;
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
+
+/**
+ * @author Yohann Chastagnier
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "/spring-notification-helper.xml" })
+public class NotificationHelperTest {
+
+  @Inject
+  OrganizationControllerMock organizationController;
+
+  @Test
+  public void testBuild_ANB_1() {
+
+    // Build
+    final NotificationMetaData notifTest = NotificationHelper.build(new ANBTest());
+
+    // Asserts
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.CREATE));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), nullValue());
+    assertThat(notifTest.getLanguages().size(), is(0));
+    assertThat(notifTest.getLink(), is(""));
+    assertThat(notifTest.getSource(), is(""));
+    assertThat(notifTest.getTitle(), nullValue());
+    assertThat(notifTest.getTemplates().size(), is(0));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(false));
+  }
+
+  @Test
+  public void testBuild_ANB_1Bis() {
+
+    // Build
+    final NotificationMetaData notifTest =
+        NotificationHelper.build(new ANBTest() {
+
+          @Override
+          protected NotifMessageType getMessageType() {
+            return NotifMessageType.URGENT;
+          }
+
+          @Override
+          protected boolean isSendImmediatly() {
+            return true;
+          }
+
+          @Override
+          protected NotifAction getAction() {
+            return NotifAction.REPORT;
+          }
+
+          @Override
+          protected void performBuild() {
+            super.performBuild();
+            getNotification().setTitle("Title_ANB_1Bis");
+            getNotification().setContent("Content_ANB_1Bis");
+          }
+        });
+
+    // Asserts
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.URGENT.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.REPORT));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getContent(), is("Content_ANB_1Bis"));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), nullValue());
+    assertThat(notifTest.getLanguages().size(), is(1));
+    assertThat(notifTest.getLink(), is(""));
+    assertThat(notifTest.getSource(), is(""));
+    assertThat(notifTest.getTitle(), is("Title_ANB_1Bis"));
+    assertThat(notifTest.getTemplates().size(), is(0));
+    assertThat(notifTest.isSendImmediately(), is(true));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(false));
+    assertThat(notifTest.getNotificationResourceData(), nullValue());
+  }
+
+  @Test
+  public void testBuild_ANB_2() {
+
+    // Build
+    final NotificationMetaData notifTest =
+        NotificationHelper.build(new ANBTest(null, null) {
+
+          @Override
+          protected String getSender() {
+            return "aSenderId";
+          }
+
+          @Override
+          protected String getComponentInstanceId() {
+            return "aComponentInstanceId";
+          }
+
+          @Override
+          protected NotifAction getAction() {
+            return NotifAction.CREATE;
+          }
+        });
+
+    // Asserts
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.CREATE));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), nullValue());
+    assertThat(notifTest.getLanguages().size(), is(0));
+    assertThat(notifTest.getLink(), is(""));
+    assertThat(notifTest.getSource(), is(""));
+    assertThat(notifTest.getTitle(), nullValue());
+    assertThat(notifTest.getTemplates().size(), is(0));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(false));
+    assertThat(notifTest.getNotificationResourceData(), nullValue());
+  }
+
+  @Test
+  public void testBuild_ANB_2Bis() {
+
+    // Build
+    final NotificationMetaData notifTest =
+        NotificationHelper.build(new ANBTest("aTitle", "aContent"));
+
+    // Asserts
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.CREATE));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getContent(), is("aContent"));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), nullValue());
+    assertThat(notifTest.getLanguages().size(), is(1));
+    assertThat(notifTest.getLink(), is(""));
+    assertThat(notifTest.getSource(), is(""));
+    assertThat(notifTest.getTitle(), is("aTitle"));
+    assertThat(notifTest.getTemplates().size(), is(0));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(false));
+    assertThat(notifTest.getNotificationResourceData(), nullValue());
+  }
+
+  @Test
+  public void testBuild_ARNB_1() {
+
+    // Build
+    NotificationMetaData notifTest = NotificationHelper.build(new ARNBTest(null));
+    assertBuild_ARNB_1(notifTest, "", false);
+    notifTest = NotificationHelper.build(new ARNBTest(new String("testBuild_ARNB_1")) {
+
+      @Override
+      protected void performBuild(final Object resource) {
+        getNotification().setSource(resource.toString());
+      }
+    });
+    assertBuild_ARNB_1(notifTest, "testBuild_ARNB_1", false);
+    notifTest = NotificationHelper.build(new ARNBTest(new ResourceDataTest()));
+    assertBuild_ARNB_1(notifTest, "", true);
+  }
+
+  private void assertBuild_ARNB_1(final NotificationMetaData notifTest, final String aSource,
+      final boolean isSilverpeasContent) {
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.UPDATE));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), nullValue());
+    assertThat(notifTest.getLanguages().size(), is(0));
+    assertThat(StringUtil.isDefined(notifTest.getLink()), is(isSilverpeasContent));
+    assertThat(notifTest.getSource(), is(aSource));
+    assertThat(notifTest.getTitle(), nullValue());
+    assertThat(notifTest.getTemplates().size(), is(0));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(false));
+    final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
+    assertThat(nrdTest, notNullValue());
+    assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
+    assertThat(nrdTest.getResourceDescription(), nullValue());
+    if (isSilverpeasContent) {
+      assertThat(nrdTest.getResourceId(), is("aIdFromResource"));
+    } else {
+      assertThat(nrdTest.getResourceId(), nullValue());
+    }
+    assertThat(nrdTest.getResourceLocation(), nullValue());
+    assertThat(nrdTest.getResourceName(), nullValue());
+    if (isSilverpeasContent) {
+      assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
+    } else {
+      assertThat(nrdTest.getResourceType(), nullValue());
+    }
+    assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(isSilverpeasContent));
+  }
+
+  @Test
+  public void testBuild_ARNB_2() {
+
+    // Build
+    final NotificationMetaData notifTest =
+        NotificationHelper.build(new ARNBTest(new ResourceDataTest()) {
+
+          @Override
+          protected void performNotificationResource(final Object resource,
+              final NotificationResourceData notificationResourceData) {
+            final ResourceDataTest resourceTest = (ResourceDataTest) resource;
+            notificationResourceData.setResourceDescription("aResourceDescription");
+            notificationResourceData.setResourceName(resourceTest.getTitle());
+            notificationResourceData.setResourceLocation(resourceTest.getComponentInstanceId());
+          }
+        });
+
+    // Asserts
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.UPDATE));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), nullValue());
+    assertThat(notifTest.getLanguages().size(), is(0));
+    assertThat(StringUtil.isDefined(notifTest.getLink()), is(true));
+    assertThat(notifTest.getSource(), is(""));
+    assertThat(notifTest.getTitle(), nullValue());
+    assertThat(notifTest.getTemplates().size(), is(0));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(false));
+    final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
+    assertThat(nrdTest, notNullValue());
+    assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
+    assertThat(nrdTest.getResourceDescription(), is("aResourceDescription"));
+    assertThat(nrdTest.getResourceId(), is("aIdFromResource"));
+    assertThat(nrdTest.getResourceLocation(), is("aComponentInstanceIdFromResource"));
+    assertThat(nrdTest.getResourceName(), is("aTitleFromResource"));
+    assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
+    assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+  }
+
+  @Test
+  public void testBuild_ARNB_2Bis() {
+
+    // Build
+    final NotificationMetaData notifTest =
+        NotificationHelper.build(new ARNBTest(new ResourceDataTest(), "aTitle", "aContent"));
+
+    // Asserts
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.UPDATE));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getContent(), is("aContent"));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), nullValue());
+    assertThat(notifTest.getLanguages().size(), is(1));
+    assertThat(StringUtil.isDefined(notifTest.getLink()), is(true));
+    assertThat(notifTest.getSource(), is(""));
+    assertThat(notifTest.getTitle(), is("aTitle"));
+    assertThat(notifTest.getTemplates().size(), is(0));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(false));
+    final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
+    assertThat(nrdTest, notNullValue());
+    assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
+    assertThat(nrdTest.getResourceDescription(), nullValue());
+    assertThat(nrdTest.getResourceId(), is("aIdFromResource"));
+    assertThat(nrdTest.getResourceLocation(), nullValue());
+    assertThat(nrdTest.getResourceName(), nullValue());
+    assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
+    assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+  }
+
+  @Test
+  public void testBuild_ATNB_1() {
+    mockOrganizationController_isComponentExist();
+
+    NotificationMetaData notifTest =
+        NotificationHelper.build(new ATNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile"));
+    assertBuild_ATNB_1(notifTest, "");
+
+    notifTest =
+        NotificationHelper.build(new ATNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile") {
+
+          @Override
+          protected String getMultilangPropertyFile() {
+            return "com.silverpeas.notification.helper.multilang.notificationHelperBundle";
+          }
+
+        });
+    assertBuild_ATNB_1(notifTest, "bundleValue");
+  }
+
+  private void assertBuild_ATNB_1(final NotificationMetaData notifTest, final String contentValue) {
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.ERROR.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.DELETE));
+    assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), is("notificationHelperTemplateFile"));
+    assertThat(notifTest.getLanguages().size(), is(1));
+    assertThat(StringUtil.isDefined(notifTest.getLink()), is(true));
+    assertThat(notifTest.getSource(), is("aSource"));
+    assertThat(notifTest.getTitle(), is("aTitle"));
+    assertThat(notifTest.getTemplates().size(), is(3));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(true));
+    final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
+    assertThat(nrdTest, notNullValue());
+    assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
+    assertThat(nrdTest.getResourceDescription(), nullValue());
+    assertThat(nrdTest.getResourceId(), is("aIdFromResource"));
+    assertThat(nrdTest.getResourceLocation(), nullValue());
+    assertThat(nrdTest.getResourceName(), is("aTitleFromResource"));
+    assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
+    assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+
+    for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
+      assertThat(notifTest.getContent(curLanguage), is(curLanguage + "-" + contentValue + " :-)"));
+    }
+  }
+
+  @Test
+  public void testBuild_ATNB_2() {
+    mockOrganizationController_isComponentExist();
+
+    // Builds
+    final NotificationMetaData notifTest =
+        NotificationHelper.build(new ATNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile") {
+
+          @Override
+          protected String getMultilangPropertyFile() {
+            return "com.silverpeas.notification.helper.multilang.notificationHelperBundle";
+          }
+
+          @Override
+          protected String getComponentInstanceId() {
+            return "<componentInstanceId>";
+          }
+        });
+
+    // Asserts
+    assertThat(notifTest, notNullValue());
+    assertThat(notifTest.getMessageType(), is(NotifMessageType.ERROR.getId()));
+    assertThat(notifTest.getAction(), is(NotifAction.DELETE));
+    assertThat(notifTest.getComponentId(), is("<componentInstanceId>"));
+    assertThat(notifTest.getSender(), is("aSenderId"));
+    assertThat(notifTest.getDate(), notNullValue());
+    assertThat(notifTest.getFileName(), is("notificationHelperTemplateFile"));
+    assertThat(notifTest.getLanguages().size(), is(1));
+    assertThat(StringUtil.isDefined(notifTest.getLink()), is(true));
+    assertThat(notifTest.getSource(), is("aSource"));
+    assertThat(notifTest.getTitle(), is("aTitle"));
+    assertThat(notifTest.getTemplates().size(), is(3));
+    assertThat(notifTest.isSendImmediately(), is(false));
+    assertThat(notifTest.isAnswerAllowed(), is(false));
+    assertThat(notifTest.isTemplateUsed(), is(true));
+    final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
+    assertThat(nrdTest, notNullValue());
+    assertThat(nrdTest.getComponentInstanceId(), is("<componentInstanceId>"));
+    assertThat(nrdTest.getResourceDescription(), nullValue());
+    assertThat(nrdTest.getResourceId(), is("aIdFromResource"));
+    assertThat(nrdTest.getResourceLocation(), nullValue());
+    assertThat(nrdTest.getResourceName(), is("aTitleFromResource"));
+    assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
+    assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+
+    for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
+      assertThat(notifTest.getContent(curLanguage), is(curLanguage + "-bundleValue :-) - components"));
+    }
+  }
+
+  protected void mockOrganizationController_isComponentExist() {
+    reset(organizationController.getMock());
+    doAnswer(new Answer<Boolean>() {
+      @Override
+      public Boolean answer(final InvocationOnMock invocation) throws Throwable {
+        final String componentInstanceId = (String) invocation.getArguments()[0];
+        if ("<componentInstanceId>".equals(componentInstanceId)) {
+          return true;
+        }
+        return false;
+      }
+    }).when(organizationController.getMock()).isComponentExist(anyString());
+  }
+
+  protected class ATNBTest extends AbstractTemplateNotificationBuilder<ResourceDataTest> {
+
+    public ATNBTest(final ResourceDataTest resource, final String title, final String fileName) {
+      super(resource, title, fileName);
+    }
+
+    @Override
+    protected void perform(final ResourceDataTest resource) {
+      getNotification().setSource("aSource");
+    }
+
+    @Override
+    protected String getTemplatePath() {
+      return "//notification////helper//////";
+    }
+
+    @Override
+    protected void performTemplateData(final String language, final ResourceDataTest resource,
+        final SilverpeasTemplate template) {
+      if (getBundle(language) != null) {
+        template.setAttribute("testAttribute", getBundle(language).getString("testAttributeKey", ""));
+      }
+    }
+
+    @Override
+    protected void performNotificationResource(final String language,
+        final ResourceDataTest resource,
+        final NotificationResourceData notificationResourceData) {
+      notificationResourceData.setResourceName(resource.getTitle());
+    }
+
+    @Override
+    protected String getSender() {
+      return "aSenderId";
+    }
+
+    @Override
+    protected String getComponentInstanceId() {
+      return "aComponentInstanceId";
+    }
+
+    @Override
+    protected NotifAction getAction() {
+      return NotifAction.DELETE;
+    }
+
+    @Override
+    protected NotifMessageType getMessageType() {
+      return NotifMessageType.ERROR;
+    }
+  }
+
+  protected class ARNBTest extends AbstractResourceNotificationBuilder<Object> {
+
+    public ARNBTest(final Object resource, final NotificationMetaData notification) {
+      super(resource, notification);
+    }
+
+    public ARNBTest(final Object resource, final String title, final String content) {
+      super(resource, title, content);
+    }
+
+    public ARNBTest(final Object resource) {
+      super(resource);
+    }
+
+    @Override
+    protected void performBuild(final Object resource) {
+      // Nothing to do
+    }
+
+    @Override
+    protected void performNotificationResource(final Object resource,
+        final NotificationResourceData notificationResourceData) {
+      // Nothing to do
+    }
+
+    @Override
+    protected String getSender() {
+      return "aSenderId";
+    }
+
+    @Override
+    protected String getComponentInstanceId() {
+      return "aComponentInstanceId";
+    }
+
+    @Override
+    protected NotifAction getAction() {
+      return NotifAction.UPDATE;
+    }
+  }
+
+  /**
+   * @author Yohann Chastagnier
+   */
+  protected class ANBTest extends AbstractNotificationBuilder {
+
+    public ANBTest() {
+      super();
+    }
+
+    public ANBTest(final NotificationMetaData notification) {
+      super(notification);
+    }
+
+    public ANBTest(final String title, final String content) {
+      super(title, content);
+    }
+
+    @Override
+    protected void performBuild() {
+      // Nothing to do
+    }
+
+    @Override
+    protected String getSender() {
+      return "aSenderId";
+    }
+
+    @Override
+    protected String getComponentInstanceId() {
+      return "aComponentInstanceId";
+    }
+
+    @Override
+    protected NotifAction getAction() {
+      return NotifAction.CREATE;
+    }
+  }
+}

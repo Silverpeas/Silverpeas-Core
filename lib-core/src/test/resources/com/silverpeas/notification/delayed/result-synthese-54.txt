@@ -1,14 +1,26 @@
-<div style="font-family:Arial;font-size:11px">
-	Bonjour User 54,
-
-	Depuis votre dernière synthèse de notifications, vous avez fait l'objet de 1 notification.
-	
-	Ressource : Delegate test resource
-		- emplacement : Test > Delegate > Resource > Location
-		- accès : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Cliquer ici ...</a>
-		- notification :
-			. modifiée par User 500, le 01/01/2012 à 08:10
-	
-	Vous recevrez dans une semaine votre prochaine synthèse de notifications.
-	Vous pouvez à tout moment changer la fréquence de réception de cette synthèse depuis le paramétrage de "Mes notifications" accessible depuis votre espace personnel.
-</div>
+<html>
+	<body>
+		<div id="layout" style="font-family:Arial;font-size:11px">
+			<div id="header">
+			Bonjour User 54,<br/><br/>
+			Depuis votre dernière synthèse de notifications, vous avez fait l'objet de 1 notification.
+			</div><br/>
+			<div id="body">
+			<div id="resource">
+			Ressource : Delegate test resource<br/>
+				<div id="resource_body" style="margin-left:15px;">
+					- emplacement : Test > Delegate > Resource > Location<br/>
+					- accès : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Cliquer ici ...</a><br/>
+					- notification :
+					<div id="resource_item" style="margin-left:25px;">
+						. modifiée par User 500, le 01/01/2012 à 08:10
+					</div>
+				</div>
+			</div>
+			</div><br/>
+			<div id="footer">
+			Vous recevrez dans une semaine votre prochaine synthèse de notifications.<br/>
+			Vous pouvez à tout moment changer la fréquence de réception de cette synthèse depuis le paramétrage de "Mes notifications" accessible depuis votre espace personnel.</div>
+		</div>
+	</body>
+</html>

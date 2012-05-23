@@ -98,7 +98,9 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
     } else {
       String body = p_Message.getMessage();
       // Transform text to html format
-      body = EncodeHelper.javaStringToHtmlParagraphe(body + "\n\n");
+      if (!p_Message.isSkipJavaToHtml()) {
+        body = EncodeHelper.javaStringToHtmlParagraphe(body + "\n\n");
+      }
       if (tmpUrlString != null) {
         body += "<a href=\"" + tmpUrlString + "\" target=_blank>"
             + messages.getString("clickHere") + "</a> "

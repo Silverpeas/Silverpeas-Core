@@ -169,6 +169,7 @@ public class NotificationSender implements java.io.Serializable {
       }
       params.sMessage = metaData.getContent(language);
       params.sLanguage = language;
+      params.nNotificationResourceData = metaData.getNotificationResourceData(language);
 
       // Notify users with their native language
       userIds = getUserIds(language, usersLanguage);
@@ -180,7 +181,7 @@ public class NotificationSender implements java.io.Serializable {
       notificationManager.notifyUsers(params, userIds.toArray(new String[userIds.size()]));
     }
 
-    // Notify other user in language of the sender.
+    // Notify other users in language of the sender.
     notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
 
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
@@ -367,7 +368,8 @@ public class NotificationSender implements java.io.Serializable {
     params.sSource = metaData.getSource();
     params.sURL = metaData.getLink();
     params.sSessionId = metaData.getSessionId();
-    params.sSendImmediately = metaData.isSendImmediately();
+    params.sOriginalExtraMessage = metaData.getOriginalExtraMessage();
+    params.bSendImmediately = metaData.isSendImmediately();
     if (instanceId != -1) {
       params.iComponentInstance = instanceId;
     } else {

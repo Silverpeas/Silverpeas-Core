@@ -23,14 +23,21 @@
  */
 package com.silverpeas.notification.delayed.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
+import com.silverpeas.notification.delayed.model.DelayedNotificationData;
+import com.silverpeas.util.persistence.TypedParameter;
+import com.silverpeas.util.persistence.TypedParameterUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 
 /**
@@ -73,5 +80,54 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
 
     // Result
     return tq.getResultList();
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.silverpeas.notification.delayed.repository.DelayedNotificationRepositoryCustom#findResource(com.silverpeas.
+   * notification.model.NotificationResourceData)
+   */
+  @Override
+  public List<DelayedNotificationData> findDelayedNotification(final DelayedNotificationData delayedNotification) {
+
+    // Parameters
+    final List<TypedParameter<?>> parameters = new ArrayList<TypedParameter<?>>();
+
+    // Query
+    final StringBuffer query = new StringBuffer("from DelayedNotificationData where");
+    query.append(" userId = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "userId", delayedNotification.getUserId()));
+    query.append(" and fromUserId = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "fromUserId", delayedNotification.getFromUserId()));
+    query.append(" and channel = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "channel", delayedNotification.getChannel().getId()));
+    query.append(" and action = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "action", delayedNotification.getAction().getId()));
+    query.append(" and language = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "language", delayedNotification.getLanguage()));
+    query.append(" and creationDate = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "creationDate",
+        delayedNotification.getCreationDate(), TemporalType.TIMESTAMP));
+    query.append(" and notificationResourceId = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceId", delayedNotification.getResource()));
+
+    // resourceDescription parameter
+    if (StringUtils.isNotBlank(delayedNotification.getMessage())) {
+      query.append(" and message = :");
+      query.append(TypedParameterUtil.addNamedParameter(parameters, "message", delayedNotification.getMessage()));
+    } else {
+      query.append(" and message is null");
+    }
+
+    // Typed query
+    final TypedQuery<DelayedNotificationData> typedQuery =
+        emf.createEntityManager().createQuery(query.toString(), DelayedNotificationData.class);
+
+    // Parameters
+    TypedParameterUtil.computeNamedParameters(typedQuery, parameters);
+
+    // Result
+    return typedQuery.getResultList();
   }
 }
