@@ -377,7 +377,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public QueryParameters getQueryParameters() {
     if (this.queryParameters == null) {
-      this.queryParameters = new QueryParameters(getLanguage());
+      this.queryParameters = new QueryParameters();
     }
     return this.queryParameters;
   }
