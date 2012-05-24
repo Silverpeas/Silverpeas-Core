@@ -131,6 +131,8 @@ public class UserProfileResource extends RESTWebService {
 
   /**
    * Gets the profile on the user that is identified by the unique identifier refered by the URI.
+   * The unique identifier in the URI accepts also the specific term <i>me</i> to refers the current
+   * user of the session within which the request is received.
    *
    * @param userId the unique identifier of the user.
    * @return the profile of the user in a JSON representation.
@@ -139,7 +141,7 @@ public class UserProfileResource extends RESTWebService {
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity getUser(@PathParam("userId") String userId) {
-    UserDetail theUser = getUserDetailById(userId);
+    UserDetail theUser = getUserDetailMatching(userId);
     return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
   }
 
@@ -199,8 +201,11 @@ public class UserProfileResource extends RESTWebService {
 
   /**
    * Gets the profile on the user that is identified by the unique identifier refered by the URI.
+   * The unique identifier in the URI accepts also the specific term <i>me</i> to refers the current
+   * user of the session within which the request is received.
    *
-   * @param userId the unique identifier of the user.
+   * @param userId the unique identifier of the user or <i>me</i> to refers the current user at the
+   * origin of the request.
    * @return the profile of the user in a JSON representation.
    */
   @GET
@@ -211,7 +216,7 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("roles") String roles,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
-    UserDetail theUser = getUserDetailById(userId);
+    UserDetail theUser = getUserDetailMatching(userId);
     String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
             : null);
     String[] contactIds = getContactIds(theUser.getId());
@@ -314,6 +319,21 @@ public class UserProfileResource extends RESTWebService {
       return paginatedUsers;
     } catch (Exception ex) {
       throw new WebApplicationException(Status.BAD_REQUEST);
+    }
+  }
+  
+  /**
+   * Gets the detail about the user that matchs the specified identifier. The identifier is a pattern
+   * that accepts either a user unique identifier or the specific word <i>me</i>. Latest means the
+   * current user of the underlying HTTP session.
+   * @param identifier an identifier.
+   * @return the detail about a user.
+   */
+  private UserDetail getUserDetailMatching(String identifier) {
+    if (identifier.equals("me")) {
+      return getUserDetail();
+    } else {
+      return getUserDetailById(identifier);
     }
   }
 }

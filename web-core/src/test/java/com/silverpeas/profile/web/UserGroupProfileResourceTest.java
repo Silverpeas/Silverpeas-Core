@@ -57,12 +57,6 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   public void prepareTestResources() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     sessionKey = authenticate(aUser());
-    getTestResources().allocate();
-  }
-  
-  @After
-  public void freeTestResources() {
-    getTestResources().deallocate();
   }
 
   @Test

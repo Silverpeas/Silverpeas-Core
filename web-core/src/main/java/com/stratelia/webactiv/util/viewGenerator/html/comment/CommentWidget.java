@@ -101,7 +101,9 @@ public abstract class CommentWidget extends TagSupport {
             + "/util/javaScript/jquery/autoresize.jquery.min.js");
     script userProfilePlugin = new script().setType("text/javascript").
             setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-profile.js");
-    script userPresentialPlugin = new script().setType("text/javascript").
+    script invitMePlugin = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-invitme.js");
+    script userZoomPlugin = new script().setType("text/javascript").
             setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-userZoom.js");
     script commentJqueryScript = new script().setType("text/javascript").
             setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-comment.js");
@@ -109,7 +111,8 @@ public abstract class CommentWidget extends TagSupport {
     xhtmlcontainer.addElement(checkForm).
             addElement(autoresizePlugin).
             addElement(userProfilePlugin).
-            addElement(userPresentialPlugin).
+            addElement(invitMePlugin).
+            addElement(userZoomPlugin).
             addElement(commentJqueryScript).
             addElement(comments).
             addElement(initCommentPlugin);

@@ -26,6 +26,7 @@
   
   $.userZoom = {
     currentTooltip: null,
+    currentUser: null,
     initialized: false
   };
   
@@ -50,6 +51,43 @@
     return $('<img>', {src: onlineStatus, alt: onlineStatusAlt});
   }
   
+  function isInMyContacts(user) {
+    var contacts = user.relationships();
+    for(var i in contacts) {
+      if ($.userZoom.currentUser.id == contacts[i].id) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function isInMyInvitations(user) {
+    var invitations = $.userZoom.currentUser.sentInvitations;
+    for(var i in invitations) {
+      if (invitations[i].receiverId == user.id) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function onMySentInvitations(callback) {
+    $.ajax({
+      url: webContext + '/services/invitations/outbox',
+      type: 'GET',
+      dataType: 'json',
+      cache: false,
+      success: function(invitations, status, jqXHR) {
+        $.userZoom.currentUser.sentInvitations = invitations;
+        if (callback)
+          callback(invitations);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+  }
+  
   /**
    * The user presential Silverpeas plugin based on JQuery.
    * This JQuery plugin renders a tooltip with status information about the user and from which 
@@ -68,6 +106,7 @@
         language: '$$', /* by default the language of the user in the current session */
         mode: 'map'
       });
+      $.userZoom.currentUser = new UserProfile({id: 'me'}).load();
       $.userZoom.initialized = true;
     }
     
@@ -77,7 +116,7 @@
       if (!(profile instanceof UserProfile)) {
         profile = new UserProfile(user);
       }
-      if (!(profile.id && profile.fullName && profile.avatar != null && profile.status != null &&
+      if (!(profile.id && profile.fullName && profile.lastName && profile.avatar != null && profile.status != null &&
         profile.connected != null))
         profile.load(function(user) {
           render($this, user);
@@ -95,9 +134,13 @@
     var status = connectionStatus(user);
     target.append('&nbsp;').append(status.css('width', '8px')).hover(function() {
       $('.userzoom-tooltip').hide();
-      var element = tooltip(target, user);
-      element.show();
-      $.userZoom.currentTooltip = element;
+      user.onRelationships($.userZoom.currentUser.lastName, true, function() {
+        onMySentInvitations(function() {
+          var element = tooltip(target, user);
+          element.show();
+          $.userZoom.currentTooltip = element;
+        });
+      });
     });
     $(document).mousedown(function(event) {
       if (!$.userZoom.currentTooltip)
@@ -130,9 +173,12 @@
       }).addClass('avatar')).
       append($('<p>').addClass('name').append(user.fullName)).
       append($('<p>').addClass('message').append(user.status)).
-      append($('<p>').addClass('connection').append(connectionStatus(user))).
-      append($('<a>', {href: '#'}).addClass('link invitation').append($.i18n.prop('invitation.send')).invitMe(user)).
-      append($('<button>').append($.i18n.prop('myProfile.tab.profile')).click(function() {
+      append($('<p>').addClass('connection').append(connectionStatus(user)));
+      
+      if (!isInMyContacts(user) && !isInMyInvitations(user))
+        userinfo.append($('<a>', {href: '#'}).addClass('link invitation').append($.i18n.prop('invitation.send')).invitMe(user));
+      
+      userinfo.append($('<button>').append($.i18n.prop('myProfile.tab.profile')).click(function() {
         document.location.href = user.webPage;
       })).
       append($('<button>').append($.i18n.prop('tchat')).click(function() {

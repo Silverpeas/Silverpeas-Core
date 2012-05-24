@@ -33,8 +33,10 @@ import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import java.util.List;
 import javax.ws.rs.core.Response;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,6 +47,7 @@ import org.junit.Test;
 public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTestResources> {
 
   private String sessionKey;
+  private UserDetail currentUser;
 
   public UserProfileResourceTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -53,8 +56,8 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Before
   public void prepareTestResources() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
-    sessionKey = authenticate(aUser());
-    getTestResources().allocate();
+    currentUser = aUser();
+    sessionKey = authenticate(currentUser);
   }
 
   @Test
@@ -232,48 +235,65 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
       assertThat(receivedStatus, is(forbidden));
     }
   }
-  
+
   @Test
   public void getAUserByItsFirstName() {
-    UserDetail expectedUser =  getTestResources().anExistingUser();
+    UserDetail expectedUser = getTestResources().anExistingUser();
     UserDetail[] actualUsers = getAt(aResourceURI() + "?name=" + expectedUser.getFirstName(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(1));
     assertThat(actualUsers[0], is(expectedUser));
   }
-  
+
   @Test
   public void getAUserByItsLastName() {
-    UserDetail expectedUser =  getTestResources().anExistingUser();
+    UserDetail expectedUser = getTestResources().anExistingUser();
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?name=" + expectedUser.getLastName(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(1));
     assertThat(actualUsers[0], is(expectedUser));
   }
-  
+
   @Test
   public void getAUserByTheFirstCharactersOfItsName() {
-    UserDetail[] expectedUsers =  getTestResources().getAllExistingUsers();
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
     String name = expectedUsers[0].getFirstName().substring(0, 2) + "*";
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?name=" + name,
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
   }
-  
+
   @Test
   public void getAUserInAGivenGroupByTheFirstCharactersOfItsName() {
     Group group;
     List<? extends UserDetail> expectedUsers;
     do {
       group = getTestResources().getAGroupNotInAnInternalDomain();
-      expectedUsers =  group.getAllUsers();
-    } while(expectedUsers.isEmpty());
+      expectedUsers = group.getAllUsers();
+    } while (expectedUsers.isEmpty());
     String name = expectedUsers.get(0).getFirstName().substring(0, 2) + "*";
-    UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + group.getId() + "?name=" + name,
+    UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + group.getId() + "?name="
+            + name,
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
     assertThat(actualUsers, contains(expectedUsers));
+  }
+
+  @Test
+  public void getTheCurrentUserInTheSession() {
+    UserProfileEntity me = getAt(aResourceURI() + "/me", UserProfileEntity.class);
+    assertThat(me, is(currentUser));
+  }
+
+  @Test
+  @Ignore
+  public void getTheContactsOfAGivenUser() {
+    UserDetail aUser = getTestResources().anExistingUser();
+    UserDetail[] expectedContacts = getTestResources().getRelationShipsOfUser(aUser.getId());
+    UserProfileEntity[] actualContacts = getAt(aResourceURI() + "/" + aUser.getId() + "/contacts",
+            getWebEntityClass());
+    assertThat(actualContacts.length, is(expectedContacts.length));
   }
 
   @Override

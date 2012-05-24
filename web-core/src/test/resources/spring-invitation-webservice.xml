@@ -34,9 +34,9 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.profile"/>
+  <ctx:component-scan base-package="com.silverpeas.socialNetwork.invitation.web"/>
   
   <import resource="spring-webservice.xml" />
-  
+
 </beans>
 

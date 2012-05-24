@@ -78,7 +78,7 @@
         <div class="action">
         	<a href="#" class="link invitation" rel="<%=member.getId() %>,<%=member.getUserDetail().getDisplayedName() %>"><fmt:message key="invitation.send" /></a>
             <br />
-            <a href="#" class="link notification" onclick="initNotification(<%=member.getId() %>,'<%=member.getUserDetail().getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
+            <a href="#" class="link notification" rel="<%=member.getId() %>,'<%=member.getUserDetail().getDisplayedName()%>"><fmt:message key="GML.notification.send" /></a>
         </div> <!-- /action  -->
 
         <!-- profilPhoto  -->  

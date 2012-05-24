@@ -23,13 +23,22 @@
  */
 package com.silverpeas.profile.web;
 
+import com.silverpeas.profile.web.mock.RelationShipServiceMock;
+import com.silverpeas.socialNetwork.relationShip.RelationShip;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.web.TestResources;
 import com.silverpeas.web.mock.OrganizationControllerMock;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import static org.mockito.Mockito.*;
 
 /**
  * The resources to use in the test on the UserProfileResource REST service. Theses objects manage
@@ -45,17 +54,21 @@ public class UserProfileTestResources extends TestResources {
   public static final String GROUP_PROFILE_PATH = "/profile/groups";
   @Inject
   private OrganizationControllerMock organization;
+  @Inject
+  private RelationShipServiceMock relationShipServiceMock;
   private Set<String> domainIds = new HashSet<String>();
 
   /**
    * Allocates the resources required by the unit tests.
    */
+  @PostConstruct
   public void allocate() {
     prepareSeveralUsers();
     prepareSeveralGroups();
     putUsersInGroups();
   }
-  
+
+  @PreDestroy
   public void deallocate() {
     organization.clearAll();
   }
@@ -75,14 +88,14 @@ public class UserProfileTestResources extends TestResources {
   public Group[] getAllExistingRootGroupsInDomain(String domainId) {
     return organization.getAllRootGroupsInDomain(domainId);
   }
-  
+
   public Group[] getAllRootGroupsAccessibleFromDomain(String domainId) {
     List<Group> groups = new ArrayList<Group>();
     groups.addAll(Arrays.asList(organization.getAllRootGroupsInDomain(domainId)));
     groups.addAll(Arrays.asList(organization.getAllRootGroupsInDomain("-1")));
     return groups.toArray(new Group[groups.size()]);
   }
-  
+
   public Group getGroupById(String groupId) {
     return organization.getGroup(groupId);
   }
@@ -111,51 +124,76 @@ public class UserProfileTestResources extends TestResources {
     }
     return otherDomainIds;
   }
-  
+
   /**
    * Gets randomly an existing user detail among the available resources for tests.
+   *
    * @return a user detail.
    */
   public UserDetail anExistingUser() {
     UserDetail[] allUsers = organization.getAllUsers();
     return allUsers[new Random().nextInt(allUsers.length)];
   }
-  
+
   public UserDetail anExistingUserNotInSilverpeasDomain() {
     UserDetail user;
     do {
       user = anExistingUser();
-    } while("0".equals(user.getDomainId()));
+    } while ("0".equals(user.getDomainId()));
     return user;
   }
-  
+
   /**
    * Gets randomly an existing group among the available resources for tests.
+   *
    * @return a group.
    */
   public Group anExistingGroup() {
     Group[] allGroups = organization.getAllGroups();
     return allGroups[new Random().nextInt(allGroups.length)];
   }
-  
+
   public Group anExistingRootGroup() {
     Group group = null;
     do {
       group = anExistingGroup();
-    } while(!group.isRoot());
+    } while (!group.isRoot());
     return group;
   }
-  
+
   /**
    * Gets a group that isn't in an internal domain.
+   *
    * @return a group in a domain other than internal one.
    */
   public Group getAGroupNotInAnInternalDomain() {
     Group group = anExistingGroup();
-    while(group.getDomainId().equals("-1")) {
+    while (group.getDomainId().equals("-1")) {
       group = anExistingGroup();
     }
     return group;
+  }
+
+  public UserDetail[] getRelationShipsOfUser(String userId) {
+    UserDetail[] users = getAllExistingUsers();
+    UserDetail[] contacts = new UserDetail[users.length - 1];
+    List<RelationShip> relationships = new ArrayList<RelationShip>(users.length - 1);
+    int currentUserId = Integer.valueOf(userId);
+    int i = 0;
+    for (UserDetail aUser : users) {
+      if (!aUser.getId().equals(userId)) {
+        contacts[i++] = aUser;
+        relationships.add(new RelationShip(Integer.valueOf(aUser.getId()), currentUserId, 1,
+                new Date(), currentUserId));
+      }
+    }
+    RelationShipService mock = relationShipServiceMock.getMockedRelationShipService();
+    try {
+      when(mock.getAllMyRelationShips(currentUserId)).thenReturn(relationships);
+    } catch (SQLException ex) {
+      Logger.getLogger(UserProfileTestResources.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return contacts;
   }
 
   private void prepareSeveralUsers() {
@@ -195,12 +233,12 @@ public class UserProfileTestResources extends TestResources {
             aGroup("Groupe 8 - 6", "8", "6", "1"),
             aGroup("Groupe 9 - 7", "9", "7", "1"));
   }
-  
+
   private void putUsersInGroups() {
     Group internalGroup = organization.getGroup("1");
     UserDetail[] users = organization.getAllUsers();
     internalGroup.setUserIds(getUserIds(users));
-    
+
     for (int i = 0; i <= 1; i++) {
       String domainId = String.valueOf(i);
       users = organization.getAllUsersInDomain(domainId);
@@ -226,10 +264,10 @@ public class UserProfileTestResources extends TestResources {
     group.setDomainId(domainId);
     return group;
   }
-  
-  private String[] getUserIds(final UserDetail ... users) {
+
+  private String[] getUserIds(final UserDetail... users) {
     String[] ids = new String[users.length];
-    for(int i = 0; i < users.length; i++) {
+    for (int i = 0; i < users.length; i++) {
       ids[i] = users[i].getId();
     }
     return ids;

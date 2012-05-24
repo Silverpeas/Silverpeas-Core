@@ -34,10 +34,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Named;
 
 /**
  * @author Bensalem Nabil
  */
+@Named
 public class InvitationService {
 
   private InvitationDao invitationDao;

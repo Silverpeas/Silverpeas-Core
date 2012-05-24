@@ -116,7 +116,7 @@
             success: function(data, status, jqXHR) {
               closeInvitationPopup();
               try {
-                $.invitMe.currentElement.hide('slow')
+                $.invitMe.currentElement.hide('slow');
               } catch (e) {
               //do nothing
               //As fragment is externalized, class invitation can be missing 
