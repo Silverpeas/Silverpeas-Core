@@ -389,7 +389,7 @@ public final class QueryDescription implements Serializable {
     SilverTrace.info("searchEngine",
         "QueryDescription.addExternalComponents()", "root.MSG_GEN_PARAM_VALUE",
         "server = " + server + ", component=" + component);
-    //TODO add all needed information
+    // add all needed information
     extComponents.add(new ExternalComponent(server, component, path, url));
   }
   
