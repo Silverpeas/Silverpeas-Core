@@ -410,9 +410,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           }
         }
 
-        // Add external components into QueryDescription
-        addExternalComponents(query);
-
         if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
           // c'est une recherche globale, on cherche si le pdc et les composants
           // personnels.
@@ -431,6 +428,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           // used for search by component type without keywords
           query.setSearchByComponentType(true);
         }
+        
+        // Add external components into QueryDescription
+        addExternalComponents(query);
 
         SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
           "root.MSG_GEN_PARAM_VALUE", "# component = " + query.getSpaceComponentPairSet().size());
@@ -467,7 +467,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param query the query description used to build Lucene query
    */
   private void addExternalComponents(QueryDescription query) {
-    if (this.isEnableExternalSearch) {
+    if (isEnableExternalSearch && !query.isSearchBySpace()) {
       for (ExternalSPConfigVO extServerCfg : this.externalServers) {
         // Loop on each directory in order to add all the external components
         List<String> filteredComponents = extServerCfg.getComponents();
@@ -513,7 +513,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String fileName = file.getName();
     List<String> filteredComponents = extServerCfg.getComponents();
     for (String authorizedComp : filteredComponents) {
-      if (fileName.indexOf(authorizedComp) >= 0) {
+      if (fileName.indexOf(authorizedComp) >= 0 && isDataTypeSearch(fileName)) {
         query.addExternalComponents(extServerCfg.getName(), fileName, extServerCfg.getDataPath(),
           extServerCfg.getUrl());
       }
@@ -1030,7 +1030,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               downloadLink =
                 getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent());
             } catch (Exception e) {
-              SilverTrace.error("pdcPeas",
+              SilverTrace.warn("pdcPeas",
                 "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
                 "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
             }
