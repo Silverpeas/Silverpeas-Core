@@ -200,7 +200,7 @@ public class RandomGenerator {
     Calendar beforeDate = Calendar.getInstance();
     beforeDate.setTimeInMillis(date.getTimeInMillis());
     beforeDate.add(Calendar.DAY_OF_MONTH, -1 - random.nextInt(10));
-    return date;
+    return beforeDate;
   }
 
   private RandomGenerator() {
