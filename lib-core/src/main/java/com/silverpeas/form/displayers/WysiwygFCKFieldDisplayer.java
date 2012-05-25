@@ -20,7 +20,17 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import au.id.jericho.lib.html.Source;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -44,15 +54,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
@@ -104,8 +105,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
   
     if (!template.isReadOnly()) {
-      out.println("var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
-      out.println("var thecode = oEditor.GetHTML();");
+      out.println("var oEditor = CKEDITOR.instances."+fieldName+";");
+      out.println("var thecode = oEditor.getData();");
       if (template.isMandatory() && PagesContext.useMandatory()) {
         out.println(
               "	if (isWhitespace(stripInitialWhitespace(thecode)) || thecode == \"<P>&nbsp;</P>\") {");
@@ -232,10 +233,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println("<tr>");
 
       // looks for size parameters
-      int editorWitdh = 500;
+      int editorWidth = 600;
       int editorHeight = 300;
       if (parameters.containsKey("width")) {
-        editorWitdh = Integer.parseInt(parameters.get("width"));
+        editorWidth = Integer.parseInt(parameters.get("width"));
       }
       if (parameters.containsKey("height")) {
         editorHeight = Integer.parseInt(parameters.get("height"));
@@ -245,22 +246,24 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName
               + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
       out.println("<script type=\"text/javascript\">");
-      out.println("var oFCKeditor = new FCKeditor('" + fieldName + "');");
-      out.println("oFCKeditor.Width = \"" + editorWitdh + "\";");
-      out.println("oFCKeditor.Height = \"" + editorHeight + "\";");
-      out.println("oFCKeditor.BasePath = \"" + Util.getPath() + "/wysiwyg/jsp/FCKeditor/\" ;");
-      out.println("oFCKeditor.DisplayErrors = true;");
-      out.println("oFCKeditor.Config[\"DefaultLanguage\"] = \"" + pageContext.getLanguage()
-              + "\";");
-      String configFile = settings.getString("configFile",
-              Util.getPath() + "/wysiwyg/jsp/javaScript/myconfig.js");
-      out.println("oFCKeditor.Config[\"CustomConfigurationsPath\"] = \"" + configFile + "\";");
-      out.println("oFCKeditor.ToolbarSet = 'XMLForm';");
-      out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = false;");
-      out.println("oFCKeditor.Config[\"ImageBrowserURL\"] = '" + Util.getPath()
-              + "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" + pageContext.getComponentId() + "&ObjectId="
-              + pageContext.getObjectId() + "&Context=" + fieldName + "';");
-      out.println("oFCKeditor.ReplaceTextarea();");
+      
+      StringBuilder builder = new StringBuilder(100);
+      String configFile = settings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/ckeditor/silverconfig.js");
+      
+      builder.append("CKEDITOR.replace('").append(fieldName).append("', {\n");
+      builder.append("width : '").append(editorWidth).append("',\n");
+      builder.append("height : ").append(editorHeight).append(",\n");
+      builder.append("language : '").append(pageContext.getLanguage()).append("',\n");
+      builder.append("baseHref : '").append(URLManager.getApplicationURL()).append("/wysiwyg/jsp/ckeditor/").append("',\n");
+      builder.append("filebrowserImageBrowseUrl : '").append(Util.getPath()
+          + "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" + pageContext.getComponentId() + "&ObjectId="
+          + pageContext.getObjectId() + "&Context=" + fieldName).append("',\n");
+      builder.append("toolbarStartupExpanded : ").append("false").append(",\n");
+      builder.append("customConfig : '").append(configFile).append("',\n");
+      builder.append("toolbar : '").append("XMLForm").append("'\n");
+      builder.append("});");
+      
+      out.println(builder.toString());
 
       // field name used to generate a javascript function name
       // dynamic value functionality
