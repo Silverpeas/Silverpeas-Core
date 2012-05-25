@@ -24,7 +24,6 @@
 package org.silverpeas.attachment.repository;
 
 import com.silverpeas.util.i18n.I18NHelper;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import javax.jcr.Node;
@@ -61,9 +60,12 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
         file = getAttachment(node, iter.next());
       }
     }
-    return new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY),
-        getIntProperty(node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED),
-        file);
+    return new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY), getIntProperty(
+        node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED),
+        getStringProperty(node, SLV_PROPERTY_OWNER), getDateProperty(node,
+        SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
+        getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
+        getStringProperty(node, SLV_PROPERTY_STATUS), file);
   }
 
   protected SimpleAttachment getAttachment(Node node, String language) throws RepositoryException {
@@ -82,11 +84,16 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
 
   private void setDocumentNodeProperties(SimpleDocument document, Node documentNode) throws
       RepositoryException {
-    documentNode.setProperty(SLV_PROPERTY_FOREIGN_KEY, document.getForeignId());
+    addStringProperty(documentNode, SLV_PROPERTY_FOREIGN_KEY, document.getForeignId());
     documentNode.setProperty(SLV_PROPERTY_VERSIONED, document.isVersioned());
     documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
     documentNode.setProperty(SLV_PROPERTY_OLD_ID, document.getOldSilverpeasId());
-    documentNode.setProperty(SLV_PROPERTY_INSTANCEID, document.getInstanceId());
+    addStringProperty(documentNode, SLV_PROPERTY_INSTANCEID, document.getInstanceId());
+    addStringProperty(documentNode, SLV_PROPERTY_OWNER, document.getEditedBy());
+    addStringProperty(documentNode, SLV_PROPERTY_STATUS, document.getStatus());
+    addDateProperty(documentNode, SLV_PROPERTY_ALERT_DATE, document.getAlert());
+    addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, document.getExpiry());
+    addDateProperty(documentNode, SLV_PROPERTY_RESERVATION_DATE, document.getReservation());
   }
 
   private Node getAttachmentNode(String attachmentNodeName, Node documentNode) throws
@@ -119,7 +126,7 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     }
   }
 
-  public void removeAttachment(Node documentNode, String  language) throws RepositoryException {
+  public void removeAttachment(Node documentNode, String language) throws RepositoryException {
     Node attachmentNode = getAttachmentNode(SimpleDocument.FILE_PREFIX + language, documentNode);
     attachmentNode.remove();
   }

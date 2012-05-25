@@ -54,6 +54,7 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.JcrConstants;
 
 import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_NAME;
@@ -324,6 +325,7 @@ public abstract class AbstractJcrConverter {
     if (fileMimeType == null) {
       fileMimeType = FileUtil.getMimeType(fileNode.getProperty(SLV_PROPERTY_NAME).getString());
     }
+    contentNode.setProperty(JCR_ENCODING, CharEncoding.UTF_8);
     contentNode.setProperty(JCR_MIMETYPE, fileMimeType);
     Calendar lastModified = Calendar.getInstance();
     contentNode.setProperty(JCR_LAST_MODIFIED, lastModified);

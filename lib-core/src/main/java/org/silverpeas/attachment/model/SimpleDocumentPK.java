@@ -76,7 +76,7 @@ public class SimpleDocumentPK extends WAPrimaryKey implements Serializable {
   public String toString() {
     StringBuilder buffer = new StringBuilder(100);
     buffer.append("SimpleDocumentPK{id = ").append(getId()).append(", componentName = ").
-        append(getComponentName()).append("oldSilverpeasId=").append(oldSilverpeasId).append('}');
+        append(getComponentName()).append(", oldSilverpeasId=").append(oldSilverpeasId).append('}');
     return buffer.toString();
   }
 }

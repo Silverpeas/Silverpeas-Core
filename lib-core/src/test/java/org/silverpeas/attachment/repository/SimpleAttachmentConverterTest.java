@@ -94,7 +94,6 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
     String fileName = "test.pdf";
     String title = "My test document";
     String description = "This is a test document";
-    String status = "my status";
     String formId = "18";
     String updatedBy = "5";
     String creatorId = "0";
@@ -102,15 +101,11 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
     String nodeName = SimpleDocument.FILE_PREFIX + language;
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     Date updateDate = RandomGenerator.getRandomCalendar().getTime();
-    Date reservationDate = RandomGenerator.getRandomCalendar().getTime();
-    Date alertDate = RandomGenerator.getRandomCalendar().getTime();
-    Date expiryDate = RandomGenerator.getRandomCalendar().getTime();
     Session session = BasicDaoFactory.getSystemSession();
     try {
       Node node = session.getRootNode().getNode(instanceId).addNode(nodeName, SLV_SIMPLE_ATTACHMENT);
       SimpleAttachment expResult = new SimpleAttachment(fileName, language, title,
-          description, 15L, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate, reservationDate,
-          alertDate, expiryDate, status, formId);
+          description, 15L, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate, formId);
       expResult.setUpdated(updateDate);
       expResult.setUpdatedBy(updatedBy);
       assertThat(expResult.equals(expResult), is(true));
@@ -122,14 +117,7 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       Calendar calend = Calendar.getInstance();
       calend.setTime(creationDate);
       node.setProperty(SLV_PROPERTY_CREATION_DATE, calend);
-      calend.setTime(reservationDate);
-      node.setProperty(SLV_PROPERTY_RESERVATION_DATE, calend);
-      calend.setTime(alertDate);
-      node.setProperty(SLV_PROPERTY_ALERT_DATE, calend);
-      calend.setTime(expiryDate);
       node.setProperty(SLV_PROPERTY_MAJOR, 1);
-      node.setProperty(SLV_PROPERTY_EXPIRY_DATE, calend);
-      node.setProperty(SLV_PROPERTY_STATUS, status);
       node.setProperty(SLV_PROPERTY_XMLFORM_ID, formId);
       node.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
@@ -160,11 +148,9 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
     String fileName = "test.pdf";
     String title = "Mon document de test";
     String description = "Ceci est un document de test";
-    String status = "status";
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleAttachment attachment = new SimpleAttachment(fileName, language, title,
-        description, 0L, MimeTypes.PDF_MIME_TYPE, "0", creationDate, null, null,
-        null, status, null);
+        description, 0L, MimeTypes.PDF_MIME_TYPE, "0", creationDate, null);
     String nodeName = attachment.getNodeName();
     Session session = BasicDaoFactory.getSystemSession();
     try {
@@ -183,17 +169,12 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       assertThat(node.hasProperty(SLV_PROPERTY_CLONE), is(false));
       assertThat(node.hasProperty(JCR_DESCRIPTION), is(true));
       assertThat(node.getProperty(JCR_DESCRIPTION).getString(), is(description));
-      assertThat(node.hasProperty(SLV_PROPERTY_OWNER), is(false));
-      assertThat(node.hasProperty(SLV_PROPERTY_EXPIRY_DATE), is(false));
       assertThat(node.hasProperty(SLV_PROPERTY_NAME), is(true));
       assertThat(node.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
       assertThat(node.hasProperty(SLV_PROPERTY_MAJOR), is(true));
       assertThat(node.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
       assertThat(node.hasProperty(SLV_PROPERTY_MINOR), is(true));
       assertThat(node.getProperty(SLV_PROPERTY_MINOR).getLong(), is(0L));
-      assertThat(node.hasProperty(SLV_PROPERTY_RESERVATION_DATE), is(false));
-      assertThat(node.hasProperty(SLV_PROPERTY_STATUS), is(true));
-      assertThat(node.getProperty(SLV_PROPERTY_STATUS).getString(), is(status));
       assertThat(node.hasProperty(JCR_TITLE), is(true));
       assertThat(node.getProperty(JCR_TITLE).getString(), is(title));
       assertThat(node.hasProperty(JCR_LAST_MODIFIED), is(false));

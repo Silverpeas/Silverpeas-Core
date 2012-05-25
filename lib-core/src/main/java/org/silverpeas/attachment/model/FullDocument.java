@@ -30,6 +30,7 @@ import java.util.List;
  * @author ehugonnet
  */
 public class FullDocument extends SimpleDocument {
+
   private List<SimpleAttachment> history;
 
   public FullDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
@@ -39,8 +40,7 @@ public class FullDocument extends SimpleDocument {
 
   public FullDocument() {
   }
-  
-  
+
   public List<SimpleAttachment> getHistory() {
     return history;
   }
@@ -48,5 +48,4 @@ public class FullDocument extends SimpleDocument {
   public void setHistory(List<SimpleAttachment> history) {
     this.history = history;
   }
-  
 }

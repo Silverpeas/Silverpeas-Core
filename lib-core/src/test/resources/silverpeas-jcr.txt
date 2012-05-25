@@ -9,12 +9,16 @@
   mixin
   - slv:owner (STRING)
 
-[slv:simpleDocument] >  nt:folder, mix:referenceable
+[slv:simpleDocument] >  nt:folder, mix:referenceable, slv:ownable
   - slv:foreignKey (STRING) 
   - slv:instanceId (STRING) MANDATORY
   - slv:versioned (BOOLEAN)  = 'false'
   - slv:oldSilverpeasId (LONG)  = '-1'
   - slv:order (LONG) = '0'
+  - slv:expiryDate (DATE)
+  - slv:alertDate (DATE)
+  - slv:reservationDate (DATE)
+  - slv:status (STRING)
   + slv:simpleAttachment PRIMARY
 
 [slv:simpleAttachment] >  nt:folder, mix:language, mix:created, mix:lastModified, mix:title
@@ -24,11 +28,7 @@
   - slv:clone (STRING)
   - slv:creationDate (DATE) MANDATORY
   - slv:creator (STRING) MANDATORY
-  - slv:expiryDate (DATE)
-  - slv:alertDate (DATE)
-  - slv:reservationDate (DATE)
   - slv:xmlFormId (STRING)
-  - slv:status (STRING)
   + jcr:content PRIMARY
 
 /* XML Forms data */

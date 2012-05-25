@@ -131,8 +131,8 @@ public class DateUtil {
       return "";
     }
     FastDateFormat formatter = FastDateFormat.getInstance(getMultilangProperties(
-        language).getString("dateOutputFormat") +
-         " " + getMultilangProperties(language).getString("hourOutputFormat"));
+        language).getString("dateOutputFormat") + " " + getMultilangProperties(language).getString(
+        "hourOutputFormat"));
     return formatter.format(date);
   }
 
@@ -257,8 +257,8 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String lang) {
-    return new SimpleDateFormat(getMultilangProperties(lang).getString("dateInputFormat") + " " +
-         getMultilangProperties(lang).getString("hourOutputFormat"));
+    return new SimpleDateFormat(getMultilangProperties(lang).getString("dateInputFormat") + " "
+        + getMultilangProperties(lang).getString("hourOutputFormat"));
   }
 
   /**
@@ -401,8 +401,7 @@ public class DateUtil {
 
   public static String getFormattedTime(Date date) {
     String time = formatTime(date);
-    SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " +
-         time);
+    SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " + time);
     return time;
   }
 
@@ -696,38 +695,58 @@ public class DateUtil {
     return calendar.getTime();
   }
 
-  
   /**
    * Get last hour, minute, second, millisecond of the specified date
+   *
    * @param curDate the specified date
    * @return a date at last hour, minute, second and millisecond of the specified date
    */
   public static Date getEndOfDay(Date curDate) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(curDate);
-    cal.set(Calendar.HOUR_OF_DAY, 23);
-    cal.set(Calendar.MINUTE, 59);
-    cal.set(Calendar.SECOND, 59);
-    cal.set(Calendar.MILLISECOND, 999);
-    return cal.getTime();
+    if (curDate != null) {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(curDate);
+      cal.set(Calendar.HOUR_OF_DAY, 23);
+      cal.set(Calendar.MINUTE, 59);
+      cal.set(Calendar.SECOND, 59);
+      cal.set(Calendar.MILLISECOND, 999);
+      return cal.getTime();
+    }
+    return null;
   }
-
 
   /**
    * Get first hour, minute, second, millisecond of the specified date
+   *
    * @param curDate the specified date
    * @return a date at last hour, minute, second and millisecond of the specified date
    */
   public static Date getBeginOfDay(Date curDate) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(curDate);
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-    cal.set(Calendar.MINUTE, 0);
-    cal.set(Calendar.SECOND, 0);
-    cal.set(Calendar.MILLISECOND,0);    
-    return cal.getTime();
+    if (curDate != null) {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(curDate);
+      cal.set(Calendar.HOUR_OF_DAY, 0);
+      cal.set(Calendar.MINUTE, 0);
+      cal.set(Calendar.SECOND, 0);
+      cal.set(Calendar.MILLISECOND, 0);
+      return cal.getTime();
+    }
+    return null;
   }
-  
+
+  /**
+   * Set the first hour, minute, second, millisecond of the specified calendar to 0.
+   *
+   * @param calendar the specified calendar.
+   */
+  public static void setAtBeginOfDay(Calendar calendar) {
+    if (calendar != null) {
+      calendar.set(Calendar.HOUR_OF_DAY, 0);
+      calendar.set(Calendar.MINUTE, 0);
+      calendar.set(Calendar.SECOND, 0);
+      calendar.set(Calendar.MILLISECOND, 0);
+    }
+  }
+
   private DateUtil() {
   }
 }

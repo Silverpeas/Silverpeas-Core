@@ -24,6 +24,7 @@
 package org.silverpeas.attachment.model;
 
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 
 /**
@@ -39,14 +40,35 @@ public class SimpleDocument {
   private String foreignId;
   private int order;
   private boolean versioned;
+  private String editedBy;
+  private Date reservation;
+  private Date alert;
+  private Date expiry;
+  private String status;
   private SimpleAttachment file;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
+      SimpleAttachment file) {
+    this(pk, foreignId, order, versioned, null, file);
+  }
+
+  public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
+      String editedBy, SimpleAttachment file) {
+    this(pk, foreignId, order, versioned, editedBy, null, null, null, null, file);
+  }
+
+  public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
+      String editedBy, Date reservation, Date alert, Date expiry, String status,
       SimpleAttachment file) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
     this.versioned = versioned;
+    this.editedBy = editedBy;
+    this.reservation = reservation;
+    this.alert = DateUtil.getBeginOfDay(alert);
+    this.expiry = DateUtil.getBeginOfDay(expiry);
+    this.status = status;
     this.file = file;
   }
 
@@ -134,35 +156,35 @@ public class SimpleDocument {
   }
 
   public Date getReservation() {
-    return file.getReservation();
+    return reservation;
   }
 
   public void setReservation(Date reservation) {
-    file.setReservation(reservation);
+    this.reservation = reservation;
   }
 
   public Date getAlert() {
-    return file.getAlert();
+    return alert;
   }
 
   public void setAlert(Date alert) {
-    file.setAlert(alert);
+    this.alert = DateUtil.getBeginOfDay(alert);
   }
 
   public Date getExpiry() {
-    return file.getExpiry();
+    return expiry;
   }
 
   public void setExpiry(Date expiry) {
-    file.setExpiry(expiry);
+    this.expiry = DateUtil.getBeginOfDay(expiry);
   }
 
   public String getStatus() {
-    return file.getStatus();
+    return status;
   }
 
   public void setStatus(String status) {
-    file.setStatus(status);
+    this.status = status;
   }
 
   public int getMinorVersion() {
@@ -182,11 +204,11 @@ public class SimpleDocument {
   }
 
   public String getEditedBy() {
-    return file.getEditedBy();
+    return editedBy;
   }
 
-  public void setEditedBy(String editedBy) {
-    file.setEditedBy(editedBy);
+  public void edit(String currentEditor) {
+    this.editedBy = currentEditor;
   }
 
   public String getCloneId() {
@@ -289,7 +311,8 @@ public class SimpleDocument {
   @Override
   public String toString() {
     return "SimpleDocument{" + "pk=" + pk + ", foreignId=" + foreignId + ", order=" + order
-        + ", versioned=" + versioned + ", file=" + file + '}';
+        + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation=" + reservation
+        + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status + ", file=" + file + '}';
   }
 
   @Override

@@ -37,24 +37,18 @@ import static javax.jcr.Property.*;
  */
 public class SimpleAttachmentConverter extends AbstractJcrConverter {
 
-
   public SimpleAttachment convertNode(Node node) throws RepositoryException {
     SimpleAttachment attachment = new SimpleAttachment();
-    attachment.setAlert(getDateProperty(node, SLV_PROPERTY_ALERT_DATE));
     attachment.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     attachment.setContentType(getContentMimeType(node));
     attachment.setCreated(getDateProperty(node, SLV_PROPERTY_CREATION_DATE));
     attachment.setCreatedBy(getStringProperty(node, SLV_PROPERTY_CREATOR));
     attachment.setDescription(getStringProperty(node, JCR_DESCRIPTION));
-    attachment.setEditedBy(getStringProperty(node,SLV_PROPERTY_OWNER));
-    attachment.setExpiry(getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE));
     attachment.setFilename(getStringProperty(node, SLV_PROPERTY_NAME));
     attachment.setLanguage(getStringProperty(node, JCR_LANGUAGE));
     attachment.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     attachment.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
-    attachment.setReservation(getDateProperty(node, SLV_PROPERTY_RESERVATION_DATE));
     attachment.setSize(getContentSize(node));
-    attachment.setStatus(getStringProperty(node, SLV_PROPERTY_STATUS));
     attachment.setTitle(getStringProperty(node, JCR_TITLE));
     attachment.setUpdated(getDateProperty(node, JCR_LAST_MODIFIED));
     attachment.setUpdatedBy(getStringProperty(node, JCR_LAST_MODIFIED_BY));
@@ -63,25 +57,19 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
   }
 
   public void fillNode(SimpleAttachment attachment, Node node) throws RepositoryException {
-    addDateProperty(node, SLV_PROPERTY_ALERT_DATE, attachment.getAlert());
-    addStringProperty(node, SLV_PROPERTY_CLONE, attachment.getCloneId());    
     addStringProperty(node, SLV_PROPERTY_CLONE, attachment.getCloneId());
     attachment.setContentType(getContentMimeType(node));
     addDateProperty(node, SLV_PROPERTY_CREATION_DATE, attachment.getCreated());
-    addStringProperty(node, SLV_PROPERTY_CREATOR, attachment.getCreatedBy());      
+    addStringProperty(node, SLV_PROPERTY_CREATOR, attachment.getCreatedBy());
     addStringProperty(node, JCR_DESCRIPTION, attachment.getDescription());
-    addStringProperty(node, SLV_PROPERTY_OWNER, attachment.getEditedBy());        
-    addDateProperty(node, SLV_PROPERTY_EXPIRY_DATE, attachment.getExpiry());
-    addStringProperty(node, SLV_PROPERTY_NAME, attachment.getFilename());   
-    addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());   
-    addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());  
+    addStringProperty(node, SLV_PROPERTY_NAME, attachment.getFilename());
+    addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());
+    addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());
     node.setProperty(SLV_PROPERTY_MAJOR, attachment.getMajorVersion());
     node.setProperty(SLV_PROPERTY_MINOR, attachment.getMinorVersion());
-    addDateProperty(node, SLV_PROPERTY_RESERVATION_DATE, attachment.getReservation());
-    addStringProperty(node, SLV_PROPERTY_STATUS, attachment.getStatus());  
     addStringProperty(node, JCR_TITLE, attachment.getTitle());
-    addDateProperty(node, JCR_LAST_MODIFIED, attachment.getUpdated());  
-    addStringProperty(node, JCR_LAST_MODIFIED_BY, attachment.getUpdatedBy()); 
+    addDateProperty(node, JCR_LAST_MODIFIED, attachment.getUpdated());
+    addStringProperty(node, JCR_LAST_MODIFIED_BY, attachment.getUpdatedBy());
     addStringProperty(node, SLV_PROPERTY_XMLFORM_ID, attachment.getXmlFormId());
   }
 }

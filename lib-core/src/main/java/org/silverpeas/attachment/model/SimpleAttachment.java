@@ -24,8 +24,7 @@
 package org.silverpeas.attachment.model;
 
 import com.silverpeas.util.i18n.I18NHelper;
-import java.io.File;
-import java.io.InputStream;
+import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 
 /**
@@ -33,30 +32,24 @@ import java.util.Date;
  * @author ehugonnet
  */
 public class SimpleAttachment {
- 
+
   private String filename;
   private String language = I18NHelper.defaultLanguage;
   private String title;
   private String description;
   private long size;
-  private String contentType;  
+  private String contentType;
   private String createdBy;
   private Date created;
   private String updatedBy;
   private Date updated;
-  private Date reservation;
-  private Date alert;
-  private Date expiry;
-  private String status;
   private int minorVersion = 0;
   private int majorVersion = 1;
-  private String editedBy;
   private String cloneId;
   private String xmlFormId;
 
-  public SimpleAttachment(String filename, String language, String title, String description, long size,
-      String contentType, String createdBy, Date created, Date reservation, Date alert, Date expiry,
-      String status, String xmlFormId) {
+  public SimpleAttachment(String filename, String language, String title, String description,
+      long size, String contentType, String createdBy, Date created, String xmlFormId) {
     this.filename = filename;
     this.language = language;
     this.title = title;
@@ -65,20 +58,16 @@ public class SimpleAttachment {
     this.contentType = contentType;
     this.createdBy = createdBy;
     this.created = created;
-    this.reservation = reservation;
-    this.alert = alert;
-    this.expiry = expiry;
-    this.status = status;
     this.xmlFormId = xmlFormId;
   }
-  
+
   public SimpleAttachment() {
   }
 
-  public String getNodeName() {   
+  public String getNodeName() {
     return SimpleDocument.FILE_PREFIX + getLanguage();
   }
-  
+
   public String getFilename() {
     return filename;
   }
@@ -159,38 +148,6 @@ public class SimpleAttachment {
     this.updated = updated;
   }
 
-  public Date getReservation() {
-    return reservation;
-  }
-
-  public void setReservation(Date reservation) {
-    this.reservation = reservation;
-  }
-
-  public Date getAlert() {
-    return alert;
-  }
-
-  public void setAlert(Date alert) {
-    this.alert = alert;
-  }
-
-  public Date getExpiry() {
-    return expiry;
-  }
-
-  public void setExpiry(Date expiry) {
-    this.expiry = expiry;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
   public int getMinorVersion() {
     return minorVersion;
   }
@@ -205,14 +162,6 @@ public class SimpleAttachment {
 
   public void setMajorVersion(int majorVersion) {
     this.majorVersion = majorVersion;
-  }
-
-  public String getEditedBy() {
-    return editedBy;
-  }
-
-  public void setEditedBy(String editedBy) {
-    this.editedBy = editedBy;
   }
 
   public String getCloneId() {
@@ -244,13 +193,8 @@ public class SimpleAttachment {
     hash = 61 * hash + (this.created != null ? this.created.hashCode() : 0);
     hash = 61 * hash + (this.updatedBy != null ? this.updatedBy.hashCode() : 0);
     hash = 61 * hash + (this.updated != null ? this.updated.hashCode() : 0);
-    hash = 61 * hash + (this.reservation != null ? this.reservation.hashCode() : 0);
-    hash = 61 * hash + (this.alert != null ? this.alert.hashCode() : 0);
-    hash = 61 * hash + (this.expiry != null ? this.expiry.hashCode() : 0);
-    hash = 61 * hash + (this.status != null ? this.status.hashCode() : 0);
     hash = 61 * hash + this.minorVersion;
     hash = 61 * hash + this.majorVersion;
-    hash = 61 * hash + (this.editedBy != null ? this.editedBy.hashCode() : 0);
     hash = 61 * hash + (this.cloneId != null ? this.cloneId.hashCode() : 0);
     hash = 61 * hash + (this.xmlFormId != null ? this.xmlFormId.hashCode() : 0);
     return hash;
@@ -289,38 +233,22 @@ public class SimpleAttachment {
         : !this.createdBy.equals(other.createdBy)) {
       return false;
     }
-    if (this.created != other.created &&
-        (this.created == null || !this.created.equals(other.created))) {
+    if (this.created != other.created && (this.created == null || !this.created.
+        equals(other.created))) {
       return false;
     }
     if ((this.updatedBy == null) ? (other.updatedBy != null)
         : !this.updatedBy.equals(other.updatedBy)) {
       return false;
     }
-    if (this.updated != other.updated &&
-        (this.updated == null || !this.updated.equals(other.updated))) {
-      return false;
-    }
-    if (this.reservation != other.reservation &&
-        (this.reservation == null || !this.reservation.equals(other.reservation))) {
-      return false;
-    }
-    if (this.alert != other.alert && (this.alert == null || !this.alert.equals(other.alert))) {
-      return false;
-    }
-    if (this.expiry != other.expiry && (this.expiry == null || !this.expiry.equals(other.expiry))) {
-      return false;
-    }
-    if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
+    if (this.updated != other.updated && (this.updated == null || !this.updated.
+        equals(other.updated))) {
       return false;
     }
     if (this.minorVersion != other.minorVersion) {
       return false;
     }
     if (this.majorVersion != other.majorVersion) {
-      return false;
-    }
-    if ((this.editedBy == null) ? (other.editedBy != null) : !this.editedBy.equals(other.editedBy)) {
       return false;
     }
     if ((this.cloneId == null) ? (other.cloneId != null) : !this.cloneId.equals(other.cloneId)) {
@@ -332,17 +260,13 @@ public class SimpleAttachment {
     }
     return true;
   }
-  
 
   @Override
   public String toString() {
-    return "SimpleFile{filename=" + filename + ", language=" + language +
-        ", title=" + title + ", description=" + description + ", size=" + size + ", contentType=" +
-        contentType + ", createdBy=" + createdBy + ", created=" + created + ", updatedBy=" +
-        updatedBy + ", updated=" + updated + ", reservation=" + reservation + ", alert=" + alert +
-        ", expiry=" + expiry + ", status=" + status + ", minorVersion=" + minorVersion +
-        ", majorVersion=" + majorVersion + ", editedBy=" + editedBy + ", cloneId=" + cloneId +
-        ", xmlFormId=" + xmlFormId + '}';
+    return "SimpleAttachment{" + "filename=" + filename + ", language=" + language + ", title="
+        + title + ", description=" + description + ", size=" + size + ", contentType=" + contentType
+        + ", createdBy=" + createdBy + ", created=" + created + ", updatedBy=" + updatedBy
+        + ", updated=" + updated + ", minorVersion=" + minorVersion + ", majorVersion="
+        + majorVersion + ", cloneId=" + cloneId + ", xmlFormId=" + xmlFormId + '}';
   }
-  
 }
