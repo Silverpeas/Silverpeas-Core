@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
   <uniqueid tableName="sb_comment_comment" maxId="10" />
-  <sb_comment_comment  commentId="1000" commentOwnerId="10" commentCreationDate="2019/10/15" 
-        commentModificationDate="[NULL]" commentComment="my comments" foreignId="500" 
-        instanceId="instanceId10" />
-  <sb_comment_comment  commentId="1001" commentOwnerId="12" commentCreationDate="2019/10/18" 
-        commentModificationDate="2020/06/16" commentComment="my comments are good" foreignId="500" 
-        instanceId="instanceId10" />
-        <sb_comment_comment  commentId="1002" commentOwnerId="12" commentCreationDate="2019/10/18" 
-        commentModificationDate="2020/06/16" commentComment="my comments are good" foreignId="610" 
-        instanceId="instanceId20" />
+  <sb_comment_comment commentId="1000"
+    commentOwnerId="10" commentCreationDate="2019/10/15"
+    commentModificationDate="[NULL]" commentComment="my comments"
+    instanceId="instanceId10" resourceType="RtypeTest" resourceId="500" />
+  <sb_comment_comment commentId="1001"
+    commentOwnerId="12" commentCreationDate="2019/10/18"
+    commentModificationDate="2020/06/16" commentComment="my comments are good"
+    instanceId="instanceId10" resourceType="RtypeTest" resourceId="500" />
+  <sb_comment_comment commentId="1002"
+    commentOwnerId="12" commentCreationDate="2019/10/18"
+    commentModificationDate="2020/06/16" commentComment="my comments are good"
+    instanceId="instanceId10" resourceType="RtypeTestAutre" resourceId="500" />
+  <sb_comment_comment commentId="1010"
+    commentOwnerId="12" commentCreationDate="2019/10/18"
+    commentModificationDate="2020/06/16" commentComment="my comments are good"
+    instanceId="instanceId20" resourceType="RtypeTest" resourceId="610" />
+  <sb_comment_comment commentId="1011"
+    commentOwnerId="12" commentCreationDate="2019/10/18"
+    commentModificationDate="2020/06/16" commentComment="my comments are good"
+    instanceId="instanceId20" resourceType="RtypeTestAutre" resourceId="610" />
+  <!-- Without instanceId -->
+  <sb_comment_comment commentId="1020"
+    commentOwnerId="12" commentCreationDate="2019/10/18"
+    commentModificationDate="2020/06/16" commentComment="Comment inside a tool"
+    instanceId="NONE" resourceType="RtypeUniqueTest" resourceId="700" />
+  <sb_comment_comment commentId="1021"
+    commentOwnerId="12" commentCreationDate="2019/10/18"
+    commentModificationDate="2020/06/16" commentComment="Comment inside a tool"
+    instanceId="NONE" resourceType="RtypeUniqueTest" resourceId="710" />
 </dataset>

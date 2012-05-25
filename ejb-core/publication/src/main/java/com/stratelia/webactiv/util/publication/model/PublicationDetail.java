@@ -1280,6 +1280,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getContributionType() {
     return TYPE;
   }
+  
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
+  }
 
   @Override
   public String getSilverpeasContentId() {

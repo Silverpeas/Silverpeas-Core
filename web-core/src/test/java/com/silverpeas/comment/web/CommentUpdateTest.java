@@ -44,16 +44,16 @@ public class CommentUpdateTest extends ResourceUpdateTest<CommentTestResources> 
   private UserDetail user;
   private String sessionKey;
   private CommentEntity theComment;
-  
+
   public CommentUpdateTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
-  
+
   @BeforeClass
   public static void prepareMessagingContext() throws Exception {
     BaseCommentTest.boostrapMessagingSystem();
   }
-  
+
   @AfterClass
   public static void releaseMessagingContext() throws Exception {
     BaseCommentTest.shutdownMessagingSystem();
@@ -63,8 +63,9 @@ public class CommentUpdateTest extends ResourceUpdateTest<CommentTestResources> 
   public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    Comment commentToUseInTest = theUser(user).commentTheResource(CONTENT_ID).inComponent(
-        COMPONENT_INSTANCE_ID).withAsText("ceci est un commentaire");
+    Comment commentToUseInTest =
+        theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
+            COMPONENT_INSTANCE_ID).withAsText("ceci est un commentaire");
     getTestResources().save(commentToUseInTest);
     theComment = CommentEntity.fromComment(commentToUseInTest);
   }
@@ -79,7 +80,7 @@ public class CommentUpdateTest extends ResourceUpdateTest<CommentTestResources> 
 
   @Override
   public CommentEntity anInvalidResource() {
-    Comment comment = theUser(user).commentTheResource(CONTENT_ID).inComponent(
+    Comment comment = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).withAsText("ceci est un commentaire");
     comment.setCommentPK(new CommentPK("3", COMPONENT_INSTANCE_ID));
     return CommentEntity.fromComment(comment);

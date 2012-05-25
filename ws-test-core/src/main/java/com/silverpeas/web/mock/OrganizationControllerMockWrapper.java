@@ -444,4 +444,9 @@ public class OrganizationControllerMockWrapper extends OrganizationController {
   public String[] getAdministratorUserIds(String fromUserId) {
     return mock.getAdministratorUserIds(fromUserId);
   }
+
+  @Override
+  public boolean isToolAvailable(String toolId) {
+    return mock.isToolAvailable(toolId);
+  }
 }

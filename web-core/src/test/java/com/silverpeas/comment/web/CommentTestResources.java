@@ -27,13 +27,9 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.web.mock.DefaultCommentServiceMock;
 import com.silverpeas.web.TestResources;
-import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Inject;
 import javax.inject.Named;
-import static org.mockito.Mockito.when;
 
 /**
  * Resources required by all the unit tests on the comment web resource.
@@ -44,10 +40,15 @@ public class CommentTestResources extends TestResources {
   public static final String JAVA_PACKAGE = "com.silverpeas.comment.web";
   public static final String SPRING_CONTEXT = "spring-comment-webservice.xml";
   public static final String COMPONENT_INSTANCE_ID = "kmelia2";
+  public static final String TOOL_ID = "toolX";
+  public static final String CONTENT_TYPE = "ContentType_1";
   public static final String CONTENT_ID = "1";
-  public static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/"
-          + CONTENT_ID;
-  public static final String INVALID_RESOURCE_PATH = "comments/kmelia100/3";
+  public static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/" +
+      CONTENT_TYPE + "/" + CONTENT_ID;
+  public static final String TOOL_RESOURCE_PATH = "comments/" + TOOL_ID + "/" + CONTENT_TYPE + "/" +
+      CONTENT_ID;
+  public static final String INVALID_RESOURCE_PATH = "comments/kmelia100/NONE/3";
+  
   @Inject
   private DefaultCommentServiceMock commentService;
 
