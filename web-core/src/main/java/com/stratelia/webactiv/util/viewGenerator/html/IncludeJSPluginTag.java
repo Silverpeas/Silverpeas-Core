@@ -53,6 +53,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
   private static final String JQUERY_BREADCRUMB = "silverpeas-breadcrumb.js";
+  private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
+  private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -94,6 +96,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       xhtml.addElement(pagination);
     } else if (breadcrumb.name().equals(getName())) {
       script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + JQUERY_BREADCRUMB);
+      xhtml.addElement(breadcrumb);
+    } else if (wysiwyg.name().equals(getName())) {
+      script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(wysiwygPath + JAVASCRIPT_CKEDITOR);
       xhtml.addElement(breadcrumb);
     }
     xhtml.output(getJspContext().getOut());

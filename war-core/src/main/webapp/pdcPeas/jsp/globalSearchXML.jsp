@@ -77,10 +77,8 @@ if (!StringUtil.isDefined(pageId)) {
 
 <html>
 <head>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function sendXMLRequest()
@@ -104,12 +102,6 @@ function viewXmlSearch(){
 	$.progressMessage();
 	document.XMLRestrictForm.submit();
 }
-
-/*$(document).ready(
-	function(){
-		viewXmlSearch();
-	}
-)*/
 </script>
 </head>
 <body class="yui-skin-sam" id="<%=pageId %>">
