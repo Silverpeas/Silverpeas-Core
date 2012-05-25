@@ -177,11 +177,12 @@
       
       if (!isInMyContacts(user) && !isInMyInvitations(user))
         userinfo.append($('<a>', {href: '#'}).addClass('link invitation').append($.i18n.prop('invitation.send')).invitMe(user));
+      userinfo.append($('<a>', {href: '#'}).addClass('link notification').append($.i18n.prop('GML.notification.send')).messageMe(user));
       
       userinfo.append($('<button>').append($.i18n.prop('myProfile.tab.profile')).click(function() {
         document.location.href = user.webPage;
       })).
-      append($('<button>').append($.i18n.prop('tchat')).click(function() {
+      append($('<button>').attr('disabled', !user.connected).append($.i18n.prop('tchat')).click(function() {
         tchatWith(user);
       })).
       appendTo(target).data('user', user.id);

@@ -101,9 +101,11 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       xhtml.addElement(breadcrumb);
     } else if (userZoom.name().equals(getName())) {
       script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
+      script messageMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_MESSAGEME);
       script invitMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_INVITME);
       script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_USERZOOM);
       xhtml.addElement(profile);
+      xhtml.addElement(messageMe);
       xhtml.addElement(invitMe);
       xhtml.addElement(userZoom);
     } else if (invitme.name().equals(getName())) {
