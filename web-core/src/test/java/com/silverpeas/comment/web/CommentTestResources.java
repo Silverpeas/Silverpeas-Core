@@ -24,14 +24,16 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.model.Comment;
-import javax.inject.Inject;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.web.mock.DefaultCommentServiceMock;
 import com.silverpeas.web.TestResources;
-import com.silverpeas.web.mock.OrganizationControllerMock;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import javax.inject.Inject;
 import javax.inject.Named;
+import static org.mockito.Mockito.when;
 
 /**
  * Resources required by all the unit tests on the comment web resource.
@@ -64,13 +66,6 @@ public class CommentTestResources extends TestResources {
    */
   public static CommentBuilder theUser(final UserDetail user) {
     return new CommentBuilder().withUser(user);
-  }
-  
-  public static UserDetail save(final UserDetail user) {
-    OrganizationControllerFactory factory = OrganizationControllerFactory.getFactory();
-    OrganizationControllerMock mock = (OrganizationControllerMock) factory.getOrganizationController();
-    mock.addUserDetail(user);
-    return user;
   }
 
   public void save(final Comment... comments) {

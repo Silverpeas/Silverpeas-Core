@@ -124,7 +124,7 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
 
   @Test
   public void getAnExistingBundleInEnglish() {
-    PersonalizationService p = getMockedPersonalizationService();
+    PersonalizationService p = getPersonalizationServiceMock();
     p.getUserSettings(user.getId()).setLanguage("en");
     String messages = getAt(aResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));

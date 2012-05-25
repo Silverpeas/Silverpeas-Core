@@ -24,19 +24,19 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.BaseCommentTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import com.silverpeas.comment.model.Comment;
+import static com.silverpeas.comment.web.CommentEntityMatcher.matches;
+import static com.silverpeas.comment.web.CommentTestResources.*;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.Matchers.equalTo;
+import org.junit.AfterClass;
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.comment.web.CommentEntityMatcher.*;
-import static com.silverpeas.comment.web.CommentTestResources.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests on the comment getting by the CommentResource web service.

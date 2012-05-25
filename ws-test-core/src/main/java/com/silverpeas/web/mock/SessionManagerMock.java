@@ -27,7 +27,6 @@ package com.silverpeas.web.mock;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
