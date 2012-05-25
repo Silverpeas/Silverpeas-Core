@@ -187,8 +187,21 @@
           }
         }
         
+        // loads the preselected user groups so that they can be displayed in the user group
+        // selection panel
+        function loadPreselectionOfGroups() {
+          if (preselectedUserGroups && preselectedUserGroups.length > 0) {
+            for(var i in preselectedUserGroups) {
+              new UserGroup({id: preselectedUserGroups[i]}).load(groupSelection.add);
+            }
+          }
+          if (groupSelection.size() == 0) {
+            renderUserGroupSelection();
+          }
+        }
+        
         // the ui event processing in the user panel
-        // each event is sent by an action of the user with an ui element and drives to a computation
+        // each event is sent by an action of the user on an ui element and drives to a computation
         // into which different others ui elements can be updated
         var eventProcessing = new function() {
           
@@ -459,15 +472,7 @@
             $operation = $('<a>', {id: 'add_group_' + theGroup.id, title: '<fmt:message key="selection.AddToSelection"/>', href: '#'}).
               addClass('add').addClass('group').text('<fmt:message key="selection.AddToSelection"/>').click(function() {
               groupSelection.add(theGroup);
-            });
-            
-            var index = preselectedUserGroups.indexOf(theGroup.id);
-            if (index > -1) {
-              groupSelection.add(theGroup);
-              preselectedUserGroups.splice(index, 1);
-            }
-            if (groupSelection.isSelected(theGroup))
-              $operation.hide();
+            })
           } else {
             var id = 'selected_group_' + theGroup.id;
             $operation = $('<a>', {title: '<fmt:message key="selection.RemoveFromSelection"/>', href: '#'}).
@@ -641,7 +646,7 @@
           }
           
           renderSearchBox($('#group_search'));
-          renderUserGroupSelection();
+          loadPreselectionOfGroups();
       </c:if>
     
       <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
