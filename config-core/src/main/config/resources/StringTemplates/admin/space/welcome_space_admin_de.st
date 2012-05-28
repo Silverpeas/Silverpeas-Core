@@ -1,37 +1,37 @@
-<h2 class="txtNav"><center>Welcome to space & applications management</center></h2>
+<h2 class="txtNav"><center>Willkommen beim Bereich & Application Management</center></h2>
 
-<p class="accroche">Silverpeas is structured into spaces that contain applications. Each space may also contains sub-spaces.<br/>
-A wide range of applications ready to use is offered to meet all your needs : document management, image gallery, blog, surveys, project management...<br/>
-As an <b>administrator</b> you can manage all spaces and applications.</p>
+<p class="accroche">Silverpeas wird in Bereiche, die Anwendungen enthalten strukturiert. Jeder Bereich kann auch Unterbereiche enthalten.<br/>
+Eine breite Palette von gebrauchsfertigen Anwendunge werden angeboten um alle Ihre Bedürfnisse zu erfüllen: Dokumenten-Management, Bildergalerie, Blog, Umfragen, Projektmanagement ...<br/>
+Als <b>Administrator</b> können Sie alle Bereiche und Anwendungen verwalten.</p>
 
 <div id="txt_evolutivite">
-<h3>It's very easy to change the structure of your platform !</h3>
-<p>You can create a root space quickly following <a class="txtnav" href="javascript:onclick=openPopup()">this link</a> or when following right corner operation <b class="yuimenu"> Create a space </b> from menu <b>What do you want to do next ?</b>.<br/>
-</p><p>All first-level spaces are accessible in the drop-down list on the left. To edit, delete or manage a space, simply select it from this list.<br/>
-The content of the selected space will then appear in this list.
-All the operations available on this space are accessible via the menu <b>What do you want to do next?</b>.<br/>
-You can especially :</p>
+<h3>Es ist sehr einfach, die Struktur Ihrer Plattform zu ändern!</h3>
+<p>Sie können schnell, unter <a class="txtnav" href="javascript:onclick=openPopup()">diesem Link</a>, einen Wurzelbereich erstellen oder, Sie können über das "Was wollen Sie tun ?" Menü <b class="yuimenu"> einen Bereich erstellen </b>. <b>Was wollen Sie als Nächstes tun ?</b>.<br/>
+</p><p>Alle First-Level-Bereiche sind über der Dropdown-Liste auf der linken Seite zugänglich. So bearbeiten, löschen oder verwalten Sie einen Bereich, wählen Sie es einfach aus dieser Liste.<br/>
+Der Inhalt des ausgewählten Bereichs wird dann in dieser Liste angezeigt.
+Alle Operationen auf diesem Bereich sind über das Menü <b>Was wollen Sie tun ?</b> erreichbar.<br/>
+Sie können insbesondere:</p>
 <ul>
-<li>add, edit or remove applications,</li>
-<li>define the access rights that apply to those applications,</li>
-<li>delegate its management to any user,</li>
-<li>define a specific home page,</li>
+<li>Anwendungen Hinzufügen, Bearbeiten oder Entfernen,</li>
+<li>die Zugriffsrechte, die für diese Anwendungen gelten definieren,</li>
+<li>Verwaltung jedem Benutzer delegieren,</li>
+<li>eine bestimmte Startseite definieren,</li>
 <li>...</li>
 </ul>
-<p>To manage a subspace or application, click on their name. It will give you access to all its operations, using the menu <b>What do you want to do next?</b>.</p>
+<p>Um einen Unterbereich oder eine Anwendung zu verwalten, klicken Sie auf ihren Namen. Es wird Ihnen den Zugriff auf alle mögliche Operationen, über das Menü <b>Was wollen Sie tun ?</b> erlaubt.</p>
 </div>
 
 <div id="txt_restauration">
-<h3>Oups I have deleted the wrong space !!!</h3>
-<p>To prevent user from doing some wrong handling, all the spaces and applications are not permanently erased.<br/>
-You can always find them inside the <a class="txtnav" href="ViewBin">bin</a>.<br/>
-The bin is only accessible to administrators. So you are the only one(s) who can restore or permanently delete spaces or applications.<br/>
-Keep in mind that you will need to grant new specific access right when restoring a space or an application.</p>
+<h3>Oooops Ich habe den falschen Bereich gelöscht!</h3>
+<p>Um zu vermeiden dass ein Benutzer eine falsche Handlung macht, werden Bereiche und Anwendungen, nicht dauerhaft gelöscht.<br/>
+Man findet sie immer im <a class="txtnav" href="ViewBin">Papierkorb</a>.<br/>
+Der Papierkorb ist nur für Administratoren zugänglich. So sind Sie der einzige, der dauerhaft Bereiche oder Anwendungen löschen kann.<br/>
+Beachten Sie, dass Sie bei der Wiederherstellung eines Bereichs oder einer Anwendung neue spezifische Zugangsrechte gewähren müssen.</p>
 </div>
 
 <div id="txt_maintenance">
-<h3>Maintenace mode</h3>
-<p>This mode allows you to close access to the platform.<br/>
-Only administrators can access the platform, so it's useful for major changes.<br/>
-This mode is also available in each space. Users will be warned of the temporary unavailability.</p>
+<h3>Maintenance-Modus</h3>
+<p>Dieser Modus ermöglicht es Ihnen den Zugriff auf der Plattform zu schließen.<br/>
+Nur Administratoren können auf die Plattform zugreifen, es ist also nützlich für große Veränderungen.<br/>
+Dieser Modus ist auch in jedem Bereich zur Verfügung. Die Nutzer werden von der vorübergehende Nichtverfügbarkeit gewarnt werden.</p>
 </div>

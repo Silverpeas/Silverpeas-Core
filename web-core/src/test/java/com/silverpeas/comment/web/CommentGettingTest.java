@@ -50,12 +50,12 @@ public class CommentGettingTest extends ResourceGettingTest<CommentTestResources
   public CommentGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
-  
+
   @BeforeClass
   public static void prepareMessagingContext() throws Exception {
     BaseCommentTest.boostrapMessagingSystem();
   }
-  
+
   @AfterClass
   public static void releaseMessagingContext() throws Exception {
     BaseCommentTest.shutdownMessagingSystem();
@@ -65,8 +65,10 @@ public class CommentGettingTest extends ResourceGettingTest<CommentTestResources
   public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    theComment = theUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
-        withAsText("ceci est un commentaire");
+    theComment =
+        theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID)
+            .inComponent(COMPONENT_INSTANCE_ID).
+            withAsText("ceci est un commentaire");
     getTestResources().save(theComment);
   }
 
@@ -79,13 +81,13 @@ public class CommentGettingTest extends ResourceGettingTest<CommentTestResources
 
   @Test
   public void getAllComments() {
-    Comment theComment1 = theUser(user).commentTheResource(CONTENT_ID).inComponent(
+    Comment theComment1 = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire 1");
-    Comment theComment2 = theUser(user).commentTheResource(CONTENT_ID).inComponent(
+    Comment theComment2 = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire 2");
-    Comment theComment3 = theUser(user).commentTheResource(CONTENT_ID).inComponent(
+    Comment theComment3 = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire 3");
     getTestResources().save(theComment1, theComment2, theComment3);

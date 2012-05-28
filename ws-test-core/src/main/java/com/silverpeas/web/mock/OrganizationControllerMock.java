@@ -38,6 +38,7 @@ public class OrganizationControllerMock extends OrganizationController {
   private Map<String, UserDetail> users = new HashMap<String, UserDetail>();
   private Map<String, Group> groups = new HashMap<String, Group>();
   private Set<String> components = new HashSet<String>();
+  private Set<String> tools = new HashSet<String>();
 
   @Override
   public UserDetail getUserDetail(String sUserId) {
@@ -187,6 +188,11 @@ public class OrganizationControllerMock extends OrganizationController {
   }
 
   @Override
+  public boolean isToolAvailable(String toolId) {
+    return tools.contains(toolId);
+  }
+
+  @Override
   public boolean isComponentExist(String componentId) {
     return components.contains(componentId);
   }
@@ -206,9 +212,19 @@ public class OrganizationControllerMock extends OrganizationController {
   }
 
   /**
+   * Adds a tool to use on tests. All tools others than the added ones are considered as non
+   * existing.
+   * 
+   * @param toolId the unique identifier of the tool to take into account in tests.
+   */
+  public void addTool(String toolId) {
+    tools.add(toolId);
+  }
+
+  /**
    * Adds a component instance to use on tests. All component instances others than the added ones
    * are considered as non existing.
-   *
+   * 
    * @param componentId the unique identifier of the component instance to take into account in
    * tests.
    */

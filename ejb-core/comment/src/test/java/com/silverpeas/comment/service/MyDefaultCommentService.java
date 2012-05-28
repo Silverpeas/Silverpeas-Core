@@ -50,21 +50,23 @@ public class MyDefaultCommentService extends DefaultCommentService {
    */
   public MyDefaultCommentService() {
     super();
-      Comment aComment1 = CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé");
-      Comment aComment2 = CommentBuilder.getBuilder().buildWith("Titi", "Repasses demain");
-      List<Comment> comments = new ArrayList<Comment>();
-      comments.add(aComment1);
-      comments.add(aComment2);
-      mockedDAO = mock(CommentDAO.class);
-      when(mockedDAO.getAllCommentsByForeignKey(any(ForeignPK.class))).thenReturn(comments);
-      when(mockedDAO.getComment(any(CommentPK.class))).thenReturn(aComment1);
-      when(mockedDAO.saveComment(any(Comment.class))).thenReturn(aComment1.getCommentPK());
+    Comment aComment1 = CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé");
+    Comment aComment2 = CommentBuilder.getBuilder().buildWith("Titi", "Repasses demain");
+    List<Comment> comments = new ArrayList<Comment>();
+    comments.add(aComment1);
+    comments.add(aComment2);
+    mockedDAO = mock(CommentDAO.class);
+    when(
+        mockedDAO.getAllCommentsByForeignKey(any(String.class),
+            any(ForeignPK.class))).thenReturn(comments);
+    when(mockedDAO.getComment(any(CommentPK.class))).thenReturn(aComment1);
+    when(mockedDAO.saveComment(any(Comment.class))).thenReturn(aComment1.getCommentPK());
 
-      UserDetail userDetail = new UserDetail();
-      userDetail.setFirstName("Toto");
-      userDetail.setLastName("Chez-les-papoos");
-      mockedController = mock(OrganizationController.class);
-      when(mockedController.getUserDetail(anyString())).thenReturn(userDetail);
+    UserDetail userDetail = new UserDetail();
+    userDetail.setFirstName("Toto");
+    userDetail.setLastName("Chez-les-papoos");
+    mockedController = mock(OrganizationController.class);
+    when(mockedController.getUserDetail(anyString())).thenReturn(userDetail);
   }
 
   @Override

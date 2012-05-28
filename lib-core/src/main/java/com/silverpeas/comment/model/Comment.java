@@ -24,12 +24,11 @@
 
 package com.silverpeas.comment.model;
 
+import java.util.Date;
+
 import com.silverpeas.SilverpeasContent;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import java.util.Date;
 
 /**
  * This object contains the description of document
@@ -41,6 +40,7 @@ public class Comment implements SilverpeasContent {
   private static final long serialVersionUID = 3738544756345055840L;
   public static final String TYPE = "Comment";
   private CommentPK pk;
+  private String resourceType;
   private WAPrimaryKey foreign_key;
   private int owner_id;
   private String message;
@@ -48,9 +48,10 @@ public class Comment implements SilverpeasContent {
   private Date modification_date;
   private UserDetail ownerDetail;
 
-  private void init(CommentPK pk, WAPrimaryKey foreign_key, int owner_id,
+  private void init(CommentPK pk, String resourceType, WAPrimaryKey foreign_key, int owner_id,
       String message, Date creation_date, Date modification_date) {
     this.pk = pk;
+    this.resourceType = resourceType;
     this.foreign_key = foreign_key;
     this.owner_id = owner_id;
     this.message = message;
@@ -60,16 +61,19 @@ public class Comment implements SilverpeasContent {
     }
   }
 
-  public Comment(CommentPK pk, WAPrimaryKey foreign_key, int owner_id,
+  public Comment(CommentPK pk, String resourceType, WAPrimaryKey foreign_key, int owner_id,
       String owner, String message, Date creation_date,
       Date modification_date) {
-    init(pk, foreign_key, owner_id, message, creation_date,
+    init(pk, resourceType, foreign_key, owner_id, message, creation_date,
         modification_date);
   }
-  
-  public Comment(CommentPK pk, WAPrimaryKey contentPk, String authorId, String message, Date creationDate,
+
+  public Comment(CommentPK pk, String resourceType, WAPrimaryKey contentPk, String authorId,
+      String message,
+      Date creationDate,
       Date modificationDate) {
-    init(pk, contentPk, Integer.valueOf(authorId), message, creationDate, modificationDate);
+    init(pk, resourceType, contentPk, Integer.valueOf(authorId), message, creationDate,
+        modificationDate);
   }
 
   public void setCommentPK(CommentPK pk) {
@@ -78,6 +82,14 @@ public class Comment implements SilverpeasContent {
 
   public CommentPK getCommentPK() {
     return this.pk;
+  }
+
+  public void setResourceType(String resourceType) {
+    this.resourceType = resourceType;
+  }
+
+  public String getResourceType() {
+    return resourceType;
   }
 
   public void setForeignKey(WAPrimaryKey foreign_key) {
@@ -127,7 +139,7 @@ public class Comment implements SilverpeasContent {
     }
     return date;
   }
-  
+
   public UserDetail getOwnerDetail() {
     return getCreator();
   }
@@ -140,6 +152,8 @@ public class Comment implements SilverpeasContent {
   public String toString() {
     StringBuilder str = new StringBuilder();
     str.append("getCommentPK() = ").append(getCommentPK().toString()).append(
+        ", \n");
+    str.append("getResourceType() = ").append(getResourceType()).append(
         ", \n");
     str.append("getForeignKey() = ").append(getForeignKey().toString()).append(
         ", \n");
@@ -155,7 +169,7 @@ public class Comment implements SilverpeasContent {
 
   @Override
   public UserDetail getCreator() {
-    if (ownerDetail == null) {
+    if (ownerDetail == null || !ownerDetail.isFullyDefined()) {
       ownerDetail = UserDetail.getById(String.valueOf(owner_id));
     }
     return ownerDetail;
@@ -174,11 +188,6 @@ public class Comment implements SilverpeasContent {
   @Override
   public String getComponentInstanceId() {
     return pk.getInstanceId();
-  }
-  
-  private OrganizationController getOrganizationController() {
-    OrganizationControllerFactory factory = OrganizationControllerFactory.getFactory();
-    return factory.getOrganizationController();
   }
 
   @Override

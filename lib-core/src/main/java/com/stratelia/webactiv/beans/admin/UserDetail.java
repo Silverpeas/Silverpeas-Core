@@ -26,6 +26,8 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialNetwork.status.StatusService;
+import com.silverpeas.util.StringUtil;
+
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -467,6 +469,11 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public static boolean isAnonymousUser(String userId) {
     return isAnonymousUserExist() && getAnonymousUserId().equals(userId);
+  }
+  
+  public boolean isFullyDefined() {
+    return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin()) &&
+        StringUtil.isDefined(getLastName());
   }
 
   /**
