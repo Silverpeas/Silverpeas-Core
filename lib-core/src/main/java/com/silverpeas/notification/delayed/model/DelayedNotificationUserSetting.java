@@ -43,13 +43,13 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
  * @author Yohann Chastagnier
  */
 @Entity
-@Table(name = "st_delayednotificationusersetting")
+@Table(name = "st_delayednotifusersetting")
 public class DelayedNotificationUserSetting implements Serializable {
   private static final long serialVersionUID = 3477090528448919931L;
 
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "st_delayednotificationusersetting", allocationSize = 1)
+      valueColumnName = "maxId", pkColumnValue = "st_delayednotifusersetting", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   @Column(name = "id")
   private Integer id;

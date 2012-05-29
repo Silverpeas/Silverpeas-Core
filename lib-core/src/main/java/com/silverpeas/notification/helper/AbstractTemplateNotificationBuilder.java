@@ -81,7 +81,6 @@ public abstract class AbstractTemplateNotificationBuilder<T> extends
   @Override
   protected final void performBuild(final T resource) {
     templates.clear();
-    initialize(resource);
     perform(resource);
     SilverpeasTemplate template;
     final NotificationResourceData nRDBase = initializeNotificationResourceData();
@@ -111,7 +110,7 @@ public abstract class AbstractTemplateNotificationBuilder<T> extends
    * Creates the template bases
    * @return
    */
-  protected final SilverpeasTemplate createTemplate() {
+  protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
     if (OrganizationControllerFactory.getFactory().getOrganizationController()
         .isComponentExist(getComponentInstanceId())) {

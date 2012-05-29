@@ -32,6 +32,7 @@ public class SyntheseResourceNotification {
   private String date;
   private String time;
   private String message;
+  private boolean previousHasMessage;
 
   public String getAction() {
     return action;
@@ -71,5 +72,13 @@ public class SyntheseResourceNotification {
 
   public void setMessage(final String message) {
     this.message = message;
+  }
+
+  public boolean isPreviousHasMessage() {
+    return previousHasMessage;
+  }
+
+  public void setPreviousHasMessage(boolean previousHasMessage) {
+    this.previousHasMessage = previousHasMessage;
   }
 }

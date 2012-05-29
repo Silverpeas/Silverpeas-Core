@@ -45,7 +45,7 @@ public class NotificationResourceData implements Cloneable {
       valueColumnName = "maxId", pkColumnValue = "st_notificationresource", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   @Column(name = "id")
-  private Integer id;
+  private Long id;
 
   @Column(name = "resourceId", nullable = false)
   private String resourceId;
@@ -80,11 +80,11 @@ public class NotificationResourceData implements Cloneable {
         isNotBlank(resourceLocation) && isNotBlank(resourceUrl) && isNotBlank(componentInstanceId);
   }
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(final Integer id) {
+  public void setId(final Long id) {
     this.id = id;
   }
 
@@ -162,7 +162,7 @@ public class NotificationResourceData implements Cloneable {
     try {
       clone = (NotificationResourceData) super.clone();
       clone.setId(null);
-    } catch (CloneNotSupportedException e) {
+    } catch (final CloneNotSupportedException e) {
       throw new RuntimeException(e.getCause());
     }
     return clone;

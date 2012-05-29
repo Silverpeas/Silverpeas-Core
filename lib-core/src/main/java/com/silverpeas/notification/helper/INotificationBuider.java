@@ -33,7 +33,7 @@ public interface INotificationBuider {
   /**
    * Builds the notification data container
    */
-  void build();
+  INotificationBuider build();
 
   /**
    * Gets the notification data container

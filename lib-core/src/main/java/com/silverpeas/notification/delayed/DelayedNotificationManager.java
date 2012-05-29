@@ -83,8 +83,7 @@ public class DelayedNotificationManager implements DelayedNotification {
       final Set<NotifChannel> aimedChannels) {
     final Map<NotifChannel, List<DelayedNotificationData>> result =
         new LinkedHashMap<NotifChannel, List<DelayedNotificationData>>();
-    for (final DelayedNotificationData data : dnRepository.findByUserId(userId,
-        NotifChannel.toIds(aimedChannels))) {
+    for (final DelayedNotificationData data : dnRepository.findByUserId(userId, NotifChannel.toIds(aimedChannels))) {
       MapUtil.putAddList(result, data.getChannel(), data);
     }
     return result;
@@ -154,10 +153,10 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
-  public int deleteDelayedNotifications(final Collection<Integer> ids) {
+  public int deleteDelayedNotifications(final Collection<Long> ids) {
     int nbDeletes = 0;
     if (CollectionUtil.isNotEmpty(ids)) {
-      for (final Collection<Integer> idLot : CollectionUtil.split(ids)) {
+      for (final Collection<Long> idLot : CollectionUtil.split(ids)) {
         nbDeletes += dnRepository.deleteByIds(idLot);
       }
       nrRepository.deleteResources();

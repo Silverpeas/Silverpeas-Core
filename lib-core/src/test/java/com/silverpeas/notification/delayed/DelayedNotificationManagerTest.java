@@ -462,7 +462,7 @@ public class DelayedNotificationManagerTest {
         manager.saveDelayedNotification(newDelayedNotificationData);
         manager.saveDelayedNotification(newDelayedNotificationData);
         if ((count % 4) == 0) {
-          final Integer idTest = newDelayedNotificationData.getId();
+          final Long idTest = newDelayedNotificationData.getId();
           if (count == 0) {
             newDelayedNotificationData.setId(null);
           }
@@ -487,12 +487,12 @@ public class DelayedNotificationManagerTest {
         assertThat(mapEntry.getValue().size(), is(actions.length));
         for (int j = 0; j < actions.length; j++) {
           delayedNotificationData = mapEntry.getValue().get(j);
-          assertThat(delayedNotificationData.getId(), is(1000 + count2));
+          assertThat(delayedNotificationData.getId(), is(1000l + count2));
           assertThat(delayedNotificationData.getUserId(), is(userIdTest));
           assertThat(delayedNotificationData.getFromUserId(), is(2 * userIdTest));
           assertThat(delayedNotificationData.getChannel(), is(channels[i]));
           assertThat(delayedNotificationData.getAction(), is(actions[j]));
-          assertThat(delayedNotificationData.getResource().getId(), is(50));
+          assertThat(delayedNotificationData.getResource().getId(), is(50l));
           assertThat(delayedNotificationData.getCreationDate(), notNullValue());
           assertThat(delayedNotificationData.getCreationDate(),
               greaterThanOrEqualTo(dateBeforeSave));
@@ -514,15 +514,13 @@ public class DelayedNotificationManagerTest {
     assertThat(notificationResourceDataList, notNullValue());
     assertThat(notificationResourceDataList.size(), is(2));
 
-    int nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Integer[] {}));
+    int nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Long[] {}));
     assertThat(nbDeletes, is(0));
     notificationResourceDataList = manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());
     assertThat(notificationResourceDataList.size(), is(2));
 
-    nbDeletes =
-        manager
-            .deleteDelayedNotifications(Arrays.asList(new Integer[] { 100, 200, 300, 400, 500 }));
+    nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l }));
     assertThat(nbDeletes, is(5));
     notificationResourceDataList = manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());
@@ -538,8 +536,7 @@ public class DelayedNotificationManagerTest {
     assertThat(notificationResourceDataList.size(), is(2));
 
     final int nbDeletes =
-        manager.deleteDelayedNotifications(Arrays.asList(new Integer[] { 100, 200, 300, 400, 500,
-            600 }));
+        manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l, 600l }));
     assertThat(nbDeletes, is(6));
     notificationResourceDataList = manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());

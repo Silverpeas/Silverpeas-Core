@@ -27,7 +27,8 @@ package com.stratelia.silverpeas.notificationManager.constant;
  * @author Yohann Chastagnier
  */
 public enum NotifAction {
-  CREATE(1, 1), UPDATE(2, 2), DELETE(3, 3), REPORT(4, 4);
+  CREATE(1, 1), UPDATE(2, 2), DELETE(3, 3), REPORT(4, 4), COMMENT(5, 5), SUSPEND(6, 6), PENDING_VALIDATION(7, 7),
+  REFUSE(8, 8), VALIDATE(9, 9);
 
   private int id;
   private int priority;
@@ -56,6 +57,16 @@ public enum NotifAction {
         result = DELETE;
       } else if (id.intValue() == REPORT.id) {
         result = REPORT;
+      } else if (id.intValue() == COMMENT.id) {
+        result = COMMENT;
+      } else if (id.intValue() == SUSPEND.id) {
+        result = SUSPEND;
+      } else if (id.intValue() == PENDING_VALIDATION.id) {
+        result = PENDING_VALIDATION;
+      } else if (id.intValue() == REFUSE.id) {
+        result = REFUSE;
+      } else if (id.intValue() == VALIDATE.id) {
+        result = VALIDATE;
       }
     }
     return result;

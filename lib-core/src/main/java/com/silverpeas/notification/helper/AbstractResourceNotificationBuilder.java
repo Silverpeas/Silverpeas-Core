@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNotificationBuilder {
 
-  private final T resource;
+  private T resource;
 
   /**
    * Default constructor
@@ -46,7 +46,7 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
    */
   public AbstractResourceNotificationBuilder(final T resource, final String title, final String content) {
     super(title, content);
-    this.resource = resource;
+    setResource(resource);
   }
 
   /**
@@ -64,13 +64,13 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
    */
   protected AbstractResourceNotificationBuilder(final T resource, final NotificationMetaData notification) {
     super(notification);
-    this.resource = resource;
+    setResource(resource);
   }
 
   /**
    * Performs common initializations from a given resource
    */
-  protected final void initialize(final T resource) {
+  protected void initialize() {
     super.initialize();
     getNotification().setLink(getResourceURL(resource));
   }
@@ -80,7 +80,6 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
    */
   @Override
   protected final void performBuild() {
-    initialize(resource);
     performBuild(resource);
     performNotificationResource(resource);
   }
@@ -128,7 +127,7 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
    * Gets the URL of the resource
    * @return
    */
-  public String getResourceURL(final T resource) {
+  protected String getResourceURL(final T resource) {
     String resourceUrl = null;
     if (resource instanceof SilverpeasContent) {
       resourceUrl = URLManager.getSearchResultURL((SilverpeasContent) resource);
@@ -144,6 +143,14 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
   /*
    * Tools
    */
+
+  protected final T getResource() {
+    return resource;
+  }
+
+  protected final void setResource(T resource) {
+    this.resource = resource;
+  }
 
   /**
    * Fills notificationResourceData with silverpeasContent container

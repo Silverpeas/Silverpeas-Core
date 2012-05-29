@@ -73,7 +73,7 @@ public abstract class AbstractNotificationBuilder implements INotificationBuider
   /**
    * Performs common initializations
    */
-  protected final void initialize() {
+  protected void initialize() {
     notification = createNotification();
     getNotification().setMessageType(getMessageType().getId());
     getNotification().setAction(getAction());
@@ -140,9 +140,14 @@ public abstract class AbstractNotificationBuilder implements INotificationBuider
    * Builds the notification data container
    */
   @Override
-  public final void build() {
-    initialize();
-    performBuild();
+  public final INotificationBuider build() {
+    try {
+      initialize();
+      performBuild();
+    } catch (final Stop e) {
+      notification = null;
+    }
+    return this;
   }
 
   /**
@@ -185,5 +190,21 @@ public abstract class AbstractNotificationBuilder implements INotificationBuider
 
   protected String getContent() {
     return content;
+  }
+
+  /**
+   * Stopping the treatment
+   */
+  protected void stop() {
+    throw new Stop();
+  }
+
+  /**
+   * Used to stop the treatment at any time
+   * @author Yohann Chastagnier
+   */
+  private class Stop extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+    // Nothing to do
   }
 }

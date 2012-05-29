@@ -4,7 +4,7 @@ CREATE TABLE uniqueId (
 	tableName varchar(100) NOT NULL
 );
 
-CREATE TABLE st_delayednotificationusersetting (
+CREATE TABLE st_delayednotifusersetting (
    id 			int NOT NULL ,
    userId		int NOT NULL ,
    channel		int NOT NULL ,
@@ -12,7 +12,7 @@ CREATE TABLE st_delayednotificationusersetting (
 );
 
 CREATE TABLE st_notificationresource (
-   id 					int NOT NULL ,
+   id 					int8 NOT NULL ,
    componentInstanceId	varchar(50) NOT NULL,
    resourceId			varchar(50) NOT NULL ,
    resourceType			varchar(50) NOT NULL ,
@@ -23,22 +23,22 @@ CREATE TABLE st_notificationresource (
 );
 
 CREATE TABLE st_delayednotification (
-   id 						int NOT NULL ,
+   id 						int8 NOT NULL ,
    userId					int NOT NULL ,
    fromUserId				int NOT NULL ,
    channel					int NOT NULL ,
    action					int NOT NULL ,
-   notificationResourceId	int NOT NULL ,
+   notificationResourceId	int8 NOT NULL ,
    language					varchar(2) NOT NULL ,
    creationDate				timestamp NOT NULL ,
    message					varchar(2000) NULL
 );
 
 /* Indexes */
-CREATE INDEX idx_st_delayednotificationusersetting_id ON st_delayednotificationusersetting(id);
-CREATE INDEX idx_st_delayednotificationusersetting_userId ON st_delayednotificationusersetting(userId);
-CREATE INDEX idx_st_delayednotificationusersetting_channel ON st_delayednotificationusersetting(channel);
-CREATE UNIQUE INDEX idx_st_delayednotificationusersetting_uc ON st_delayednotificationusersetting(userId, channel);
+CREATE INDEX idx_st_delayednotifusersetting_id ON st_delayednotifusersetting(id);
+CREATE INDEX idx_st_delayednotifusersetting_userId ON st_delayednotifusersetting(userId);
+CREATE INDEX idx_st_delayednotifusersetting_channel ON st_delayednotifusersetting(channel);
+CREATE UNIQUE INDEX idx_st_delayednotifusersetting_uc ON st_delayednotifusersetting(userId, channel);
 
 CREATE INDEX idx_st_notificationresource_id ON st_notificationresource(id);
 CREATE INDEX idx_st_notificationresource_resourceId ON st_notificationresource(resourceId);
@@ -48,11 +48,11 @@ CREATE INDEX idx_st_delayednotification_userId ON st_delayednotification(userId)
 CREATE INDEX idx_st_delayednotification_channel ON st_delayednotification(channel);
 
 /* Constraints */
-ALTER TABLE st_delayednotificationusersetting
-        ADD CONSTRAINT const_st_delayednotificationusersetting_pk
+ALTER TABLE st_delayednotifusersetting
+        ADD CONSTRAINT const_st_delayednotifusersetting_pk
         PRIMARY KEY (id);
--- ALTER TABLE st_delayednotificationusersetting
---		ADD CONSTRAINT const_st_delayednotificationusersetting_fk_userId
+-- ALTER TABLE st_delayednotifusersetting
+--		ADD CONSTRAINT const_st_delayednotifusersetting_fk_userId
 --		FOREIGN KEY (userId) REFERENCES ST_User(id);
 
 ALTER TABLE st_notificationresource

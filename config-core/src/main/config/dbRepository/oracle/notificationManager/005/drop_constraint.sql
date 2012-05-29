@@ -19,5 +19,5 @@ ALTER TABLE st_delayednotification DROP CONSTRAINT const_st_delayednotification_
 
 ALTER TABLE st_notificationresource DROP CONSTRAINT const_st_notificationresource_pk;
 
-ALTER TABLE st_delayednotificationusersetting DROP CONSTRAINT const_st_delayednotificationusersetting_pk;
-ALTER TABLE st_delayednotificationusersetting DROP CONSTRAINT const_st_delayednotificationusersetting_fk_userId;
+ALTER TABLE st_delayednotifusersetting DROP CONSTRAINT const_st_delayednotifusersetting_pk;
+ALTER TABLE st_delayednotifusersetting DROP CONSTRAINT const_st_delayednotifusersetting_fk_userId;

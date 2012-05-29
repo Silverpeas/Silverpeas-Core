@@ -23,26 +23,8 @@
  */
 package com.silverpeas.comment.service.notification;
 
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import java.util.Properties;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import java.util.HashMap;
-import com.silverpeas.SilverpeasComponentService;
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.service.CommentActionListener;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import static com.silverpeas.util.StringUtil.isDefined;
+
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +32,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-import static com.silverpeas.util.StringUtil.*;
+
+import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentActionListener;
+import com.silverpeas.comment.service.CommentNotificationBuilder;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.notification.helper.NotificationHelper;
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * It is a service dedicated to notify the concerning users about the adding or the removal of the
@@ -79,17 +75,18 @@ public class CommentUserNotificationService extends CommentActionListener {
    * If no property with the subject of the notification message is defined in a Silverpeas
    * component, then the below default property is taken.
    */
-  protected static final String DEFAULT_SUBJECT_COMMENT_ADDING = "comments.commentAddingSubject";
+  protected static final String DEFAULT_SUBJECT_COMMENT_ADDING = CommentNotificationBuilder.DEFAULT_SUBJECT_COMMENT_ADDING;
   /**
    * The name of the attribute in a notification message that refers the comment responsable of the
    * triggering of this service.
    */
-  protected static final String NOTIFICATION_COMMENT_ATTRIBUTE = "comment";
+  protected static final String NOTIFICATION_COMMENT_ATTRIBUTE = CommentNotificationBuilder.NOTIFICATION_COMMENT_ATTRIBUTE;
   /**
    * The name of the attribute in a notification message that refers the content commented by the
    * comment responsable of the triggering of this service.
    */
-  protected static final String NOTIFICATION_CONTENT_ATTRIBUTE = "content";
+  protected static final String NOTIFICATION_CONTENT_ATTRIBUTE = CommentNotificationBuilder.NOTIFICATION_CONTENT_ATTRIBUTE;
+  
   @Inject
   private CommentService commentService;
   private Map<String, SilverpeasComponentService<? extends SilverpeasContent>> register =
@@ -141,13 +138,12 @@ public class CommentUserNotificationService extends CommentActionListener {
         try {
           SilverpeasContent commentedContent =
               service.getContentById(newComment.getForeignKey().getId());
-          Set<String> recipients = getInterestedUsers(newComment.getCreator(), commentedContent);
-          NotificationMetaData notification = createNotification(
-              component + "." + SUBJECT_COMMENT_ADDING,
-              newComment,
-              commentedContent,
-              service.getComponentMessages(""));
-          notifyUsers(recipients, notification);
+          final Set<String> recipients = getInterestedUsers(newComment.getCreator(), commentedContent);
+          final NotificationMetaData notification =
+              NotificationHelper.build(new CommentNotificationBuilder(getCommentService(), newComment,
+                  commentedContent, component + "." + SUBJECT_COMMENT_ADDING, service.getComponentMessages(""),
+                  recipients));
+          notifyUsers(notification);
         } catch (Exception ex) {
           Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
         }
@@ -208,13 +204,9 @@ public class CommentUserNotificationService extends CommentActionListener {
    * @param notification the notification information.
    * @throws NotificationManagerException if the notification of the recipients fail.
    */
-  protected void notifyUsers(final Set<String> recipients, final NotificationMetaData notification)
+  protected void notifyUsers(final NotificationMetaData notification)
       throws NotificationManagerException {
-    for (String recipient : recipients) {
-      notification.addUserRecipient(new UserRecipient(recipient));
-    }
-    NotificationSender sender = getNotificationSender(notification.getComponentId());
-    sender.notifyUser(notification);
+    getNotificationSender(notification.getComponentId()).notifyUser(notification);
   }
 
   protected NotificationSender getNotificationSender(String componentInstanceId) {
@@ -223,55 +215,5 @@ public class CommentUserNotificationService extends CommentActionListener {
 
   protected CommentService getCommentService() {
     return commentService;
-  }
-
-  private NotificationMetaData createNotification(String subjectKey, final Comment aComment,
-      final SilverpeasContent content, final ResourceLocator messages) {
-    Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-        getNotificationSubject(subjectKey, messages), templates, "commented");
-    for (String language : I18NHelper.getAllSupportedLanguages()) {
-      messages.setLanguage(language);
-      SilverpeasTemplate template = aNotificationTemplate(aComment, content);
-      templates.put(language, template);
-      notifMetaData.addLanguage(language, getNotificationSubject(subjectKey, messages), "");
-    }
-    notifMetaData.setLink(URLManager.getSearchResultURL(content));
-    notifMetaData.setComponentId(aComment.getCommentPK().getInstanceId());
-    notifMetaData.setSender(aComment.getCreator().getId());
-
-    return notifMetaData;
-  }
-
-  private String getNotificationSubject(String subjectKey, final ResourceLocator componentMessages) {
-    String subject = componentMessages.getString(subjectKey);
-    if (!isDefined(subject)) {
-      subject =
-          getCommentService().getComponentMessages(componentMessages.getLanguage()).getString(
-              DEFAULT_SUBJECT_COMMENT_ADDING);
-    }
-    return subject;
-  }
-
-  /**
-   * Creates a notification message template for the commented Silverpeas content.
-   * @param comment the comment for which a notification has to be sent to some users.
-   * @param commentedContent the content that is commented.
-   * @return a SilverpeasTemplate instance.
-   */
-  private SilverpeasTemplate aNotificationTemplate(final Comment comment,
-      final SilverpeasContent commentedContent) {
-    ResourceLocator settings = getCommentService().getComponentSettings();
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
-        settings.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
-        settings.getString("customersTemplatePath"));
-
-    SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
-    template.setAttribute(NOTIFICATION_CONTENT_ATTRIBUTE, commentedContent);
-    template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, comment);
-    return template;
   }
 }

@@ -45,6 +45,7 @@ import com.silverpeas.notification.delayed.synthese.SyntheseResource;
 import com.silverpeas.notification.delayed.synthese.SyntheseResourceNotification;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.MapUtil;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -311,7 +312,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     }
 
     // Performing all users to notify
-    final Collection<Integer> delayedNotificationIdsToDelete = new ArrayList<Integer>();
+    final Collection<Long> delayedNotificationIdsToDelete = new ArrayList<Long>();
     try {
       Map<NotifChannel, List<DelayedNotificationData>> delayedNotifications;
       for (final Integer userIdToNotify : usersToBeNotified) {
@@ -344,7 +345,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @throws Exception
    * @throws NotificationServerException
    */
-  private Collection<Integer> performUserDelayedNotificationsOnChannel(final NotifChannel channel,
+  private Collection<Long> performUserDelayedNotificationsOnChannel(final NotifChannel channel,
       final List<DelayedNotificationData> delayedNotifications) throws Exception {
     final DelayedNotificationSyntheseData synthese = buildSynthese(delayedNotifications);
     sendNotification(createNotificationData(channel, synthese));
@@ -418,6 +419,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
     // Browsing notifications
     SyntheseResourceNotification syntheseNotification;
+    boolean isPreviousHasMessage = false;
     for (final DelayedNotificationData delayedNotificationData : notifications) {
       syntheseNotification = new SyntheseResourceNotification();
       syntheseResource.addNotification(syntheseNotification);
@@ -440,6 +442,13 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
       // Message
       syntheseNotification.setMessage(nullIfBlank(delayedNotificationData.getMessage()));
+      syntheseNotification.setPreviousHasMessage(isPreviousHasMessage);
+      if (syntheseNotification.getMessage() != null) {
+        isPreviousHasMessage = true;
+        syntheseNotification.setMessage(EncodeHelper.javaStringToHtmlParagraphe(syntheseNotification.getMessage()));
+      } else {
+        isPreviousHasMessage = false;
+      }
 
       // Indicates that the notification has been treated
       synthese.getDelayedNotificationIdProceeded().add(delayedNotificationData.getId());
@@ -575,7 +584,6 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
     // Set the message
     notificationData.setMessage(synthese.getMessage());
-    notificationData.setSkipJavaToHtml(synthese.isHtmlMessage());
 
     // Set that the answer is not allowed
     notificationData.setAnswerAllowed(false);
@@ -672,6 +680,11 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    */
   protected void sendNotification(final NotificationData notificationData)
       throws NotificationServerException {
+
+    // Removing Java Strings of the computed message
+    notificationData.setMessage(notificationData.getMessage().replaceAll("[\r\n\t]", ""));
+
+    // Adding the notification
     notificationServer.addNotification(notificationData);
   }
 }

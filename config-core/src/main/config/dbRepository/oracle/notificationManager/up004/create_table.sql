@@ -1,4 +1,4 @@
-CREATE TABLE st_delayednotificationusersetting (
+CREATE TABLE st_delayednotifusersetting (
    id 			int NOT NULL ,
    userId		int NOT NULL ,
    channel		int NOT NULL ,
@@ -6,7 +6,7 @@ CREATE TABLE st_delayednotificationusersetting (
 );
 
 CREATE TABLE st_notificationresource (
-   id 					int NOT NULL ,
+   id 					number(19,0) NOT NULL ,
    componentInstanceId	varchar(50) NOT NULL ,
    resourceId			varchar(50) NOT NULL ,
    resourceType			varchar(50) NOT NULL ,
@@ -17,12 +17,12 @@ CREATE TABLE st_notificationresource (
 );
 
 CREATE TABLE st_delayednotification (
-   id 						int NOT NULL ,
+   id 						number(19,0) NOT NULL ,
    userId					int NOT NULL ,
    fromUserId				int NOT NULL ,
    channel					int NOT NULL ,
    action					int NOT NULL ,
-   notificationResourceId	int NOT NULL ,
+   notificationResourceId	number(19,0) NOT NULL ,
    language					varchar(2) NOT NULL ,
    creationDate				timestamp NOT NULL ,
    message					varchar(2000) NULL

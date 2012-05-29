@@ -55,7 +55,6 @@ public class NotificationHelper {
    */
   public static NotificationMetaData buildAndSend(final NotifMediaType mediaType,
       final INotificationBuider notificationBuider) {
-    notificationBuider.build();
     final NotificationMetaData notification = build(notificationBuider);
     send(mediaType, notification);
     return notification;
@@ -67,8 +66,7 @@ public class NotificationHelper {
    * @return
    */
   public static NotificationMetaData build(final INotificationBuider notificationBuider) {
-    notificationBuider.build();
-    return notificationBuider.getNotification();
+    return notificationBuider.build().getNotification();
   }
 
   /**
@@ -85,16 +83,18 @@ public class NotificationHelper {
    * @param notification
    */
   public static void send(final NotifMediaType mediaType, final NotificationMetaData notification) {
-    try {
-      final NotificationSender sender = new NotificationSender(notification.getComponentId());
-      if (mediaType != null) {
-        sender.notifyUser(mediaType.getId(), notification);
-      } else {
-        sender.notifyUser(notification);
+    if (notification != null) {
+      try {
+        final NotificationSender sender = new NotificationSender(notification.getComponentId());
+        if (mediaType != null) {
+          sender.notifyUser(mediaType.getId(), notification);
+        } else {
+          sender.notifyUser(notification);
+        }
+      } catch (final NotificationManagerException e) {
+        SilverTrace.warn("notification", "NotificationHelper.send()",
+            "notification.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
       }
-    } catch (final NotificationManagerException e) {
-      SilverTrace.warn("notification", "NotificationHelper.send()",
-          "notification.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
     }
   }
 }

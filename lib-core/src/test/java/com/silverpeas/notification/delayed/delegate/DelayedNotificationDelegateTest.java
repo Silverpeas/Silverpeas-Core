@@ -291,12 +291,12 @@ public class DelayedNotificationDelegateTest {
     assertThat(mock.sendedList.size(), is(userIds.length));
     for (int i = 0; i < userIds.length; i++) {
       assertThat(
-          mock.sendedList.get(i).getMessage().replaceAll("\r", ""),
+          mock.sendedList.get(i).getMessage().replaceAll("[\r\n\t]", ""),
           is(IOUtils.toString(
               DelayedNotificationDelegateTest.class.getClassLoader().getResourceAsStream(
                   "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + ".txt"),
               "UTF-8")
-              .replaceAll("\r", "")));
+              .replaceAll("[\r\n\t]", "")));
     }
     return mock;
   }

@@ -415,7 +415,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public void addExtraMessage(String message, String label, String language) {
-    originalExtraMessage = message;
+    setOriginalExtraMessage(message);
     if (templates != null && !templates.isEmpty()) {
       templates.get(language).setAttribute("senderMessage", message);
     } else {
@@ -429,6 +429,10 @@ public class NotificationMetaData implements java.io.Serializable {
   
   public String getOriginalExtraMessage() {
     return originalExtraMessage;
+  }
+
+  public void setOriginalExtraMessage(String originalExtraMessage) {
+    this.originalExtraMessage = originalExtraMessage;
   }
 
   public String getFileName() {

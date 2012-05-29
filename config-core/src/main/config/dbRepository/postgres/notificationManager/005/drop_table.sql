@@ -6,4 +6,4 @@ DROP TABLE ST_NotifSended;
 DROP TABLE ST_NotifSendedReceiver;
 DROP TABLE st_delayednotification;
 DROP TABLE st_notificationresource;
-DROP TABLE st_delayednotificationusersetting;
+DROP TABLE st_delayednotifusersetting;

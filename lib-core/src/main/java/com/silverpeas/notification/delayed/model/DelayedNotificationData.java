@@ -64,7 +64,7 @@ public class DelayedNotificationData implements Serializable {
       valueColumnName = "maxId", pkColumnValue = "st_delayednotification", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   @Column(name = "id")
-  private Integer id;
+  private Long id;
 
   @Column(name = "userId", nullable = false)
   private Integer userId;
@@ -132,11 +132,11 @@ public class DelayedNotificationData implements Serializable {
     }
   }
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(final Integer id) {
+  public void setId(final Long id) {
     this.id = id;
   }
 

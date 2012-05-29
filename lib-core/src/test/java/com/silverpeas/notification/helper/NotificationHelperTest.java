@@ -218,8 +218,19 @@ public class NotificationHelperTest {
       }
     });
     assertBuild_ARNB_1(notifTest, "testBuild_ARNB_1", false);
+
     notifTest = NotificationHelper.build(new ARNBTest(new ResourceDataTest()));
     assertBuild_ARNB_1(notifTest, "", true);
+
+    notifTest = NotificationHelper.build(new ARNBTest(new ResourceDataTest()) {
+
+      @Override
+      protected void performBuild(Object resource) {
+        super.performBuild(resource);
+        stop();
+      }
+    });
+    assertThat(notifTest, nullValue());
   }
 
   private void assertBuild_ARNB_1(final NotificationMetaData notifTest, final String aSource,

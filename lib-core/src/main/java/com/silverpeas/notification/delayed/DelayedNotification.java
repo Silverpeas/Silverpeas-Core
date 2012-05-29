@@ -49,12 +49,12 @@ public interface DelayedNotification {
   List<Integer> findUsersToBeNotified(Date date, Set<NotifChannel> aimedChannels,
       DelayedNotificationFrequency defaultDelayedNotificationFrequency);
 
-  Map<NotifChannel, List<DelayedNotificationData>> findDelayedNotificationByUserIdGroupByChannel(
-      int userId, Set<NotifChannel> aimedChannels);
+  Map<NotifChannel, List<DelayedNotificationData>> findDelayedNotificationByUserIdGroupByChannel(int userId,
+      Set<NotifChannel> aimedChannels);
 
   void saveDelayedNotification(DelayedNotificationData delayedNotificationData);
 
-  int deleteDelayedNotifications(Collection<Integer> ids);
+  int deleteDelayedNotifications(Collection<Long> ids);
 
   /*
    * Resource Data
@@ -70,16 +70,14 @@ public interface DelayedNotification {
 
   List<DelayedNotificationUserSetting> findDelayedNotificationUserSettingByUserId(int userId);
 
-  DelayedNotificationUserSetting getDelayedNotificationUserSettingByUserIdAndChannel(int userId,
-      NotifChannel channel);
+  DelayedNotificationUserSetting getDelayedNotificationUserSettingByUserIdAndChannel(int userId, NotifChannel channel);
 
-  DelayedNotificationUserSetting saveDelayedNotificationUserSetting(final int userId,
-      final NotifChannel channel, final DelayedNotificationFrequency frequency);
+  DelayedNotificationUserSetting saveDelayedNotificationUserSetting(final int userId, final NotifChannel channel,
+      final DelayedNotificationFrequency frequency);
 
   void deleteDelayedNotificationUserSetting(int id);
 
-  void deleteDelayedNotificationUserSetting(
-      DelayedNotificationUserSetting delayedNotificationUserSetting);
+  void deleteDelayedNotificationUserSetting(DelayedNotificationUserSetting delayedNotificationUserSetting);
 
   /*
    * Commons

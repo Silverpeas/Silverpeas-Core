@@ -48,5 +48,5 @@ public interface DelayedNotificationRepository extends
 
   @Modifying
   @Query("delete from DelayedNotificationData where id in (:ids)")
-  public int deleteByIds(@Param("ids") Collection<Integer> ids);
+  public int deleteByIds(@Param("ids") Collection<Long> ids);
 }

@@ -13,7 +13,7 @@ DROP INDEX idx_st_delayednotification_channel;
 DROP INDEX idx_st_notificationresource_id;
 DROP INDEX idx_st_notificationresource_resourceId;
 
-DROP INDEX idx_st_delayednotificationusersetting_id;
-DROP INDEX idx_st_delayednotificationusersetting_userId;
-DROP INDEX idx_st_delayednotificationusersetting_channel;
-DROP INDEX idx_st_delayednotificationusersetting_uc;
+DROP INDEX idx_st_delayednotifusersetting_id;
+DROP INDEX idx_st_delayednotifusersetting_userId;
+DROP INDEX idx_st_delayednotifusersetting_channel;
+DROP INDEX idx_st_delayednotifusersetting_uc;
