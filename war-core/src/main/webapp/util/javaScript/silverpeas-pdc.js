@@ -389,14 +389,17 @@
                 label     : settings.labelPosition,
                 positions: loadedClassification.positions,
                 update    : {
+                  activated: (settings.mode == 'edition'),
                   title: settings.update.title,
                   icon: settings.update.icon
                 },
                 addition  : {
+                  activated: (settings.mode == 'edition'),
                   title: settings.addition.title,
                   icon: settings.addition.icon
                 },
                 deletion  : {
+                  activated: (settings.mode == 'edition'),
                   title: settings.deletion.title,
                   icon: settings.deletion.icon
                 },
