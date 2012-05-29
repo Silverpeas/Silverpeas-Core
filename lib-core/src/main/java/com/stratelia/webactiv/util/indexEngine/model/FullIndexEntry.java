@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.indexEngine.model;
 
 import com.stratelia.webactiv.util.indexEngine.DateFormatter;
@@ -39,6 +35,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
 
   /**
    * The constructor only set the key part of the IndexEntry.
+   *
    * @deprecated - parameter space is no more used
    */
   public FullIndexEntry(String space, String component, String objectType,
@@ -63,15 +60,10 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
-   * Add a file to be indexed. We need :
-   * <UL>
-   * <LI>the path to the file</LI>
-   * <LI>the encoding of the file</LI>
-   * <LI>the format of the file</LI>
-   * <LI>the language of the file</LI>
-   * </UL>
-   * All this files will be parsed and then indexed but not stored in the index. They may be added
-   * in any order.
+   * Add a file to be indexed. We need : <UL> <LI>the path to the file</LI> <LI>the encoding of the
+   * file</LI> <LI>the format of the file</LI> <LI>the language of the file</LI> </UL> All this
+   * files will be parsed and then indexed but not stored in the index. They may be added in any
+   * order.
    */
   public void addFileContent(String path, String encoding, String format,
       String lang) {
@@ -81,25 +73,31 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
-   * Add a linked file id to be indexed. We need :
-   * <UL>
-   * <LI>the file id</LI>
-   * </UL>
+   *
+   * @param uuid
+   * @param encoding
+   * @param mimeType
+   * @param lang
    */
-  public void addLinkedFileId(String fileId) {
-   getLinkedFileIdsSet().add(fileId);
+  public void addJcrContent(String uuid, String encoding, String mimeType,
+      String lang) {
+    if (uuid != null) {
+      getFileList().add(new JcrContent(encoding, lang, mimeType, uuid));
+    }
   }
 
   /**
-   * Add a linked file to be indexed. We need :
-   * <UL>
-   * <LI>the path to the file</LI>
-   * <LI>the encoding of the file</LI>
-   * <LI>the format of the file</LI>
-   * <LI>the language of the file</LI>
-   * </UL>
-   * All this files will be parsed and then indexed but not stored in the index. They may be added
-   * in any order.
+   * Add a linked file id to be indexed. We need : <UL> <LI>the file id</LI> </UL>
+   */
+  public void addLinkedFileId(String fileId) {
+    getLinkedFileIdsSet().add(fileId);
+  }
+
+  /**
+   * Add a linked file to be indexed. We need : <UL> <LI>the path to the file</LI> <LI>the encoding
+   * of the file</LI> <LI>the format of the file</LI> <LI>the language of the file</LI> </UL> All
+   * this files will be parsed and then indexed but not stored in the index. They may be added in
+   * any order.
    */
   public void addLinkedFileContent(String path, String encoding, String format,
       String lang) {
@@ -169,35 +167,39 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   private List<TextDescription> getTextList() {
-    if (textList == null)
+    if (textList == null) {
       textList = new ArrayList<TextDescription>();
+    }
     return textList;
   }
 
   private List<FileDescription> getFileList() {
-    if (fileList == null)
+    if (fileList == null) {
       fileList = new ArrayList<FileDescription>();
+    }
     return fileList;
   }
 
   private List<FileDescription> getLinkedFileList() {
-    if (linkedFileList == null)
+    if (linkedFileList == null) {
       linkedFileList = new ArrayList<FileDescription>();
+    }
     return linkedFileList;
   }
 
   public Set<String> getLinkedFileIdsSet() {
-    if (linkedFileIdsList == null)
+    if (linkedFileIdsList == null) {
       linkedFileIdsList = new HashSet<String>();
+    }
     return linkedFileIdsList;
   }
 
   public List<FieldDescription> getFields() {
-    if (fields == null)
+    if (fields == null) {
       fields = new ArrayList<FieldDescription>();
+    }
     return fields;
   }
-
   /**
    * All the added texts and files are collected in two lists to be later retrieved by the index
    * engine. textList is a list of String. fileList is a list of FileDescription.

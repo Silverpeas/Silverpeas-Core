@@ -20,14 +20,14 @@
  */
 package org.silverpeas.attachment;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
  *
  * @author
  */
-public class AttachmentException extends SilverpeasException {
+public class AttachmentException extends SilverpeasRuntimeException {
 
   /**
    * Creates new AttachmentException

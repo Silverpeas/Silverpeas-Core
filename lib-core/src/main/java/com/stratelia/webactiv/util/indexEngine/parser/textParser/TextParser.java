@@ -7,23 +7,22 @@
  *
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
- * the text describing the FLOSS exception, and it is also available here:
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util.indexEngine.parser.textParser;
 
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
-import java.io.FileInputStream;
+import com.stratelia.webactiv.util.indexEngine.parser.ParserHelper;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -43,6 +42,7 @@ public class TextParser implements Parser {
 
   /**
    * Method declaration
+   *
    * @param path
    * @param encoding
    * @return
@@ -51,15 +51,15 @@ public class TextParser implements Parser {
   public Reader getReader(String path, String encoding) {
     Reader reader = null;
     try {
-      InputStream file = new FileInputStream(path);
+      InputStream file = ParserHelper.getContent(path);
       if (encoding == null) {
         reader = new InputStreamReader(file);
       } else {
         reader = new InputStreamReader(file, encoding);
       }
     } catch (Exception e) {
-      SilverTrace.error("indexEngine", "TextParser",
-              "indexEngine.MSG_IO_ERROR_WHILE_READING", path, e);
+      SilverTrace.error("indexEngine", "TextParser", "indexEngine.MSG_IO_ERROR_WHILE_READING", path,
+          e);
     }
     return reader;
   }

@@ -23,7 +23,7 @@ package com.stratelia.webactiv.util.indexEngine.parser.tika;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
-import java.io.File;
+import com.stratelia.webactiv.util.indexEngine.parser.ParserHelper;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -69,7 +69,7 @@ public class TikaParser implements Parser {
   @Override
   public Reader getReader(String path, String encoding) { 
     try {
-      return tika.parse(new File(path));
+      return tika.parse(ParserHelper.getContent(path));
     } catch (IOException ex) {
       SilverTrace.error("util", "OpenxmlParser.getReader", "root.EX_LOAD_IO_EXCEPTION", ex);
     }

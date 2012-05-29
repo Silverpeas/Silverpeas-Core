@@ -572,7 +572,7 @@ public class SimpleDocumentConverterTest {
       in.close();
       binaryContent.dispose();
       assertThat(new String(buffer.toByteArray(), CharEncoding.UTF_8), is("Contenu de test"));
-      assertThat(contentNode.getProperty(JCR_MIMETYPE).getString(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(contentNode.getProperty(JCR_MIMETYPE).getString(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
       assertThat(contentNode.getProperty(JCR_ENCODING).getString(), is(CharEncoding.UTF_8));
     } finally {
       BasicDaoFactory.logout(session);

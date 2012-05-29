@@ -24,10 +24,9 @@
 
 package com.stratelia.webactiv.util.indexEngine.model;
 
+import com.silverpeas.util.i18n.I18NHelper;
 import java.io.File;
 import java.io.Serializable;
-
-import com.silverpeas.util.i18n.I18NHelper;
 
 /**
  * A FileDescription pack all the needed information to parse and index a file. We need :
@@ -39,7 +38,7 @@ import com.silverpeas.util.i18n.I18NHelper;
  * </UL>
  * The java.io.InputStreamReader javadoc page provides a link to a list of java-known encodings.
  */
-public final class FileDescription implements Serializable {
+public class FileDescription implements Serializable {
 
   private static final long serialVersionUID = 6095740867318623417L;
 

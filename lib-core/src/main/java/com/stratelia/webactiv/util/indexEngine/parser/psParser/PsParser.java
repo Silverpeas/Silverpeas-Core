@@ -1,34 +1,31 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
  * author
  * Mohammed Hguig
  */
-
 package com.stratelia.webactiv.util.indexEngine.parser.psParser;
 
+import com.stratelia.webactiv.util.indexEngine.parser.ParserHelper;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,11 +34,11 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 
 import com.stratelia.webactiv.util.indexEngine.parser.PipedParser;
+import org.apache.commons.io.IOUtils;
 
 /**
  * the psParser parse a postscript file
  */
-
 public class PsParser extends PipedParser {
 
   public PsParser() {
@@ -50,31 +47,27 @@ public class PsParser extends PipedParser {
   /**
    * outPutContent read the text content of a ps file and store it in out to be ready to be indexed
    */
-
-  public void outPutContent(Writer out, String path, String encoding)
-      throws IOException {
+  @Override
+  public void outPutContent(Writer out, String path, String encoding) throws IOException {
 
     BufferedReader buffer = null;
 
     try {
-      InputStream file = new FileInputStream(path);
+      InputStream file = ParserHelper.getContent(path);
       if (encoding != null) {
         buffer = new BufferedReader(new InputStreamReader(file, encoding));
       } else {
         buffer = new BufferedReader(new InputStreamReader(file));
       }
-
       outPutChar(out, buffer);
     } finally {
-      if (buffer != null)
-        buffer.close();
+      IOUtils.closeQuietly(buffer);
     }
   }
 
   /**
    * read the text content between parses ( and )
    */
-
   public void outPutChar(Writer out, BufferedReader buffer) throws IOException {
     int ch, para = 0, last = 0;
     char charr = 0;
@@ -109,7 +102,7 @@ public class PsParser extends PipedParser {
           last = 1;
           break;
         case '\\':
-          if (para > 0)
+          if (para > 0) {
             switch (charr = (char) buffer.read()) {
               case '(':
               case ')':
@@ -137,6 +130,7 @@ public class PsParser extends PipedParser {
                 out.write(charr);
                 break;
             }
+          }
           break;
         default:
           if (para > 0) {

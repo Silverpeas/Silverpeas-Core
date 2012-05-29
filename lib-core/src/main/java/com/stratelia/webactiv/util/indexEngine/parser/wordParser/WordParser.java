@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.util.indexEngine.parser.wordParser;
 
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
+import com.stratelia.webactiv.util.indexEngine.parser.ParserHelper;
 import java.io.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hwpf.extractor.WordExtractor;
@@ -50,7 +51,7 @@ public class WordParser implements Parser {
     Reader reader = null;
     InputStream file = null;
     try {
-      file = new FileInputStream(path);
+      file = ParserHelper.getContent(path);
       WordExtractor extractor = new WordExtractor(file);
       String wordText = extractor.getText();
       reader = new StringReader(wordText);

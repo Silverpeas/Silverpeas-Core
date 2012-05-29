@@ -130,4 +130,6 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     Node attachmentNode = getAttachmentNode(SimpleDocument.FILE_PREFIX + language, documentNode);
     attachmentNode.remove();
   }
+  
+
 }

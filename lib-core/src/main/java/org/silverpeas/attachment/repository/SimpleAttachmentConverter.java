@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.repository;
 
+import java.math.BigDecimal;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -58,12 +59,10 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
 
   public void fillNode(SimpleAttachment attachment, Node node) throws RepositoryException {
     addStringProperty(node, SLV_PROPERTY_CLONE, attachment.getCloneId());
-    attachment.setContentType(getContentMimeType(node));
     addDateProperty(node, SLV_PROPERTY_CREATION_DATE, attachment.getCreated());
     addStringProperty(node, SLV_PROPERTY_CREATOR, attachment.getCreatedBy());
     addStringProperty(node, JCR_DESCRIPTION, attachment.getDescription());
     addStringProperty(node, SLV_PROPERTY_NAME, attachment.getFilename());
-    addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());
     addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());
     node.setProperty(SLV_PROPERTY_MAJOR, attachment.getMajorVersion());
     node.setProperty(SLV_PROPERTY_MINOR, attachment.getMinorVersion());

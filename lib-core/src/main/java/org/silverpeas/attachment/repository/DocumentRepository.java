@@ -23,9 +23,15 @@
  */
 package org.silverpeas.attachment.repository;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +50,7 @@ import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
+import org.silverpeas.attachment.BinaryInputStream;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -57,6 +64,23 @@ import static com.silverpeas.jcrutil.JcrConstants.*;
 public class DocumentRepository {
 
   SimpleDocumentConverter converter = new SimpleDocumentConverter();
+
+  public void prepareComponentAttachments(String instanceId) throws
+      RepositoryException {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      prepareComponentAttachments(session, instanceId);
+      session.save();
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  protected Node prepareComponentAttachments(Session session, String instanceId) throws
+      RepositoryException {
+    Node targetInstanceNode = converter.getFolder(session.getRootNode(), instanceId);
+    return converter.getFolder(targetInstanceNode, "attachments");
+  }
 
   /**
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
@@ -73,13 +97,82 @@ public class DocumentRepository {
     if (last != null && document.getOrder() <= 0) {
       document.setOrder(last.getOrder() + 1);
     }
-    Node componentNode = session.getRootNode().getNode(document.getInstanceId());
-    Node contextFolderNode = componentNode;
-    Node documentNode = contextFolderNode.addNode(document.getNodeName(), SLV_SIMPLE_DOCUMENT);
+    Node docsNode = prepareComponentAttachments(session, document.getInstanceId());
+    Node documentNode = docsNode.addNode(document.getNodeName(), SLV_SIMPLE_DOCUMENT);
     converter.fillNode(document, content, documentNode);
-    session.save();
     document.setId(documentNode.getIdentifier());
     return document.getPk();
+  }
+
+  /**
+   * Move the document to another attached object.
+   *
+   * @param session
+   * @param document
+   * @param destination
+   * @return
+   * @throws RepositoryException
+   */
+  public SimpleDocumentPK moveDocument(Session session, SimpleDocument document,
+      WAPrimaryKey destination) throws RepositoryException {
+    SimpleDocument targetDoc = new SimpleDocument();
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+    pk.setOldSilverpeasId(document.getOldSilverpeasId());
+    targetDoc.setPK(pk);
+    prepareComponentAttachments(session, destination.getInstanceId());
+    Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
+    session.move(originDocumentNode.getPath(), targetDoc.getFullPath());
+    Node targetDocumentNode = session.getNode(targetDoc.getFullPath());
+    converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
+    pk.setId(targetDocumentNode.getIdentifier());
+    return pk;
+  }
+
+  /**
+   * Copy the document to another attached object.
+   *
+   * @param session
+   * @param document
+   * @param destination
+   * @return
+   * @throws RepositoryException
+   */
+  public SimpleDocumentPK copyDocument(Session session, SimpleDocument document,
+      WAPrimaryKey destination) throws RepositoryException {
+    prepareComponentAttachments(destination.getInstanceId());
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+    SimpleDocument targetDoc = findDocumentById(session, document.getPk(), document.getLanguage());
+    targetDoc.setPK(pk);
+    targetDoc.setForeignId(destination.getId());
+    session.getWorkspace().copy(document.getFullPath(), targetDoc.getFullPath());
+    Node copy = session.getNode(targetDoc.getFullPath());
+    copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
+    pk.setId(copy.getIdentifier());
+    return pk;
+    /*Binary data = null;
+     InputStream in = null;
+     try {
+     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+     SimpleDocument targetDoc = findDocumentById(session, document.getPk(), document.getLanguage());
+     targetDoc.setPK(pk);
+     targetDoc.setForeignId(destination.getId());
+     data = converter.getBinaryContent(session.getNodeByIdentifier(document.getId()).
+     getNode(document.getFile().getNodeName()));
+     createDocument(session, targetDoc, data.getStream());
+     for (String lang : I18NHelper.getAllSupportedLanguages()) {
+     }
+     targetDoc.setId(targetDocumentNode.getIdentifier());
+     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
+     session.getWorkspace().copy(originDocumentNode.getPath(), targetDoc.getFullPath());
+     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
+     targetDocumentNode.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
+     return targetDoc.getPk();
+     } finally {
+     IOUtils.closeQuietly(in);
+     if (data != null) {
+     data.dispose();
+     }
+     }*/
   }
 
   /**
@@ -130,10 +223,9 @@ public class DocumentRepository {
       throws RepositoryException {
     try {
       Node componentNode = session.getNodeByIdentifier(documentPk.getId());
-      if (componentNode != null) {
-        return converter.convertNode(componentNode, lang);
-      }
+      return converter.convertNode(componentNode, lang);
     } catch (ItemNotFoundException infex) {
+      SilverTrace.info("attachment", "DocumentRepository.findDocumentById()", "", infex);
     }
     return null;
   }
@@ -148,13 +240,25 @@ public class DocumentRepository {
    */
   public SimpleDocument findDocumentByOldSilverpeasId(Session session, String instanceId,
       long oldSilverpeasId, boolean versioned, String lang) throws RepositoryException {
-    String nodeName = SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId;
-    if (versioned) {
-      nodeName = SimpleDocument.VERSION_PREFIX + oldSilverpeasId;
-    }
-    if (session.getRootNode().hasNode(instanceId + '/' + nodeName)) {
-      Node componentNode = session.getRootNode().getNode(instanceId + '/' + nodeName);
-      return converter.convertNode(componentNode, lang);
+    QueryManager manager = session.getWorkspace().getQueryManager();
+    QueryObjectModelFactory factory = manager.getQOMFactory();
+    final String alias = "SimpleDocuments";
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
+    ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
+        + instanceId + "/attachments");
+    Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(alias,
+        SLV_PROPERTY_OLD_ID), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        literal(session.getValueFactory().createValue(oldSilverpeasId)));
+    Comparison versionedComparison = factory.comparison(factory.propertyValue(alias,
+        SLV_PROPERTY_VERSIONED), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        literal(session.getValueFactory().createValue(versioned)));
+
+    QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
+        factory.and(oldSilverpeasIdComparison, versionedComparison)), null, null);
+    QueryResult result = query.execute();
+    NodeIterator iter = result.getNodes();
+    if (iter.hasNext()) {
+      return converter.convertNode(iter.nextNode(), lang);
     }
     return null;
   }
@@ -235,7 +339,7 @@ public class DocumentRepository {
     final String alias = "SimpleDocuments";
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId);
+        + instanceId + "/attachments");
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
@@ -308,12 +412,13 @@ public class DocumentRepository {
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId);
+        + instanceId + "/attachments");
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(expiry)));
+    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        foreignIdComparison), null, null);
+        foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -357,12 +462,13 @@ public class DocumentRepository {
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId);
+        + instanceId + "/attachments");
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_LESS_THAN, factory.
         literal(session.getValueFactory().createValue(expiry)));
+    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        foreignIdComparison), null, null);
+        foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -385,12 +491,13 @@ public class DocumentRepository {
     alert.setTime(DateUtil.getBeginOfDay(alertDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId);
+        + instanceId + "/attachments");
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_ALERT_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(alert)));
+    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        foreignIdComparison), null, null);
+        foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -411,11 +518,11 @@ public class DocumentRepository {
     final String alias = "SimpleDocuments";
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId);
+        + instanceId + "/attachments");
     Comparison ownerComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));
-    Ordering order = factory.descending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
         ownerComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
@@ -433,13 +540,32 @@ public class DocumentRepository {
    */
   public void addContent(Session session, SimpleDocumentPK documentPk, SimpleAttachment attachment,
       InputStream content) throws RepositoryException {
-    try {
-      Node componentNode = session.getNodeByIdentifier(documentPk.getId());
-      if (componentNode != null) {
-        converter.addAttachment(componentNode, attachment, content);
-      }
-    } catch (ItemNotFoundException infex) {
+    Node componentNode = session.getNodeByIdentifier(documentPk.getId());
+    converter.addAttachment(componentNode, attachment, content);
+  }
+
+  /**
+   * Get the content.
+   *
+   * @param session the current JCR session.
+   * @param documentPk the document which content is to be added.
+   * @param attachment the attachment metadata.
+   * @param content the attachment binary content.
+   * @throws RepositoryException
+   */
+  public InputStream getContent(Session session, SimpleDocumentPK pk, String lang) throws
+      RepositoryException, IOException {
+    Node docNode = session.getNodeByIdentifier(pk.getId());
+    String language = lang;
+    if (!StringUtil.isDefined(language)) {
+      language = I18NHelper.defaultLanguage;
     }
+    String fileNodeName = SimpleDocument.FILE_PREFIX + language;
+    if (docNode.hasNode(fileNodeName)) {
+      Node fileNode = docNode.getNode(fileNodeName);
+      return new BinaryInputStream(fileNode.getPath());
+    }
+    return new ByteArrayInputStream(ArrayUtil.EMPTY_BYTE_ARRAY);
   }
 
   /**
@@ -450,14 +576,9 @@ public class DocumentRepository {
    * @param language the language of the content which is to be removed.
    * @throws RepositoryException
    */
-  public void removeContent(Session session, SimpleDocumentPK documentPk,
-      String language) throws RepositoryException {
-    try {
-      Node componentNode = session.getNodeByIdentifier(documentPk.getId());
-      if (componentNode != null) {
-        converter.removeAttachment(componentNode, language);
-      }
-    } catch (ItemNotFoundException infex) {
-    }
+  public void removeContent(Session session, SimpleDocumentPK documentPk, String language) throws
+      RepositoryException {
+    Node componentNode = session.getNodeByIdentifier(documentPk.getId());
+    converter.removeAttachment(componentNode, language);
   }
 }

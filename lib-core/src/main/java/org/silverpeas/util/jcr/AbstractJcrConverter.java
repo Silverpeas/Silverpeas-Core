@@ -58,6 +58,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.JcrConstants;
 
 import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_NAME;
+import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static javax.jcr.Property.*;
 
 /**
@@ -419,7 +420,23 @@ public abstract class AbstractJcrConverter {
       return out.toByteArray();
     }
     return ArrayUtil.EMPTY_BYTE_ARRAY;
+  }
 
+  /**
+   *
+   * @param fileNode
+   * @return
+   * @throws RepositoryException
+   */
+  public Binary getBinaryContent(Node fileNode) throws RepositoryException {
+    Node contentNode;
+    if (fileNode.hasNode(JCR_CONTENT)) {
+      contentNode = fileNode.getNode(JCR_CONTENT);
+      if (contentNode.hasProperty(JCR_DATA)) {
+        return contentNode.getProperty(JCR_DATA).getBinary();
+      }
+    }
+    return null;
   }
 
   /**
@@ -457,5 +474,21 @@ public abstract class AbstractJcrConverter {
       return contentNode.getProperty(JCR_DATA).getBinary().getSize();
     }
     return 0L;
+  }
+
+  /**
+   * Return the node whith the specified parent and name. Create a nt:folder with the specified
+   * parent and name if the node doesn't exist.
+   *
+   * @param parent parent node of the folder.
+   * @param name name of the folder.
+   * @return the node whith the specified parent and name.
+   * @throws RepositoryException
+   */
+  public Node getFolder(Node parent, String name) throws RepositoryException {
+    if (parent.hasNode(name)) {
+      return parent.getNode(name);
+    }
+    return parent.addNode(name, NT_FOLDER);
   }
 }

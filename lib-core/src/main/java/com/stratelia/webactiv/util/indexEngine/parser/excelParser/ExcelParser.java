@@ -24,8 +24,6 @@
 
 package com.stratelia.webactiv.util.indexEngine.parser.excelParser;
 
-import com.google.common.io.Closeables;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
@@ -36,7 +34,9 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.indexEngine.parser.ParserHelper;
 import com.stratelia.webactiv.util.indexEngine.parser.PipedParser;
+import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -59,18 +59,17 @@ public class ExcelParser extends PipedParser {
    */
   @Override
   public void outPutContent(Writer out, String path, String encoding) throws IOException {
-    FileInputStream file = new FileInputStream(path);
+    InputStream file = null;
     try {
+      file = ParserHelper.getContent(path);
       POIFSFileSystem fs = new POIFSFileSystem(file);
       HSSFWorkbook workbook = new HSSFWorkbook(fs);
-
-      HSSFSheet sheet = null;
       for (int nbSheet = 0; nbSheet < workbook.getNumberOfSheets(); nbSheet++) {
         // extract sheet's name
         out.write(workbook.getSheetName(nbSheet));
         SilverTrace.debug("indexEngine", "ExcelParser.outputContent",
             "root.MSG_GEN_PARAM_VALUE", "sheetName = " + workbook.getSheetName(nbSheet));
-        sheet = workbook.getSheetAt(nbSheet);
+        HSSFSheet sheet = workbook.getSheetAt(nbSheet);
         Iterator<Row> rows = sheet.rowIterator();
         while (rows.hasNext()) {
           Row row = rows.next();

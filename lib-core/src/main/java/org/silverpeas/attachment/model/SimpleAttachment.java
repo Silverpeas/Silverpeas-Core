@@ -24,7 +24,6 @@
 package org.silverpeas.attachment.model;
 
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 
 /**

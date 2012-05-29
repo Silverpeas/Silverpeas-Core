@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute document Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with document program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.attachment.repository;
 
@@ -31,10 +31,9 @@ import org.silverpeas.attachment.model.SimpleDocument;
  *
  * @author ehugonnet
  */
-public class SimpleDocumentMatcher extends BaseMatcher<SimpleDocument> {
+public class SimpleDocumentAttributesMatcher extends BaseMatcher<SimpleDocument> {
 
   private SimpleDocument document;
-
   @Override
   public boolean matches(Object item) {
     boolean match = false;
@@ -56,20 +55,15 @@ public class SimpleDocumentMatcher extends BaseMatcher<SimpleDocument> {
    * @param document the document to match.
    * @return a document matcher.
    */
-  public static SimpleDocumentMatcher matches(final SimpleDocument document) {
-    return new SimpleDocumentMatcher(document);
+  public static SimpleDocumentAttributesMatcher matches(final SimpleDocument document) {
+    return new SimpleDocumentAttributesMatcher(document);
   }
 
-  private SimpleDocumentMatcher(final SimpleDocument document) {
+  private SimpleDocumentAttributesMatcher(final SimpleDocument document) {
     this.document = document;
   }
 
   private boolean equals(SimpleDocument other) {
-
-    if (document.getPk() != other.getPk() && (document.getPk() == null || !document.getPk().
-        equals(other.getPk()))) {
-      return false;
-    }
     if ((document.getForeignId() == null) ? (other.getForeignId() != null)
         : !document.getForeignId().equals(other.getForeignId())) {
       return false;

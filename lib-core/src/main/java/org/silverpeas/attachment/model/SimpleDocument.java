@@ -23,6 +23,8 @@
  */
 package org.silverpeas.attachment.model;
 
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
@@ -306,6 +308,26 @@ public class SimpleDocument {
       return VERSION_PREFIX + getOldSilverpeasId();
     }
     return ATTACHMENT_PREFIX + getOldSilverpeasId();
+  }
+
+  public String getFullContentPath() {
+    return getFullPath() + '/' + file.getNodeName();
+  }
+  
+  public String getFullPath() {
+    return '/' + getInstanceId() + "/attachments/" + getNodeName();
+  }
+  
+  /**
+   * Check if the document is compatible with OpenOffice using the mime type .
+   * @return true if the document is compatible with OpenOffice false otherwise.
+   */
+  public boolean isOpenOfficeCompatible() {
+    return FileUtil.isOpenOfficeCompatible(getFilename());
+  }
+  
+  public boolean isReadOnly() {
+    return StringUtil.isDefined(getEditedBy());
   }
 
   @Override
