@@ -23,7 +23,6 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
@@ -31,11 +30,11 @@ import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.forUser;
 import com.silverpeas.pdc.web.mock.ContentManagerMock;
 import com.silverpeas.pdc.web.mock.PdcBmMock;
+import com.silverpeas.pdc.web.mock.PdcClassificationServiceMockWrapper;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.web.TestResources;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
-import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.TestResources;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -53,8 +52,8 @@ import static org.mockito.Mockito.when;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Resources required by the unit tests on the PdC web resources.
- * It manages all of the resources required by the tests.
+ * Resources required by the unit tests on the PdC web resources. It manages all of the resources
+ * required by the tests.
  */
 @Named(TestResources.TEST_RESOURCES_NAME)
 public class PdcTestResources extends TestResources {
@@ -74,9 +73,7 @@ public class PdcTestResources extends TestResources {
   @Inject
   ContentManagerMock contentManager;
   @Inject
-  PdcClassificationRepository classificationRepository;
-  @Inject
-  PdcClassificationService classificationService;
+  PdcClassificationServiceMockWrapper classificationService;
   private NodeBm nodeBmMock = mock(NodeBm.class);
 
   @PostConstruct
@@ -90,6 +87,7 @@ public class PdcTestResources extends TestResources {
 
   /**
    * Gets the PdC business service used in tests.
+   *
    * @return a PdcBm object.
    */
   public PdcBm getPdcService() {
@@ -98,6 +96,7 @@ public class PdcTestResources extends TestResources {
 
   /**
    * Gets the manager of resource's content used in tests.
+   *
    * @return a ContentManager instance.
    */
   public ContentManager getContentManager() {
@@ -106,6 +105,7 @@ public class PdcTestResources extends TestResources {
 
   /**
    * Gets a holder of thesaurus for the specified user.
+   *
    * @param user the user for which a thesaurus holder should be get.
    * @return a UserThesaurusHolder instance.
    */
@@ -115,6 +115,7 @@ public class PdcTestResources extends TestResources {
 
   /**
    * Saves the specified PdC classification in the current test context.
+   *
    * @param classification the classification on which the test will work.
    */
   public void save(final PdcClassification classification) {
@@ -122,27 +123,28 @@ public class PdcTestResources extends TestResources {
   }
 
   public void savePredefined(final PdcClassification classification) {
-    classificationRepository.saveAndFlush(classification);
-  }
-  
-  public PdcClassification getPredefinedClassification(String nodeId, String componentId) {
-    if (isDefined(nodeId)) {
-      return classificationRepository.findPredefinedClassificationByNodeId(nodeId, componentId);
-    } else {
-      return classificationRepository.findPredefinedClassificationByComponentInstanceId(componentId);
+    PdcClassificationService mock = getPdcClassificationServiceMock();
+    if (classification.isPredefinedForANode()) {
+      when(mock.findAPreDefinedClassification(classification.getNodeId(), classification.
+              getComponentInstanceId())).thenReturn(classification);
     }
   }
 
-  public void getPredefinedPdcClassificationForWholeComponent() {
-    classificationRepository.findPredefinedClassificationByComponentInstanceId(COMPONENT_INSTANCE_ID);
+  public PdcClassification getPredefinedClassification(String nodeId, String componentId) {
+    return getPdcClassificationServiceMock().findAPreDefinedClassification(nodeId, componentId);
   }
-
-  public void getPredefinedPdcClassificationForNode() {
-    classificationRepository.findPredefinedClassificationByNodeId(NODE_ID, COMPONENT_INSTANCE_ID);
-  }
-
+  
+//
+//  public void getPredefinedPdcClassificationForWholeComponent() {
+//    classificationRepository.findPredefinedClassificationByComponentInstanceId(COMPONENT_INSTANCE_ID);
+//  }
+//
+//  public void getPredefinedPdcClassificationForNode() {
+//    classificationRepository.findPredefinedClassificationByNodeId(NODE_ID, COMPONENT_INSTANCE_ID);
+//  }
   /**
    * Gets the current PdC classification used in the test.
+   *
    * @return the PdC classification in use in the test or null if no classification were saved.
    */
   public PdcClassification getPdcClassification() {
@@ -152,9 +154,11 @@ public class PdcTestResources extends TestResources {
   /**
    * Converts the specified classification of a resource on the PdC to its web representation (web
    * entity).
+   *
    * @param classification the PdC classification of a resource.
    * @param forUser for whom user the web entity should be built.
-   * @return the web entity representing the specified PdC classification and for the specified user.
+   * @return the web entity representing the specified PdC classification and for the specified
+   * user.
    * @throws ThesaurusException if an error olean ccurs while settings the synonyms.
    */
   public PdcClassificationEntity toWebEntity(final PdcClassification classification,
@@ -230,5 +234,9 @@ public class PdcTestResources extends TestResources {
     UserPreferences preferences = getPersonalizationServiceMock().getUserSettings(
             USER_ID);
     preferences.enableThesaurus(true);
+  }
+
+  public PdcClassificationService getPdcClassificationServiceMock() {
+    return classificationService.getPdcClassificationServiceMock();
   }
 }
