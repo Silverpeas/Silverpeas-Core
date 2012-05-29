@@ -24,16 +24,19 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
-import org.junit.Test;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.junit.Before;
-import com.silverpeas.web.ResourceGettingTest;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
+import static com.silverpeas.pdc.web.PdcTestResources.JAVA_PACKAGE;
+import static com.silverpeas.pdc.web.PdcTestResources.SPRING_CONTEXT;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.PdcTestResources.*;
-import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
+import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.aPdcClassification;
+import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.equalTo;
+import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.undefined;
+import com.silverpeas.web.ResourceGettingTest;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Unit tests on the predefined classification web resources.
