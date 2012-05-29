@@ -25,6 +25,7 @@
 package com.silverpeas.form.record;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 
 import com.silverpeas.form.DataRecord;
@@ -35,10 +36,15 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
+import com.silverpeas.form.displayers.ImageFieldDisplayer;
+import com.silverpeas.form.displayers.VideoFieldDisplayer;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
 /**
@@ -211,8 +217,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     GenericDataRecord record = (GenericDataRecord) getRecord(originalExternalId);
     record.setInternalId(-1);
     record.setId(cloneExternalId);
-    insert(record);
-
+    
     // clone wysiwyg fields content
     WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
     try {
@@ -221,6 +226,26 @@ public class GenericRecordSet implements RecordSet, Serializable {
     } catch (Exception e) {
       SilverTrace.error("form", "AbstractForm.clone", "form.EX_CLONE_FAILURE", null, e);
     }
+    
+    // clone images and videos
+    AttachmentPK fromPK = new AttachmentPK(originalExternalId, originalComponentId);
+    AttachmentPK toPK = new AttachmentPK(cloneExternalId, cloneComponentId);
+    try {
+      HashMap<String, String> ids =
+          AttachmentController.cloneAttachments(fromPK, toPK,
+              ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
+
+      HashMap<String, String> videoIds =
+          AttachmentController.cloneAttachments(fromPK, toPK,
+              VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
+      ids.putAll(videoIds);
+      
+      replaceIds(ids, record);
+    } catch (AttachmentException e) {
+      throw new FormException("form", "", e);
+    }
+    
+    insert(record);
   }
 
   @Override
@@ -231,7 +256,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
     fromRecord.setInternalId(toRecord.getInternalId());
     fromRecord.setId(toExternalId);
-    update(fromRecord);
 
     // merge wysiwyg fields content
     WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
@@ -239,6 +263,55 @@ public class GenericRecordSet implements RecordSet, Serializable {
       wysiwygDisplayer.mergeContents(fromComponentId, fromExternalId, toComponentId, toExternalId);
     } catch (Exception e) {
       SilverTrace.error("form", "AbstractForm.clone", "form.EX_MERGE_FAILURE", null, e);
+    }
+    
+    // merge images and videos
+    AttachmentPK fromPK = new AttachmentPK(fromExternalId, fromComponentId);
+    AttachmentPK toPK = new AttachmentPK(toExternalId, toComponentId);
+    try {
+      HashMap<String, String> ids =
+          AttachmentController.mergeAttachments(toPK, fromPK,
+              ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
+      
+      HashMap<String, String> videoIds =
+        AttachmentController.mergeAttachments(toPK, fromPK,
+            VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
+      ids.putAll(videoIds);
+    
+      replaceIds(ids, fromRecord);
+    } catch (AttachmentException e) {
+      throw new FormException("form", "", e);
+    }
+    
+    update(fromRecord);
+  }
+  
+  private void replaceIds(HashMap<String, String> ids, GenericDataRecord record)
+      throws FormException {
+    String[] fieldNames = record.getFieldNames();
+    Field field = null;
+    for (String fieldName : fieldNames) {
+      field = record.getField(fieldName);
+      if (field != null) {
+        FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
+        if (fieldTemplate != null) {
+          String fieldType = fieldTemplate.getTypeName();
+          String fieldDisplayerName = fieldTemplate.getDisplayerName();
+          try {
+            if (!StringUtil.isDefined(fieldDisplayerName)) {
+              fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
+            }
+            if ("image".equals(fieldDisplayerName) || "video".equals(fieldDisplayerName)) {
+              if (ids.containsKey(field.getStringValue())) {
+                field.setStringValue(ids.get(field.getStringValue()));
+              }
+            }
+          } catch (Exception e) {
+            SilverTrace.error("form", "AbstractForm.update",
+                "form.EXP_UNKNOWN_FIELD", null, e);
+          }
+        }
+      }
     }
   }
   
