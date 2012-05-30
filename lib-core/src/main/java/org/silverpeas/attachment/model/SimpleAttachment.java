@@ -44,7 +44,6 @@ public class SimpleAttachment {
   private Date updated;
   private int minorVersion = 0;
   private int majorVersion = 1;
-  private String cloneId;
   private String xmlFormId;
 
   public SimpleAttachment(String filename, String language, String title, String description,
@@ -163,14 +162,6 @@ public class SimpleAttachment {
     this.majorVersion = majorVersion;
   }
 
-  public String getCloneId() {
-    return cloneId;
-  }
-
-  public void setCloneId(String cloneId) {
-    this.cloneId = cloneId;
-  }
-
   public String getXmlFormId() {
     return xmlFormId;
   }
@@ -194,7 +185,6 @@ public class SimpleAttachment {
     hash = 61 * hash + (this.updated != null ? this.updated.hashCode() : 0);
     hash = 61 * hash + this.minorVersion;
     hash = 61 * hash + this.majorVersion;
-    hash = 61 * hash + (this.cloneId != null ? this.cloneId.hashCode() : 0);
     hash = 61 * hash + (this.xmlFormId != null ? this.xmlFormId.hashCode() : 0);
     return hash;
   }
@@ -250,9 +240,7 @@ public class SimpleAttachment {
     if (this.majorVersion != other.majorVersion) {
       return false;
     }
-    if ((this.cloneId == null) ? (other.cloneId != null) : !this.cloneId.equals(other.cloneId)) {
-      return false;
-    }
+
     if ((this.xmlFormId == null) ? (other.xmlFormId != null)
         : !this.xmlFormId.equals(other.xmlFormId)) {
       return false;
@@ -266,6 +254,6 @@ public class SimpleAttachment {
         + title + ", description=" + description + ", size=" + size + ", contentType=" + contentType
         + ", createdBy=" + createdBy + ", created=" + created + ", updatedBy=" + updatedBy
         + ", updated=" + updated + ", minorVersion=" + minorVersion + ", majorVersion="
-        + majorVersion + ", cloneId=" + cloneId + ", xmlFormId=" + xmlFormId + '}';
+        + majorVersion + ", xmlFormId=" + xmlFormId + '}';
   }
 }

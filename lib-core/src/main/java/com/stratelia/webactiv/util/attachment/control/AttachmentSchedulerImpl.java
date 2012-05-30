@@ -30,6 +30,7 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -118,7 +119,7 @@ public class AttachmentSchedulerImpl
           String fileName = file.getName();
           String physicalName = Long.toString(System.currentTimeMillis()) + ".3d";
           String logicalName = fileName.substring(0, fileName.lastIndexOf('.')) + ".3d";
-          String mimeType = AttachmentController.getMimeType(physicalName);
+          String mimeType = FileUtil.getMimeType(physicalName);
 
           AttachmentDetail attachmentDetail = new AttachmentDetail(atPK,
               physicalName, logicalName, null, mimeType, file.length(),

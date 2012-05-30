@@ -27,6 +27,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.util.Date;
 
 /**
@@ -47,6 +48,25 @@ public class SimpleDocument {
   private Date alert;
   private Date expiry;
   private String status;
+  private String cloneId;
+
+  /**
+   * Get the value of cloneId
+   *
+   * @return the value of cloneId
+   */
+  public String getCloneId() {
+    return cloneId;
+  }
+
+  /**
+   * Set the value of cloneId
+   *
+   * @param cloneId new value of cloneId
+   */
+  public void setCloneId(String cloneId) {
+    this.cloneId = cloneId;
+  }
   private SimpleAttachment file;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
@@ -213,14 +233,6 @@ public class SimpleDocument {
     this.editedBy = currentEditor;
   }
 
-  public String getCloneId() {
-    return file.getCloneId();
-  }
-
-  public void setCloneId(String cloneId) {
-    file.setCloneId(cloneId);
-  }
-
   public String getXmlFormId() {
     return file.getXmlFormId();
   }
@@ -296,6 +308,12 @@ public class SimpleDocument {
     this.file = file;
   }
 
+  public void unlock() {
+    this.editedBy = null;
+    this.expiry = null;
+    this.alert = null;
+  }
+
   public String getNodeName() {
     if (getOldSilverpeasId() <= 0L) {
       if (isVersioned()) {
@@ -313,19 +331,28 @@ public class SimpleDocument {
   public String getFullContentPath() {
     return getFullPath() + '/' + file.getNodeName();
   }
-  
+
   public String getFullPath() {
     return '/' + getInstanceId() + "/attachments/" + getNodeName();
   }
-  
+
+  /**
+   * Return the icon correponding to the file.
+   * @return 
+   */
+  public String getDisplayIcon() {
+    return FileRepositoryManager.getFileIcon(FileRepositoryManager.getFileExtension(getFilename()));
+  }
+
   /**
    * Check if the document is compatible with OpenOffice using the mime type .
+   *
    * @return true if the document is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible() {
     return FileUtil.isOpenOfficeCompatible(getFilename());
   }
-  
+
   public boolean isReadOnly() {
     return StringUtil.isDefined(getEditedBy());
   }
@@ -334,7 +361,8 @@ public class SimpleDocument {
   public String toString() {
     return "SimpleDocument{" + "pk=" + pk + ", foreignId=" + foreignId + ", order=" + order
         + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation=" + reservation
-        + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status + ", file=" + file + '}';
+        + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status + ", cloneId=" + cloneId
+        + ", file=" + file + '}';
   }
 
   @Override

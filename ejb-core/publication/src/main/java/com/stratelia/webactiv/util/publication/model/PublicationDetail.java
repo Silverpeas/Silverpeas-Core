@@ -1,36 +1,24 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util.publication.model;
-
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 import com.google.common.base.Objects;
 import com.silverpeas.SilverpeasContent;
@@ -71,13 +59,25 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * This object contains the description of a publication
+ *
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface, SilverpeasContent,
+public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface,
+    SilverpeasContent,
     Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
@@ -128,7 +128,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
-  
   public static final String TYPE = "Publication";
 
   /**
@@ -220,8 +219,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * @deprecated
-   * @param pk
+   * @deprecated @param pk
    * @param name
    * @param description
    * @param creationDate
@@ -280,8 +278,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * @deprecated
-   * @param id
+   * @deprecated @param id
    * @param name
    * @param description
    * @param creationDate
@@ -397,7 +394,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * 
+   *
    * @param pk
    * @param name
    * @param description
@@ -413,9 +410,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
    * @param updateDate
    * @param updaterId
    * @param validateDate
-   * @param validatorId 
-   * 
-   * @deprecated 
+   * @param validatorId
+   *
+   * @deprecated
    */
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
@@ -586,7 +583,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getCreatorId() {
     return creatorId;
   }
-  
+
   @Override
   public UserDetail getCreator() {
     return UserDetail.getById(getCreatorId());
@@ -647,8 +644,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public ThumbnailDetail getThumbnail() {
     if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
-      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
-          getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.
+          valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       return ThumbnailController.getCompleteThumbnail(thumbDetail);
     }
     return null;
@@ -795,9 +792,15 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return this.iconUrl;
   }
 
-  /****************************************************************************************/
-  /** FormTemplate exposition for taglibs */
-  /****************************************************************************************/
+  /**
+   * *************************************************************************************
+   */
+  /**
+   * FormTemplate exposition for taglibs
+   */
+  /**
+   * *************************************************************************************
+   */
   public List<XMLField> getXmlFields() {
     return getXmlFields(null);
   }
@@ -820,7 +823,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     }
     return xmlFields;
   }
-  
+
   public HashMap<String, String> getFormValues(String language) {
     HashMap<String, String> formValues = new HashMap<String, String>();
     if ("0".equals(getInfoId())) {
@@ -833,7 +836,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     try {
       pub =
           PublicationTemplateManager.getInstance().getPublicationTemplate(
-              getPK().getInstanceId() + ":" + getInfoId());
+          getPK().getInstanceId() + ":" + getInfoId());
       data = pub.getRecordSet().getRecord(pk.getId());
     } catch (Exception e) {
       SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FORM_RECORD",
@@ -893,15 +896,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
         "root.MSG_GEN_EXIT_METHOD", "fieldValue = " + fieldValue);
     return fieldValue;
   }
-  
+
   private String getValueOfField(XMLField xmlField, String language) {
     String fieldValue = xmlField.getValue();
     if (fieldValue == null) {
       fieldValue = "";
     } else {
       if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
-        String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
-            length());
+        String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.length());
         if (StringUtil.isDefined(attachmentId)) {
           if (attachmentId.startsWith("/")) {
             // case of an image provided by a gallery
@@ -942,10 +944,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     }
   }
 
-  /****************************************************************************************/
   /**
-   * 
-   * @return 
+   * *************************************************************************************
+   */
+  /**
+   *
+   * @return
    */
   public InfoDetail getInfoDetail() {
     if (infoDetail == null) {
@@ -1010,7 +1014,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return publicationBm;
   }
 
-  public Collection<AttachmentDetail> getAttachments() {
+  public Collection<SimpleDocument> getAttachments() {
     if (getPK() == null) {
       SilverTrace.info("publication", "PublicationDetail.getAttachments()",
           "root.MSG_GEN_ENTER_METHOD", "getPK() is null !");
@@ -1018,23 +1022,21 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       SilverTrace.info("publication", "PublicationDetail.getAttachments()",
           "root.MSG_GEN_ENTER_METHOD", "getPK() is not null !");
     }
-
-    String ctx = "Images";
-
     AttachmentPK foreignKey = new AttachmentPK(getPK().getId(), getPK().getSpace(), getPK().
         getComponentName());
-    SilverTrace.info("publication", "PublicationDetail.getAttachments()",
-        "root.MSG_GEN_PARAM_VALUE", "foreignKey = " + foreignKey.toString());
-    Collection<AttachmentDetail> attachmentList = AttachmentController.
-        searchAttachmentByPKAndContext(foreignKey, ctx);
-    SilverTrace.info("publication", "PublicationDetail.getAttachments()",
-        "root.MSG_GEN_PARAM_VALUE", "attachmentList.size() = "
-        + attachmentList.size());
+    SilverTrace.
+        info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
+        "foreignKey = " + foreignKey.toString());
+    Collection<SimpleDocument> attachmentList = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(foreignKey, null);
+    SilverTrace.
+        info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
+        "attachmentList.size() = " + attachmentList.size());
     return attachmentList;
   }
 
   public String getWysiwyg() {
-    String wysiwygContent = null;
+    String wysiwygContent;
     try {
       wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().getSpace(), getPK().
           getComponentName(), getPK().getId());
@@ -1103,7 +1105,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public boolean haveGotClone() {
-    return (cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) && cloneId.length() > 0);
+    return (cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) && cloneId.length()
+        > 0);
   }
 
   public boolean isClone() {
@@ -1250,9 +1253,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public boolean isIndexable() {
     return VALID.equals(this.status);
   }
-  
+
   public boolean isPublicationEditor(String userId) {
-    return Objects.equal(creatorId, userId) ||  Objects.equal(updaterId, userId);
+    return Objects.equal(creatorId, userId) || Objects.equal(updaterId, userId);
   }
 
   @Override

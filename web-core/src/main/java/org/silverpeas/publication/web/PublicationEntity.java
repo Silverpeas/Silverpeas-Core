@@ -40,6 +40,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 public class PublicationEntity implements Exposable {
 
@@ -67,7 +68,7 @@ public class PublicationEntity implements Exposable {
   /**
    * Creates a new publication entity from the specified publication.
    *
-   * @param node the node to entitify.
+   * @param publication the publication to entitify.
    * @return the entity representing the specified node.
    */
   public static PublicationEntity fromPublicationDetail(final PublicationDetail publication, URI uri) {
@@ -83,11 +84,11 @@ public class PublicationEntity implements Exposable {
     this.lastUpdater = UserProfileEntity.fromUser(UserDetail.getById(publication.getUpdaterId()));
   }
 
-  public PublicationEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails,
+  public PublicationEntity withAttachments(final Collection<SimpleDocument> attachmentDetails,
       String baseURI, String token) {
     if (attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
-      for (AttachmentDetail attachment : attachmentDetails) {
+      for (SimpleDocument attachment : attachmentDetails) {
         AttachmentEntity entity = AttachmentEntity.fromAttachment(attachment);
         URI sharedUri = getAttachmentSharedURI(attachment, baseURI, token);
         entity.setSharedUri(sharedUri);
@@ -98,11 +99,11 @@ public class PublicationEntity implements Exposable {
     return this;
   }
 
-  private URI getAttachmentSharedURI(AttachmentDetail attachment, String baseURI, String token) {
+  private URI getAttachmentSharedURI(SimpleDocument attachment, String baseURI, String token) {
     URI sharedUri;
     try {
       sharedUri = new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" + token + "/"
-          + attachment.getPK().getId() + "/" + URLEncoder.encode(attachment.getLogicalName(),
+          + attachment.getId() + "/" + URLEncoder.encode(attachment.getFilename(),
           CharEncoding.UTF_8));
     } catch (Exception e) {
       Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, e);

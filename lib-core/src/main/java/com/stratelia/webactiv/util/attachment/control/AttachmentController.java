@@ -411,31 +411,6 @@ public class AttachmentController {
     }
   }
 
-  /**
-   * to search all file attached by primary key of customer object and mime type of file attached
-   *
-   * @param foreignKey : com.stratelia.webactiv.util.WAPrimaryKey:the primary key of customer object
-   *                   but this key must be transformed to AttachmentPK
-   * @param mimeType   : the mime type of file attached
-   * @return java.util.Vector, a vector of AttachmentDetail
-   * @throws AttachmentRuntimeException when is impossible to search
-   * @author Jean-Claude Groccia
-   * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   */
-  public static Vector<AttachmentDetail> searchAttachmentByPKAndMimeType(WAPrimaryKey foreignKey,
-      String mimeType) {
-    AttachmentPK fk =
-        new AttachmentPK(foreignKey.getId(), foreignKey.getSpace(), foreignKey.getComponentName());
-
-    try {
-      return attachmentBm.getAttachmentsByPKAndParam(fk, "type", mimeType);
-    } catch (Exception fe) {
-      throw new AttachmentRuntimeException(
-          "AttachmentController.searchAttachmentByPK(AttachmentPK primaryKey )",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", fe);
-    }
-  }
 
   public static Vector<AttachmentDetail> searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
       String context) {
@@ -724,16 +699,6 @@ public class AttachmentController {
     }
   }
 
-  /**
-   * Method to build the attachment Context
-   *
-   * @param str   : String: the string of repertories
-   * @param token : String: the token séparating the repertories
-   * @return: String : the string separating by token of attachmentDetail.context.
-   */
-  public static String getDetailContext(String str, String token) {
-    return str.replace(token.charAt(0), ',');
-  }
 
   /**
    * to create path
@@ -805,8 +770,9 @@ public class AttachmentController {
   /**
    * to get mime type of the file param extensionFile : type String
    *
-   * @p
+   * @deprecated use com.silverpeas.util.FileUtil.getMimeType(String fileName) isntead.
    */
+  @Deprecated
   public static String getMimeType(String fileLogicalName) {
     return FileUtil.getMimeType(fileLogicalName);
   }
@@ -1027,29 +993,7 @@ public class AttachmentController {
     }
   }
 
-  /**
-   * to copy all files attached to an object who is identified by "PK" to an other object
-   *
-   * @param foreignKeyFrom : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer
-   *                       object source
-   * @param foreignKeyTo   : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer
-   *                       object destination
-   * @throws AttachmentRuntimeException
-   * @author SCO
-   * @version 1.0
-   */
-  public static Hashtable<String, String> copyAttachmentByCustomerPK(
-      WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo)
-      throws AttachmentRuntimeException {
-    SilverTrace.debug("attachment",
-        "AttachmentController.copyAttachmentByCustomerPK",
-        "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
-            + ", foreignKeyTo=" + foreignKeyTo);
 
-    Vector<AttachmentDetail> attsToCopy = searchAttachmentByCustomerPK(foreignKeyFrom);
-
-    return copyAttachments(attsToCopy, foreignKeyFrom, foreignKeyTo);
-  }
 
   public static Hashtable<String, String> copyAttachmentByCustomerPKAndContext(
       WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo, String context)

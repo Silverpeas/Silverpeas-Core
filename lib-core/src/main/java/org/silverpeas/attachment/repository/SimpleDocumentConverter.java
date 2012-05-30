@@ -40,9 +40,9 @@ import static com.silverpeas.jcrutil.JcrConstants.*;
  * @author ehugonnet
  */
 class SimpleDocumentConverter extends AbstractJcrConverter {
-
+  
   SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
-
+  
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
     SimpleDocumentPK pk = new SimpleDocumentPK(node.getIdentifier(), getStringProperty(node,
         SLV_PROPERTY_INSTANCEID));
@@ -51,8 +51,7 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     String language = lang;
     if (language == null) {
       language = I18NHelper.defaultLanguage;
-    }
-
+    }    
     SimpleAttachment file = getAttachment(node, language);
     if (file == null) {
       Iterator<String> iter = I18NHelper.getLanguages();
@@ -60,14 +59,16 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
         file = getAttachment(node, iter.next());
       }
     }
-    return new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY), getIntProperty(
-        node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED),
+    SimpleDocument doc = new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY),
+        getIntProperty(node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED),
         getStringProperty(node, SLV_PROPERTY_OWNER), getDateProperty(node,
         SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
         getStringProperty(node, SLV_PROPERTY_STATUS), file);
+    doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
+    return doc;
   }
-
+  
   protected SimpleAttachment getAttachment(Node node, String language) throws RepositoryException {
     String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
     if (node.hasNode(attachmentNodeName)) {
@@ -75,13 +76,13 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     }
     return null;
   }
-
+  
   public void fillNode(SimpleDocument document, Node documentNode) throws RepositoryException {
     setDocumentNodeProperties(document, documentNode);
     Node attachmentNode = getAttachmentNode(document.getFile().getNodeName(), documentNode);
     attachmentConverter.fillNode(document.getFile(), attachmentNode);
   }
-
+  
   private void setDocumentNodeProperties(SimpleDocument document, Node documentNode) throws
       RepositoryException {
     addStringProperty(documentNode, SLV_PROPERTY_FOREIGN_KEY, document.getForeignId());
@@ -94,8 +95,9 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     addDateProperty(documentNode, SLV_PROPERTY_ALERT_DATE, document.getAlert());
     addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, document.getExpiry());
     addDateProperty(documentNode, SLV_PROPERTY_RESERVATION_DATE, document.getReservation());
+    addStringProperty(documentNode, SLV_PROPERTY_CLONE, document.getCloneId());
   }
-
+  
   private Node getAttachmentNode(String attachmentNodeName, Node documentNode) throws
       RepositoryException {
     Node attachmentNode;
@@ -106,7 +108,7 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     }
     return attachmentNode;
   }
-
+  
   void fillNode(SimpleDocument document, InputStream content, Node documentNode) throws
       RepositoryException {
     setDocumentNodeProperties(document, documentNode);
@@ -116,7 +118,7 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
       attachmentConverter.setContent(attachmentNode, content, document.getContentType());
     }
   }
-
+  
   public void addAttachment(Node documentNode, SimpleAttachment attachment, InputStream content)
       throws RepositoryException {
     if (content != null) {
@@ -125,11 +127,9 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
       attachmentConverter.setContent(attachmentNode, content, attachment.getContentType());
     }
   }
-
+  
   public void removeAttachment(Node documentNode, String language) throws RepositoryException {
     Node attachmentNode = getAttachmentNode(SimpleDocument.FILE_PREFIX + language, documentNode);
     attachmentNode.remove();
   }
-  
-
 }

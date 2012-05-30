@@ -29,7 +29,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.MissingResourceException;
-import org.silverpeas.attachment.BinaryInputStream;
+import org.silverpeas.attachment.repository.BinaryInputStream;
 
 /**
  * Class declaration

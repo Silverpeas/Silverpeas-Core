@@ -595,8 +595,7 @@ public class DocumentRepositoryTest {
       notExpiringDoc4.setExpiry(beforeDate.getTime());
       instance.createDocument(session, notExpiringDoc4, content);
       session.save();
-      List<SimpleDocument> docs = instance.listExpiringDocuments(session, instanceId, today.
-          getTime(), "fr");
+      List<SimpleDocument> docs = instance.listExpiringDocuments(session, today.getTime(), "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, contains(expiringDoc1, expiringDoc3));
@@ -644,7 +643,7 @@ public class DocumentRepositoryTest {
       notExpiringDoc4.setExpiry(beforeDate.getTime());
       instance.createDocument(session, notExpiringDoc4, content);
       session.save();
-      NodeIterator nodes = instance.selectExpiringDocuments(session, instanceId, today.getTime());
+      NodeIterator nodes = instance.selectExpiringDocuments(session, today.getTime());
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(expiringDoc1.getId()));
@@ -694,8 +693,7 @@ public class DocumentRepositoryTest {
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
       instance.createDocument(session, docToLeaveLocked4, content);
       session.save();
-      List<SimpleDocument> docs = instance.listDocumentsToUnlock(session, instanceId, today.
-          getTime(), "fr");
+      List<SimpleDocument> docs = instance.listDocumentsToUnlock(session, today.getTime(), "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, contains(docToUnlock2, docToUnlock3));
@@ -743,8 +741,7 @@ public class DocumentRepositoryTest {
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
       instance.createDocument(session, docToLeaveLocked4, content);
       session.save();
-      NodeIterator nodes = instance.selectDocumentsRequiringUnlocking(session, instanceId, today.
-          getTime());
+      NodeIterator nodes = instance.selectDocumentsRequiringUnlocking(session, today.getTime());
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docToUnlock2.getId()));
@@ -794,7 +791,7 @@ public class DocumentRepositoryTest {
       notWarningDoc4.setAlert(beforeDate.getTime());
       instance.createDocument(session, notWarningDoc4, content);
       session.save();
-      NodeIterator nodes = instance.selectWarningDocuments(session, instanceId, today.getTime());
+      NodeIterator nodes = instance.selectWarningDocuments(session, today.getTime());
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(warningDoc1.getId()));
@@ -958,8 +955,8 @@ public class DocumentRepositoryTest {
       notWarningDoc4.setAlert(beforeDate.getTime());
       instance.createDocument(session, notWarningDoc4, content);
       session.save();
-      List<SimpleDocument> docs = instance.listDocumentsRequiringWarning(session, instanceId, today.
-          getTime(), null);
+      List<SimpleDocument> docs = instance.listDocumentsRequiringWarning(session, today.getTime(),
+          null);
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, contains(warningDoc1, warningDoc3));

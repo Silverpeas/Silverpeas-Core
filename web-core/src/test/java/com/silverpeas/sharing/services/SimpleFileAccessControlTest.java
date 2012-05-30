@@ -28,8 +28,6 @@ import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -49,6 +47,8 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -103,8 +103,9 @@ public class SimpleFileAccessControlTest {
    */
   @Test
   public void testIsReadable() {
-    AttachmentPK pk = new AttachmentPK("5", "kmelia2");
-    AttachmentDetail attachment = new AttachmentDetail(pk);
+    SimpleDocumentPK pk = new SimpleDocumentPK("5", "kmelia2");
+    SimpleDocument attachment = new SimpleDocument();
+    attachment.setPK(pk);
     ShareableAttachment resource = new ShareableAttachment(
             "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505", attachment);
     SimpleFileAccessControl instance = new SimpleFileAccessControl();
@@ -115,8 +116,9 @@ public class SimpleFileAccessControlTest {
 
   @Test
   public void testIsNotReadable() {
-    AttachmentPK pk = new AttachmentPK("10", "kmelia2");
-    AttachmentDetail attachment = new AttachmentDetail(pk);
+    SimpleDocumentPK pk = new SimpleDocumentPK("10", "kmelia2");
+    SimpleDocument attachment = new SimpleDocument();
+    attachment.setPK(pk);
     ShareableAttachment resource = new ShareableAttachment(
             "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505", attachment);
     SimpleFileAccessControl instance = new SimpleFileAccessControl();

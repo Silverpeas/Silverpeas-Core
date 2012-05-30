@@ -24,11 +24,6 @@
 
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
-import java.io.IOException;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
@@ -36,6 +31,10 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.io.IOException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 public class JcrAttachmentServiceImpl implements JcrAttachmentService {
 
@@ -174,5 +173,30 @@ public class JcrAttachmentServiceImpl implements JcrAttachmentService {
         session.logout();
       }
     }
+  }
+
+  @Override
+  public void createAttachment(SimpleDocument attachment, String language) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void getUpdatedDocument(SimpleDocument attachment, String language) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void deleteAttachment(SimpleDocument attachment, String language) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void updateNodeAttachment(SimpleDocument attachment, String language) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public boolean isNodeLocked(SimpleDocument attachment, String language) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

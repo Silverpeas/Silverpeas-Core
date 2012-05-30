@@ -50,7 +50,6 @@ import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
-import org.silverpeas.attachment.BinaryInputStream;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -354,17 +353,15 @@ public class DocumentRepository {
    * Search all the documents in an instance which are expiring at the specified date.
    *
    * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
    * @param expiryDate the date when the document reservation should expire.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
-   * @throws RepositoryException
-   * @throws RepositoryException
+   * @throws RepositoryException.
    */
-  public List<SimpleDocument> listExpiringDocuments(Session session, String instanceId,
-      Date expiryDate, String language) throws RepositoryException {
+  public List<SimpleDocument> listExpiringDocuments(Session session, Date expiryDate,
+      String language) throws RepositoryException {
     List<SimpleDocument> result = new ArrayList<SimpleDocument>();
-    NodeIterator iter = selectExpiringDocuments(session, instanceId, DateUtil.getBeginOfDay(
+    NodeIterator iter = selectExpiringDocuments(session, DateUtil.getBeginOfDay(
         expiryDate));
     while (iter.hasNext()) {
       result.add(converter.convertNode(iter.nextNode(), language));
@@ -376,17 +373,16 @@ public class DocumentRepository {
    * Search all the documents in an instance which are locked at the alert date.
    *
    * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
    * @param alertDate the date when the document reservation should send an alert.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listDocumentsRequiringWarning(Session session, String instanceId,
-      Date alertDate, String language) throws RepositoryException {
+  public List<SimpleDocument> listDocumentsRequiringWarning(Session session, Date alertDate,
+      String language) throws RepositoryException {
     List<SimpleDocument> result = new ArrayList<SimpleDocument>();
-    NodeIterator iter = selectWarningDocuments(session, instanceId, DateUtil.getBeginOfDay(
+    NodeIterator iter = selectWarningDocuments(session, DateUtil.getBeginOfDay(
         alertDate));
     while (iter.hasNext()) {
       result.add(converter.convertNode(iter.nextNode(), language));
@@ -398,27 +394,23 @@ public class DocumentRepository {
    * Search all the documents in an instance expirying at the specified date.
    *
    * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
    * @param expiryDate the date when the document reservation should expire.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectExpiringDocuments(Session session, String instanceId, Date expiryDate) throws
-      RepositoryException {
+  NodeIterator selectExpiringDocuments(Session session, Date expiryDate) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     final String alias = "SimpleDocuments";
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId + "/attachments");
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(expiry)));
     Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        foreignIdComparison), new Ordering[]{order}, null);
+    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -427,17 +419,15 @@ public class DocumentRepository {
    * Search all the documents in an instance requiring to be unlocked at the specified date.
    *
    * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
    * @param expiryDate the date when the document reservation should expire.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
-   * @throws RepositoryException
-   * @throws RepositoryException
+   * @throws RepositoryException.
    */
-  public List<SimpleDocument> listDocumentsToUnlock(Session session, String instanceId,
-      Date expiryDate, String language) throws RepositoryException {
+  public List<SimpleDocument> listDocumentsToUnlock(Session session, Date expiryDate,
+      String language) throws RepositoryException {
     List<SimpleDocument> result = new ArrayList<SimpleDocument>();
-    NodeIterator iter = selectDocumentsRequiringUnlocking(session, instanceId, expiryDate);
+    NodeIterator iter = selectDocumentsRequiringUnlocking(session, expiryDate);
     while (iter.hasNext()) {
       result.add(converter.convertNode(iter.nextNode(), language));
     }
@@ -448,27 +438,24 @@ public class DocumentRepository {
    * Search all the documents in an instance requiring to be unlocked at the specified date.
    *
    * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
    * @param expiryDate the date when the document reservation should expire.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectDocumentsRequiringUnlocking(Session session, String instanceId, Date expiryDate)
-      throws RepositoryException {
+  NodeIterator selectDocumentsRequiringUnlocking(Session session, Date expiryDate) throws
+      RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     final String alias = "SimpleDocuments";
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId + "/attachments");
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_LESS_THAN, factory.
         literal(session.getValueFactory().createValue(expiry)));
     Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        foreignIdComparison), new Ordering[]{order}, null);
+    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -477,27 +464,23 @@ public class DocumentRepository {
    * Search all the documents in an instance in a warning state at the specified date.
    *
    * @param session the current JCR session.
-   * @param instanceId the component id containing the documents.
    * @param alertDate the date when a warning is required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectWarningDocuments(Session session, String instanceId, Date alertDate) throws
-      RepositoryException {
+  NodeIterator selectWarningDocuments(Session session, Date alertDate) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     final String alias = "SimpleDocuments";
     Calendar alert = Calendar.getInstance();
     alert.setTime(DateUtil.getBeginOfDay(alertDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId + "/attachments");
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_ALERT_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(alert)));
     Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
-    QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
-        foreignIdComparison), new Ordering[]{order}, null);
+    QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }

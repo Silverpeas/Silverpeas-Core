@@ -25,14 +25,14 @@ import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.services.SimpleFileAccessControl;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.silverpeas.util.UuidPk;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.Date;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * Ticket for attached files.
@@ -49,13 +49,13 @@ public class SimpleFileTicket extends Ticket {
   }
 
   public SimpleFileTicket(int sharedObjectId, String componentId, UserDetail creator,
-          Date creationDate, Date endDate, int nbAccessMax) {
+      Date creationDate, Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = FILE_TYPE;
   }
 
   public SimpleFileTicket(int sharedObjectId, String componentId, String creatorId,
-          Date creationDate, Date endDate, int nbAccessMax) {
+      Date creationDate, Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = FILE_TYPE;
   }
@@ -66,15 +66,15 @@ public class SimpleFileTicket extends Ticket {
   }
 
   public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
-          Date creationDate, Date endDate, int nbAccessMax) {
+      Date creationDate, Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.token = new UuidPk(key);
   }
 
   @Override
-  public ShareableResource<AttachmentDetail> getResource() {
-    return new ShareableAttachment(getToken(), AttachmentController.
-            searchAttachmentByPK(new AttachmentPK(String.valueOf(getSharedObjectId()),
-            getComponentId())));
+  public ShareableResource<SimpleDocument> getResource() {
+    return new ShareableAttachment(getToken(), AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentById(new SimpleDocumentPK(String.valueOf(getSharedObjectId()),
+        getComponentId()), null));
   }
 }

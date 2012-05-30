@@ -33,8 +33,6 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -42,16 +40,17 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -104,8 +103,7 @@ public class NodeAccessControlTest {
     PowerMockito.when(SharingServiceFactory.getSharingTicketService()).thenReturn(new NodeSharingTicketService(
             token, pk));
     NodeAccessControl instance = new NodeAccessControl();
-    boolean result = instance.isReadable(resource);
-    assertThat(result, is(true));
+    assertThat(instance.isReadable(resource), is(true));
   }
   
   /**
@@ -175,9 +173,10 @@ public class NodeAccessControlTest {
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
             thenReturn(nodeHome);
 
-    AttachmentPK resourcePk = new AttachmentPK("5", "kmelia2");
-    AttachmentDetail attachmentDetail = new AttachmentDetail(resourcePk);
-    attachmentDetail.setForeignKey(publicationPK);
+    SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
+    SimpleDocument attachmentDetail = new SimpleDocument();
+    attachmentDetail.setPK(resourcePk);
+    attachmentDetail.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableAttachment resource = new ShareableAttachment(token, attachmentDetail);
     PowerMockito.mockStatic(SharingServiceFactory.class);
@@ -215,9 +214,10 @@ public class NodeAccessControlTest {
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
             thenReturn(nodeHome);
 
-    AttachmentPK resourcePk = new AttachmentPK("5", "kmelia2");
-    AttachmentDetail attachmentDetail = new AttachmentDetail(resourcePk);
-    attachmentDetail.setForeignKey(publicationPK);
+    SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
+    SimpleDocument attachmentDetail = new SimpleDocument();
+    attachmentDetail.setPK(resourcePk);
+    attachmentDetail.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableAttachment resource = new ShareableAttachment(token, attachmentDetail);
     PowerMockito.mockStatic(SharingServiceFactory.class);

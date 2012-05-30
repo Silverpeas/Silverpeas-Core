@@ -189,7 +189,7 @@ public class AttachmentImportExport {
     // Get parameters of file to create
     String logicalName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
     String type = logicalName.substring(logicalName.lastIndexOf('.') + 1, logicalName.length());
-    String mimeType = AttachmentController.getMimeType(logicalName);
+    String mimeType = FileUtil.getMimeType(logicalName);
     String physicalName = System.currentTimeMillis() + "." + type;
     File fileToCreate = new File(path + physicalName);
     while (fileToCreate.exists()) {

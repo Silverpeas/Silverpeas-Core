@@ -40,7 +40,6 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
 
   public SimpleAttachment convertNode(Node node) throws RepositoryException {
     SimpleAttachment attachment = new SimpleAttachment();
-    attachment.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     attachment.setContentType(getContentMimeType(node));
     attachment.setCreated(getDateProperty(node, SLV_PROPERTY_CREATION_DATE));
     attachment.setCreatedBy(getStringProperty(node, SLV_PROPERTY_CREATOR));
@@ -58,7 +57,6 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
   }
 
   public void fillNode(SimpleAttachment attachment, Node node) throws RepositoryException {
-    addStringProperty(node, SLV_PROPERTY_CLONE, attachment.getCloneId());
     addDateProperty(node, SLV_PROPERTY_CREATION_DATE, attachment.getCreated());
     addStringProperty(node, SLV_PROPERTY_CREATOR, attachment.getCreatedBy());
     addStringProperty(node, JCR_DESCRIPTION, attachment.getDescription());
