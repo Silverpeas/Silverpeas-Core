@@ -21,30 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.helper.mock;
+package com.silverpeas.notification.builder;
 
-import static org.mockito.Mockito.mock;
-
-import javax.inject.Named;
-
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("organizationController")
-public class OrganizationControllerMock extends OrganizationController {
-
-  private static final long serialVersionUID = -1284043052264993988L;
-
-  private final OrganizationController mock = mock(OrganizationController.class);
-
-  @Override
-  public boolean isComponentExist(String componentId) {
-    return mock.isComponentExist(componentId);
-  }
-
-  public OrganizationController getMock() {
-    return mock;
-  }
+public interface IUserNotificationBuider {
+  
+  /**
+   * Builds the notification data container
+   */
+  IUserNotification build();
 }

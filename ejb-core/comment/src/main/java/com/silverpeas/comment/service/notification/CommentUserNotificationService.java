@@ -40,9 +40,9 @@ import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentActionListener;
-import com.silverpeas.comment.service.CommentNotificationBuilder;
+import com.silverpeas.comment.service.CommentUserNotification;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.notification.helper.NotificationHelper;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -75,17 +75,17 @@ public class CommentUserNotificationService extends CommentActionListener {
    * If no property with the subject of the notification message is defined in a Silverpeas
    * component, then the below default property is taken.
    */
-  protected static final String DEFAULT_SUBJECT_COMMENT_ADDING = CommentNotificationBuilder.DEFAULT_SUBJECT_COMMENT_ADDING;
+  protected static final String DEFAULT_SUBJECT_COMMENT_ADDING = CommentUserNotification.DEFAULT_SUBJECT_COMMENT_ADDING;
   /**
    * The name of the attribute in a notification message that refers the comment responsable of the
    * triggering of this service.
    */
-  protected static final String NOTIFICATION_COMMENT_ATTRIBUTE = CommentNotificationBuilder.NOTIFICATION_COMMENT_ATTRIBUTE;
+  protected static final String NOTIFICATION_COMMENT_ATTRIBUTE = CommentUserNotification.NOTIFICATION_COMMENT_ATTRIBUTE;
   /**
    * The name of the attribute in a notification message that refers the content commented by the
    * comment responsable of the triggering of this service.
    */
-  protected static final String NOTIFICATION_CONTENT_ATTRIBUTE = CommentNotificationBuilder.NOTIFICATION_CONTENT_ATTRIBUTE;
+  protected static final String NOTIFICATION_CONTENT_ATTRIBUTE = CommentUserNotification.NOTIFICATION_CONTENT_ATTRIBUTE;
   
   @Inject
   private CommentService commentService;
@@ -140,7 +140,7 @@ public class CommentUserNotificationService extends CommentActionListener {
               service.getContentById(newComment.getForeignKey().getId());
           final Set<String> recipients = getInterestedUsers(newComment.getCreator(), commentedContent);
           final NotificationMetaData notification =
-              NotificationHelper.build(new CommentNotificationBuilder(getCommentService(), newComment,
+              UserNotificationHelper.build(new CommentUserNotification(getCommentService(), newComment,
                   commentedContent, component + "." + SUBJECT_COMMENT_ADDING, service.getComponentMessages(""),
                   recipients));
           notifyUsers(notification);

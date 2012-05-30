@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.helper;
+package com.silverpeas.notification.builder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,15 +30,13 @@ import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractTemplateNotificationBuilder<T> extends
-    AbstractResourceNotificationBuilder<T> {
+public abstract class AbstractTemplateUserNotificationBuilder<T> extends
+    AbstractResourceUserNotificationBuilder<T> {
 
   /** The silverpeas templates indexed by languages */
   private final Map<String, SilverpeasTemplate> templates =
@@ -50,7 +48,7 @@ public abstract class AbstractTemplateNotificationBuilder<T> extends
    * @param title
    * @param fileName
    */
-  public AbstractTemplateNotificationBuilder(final T resource) {
+  public AbstractTemplateUserNotificationBuilder(final T resource) {
     super(resource, null, null);
   }
 
@@ -60,10 +58,10 @@ public abstract class AbstractTemplateNotificationBuilder<T> extends
    * @param title
    * @param fileName
    */
-  public AbstractTemplateNotificationBuilder(final T resource, final String title, final String fileName) {
+  public AbstractTemplateUserNotificationBuilder(final T resource, final String title, final String fileName) {
     super(resource, title, fileName);
   }
-  
+
   /**
    * Gets the fileName of StringTemplate
    * @return
@@ -74,8 +72,8 @@ public abstract class AbstractTemplateNotificationBuilder<T> extends
   }
 
   @Override
-  protected NotificationMetaData createNotification() {
-    return new NotificationMetaData(NotifMessageType.NORMAL.getId(), getTitle(), templates, getFileName());
+  protected IUserNotification createNotification() {
+    return new DefaultUserNotification(getTitle(), templates, getFileName());
   }
 
   @Override

@@ -31,7 +31,7 @@ import java.util.Set;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.notification.helper.AbstractTemplateNotificationBuilder;
+import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 /**
  * @author Yohann Chastagnier
  */
-public class CommentNotificationBuilder extends AbstractTemplateNotificationBuilder<SilverpeasContent> {
+public class CommentUserNotification extends AbstractTemplateUserNotificationBuilder<SilverpeasContent> {
   
   /**
    * If no property with the subject of the notification message is defined in a Silverpeas
@@ -68,7 +68,7 @@ public class CommentNotificationBuilder extends AbstractTemplateNotificationBuil
   private final Comment comment;
   private final Set<String> recipients;
 
-  public CommentNotificationBuilder(final CommentService commentService, final Comment comment,
+  public CommentUserNotification(final CommentService commentService, final Comment comment,
       final SilverpeasContent commentedContent,
       final String subjectKey, final ResourceLocator componentMessages, final Set<String> recipients) {
     super(commentedContent, null, "commented");

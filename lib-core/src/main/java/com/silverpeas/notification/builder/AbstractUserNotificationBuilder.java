@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.helper;
+package com.silverpeas.notification.builder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,44 +37,36 @@ import com.stratelia.webactiv.util.ResourceLocator;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractNotificationBuilder implements INotificationBuider {
+public abstract class AbstractUserNotificationBuilder implements IUserNotificationBuider {
 
   private String title = null;
   private String content = null;
-  private NotificationMetaData notification = null;
+  private IUserNotification userNotification = null;
   private final Map<String, ResourceLocator> bundles = new HashMap<String, ResourceLocator>();
 
   /**
    * Default constructor
    * @param notification
    */
-  protected AbstractNotificationBuilder() {
-    this(null);
+  protected AbstractUserNotificationBuilder() {
+    // Nothing to do
   }
 
   /**
    * Default constructor
    * @param notification
    */
-  protected AbstractNotificationBuilder(final String title, final String content) {
+  protected AbstractUserNotificationBuilder(final String title, final String content) {
     this();
     this.title = title;
     this.content = content;
   }
 
   /**
-   * Default constructor
-   * @param notification
-   */
-  protected AbstractNotificationBuilder(final NotificationMetaData notification) {
-    this.notification = notification;
-  }
-
-  /**
    * Performs common initializations
    */
   protected void initialize() {
-    notification = createNotification();
+    userNotification = createNotification();
     getNotification().setMessageType(getMessageType().getId());
     getNotification().setAction(getAction());
     getNotification().setComponentId(getComponentInstanceId());
@@ -83,14 +75,11 @@ public abstract class AbstractNotificationBuilder implements INotificationBuider
   }
 
   /**
-   * Create the notification meta data container
+   * Create the user notification container
    * @return
    */
-  protected NotificationMetaData createNotification() {
-    if (StringUtils.isNotBlank(getTitle()) && StringUtils.isNotBlank(getContent())) {
-      return new NotificationMetaData(NotifMessageType.NORMAL.getId(), getTitle(), getContent());
-    }
-    return new NotificationMetaData();
+  protected IUserNotification createNotification() {
+    return new DefaultUserNotification(getTitle(), getContent());
   }
 
   /**
@@ -111,13 +100,12 @@ public abstract class AbstractNotificationBuilder implements INotificationBuider
    */
   protected abstract String getSender();
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.notification.helper.INotificationBuider#getNotification()
+  /**
+   * Gets the notification meta data container
+   * @return
    */
-  @Override
-  public NotificationMetaData getNotification() {
-    return notification;
+  protected final NotificationMetaData getNotification() {
+    return userNotification.getNotification();
   }
 
   /**
@@ -140,14 +128,14 @@ public abstract class AbstractNotificationBuilder implements INotificationBuider
    * Builds the notification data container
    */
   @Override
-  public final INotificationBuider build() {
+  public final IUserNotification build() {
     try {
       initialize();
       performBuild();
     } catch (final Stop e) {
-      notification = null;
+      userNotification = new NullUserNotification();
     }
-    return this;
+    return userNotification;
   }
 
   /**

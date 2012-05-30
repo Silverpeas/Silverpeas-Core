@@ -21,29 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.helper;
+package com.silverpeas.notification.builder.helper;
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.silverpeas.notification.builder.IUserNotificationBuider;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * @author Yohann Chastagnier
  */
-public class NotificationHelper {
+public class UserNotificationHelper {
 
   /**
    * Builds a notification data container from a given builder. After that, sends the builded notification
    * @param notificationBuider
    * @return
    */
-  public static NotificationMetaData buildAndSend(final INotificationBuider notificationBuider) {
-    notificationBuider.build();
-    final NotificationMetaData notification = build(notificationBuider);
-    send(notification);
-    return notification;
+  public static void buildAndSend(final IUserNotificationBuider notificationBuider) {
+    notificationBuider.build().send();
   }
 
   /**
@@ -53,11 +48,9 @@ public class NotificationHelper {
    * @param notificationBuider
    * @return
    */
-  public static NotificationMetaData buildAndSend(final NotifMediaType mediaType,
-      final INotificationBuider notificationBuider) {
-    final NotificationMetaData notification = build(notificationBuider);
-    send(mediaType, notification);
-    return notification;
+  public static void buildAndSend(final NotifMediaType mediaType,
+      final IUserNotificationBuider notificationBuider) {
+    notificationBuider.build().send(mediaType);
   }
 
   /**
@@ -65,36 +58,7 @@ public class NotificationHelper {
    * @param notificationBuider
    * @return
    */
-  public static NotificationMetaData build(final INotificationBuider notificationBuider) {
+  public static NotificationMetaData build(final IUserNotificationBuider notificationBuider) {
     return notificationBuider.build().getNotification();
-  }
-
-  /**
-   * Sends the given notification
-   * @param notification
-   */
-  public static void send(final NotificationMetaData notification) {
-    send(null, notification);
-  }
-
-  /**
-   * Sends the given notification for the given media type
-   * @param mediaType
-   * @param notification
-   */
-  public static void send(final NotifMediaType mediaType, final NotificationMetaData notification) {
-    if (notification != null) {
-      try {
-        final NotificationSender sender = new NotificationSender(notification.getComponentId());
-        if (mediaType != null) {
-          sender.notifyUser(mediaType.getId(), notification);
-        } else {
-          sender.notifyUser(notification);
-        }
-      } catch (final NotificationManagerException e) {
-        SilverTrace.warn("notification", "NotificationHelper.send()",
-            "notification.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-      }
-    }
   }
 }

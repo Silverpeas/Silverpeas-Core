@@ -21,20 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.helper;
+package com.silverpeas.notification.builder;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNotificationBuilder {
+public abstract class AbstractResourceUserNotificationBuilder<T> extends AbstractUserNotificationBuilder {
 
   private T resource;
 
@@ -44,7 +43,7 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
    * @param title
    * @param content
    */
-  public AbstractResourceNotificationBuilder(final T resource, final String title, final String content) {
+  public AbstractResourceUserNotificationBuilder(final T resource, final String title, final String content) {
     super(title, content);
     setResource(resource);
   }
@@ -53,23 +52,14 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
    * Default constructor
    * @param resource
    */
-  public AbstractResourceNotificationBuilder(final T resource) {
-    this(resource, null);
-  }
-
-  /**
-   * Default constructor
-   * @param resource
-   * @param notification
-   */
-  protected AbstractResourceNotificationBuilder(final T resource, final NotificationMetaData notification) {
-    super(notification);
-    setResource(resource);
+  public AbstractResourceUserNotificationBuilder(final T resource) {
+    this(resource, null, null);
   }
 
   /**
    * Performs common initializations from a given resource
    */
+  @Override
   protected void initialize() {
     super.initialize();
     getNotification().setLink(getResourceURL(resource));
@@ -148,7 +138,7 @@ public abstract class AbstractResourceNotificationBuilder<T> extends AbstractNot
     return resource;
   }
 
-  protected final void setResource(T resource) {
+  protected final void setResource(final T resource) {
     this.resource = resource;
   }
 

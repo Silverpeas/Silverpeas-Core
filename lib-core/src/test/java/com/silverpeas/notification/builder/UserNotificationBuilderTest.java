@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.helper;
+package com.silverpeas.notification.builder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,7 +40,8 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.silverpeas.notification.helper.mock.OrganizationControllerMock;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.notification.builder.mock.OrganizationControllerMock;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
@@ -53,8 +54,8 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
  * @author Yohann Chastagnier
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-notification-helper.xml" })
-public class NotificationHelperTest {
+@ContextConfiguration(locations = { "/spring-user-notification-builder.xml" })
+public class UserNotificationBuilderTest {
 
   @Inject
   OrganizationControllerMock organizationController;
@@ -63,7 +64,7 @@ public class NotificationHelperTest {
   public void testBuild_ANB_1() {
 
     // Build
-    final NotificationMetaData notifTest = NotificationHelper.build(new ANBTest());
+    final NotificationMetaData notifTest = UserNotificationHelper.build(new AUNBTest());
 
     // Asserts
     assertThat(notifTest, notNullValue());
@@ -89,7 +90,7 @@ public class NotificationHelperTest {
 
     // Build
     final NotificationMetaData notifTest =
-        NotificationHelper.build(new ANBTest() {
+        UserNotificationHelper.build(new AUNBTest() {
 
           @Override
           protected NotifMessageType getMessageType() {
@@ -139,7 +140,7 @@ public class NotificationHelperTest {
 
     // Build
     final NotificationMetaData notifTest =
-        NotificationHelper.build(new ANBTest(null, null) {
+        UserNotificationHelper.build(new AUNBTest(null, null) {
 
           @Override
           protected String getSender() {
@@ -182,7 +183,7 @@ public class NotificationHelperTest {
 
     // Build
     final NotificationMetaData notifTest =
-        NotificationHelper.build(new ANBTest("aTitle", "aContent"));
+        UserNotificationHelper.build(new AUNBTest("aTitle", "aContent"));
 
     // Asserts
     assertThat(notifTest, notNullValue());
@@ -208,9 +209,9 @@ public class NotificationHelperTest {
   public void testBuild_ARNB_1() {
 
     // Build
-    NotificationMetaData notifTest = NotificationHelper.build(new ARNBTest(null));
+    NotificationMetaData notifTest = UserNotificationHelper.build(new ARUNBTest(null));
     assertBuild_ARNB_1(notifTest, "", false);
-    notifTest = NotificationHelper.build(new ARNBTest(new String("testBuild_ARNB_1")) {
+    notifTest = UserNotificationHelper.build(new ARUNBTest(new String("testBuild_ARNB_1")) {
 
       @Override
       protected void performBuild(final Object resource) {
@@ -219,13 +220,13 @@ public class NotificationHelperTest {
     });
     assertBuild_ARNB_1(notifTest, "testBuild_ARNB_1", false);
 
-    notifTest = NotificationHelper.build(new ARNBTest(new ResourceDataTest()));
+    notifTest = UserNotificationHelper.build(new ARUNBTest(new ResourceDataTest()));
     assertBuild_ARNB_1(notifTest, "", true);
 
-    notifTest = NotificationHelper.build(new ARNBTest(new ResourceDataTest()) {
+    notifTest = UserNotificationHelper.build(new ARUNBTest(new ResourceDataTest()) {
 
       @Override
-      protected void performBuild(Object resource) {
+      protected void performBuild(final Object resource) {
         super.performBuild(resource);
         stop();
       }
@@ -275,7 +276,7 @@ public class NotificationHelperTest {
 
     // Build
     final NotificationMetaData notifTest =
-        NotificationHelper.build(new ARNBTest(new ResourceDataTest()) {
+        UserNotificationHelper.build(new ARUNBTest(new ResourceDataTest()) {
 
           @Override
           protected void performNotificationResource(final Object resource,
@@ -320,7 +321,7 @@ public class NotificationHelperTest {
 
     // Build
     final NotificationMetaData notifTest =
-        NotificationHelper.build(new ARNBTest(new ResourceDataTest(), "aTitle", "aContent"));
+        UserNotificationHelper.build(new ARUNBTest(new ResourceDataTest(), "aTitle", "aContent"));
 
     // Asserts
     assertThat(notifTest, notNullValue());
@@ -355,11 +356,11 @@ public class NotificationHelperTest {
     mockOrganizationController_isComponentExist();
 
     NotificationMetaData notifTest =
-        NotificationHelper.build(new ATNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile"));
+        UserNotificationHelper.build(new ATUNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile"));
     assertBuild_ATNB_1(notifTest, "");
 
     notifTest =
-        NotificationHelper.build(new ATNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile") {
+        UserNotificationHelper.build(new ATUNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile") {
 
           @Override
           protected String getMultilangPropertyFile() {
@@ -407,7 +408,7 @@ public class NotificationHelperTest {
 
     // Builds
     final NotificationMetaData notifTest =
-        NotificationHelper.build(new ATNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile") {
+        UserNotificationHelper.build(new ATUNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile") {
 
           @Override
           protected String getMultilangPropertyFile() {
@@ -465,9 +466,9 @@ public class NotificationHelperTest {
     }).when(organizationController.getMock()).isComponentExist(anyString());
   }
 
-  protected class ATNBTest extends AbstractTemplateNotificationBuilder<ResourceDataTest> {
+  protected class ATUNBTest extends AbstractTemplateUserNotificationBuilder<ResourceDataTest> {
 
-    public ATNBTest(final ResourceDataTest resource, final String title, final String fileName) {
+    public ATUNBTest(final ResourceDataTest resource, final String title, final String fileName) {
       super(resource, title, fileName);
     }
 
@@ -517,17 +518,13 @@ public class NotificationHelperTest {
     }
   }
 
-  protected class ARNBTest extends AbstractResourceNotificationBuilder<Object> {
+  protected class ARUNBTest extends AbstractResourceUserNotificationBuilder<Object> {
 
-    public ARNBTest(final Object resource, final NotificationMetaData notification) {
-      super(resource, notification);
-    }
-
-    public ARNBTest(final Object resource, final String title, final String content) {
+    public ARUNBTest(final Object resource, final String title, final String content) {
       super(resource, title, content);
     }
 
-    public ARNBTest(final Object resource) {
+    public ARUNBTest(final Object resource) {
       super(resource);
     }
 
@@ -561,17 +558,13 @@ public class NotificationHelperTest {
   /**
    * @author Yohann Chastagnier
    */
-  protected class ANBTest extends AbstractNotificationBuilder {
+  protected class AUNBTest extends AbstractUserNotificationBuilder {
 
-    public ANBTest() {
+    public AUNBTest() {
       super();
     }
 
-    public ANBTest(final NotificationMetaData notification) {
-      super(notification);
-    }
-
-    public ANBTest(final String title, final String content) {
+    public AUNBTest(final String title, final String content) {
       super(title, content);
     }
 
