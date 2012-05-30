@@ -21,47 +21,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.annotation.constraint;
 
-package com.silverpeas.annotation;
-
-import com.silverpeas.annotation.constraint.DateRange;
-import com.silverpeas.calendar.Datable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.ElementType.*;
+import java.lang.annotation.Target;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
 /**
- * Objects representing an interval of dates. It is aiming for tests on the DateRangeValidator
- * validation.
+ * Annotation for JSR-303 validator.
+ * It validates the range of dates are coherent: the end date is after or equals the start one.
  */
-@DateRange(startDate="from", endDate="to")
-public class DateInterval {
+@Target({TYPE, ANNOTATION_TYPE})
+@Retention(RUNTIME)
+@Constraint(validatedBy = DateRangeValidator.class)
+@Documented
+public @interface DateRange {
 
-  private Datable<?> from;
-  private Datable<?> to;
+  String message() default "The end date isn't after or equal the start date";
 
-  /**
-   * Constructs a new interval from the two specified dates.
-   * @param startDate the start date of the interval.
-   * @param endDate the end date of the interval.
-   */
-  public DateInterval(final Datable<?> startDate, final Datable<?> endDate) {
-    this.from = startDate;
-    this.to = endDate;
-  }
+  Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 
   /**
-   * Gets the start date of the interval.
-   * @return the interval start date.
+   * The name of the field representing the date starting a range.
+   * @return the field name of the range start date.
    */
-  public Datable<?> getStartDate() {
-    return from;
-  }
+  String startDate();
 
   /**
-   * Gets the end date of the interval.
-   * @return the interval end date.
+   * The name of the field representing the date ending a range.
+   * @return the field name of the range end date.
    */
-  public Datable<?> getEndDate() {
-    return to;
-  }
-
-
+  String endDate();
 }

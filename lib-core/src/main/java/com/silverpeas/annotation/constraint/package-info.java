@@ -21,41 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.annotation;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.*;
-import static java.lang.annotation.ElementType.*;
-import java.lang.annotation.Target;
-import javax.validation.Constraint;
-import javax.validation.Payload;
 
 /**
- * Annotation for JSR-303 validator.
- * It validates the range of dates are coherent: the end date is after or equals the start one.
+ * Provides Silverpeas custom annotations for adding Bean Validation constraints to objects.
  */
-@Target({TYPE, ANNOTATION_TYPE})
-@Retention(RUNTIME)
-@Constraint(validatedBy = DateRangeValidator.class)
-@Documented
-public @interface DateRange {
-
-  String message() default "The end date isn't after or equal the start date";
-
-  Class<?>[] groups() default {};
-
-  Class<? extends Payload>[] payload() default {};
-
-  /**
-   * The name of the field representing the date starting a range.
-   * @return the field name of the range start date.
-   */
-  String startDate();
-
-  /**
-   * The name of the field representing the date ending a range.
-   * @return the field name of the range end date.
-   */
-  String endDate();
-}
+package com.silverpeas.annotation.constraint;
