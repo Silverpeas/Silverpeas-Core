@@ -116,7 +116,15 @@ public class PdcTestResources extends TestResources {
   public PdcClassification getPredefinedClassification(String nodeId, String componentId) {
     return getPdcClassificationServiceMock().findAPreDefinedClassification(nodeId, componentId);
   }
-
+  
+//
+//  public void getPredefinedPdcClassificationForWholeComponent() {
+//    classificationRepository.findPredefinedClassificationByComponentInstanceId(COMPONENT_INSTANCE_ID);
+//  }
+//
+//  public void getPredefinedPdcClassificationForNode() {
+//    classificationRepository.findPredefinedClassificationByNodeId(NODE_ID, COMPONENT_INSTANCE_ID);
+//  }
   /**
    * Gets the current PdC classification used in the test.
    *
