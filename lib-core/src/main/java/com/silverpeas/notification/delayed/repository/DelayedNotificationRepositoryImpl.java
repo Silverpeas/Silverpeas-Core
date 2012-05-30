@@ -33,6 +33,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
@@ -106,9 +107,14 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
     query.append(TypedParameterUtil.addNamedParameter(parameters, "action", delayedNotification.getAction().getId()));
     query.append(" and language = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "language", delayedNotification.getLanguage()));
-    query.append(" and creationDate = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "creationDate",
-        delayedNotification.getCreationDate(), TemporalType.TIMESTAMP));
+    query.append(" and creationDate between :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "creationDateMin",
+        DateUtils.setSeconds(DateUtils.setMilliseconds(delayedNotification.getCreationDate(), 0), 0),
+        TemporalType.TIMESTAMP));
+    query.append(" and :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "creationDateMax",
+        DateUtils.setSeconds(DateUtils.setMilliseconds(delayedNotification.getCreationDate(), 999), 59),
+        TemporalType.TIMESTAMP));
     query.append(" and notificationResourceId = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceId", delayedNotification.getResource()));
 
