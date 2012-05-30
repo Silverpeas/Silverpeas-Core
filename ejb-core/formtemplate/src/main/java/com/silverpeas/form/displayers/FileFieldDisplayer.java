@@ -260,7 +260,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       String value = processUploadedFile(items, itemName, pageContext);
       String param = FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
       if (param != null) {
-        if (param.startsWith("remove_")) {
+        if (param.startsWith("remove_") && !pageContext.isCreation()) {
           // Il faut supprimer le fichier
           String attachmentId = param.substring("remove_".length());
           deleteAttachment(attachmentId, pageContext);

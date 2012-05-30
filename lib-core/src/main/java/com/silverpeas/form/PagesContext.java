@@ -53,6 +53,7 @@ public class PagesContext {
   String xmlFormName = "";
   int updatePolicy = ON_UPDATE_REPLACE_EMPTY_VALUES;
   String encoding = "UTF-8";
+  boolean creation = false;
 
   public PagesContext() {
   }
@@ -76,7 +77,7 @@ public class PagesContext {
     setUseBlankFields(pc.isBlankFieldsUse());
     setIgnoreDefaultValues(pc.isIgnoreDefaultValues());
     setUpdatePolicy(pc.getUpdatePolicy());
-
+    setCreation(pc.isCreation());
   }
 
   public PagesContext(String formIndex, String language) {
@@ -181,7 +182,6 @@ public class PagesContext {
     this.currentFieldIndex = currentFieldIndex;
   }
 
-  @SuppressWarnings("AssignmentReplaceableWithOperatorAssignment")
   public final void incCurrentFieldIndex(int increment) {
     int currentFieldIndexInt = 0;
     if (currentFieldIndex != null) {
@@ -306,5 +306,13 @@ public class PagesContext {
 
   public final void setEncoding(String encoding) {
     this.encoding = encoding;
+  }
+  
+  public boolean isCreation() {
+    return creation;
+  }
+  
+  public void setCreation(boolean creation) {
+    this.creation = creation;
   }
 }

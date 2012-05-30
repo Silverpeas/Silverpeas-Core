@@ -85,7 +85,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    */
   public static final String PARAMETER_AUTOPLAY = "autoplay";
 
-  private static final String CONTEXT_FORM_VIDEO = "XMLFormVideo";
+  public static final String CONTEXT_FORM_VIDEO = "XMLFormVideo";
   private static final String SWF_PLAYER_PATH = "/util/flowplayer/flowplayer-3.2.4.swf";
   private static final String VIDEO_PLAYER_ID = "player";
   private static final String OPERATION_KEY = "Operation";
@@ -183,7 +183,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
               fieldName + OPERATION_KEY));
       String currentAttachmentId = FileUploadUtil.getParameter(items, fieldName
               + Field.FILE_PARAM_NAME_SUFFIX);
-      if (isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId)) {
+      if ((isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId)) &&
+          !pageContext.isCreation()) {
         deleteAttachment(currentAttachmentId, pageContext);
       }
       if (StringUtil.isDefined(attachmentId)) {

@@ -145,14 +145,16 @@ function stripInitialWhitespace (s) {
 //return true if length of s is < textFieldLength
 function isValidText(input, textFieldLength) {
 	var s = input.value;
-	return (s.length <= Number(textFieldLength));
+	if (typeof s != 'undefined') {
+		return s.length <= Number(textFieldLength);
+	}
+	return true;
 }
 
 //return true if length of s is < textFieldLength
 function isValidTextField(input) {
 	var textFieldLength = 1000;
-	var s = input.value;
-	return (s.length <= textFieldLength);
+	return isValidText(input, textFieldLength)
 }
 
 //return true if length of s is < textAreaLength
@@ -170,7 +172,10 @@ function isValidTextArea(input) {
 function isValidTextMaxi(input) {
 	var textMaxiLength = 4000;
 	var s = input.value;
-	return (s.length <= textMaxiLength);
+	if (typeof s != 'undefined') {
+		return (s.length <= textMaxiLength);
+	}
+	return true;
 }
 
 // Notify user that required field theField is empty.
