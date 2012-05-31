@@ -26,6 +26,7 @@ package com.silverpeas.notification.builder;
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -128,6 +129,11 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
           "notificationBuider.RESOURCE_URL_IS_EMPTY");
     }
     return resourceUrl;
+  }
+
+  @Override
+  protected boolean isSendImmediatly() {
+    return (getResource() instanceof SilverpeasToolContent);
   }
 
   /*

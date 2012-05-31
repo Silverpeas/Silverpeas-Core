@@ -25,6 +25,7 @@ package com.silverpeas.comment.service;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
 
@@ -35,7 +36,6 @@ import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuild
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -43,22 +43,22 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @author Yohann Chastagnier
  */
 public class CommentUserNotification extends AbstractTemplateUserNotificationBuilder<SilverpeasContent> {
-  
+
   /**
-   * If no property with the subject of the notification message is defined in a Silverpeas
-   * component, then the below default property is taken.
+   * If no property with the subject of the notification message is defined in a Silverpeas component, then the below
+   * default property is taken.
    */
   public static final String DEFAULT_SUBJECT_COMMENT_ADDING = "comments.commentAddingSubject";
-  
+
   /**
-   * The name of the attribute in a notification message that refers the comment responsable of the
-   * triggering of this service.
+   * The name of the attribute in a notification message that refers the comment responsable of the triggering of this
+   * service.
    */
   public static final String NOTIFICATION_COMMENT_ATTRIBUTE = "comment";
-  
+
   /**
-   * The name of the attribute in a notification message that refers the content commented by the
-   * comment responsable of the triggering of this service.
+   * The name of the attribute in a notification message that refers the content commented by the comment responsable of
+   * the triggering of this service.
    */
   public static final String NOTIFICATION_CONTENT_ATTRIBUTE = "content";
 
@@ -80,8 +80,13 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   }
 
   @Override
+  protected String getBundleSubjectKey() {
+    return subjectKey;
+  }
+
+  @Override
   protected String getTitle() {
-    String subject = componentMessages.getString(subjectKey);
+    String subject = componentMessages.getString(getBundleSubjectKey());
     if (!isDefined(subject)) {
       subject =
           commentService.getComponentMessages(componentMessages.getLanguage())
@@ -91,12 +96,12 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   }
 
   @Override
+  protected Collection<String> getUserIdsToNotify() {
+    return recipients;
+  }
+
+  @Override
   protected void perform(final SilverpeasContent resource) {
-    if (recipients != null) {
-      for (final String recipient : recipients) {
-        getNotification().addUserRecipient(new UserRecipient(recipient));
-      }
-    }
     getNotification().setOriginalExtraMessage(comment.getMessage());
   }
 

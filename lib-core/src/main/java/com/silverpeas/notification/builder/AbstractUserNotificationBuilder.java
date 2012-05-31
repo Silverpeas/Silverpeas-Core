@@ -23,15 +23,19 @@
  */
 package com.silverpeas.notification.builder;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -131,11 +135,36 @@ public abstract class AbstractUserNotificationBuilder implements IUserNotificati
   public final IUserNotification build() {
     try {
       initialize();
+      performUsersToBeNotified();
       performBuild();
     } catch (final Stop e) {
       userNotification = new NullUserNotification();
     }
     return userNotification;
+  }
+
+  protected abstract Collection<String> getUserIdsToNotify();
+
+  protected final void performUsersToBeNotified() {
+    final Collection<String> userIdsToNotify = getUserIdsToNotify();
+
+    // Stopping the process if no user to notify
+    if (stopWhenNoUserToNotify() && CollectionUtil.isEmpty(userIdsToNotify)) {
+      SilverTrace.warn("notification", "IUserNotificationBuider.build()",
+          "IUserNotificationBuider.EX_NO_USER_TO_NOTIFY");
+      stop();
+    }
+
+    if (CollectionUtil.isNotEmpty(userIdsToNotify)) {
+      // There is at least one user to notify
+      for (final String userId : userIdsToNotify) {
+        getNotification().addUserRecipient(new UserRecipient(userId));
+      }
+    }
+  }
+
+  protected boolean stopWhenNoUserToNotify() {
+    return true;
   }
 
   /**

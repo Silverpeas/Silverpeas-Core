@@ -26,6 +26,8 @@ package com.silverpeas.notification.builder;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -60,6 +62,16 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   public AbstractTemplateUserNotificationBuilder(final T resource, final String title, final String fileName) {
     super(resource, title, fileName);
+  }
+
+  protected abstract String getBundleSubjectKey();
+
+  @Override
+  protected String getTitle() {
+    if (StringUtils.isBlank(getBundleSubjectKey())) {
+      return super.getTitle();
+    }
+    return getBundle().getString(getBundleSubjectKey());
   }
 
   /**
@@ -111,7 +123,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
     if (OrganizationControllerFactory.getFactory().getOrganizationController()
-        .isComponentExist(getComponentInstanceId())) {
+        .isComponentExist(getComponentInstanceId()) ||
+        OrganizationControllerFactory.getFactory().getOrganizationController()
+            .isToolAvailable(getComponentInstanceId())) {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
     } else {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(getTemplatePath());
@@ -123,7 +137,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * Performing notification data from a given language
    * @param resource
    */
-  protected abstract void perform(final T resource);
+  protected void perform(final T resource) {
+    // Default : nothing to do
+  }
 
   /**
    * Performing notification data from a given language

@@ -31,6 +31,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.reset;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -61,12 +65,20 @@ public class UserNotificationBuilderTest {
   OrganizationControllerMock organizationController;
 
   @Test
-  public void testBuild_ANB_1() {
+  public void testBuild_AUNB_1() {
 
     // Build
-    final NotificationMetaData notifTest = UserNotificationHelper.build(new AUNBTest());
+    NotificationMetaData notifTest = UserNotificationHelper.build(new AUNBTest() {
+
+      @Override
+      protected Collection<String> getUserIdsToNotify() {
+        return null;
+      }
+    });
+    assertThat(notifTest, nullValue());
 
     // Asserts
+    notifTest = UserNotificationHelper.build(new AUNBTest());
     assertThat(notifTest, notNullValue());
     assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
     assertThat(notifTest.getAction(), is(NotifAction.CREATE));
@@ -83,10 +95,11 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
     assertThat(notifTest.isTemplateUsed(), is(false));
+    assertThat(notifTest.getUserRecipients().size(), is(1));
   }
 
   @Test
-  public void testBuild_ANB_1Bis() {
+  public void testBuild_AUNB_1Bis() {
 
     // Build
     final NotificationMetaData notifTest =
@@ -133,10 +146,11 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.isAnswerAllowed(), is(false));
     assertThat(notifTest.isTemplateUsed(), is(false));
     assertThat(notifTest.getNotificationResourceData(), nullValue());
+    assertThat(notifTest.getUserRecipients().size(), is(1));
   }
 
   @Test
-  public void testBuild_ANB_2() {
+  public void testBuild_AUNB_2() {
 
     // Build
     final NotificationMetaData notifTest =
@@ -176,10 +190,11 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.isAnswerAllowed(), is(false));
     assertThat(notifTest.isTemplateUsed(), is(false));
     assertThat(notifTest.getNotificationResourceData(), nullValue());
+    assertThat(notifTest.getUserRecipients().size(), is(1));
   }
 
   @Test
-  public void testBuild_ANB_2Bis() {
+  public void testBuild_AUNB_2Bis() {
 
     // Build
     final NotificationMetaData notifTest =
@@ -203,25 +218,26 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.isAnswerAllowed(), is(false));
     assertThat(notifTest.isTemplateUsed(), is(false));
     assertThat(notifTest.getNotificationResourceData(), nullValue());
+    assertThat(notifTest.getUserRecipients().size(), is(1));
   }
 
   @Test
-  public void testBuild_ARNB_1() {
+  public void testBuild_ARUNB_1() {
 
     // Build
     NotificationMetaData notifTest = UserNotificationHelper.build(new ARUNBTest(null));
-    assertBuild_ARNB_1(notifTest, "", false);
-    notifTest = UserNotificationHelper.build(new ARUNBTest(new String("testBuild_ARNB_1")) {
+    assertBuild_ARUNB_1(notifTest, "", false);
+    notifTest = UserNotificationHelper.build(new ARUNBTest(new String("testBuild_ARUNB_1")) {
 
       @Override
       protected void performBuild(final Object resource) {
         getNotification().setSource(resource.toString());
       }
     });
-    assertBuild_ARNB_1(notifTest, "testBuild_ARNB_1", false);
+    assertBuild_ARUNB_1(notifTest, "testBuild_ARUNB_1", false);
 
     notifTest = UserNotificationHelper.build(new ARUNBTest(new ResourceDataTest()));
-    assertBuild_ARNB_1(notifTest, "", true);
+    assertBuild_ARUNB_1(notifTest, "", true);
 
     notifTest = UserNotificationHelper.build(new ARUNBTest(new ResourceDataTest()) {
 
@@ -234,7 +250,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest, nullValue());
   }
 
-  private void assertBuild_ARNB_1(final NotificationMetaData notifTest, final String aSource,
+  private void assertBuild_ARUNB_1(final NotificationMetaData notifTest, final String aSource,
       final boolean isSilverpeasContent) {
     assertThat(notifTest, notNullValue());
     assertThat(notifTest.getMessageType(), is(NotifMessageType.NORMAL.getId()));
@@ -269,10 +285,11 @@ public class UserNotificationBuilderTest {
       assertThat(nrdTest.getResourceType(), nullValue());
     }
     assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(isSilverpeasContent));
+    assertThat(notifTest.getUserRecipients().size(), is(2));
   }
 
   @Test
-  public void testBuild_ARNB_2() {
+  public void testBuild_ARUNB_2() {
 
     // Build
     final NotificationMetaData notifTest =
@@ -314,10 +331,11 @@ public class UserNotificationBuilderTest {
     assertThat(nrdTest.getResourceName(), is("aTitleFromResource"));
     assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
     assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+    assertThat(notifTest.getUserRecipients().size(), is(2));
   }
 
   @Test
-  public void testBuild_ARNB_2Bis() {
+  public void testBuild_ARUNB_2Bis() {
 
     // Build
     final NotificationMetaData notifTest =
@@ -349,15 +367,16 @@ public class UserNotificationBuilderTest {
     assertThat(nrdTest.getResourceName(), nullValue());
     assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
     assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+    assertThat(notifTest.getUserRecipients().size(), is(2));
   }
 
   @Test
-  public void testBuild_ATNB_1() {
+  public void testBuild_ATUNB_1() {
     mockOrganizationController_isComponentExist();
 
     NotificationMetaData notifTest =
         UserNotificationHelper.build(new ATUNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile"));
-    assertBuild_ATNB_1(notifTest, "");
+    assertBuild_ATUNB_1(notifTest, "");
 
     notifTest =
         UserNotificationHelper.build(new ATUNBTest(new ResourceDataTest(), "aTitle", "notificationHelperTemplateFile") {
@@ -368,10 +387,10 @@ public class UserNotificationBuilderTest {
           }
 
         });
-    assertBuild_ATNB_1(notifTest, "bundleValue");
+    assertBuild_ATUNB_1(notifTest, "bundleValue");
   }
 
-  private void assertBuild_ATNB_1(final NotificationMetaData notifTest, final String contentValue) {
+  private void assertBuild_ATUNB_1(final NotificationMetaData notifTest, final String contentValue) {
     assertThat(notifTest, notNullValue());
     assertThat(notifTest.getMessageType(), is(NotifMessageType.ERROR.getId()));
     assertThat(notifTest.getAction(), is(NotifAction.DELETE));
@@ -396,6 +415,7 @@ public class UserNotificationBuilderTest {
     assertThat(nrdTest.getResourceName(), is("aTitleFromResource"));
     assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
     assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+    assertThat(notifTest.getUserRecipients().size(), is(3));
 
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
       assertThat(notifTest.getContent(curLanguage), is(curLanguage + "-" + contentValue + " :-)"));
@@ -403,7 +423,7 @@ public class UserNotificationBuilderTest {
   }
 
   @Test
-  public void testBuild_ATNB_2() {
+  public void testBuild_ATUNB_2() {
     mockOrganizationController_isComponentExist();
 
     // Builds
@@ -446,6 +466,7 @@ public class UserNotificationBuilderTest {
     assertThat(nrdTest.getResourceName(), is("aTitleFromResource"));
     assertThat(nrdTest.getResourceType(), is("aContributionTypeFromResource"));
     assertThat(StringUtil.isDefined(nrdTest.getResourceUrl()), is(true));
+    assertThat(notifTest.getUserRecipients().size(), is(3));
 
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
       assertThat(notifTest.getContent(curLanguage), is(curLanguage + "-bundleValue :-) - components"));
@@ -470,6 +491,16 @@ public class UserNotificationBuilderTest {
 
     public ATUNBTest(final ResourceDataTest resource, final String title, final String fileName) {
       super(resource, title, fileName);
+    }
+
+    @Override
+    protected String getBundleSubjectKey() {
+      return null;
+    }
+
+    @Override
+    protected Collection<String> getUserIdsToNotify() {
+      return Arrays.asList("123", "124", "125");
     }
 
     @Override
@@ -529,6 +560,11 @@ public class UserNotificationBuilderTest {
     }
 
     @Override
+    protected Collection<String> getUserIdsToNotify() {
+      return Arrays.asList("123", "124");
+    }
+
+    @Override
     protected void performBuild(final Object resource) {
       // Nothing to do
     }
@@ -566,6 +602,11 @@ public class UserNotificationBuilderTest {
 
     public AUNBTest(final String title, final String content) {
       super(title, content);
+    }
+
+    @Override
+    protected Collection<String> getUserIdsToNotify() {
+      return Collections.singletonList("123");
     }
 
     @Override
