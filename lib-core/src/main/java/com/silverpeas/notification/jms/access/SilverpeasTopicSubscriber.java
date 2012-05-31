@@ -23,11 +23,7 @@
  */
 package com.silverpeas.notification.jms.access;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.Topic;
-import javax.jms.TopicSubscriber;
+import javax.jms.*;
 
 /**
  * Decorator of a TopicSubscriber returned by the JMS system.

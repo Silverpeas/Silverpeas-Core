@@ -23,20 +23,23 @@
  */
 package com.silverpeas.notification.jms;
 
-import com.silverpeas.notification.jms.access.JMSAccessObject;
 import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.jms.access.JMSAccessObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
 
 /**
  * Service for publishing an event by using a JMS system. This service is managed by the IoC
- * container under the name 'notificationPublisher' as required by the Notification API.
- * The JMS system is injected as a dependency by the IoC container.
+ * container under the name 'notificationPublisher' as required by the Notification API. The JMS
+ * system is injected as a dependency by the IoC container.
  */
 @Named("notificationPublisher")
 public class JMSPublishingService implements NotificationPublisher {
@@ -46,15 +49,23 @@ public class JMSPublishingService implements NotificationPublisher {
 
   @Override
   public void publish(SilverpeasNotification notification, NotificationTopic onTopic) {
+    TopicPublisher publisher = null;
     try {
       String topicName = onTopic.getName();
-      TopicPublisher publisher = jmsService.createTopicPublisher(topicName);
+      publisher = jmsService.createTopicPublisher(topicName);
       ObjectMessage message = jmsService.createObjectMessageFor(publisher);
       message.setObject(notification);
       publisher.publish(message);
-      jmsService.disposeTopicPublisher(publisher);
     } catch (Exception ex) {
       throw new PublishingException(ex);
+    } finally {
+      try {
+        if (publisher != null) {
+          jmsService.disposeTopicPublisher(publisher);
+        }
+      } catch (JMSException ex) {
+        Logger.getLogger(JMSPublishingService.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
   }
 }
