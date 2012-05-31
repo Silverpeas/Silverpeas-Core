@@ -24,23 +24,15 @@
 
 package com.silverpeas.notification.jms.access;
 
+import static com.silverpeas.notification.jms.access.SilverpeasTopicPublisher.decorateTopicPublisher;
+import static com.silverpeas.notification.jms.access.SilverpeasTopicSubscriber.decorateTopicSubscriber;
 import com.stratelia.webactiv.util.JNDINames;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
+import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import static com.silverpeas.notification.jms.access.SilverpeasTopicSubscriber.*;
-import static com.silverpeas.notification.jms.access.SilverpeasTopicPublisher.*;
 
 /**
  * An object providing an access to the services of a JMS system and managing the life-cycle of the
@@ -101,6 +93,7 @@ public final class JMSAccessObject {
    */
   public void disposeTopicSubscriber(final TopicSubscriber subscriber) throws JMSException {
     Session session = ((SilverpeasTopicSubscriber) subscriber).getSession();
+    subscriber.close();
     releaseSession(session);
   }
 
@@ -132,6 +125,7 @@ public final class JMSAccessObject {
    */
   public void disposeTopicPublisher(final TopicPublisher publisher) throws JMSException {
     Session session = ((SilverpeasTopicPublisher) publisher).getSession();
+    publisher.close();
     releaseSession(session);
   }
 

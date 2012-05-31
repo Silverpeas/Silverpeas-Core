@@ -24,15 +24,15 @@
 
 package com.silverpeas.notification.jms;
 
+import com.silverpeas.notification.MessageSubscribingService;
+import com.silverpeas.notification.NotificationSubscriber;
+import com.silverpeas.notification.NotificationTopic;
+import com.silverpeas.notification.SubscriptionException;
+import static com.silverpeas.notification.jms.SilverpeasMessageListener.mapMessageListenerTo;
 import com.silverpeas.notification.jms.access.JMSAccessObject;
 import javax.inject.Inject;
-import com.silverpeas.notification.NotificationTopic;
-import com.silverpeas.notification.NotificationSubscriber;
-import com.silverpeas.notification.MessageSubscribingService;
-import com.silverpeas.notification.SubscriptionException;
 import javax.inject.Named;
 import javax.jms.TopicSubscriber;
-import static com.silverpeas.notification.jms.SilverpeasMessageListener.*;
 
 /**
  * Implementation of the subscribing service using the JMS API. This service is managed by the IoC
