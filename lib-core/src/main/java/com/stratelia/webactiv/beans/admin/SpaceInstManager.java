@@ -35,7 +35,6 @@ import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
