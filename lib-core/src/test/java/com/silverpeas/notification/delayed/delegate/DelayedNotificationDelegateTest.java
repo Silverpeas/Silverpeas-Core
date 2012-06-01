@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
+import com.silverpeas.notification.delayed.DelayedNotificationFactory;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -262,10 +264,16 @@ public class DelayedNotificationDelegateTest {
   public void testDelayedNotifications_3() throws Exception {
     // Weekly
     assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[] {
-        51, 53, 54 });
+        51, 53, 54 }, "fr");
     // Checks
     assertDelayedNotifications(0, 53);
     assertDelayedNotifications(1, 55);
+  }
+
+  @Test
+  public void testDelayedNotifications_3Bis() throws Exception {
+    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[] {
+        51, 53, 54 }, "en");
   }
 
   private DelayedNotificationDelegateMock assertDelayedNotifications(final int nbExpectedSendings,
@@ -284,8 +292,22 @@ public class DelayedNotificationDelegateTest {
 
   private DelayedNotificationDelegateMock assertDelayedNotifications(
       final Date date,
-      final int[] userIds)
+      final int[] userIds,
+      final String language)
       throws Exception {
+
+    for (final Integer userId : userIds) {
+      final Map<NotifChannel, List<DelayedNotificationData>> dndMap =
+          DelayedNotificationFactory.getDelayedNotification().findDelayedNotificationByUserIdGroupByChannel(userId,
+              DelayedNotificationFactory.getDelayedNotification().getWiredChannels());
+      for (final List<DelayedNotificationData> dndList : dndMap.values()) {
+        for (final DelayedNotificationData dnd : dndList) {
+          dnd.setLanguage(language);
+          DelayedNotificationFactory.getDelayedNotification().saveDelayedNotification(dnd);
+        }
+      }
+    }
+
     final DelayedNotificationDelegateMock mock = new DelayedNotificationDelegateMock();
     mock.performDelayedNotificationsSending(date, getAimedChannelsBase());
     assertThat(mock.sendedList.size(), is(userIds.length));
@@ -294,7 +316,7 @@ public class DelayedNotificationDelegateTest {
           mock.sendedList.get(i).getMessage().replaceAll("[\r\n\t]", ""),
           is(IOUtils.toString(
               DelayedNotificationDelegateTest.class.getClassLoader().getResourceAsStream(
-                  "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + ".txt"),
+                  "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + "-" + language + ".txt"),
               "UTF-8")
               .replaceAll("[\r\n\t]", "")));
     }

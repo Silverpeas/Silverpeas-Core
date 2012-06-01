@@ -98,6 +98,28 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    */
 
   /**
+   * Deleting all delayed notification data of a user
+   * @param userId
+   * @throws Exception
+   */
+  public static void executeUserDeleting(final int userId) throws Exception {
+
+    // Forcing sending of delayed notification on the aimed channel
+    executeForceDelayedNotificationsSending(userId, DelayedNotificationFactory.getDelayedNotification()
+        .getWiredChannels());
+
+    // Deleting settings
+    for (final NotifChannel channel : DelayedNotificationFactory.getDelayedNotification().getWiredChannels()) {
+      final DelayedNotificationUserSetting settings =
+          DelayedNotificationFactory.getDelayedNotification().getDelayedNotificationUserSettingByUserIdAndChannel(
+              userId, channel);
+      if (settings != null) {
+        DelayedNotificationFactory.getDelayedNotification().deleteDelayedNotificationUserSetting(settings);
+      }
+    }
+  }
+
+  /**
    * When user settings change, if the new frequency is NONE then the delayed notifications saved have to be sent
    * @param userId
    * @param channel
