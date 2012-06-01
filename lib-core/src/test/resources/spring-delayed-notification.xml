@@ -18,7 +18,9 @@
   <import resource="spring-jpa.xml" />
 
   <context:annotation-config />
-  <context:component-scan base-package="com.silverpeas.notification.delayed,com.silverpeas.notification.model,com.silverpeas.notification.repository" />
+  <context:component-scan base-package="com.silverpeas.notification.delayed,com.silverpeas.notification.model,com.silverpeas.notification.repository">
+    <context:exclude-filter type="regex" expression="com.silverpeas.notification.delayed.scheduler.*" />
+  </context:component-scan>
   
   <jpa:repositories base-package="com.silverpeas.notification" transaction-manager-ref="jpaTransactionManager" />
   

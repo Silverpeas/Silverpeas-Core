@@ -24,6 +24,7 @@
 package com.silverpeas.notification.delayed.repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -59,28 +60,33 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
       final Set<DelayedNotificationFrequency> aimedFrequencies,
       final boolean isThatUsersWithNoSettingHaveToBeNotified) {
 
+    // Parameters
+    final List<TypedParameter<?>> parameters = new ArrayList<TypedParameter<?>>();
+
     // Query
     final StringBuffer query = new StringBuffer();
     query.append("select distinct d.userId from DelayedNotificationData d ");
     query.append("  left outer join d.delayedNotificationUserSetting p ");
-    query.append("where d.channel in (:channels) ");
-    query.append("and ( ");
-    query.append("  (p.id is not null and p.frequency in (:frequencies)) ");
+    query.append("where d.channel in (:");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "channels", NotifChannel.toIds(aimedChannels)));
+    query.append(") and ( ");
+    query.append("  (p.id is not null and p.frequency in (:");
+    query.append(
+        TypedParameterUtil.addNamedParameter(parameters, "frequencies",
+            DelayedNotificationFrequency.toCodes(aimedFrequencies))).append(")) ");
     if (isThatUsersWithNoSettingHaveToBeNotified) {
       query.append("  or p.id is null ");
     }
     query.append(") ");
 
     // Typed query
-    final TypedQuery<Integer> tq =
-        emf.createEntityManager().createQuery(query.toString(), Integer.class);
+    final TypedQuery<Integer> typedQuery = emf.createEntityManager().createQuery(query.toString(), Integer.class);
 
-    // Query parameters
-    tq.setParameter("channels", NotifChannel.toIds(aimedChannels));
-    tq.setParameter("frequencies", DelayedNotificationFrequency.toCodes(aimedFrequencies));
+    // Parameters
+    TypedParameterUtil.computeNamedParameters(typedQuery, parameters);
 
     // Result
-    return tq.getResultList();
+    return typedQuery.getResultList();
   }
 
   /*
@@ -107,14 +113,16 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
     query.append(TypedParameterUtil.addNamedParameter(parameters, "action", delayedNotification.getAction().getId()));
     query.append(" and language = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "language", delayedNotification.getLanguage()));
+    Date date = delayedNotification.getCreationDate();
+    if (date == null) {
+      date = new Date();
+    }
     query.append(" and creationDate between :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "creationDateMin",
-        DateUtils.setSeconds(DateUtils.setMilliseconds(delayedNotification.getCreationDate(), 0), 0),
-        TemporalType.TIMESTAMP));
+        DateUtils.setSeconds(DateUtils.setMilliseconds(date, 0), 0), TemporalType.TIMESTAMP));
     query.append(" and :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "creationDateMax",
-        DateUtils.setSeconds(DateUtils.setMilliseconds(delayedNotification.getCreationDate(), 999), 59),
-        TemporalType.TIMESTAMP));
+        DateUtils.setSeconds(DateUtils.setMilliseconds(date, 999), 59), TemporalType.TIMESTAMP));
     query.append(" and notificationResourceId = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceId", delayedNotification.getResource()));
 

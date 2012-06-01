@@ -21,15 +21,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.builder;
+package com.silverpeas.notification.delayed.scheduler;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.stratelia.silverpeas.notificationManager.AbstractNotification;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface IUserNotificationBuider {
+@Named("delayedNotificationSchedulerInitializer")
+public class DelayedNotificationSchedulerInitializer extends AbstractNotification {
 
-  /**
-   * Builds the notification data container
-   */
-  IUserNotification build();
+  public static final String JOB_NAME = "DelayedNotificationJob";
+
+  @Inject
+  private Scheduler scheduler;
+
+  @PostConstruct
+  public void initialize() throws Exception {
+    final String cron = getNotificationResources().getString("cronDelayedNotificationSending");
+    if (StringUtils.isNotBlank(cron)) {
+      scheduler.scheduleJob(JOB_NAME, JobTrigger.triggerAt(cron), new DelayedNotificationListener());
+    }
+  }
 }
