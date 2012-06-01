@@ -60,13 +60,13 @@ public class OpenDJRule implements TestRule {
     CreateLdapServer annotation = d.getAnnotation(CreateLdapServer.class);
     if (annotation != null) {
       return statement(stmnt, annotation.serverHome(), annotation.ldifConfig(), annotation.
-          ldifFile());
+          ldifFile(), annotation.backendID());
     }
     return stmnt;
   }
 
   private Statement statement(final Statement stmnt, final String serverHome,
-      final String ldifConfigFile, final String ldifFile) {
+      final String ldifConfigFile, final String ldifFile, final String backendId) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
@@ -84,7 +84,7 @@ public class OpenDJRule implements TestRule {
 
       private void before() {
         try {
-          loadLdif(ldifFile);
+          loadLdif(ldifFile, backendId);
           startLdapServer(serverHome, ldifConfigFile);
         } catch (Exception ex) {
           throw new RuntimeException("Could'nt start LDAP Server", ex);
@@ -138,7 +138,7 @@ public class OpenDJRule implements TestRule {
    * @throws DirectoryException
    * @throws URISyntaxException 
    */
-  private void loadLdif(String ldifFile) throws InitializationException, ConfigException,
+  private void loadLdif(String ldifFile, String backendID) throws InitializationException, ConfigException,
       FileNotFoundException, DirectoryException, URISyntaxException {
     LDIFImportConfig importConfig = new LDIFImportConfig(new FileInputStream(getFile(ldifFile)));
     importConfig.setAppendToExistingData(true);
@@ -154,7 +154,7 @@ public class OpenDJRule implements TestRule {
     BackendToolUtils.getBackends(backendList, entryList, dnList);
     Backend backend = null;
     for (Backend b : backendList) {
-      if ("userRoot".equals(b.getBackendID())) {
+      if (backendID.equals(b.getBackendID())) {
         backend = b;
         break;
       }

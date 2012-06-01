@@ -54,4 +54,11 @@ public @interface CreateLdapServer {
    * @return ldif file to be loaded into the server.
    */
   String ldifFile();
+  
+  
+  /**
+   * The backendID of the backend where the ldif will be loaded.
+   * @return backendId of the backend where the ldif will be loaded.
+   */
+  String backendID() default "userRoot";
 }
