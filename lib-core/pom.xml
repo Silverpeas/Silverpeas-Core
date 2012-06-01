@@ -344,6 +344,56 @@
       <type>jar</type>      
       <classifier>jdk6</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.forgerock.opendj</groupId>
+      <artifactId>opendj-server</artifactId>
+      <version>2.4.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sleepycat</groupId>
+      <artifactId>je</artifactId>
+      <version>4.1.7</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <!--
+     <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-all</artifactId>
+      <version>${apacheds.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.directory.shared</groupId>
+          <artifactId>shared-ldap-schema</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>-->
+    <!-- <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-server-integ</artifactId>
+      <version>${apacheds.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.directory.shared</groupId>
+          <artifactId>shared-ldap-schema</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency> 
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-core-integ</artifactId>
+      <version>${apacheds.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.directory.shared</groupId>
+          <artifactId>shared-ldap-schema</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>-->
   </dependencies>
 
   <build>
@@ -361,6 +411,7 @@
           <exclude>**/*.tar.gz</exclude>
           <exclude>**/*.tar.bz2</exclude>
           <exclude>**/*.sql</exclude>
+          <exclude>opendj/**</exclude>
         </excludes>
       </testResource>
       <testResource>
@@ -376,6 +427,7 @@
           <include>**/*.tar.gz</include>
           <include>**/*.tar.bz2</include>
           <include>**/*.sql</include>
+          <include>opendj/**</include>
         </includes>
       </testResource>
     </testResources>
@@ -409,4 +461,7 @@
       </plugin>
     </plugins>
   </build>
+  <properties>
+    <apacheds.version>1.5.7</apacheds.version>
+  </properties>
 </project>
