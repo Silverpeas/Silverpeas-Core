@@ -88,6 +88,12 @@ public interface DelayedNotification {
    * @return
    */
   Set<NotifChannel> getWiredChannels();
+  
+  /**
+   * Gets the possible frequencies. At least, the default frequency.
+   * @return
+   */
+  Set<DelayedNotificationFrequency> getPossibleFrequencies();
 
   /**
    * Gets the default frequency from the file of notification manager settings. If that not exists,

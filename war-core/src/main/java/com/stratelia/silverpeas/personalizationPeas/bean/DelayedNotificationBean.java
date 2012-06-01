@@ -23,9 +23,7 @@
  */
 package com.stratelia.silverpeas.personalizationPeas.bean;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 import com.silverpeas.notification.delayed.DelayedNotificationFactory;
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
@@ -55,9 +53,8 @@ public class DelayedNotificationBean {
         .getDefaultDelayedNotificationFrequency();
   }
 
-  public List<DelayedNotificationFrequency> getFrequencies() {
-    return new ArrayList<DelayedNotificationFrequency>(Arrays.asList(DelayedNotificationFrequency
-        .values()));
+  public Set<DelayedNotificationFrequency> getFrequencies() {
+    return DelayedNotificationFactory.getDelayedNotification().getPossibleFrequencies();
   }
 
   public String getCurrentUserFrequencyCode() {

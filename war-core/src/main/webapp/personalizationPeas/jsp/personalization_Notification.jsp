@@ -290,7 +290,7 @@ function onChangeFrequency()
   <select id="SelectFrequency" name="SelectFrequency" onchange="${frequencyOnChange}">
     <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
     <c:choose>
-      <c:when test="${empty currentUserFrequencyCode}">
+      <c:when test="${empty currentUserFrequencyCode or empty requestScope.delayedNotification.frequencies}">
         <option value="" selected="selected"><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
       </c:when>
       <c:otherwise>

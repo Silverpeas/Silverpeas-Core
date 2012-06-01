@@ -6,6 +6,7 @@ package com.silverpeas.notification.delayed;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -98,6 +99,17 @@ public class DelayedNotificationManagerTest {
     final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());
+  }
+
+  /*
+   * Common
+   */
+
+  @Test
+  public void testGetPossibleFrequencies() throws Exception {
+    final Set<DelayedNotificationFrequency> possibleFrequencies = manager.getPossibleFrequencies();
+    assertThat(manager.getPossibleFrequencies(), sameInstance(possibleFrequencies));
+    assertThat(possibleFrequencies, containsInAnyOrder(DelayedNotificationFrequency.values()));
   }
 
   /*

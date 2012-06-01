@@ -52,10 +52,12 @@ public enum DelayedNotificationFrequency {
   }
 
   public static DelayedNotificationFrequency decode(String code) {
-    DelayedNotificationFrequency result = NONE;
+    DelayedNotificationFrequency result = null;
     if (code != null) {
       code = code.trim();
-      if (DAILY.code.equals(code)) {
+      if (NONE.code.equals(code)) {
+        result = NONE;
+      } else if (DAILY.code.equals(code)) {
         result = DAILY;
       } else if (WEEKLY.code.equals(code)) {
         result = WEEKLY;
