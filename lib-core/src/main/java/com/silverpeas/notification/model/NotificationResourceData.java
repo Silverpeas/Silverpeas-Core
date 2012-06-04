@@ -23,6 +23,7 @@
  */
 package com.silverpeas.notification.model;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import javax.persistence.Column;
@@ -30,6 +31,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
@@ -56,13 +59,13 @@ public class NotificationResourceData implements Cloneable {
   @Column(name = "resourceName", nullable = false)
   private String resourceName;
 
-  @Column(name = "resourceDescription", nullable = false)
+  @Column(name = "resourceDescription", nullable = true)
   private String resourceDescription;
 
   @Column(name = "resourceLocation", nullable = false)
   private String resourceLocation;
 
-  @Column(name = "resourceUrl", nullable = false)
+  @Column(name = "resourceUrl", nullable = true)
   private String resourceUrl;
 
   @Column(name = "componentInstanceId", nullable = false)
@@ -73,6 +76,25 @@ public class NotificationResourceData implements Cloneable {
    */
   public NotificationResourceData() {
     // NTD
+  }
+
+  @PrePersist
+  public void beforePersist() {
+    forcesNullValues();
+  }
+
+  @PreUpdate
+  public void beforeUpdate() {
+    forcesNullValues();
+  }
+
+  private void forcesNullValues() {
+    if (isBlank(resourceDescription)) {
+      resourceDescription = null;
+    }
+    if (isBlank(resourceUrl)) {
+      resourceUrl = null;
+    }
   }
 
   public boolean isValid() {

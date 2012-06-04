@@ -2,25 +2,27 @@
 	<body>
 		<div id="layout" style="font-family:Arial;font-size:11px">
 			<div id="header">
-			Bonjour User 51,<br/><br/>
-			Depuis votre dernière synthèse de notifications, vous avez fait l'objet de 2 notifications.
+			Hello User 51,<br/><br/>
+			Since your last notification synthesis, you have been notified 2 times.
 			</div><br/>
 			<div id="body">
 			<div id="resource">
-			Ressource : Delegate test resource<br/>
+			Resource : Delegate test resource<br/>
 				<div id="resource_body" style="margin-left:15px;">
-					- emplacement : Test > Delegate > Resource > Location<br/>
-					- accès : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Cliquer ici ...</a><br/>
+					- description : Test resource description<br/>
+					- location : Test > Delegate > Resource > Location<br/>
+					- link : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Click here ...</a><br/>
 					- notifications :
 					<div id="resource_item" style="margin-left:25px;">
-						. créée par User 500, le 01/01/2012 à 08:10<br/>. modifiée par User 70, le 01/01/2012 à 08:10
+						. created by User 500, on 2012/01/01 at 08:10
+						<br/>. updated by User 70, on 2012/01/01 at 08:10
 					</div>
 				</div>
 			</div>
 			</div><br/>
 			<div id="footer">
-			Vous recevrez dans un jour votre prochaine synthèse de notifications.<br/>
-			Vous pouvez à tout moment changer la fréquence de réception de cette synthèse depuis le paramétrage de "Mes notifications" accessible depuis votre espace personnel.</div>
+			You will receive tomorrow a new notification synthesis.<br/>
+			You can change whenever you want the receive frequency of this notification synthesis from the settings of "My notifications" from your personnal space.</div>
 		</div>
 	</body>
 </html>

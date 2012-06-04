@@ -69,9 +69,15 @@ public class NotificationResourceRepositoryImpl implements NotificationResourceR
     query.append(" and resourceLocation = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceLocation",
         notificationResourceData.getResourceLocation()));
-    query.append(" and resourceUrl = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceUrl",
-        notificationResourceData.getResourceUrl()));
+
+    // resourceUrl parameter
+    if (StringUtils.isNotBlank(notificationResourceData.getResourceUrl())) {
+      query.append(" and resourceUrl = :");
+      query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceUrl",
+          notificationResourceData.getResourceUrl()));
+    } else {
+      query.append(" and resourceUrl is null");
+    }
 
     // resourceDescription parameter
     if (StringUtils.isNotBlank(notificationResourceData.getResourceDescription())) {

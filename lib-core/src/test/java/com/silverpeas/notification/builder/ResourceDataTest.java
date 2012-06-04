@@ -93,6 +93,15 @@ public class ResourceDataTest implements SilverpeasContent {
 
   /*
    * (non-Javadoc)
+   * @see com.silverpeas.SilverpeasContent#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "";
+  }
+
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.SilverpeasContent#getContributionType()
    */
   @Override

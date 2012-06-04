@@ -119,26 +119,27 @@ public class DelayedNotificationManagerTest {
   @Test
   public void testFindResource() throws Exception {
     NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
-    List<NotificationResourceData> notificationResourceDataList =
-        manager.findResource(query);
+    List<NotificationResourceData> notificationResourceDataList = manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());
     assertThat(notificationResourceDataList.size(), is(2));
 
+    query.setResourceUrl("   ");
+    notificationResourceDataList = manager.findResource(query);
+    assertThat(notificationResourceDataList, notNullValue());
+    assertThat(notificationResourceDataList.size(), is(0));
+
     query = buildNotificationResourceData(TEST_CASE_2);
-    notificationResourceDataList =
-        manager.findResource(query);
+    notificationResourceDataList = manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());
     assertThat(notificationResourceDataList.size(), is(1));
 
-    query.setResourceDescription("");
-    notificationResourceDataList =
-        manager.findResource(query);
+    query.setResourceDescription("   ");
+    notificationResourceDataList = manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());
     assertThat(notificationResourceDataList.size(), is(1));
 
     query.setResourceDescription("no desc");
-    notificationResourceDataList =
-        manager.findResource(query);
+    notificationResourceDataList = manager.findResource(query);
     assertThat(notificationResourceDataList, notNullValue());
     assertThat(notificationResourceDataList.size(), is(0));
   }

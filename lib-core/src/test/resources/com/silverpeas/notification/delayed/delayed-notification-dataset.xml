@@ -41,7 +41,7 @@
     resourceLocation="Test > Resource > Location no desc" resourceUrl="Test resource URL no desc"
     componentInstanceId="-1" />
   <st_notificationresource id="40" resourceId="400" resourceType="delegateResourceTest" resourceName="Delegate test resource"
-    resourceLocation="Test > Delegate > Resource > Location" resourceUrl="Delegate test resource"
+    resourceDescription="Test resource description" resourceLocation="Test > Delegate > Resource > Location" resourceUrl="Delegate test resource"
     componentInstanceId="-1" />
 
   <uniqueId maxId="50" tablename="st_notificationresource" />

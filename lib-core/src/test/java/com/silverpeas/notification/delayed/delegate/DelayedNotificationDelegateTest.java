@@ -276,6 +276,12 @@ public class DelayedNotificationDelegateTest {
         51, 53, 54 }, "en");
   }
 
+  @Test
+  public void testDelayedNotifications_3Ter() throws Exception {
+    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[] {
+        51, 53, 54 }, "de");
+  }
+
   private DelayedNotificationDelegateMock assertDelayedNotifications(final int nbExpectedSendings,
       final Integer userId)
       throws Exception {

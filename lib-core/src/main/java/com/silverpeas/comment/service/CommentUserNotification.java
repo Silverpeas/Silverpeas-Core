@@ -116,6 +116,7 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   protected void performNotificationResource(final String language, final SilverpeasContent resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getTitle());
+    notificationResourceData.setResourceDescription(resource.getDescription());
   }
 
   @Override

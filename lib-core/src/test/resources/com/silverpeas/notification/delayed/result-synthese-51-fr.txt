@@ -9,6 +9,7 @@
 			<div id="resource">
 			Ressource : Delegate test resource<br/>
 				<div id="resource_body" style="margin-left:15px;">
+					- description : Test resource description<br/>
 					- emplacement : Test > Delegate > Resource > Location<br/>
 					- accès : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Cliquer ici ...</a><br/>
 					- notifications :

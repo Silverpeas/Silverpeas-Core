@@ -436,8 +436,14 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     // Filling the synthese resource data
     syntheseResource.setName(resource.getResourceName());
     syntheseResource.setDescription(resource.getResourceDescription());
+    if (syntheseResource.getDescription() != null) {
+      syntheseResource.setDescription(EncodeHelper.javaStringToHtmlParagraphe(syntheseResource.getDescription()));
+    }
     syntheseResource.setLocation(resource.getResourceLocation());
-    syntheseResource.setUrl(computeURL(synthese.getUserId(), resource.getResourceUrl()));
+    syntheseResource.setUrl(resource.getResourceUrl());
+    if (syntheseResource.getUrl() != null) {
+      syntheseResource.setUrl(computeURL(synthese.getUserId(), syntheseResource.getUrl()));
+    }
 
     // Browsing notifications
     SyntheseResourceNotification syntheseNotification;
