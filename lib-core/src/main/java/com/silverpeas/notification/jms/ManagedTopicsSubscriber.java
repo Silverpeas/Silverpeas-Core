@@ -31,9 +31,11 @@ import javax.jms.TopicSubscriber;
 /**
  * A subscriber of one or more topics whose the life-cycle is managed by the JMS adapter.
  *
- * JMS doesn't support the subscription of a given subscriber to several topics. JMS is a low-level
- * MOM API so that it is required to enhance this API by adding additional features in order to
- * provide high-level messaging features.
+ * JMS doesn't support the subscription of a subscriber to several topics. In JMS, a subscriber is
+ * the representation of a given subscription to a topic. So, each subscription of a JMS client
+ * to a several topics is represented by a different JMS subscriber. The aims of this class is to
+ * represent a topic subscriber with the capability to subscribe to one or more topics and each of
+ * theses subscriptions will be represented actually by a JMS topic subscriber.
  */
 class ManagedTopicsSubscriber {
 

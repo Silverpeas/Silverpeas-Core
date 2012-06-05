@@ -49,20 +49,21 @@ public class JMSSubscribingService implements MessageSubscribingService {
   public synchronized void subscribe(NotificationSubscriber subscriber, NotificationTopic onTopic) {
 
     String topicName = onTopic.getName();
-    String subscriptionId = subscriber.getId();
+    String subscriberId = subscriber.getId();
     ManagedTopicsSubscriber topicsSubscriber =
-      ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriptionId);
+      ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriberId);
     if (topicsSubscriber == null) {
       topicsSubscriber = ManagedTopicsSubscriber.getNewManagedTopicsSubscriber();
     }
     try {
       if (!topicsSubscriber.isSubscribedTo(topicName)) {
-        subscriptionId = topicsSubscriber.getId();
-        TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName);
+        subscriberId = topicsSubscriber.getId();
+        String subscriptionId = subscriberId + "::" + topicName;
+        TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName, subscriptionId);
         jmsSubscriber.setMessageListener(mapMessageListenerTo(subscriber).forTopic(topicName));
         topicsSubscriber.addSubscription(jmsSubscriber);
         topicsSubscriber.save();
-        subscriber.setId(subscriptionId);
+        subscriber.setId(subscriberId);
       }
     } catch (Exception ex) {
       throw new SubscriptionException(ex);
