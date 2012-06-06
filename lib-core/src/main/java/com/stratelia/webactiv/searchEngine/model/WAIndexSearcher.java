@@ -238,13 +238,12 @@ public class WAIndexSearcher {
   }
 
   private Query getPlainTextQuery(QueryDescription query, String searchField) throws ParseException {
-    Analyzer analyzer = indexManager.getAnalyzer(Locale.getDefault().getLanguage());
-
     if (!StringUtil.isDefined(query.getQuery())) {
       return null;
     }
 
     String language = query.getRequestedLanguage();
+    Analyzer analyzer = indexManager.getAnalyzer(language);
 
     Query parsedQuery;
     if (I18NHelper.isI18N && "*".equals(language)) {
