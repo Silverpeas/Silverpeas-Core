@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
@@ -35,10 +32,14 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -50,13 +51,13 @@ import java.util.Vector;
  */
 
 public class LDAPGroupAllRoot extends AbstractLDAPGroup {
-  protected Vector<String> getMemberGroupIds(String lds, String memberId, boolean isGroup)
+  protected List<String> getMemberGroupIds(String lds, String memberId, boolean isGroup)
       throws AdminException {
-    Vector<String> groupsVector = new Vector<String>();
+    List<String> groupsVector = new ArrayList<String>();
 
     if (StringUtil.isDefined(memberId)) {
-      LDAPEntry[] theEntries = null;
-      LDAPEntry memberEntry = null;
+      LDAPEntry[] theEntries;
+      LDAPEntry memberEntry;
       int i;
 
       SilverTrace.info("admin", "LDAPGroupAllRoot.getMemberGroupIds()",
@@ -110,25 +111,22 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @return
    * @throws AdminException
    */
+  @Override
   public String[] getGroupMemberGroupIds(String lds, String groupId) throws AdminException {
     return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
-  public String[] getUserMemberGroupIds(String lds, String userId)
-      throws AdminException {
-    Vector<String> groupsIdsSet;
-    Vector<String> groupsCur;
-    Iterator<String> it;
-    String grId;
-    HashSet<String> groupsManaged = new HashSet<String>();
+  @Override
+  public String[] getUserMemberGroupIds(String lds, String userId) throws AdminException {
+    Set<String> groupsManaged = new HashSet<String>();
 
-    groupsIdsSet = getMemberGroupIds(lds, userId, false);
+    List<String> groupsIdsSet = getMemberGroupIds(lds, userId, false);
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
-      it = groupsIdsSet.iterator();
-      groupsCur = new Vector<String>();
+      Iterator<String> it = groupsIdsSet.iterator();
+      List<String> groupsCur = new ArrayList<String>();
       while (it.hasNext()) {
-        grId = it.next();
+        String grId = it.next();
         if (StringUtil.isDefined(grId) && !groupsManaged.contains(grId)) {
           groupsManaged.add(grId);
           groupsCur.addAll(getMemberGroupIds(lds, grId, true));
@@ -147,27 +145,23 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
-  protected String[] getUserIds(String lds, LDAPEntry groupEntry)
-      throws AdminException {
-    HashSet<String> usersManaged = new HashSet<String>();
-    HashSet<String> groupsManaged = new HashSet<String>();
-    Vector<LDAPEntry> groupsSet = new Vector<LDAPEntry>();
-    Vector<LDAPEntry> groupsCur;
-    Iterator<LDAPEntry> it;
-    LDAPEntry curGroup;
+  @Override
+  protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
+    Set<String> usersManaged = new HashSet<String>();
+    Set<String> groupsManaged = new HashSet<String>();
+    List<LDAPEntry> groupsSet = new ArrayList<LDAPEntry>();
     String grId;
 
     groupsSet.add(groupEntry);
     while (groupsSet.size() > 0) {
-      it = groupsSet.iterator();
-      groupsCur = new Vector<LDAPEntry>();
+      Iterator<LDAPEntry> it = groupsSet.iterator();
+      List<LDAPEntry> groupsCur = new ArrayList<LDAPEntry>();
       while (it.hasNext()) {
-        curGroup = it.next();
+        LDAPEntry curGroup = it.next();
         if (curGroup != null) {
           grId = "???";
           try {
-            grId = LDAPUtility.getFirstAttributeValue(curGroup, driverSettings
-                .getGroupsIdField());
+            grId = LDAPUtility.getFirstAttributeValue(curGroup, driverSettings.getGroupsIdField());
             if (!groupsManaged.contains(grId)) {
               groupsManaged.add(grId);
               usersManaged.addAll(getTRUEUserIds(lds, curGroup));
@@ -184,20 +178,18 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return usersManaged.toArray(new String[usersManaged.size()]);
   }
 
-  protected Vector<String> getTRUEUserIds(String lds, LDAPEntry groupEntry)
-      throws AdminException {
+  protected List<String> getTRUEUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
     SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEUserIds()",
         "root.MSG_GEN_ENTER_METHOD", "lds = " + lds + ", group = "
         + groupEntry.getDN());
 
-    Vector<String> usersVector = new Vector<String>();
-    LDAPEntry userEntry = null;
-    String[] stringVals = null;
+    List<String> usersVector = new ArrayList<String>();
+    LDAPEntry userEntry;
     int i;
 
     String groupsMemberField = driverSettings.getGroupsMemberField();
 
-    stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
+    String[] stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
     for (i = 0; i < stringVals.length; i++) {
       SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEUserIds()",
           "root.MSG_GEN_PARAM_VALUE", "stringVals[" + i + "] = "
@@ -208,8 +200,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
           // memberUid = specificId
           userEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
               .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
-              .getUsersIdFilter(stringVals[i]), driverSettings
-              .getGroupAttributes());
+              .getUsersIdFilter(stringVals[i]), driverSettings.getGroupAttributes());
           if (userEntry != null) {
             usersVector.add(stringVals[i]);
           }
@@ -236,7 +227,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e);
       }
     }
-    stringVals = null;
     SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEUserIds()",
         "root.MSG_GEN_EXIT_METHOD");
     return usersVector;
@@ -250,6 +240,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
+  @Override
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
       String extraFilter) throws AdminException {
     if ((parentId != null) && (parentId.length() > 0)) { // ALL ROOT GROUPS
@@ -297,21 +288,17 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
-  protected Vector<LDAPEntry> getTRUEChildGroupsEntry(String lds, String parentId,
-      LDAPEntry theEntry) {
-    LDAPEntry childGroupEntry = null;
-    Vector<LDAPEntry> entryVector = new Vector<LDAPEntry>();
-    String[] stringVals = null;
+  protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, String parentId, LDAPEntry theEntry) {
+    List<LDAPEntry> entryVector = new ArrayList<LDAPEntry>();
     int i;
-
     if ((parentId != null) && (parentId.length() > 0)) {
       SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
           "root.MSG_GEN_PARAM_VALUE", "Root Group Search : " + parentId);
-      stringVals = LDAPUtility.getAttributeValues(theEntry, driverSettings
+       String[] stringVals = LDAPUtility.getAttributeValues(theEntry, driverSettings
           .getGroupsMemberField());
       for (i = 0; i < stringVals.length; i++) {
         try {
-          childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds,
+          LDAPEntry childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds,
               stringVals[i], driverSettings.getScope(), driverSettings
               .getGroupsFullFilter(), driverSettings.getGroupAttributes());
           if (childGroupEntry != null) {
@@ -336,27 +323,22 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return entryVector;
   }
 
-  public Group[] getAllChangedGroups(String lds, String extraFilter)
-      throws AdminException {
-    Vector<LDAPEntry> groupsIdsSet;
-    Vector<LDAPEntry> groupsCur;
-    Iterator<LDAPEntry> it;
+  @Override
+  public Group[] getAllChangedGroups(String lds, String extraFilter) throws AdminException {
     int i;
-    Hashtable<String, Group> groupsManaged = new Hashtable<String, Group>();
+    Map<String, Group> groupsManaged = new HashMap<String, Group>();
     LDAPEntry[] les = getChildGroupsEntry(lds, null, extraFilter);
-    LDAPEntry theGroup;
-
-    groupsIdsSet = new Vector<LDAPEntry>(les.length);
-    for (i = 0; i < les.length; i++) {
-      groupsIdsSet.add(les[i]);
-      groupsManaged.put(les[i].getDN(), translateGroup(lds, les[i]));
+    List<LDAPEntry>  groupsIdsSet = new Vector<LDAPEntry>(les.length);
+    for (LDAPEntry entry : les) {
+      groupsIdsSet.add(entry);
+      groupsManaged.put(entry.getDN(), translateGroup(lds, entry));
     }
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
-      it = groupsIdsSet.iterator();
-      groupsCur = new Vector<LDAPEntry>();
+      Iterator<LDAPEntry> it = groupsIdsSet.iterator();
+      List<LDAPEntry>  groupsCur = new ArrayList<LDAPEntry>();
       while (it.hasNext()) {
-        theGroup = it.next();
+        LDAPEntry theGroup = it.next();
         SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
             "root.MSG_GEN_PARAM_VALUE", "GroupTraite2="
             + theGroup.getDN());
@@ -365,18 +347,15 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             "(&" + driverSettings.getGroupsFullFilter() + "("
             + driverSettings.getGroupsMemberField() + "="
             + LDAPUtility.dblBackSlashesForDNInFilters(theGroup.getDN())
-            + "))", driverSettings.getGroupsNameField(), driverSettings
-            .getGroupAttributes());
-        for (i = 0; i < les.length; i++) {
+            + "))", driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
+        for (LDAPEntry entry : les) {
           SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
-              "root.MSG_GEN_PARAM_VALUE", "GroupFound2=" + les[i].getDN());
-          if (!groupsManaged.containsKey(les[i].getDN())) {
+              "root.MSG_GEN_PARAM_VALUE", "GroupFound2=" + entry.getDN());
+          if (!groupsManaged.containsKey(entry.getDN())) {
             SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
-                "root.MSG_GEN_PARAM_VALUE", "GroupAjoute2="
-                + les[i].getDN());
-            groupsCur.add(les[i]);
-            groupsManaged.put(les[i].getDN(), translateGroup(lds,
-                les[i]));
+                "root.MSG_GEN_PARAM_VALUE", "GroupAjoute2=" + entry.getDN());
+            groupsCur.add(entry);
+            groupsManaged.put(entry.getDN(), translateGroup(lds, entry));
           }
         }
       }
