@@ -191,14 +191,11 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         + groupEntry.getDN());
 
     Vector<String> usersVector = new Vector<String>();
-    LDAPEntry userEntry = null;
-    String[] stringVals = null;
-    int i;
 
     String groupsMemberField = driverSettings.getGroupsMemberField();
 
-    stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
-    for (i = 0; i < stringVals.length; i++) {
+    String[] stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
+    for (int i = 0; i < stringVals.length; i++) {
       SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEUserIds()",
           "root.MSG_GEN_PARAM_VALUE", "stringVals[" + i + "] = "
           + stringVals[i]);
@@ -206,19 +203,18 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         if ("memberUid".equals(groupsMemberField)) {
           // Case of most common OpenLDAP implementation.
           // memberUid = specificId
-          userEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
+          LDAPEntry userEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
               .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
-              .getUsersIdFilter(stringVals[i]), driverSettings
-              .getGroupAttributes());
+              .getUsersIdFilter(stringVals[i]), driverSettings.getUserAttributes());
           if (userEntry != null) {
             usersVector.add(stringVals[i]);
           }
         } else {
-          // Case of ActiveDirectory or NDS
-          // member = dn
-          userEntry = LDAPUtility.getFirstEntryFromSearch(lds, stringVals[i],
+          // Case of ActiveDirectory, NDS or OpenDS
+          // member = dn or uniqueMember = dn
+          LDAPEntry userEntry = LDAPUtility.getFirstEntryFromSearch(lds, stringVals[i],
               driverSettings.getScope(), driverSettings.getUsersFullFilter(),
-              driverSettings.getGroupAttributes());
+              driverSettings.getUserAttributes());
           if (userEntry != null) {
             String userSpecificId = LDAPUtility.getFirstAttributeValue(
                 userEntry, driverSettings.getUsersIdField());
@@ -226,7 +222,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             if (LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
                 .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
                 .getUsersIdFilter(userSpecificId), driverSettings
-                .getGroupAttributes()) != null)
+                .getUserAttributes()) != null)
               usersVector.add(userSpecificId);
           }
         }
