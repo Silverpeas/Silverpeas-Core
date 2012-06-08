@@ -1,13 +1,6 @@
-<div id="resource">
-Resource : $resource.name$<br/>
-	<div id="resource_body" style="margin-left:15px;">
-		$if(resource.description)$- description : $resource.description$<br/>$endif$
-		- location : $resource.location$<br/>
-		$if(resource.url)$- link : <a href="$resource.url$" target=_blank>Click here ...</a><br/>$endif$
-		- notification$if(resource.severalNotifications)$s$endif$ :
-		<div id="resource_item" style="margin-left:25px;">
-			$first(resource.notifications):messageBodyResourceNotificationItem_en(notification=it)$
-			$rest(resource.notifications):{$if(!it.previousHasMessage)$<br/>$endif$$messageBodyResourceNotificationItem_en(notification=it)$}$
-		</div>
-	</div>
+<div style="border-bottom:1px solid #C0C0C0; padding:5px 10px; margin:0 0 5px;">
+	<h2 style="border-bottom:1px solid #CCCCCC; padding:0 0 5px; margin:0; font-weight:100; font-size:12px; color:#444444">$resource.location$ &gt; $if(resource.url)$<a style="color:#DF6900" target="_blank" href="$resource.url$">$resource.name$</a>$else$$resource.name$$endif$</h2>
+	$if(resource.description)$<p style="border-left: 6px solid #D6D4D4; padding: 6px; color:#915E47; margin:5px 0 0;">$resource.description$</p>$endif$
+	<ul style="margin:0 0 0 15px; padding:15px 0 0 15px; list-style-type: disc;">$resource.notifications:messageBodyResourceNotificationItem_en(notification=it)$</ul>
+	$if(resource.url)$<a style="text-align:right; display:block; color:#000000;"  target="_blank" href="$resource.url$">&gt;&gt; Access the contribution</a>$endif$
 </div>

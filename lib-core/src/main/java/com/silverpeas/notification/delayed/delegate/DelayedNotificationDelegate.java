@@ -68,6 +68,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 public class DelayedNotificationDelegate extends AbstractNotification {
 
+  private final static String LOCATION_SEPARATOR = " &gt; ";
+
   /** Global settings */
   private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
 
@@ -439,7 +441,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     if (syntheseResource.getDescription() != null) {
       syntheseResource.setDescription(EncodeHelper.javaStringToHtmlParagraphe(syntheseResource.getDescription()));
     }
-    syntheseResource.setLocation(resource.getResourceLocation());
+    syntheseResource.setLocation(resource.getResourceLocation().replaceAll(NotificationResourceData.LOCATION_SEPARATOR,
+        LOCATION_SEPARATOR));
     syntheseResource.setUrl(resource.getResourceUrl());
     if (syntheseResource.getUrl() != null) {
       syntheseResource.setUrl(computeURL(synthese.getUserId(), syntheseResource.getUrl()));

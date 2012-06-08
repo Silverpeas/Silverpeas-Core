@@ -45,6 +45,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
+import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressRow;
@@ -879,10 +880,22 @@ public class NotificationManager extends AbstractNotification
    * @see
    */
   public String getComponentFullName(String compInst) throws NotificationManagerException {
+    return getComponentFullName(compInst, " - ");
+  }
+
+  /**
+   * Method declaration
+   *
+   * @param compInst
+   * @return
+   * @throws NotificationManagerException
+   * @see
+   */
+  public String getComponentFullName(String compInst, String separator) throws NotificationManagerException {
     try {
       ComponentInst instance = AdminReference.getAdminService().getComponentInst(compInst);
       SpaceInst space = AdminReference.getAdminService().getSpaceInstById(instance.getDomainFatherId());
-      return (space.getName() + " - " + instance.getLabel());
+      return (space.getName() + separator + instance.getLabel());
     } catch (AdminException e) {
       throw new NotificationManagerException( "NotificationManager.getComponentFullName()",
           SilverpeasException.ERROR, "notificationManager.EX_CANT_GET_COMPONENT_FULL_NAME",
@@ -1518,7 +1531,8 @@ public class NotificationManager extends AbstractNotification
             theExtraParams.put(NotificationParameterNames.SOURCE, componentFullName);
             if (delayedNotificationData.getResource() != null &&
                 StringUtils.isBlank(delayedNotificationData.getResource().getResourceLocation())) {
-              delayedNotificationData.getResource().setResourceLocation(componentFullName);
+              delayedNotificationData.getResource().setResourceLocation(
+                  getComponentFullName("" + params.iComponentInstance, NotificationResourceData.LOCATION_SEPARATOR));
             }
           } catch (Exception e) {
             SilverTrace.warn("notificationManager", "NotificationManager.createNotificationData()",

@@ -42,6 +42,8 @@ import javax.persistence.TableGenerator;
 @Entity
 @Table(name = "st_notificationresource")
 public class NotificationResourceData implements Cloneable {
+  
+  public final static String LOCATION_SEPARATOR = "@#@#@";
 
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
