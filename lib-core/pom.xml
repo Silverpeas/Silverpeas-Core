@@ -234,10 +234,10 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spellchecker</artifactId>
     </dependency>
-    <!--<dependency>
+    <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-snowball</artifactId>
-    </dependency>-->
+    </dependency>
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
