@@ -69,32 +69,38 @@ public final class JMSAccessObject {
   }
 
   /**
-   * Creates a subscription to the specified topic and returns the subscriber resulting of the
-   * subscription. The method allocates the required resources for the subscriber receive incoming
-   * messages. Once created, the subscriber can be used to set a message listener or to perform
-   * additional settings. To unsubscribe from the topic, just call the disposeTopicSubscriber method
-   * with the subscriber as parameter.
+   * Creates a subscription to the specified topic with the specified listener for receiving the
+   * messages published in the topic. The subscription will be uniquely identified by the specified
+   * identifier.
+   *
+   * A subscription in JMS is represented by a TopicSubscriber instance.
+   *
+   * To unsubscribe from the topic, just call the
+   * <code>disposeTopicSubscriber</code> method with the TopicSubscriber instance as parameter.
    *
    * @param topicName the name of topic.
+   * @param subscriberId the unique identifier of the subscription.
+   * @param listener the listener that will receive the messages published in the topic.
    * @return a TopicSubscriber instance resulting of the topic subscription. For each topic
    * subscription matchs a specific and single TopicSubscriber instance.
    * @throws JMSException if an error occurs while subscribing to the specified topic.
    * @throws NamingException if no such topic exists with the specified name.
    */
-  public TopicSubscriber createTopicSubscriber(String topicName, String subscriberId) throws
-          JMSException, NamingException {
+  public TopicSubscriber createTopicSubscriber(String topicName, String subscriberId,
+          final MessageListener listener) throws JMSException, NamingException {
     Topic topic = getExistingTopic(topicName);
     TopicSession session = getTopicSession();
     SilverpeasTopicSubscriber topicSubscriber = decorateTopicSubscriber(session.
             createDurableSubscriber(topic, subscriberId));
+    topicSubscriber.setMessageListener(listener);
     topicSubscriber.setSession(session);
     topicSubscriber.setId(subscriberId);
     return topicSubscriber;
   }
 
   /**
-   * Disposes the subscription to a topic backed by the specified subscriber. It frees all the
-   * resources used by the subscriber.
+   * Disposes the subscription to a topic represented by the specified TopicSubscriver instance. It
+   * frees all the resources used by the subscriber in JMS.
    *
    * @param subscriber the subscriber matching the subscription to a given topic.
    * @throws JMSException if an error occurs while unsubscribing the subscription.
@@ -163,9 +169,6 @@ public final class JMSAccessObject {
    * @throws JMSException if an error occurs while creating or fetching a JMS session.
    */
   protected TopicSession getTopicSession() throws JMSException {
-    if (topicSession == null) {
-      topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-    }
     return topicSession;
   }
 
@@ -183,10 +186,11 @@ public final class JMSAccessObject {
 
   @PostConstruct
   protected void openConnection() throws NamingException, JMSException {
-    TopicConnectionFactory connectionFactory = InitialContext.doLookup(JNDINames.JMS_FACTORY);
+    TopicConnectionFactory connectionFactory = InitialContext.doLookup(JNDINames.NOTIF_API_JMS);
     topicConnection = connectionFactory.createTopicConnection();
     topicConnection.setClientID("Silverpeas");
     topicConnection.start();
+    topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
   }
 
   @PreDestroy
