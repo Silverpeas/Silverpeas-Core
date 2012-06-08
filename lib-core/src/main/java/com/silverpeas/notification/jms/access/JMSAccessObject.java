@@ -60,6 +60,7 @@ public final class JMSAccessObject {
 
   private TopicConnection topicConnection;
   private TopicSession topicSession;
+  private ExceptionListener exceptionListener = new ConnectionExceptionListener();
   /**
    * The prefix of the JNDI name under which JMS topic will be registered.
    */
@@ -219,6 +220,7 @@ public final class JMSAccessObject {
     TopicConnectionFactory connectionFactory = InitialContext.doLookup(JNDINames.NOTIF_API_JMS);
     topicConnection = connectionFactory.createTopicConnection();
     topicConnection.setClientID("Silverpeas");
+    topicConnection.setExceptionListener(exceptionListener);
     topicConnection.start();
     topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
   }
