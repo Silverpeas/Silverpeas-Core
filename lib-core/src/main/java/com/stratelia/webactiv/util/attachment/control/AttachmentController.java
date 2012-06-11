@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -1342,8 +1343,14 @@ public class AttachmentController {
 
   public static void cloneAttachments(AttachmentPK fromForeignKey,
       AttachmentPK toForeignKey) throws AttachmentException {
+    cloneAttachments(fromForeignKey, toForeignKey, "Images");
+  }
+  
+  public static HashMap<String, String> cloneAttachments(AttachmentPK fromForeignKey,
+      AttachmentPK toForeignKey, String context) throws AttachmentException {
+    HashMap<String, String> ids = new HashMap<String, String>();
     Vector<AttachmentDetail> attachments = attachmentBm.getAttachmentsByPKAndParam(
-        fromForeignKey, "Context", "Images");
+        fromForeignKey, "Context", context);
     for (AttachmentDetail a : attachments) {
       AttachmentDetail clone = (AttachmentDetail) a.clone();
       // The file must be copied
@@ -1353,56 +1360,51 @@ public class AttachmentController {
       clone.setForeignKey(toForeignKey);
       clone.setCloneId(a.getPK().getId());
       clone = attachmentBm.createAttachment(clone);
+      ids.put(clone.getCloneId(), clone.getPK().getId());
     }
+    return ids;
   }
-
+  
   public static void mergeAttachments(AttachmentPK fromForeignKey,
       AttachmentPK toForeignKey) throws AttachmentException {
+    mergeAttachments(fromForeignKey, toForeignKey, "Images");
+  }
 
+  public static HashMap<String, String> mergeAttachments(AttachmentPK fromForeignKey,
+      AttachmentPK cloneForeignKey, String context) throws AttachmentException {
+    HashMap<String, String> ids = new HashMap<String, String>();
     // On part des fichiers d'origine
     Vector<AttachmentDetail> attachments = attachmentBm.getAttachmentsByPKAndParam(
-        fromForeignKey, "Context", "Images");
-    Iterator<AttachmentDetail> iAttachments = attachments.iterator();
+        fromForeignKey, "Context", context);
 
-    Vector<AttachmentDetail> clones = attachmentBm.getAttachmentsByPKAndParam(toForeignKey,
-        "Context", "Images");
+    Vector<AttachmentDetail> clones = attachmentBm.getAttachmentsByPKAndParam(cloneForeignKey,
+        "Context", context);
 
     // recherche suppressions et modifications
-    AttachmentDetail attachmentDetail = null;
-    AttachmentDetail clone = null;
-
-    while (iAttachments.hasNext()) {
-      attachmentDetail = iAttachments.next();
+    for (AttachmentDetail attachmentDetail : attachments) {
 
       // Ce fichier existe-il toujours ?
-      clone = searchClone(attachmentDetail, clones);
+      AttachmentDetail clone = searchClone(attachmentDetail, clones);
 
       if (clone != null) {
-
         // le fichier existe toujours !
         // Merge du clone sur le fichier d'origine
         mergeAttachment(attachmentDetail, clone);
+        
+        ids.put(clone.getPK().getId(), attachmentDetail.getPK().getId());
 
         // Suppression de la liste des clones
         clones.remove(clone);
       } else {
-
         // le fichier a été supprimé
         // Suppression du fichier d'origine
         deleteAttachment(attachmentDetail);
       }
     }
 
-    if (clones.size() > 0) {
-
+    if (!clones.isEmpty()) {
       // Il s'agit d'ajouts
-      Iterator<AttachmentDetail> iClones = clones.iterator();
-
-      clone = null;
-
-      while (iClones.hasNext()) {
-        clone = iClones.next();
-
+      for (AttachmentDetail clone : clones) {
         clone.setForeignKey(fromForeignKey);
         clone.setCloneId(null);
 
@@ -1411,18 +1413,13 @@ public class AttachmentController {
             fromForeignKey.getId());
       }
     }
+    return ids;
   }
 
   private static AttachmentDetail searchClone(
       AttachmentDetail attachmentDetail, Vector<AttachmentDetail> clones) {
-    Iterator<AttachmentDetail> iClones = clones.iterator();
-
-    AttachmentDetail clone = null;
-
-    while (iClones.hasNext()) {
-      clone = iClones.next();
-
-      if ((clone.getCloneId() != null)
+    for (AttachmentDetail clone : clones) {
+      if (clone.getCloneId() != null
           && clone.getCloneId().equals(attachmentDetail.getPK().getId())) {
         return clone;
       }

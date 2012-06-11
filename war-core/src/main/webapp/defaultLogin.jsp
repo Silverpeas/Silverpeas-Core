@@ -172,8 +172,8 @@ function checkSubmit(ev)
                         </p>
                         <div class="clear"></div>
                     </div>   
-                    <p><label><span><fmt:message key="authentication.logon.login" /></span><input autofocus="autofocus"  type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
-                    <p><label><span><fmt:message key="authentication.logon.password" /></span><input autocomplete="on" type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
+                    <p><label><span><fmt:message key="authentication.logon.login" /></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
+                    <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
                     <c:choose>
                       <c:when test="${!pageScope.multipleDomains}">
                         <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
@@ -188,7 +188,7 @@ function checkSubmit(ev)
                           </label></p> 		
                       </c:otherwise>
                     </c:choose>            
-                     <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="submit" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
+                     <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="<%=submitClass%>" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
 						 <p>
 						 <% if (forgottenPwdActive) { %>

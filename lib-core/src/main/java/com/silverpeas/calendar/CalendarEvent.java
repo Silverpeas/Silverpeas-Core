@@ -23,7 +23,7 @@
  */
 package com.silverpeas.calendar;
 
-import com.silverpeas.annotation.DateRange;
+import com.silverpeas.annotation.constraint.DateRange;
 import java.io.Serializable;
 import java.net.URL;
 import static com.silverpeas.util.StringUtil.*;

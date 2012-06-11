@@ -24,6 +24,7 @@
 
 package com.silverpeas.annotation;
 
+import com.silverpeas.annotation.constraint.DateRange;
 import com.silverpeas.calendar.Datable;
 
 /**

@@ -65,7 +65,7 @@ public class Util {
 
   public static String getJavascriptIncludes(String language) {
     StringBuilder includes = new StringBuilder();
-    addSilverpeasScript(includes, "/wysiwyg/jsp/FCKeditor/fckeditor.js");
+    addSilverpeasScript(includes, "/wysiwyg/jsp/ckeditor/ckeditor.js");
     addSilverpeasScript(includes, "/util/javaScript/dateUtils.js");
     addSilverpeasScript(includes, "/util/javaScript/checkForm.js");
     addSilverpeasScript(includes, "/util/javaScript/animation.js");

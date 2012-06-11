@@ -66,6 +66,11 @@ LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
 Hashtable domains = lpAuth.getAllDomains();
 List<Domain> listDomains = lpAuth.getListDomains();
 pageContext.setAttribute("listDomains", listDomains);
-pageContext.setAttribute("multipleDomains", (listDomains != null && !listDomains.isEmpty() && listDomains.size() > 1));
+boolean multipleDomains = listDomains != null && listDomains.size() > 1;
+pageContext.setAttribute("multipleDomains", multipleDomains);
+String submitClass = "submitWithOneDomain";
+if (multipleDomains) {
+  submitClass = "submit";
+}
 List<String> domainIds = lpAuth.getDomainsIds();
 %>

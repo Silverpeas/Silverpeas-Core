@@ -1,6 +1,7 @@
 *.iws
 *.ipr
 *.iml
+*.merge*
 catalog.xml
 target
 .settings

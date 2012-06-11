@@ -45,6 +45,7 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
   private UserDetail user;
   private String sessionKey;
   private CommentEntity theComment;
+  private CommentEntity theCommentFromTool;
 
   public CommentCreationTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -64,8 +65,12 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
   public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    theComment = CommentEntity.fromComment(theUser(user).commentTheResource(CONTENT_ID).
+    theComment =
+        CommentEntity.fromComment(theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).
             inComponent(COMPONENT_INSTANCE_ID).withAsText("ceci est un commentaire"));
+    theCommentFromTool =
+        CommentEntity.fromComment(theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).
+            inComponent(TOOL_ID).withAsText("ceci est un commentaire"));
   }
 
   @Test
@@ -77,17 +82,41 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
     assertThat(response.getEntity(CommentEntity.class), equalTo(theComment));
   }
 
+  @Test
+  public void postANewCommentFromTool() {
+    ClientResponse response = post(theCommentFromTool, at(aToolResourceURI()));
+    int recievedStatus = response.getStatus();
+    int created = Status.CREATED.getStatusCode();
+    assertThat(recievedStatus, is(created));
+    assertThat(response.getEntity(CommentEntity.class), equalTo(theCommentFromTool));
+  }
+
   /**
    * In a such situation, the comment is created as a new one.
    */
   @Test
   public void postAnAlreadyExistingComment() {
-    Comment existingComment = theUser(user).commentTheResource(CONTENT_ID).
+    Comment existingComment = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).
             inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou");
     getTestResources().save(existingComment);
     CommentEntity aComment = CommentEntity.fromComment(existingComment);
 
     ClientResponse response = post(aComment, at(aResourceURI()));
+    int recievedStatus = response.getStatus();
+    int created = Status.CREATED.getStatusCode();
+    assertThat(recievedStatus, is(created));
+    CommentEntity createdComment = response.getEntity(CommentEntity.class);
+    assertThat(createdComment.getId(), not(aComment.getId()));
+  }
+  
+  @Test
+  public void postAnAlreadyExistingCommentFromTool() {
+    Comment existingComment = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).
+        inComponent(TOOL_ID).withAsText("coucou");
+    getTestResources().save(existingComment);
+    CommentEntity aComment = CommentEntity.fromComment(existingComment);
+
+    ClientResponse response = post(aComment, at(aToolResourceURI()));
     int recievedStatus = response.getStatus();
     int created = Status.CREATED.getStatusCode();
     assertThat(recievedStatus, is(created));
@@ -107,6 +136,10 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
   @Override
   public String aResourceURI() {
     return RESOURCE_PATH;
+  }
+
+  public String aToolResourceURI() {
+    return TOOL_RESOURCE_PATH;
   }
 
   @Override
@@ -132,5 +165,10 @@ public class CommentCreationTest extends ResourceCreationTest<CommentTestResourc
   @Override
   public String[] getExistingComponentInstances() {
     return new String[]{COMPONENT_INSTANCE_ID};
+  }
+
+  @Override
+  public String[] getExistingTools() {
+    return new String[] { TOOL_ID };
   }
 }

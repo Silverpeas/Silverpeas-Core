@@ -56,6 +56,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="javax.servlet.http.*"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%
     String spaceId = "";
     String componentId = "";
@@ -64,15 +66,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String objectId = "";
     String language = "";
     String contentLanguage = "";
-    String actionWysiwyg = null;
     String codeWysiwyg = "";
     String returnUrl = null;
     String browseInformation = null;
     String[][] collectionImages = null;
-
-	//For parsing absolute url (Bug FCKEditor)
-	String server = request.getRequestURL().substring(0,request.getRequestURL().toString().lastIndexOf(URLManager.getApplicationURL()));
-	int serverPort = request.getServerPort();
 
 	String fileName = "";
 	String path = "";
@@ -80,15 +77,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String specificURL = "";		//For Websites only
 
     String wysiwygTextValue = "";
-    String editedText;
     String context = URLManager.getApplicationURL();
-    String iconsPath = context + "/util/icons/wysiwyg/";
     String imagesContext = "";
     String userId = "";
     String exit = "";
     String indexIt = "";
 
-    actionWysiwyg = request.getParameter("actionWysiwyg");
+    String actionWysiwyg = request.getParameter("actionWysiwyg");
     SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "actionWysiwyg="+actionWysiwyg);
 
     if (actionWysiwyg == null) {
@@ -96,7 +91,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     }
     
     if (actionWysiwyg.equals("SaveHtmlAndExit") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml")) {
-        codeWysiwyg 	= request.getParameter("codeWysiwyg");
+        codeWysiwyg 	= request.getParameter("editor1");
         spaceId 		= (String) session.getAttribute("WYSIWYG_SpaceId");
         spaceName 		= (String) session.getAttribute("WYSIWYG_SpaceName");
         componentId 	= (String) session.getAttribute("WYSIWYG_ComponentId");
@@ -113,51 +108,46 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		indexIt			= (String) session.getAttribute("WYSIWYG_IndexIt");
 		exit			= request.getParameter("Exit");
 
-        if ("SaveHtmlAndExit".equals(actionWysiwyg) || "SaveHtml".equals(actionWysiwyg))
-        {
+        if ("SaveHtmlAndExit".equals(actionWysiwyg) || "SaveHtml".equals(actionWysiwyg)) {
+        	//For parsing absolute url (Bug FCKEditor)
+        	String server = request.getRequestURL().substring(0,request.getRequestURL().toString().lastIndexOf(URLManager.getApplicationURL()));
+        	int serverPort = request.getServerPort();
+        	
         	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) { 
-			
         		codeWysiwyg = codeWysiwyg.replaceAll("../../../../../", "/");
 	    		codeWysiwyg = codeWysiwyg.replaceAll(server+":"+serverPort, "");
     			codeWysiwyg = codeWysiwyg.replaceAll(server+"/", "/");
 		
 			} else {
-				
 				codeWysiwyg = codeWysiwyg.replaceAll("../../../../", URLManager.getApplicationURL()+"/");
 	    		codeWysiwyg = codeWysiwyg.replaceAll(server+":"+serverPort, "");
     			codeWysiwyg = codeWysiwyg.replaceAll(server+"/", "/");
 			}
         		
-	        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES))
-	        {
+	        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
             	WysiwygController.updateWebsite(path, fileName, codeWysiwyg);
-            }
-            else
-            {
+            } else {
             	boolean bIndexIt = (!StringUtil.isDefined(indexIt) || !"false".equalsIgnoreCase(indexIt));
-            	if (StringUtil.isDefined(contentLanguage))
+            	if (StringUtil.isDefined(contentLanguage)) {
             		WysiwygController.save(codeWysiwyg, spaceId, componentId, objectId, userId, contentLanguage, bIndexIt);
-            	else
+            	} else {
             		WysiwygController.updateFileAndAttachment(codeWysiwyg, spaceId, componentId, objectId, userId, bIndexIt);
+            	}
             }
         }
         if (actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml")) {
             wysiwygTextValue = codeWysiwyg;
-            if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES))
-            {
+            if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
 	            collectionImages = WysiwygController.getWebsiteImages(path, componentId);
 	            collectionPages = WysiwygController.getWebsitePages(path, componentId);
 			    SilverTrace.info("wysiwyg", "wysiwyg.htmlEditor.jsp", "root.MSG_GEN_PARAM_VALUE", "nb collectionPages = " + collectionPages.length+" nb collectionImages="+collectionImages.length);
-			}
-			else
-			{
+			} else {
 				imagesContext = WysiwygController.getImagesFileName(objectId);
 				SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "objectId="+objectId+" imagesContext="+imagesContext);
 				collectionImages = WysiwygController.searchAllAttachments(objectId, spaceId, componentId, imagesContext);
 			}
         }
-    }
-    else if ("Load".equals(actionWysiwyg)) {
+    } else if ("Load".equals(actionWysiwyg)) {
 
         spaceId = request.getParameter("SpaceId");
         session.setAttribute("WYSIWYG_SpaceId", spaceId);
@@ -197,8 +187,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite",  "fileName= "+fileName+" Path="+path);
        
 		language = request.getParameter("Language");
-        if (language == null)
+        if (language == null) {
             language = "en";
+        }
         session.setAttribute("WYSIWYG_Language", language);
         
         contentLanguage = request.getParameter("ContentLanguage");
@@ -207,32 +198,30 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         indexIt = request.getParameter("IndexIt");
         session.setAttribute("WYSIWYG_IndexIt", indexIt);
 
-        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES))
-        {
+        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
           collectionImages = WysiwygController.getWebsiteImages(path, componentId);
           collectionPages = WysiwygController.getWebsitePages(path, componentId);
           SilverTrace.info("wysiwyg", "wysiwyg.htmlEditor.jsp", "root.MSG_GEN_PARAM_VALUE", "nb collectionPages = " + collectionPages.length+" nb collectionImages="+collectionImages.length);
           specificURL = "/website/"+componentId+"/"+objectId+"/";
-		}
-		else
-		{
+		} else {
 			imagesContext = WysiwygController.getImagesFileName(objectId);
 	        collectionImages = WysiwygController.searchAllAttachments(objectId, spaceId, componentId, imagesContext);
 		}
         session.setAttribute("WYSIWYG_SpecificURL", specificURL);
 
         try {
-	        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES))
+	        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
 	        	wysiwygTextValue = WysiwygController.loadFileWebsite(path, fileName);
-			else
-			{
-				if (StringUtil.isDefined(contentLanguage))
-					wysiwygTextValue = WysiwygController.load(spaceId, componentId, objectId, contentLanguage);
-				else
+	        } else {
+				if (StringUtil.isDefined(contentLanguage)) {
+					wysiwygTextValue = WysiwygController.load(componentId, objectId, contentLanguage);
+				} else {
 					wysiwygTextValue = WysiwygController.loadFileAndAttachment(spaceId, componentId, objectId);
+				}
 			}
-	        if (wysiwygTextValue==null)
+	        if (wysiwygTextValue==null) {
 	        	wysiwygTextValue = "";
+	        }
         } catch (WysiwygException exc) {
               // no file
         }
@@ -255,169 +244,117 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Silverpeas Wysiwyg Editor</title>
-<%
-	out.print(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <style type="text/css">
-	.TB_Expand
-	{
+	.TB_Expand {
 		background-color: #efefde;
 		padding: 2px 2px 2px 2px;
 		border: #efefde 1px outset;
 	}
 </style>
 <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<view:includePlugin name="wysiwyg"/>
 </head>
 <body>
 <%  
     out.println(window.printBefore());
-	String wysiwygContent = "";
 %>
 
 <script type="text/javascript">
-	var oEditor;
 	var galleryWindow = window;
-	window.onload = function()
-	{
-			var oFCKeditor = new FCKeditor('codeWysiwyg');
-			oFCKeditor.BasePath = "<%=context%>/wysiwyg/jsp/FCKeditor/";
-			oFCKeditor.Width = "750";
-			oFCKeditor.Height = "500";
-			oFCKeditor.Config[ "AutoDetectLanguage" ] = false;
-			oFCKeditor.Config[ "DefaultLanguage" ] = "<%=language%>";
-			<% if (!settings.getString("configFile").equals("")) { %>
-				oFCKeditor.Config['CustomConfigurationsPath'] = "<%=settings.getString("configFile")%>";
-			<% } else { %>
-				oFCKeditor.Config[ "EditorAreaCSS" ] = "<%=context%>/util/styleSheets/globalSP_SilverpeasV5.css";
-			<% } %>
-			oFCKeditor.ReplaceTextarea();
-	}	
-
-	function FCKeditor_OnComplete( editorInstance )
-	{
-			oEditor = FCKeditorAPI.GetInstance(editorInstance.Name);
+	window.onload = function() {
+		<view:wysiwyg replace="editor1" language="<%=language %>"/>
+	}
+	
+	function getCKEditor() {
+		return CKEDITOR.instances.editor1;
 	}
 
-	function B_VALIDER_ONCLICK() {
-		oEditor.Focus();
+	function saveAndExit() {
 		document.recupHtml.actionWysiwyg.value = "SaveHtmlAndExit";
 		document.recupHtml.Exit.value = "1";
 		document.recupHtml.submit();
 	}
 	
-	function refresh(){
-		oEditor.Focus();
-	  	document.recupHtml.actionWysiwyg.value = "Refresh";
-	  	document.recupHtml.submit();
-	}
-	
-	function Save()
-	{
-		oEditor.Focus();
-	  	document.recupHtml.actionWysiwyg.value = "SaveHtml";
-	  	document.recupHtml.Exit.value = "0";
-	  	document.recupHtml.submit();
-	}
-	
 	function choixImage() {
-		oEditor.Focus();
 		index = document.recupHtml.images.selectedIndex;
 		var str = document.recupHtml.images.options[index].value;
 		var title = document.recupHtml.images.options[index].text;
 
 		if (index != 0 && str != null) {
 			var ext = title.substring(title.length - 4);
-
     	    if (ext.toLowerCase() == ".swf") {//du flash
-				oEditor.InsertHtml('<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" 					src="'+str+'"></embed>');
+    	    	getCKEditor().insertHtml('<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" src="'+str+'"></embed>');
 			} else {
-				oEditor.InsertHtml('<img border="0" src="'+str+'" alt=""/>');
+				getCKEditor().insertHtml('<img border="0" src="'+str+'" alt=""/>');
 			}
 		}
-		//var wysiwygContent = oEditor.GetHTML();
-		//re = new RegExp("http:///", "gi");
-		//var newstr = wysiwygContent.replace(re, "/");
-		//oEditor.SetHTML(newstr);
 	}
 	
-	function choixGallery()
-	{
+	function choixGallery() {
 		index = document.recupHtml.galleries.selectedIndex;
 		var componentId = document.recupHtml.galleries.options[index].value;
-		if (index != 0)
-		{
+		if (index != 0) {
 			url = "<%=context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&amp;Language=<%=language%>";
 			windowName = "galleryWindow";
 			larg = "820";
 			haut = "600";
 			windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-			if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
+			if (!galleryWindow.closed && galleryWindow.name=="galleryWindow") {
 				galleryWindow.close();
+			}
 			galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 		}
 	}
 	
-	function choixImageInGallery(url)
-	{
-		oEditor.Focus();
-		oEditor.InsertHtml('<img border="0" src="'+url+'" alt=""/>');
-		//var wysiwygContent = oEditor.GetHTML();
-		//re = new RegExp("http:///", "gi");
-		//var newstr = wysiwygContent.replace(re, "/");
-		//oEditor.SetHTML(newstr);
+	function choixImageInGallery(url) {
+		getCKEditor().insertHtml('<img border="0" src="'+url+'" alt=""/>');
 	}
 	
 	function choixLien() {
-		oEditor.Focus();
 		index = document.recupHtml.liens.selectedIndex;
 		var str = document.recupHtml.liens.options[index].value;
-		if (index != 0 && str != null)
-				oEditor.InsertHtml('<a href="'+str+'">'+str.substring(str.lastIndexOf("/")+1)+"</a>");
+		if (index != 0 && str != null) {
+			getCKEditor().insertHtml('<a href="'+str+'">'+str.substring(str.lastIndexOf("/")+1)+"</a>");
+		}
 	}
 
 	function chooseDynamicValuesdefault(){
-		oEditor.Focus();
 		index = document.recupHtml.dynamicValues.selectedIndex;
 		var str = document.recupHtml.dynamicValues.options[index].value;
 		if (index != 0 && str != null){		   
-				oEditor.InsertHtml('(%'+str+'%)');
+			getCKEditor().insertHtml('(%'+str+'%)');
 		}
 	}
-var storageFileWindow=window;
-function openStorageFilemanager(){
-	index = document.getElementById("storageFile").selectedIndex;
-	var componentId = document.getElementById("storageFile").options[index].value;
-	if (index != 0){	
-		url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=<%=NodeType.COMPONENT%>";
-		windowName = "StorageFileWindow";
-		width = "750";
-		height = "580";
-		windowParams = "scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised";
-		if (!storageFileWindow.closed && storageFileWindow.name==windowName)
-			storageFileWindow.close();
-		storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);
+	
+	var storageFileWindow=window;
+	function openStorageFilemanager(){
+		index = document.getElementById("storageFile").selectedIndex;
+		var componentId = document.getElementById("storageFile").options[index].value;
+		if (index != 0){	
+			url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=<%=NodeType.COMPONENT%>";
+			windowName = "StorageFileWindow";
+			width = "750";
+			height = "580";
+			windowParams = "scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised";
+			if (!storageFileWindow.closed && storageFileWindow.name==windowName) {
+				storageFileWindow.close();
+			}
+			storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);
+		}
 	}
-}
 
-function insertAttachmentLink(url,img,label){
-	oEditor.Focus();
-	oEditor.InsertHtml('<a href="'+url+'" target="_blank"> <img src="'+img+'" width="20" border="0" align="top" alt=""/> '+label+'</a> ');
-}
+	function insertAttachmentLink(url, img, label){
+		getCKEditor().insertHtml('<a href="'+url+'" target="_blank"><img src="'+img+'" width="20" border="0" align="top" alt=""/> '+label+'</a> ');
+	}
 </script>
 
-<%
-if (actionWysiwyg.startsWith("SaveHtml") && "1".equals(exit)) {
-%>
+<% if (actionWysiwyg.startsWith("SaveHtml") && "1".equals(exit)) { %>
 	<script language="javascript">
 	  location.href = '<%=EncodeHelper.javaStringToJsString(returnUrl)%>';
 	</script>
-<%
-}
-else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml"))
-{
-%>
-	<form method="post" name="recupHtml" action="<%=context%>/wysiwyg/jsp/htmlEditor.jsp" onsubmit="return Save();">
+<% } else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml")) { %>
+	<form method="post" name="recupHtml" action="<%=context%>/wysiwyg/jsp/htmlEditor.jsp">
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr class="TB_Expand">
 			<td class="TB_Expand" align="center">
@@ -432,31 +369,22 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 				<option value="${option.id}"><%= ((ComponentInstLight)pageContext.findAttribute("option")).getLabel(language) %></option> 		
 			</c:forEach>
 			</select>
-	  </c:if>
+	  	</c:if>
 				<select id="images" name="images" onchange="choixImage();this.selectedIndex=0">
 					<option selected="selected"><%=message.getString("Image")%></option>
-							<%
-							if (collectionImages != null) {
-								int nbImages = collectionImages.length;
-								for(int i=0; i < nbImages; i++ ) {
-									out.println("<option value=\""+specificURL+collectionImages[i][0]+"\">"+collectionImages[i][1]+"</option>");
-								}
-							}
-							%>
+							<% for(int i=0; collectionImages != null && i < collectionImages.length; i++ ) { %>
+									<option value="<%=specificURL+collectionImages[i][0] %>"><%=collectionImages[i][1] %></option>
+							<% } %>
 				</select>
 				<%
-					List galleries = WysiwygController.getGalleries();
-					if (galleries != null)
-					{
+					List<ComponentInstLight> galleries = WysiwygController.getGalleries();
+					if (galleries != null) {
 						%>
 						<select id="galleries" name="galleries" onchange="choixGallery();this.selectedIndex=0;">
 							<option selected="selected"><%=message.getString("Galleries")%></option>
-							<%
-							for(int i=0; i < galleries.size(); i++ ) {
-								ComponentInstLight gallery = (ComponentInstLight) galleries.get(i);
-								out.println("<option value=\""+gallery.getId()+"\">"+gallery.getLabel()+"</option>");
-							}
-							%>
+							<% for (ComponentInstLight gallery : galleries) { %>
+								<option value="<%=gallery.getId() %>"><%=gallery.getLabel() %></option>
+							<% } %>
 						</select>
 						<%
 					}
@@ -472,30 +400,26 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 				 if (collectionPages != null) { %>
 					<select name="liens" onchange="choixLien(); this.selectedIndex=0">
 				        <option selected="selected"><%=message.getString("Links")%></option>
-				        <%
-								int nbPages = collectionPages.length;
-								for(int i=0; i < nbPages; i++ ) {
-									out.println("<option value=\""+specificURL+collectionPages[i][0]+"\">"+collectionPages[i][1]+"</option>");
-								}
-					      %>
+				        <% for(int i=0; i < collectionPages.length; i++ ) { %>
+							<option value="<%=specificURL+collectionPages[i][0] %>"><%=collectionPages[i][1] %></option>
+						<% } %>
 					</select>
 				<% } %>
 			</td></tr>
 			<tr><td>
-				<textarea id="codeWysiwyg" name="codeWysiwyg" cols="10" rows="10"><%=wysiwygTextValue%></textarea>
+				<textarea id="editor1" name="editor1" cols="10" rows="10"><%=wysiwygTextValue%></textarea>
 			</td></tr>
 		</table>
-		<input name="code" type="hidden"/>
-		<input name="actionWysiwyg" type="hidden"/>
+		<input name="actionWysiwyg" type="hidden" value="SaveHtml"/>
 		<input name="origin" type="hidden" value="<%=componentId%>"/>
-		<input name="Exit" type="hidden"/>
+		<input name="Exit" type="hidden" value="0"/>
 <%
 		ButtonPane buttonPane = gef.getButtonPane();
-		Button button = gef.getFormButton(message.getString("SaveAndExit"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
+		Button button = gef.getFormButton(message.getString("SaveAndExit"), "javascript:onclick=saveAndExit();", false);
 		Button buttonExit = gef.getFormButton(message.getString("Cancel"), "javascript:location.href='"+returnUrl+"';", false);
 		buttonPane.addButton(button);
 		buttonPane.addButton(buttonExit);
-    	out.println("<center><br/>"+buttonPane.print()+"</center>");
+    	out.println("<br/>"+buttonPane.print());
 %>
 	</form>
 <%

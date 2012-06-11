@@ -36,15 +36,15 @@ import java.net.URI;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 
 /**
  * A REST Web resource representing a given subscription.
  * It is a web service that provides an access to a subscription referenced by its URL.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("subscribe/{componentId}")
 @Authorized
 public class SubscribeResource extends RESTWebService {

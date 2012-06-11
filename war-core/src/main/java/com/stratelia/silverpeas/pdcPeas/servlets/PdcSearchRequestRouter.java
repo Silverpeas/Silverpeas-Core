@@ -1494,9 +1494,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     ContainerInterface containerInterface = getContainerInterface(pdcSC);
     List<String> alComponentIds = pdcSC.getCurrentComponentIds();
     // We get silvercontentids according to the search context, author, components and dates
-    String afterDate = DateUtil.date2SQLDate(searchParameters.getAfterDate(), pdcSC.getLanguage());
-    String beforeDate =
-        DateUtil.date2SQLDate(searchParameters.getBeforeDate(), pdcSC.getLanguage());
+    String afterDate = DateUtil.date2SQLDate(searchParameters.getAfterDate());
+    String beforeDate = DateUtil.date2SQLDate(searchParameters.getBeforeDate());
     return containerInterface.findSilverContentIdByPosition(pdcSC.getContainerPosition(),
         alComponentIds, searchParameters.getCreatorId(), afterDate, beforeDate);
   }

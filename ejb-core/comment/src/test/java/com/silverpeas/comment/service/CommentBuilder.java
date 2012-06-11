@@ -33,6 +33,7 @@ import java.util.Date;
  */
 public class CommentBuilder {
 
+  private static final String RESOURCE_TYPE = "kmelia_pub";
   private static final String RESOURCE_ID = "1";
   private static final String SPACE_ID = "Toto";
   private static final String COMPONENT_ID = "kmelia3";
@@ -44,28 +45,28 @@ public class CommentBuilder {
   }
 
   /**
-   * Builds a comment with the specified author and with the specified comment text.
-   * All built comments are about the same resource.
+   * Builds a comment with the specified author and with the specified comment text. All built
+   * comments are about the same resource.
    * @param author the author of the comment.
    * @param text the text of the comment.
    * @return a Comment instance.
    */
   public Comment buildWith(final String author, final String text) {
     Date now = new Date();
-    return new Comment(new CommentPK(String.valueOf(i++), COMPONENT_ID),
+    return new Comment(new CommentPK(String.valueOf(i++), COMPONENT_ID), RESOURCE_TYPE,
         new CommentPK(RESOURCE_ID, SPACE_ID, COMPONENT_ID), 1, author, text, now, now);
   }
 
   /**
-   * Builds a comment with the specified author and with the specified comment text.
-   * The publication on which the comment is is not set; the comment is orphelan.
+   * Builds a comment with the specified author and with the specified comment text. The publication
+   * on which the comment is is not set; the comment is orphelan.
    * @param author the author of the comment.
    * @param text the text of the comment.
    * @return a Comment instance.
    */
   public Comment buildOrphelanWith(final String author, final String text) {
     Date now = new Date();
-    return new Comment(new CommentPK(String.valueOf(i++)),
+    return new Comment(new CommentPK(String.valueOf(i++)), RESOURCE_TYPE,
         new CommentPK(RESOURCE_ID), 1, author, text, now, now);
   }
 

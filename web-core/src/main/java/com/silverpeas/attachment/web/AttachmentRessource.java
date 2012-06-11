@@ -20,15 +20,15 @@
  */
 package com.silverpeas.attachment.web;
 
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,11 +48,10 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+
 
 @Service
-@Scope("request")
+@RequestScoped
 @Path("attachments/{componentId}/{token}")
 public class AttachmentRessource extends RESTWebService {
 

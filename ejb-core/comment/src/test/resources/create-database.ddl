@@ -16,8 +16,9 @@ CREATE TABLE sb_comment_comment
 	commentCreationDate char (10) not null,
 	commentModificationDate char (10),
 	commentComment varchar (2000) not null,
-	foreignId int not null,
-	instanceId varchar (50) not null
+	instanceId varchar (50) not null,
+	resourceType varchar (50) not null,
+	resourceId varchar(50) not null
 	);
 
 ALTER TABLE sb_comment_comment  ADD 

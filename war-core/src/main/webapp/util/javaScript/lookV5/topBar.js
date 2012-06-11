@@ -55,7 +55,7 @@ function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
         domainsBarPage = '/admin/jsp/' + domainsBarPage;
       }
 
-  top.bottomFrame.SpacesBar.location = domainsBarPage + "?privateDomain=" + spaceId + "&privateSubDomain=" + subSpaceId + "&component_id=" + componentId + "&FromTopBar=1";
+  top.bottomFrame.SpacesBar.location = getContext() + domainsBarPage + "?privateDomain=" + spaceId + "&privateSubDomain=" + subSpaceId + "&component_id=" + componentId + "&FromTopBar=1";
   top.bottomFrame.MyMain.location = url;
 
   if (reloadPage) {
@@ -63,7 +63,7 @@ function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
     if (!topBarFrame.startsWith('/')) {
       topBarFrame = '/admin/jsp/' + topBarFrame;
     }
-    location.href = topBarFrame + "?ComponentId=" + componentId + "&SpaceId=" + spaceId;
+    location.href = getContext() + topBarFrame + "?ComponentId=" + componentId + "&SpaceId=" + spaceId;
   }
   else {
     //unactivate all items

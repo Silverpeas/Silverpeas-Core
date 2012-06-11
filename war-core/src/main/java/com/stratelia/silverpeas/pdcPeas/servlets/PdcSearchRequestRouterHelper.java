@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 
 public class PdcSearchRequestRouterHelper {
 
@@ -142,13 +144,14 @@ public class PdcSearchRequestRouterHelper {
     queryParameters.setKeywords(query);
 
     if (pdcSC.getSearchType() >= PdcSearchSessionController.SEARCH_ADVANCED) {
+      String lang = pdcSC.getLanguage(); 
       queryParameters.setSpaceId(request.getParameter("spaces"));
       queryParameters.setInstanceId(request.getParameter("componentSearch"));
       queryParameters.setCreatorId(request.getParameter("authorSearch"));
-      queryParameters.setAfterDate(request.getParameter("createafterdate"));
-      queryParameters.setBeforeDate(request.getParameter("createbeforedate"));
-      queryParameters.setAfterUpdateDate(request.getParameter("updateafterdate"));
-      queryParameters.setBeforeUpdateDate(request.getParameter("updatebeforedate"));
+      queryParameters.setAfterDate(getDateFromRequest("createafterdate", lang, request));
+      queryParameters.setBeforeDate(getDateFromRequest("createbeforedate", lang, request));
+      queryParameters.setAfterUpdateDate(getDateFromRequest("updateafterdate", lang, request));
+      queryParameters.setBeforeUpdateDate(getDateFromRequest("updatebeforedate", lang, request));
     }
 
     String paramNbResToDisplay = request.getParameter("nbRes");
@@ -181,6 +184,20 @@ public class PdcSearchRequestRouterHelper {
     // Set component search type
     pdcSC.setDataType(request.getParameter("dataType"));
     return queryParameters;
+  }
+  
+  private static Date getDateFromRequest(String name, String language, HttpServletRequest request) {
+    String str = request.getParameter(name);
+    if (!StringUtil.isDefined(str)) {
+      return null;
+    }
+    try {
+      return DateUtil.stringToDate(str, language);
+    } catch (ParseException e) {
+      SilverTrace.warn("pdcPeas", "PdcPeasRequestRouterHelper.getDateFromRequest()",
+          "ERR_CANT_PARSE_DATE", e);
+    }
+    return null;
   }
 
   /**

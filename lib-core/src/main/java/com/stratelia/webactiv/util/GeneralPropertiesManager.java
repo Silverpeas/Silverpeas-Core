@@ -23,6 +23,11 @@
  */
 package com.stratelia.webactiv.util;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+
 /**
  * @author Norbert CHAIX
  * @version
@@ -36,6 +41,7 @@ public class GeneralPropertiesManager {
   static final ResourceLocator s_GeneralProperties = new ResourceLocator(
       "com.stratelia.webactiv.general", "");
   static int dvis = Integer.parseInt(s_GeneralProperties.getString("domainVisibility", "0"));
+  static final Map<String, Collection<String>> listProperties = new HashMap<String, Collection<String>>();
 
   static public ResourceLocator getGeneralResourceLocator() {
     return s_GeneralProperties;
@@ -57,6 +63,27 @@ public class GeneralPropertiesManager {
   
   static public boolean getBoolean(String property, boolean defaultValue) {
     return s_GeneralProperties.getBoolean(property, defaultValue);
+  }
+
+  static public Collection<String> getStringCollection(String property) {
+    return getStringCollection(property,"[ ,;]");
+  }
+
+  static public Collection<String> getStringCollection(String property, String regexValueSeparator) {
+    Collection<String> propertyValues = listProperties.get(property);
+    if (propertyValues == null) {
+      propertyValues = new LinkedHashSet<String>();
+      listProperties.put(property, propertyValues);
+      final String stringValues = s_GeneralProperties.getString(property, null);
+      if (stringValues != null && !"".equals(stringValues.trim())) {
+        for (String value : stringValues.split(regexValueSeparator)) {
+          if (value != null && !"".equals(value.trim())) {
+            propertyValues.add(value.trim());
+          }
+        }
+      }
+    }
+    return propertyValues;
   }
 
   static public int getDomainVisibility() {
