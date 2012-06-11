@@ -28,7 +28,7 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.repository.DownloadDetailRepository;
 import com.silverpeas.sharing.repository.TicketRepository;
 import org.silverpeas.util.UuidPk;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
