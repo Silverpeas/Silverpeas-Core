@@ -61,6 +61,7 @@ import org.silverpeas.attachment.repository.DocumentRepository;
  * @author ehugonnet
  */
 public class SimpleDocumentService implements AttachmentService {
+
   private final ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
   private final DocumentRepository repository = new DocumentRepository();
@@ -333,7 +334,11 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      return repository.findDocumentById(session, primaryKey, lang);
+      if (StringUtil.isDefined(primaryKey.getId())) {
+        return repository.findDocumentById(session, primaryKey, lang);
+      }
+      return repository.findDocumentByOldSilverpeasId(session, primaryKey.getComponentName(),
+          primaryKey.getOldSilverpeasId(), false, lang);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -1226,7 +1231,7 @@ public class SimpleDocumentService implements AttachmentService {
       session = BasicDaoFactory.getSystemSession();
       return repository.getContent(session, pk, lang);
     } catch (IOException ex) {
-     throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -1243,7 +1248,7 @@ public class SimpleDocumentService implements AttachmentService {
       in = repository.getContent(session, pk, lang);
       IOUtils.copy(in, output);
     } catch (IOException ex) {
-     throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {

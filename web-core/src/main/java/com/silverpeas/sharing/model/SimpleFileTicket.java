@@ -73,8 +73,9 @@ public class SimpleFileTicket extends Ticket {
 
   @Override
   public ShareableResource<SimpleDocument> getResource() {
+    SimpleDocumentPK pk = new SimpleDocumentPK(null,getComponentId());
+    pk.setOldSilverpeasId(getSharedObjectId());
     return new ShareableAttachment(getToken(), AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(String.valueOf(getSharedObjectId()),
-        getComponentId()), null));
+        searchAttachmentById(pk, null));
   }
 }

@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import static com.silverpeas.sharing.servlets.FileSharingConstants.*;
 
@@ -67,8 +68,8 @@ public class GetInfoFromKeyServlet extends HttpServlet {
       response.sendRedirect(url);
     } else {
       if (ticket instanceof SimpleFileTicket) {
-        AttachmentDetail attachment = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
-        request.setAttribute("fileIcon", attachment.getAttachmentIcon());
+        SimpleDocument attachment = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
+        request.setAttribute("fileIcon", attachment.getDisplayIcon());
         request.setAttribute("fileSize", FileRepositoryManager.formatFileSize(attachment.getSize()));
       } else if (ticket instanceof VersionFileTicket) {
         Document document = ((VersionFileTicket) ticket).getResource().getAccessedObject();

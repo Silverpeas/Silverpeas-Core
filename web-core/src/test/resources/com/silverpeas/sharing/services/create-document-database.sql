@@ -1,9 +1,9 @@
-CREATE TABLE uniqueId (
+CREATE TABLE IF NOT EXISTS uniqueId (
 	maxId int NOT NULL ,
 	tableName VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE sb_filesharing_ticket
+CREATE TABLE IF NOT EXISTS sb_filesharing_ticket
 (
 	shared_object BIGINT NOT NULL,
 	componentId VARCHAR(255) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE sb_filesharing_ticket
   shared_object_type VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE sb_filesharing_history
+CREATE TABLE IF NOT EXISTS sb_filesharing_history
 (
 	id BIGINT NOT NULL,
 	keyfile VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE sb_filesharing_history
 	downloadIp VARCHAR(50)	NOT NULL
 );
 
-CREATE TABLE SB_Version_Document 
+CREATE TABLE IF NOT EXISTS SB_Version_Document 
 	(
 	documentId		INT		NOT NULL, 
 	documentName		VARCHAR (255)	NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE SB_Version_Document
 	documentOrderNum	INT NOT NULL DEFAULT (0)
 	);
 
-CREATE TABLE SB_Version_Version 
+CREATE TABLE IF NOT EXISTS SB_Version_Version 
 	(
 	versionId INT NOT NULL,
 	documentId INT NOT NULL,
