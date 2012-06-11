@@ -23,6 +23,7 @@
  */
 package com.silverpeas.attachment.web;
 
+import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.services.SharingServiceFactory;
@@ -45,11 +46,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
 
 @Service
-@Scope("request")
+@RequestScoped
 @Path("attachments/{componentId}/{token}")
 public class AttachmentRessource extends RESTWebService {
 

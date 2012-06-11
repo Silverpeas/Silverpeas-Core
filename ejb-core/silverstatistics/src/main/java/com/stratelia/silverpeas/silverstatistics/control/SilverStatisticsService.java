@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import org.apache.commons.lang3.text.StrTokenizer;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 
 import javax.inject.Named;
 import java.io.IOException;

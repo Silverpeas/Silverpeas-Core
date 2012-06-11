@@ -33,7 +33,7 @@ import com.stratelia.webactiv.searchEngine.model.SearchCompletion;
 import com.stratelia.webactiv.searchEngine.model.WAIndexSearcher;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;

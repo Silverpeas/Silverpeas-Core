@@ -36,15 +36,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.silverpeas.publication.web.PublicationResource;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 
 @Service
-@Scope("request")
+@RequestScoped
 @Path("sharing/{token}")
 public class SharingResource extends RESTWebService {
   
