@@ -20,6 +20,15 @@
  */
 package com.silverpeas.form.displayers;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -44,14 +53,6 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.apache.commons.fileupload.FileItem;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
@@ -309,7 +310,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     try {
       String value = processUploadedImage(items, itemName, pageContext);
       String param = FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
-      if (param != null) {
+      if (param != null && !pageContext.isCreation()) {
         if (param.startsWith("remove_")) {
           // Il faut supprimer le fichier
           String attachmentId = param.substring("remove_".length());

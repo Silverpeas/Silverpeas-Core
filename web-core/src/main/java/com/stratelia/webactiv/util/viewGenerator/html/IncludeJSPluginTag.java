@@ -57,6 +57,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
+  private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
+  private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
@@ -118,6 +120,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       script messageMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_MESSAGEME);
       xhtml.addElement(profile);
       xhtml.addElement(messageMe);
+    } else if (wysiwyg.name().equals(getName())) {
+      script wysiwyg = new script().setType(JAVASCRIPT_TYPE).setSrc(wysiwygPath + JAVASCRIPT_CKEDITOR);
+      xhtml.addElement(wysiwyg);
     }
     xhtml.output(getJspContext().getOut());
   }

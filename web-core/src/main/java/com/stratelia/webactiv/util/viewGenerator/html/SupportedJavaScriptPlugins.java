@@ -63,5 +63,9 @@ public enum SupportedJavaScriptPlugins {
    * The HTML element on which the plugin is invoked must present the rel attribute valued with the
    * user identifier and optionally the user full name (comma separated).
    */
-  messageme;
+  messageme,
+  /**
+   * The CKEditor script to write and render WYSIWYG content.
+   */
+  wysiwyg;
 }
