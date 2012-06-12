@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
  * that point to each users and sub-groups DN Example (with the attribute 'member') : member
@@ -51,6 +52,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
     if (StringUtil.isDefined(memberId)) {
       LDAPEntry memberEntry;
+
       SilverTrace.info("admin", "LDAPGroupAllRoot.getMemberGroupIds()",
           "root.MSG_GEN_ENTER_METHOD", "MemberId=" + memberId + ", isGroup=" + isGroup);
       if (isGroup) {
@@ -104,6 +106,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
+
   @Override
   public String[] getUserMemberGroupIds(String lds, String userId) throws AdminException {
     Iterator<String> it;
@@ -136,8 +139,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @see
    */
   @Override
-  protected String[] getUserIds(String lds, LDAPEntry groupEntry)
-      throws AdminException {
+  protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
     Set<String> usersManaged = new HashSet<String>();
     Set<String> groupsManaged = new HashSet<String>();
     List<LDAPEntry> groupsSet = new ArrayList<LDAPEntry> ();
@@ -195,6 +197,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
           // Case of ActiveDirectory or NDS member = dn
           userEntry = LDAPUtility.getFirstEntryFromSearch(lds, memberFieldValue, driverSettings.
               getScope(), driverSettings.getUsersFullFilter(), driverSettings.getUserAttributes());
+
           if (userEntry != null) {
             String userSpecificId = LDAPUtility.getFirstAttributeValue(
                 userEntry, driverSettings.getUsersIdField());
@@ -232,12 +235,9 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       return ArrayUtil.EMPTY_LDAP_ENTRY_ARRAY;
     } else {
       LDAPEntry[] theEntries = null;
-      String theFilter;
-
-      if ((extraFilter != null) && (extraFilter.length() > 0)) {
+      String theFilter = driverSettings.getGroupsFullFilter();
+      if (StringUtil.isDefined(extraFilter)) {
         theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
-      } else {
-        theFilter = driverSettings.getGroupsFullFilter();
       }
       try {
         SilverTrace.info("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",

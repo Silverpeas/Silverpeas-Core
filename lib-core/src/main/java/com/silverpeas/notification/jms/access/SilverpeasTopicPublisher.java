@@ -23,11 +23,7 @@
  */
 package com.silverpeas.notification.jms.access;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Topic;
-import javax.jms.TopicPublisher;
+import javax.jms.*;
 
 /**
  * Decorator of a TopicPublisher returned by the JMS system.
