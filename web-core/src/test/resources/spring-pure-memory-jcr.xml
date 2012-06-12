@@ -39,6 +39,9 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.stratelia.webactiv.util.attachment.model"/>
   <ctx:component-scan base-package="com.silverpeas.jcrutil"/>
+  <ctx:component-scan base-package="org.silverpeas.attachment">
+    <ctx:exclude-filter type="regex" expression="org.silverpeas.attachment.*Wrapper" />
+  </ctx:component-scan>
 
 
   <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean">
@@ -61,6 +64,7 @@
   </bean>
 
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory" factory-method="getInstance" />
   
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="jcrAccessManager" scope="prototype" class="com.silverpeas.jcrutil.security.impl.SimpleAccessManager" />

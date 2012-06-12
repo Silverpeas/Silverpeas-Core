@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.io.IOUtils;
@@ -60,6 +61,7 @@ import org.silverpeas.attachment.repository.DocumentRepository;
  *
  * @author ehugonnet
  */
+@Named("simpleDocumentService")
 public class SimpleDocumentService implements AttachmentService {
 
   private final ResourceLocator resources = new ResourceLocator(

@@ -23,18 +23,24 @@
  */
 package org.silverpeas.attachment;
 
+import javax.inject.Inject;
+
 /**
  *
  * @author ehugonnet
  */
 public class AttachmentServiceFactory {
   
+  @Inject
   private AttachmentService service;
   
   private AttachmentServiceFactory() {
-    service = new SimpleDocumentService();
   }
   private static final AttachmentServiceFactory factory = new AttachmentServiceFactory();
+  
+  public static final AttachmentServiceFactory getInstance() {
+    return factory;
+  }
   
   public static AttachmentService getAttachmentService() {
     return factory.service;

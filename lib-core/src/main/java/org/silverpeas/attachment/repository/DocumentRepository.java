@@ -148,30 +148,6 @@ public class DocumentRepository {
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
     pk.setId(copy.getIdentifier());
     return pk;
-    /*Binary data = null;
-     InputStream in = null;
-     try {
-     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
-     SimpleDocument targetDoc = findDocumentById(session, document.getPk(), document.getLanguage());
-     targetDoc.setPK(pk);
-     targetDoc.setForeignId(destination.getId());
-     data = converter.getBinaryContent(session.getNodeByIdentifier(document.getId()).
-     getNode(document.getFile().getNodeName()));
-     createDocument(session, targetDoc, data.getStream());
-     for (String lang : I18NHelper.getAllSupportedLanguages()) {
-     }
-     targetDoc.setId(targetDocumentNode.getIdentifier());
-     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
-     session.getWorkspace().copy(originDocumentNode.getPath(), targetDoc.getFullPath());
-     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
-     targetDocumentNode.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
-     return targetDoc.getPk();
-     } finally {
-     IOUtils.closeQuietly(in);
-     if (data != null) {
-     data.dispose();
-     }
-     }*/
   }
 
   /**

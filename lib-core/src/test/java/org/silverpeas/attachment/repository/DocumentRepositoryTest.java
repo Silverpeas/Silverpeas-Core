@@ -93,7 +93,7 @@ public class DocumentRepositoryTest {
   @Before
   public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
     if (!registred) {
-      String cndFileName = AbstractJcrRegisteringTestCase.class.getClassLoader().getResource(
+      String cndFileName = DocumentRepositoryTest.class.getClassLoader().getResource(
           "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
       SilverpeasRegister.registerNodeTypes(cndFileName);
       registred = true;
