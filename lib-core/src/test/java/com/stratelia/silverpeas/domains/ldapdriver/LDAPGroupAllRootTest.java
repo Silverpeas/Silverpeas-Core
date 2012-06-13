@@ -54,14 +54,14 @@ import org.opends.server.types.LDIFImportConfig;
 import org.opends.server.util.EmbeddedUtils;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LDAPGroupAllRootTest {
-  
+
   private static final LDAPSettings settings = new LDAPSettings();
-  
+
   public static void startLdapServer() throws InitializationException, ConfigException,
       FileNotFoundException, DirectoryException {
     File directoryServerRoot = new File(PathTestUtil.TARGET_DIR + "test-classes"
@@ -88,16 +88,14 @@ public class LDAPGroupAllRootTest {
       throw new RuntimeException("OpenDS cannot get internal connection (null)");
     }
   }
-  
+
   public static void loadLdifs() throws InitializationException, ConfigException,
       FileNotFoundException, DirectoryException {
-    
+
     LDIFImportConfig importConfig = new LDIFImportConfig(new FileInputStream(new File(
         PathTestUtil.TARGET_DIR + "test-classes", "silverpeas-ldap.ldif")));
     importConfig.setAppendToExistingData(true);
-    // importConfig.setReplaceExistingEntries(true);
     importConfig.setCompressed(false);
-    //importConfig.setClearBackend(true);
     importConfig.setEncrypted(false);
     importConfig.setValidateSchema(false);
     importConfig.setSkipDNValidation(false);
@@ -131,14 +129,14 @@ public class LDAPGroupAllRootTest {
   }
   private String connectionId;
   private LDAPGroupAllRoot instance = new LDAPGroupAllRoot();
-  
+
   public LDAPGroupAllRootTest() {
   }
-  
+
   @BeforeClass
   public static void prepareSettings() throws Exception {
     loadLdifs();
-    
+
     settings.LDAPHost = "localhost";
     settings.LDAPPort = 1389;
     settings.LDAPSearchRecurs = true;
@@ -146,7 +144,7 @@ public class LDAPGroupAllRootTest {
     settings.LDAPAccessLoginDN = "cn=Directory Manager,cn=Root DNs,cn=config";
     settings.LDAPAccessPasswd = "password";
     settings.LDAPOpAttributesUsed = true;
-    
+
     settings.usersClassName = "person";
     settings.usersFilter = "";
     settings.usersIdField = "uid";
@@ -154,7 +152,7 @@ public class LDAPGroupAllRootTest {
     settings.usersFirstNameField = "givenName";
     settings.usersLastNameField = "sn";
     settings.usersEmailField = "mail";
-    
+
     settings.groupsClassName = "groupOfUniqueNames";
     settings.groupsFilter = "(uniqueMember=*)";
     settings.groupsIdField = "entryUUID";
@@ -166,13 +164,13 @@ public class LDAPGroupAllRootTest {
     settings.groupsIncludeEmptyGroups = true;
     settings.groupsNameField = "cn";
     settings.groupsDescriptionField = "description";
-    
-    
-    
+
+
+
     settings.LDAPDefaultSearchConstraints = settings.getSearchConstraints(true);
     settings.LDAPDefaultConstraints = settings.getConstraints(true);
   }
-  
+
   @Before
   public void prepareConnection() throws Exception {
     connectionId = LDAPUtility.openConnection(settings);
@@ -180,13 +178,13 @@ public class LDAPGroupAllRootTest {
     cache.init(settings);
     instance.init(settings, cache);
   }
-  
+
   @After
   public void closeConnection() throws AdminException {
     LDAPUtility.closeConnection(connectionId);
-    
+
   }
-  
+
   @AfterClass
   public static void stopLdapServer() {
     if (EmbeddedUtils.isRunning()) {
@@ -203,8 +201,14 @@ public class LDAPGroupAllRootTest {
     boolean isGroup = false;
     List<String> result = instance.getMemberGroupIds(connectionId, userId, isGroup);
     assertThat(result, is(not(nullValue())));
+    assertThat(result, hasSize(3));
+    assertThat(result, contains("a95b39de-ea91-45cb-9af0-890670075d54",
+        "b475049f-f640-400a-b643-3a8d047e8d57", "04d0ceff-2ccc-4c78-8c55-e819875cb0ae"));
+    userId = "user.3";
+    result = instance.getMemberGroupIds(connectionId, userId, isGroup);
+    assertThat(result, is(not(nullValue())));
     assertThat(result, hasSize(1));
-    assertThat(result.get(0), is("a95b39de-ea91-45cb-9af0-890670075d54"));
+    assertThat(result, contains("a95b39de-ea91-45cb-9af0-890670075d54"));
   }
 
   /**
@@ -227,8 +231,15 @@ public class LDAPGroupAllRootTest {
     String[] result = instance.getUserMemberGroupIds(connectionId, userId);
     assertThat(result, is(not(nullValue())));
     assertThat(result, arrayWithSize(0));
-    
+
     userId = "user.1";
+    result = instance.getUserMemberGroupIds(connectionId, userId);
+    assertThat(result, is(not(nullValue())));
+    assertThat(result, arrayWithSize(3));
+    assertThat(result, arrayContaining("a95b39de-ea91-45cb-9af0-890670075d54",
+        "b475049f-f640-400a-b643-3a8d047e8d57", "04d0ceff-2ccc-4c78-8c55-e819875cb0ae"));
+
+    userId = "user.3";
     result = instance.getUserMemberGroupIds(connectionId, userId);
     assertThat(result, is(not(nullValue())));
     assertThat(result, arrayWithSize(1));
@@ -250,7 +261,7 @@ public class LDAPGroupAllRootTest {
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8).length);
-    
+
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
@@ -262,11 +273,12 @@ public class LDAPGroupAllRootTest {
         });
     when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
     when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
-    
+
     String[] result = instance.getUserIds(connectionId, groupEntry);
     assertThat(result, is(not(nullValue())));
-    assertThat(result, arrayWithSize(5));
-    assertThat(result, arrayContainingInAnyOrder("user.0", "user.1", "user.2", "user.3", "user.4"));
+    assertThat(result, arrayWithSize(6));
+    assertThat(result, arrayContainingInAnyOrder("user.0", "user.1", "user.2", "user.3", "user.4",
+        "user.5"));
   }
 
   /**
@@ -284,7 +296,7 @@ public class LDAPGroupAllRootTest {
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8).length);
-    
+
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
@@ -313,8 +325,21 @@ public class LDAPGroupAllRootTest {
     assertThat(result, arrayWithSize(0));
     result = instance.getChildGroupsEntry(connectionId, "", "");
     assertThat(result, is(not(nullValue())));
-    assertThat(result, arrayWithSize(1));
+    assertThat(result, arrayWithSize(3));
     assertThat(result[0].getDN(), is("cn=Groupe 1,dc=silverpeas,dc=org"));
+    assertThat(result[1].getDN(), is("cn=Groupe 2,dc=silverpeas,dc=org"));
+    assertThat(result[2].getDN(), is("cn=Groupe 3,cn=Groupe 1,dc=silverpeas,dc=org"));
+
+    result = instance.getChildGroupsEntry(connectionId,
+        "b475049f-f640-400a-b643-3a8d047e8d57", "");
+    assertThat(result, is(not(nullValue())));
+    assertThat(result, arrayWithSize(0));
+    result = instance.getChildGroupsEntry(connectionId, "", "");
+    assertThat(result, is(not(nullValue())));
+    assertThat(result, arrayWithSize(3));
+    assertThat(result[0].getDN(), is("cn=Groupe 1,dc=silverpeas,dc=org"));
+    assertThat(result[1].getDN(), is("cn=Groupe 2,dc=silverpeas,dc=org"));
+    assertThat(result[2].getDN(), is("cn=Groupe 3,cn=Groupe 1,dc=silverpeas,dc=org"));
   }
 
   /**
@@ -332,7 +357,7 @@ public class LDAPGroupAllRootTest {
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8).length);
-    
+
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
@@ -340,13 +365,30 @@ public class LDAPGroupAllRootTest {
           "uid=user.1,ou=People,dc=silverpeas,dc=org",
           "uid=user.2,ou=People,dc=silverpeas,dc=org",
           "uid=user.3,ou=People,dc=silverpeas,dc=org",
-          "uid=user.4,ou=People,dc=silverpeas,dc=org"
+          "uid=user.4,ou=People,dc=silverpeas,dc=org",
+          "cn=Groupe 2,dc=silverpeas,dc=org"
         });
     when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
     when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
     when(groupEntry.getDN()).thenReturn("cn=Groupe 1,dc=silverpeas,dc=org");
-    
+
     List<LDAPEntry> result = instance.getTRUEChildGroupsEntry(connectionId, groupEntry);
+    assertThat(result, is(not(nullValue())));
+    assertThat(result, hasSize(1));
+    assertThat(result.get(0).getDN(), is("cn=Groupe 3,cn=Groupe 1,dc=silverpeas,dc=org"));
+    when(groupEntry.getDN()).thenReturn("cn=Groupe 2,dc=silverpeas,dc=org");
+    uuidAttribute = mock(LDAPAttribute.class);
+    when(uuidAttribute.getName()).thenReturn("entryUUID");
+    when(uuidAttribute.getStringValue()).thenReturn("b475049f-f640-400a-b643-3a8d047e8d57");
+    when(uuidAttribute.getStringValueArray()).thenReturn(new String[]{
+          "b475049f-f640-400a-b643-3a8d047e8d57"});
+    when(uuidAttribute.getByteValue()).thenReturn("b475049f-f640-400a-b643-3a8d047e8d57".getBytes(
+        Charsets.UTF_8));
+    when(uuidAttribute.size()).thenReturn("b475049f-f640-400a-b643-3a8d047e8d57".getBytes(
+        Charsets.UTF_8).length);
+    when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
+    when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
+    result = instance.getTRUEChildGroupsEntry(connectionId, groupEntry);
     assertThat(result, is(not(nullValue())));
     assertThat(result, hasSize(0));
   }
@@ -359,14 +401,35 @@ public class LDAPGroupAllRootTest {
     String extraFilter = "";
     Group[] result = instance.getAllChangedGroups(connectionId, extraFilter);
     assertThat(result, is(not(nullValue())));
-    assertThat(result, arrayWithSize(1));
-    assertThat(result[0].getSpecificId(), is("a95b39de-ea91-45cb-9af0-890670075d54"));
-    assertThat(result[0].getName(), is("Groupe 1"));
-    assertThat(result[0].getDescription(), is("Description du premier groupe"));
-    assertThat(result[0].getDomainId(), is(nullValue()));
-    assertThat(result[0].getId(), is(nullValue()));
-    assertThat(result[0].getRule(), is(nullValue()));
-    assertThat(result[0].getUserIds(), is(not(nullValue())));
-    assertThat(result[0].getUserIds(), arrayWithSize(5));
+    assertThat(result, arrayWithSize(3));
+    int index = 1;
+    assertThat(result[index].getSpecificId(), is("a95b39de-ea91-45cb-9af0-890670075d54"));
+    assertThat(result[index].getName(), is("Groupe 1"));
+    assertThat(result[index].getDescription(), is("Description du premier groupe"));
+    assertThat(result[index].getDomainId(), is(nullValue()));
+    assertThat(result[index].getId(), is(nullValue()));
+    assertThat(result[index].getRule(), is(nullValue()));
+    assertThat(result[index].getUserIds(), is(not(nullValue())));
+    assertThat(result[index].getUserIds(), arrayWithSize(5));
+
+    index = 2;
+    assertThat(result[index].getSpecificId(), is("b475049f-f640-400a-b643-3a8d047e8d57"));
+    assertThat(result[index].getName(), is("Groupe 2"));
+    assertThat(result[index].getDescription(), is("Description du second groupe"));
+    assertThat(result[index].getDomainId(), is(nullValue()));
+    assertThat(result[index].getId(), is(nullValue()));
+    assertThat(result[index].getRule(), is(nullValue()));
+    assertThat(result[index].getUserIds(), is(not(nullValue())));
+    assertThat(result[index].getUserIds(), arrayWithSize(2));
+    
+    index = 0;
+    assertThat(result[index].getSpecificId(), is("04d0ceff-2ccc-4c78-8c55-e819875cb0ae"));
+    assertThat(result[index].getName(), is("Groupe 3"));
+    assertThat(result[index].getDescription(), is("Description du troisème groupe"));
+    assertThat(result[index].getDomainId(), is(nullValue()));
+    assertThat(result[index].getId(), is(nullValue()));
+    assertThat(result[index].getRule(), is(nullValue()));
+    assertThat(result[index].getUserIds(), is(not(nullValue())));
+    assertThat(result[index].getUserIds(), arrayWithSize(1));
   }
 }
