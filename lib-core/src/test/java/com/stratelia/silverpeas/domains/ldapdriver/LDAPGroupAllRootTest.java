@@ -332,7 +332,7 @@ public class LDAPGroupAllRootTest {
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8).length);
-
+    
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
@@ -344,14 +344,11 @@ public class LDAPGroupAllRootTest {
         });
     when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
     when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
+    when(groupEntry.getDN()).thenReturn("cn=Groupe 1,dc=silverpeas,dc=org");
+    
     List<LDAPEntry> result = instance.getTRUEChildGroupsEntry(connectionId, groupEntry);
     assertThat(result, is(not(nullValue())));
-    assertThat(result, hasSize(1));
-    assertThat(result.get(0).getDN(), is("cn=Groupe 1,dc=silverpeas,dc=org"));
-    when(groupEntry.getDN()).thenReturn("cn=Groupe 2,dc=silverpeas,dc=org");
-    result = instance.getTRUEChildGroupsEntry(connectionId, groupEntry);
-    assertThat(result, is(not(nullValue())));
-    assertThat(result, hasSize(0));    
+    assertThat(result, hasSize(0));
   }
 
   /**

@@ -270,21 +270,25 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @see
    */
   protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, LDAPEntry theEntry) {
-    List<LDAPEntry> entryVector = new ArrayList<LDAPEntry>();
-
     try {
-      LDAPEntry[] subGroups = LDAPUtility.search1000Plus(lds, theEntry.getDN(),
+      LDAPEntry[] entries = LDAPUtility.search1000Plus(lds, theEntry.getDN(),
           driverSettings.getScope(), driverSettings.getGroupsFullFilter(),
           driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
-      if (subGroups != null) {
-        return Arrays.asList(subGroups);
+      if(entries != null) {
+        List<LDAPEntry> subGroups = new ArrayList<LDAPEntry>();
+        for (LDAPEntry entry : entries) {
+          if (!entry.getDN().equals(theEntry.getDN())) {
+            subGroups.add(entry);
+          }
+        }
+        return subGroups;
       }
     } catch (AdminException e) {
       SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
           "admin.MSG_ERR_LDAP_GENERAL", "GETTING SUBGROUPS FAILED FOR : "
           + theEntry.getDN(), e);
     }
-    return entryVector;
+    return new ArrayList<LDAPEntry>();
   }
 
   @Override
