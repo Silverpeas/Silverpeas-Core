@@ -18,7 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPEntry;
@@ -30,13 +29,13 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -80,7 +79,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "("
             + driverSettings.getGroupsMemberField() + "="
-            + memberEntry.getDN() + "))", 
+            + memberEntry.getDN() + "))",
             driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
       }
       for (LDAPEntry currentEntry : theEntries) {
@@ -105,7 +104,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   public String[] getGroupMemberGroupIds(String lds, String groupId) throws AdminException {
     return ArrayUtil.EMPTY_STRING_ARRAY;
   }
-
 
   @Override
   public String[] getUserMemberGroupIds(String lds, String userId) throws AdminException {
@@ -142,7 +140,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
     Set<String> usersManaged = new HashSet<String>();
     Set<String> groupsManaged = new HashSet<String>();
-    List<LDAPEntry> groupsSet = new ArrayList<LDAPEntry> ();
+    List<LDAPEntry> groupsSet = new ArrayList<LDAPEntry>();
     List<LDAPEntry> groupsCur;
     Iterator<LDAPEntry> it;
     LDAPEntry curGroup;
@@ -161,7 +159,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             if (!groupsManaged.contains(grId)) {
               groupsManaged.add(grId);
               usersManaged.addAll(getTRUEUserIds(lds, curGroup));
-              groupsCur.addAll(getTRUEChildGroupsEntry(lds, grId, curGroup));
+              groupsCur.addAll(getTRUEChildGroupsEntry(lds, curGroup));
             }
           } catch (AdminException e) {
             SilverTrace.info("admin", "LDAPGroupAllRoot.getUserIds()",
@@ -271,34 +269,20 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
-  protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, String parentId, LDAPEntry theEntry) {
+  protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, LDAPEntry theEntry) {
     List<LDAPEntry> entryVector = new ArrayList<LDAPEntry>();
-    if (StringUtil.isDefined(parentId)) {
-      SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
-          "root.MSG_GEN_PARAM_VALUE", "Root Group Search : " + parentId);
-      String[] stringVals = LDAPUtility.getAttributeValues(theEntry, driverSettings.
-          getGroupsMemberField());
-      for (String childDN : stringVals) {
-        try {
-          LDAPEntry childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds, childDN,
-              driverSettings.getScope(), driverSettings.getGroupsFullFilter(),
-              driverSettings.getGroupAttributes());
-          if (childGroupEntry != null) {
-            // Verify that the group exist in the scope
-            String groupSpecificId = LDAPUtility.getFirstAttributeValue(
-                childGroupEntry, driverSettings.getGroupsIdField());
-            if (LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.
-                getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
-                driverSettings.getGroupsIdFilter(groupSpecificId),
-                driverSettings.getGroupAttributes()) != null) {
-              entryVector.add(childGroupEntry);
-            }
-          }
-        } catch (AdminException e) {
-          SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
-              "admin.MSG_ERR_LDAP_GENERAL", "GROUP NOT FOUND : " + childDN, e);
-        }
+
+    try {
+      LDAPEntry[] subGroups = LDAPUtility.search1000Plus(lds, theEntry.getDN(),
+          driverSettings.getScope(), driverSettings.getGroupsFullFilter(),
+          driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
+      if (subGroups != null) {
+        return Arrays.asList(subGroups);
       }
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
+          "admin.MSG_ERR_LDAP_GENERAL", "GETTING SUBGROUPS FAILED FOR : "
+          + theEntry.getDN(), e);
     }
     return entryVector;
   }
@@ -320,7 +304,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     // Go recurs to all group's ancestors
     while (!groupsIdsSet.isEmpty()) {
       groupsCur = new ArrayList<LDAPEntry>();
-      for ( LDAPEntry theGroup : groupsIdsSet) {
+      for (LDAPEntry theGroup : groupsIdsSet) {
         SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
             "root.MSG_GEN_PARAM_VALUE", "GroupTraite2=" + theGroup.getDN());
         les = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),

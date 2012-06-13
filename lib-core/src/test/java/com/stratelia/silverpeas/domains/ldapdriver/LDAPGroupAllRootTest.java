@@ -344,24 +344,14 @@ public class LDAPGroupAllRootTest {
         });
     when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
     when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
-    List<LDAPEntry> result = instance.getTRUEChildGroupsEntry(connectionId, "toto", groupEntry);
+    List<LDAPEntry> result = instance.getTRUEChildGroupsEntry(connectionId, groupEntry);
     assertThat(result, is(not(nullValue())));
-    assertThat(result, hasSize(0));
-    /*assertThat(result, hasSize(10));
-     List<String> dns = new ArrayList<String>(result.size());
-     for(LDAPEntry entry : result) {
-     dns.add(entry.getDN());
-     }
-     assertThat(dns, containsInAnyOrder( "uid=user.0,ou=People,dc=silverpeas,dc=org",
-     "uid=user.1,ou=People,dc=silverpeas,dc=org",
-     "uid=user.2,ou=People,dc=silverpeas,dc=org",
-     "uid=user.3,ou=People,dc=silverpeas,dc=org",
-     "uid=user.4,ou=People,dc=silverpeas,dc=org",
-     "uid=user.5,ou=People,dc=silverpeas,dc=org",
-     "uid=user.6,ou=People,dc=silverpeas,dc=org",
-     "uid=user.7,ou=People,dc=silverpeas,dc=org",
-     "uid=user.8,ou=People,dc=silverpeas,dc=org",
-     "uid=user.9,ou=People,dc=silverpeas,dc=org"));*/
+    assertThat(result, hasSize(1));
+    assertThat(result.get(0).getDN(), is("cn=Groupe 1,dc=silverpeas,dc=org"));
+    when(groupEntry.getDN()).thenReturn("cn=Groupe 2,dc=silverpeas,dc=org");
+    result = instance.getTRUEChildGroupsEntry(connectionId, groupEntry);
+    assertThat(result, is(not(nullValue())));
+    assertThat(result, hasSize(0));    
   }
 
   /**
