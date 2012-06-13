@@ -30,6 +30,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -262,27 +263,29 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @see
    */
   protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, String parentId, LDAPEntry theEntry) {
-    List<LDAPEntry> entryVector = new ArrayList<LDAPEntry>();
     if (StringUtil.isDefined(parentId)) {
       SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
           "root.MSG_GEN_PARAM_VALUE", "Root Group Search : " + parentId);
-      LDAPEntry[] subGroups = new LDAPEntry[0];
       try {
-        subGroups = LDAPUtility.search1000Plus(lds, theEntry.getDN(), driverSettings.getScope(), driverSettings
+        LDAPEntry[] entries = LDAPUtility.search1000Plus(lds, theEntry.getDN(), driverSettings.getScope(), driverSettings
                 .getGroupsFullFilter(), driverSettings.getGroupsNameField(), driverSettings
               .getGroupAttributes());
+        if(entries != null) {
+          List<LDAPEntry> subGroups = new ArrayList<LDAPEntry>();
+          for (LDAPEntry entry : entries) {
+            if (!entry.getDN().equals(theEntry.getDN())) {
+              subGroups.add(entry);
+            }
+          }
+          return subGroups;
+        }
       } catch (AdminException e) {
         SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
             "admin.MSG_ERR_LDAP_GENERAL", "GETTING SUBGROUPS FAILED FOR : "
             + theEntry.getDN(), e);
       }
-      for (LDAPEntry subGroup : subGroups) {
-          if (subGroup != null) {
-            entryVector.add(subGroup);
-          }
-      }
     }
-    return entryVector;
+    return new ArrayList<LDAPEntry>();
   }
 
   @Override

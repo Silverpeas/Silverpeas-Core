@@ -5762,41 +5762,29 @@ public final class Admin {
             "root.MSG_GEN_ENTER_METHOD", "TimeStamps from " + fromTimeStamp + " to "
             + toTimeStamp);
 
-        if (fromTimeStamp.equals(toTimeStamp)) {
-          String uptodate =
-              "Domain '" + domainDriverManager.getDomain(sDomainId).getName()
-              + "' is already up-to-date !";
-          SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", uptodate, null);
-          sReport += uptodate + "\n";
-        } else {
-          // Start transaction
-          domainDriverManager.startTransaction(false);
-          domainDriverManager.startTransaction(sDomainId, false);
+        // Start transaction
+        domainDriverManager.startTransaction(false);
+        domainDriverManager.startTransaction(sDomainId, false);
 
-          // Synchronize users
-          if (synchroDomain.mustImportUsers() || threaded) {
-            sReport += synchronizeUsers(sDomainId, fromTimeStamp, toTimeStamp, threaded,
-                    true);
-          } else {
-            sReport += synchronizeUsers(sDomainId, fromTimeStamp, toTimeStamp, threaded,
-                    false);
-          }
+        // Synchronize users
+        boolean importUsers = synchroDomain.mustImportUsers() || threaded;
+        sReport += synchronizeUsers(sDomainId, fromTimeStamp, toTimeStamp, threaded, importUsers);
 
-          // Synchronize groups
-          // Get all users of the domain from Silverpeas
-          UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, sDomainId);
-          HashMap<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
-          sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping, fromTimeStamp, toTimeStamp);
+        // Synchronize groups
+        // Get all users of the domain from Silverpeas
+        UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, sDomainId);
+        HashMap<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
+        sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping, fromTimeStamp, toTimeStamp);
 
-          // All the synchro is finished -> set the new timestamp
-          // ----------------------------------------------------
-          theDomain.setTheTimeStamp(toTimeStamp);
-          updateDomain(theDomain);
+        // All the synchro is finished -> set the new timestamp
+        // ----------------------------------------------------
+        theDomain.setTheTimeStamp(toTimeStamp);
+        updateDomain(theDomain);
 
-          // Commit the transaction
-          domainDriverManager.commit();
-          domainDriverManager.commit(sDomainId);
-        }
+        // Commit the transaction
+        domainDriverManager.commit();
+        domainDriverManager.commit(sDomainId);
+        
         // End synchronization
         String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", "----------------"

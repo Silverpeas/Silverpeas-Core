@@ -241,7 +241,8 @@ public class LDAPGroupAllRootTest {
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8).length);
-
+    when(groupEntry.getDN()).thenReturn("cn=Groupe 1,dc=silverpeas,dc=org");
+    
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
