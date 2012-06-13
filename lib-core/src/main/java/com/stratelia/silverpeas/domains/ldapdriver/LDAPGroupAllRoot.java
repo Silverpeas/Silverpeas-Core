@@ -32,7 +32,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -267,28 +266,20 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     if (StringUtil.isDefined(parentId)) {
       SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
           "root.MSG_GEN_PARAM_VALUE", "Root Group Search : " + parentId);
-      String[] stringVals = LDAPUtility.getAttributeValues(theEntry, driverSettings.
-          getGroupsMemberField());
-      for (String childDN : stringVals) {
-        try {
-          LDAPEntry childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds, childDN,
-              driverSettings.getScope(), driverSettings.getGroupsFullFilter(),
-              driverSettings.getGroupAttributes());
-          if (childGroupEntry != null) {
-            // Verify that the group exist in the scope
-            String groupSpecificId = LDAPUtility.getFirstAttributeValue(
-                childGroupEntry, driverSettings.getGroupsIdField());
-            if (LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.
-                getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
-                driverSettings.getGroupsIdFilter(groupSpecificId),
-                driverSettings.getGroupAttributes()) != null) {
-              entryVector.add(childGroupEntry);
-            }
+      LDAPEntry[] subGroups = new LDAPEntry[0];
+      try {
+        subGroups = LDAPUtility.search1000Plus(lds, theEntry.getDN(), driverSettings.getScope(), driverSettings
+                .getGroupsFullFilter(), driverSettings.getGroupsNameField(), driverSettings
+              .getGroupAttributes());
+      } catch (AdminException e) {
+        SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
+            "admin.MSG_ERR_LDAP_GENERAL", "GETTING SUBGROUPS FAILED FOR : "
+            + theEntry.getDN(), e);
+      }
+      for (LDAPEntry subGroup : subGroups) {
+          if (subGroup != null) {
+            entryVector.add(subGroup);
           }
-        } catch (AdminException e) {
-          SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
-              "admin.MSG_ERR_LDAP_GENERAL", "GROUP NOT FOUND : " + childDN, e);
-        }
       }
     }
     return entryVector;
