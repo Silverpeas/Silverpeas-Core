@@ -25,19 +25,27 @@
 package com.stratelia.webactiv.util.questionContainer.model;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
+import com.silverpeas.SilverpeasContent;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.question.model.Question;
+import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerContentManager;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
-public class QuestionContainerDetail implements java.io.Serializable {
+public class QuestionContainerDetail implements java.io.Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = -2502073007907742590L;
   private QuestionContainerHeader header = null;
   private Collection<Question> questions = null;
   private Collection<Comment> comments = null; // Comments Collection
   private Collection<QuestionResult> votes = null; // QuestionResult Collection of Current user
-
+//  private List<PdcPosition> positions = null;
+  private String jsonPosition = null;
+  private String silverObjectId = null;
+  
   public QuestionContainerDetail() {
     super();
   }
@@ -118,6 +126,72 @@ public class QuestionContainerDetail implements java.io.Serializable {
    */
   public Collection<QuestionResult> getCurrentUserVotes() {
     return this.votes;
+  }
+
+  
+
+  /**
+   * @return the jsonPosition
+   */
+  public String getJsonPosition() {
+    return jsonPosition;
+  }
+
+  /**
+   * @param jsonPosition the jsonPosition to set
+   */
+  public void setJsonPosition(String jsonPosition) {
+    this.jsonPosition = jsonPosition;
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return getHeader().getInstanceId();
+  }
+
+  @Override
+  public String getContributionType() {
+    // TODO Add an attribute in order to distinguish survey/poll or quizz contribution type
+    return null;
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return null;
+  }
+
+  @Override
+  public UserDetail getCreator() {
+    return UserDetail.getById(getHeader().getCreatorId());
+  }
+
+  @Override
+  public String getId() {
+    return getHeader().getId();
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    if (this.silverObjectId == null) {
+      try {
+        int objectId = QuestionContainerContentManager.getSilverObjectId(getId(), getComponentInstanceId());
+        if (objectId >= 0) {
+          this.silverObjectId = String.valueOf(objectId);
+        }
+      } catch (ContentManagerException ex) {
+        this.silverObjectId = null;
+      }
+    }
+    return this.silverObjectId;
+  }
+  
+  protected void setSilverpeasContentId(String contentId) {
+    this.silverObjectId = contentId;
+  }
+  
+  @Override
+  public String getTitle() {
+    return getHeader().getTitle();
   }
 
 }
