@@ -124,7 +124,7 @@ public class LDAPSettings extends DriverSettings {
     LDAPSecured = getBooleanValue(rs, "database.LDAPSecured", LDAPSecured);
     LDAPPortSecured = getIntValue(rs, "database.LDAPPortSecured",
         LDAPPortSecured);
-    sortControlSupported = getBooleanValue(rs, "database.SortControlSupported", "openldap".
+    sortControlSupported = getBooleanValue(rs, "database.SortControlSupported", ! "openldap".
         equalsIgnoreCase(LDAPImpl));
     LDAPDefaultSearchConstraints = getSearchConstraints(true);
     LDAPDefaultConstraints = getConstraints(true);
