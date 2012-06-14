@@ -50,7 +50,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     super(webServicePackage, springContext);
   }
 
-  public abstract <T> T anInvalidResource();
+  public abstract <I> I anInvalidResource();
 
   /**
    * A convenient method to improve the readability of the method calls.
@@ -69,12 +69,12 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   /**
    * Puts at the specified URI the specified new state of the resource.
    *
-   * @param <T> the type of the resource's state.
+   * @param <C> the type of the resource's state.
    * @param uri the URI at which the resource is.
    * @param newResourceState the new state of the resource.
    * @return
    */
-  public <T> T putAt(String uri, T newResourceState) {
+  public <C> C putAt(String uri, C newResourceState) {
     return put(newResourceState, at(uri), withAsSessionKey(getSessionKey()));
   }
 
@@ -150,7 +150,8 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     }
   }
 
-  private <T> T put(final T entity, String atURI, String withSessionKey) {
+  @SuppressWarnings("unchecked")
+  private <E> E put(final E entity, String atURI, String withSessionKey) {
     String thePath = atURI;
     WebResource resource = resource();
     if (thePath.contains("?")) {
@@ -160,7 +161,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
       MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
       resource = resource.queryParams(parameters);
     }
-    Class<T> c = (Class<T>) entity.getClass();
+    Class<E> c = (Class<E>) entity.getClass();
     WebResource.Builder resourcePutter = resource.path(thePath).
             accept(MediaType.APPLICATION_JSON).
             type(MediaType.APPLICATION_JSON);

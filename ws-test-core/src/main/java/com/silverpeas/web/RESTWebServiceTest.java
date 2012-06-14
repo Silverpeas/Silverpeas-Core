@@ -23,6 +23,18 @@
  */
 package com.silverpeas.web;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
+
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.junit.Before;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
+
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.MockablePersonalizationService;
@@ -30,6 +42,7 @@ import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.web.mock.AccessControllerMock;
 import com.silverpeas.web.mock.OrganizationControllerMock;
+import com.silverpeas.web.mock.SpaceAccessControllerMock;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -40,14 +53,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import java.util.UUID;
-import javax.ws.rs.core.MultivaluedMap;
-import org.junit.Before;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.request.RequestContextListener;
 
 /**
  * The base class for testing REST web services in Silverpeas.
@@ -106,6 +111,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     return webClient.resource(getBaseURI() + CONTEXT_NAME + "/");
   }
 
+  @SuppressWarnings("unchecked")
   @Before
   public void prepareMockedResources() {
     testResources = (T) TestResources.getTestResources();
@@ -151,6 +157,13 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   }
 
   /**
+   * Denies the access to the silverpeas spaces to all users.
+   */
+  public void denieSpaceAuthorizationToUsers() {
+    getMockedSpaceAccessController().setAuthorization(false);
+  }
+
+  /**
    * Gets the resources in use in the current test case.
    * @return a TestResources instance.
    */
@@ -174,6 +187,10 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     return (AccessControllerMock) getTestResources().getAccessControllerMock();
   }
 
+  protected SpaceAccessControllerMock getMockedSpaceAccessController() {
+    return (SpaceAccessControllerMock) getTestResources().getSpaceAccessControllerMock();
+  }
+
   protected MockablePersonalizationService getMockedPersonalizationService() {
     return (MockablePersonalizationService) getTestResources().getPersonalizationServiceMock();
   }
@@ -183,7 +200,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     String[] queryParameters = query.split("&");
     for (String aQueryParameter : queryParameters) {
       String[] parameterParts = aQueryParameter.split("=");
-      parameters.add(parameterParts[0], parameterParts[1]);
+      parameters.add(parameterParts[0], parameterParts.length > 1 ? parameterParts[1] : "");
     }
     return parameters;
   }

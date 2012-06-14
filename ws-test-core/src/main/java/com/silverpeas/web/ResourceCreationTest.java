@@ -64,12 +64,12 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
 
   /**
    * Posts the specified web entity at the specified URI.
-   * @param <T> the type of the web entity to post.
+   * @param <C> the type of the web entity to post.
    * @param entity the web entity to post.
    * @param atURI the URI at which the entity has to be posted.
    * @return the response of the post.
    */
-  public <T> ClientResponse post(final T entity, String atURI) {
+  public <C> ClientResponse post(final C entity, String atURI) {
     return post(entity, atURI, withAsSessionKey(getSessionKey()));
   }
 
@@ -108,7 +108,7 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
     assertThat(recievedStatus, is(badRequest));
   }
 
-  private <T> ClientResponse post(final T entity, String atURI, String withSessionKey) {
+  private <C> ClientResponse post(final C entity, String atURI, String withSessionKey) {
     String thePath = atURI;
     WebResource resource = resource();
     if (thePath.contains("?")) {

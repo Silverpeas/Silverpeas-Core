@@ -58,6 +58,18 @@ public abstract class ResourceDeletionTest<T extends TestResources> extends REST
             delete();
   }
 
+  /**
+   * Requests a delete of the web resource identified at the specified URI.
+   * If an error occurs, then an UniformInterfaceException exception is thrown.
+   * @param c the class of which the returned resource should be an instance.
+   * @param uri the uri of the resource to delete.
+   * @return the web entity.
+   */
+  public <C> C deleteAt(String uri, Class<C> c) {
+    return resource().path(uri).header(HTTP_SESSIONKEY, getSessionKey())
+        .accept(MediaType.APPLICATION_JSON).delete(c);
+  }
+
   @Test
   public void deletionOfAResourceByANonAuthenticatedUser() throws Exception {
     try {

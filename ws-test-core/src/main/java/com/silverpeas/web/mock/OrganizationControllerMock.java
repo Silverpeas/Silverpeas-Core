@@ -24,9 +24,26 @@
 package com.silverpeas.web.mock;
 
 import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.*;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.inject.Named;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.SearchCriteria;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * A mock the OrganizationController objects for testing purpose.
@@ -39,6 +56,13 @@ public class OrganizationControllerMock extends OrganizationController {
   private Map<String, Group> groups = new HashMap<String, Group>();
   private Set<String> components = new HashSet<String>();
   private Set<String> tools = new HashSet<String>();
+  private final Map<String, SpaceInstLight> spaceInstLights = new HashMap<String, SpaceInstLight>();
+  private final Map<String, Collection<String>> subSpaceInstLights =
+      new HashMap<String, Collection<String>>();
+  private final Map<String, ComponentInstLight> componentInstLights =
+      new HashMap<String, ComponentInstLight>();
+  private final Map<String, Collection<String>> spaceComponents =
+      new HashMap<String, Collection<String>>();
 
   @Override
   public UserDetail getUserDetail(String sUserId) {
@@ -82,7 +106,6 @@ public class OrganizationControllerMock extends OrganizationController {
   @Override
   public Group[] getAllRootGroups() {
     List<Group> allGroups = new ArrayList<Group>();
-    int i = 0;
     for (Group group : groups.values()) {
       if (group.isRoot()) {
         allGroups.add(group);
@@ -331,5 +354,89 @@ public class OrganizationControllerMock extends OrganizationController {
       }
     }
     return groupIds.toArray(new String[groupIds.size()]);
+  }
+
+  /**
+   * Adds a ComponentInstLight to use on tests. All ComponentInstLight others than the added ones
+   * are considered as non existing.
+   * @param components some ComponentInstLights to take into account in tests.
+   */
+  public void addComponentInstLight(final ComponentInstLight... components) {
+    String componentId;
+    String spaceId;
+    for (final ComponentInstLight component : components) {
+      componentId = component.getId().replaceFirst(component.getName(), "");
+      addComponentInstance(componentId);
+      componentInstLights.put(componentId, component);
+      // TODO - YCH - Utiliser le MapUtil
+      spaceId = component.getDomainFatherId().replaceFirst(Admin.SPACE_KEY_PREFIX, "");
+      if (StringUtil.isDefined(spaceId)) {
+        Collection<String> componentIds = spaceComponents.get(spaceId);
+        if (componentIds == null) {
+          componentIds = new ArrayList<String>();
+          spaceComponents.put(spaceId, componentIds);
+        }
+        componentIds.add(componentId);
+      }
+    }
+  }
+
+  @Override
+  public ComponentInstLight getComponentInstLight(final String componentId) {
+    return componentInstLights.get(componentId);
+  }
+
+  @Override
+  public String[] getAvailCompoIdsAtRoot(final String spaceId, final String userId) {
+    final Collection<String> spaceComponentIds = spaceComponents.get(spaceId);
+    if (spaceComponentIds == null) {
+      return new String[0];
+    }
+    return spaceComponentIds.toArray(new String[] {});
+  }
+
+  /**
+   * Adds a SpaceInstLight to use on tests. All SpaceInstLight others than the added ones
+   * are considered as non existing.
+   * @param spaces some SpaceInstLights to take into account in tests.
+   */
+  public void addSpaceInstLight(final SpaceInstLight... spaces) {
+    for (final SpaceInstLight spaceInstLight : spaces) {
+      spaceInstLights.put(spaceInstLight.getShortId(), spaceInstLight);
+      // TODO - YCH - Utiliser le MapUtil
+      if (!spaceInstLight.isRoot()) {
+        Collection<String> spaceIds = subSpaceInstLights.get(spaceInstLight.getFatherId());
+        if (spaceIds == null) {
+          spaceIds = new ArrayList<String>();
+          subSpaceInstLights.put(spaceInstLight.getFatherId(), spaceIds);
+        }
+        spaceIds.add(spaceInstLight.getShortId());
+      }
+    }
+  }
+
+  @Override
+  public SpaceInstLight getSpaceInstLightById(final String spaceId) {
+    return spaceInstLights.get(spaceId);
+  }
+
+  @Override
+  public String[] getAllRootSpaceIds(final String userId) {
+    final Collection<String> rootSpaceIds = new ArrayList<String>();
+    for (final SpaceInstLight space : spaceInstLights.values()) {
+      if (space.isRoot()) {
+        rootSpaceIds.add(space.getShortId());
+      }
+    }
+    return rootSpaceIds.toArray(new String[] {});
+  }
+
+  @Override
+  public String[] getAllSubSpaceIds(final String spaceId, final String userId) {
+    final Collection<String> subSpaceIds = subSpaceInstLights.get(spaceId);
+    if (subSpaceIds == null) {
+      return new String[0];
+    }
+    return subSpaceIds.toArray(new String[] {});
   }
 }

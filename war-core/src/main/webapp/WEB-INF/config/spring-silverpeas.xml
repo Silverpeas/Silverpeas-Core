@@ -55,6 +55,7 @@
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
   <ctx:component-scan base-package="com.silverpeas.admin.notification"/>
+  <ctx:component-scan base-package="com.silverpeas.admin.web"/>
   <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" /> 
   <ctx:component-scan base-package="com.silverpeas.profile"/>
   <ctx:component-scan base-package="com.silverpeas.web"/>

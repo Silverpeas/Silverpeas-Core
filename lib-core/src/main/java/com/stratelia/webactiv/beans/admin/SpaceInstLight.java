@@ -214,7 +214,11 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   }
 
   public boolean isRoot() {
-    return "0".equals(getFatherId());
+    return isRoot(getFatherId());
+  }
+
+  public static boolean isRoot(String spaceId) {
+    return "0".equals(spaceId);
   }
 
   /**

@@ -23,17 +23,21 @@
  */
 package com.silverpeas.web;
 
+import static org.junit.Assert.assertNotNull;
+
+import javax.inject.Inject;
+
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
 import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.mock.AccessControllerMock;
 import com.silverpeas.web.mock.OrganizationControllerMock;
 import com.silverpeas.web.mock.SessionManagerMock;
+import com.silverpeas.web.mock.SpaceAccessControllerMock;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import javax.inject.Inject;
-import static org.junit.Assert.assertNotNull;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
  * It is a wrapper of the resources that have to be used in the RESTWebServiceTest test cases.
@@ -70,6 +74,8 @@ public abstract class TestResources implements ApplicationContextAware {
   @Inject
   private AccessControllerMock accessController;
   @Inject
+  private SpaceAccessControllerMock spaceAccessController;
+  @Inject
   private OrganizationControllerMock organizationController;
   @Inject
   private MockablePersonalizationService personalizationService;
@@ -84,6 +90,7 @@ public abstract class TestResources implements ApplicationContextAware {
     assertNotNull(context);
     TestResources resources = context.getBean(TEST_RESOURCES_NAME, TestResources.class);
     assertNotNull(resources.getAccessControllerMock());
+    assertNotNull(resources.getSpaceAccessControllerMock());
     assertNotNull(resources.getOrganizationControllerMock());
     assertNotNull(resources.getPersonalizationServiceMock());
     assertNotNull(resources.getSessionManagerMock());
@@ -105,6 +112,16 @@ public abstract class TestResources implements ApplicationContextAware {
    */
   public AccessControllerMock getAccessControllerMock() {
     return accessController;
+  }
+
+  /**
+   * Gets a mock of the SpaceAccessController. This mock is used to handle space authorization
+   * capabilities
+   * according to the test fixture.
+   * @return mock of the access controller used in the test case.
+   */
+  public SpaceAccessControllerMock getSpaceAccessControllerMock() {
+    return spaceAccessController;
   }
 
   /**
