@@ -57,8 +57,8 @@ import org.xml.sax.InputSource;
 /**
  * FactoryBean for creating a JackRabbit (JCR-170) repository through Spring configuration files.
  * Use this factory bean when you have to manually configure the repository; for retrieving the
- * repository from JNDI use the JndiObjectFactoryBean {@link org.springframework.jndi.JndiObjectFactoryBean}.
- * Sample configuration :
+ * repository from JNDI use the JndiObjectFactoryBean
+ * {@link org.springframework.jndi.JndiObjectFactoryBean}. Sample configuration :
  * <code>
  * &lt;bean id="repository" class="BetterRepositoryFactoryBean"&gt;
  * &lt;!-- normal factory beans params --&gt;
@@ -79,6 +79,10 @@ import org.xml.sax.InputSource;
  */
 public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
+  /**
+   * Should System properties be available as configuration keys.
+   */
+  private boolean useSystemProperties = false;
   /**
    * Default repository configuration file.
    */
@@ -121,7 +125,8 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     try {
       InitialContext ic = new InitialContext();
       prepareContext(ic, jndiName);
-      RegistryHelper.registerRepository(new InitialContext(), jndiName, getConfiguration().getFile().
+      RegistryHelper.registerRepository(new InitialContext(), jndiName,
+          getConfiguration().getFile().
           getAbsolutePath(), getHomeDir().getFile().getAbsolutePath(), true);
       return (Repository) ic.lookup(jndiName);
     } catch (RepositoryException ex) {
@@ -133,7 +138,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     }
     return null;
   }
-  
+
   protected static void prepareContext(InitialContext ic, String jndiName) throws
       NamingException {
     Context currentContext = ic;
@@ -162,15 +167,13 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     }
 
     if (this.configuration == null) {
-      log.debug("no configuration resource specified, using the default one:" +
-          DEFAULT_CONF_FILE);
+      log.debug("no configuration resource specified, using the default one:" + DEFAULT_CONF_FILE);
       configuration = new ClassPathResource(DEFAULT_CONF_FILE);
     }
 
     if (homeDir == null) {
       if (log.isDebugEnabled()) {
-        log.debug("no repository home dir specified, using the default one:" +
-            DEFAULT_REP_DIR);
+        log.debug("no repository home dir specified, using the default one:" + DEFAULT_REP_DIR);
       }
       homeDir = new FileSystemResource(DEFAULT_REP_DIR);
     }
@@ -195,8 +198,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
    *
    * @param variables
    * @param value the original value
-   * @param ignoreMissing if
-   * <code>true</code>, missing variables are not replaced.
+   * @param ignoreMissing if <code>true</code>, missing variables are not replaced.
    * @return value after variable replacements
    * @throws IllegalArgumentException if the replacement of a referenced variable is not found
    */
@@ -220,8 +222,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
           if (ignoreMissing) {
             replacement = "${" + variable + '}';
           } else {
-            throw new IllegalArgumentException("Replacement not found for ${" +
-                variable + "}.");
+            throw new IllegalArgumentException("Replacement not found for ${" + variable + "}.");
           }
         }
         result.append(replacement);
@@ -294,6 +295,14 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     this.jndiName = jndiName;
   }
 
+  public boolean isUseSystemProperties() {
+    return useSystemProperties;
+  }
+
+  public void setUseSystemProperties(boolean useSystemProperties) {
+    this.useSystemProperties = useSystemProperties;
+  }
+
   /**
    * Load all the configuration properties
    *
@@ -301,7 +310,13 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
    */
   protected Properties loadConfigurationKeys() {
     Iterator<String> iter = configurationProperties.iterator();
-    Properties props = new Properties();
+
+    Properties props;
+    if (isUseSystemProperties()) {
+      props = new Properties(System.getProperties());
+    } else {
+      props = new Properties();
+    }
     ResourceLoader loader = new DefaultResourceLoader(this.getClass().getClassLoader());
     String location = "";
     while (iter.hasNext()) {

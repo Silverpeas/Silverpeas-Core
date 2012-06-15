@@ -29,7 +29,6 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -39,7 +38,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.RepositoryHelper;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
@@ -56,6 +54,8 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Named;
+import javax.jcr.Binary;
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.io.FileUtils;
@@ -64,6 +64,9 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.DocumentRepository;
+
+import static javax.jcr.Property.JCR_CONTENT;
+import static javax.jcr.Property.JCR_DATA;
 
 /**
  *
@@ -82,8 +85,7 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public void createIndex(SimpleDocument document, Date startOfVisibilityPeriod,
-      Date endOfVisibilityPeriod) {
+  public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
     String language = document.getLanguage();
     if (!StringUtil.isDefined(language)) {
       language = I18NHelper.defaultLanguage;
@@ -97,18 +99,18 @@ public class SimpleDocumentService implements AttachmentService {
     indexEntry.setLang(language);
     indexEntry.setCreationDate(document.getCreated());
     indexEntry.setCreationUser(document.getCreatedBy());
-    if (startOfVisibilityPeriod != null) {
-      indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibilityPeriod));
+    if (startOfVisibility != null) {
+      indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibility));
     }
-    if (endOfVisibilityPeriod != null) {
-      indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibilityPeriod));
+    if (endOfVisibility != null) {
+      indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibility));
     }
     indexEntry.setTitle(document.getTitle(), language);
     String title = document.getTitle();
     if (StringUtil.isDefined(title)) {
       indexEntry.setKeywords(title, language);
     }
-    indexEntry.addFileContent(document.getFullContentPath(), CharEncoding.UTF_8, document.
+    indexEntry.addFileContent(document.getAttachmentPath(), CharEncoding.UTF_8, document.
         getContentType(), language);
 
     if (StringUtil.isDefined(document.getXmlFormId())) {
@@ -178,7 +180,7 @@ public class SimpleDocumentService implements AttachmentService {
         List<SimpleDocument> attachments = searchAttachmentsByExternalObject(pk, indexEntry.
             getLang());
         for (SimpleDocument attachment : attachments) {
-          indexEntry.addFileContent(attachment.getFullContentPath(), CharEncoding.UTF_8,
+          indexEntry.addFileContent(attachment.getAttachmentPath(), CharEncoding.UTF_8,
               attachment.getContentType(), indexEntry.getLang());
         }
       }
@@ -276,14 +278,20 @@ public class SimpleDocumentService implements AttachmentService {
   private void storeContent(Session session, SimpleDocument document) throws RepositoryException,
       IOException {
     File file = new File(document.getAttachmentPath());
-    InputStream in = null;
-    try {
-      in = repository.getContent(session, document.getPk(), document.getLanguage());
-      FileUtils.copyInputStreamToFile(in, file);
-    } finally {
-      IOUtils.closeQuietly(in);
+    Node docNode = session.getNodeByIdentifier(document.getId());
+    String fileNodeName = SimpleDocument.FILE_PREFIX + document.getLanguage();
+    if (docNode.hasNode(fileNodeName)) {
+      Node fileNode = docNode.getNode(fileNodeName);
+      if (fileNode.hasNode(JCR_CONTENT)) {
+        Node contentNode = fileNode.getNode(JCR_CONTENT);
+        Binary binary = contentNode.getProperty(JCR_DATA).getBinary();
+        FileUtils.copyInputStreamToFile(binary.getStream(), file);
+        binary.dispose();
+      }
     }
   }
+  
+
 
   /**
    * Delete a given attachment.
@@ -326,6 +334,7 @@ public class SimpleDocumentService implements AttachmentService {
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE, authorId, document.
             getInstanceId(), document);
       }
+      session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -393,6 +402,7 @@ public class SimpleDocumentService implements AttachmentService {
       if (indexIt) {
         createIndex(document);
       }
+      session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -421,6 +431,7 @@ public class SimpleDocumentService implements AttachmentService {
       if (indexIt) {
         createIndex(document);
       }
+      session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
@@ -436,6 +447,7 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       repository.removeContent(session, document.getPk(), lang);
+      FileUtils.deleteQuietly(new File(document.getDirectoryPath(lang)));
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         RepositoryHelper.getJcrAttachmentService().
             deleteAttachment(document, document.getLanguage());
@@ -447,6 +459,7 @@ public class SimpleDocumentService implements AttachmentService {
             document.getInstanceId(), document.getForeignId());
       }
       deleteIndex(document, document.getLanguage());
+      session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -1196,7 +1209,7 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
-  @Override
+  //@Override
   public InputStream getBinaryContent(SimpleDocumentPK pk, String lang) {
     Session session = null;
     try {

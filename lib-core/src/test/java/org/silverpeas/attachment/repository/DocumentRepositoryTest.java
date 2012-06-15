@@ -24,9 +24,9 @@
 package org.silverpeas.attachment.repository;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
@@ -42,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jcr.NodeIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -61,6 +62,7 @@ import org.silverpeas.util.Charsets;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -74,11 +76,18 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
+@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_CLASS)
 public class DocumentRepositoryTest {
 
   private static final String instanceId = "kmelia73";
   private static EmbeddedDatabase dataSource;
   private boolean registred = false;
+  
+  private static BetterRepositoryFactoryBean shutdown;
+  
+  @Inject
+  private BetterRepositoryFactoryBean helper;
+  
   @Resource
   private Repository repository;
   private DocumentRepository instance = new DocumentRepository();
@@ -86,7 +95,7 @@ public class DocumentRepositoryTest {
   public Repository getRepository() {
     return this.repository;
   }
-
+  
   public DocumentRepositoryTest() {
   }
 
@@ -112,6 +121,9 @@ public class DocumentRepositoryTest {
       if (session != null) {
         session.logout();
       }
+    }
+    if(shutdown == null) {
+      shutdown = helper;
     }
   }
 
@@ -140,9 +152,10 @@ public class DocumentRepositoryTest {
   }
 
   @AfterClass
-  public static void tearDown() throws IOException {
+  public static void tearDown() throws Exception {    
     dataSource.shutdown();
     DBUtil.clearTestInstance();
+    shutdown.destroy();
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
   }
@@ -167,7 +180,7 @@ public class DocumentRepositoryTest {
       assertThat(result, is(expResult));
       SimpleDocument doc = instance.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
-      assertThat(doc.getOldSilverpeasId(), is(1L));
+      assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
       assertThat(doc.getCreated(), is(creationDate));
       checkEnglishSimpleDocument(doc);
     } finally {
@@ -196,7 +209,7 @@ public class DocumentRepositoryTest {
       SimpleDocument doc = instance.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       checkEnglishSimpleDocument(doc);
-      assertThat(doc.getOldSilverpeasId(), is(not(0L)));
+      assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
       assertThat(doc.getCreated(), is(creationDate));
       instance.deleteDocument(session, expResult);
       doc = instance.findDocumentById(session, expResult, language);

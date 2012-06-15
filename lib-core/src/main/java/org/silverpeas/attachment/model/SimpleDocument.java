@@ -364,16 +364,24 @@ public class SimpleDocument {
 
   /**
    * Path to the file stored on the filesystem.
-   * @return 
+   * @return the path to the file stored on the filesystem.
    */
   public String getAttachmentPath() {
-    String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
-    directory = directory.replace('/', separatorChar);
-    directory = directory + getId() + separatorChar;
     String lang = getLanguage();
     if (!StringUtil.isDefined(lang)) {
       lang = defaultLanguage;
     }
+    return getDirectoryPath(lang) + getFilename();
+  }
+  
+  /**
+   * Path to the directory where the file is to be stored.
+   * @return the path to the directory where the file is to be stored.
+   */
+  public String getDirectoryPath(String lang) {
+    String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
+    directory = directory.replace('/', separatorChar);
+    directory = directory + getId() + separatorChar;
     directory = directory + lang + separatorChar;
     return directory + getFilename();
   }

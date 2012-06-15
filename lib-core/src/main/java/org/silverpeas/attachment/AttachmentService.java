@@ -66,15 +66,6 @@ public interface AttachmentService {
   void addContent(SimpleDocument document, File content, boolean indexIt, boolean invokeCallback);
 
   /**
-   * Returns the binary content.
-   *
-   * @param pk the id of the document.
-   * @param lang the language of the content.
-   * @return a stream to the content.
-   */
-  InputStream getBinaryContent(SimpleDocumentPK pk, String lang);
-
-  /**
    *  Writes the binary content into the specified File.
    *
    * @param file the file where the content is to be written.

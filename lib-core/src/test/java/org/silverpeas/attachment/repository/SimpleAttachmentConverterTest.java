@@ -31,7 +31,6 @@ import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.util.DateUtil;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Calendar;
 import java.util.Date;
 import javax.jcr.Binary;
@@ -60,6 +59,8 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
 
   private static final String instanceId = "kmelia73";
   private static final SimpleAttachmentConverter instance = new SimpleAttachmentConverter();
+  
+  
 
   public SimpleAttachmentConverterTest() {
   }

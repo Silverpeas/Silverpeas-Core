@@ -539,5 +539,9 @@ public class DocumentRepository {
       RepositoryException {
     Node componentNode = session.getNodeByIdentifier(documentPk.getId());
     converter.removeAttachment(componentNode, language);
+    componentNode = session.getNodeByIdentifier(documentPk.getId());
+    if(!componentNode.hasNodes()) {
+      componentNode.remove();
+    }    
   }
 }

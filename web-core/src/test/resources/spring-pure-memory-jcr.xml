@@ -52,6 +52,7 @@
         <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>
       </list>
     </property>
+    <property name="useSystemProperties" value="true"/>
   </bean>
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

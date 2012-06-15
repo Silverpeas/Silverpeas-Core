@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util;
 
@@ -34,6 +31,9 @@ import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import static java.io.File.separator;
+import static java.io.File.separatorChar;
+
 /**
  * @author Norbert CHAIX
  * @version
@@ -41,17 +41,17 @@ import org.apache.commons.io.FilenameUtils;
 public class FileRepositoryManager {
 
   static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
-  final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  final static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
-  final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath +
-      File.separatorChar + "avatar");
+  static final String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
+  static final String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+  static final String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath
+      + separatorChar + "avatar");
   static String tempPath = "";
-  final static ResourceLocator uploadSettings=  new ResourceLocator(
-          "com.stratelia.webactiv.util.uploads.uploadSettings", "");
-  static final ResourceLocator utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", "");
+  final static ResourceLocator uploadSettings = new ResourceLocator(
+      "com.stratelia.webactiv.util.uploads.uploadSettings", "");
+  static final ResourceLocator utilMessages = new ResourceLocator(
+      "com.silverpeas.util.multilang.util", "");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
-  
   static final long ko = 1024;
   static final long mo = ko * 1024;
   static final long go = mo * 1024;
@@ -60,8 +60,8 @@ public class FileRepositoryManager {
   static {
     try {
       tempPath = GeneralPropertiesManager.getString("tempPath");
-      if (!tempPath.endsWith(File.separator)) {
-        tempPath = tempPath + File.separatorChar;
+      if (!tempPath.endsWith(separator)) {
+        tempPath = tempPath + separatorChar;
       }
     } catch (Exception e) {
       SilverTrace.error("util", "FileRepositoryManager static",
@@ -71,62 +71,63 @@ public class FileRepositoryManager {
   }
 
   /**
-   * @deprecated
-   * @param sSpaceId
+   * @deprecated @param sSpaceId
    * @param sComponentId
    * @return
    */
   static public String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
-    return upLoadPath + File.separatorChar + sComponentId + File.separatorChar;
+    return upLoadPath + separatorChar + sComponentId + separatorChar;
   }
 
   static public String getAbsolutePath(String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
-    return upLoadPath + File.separatorChar + sComponentId + File.separatorChar;
+    return upLoadPath + separatorChar + sComponentId + separatorChar;
   }
 
   static public String getAvatarPath() {
     return avatarPath;
   }
-  
+
   /**
    * Gets the path of the repository into which attachments and other files are uploaded in
    * Silverpeas.
+   *
    * @return the path of the root repository for uploads.
    */
   static public String getUploadPath() {
-    return upLoadPath + File.separatorChar;
+    return upLoadPath + separatorChar;
   }
 
-  // Add by Jean-Claude Groccia
-  // @param: sSpaceId: type String: the name of the space
-  // @param: sComponentId: type String: the name of the componentId
-  // @param: sDirectoryName: type Array of String: the name of sub directory.
-  // this parameter represents the context of component
   /**
+   * Add by Jean-Claude Groccia
+   *
+   * @param: sSpaceId: type String: the name of the space
+   * @param: sComponentId: type String: the name of the componentId
+   * @param: sDirectoryName: type Array of String: the name of sub directory. this parameter
+   * represents the context of component
    * @deprecated
    */
-  static public String getAbsolutePath(String sSpaceId, String sComponentId,
-      String[] sDirectoryName) {
-    return getAbsolutePath(sComponentId, sDirectoryName);
+  @Deprecated
+  public static String getAbsolutePath(String spaceId, String componentId, String[] directoryName) {
+    return getAbsolutePath(componentId, directoryName);
   }
 
   /**
    * @param sSpaceId
-   * @param sComponentId
-   * @param sDirectoryName
+   * @param componentId
+   * @param directoryName
    * @return path
    */
-  static public String getAbsolutePath(String sComponentId, String[] sDirectoryName) {
-    int lg = sDirectoryName.length;
-    String path = getAbsolutePath(sComponentId);
+  public static String getAbsolutePath(String componentId, String[] directoryName) {
+    int lg = directoryName.length;
+    String path = getAbsolutePath(componentId);
     for (int k = 0; k < lg; k++) {
       SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
-          ("concat: path = " + path + " sDirectoryName[" + k + "]=" + sDirectoryName[k]));
-      path = path + sDirectoryName[k] + File.separatorChar;
+          ("concat: path = " + path + " sDirectoryName[" + k + "]=" + directoryName[k]));
+      path = path + directoryName[k] + separatorChar;
     }
     return path;
   }
@@ -137,73 +138,65 @@ public class FileRepositoryManager {
   static public String getRelativePath(String[] sDirectoryName) {
     int lg = sDirectoryName.length;
     String path = sDirectoryName[0];
-    path = path.concat(File.separator);
+    path = path.concat(separator);
     for (int k = 1; k < lg; k++) {
       SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
           "concat: path = " + path + " sDirectoryName[" + k + "]="
           + sDirectoryName[k]);
       path = path.concat(sDirectoryName[k]);
-      path = path.concat(File.separator);
+      path = path.concat(separator);
     }
     return path;
   }
 
   static public String getTemporaryPath() {
-    return tempPath + File.separator;
+    return tempPath + separator;
   }
 
   static public String getTemporaryPath(String sSpaceId, String sComponentId) {
-    return tempPath + File.separator;
+    return tempPath + separator;
   }
 
   static public String getComponentTemporaryPath(String sComponentId) {
-    return getAbsolutePath(sComponentId) + "Temp" + File.separator;
+    return getAbsolutePath(sComponentId) + "Temp" + separator;
   }
 
-  static public String getAbsoluteIndexPath(String particularSpace,
-      String sComponentId) {
+  static public String getAbsoluteIndexPath(String particularSpace, String componentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsoluteIndexPath",
-        "particularSpace = " + particularSpace + " sComponentId= "
-        + sComponentId);
-    if (particularSpace != null
-        && (particularSpace.startsWith("user@") || particularSpace.equals("transverse"))) {
-      return indexUpLoadPath + File.separator + particularSpace
-          + File.separator + sComponentId + File.separator + "index";
-    } else {
-      return indexUpLoadPath + File.separator + sComponentId
-          + File.separator + "index";
+        "particularSpace = " + particularSpace + " sComponentId= " + componentId);
+    if (particularSpace != null && (particularSpace.startsWith("user@") || particularSpace.equals(
+        "transverse"))) {
+      return indexUpLoadPath + separator + particularSpace + separator + componentId + separator
+          + "index";
     }
+    return indexUpLoadPath + separator + componentId + separator + "index";
   }
 
   /**
-   * @param sSpaceId
-   * @param sComponentId
-   * @param sDirectoryName
+   * @param spaceId
+   * @param componentId
+   * @param directoryName
    * @throws Exception
    * @deprecated
    */
-  static public void createAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(sComponentId)
-        + sDirectoryName);
+  static public void createAbsolutePath(String spaceId, String componentId, String directoryName) {
+    FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }
 
-  static public void createAbsolutePath(String sComponentId,
-      String sDirectoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(sComponentId)
-        + sDirectoryName);
+  static public void createAbsolutePath(String componentId, String directoryName) {
+    FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }
 
   /**
-   * @param sSpaceId
-   * @param sComponentId
-   * @param sDirectoryName
+   * @param spaceId
+   * @param componentId
+   * @param directoryName
    * @throws Exception
    * @deprecated
    */
-  static public void createTempPath(String sSpaceId, String sComponentId,
-      String sDirectoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(sComponentId));
+  @Deprecated
+  static public void createTempPath(String spaceId, String componentId, String directoryName) {
+    FileFolderManager.createFolder(getAbsolutePath(componentId));
   }
 
   static public void createTempPath(String sComponentId, String sDirectoryName) {
@@ -231,10 +224,8 @@ public class FileRepositoryManager {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
   }
 
-  static public void deleteAbsoluteIndexPath(String particularSpace,
-      String sComponentId) {
-    FileFolderManager.deleteFolder(getAbsoluteIndexPath(particularSpace,
-        sComponentId));
+  static public void deleteAbsoluteIndexPath(String particularSpace, String sComponentId) {
+    FileFolderManager.deleteFolder(getAbsoluteIndexPath(particularSpace, sComponentId));
   }
 
   static public String getFileIcon(boolean small, String extension) {
@@ -247,6 +238,7 @@ public class FileRepositoryManager {
 
   /**
    * Get File icon
+   *
    * @param extension
    * @param isReadOnly
    * @return
@@ -280,9 +272,10 @@ public class FileRepositoryManager {
 
   /**
    * Get the file size with the suitable unit
+   *
    * @param lSize : size
    * @return String
-   */  
+   */
   static public String formatFileSize(long lSize) {
     String sTo = utilMessages.getString("to", "Tb");
     String sGo = utilMessages.getString("go", "Gb");
@@ -313,6 +306,7 @@ public class FileRepositoryManager {
 
   /**
    * Get the size of a file (in bytes)
+   *
    * @param sourceFile
    * @return int
    */
@@ -322,6 +316,7 @@ public class FileRepositoryManager {
 
   /**
    * Get the estimated download time
+   *
    * @param size the file's size
    * @return String
    */
@@ -340,6 +335,7 @@ public class FileRepositoryManager {
 
   /**
    * Copy a contents from a file to another one
+   *
    * @author Seb
    * @param from The name of the source file, the one to copy.
    * @param to The name of the destination file, where to paste data.
@@ -347,7 +343,7 @@ public class FileRepositoryManager {
    * @throws IOException
    */
   static public void copyFile(String from, String to) throws IOException {
-   FileUtils.copyFile(new File(from), new File(to));
+    FileUtils.copyFile(new File(from), new File(to));
   }
 
   static public String formatFileUploadTime(long size) {
@@ -366,6 +362,7 @@ public class FileRepositoryManager {
   /**
    * to create the array of the string this array represents the repertories where the files must be
    * stored.
+   *
    * @param str : type String: the string of repertories
    */
   public static String[] getAttachmentContext(String str) {
@@ -392,14 +389,16 @@ public class FileRepositoryManager {
 
   /**
    * get the base directory of index upload path
+   *
    * @return
    */
   public static String getIndexUpLoadPath() {
-    return indexUpLoadPath + File.separator;
+    return indexUpLoadPath + separatorChar;
   }
-  
+
   /**
    * Gets the path of the repository that contains the templates to use in exports.
+   *
    * @return the path of the export template repository.
    */
   public static String getExportTemplateRepository() {
