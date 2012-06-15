@@ -27,7 +27,64 @@
   $.userZoom = {
     currentTooltip: null,
     currentUser: null,
-    initialized: false
+    target: null,
+    initialized: false,
+    clear: function() {
+      if (this.currentTooltip != null) {
+        this.currentTooltip.hide();
+        this.currentTooltip.remove();
+      }
+      this.currentTooltip = null;
+      this.target = null;
+    },
+    set: function(target, tooltip) {
+      this.clear();
+      this.currentTooltip = tooltip;
+      this.target = target;
+    },
+    initialize: function() {
+      this.currentUser = new UserProfile({
+        id: 'me'
+      }).load();
+      this.currentUser.isInMyContacts = function(user) {
+        var contacts = user.relationships();
+        for(var i in contacts) {
+          if (this.id == contacts[i].id) {
+            return true;
+          }
+        }
+        return false;
+      };
+    
+      this.currentUser.isInMyInvitations = function(user) {
+        var invitations = this.sentInvitations;
+        for(var i in invitations) {
+          if (invitations[i].receiverId == user.id) {
+            return true;
+          }
+        }
+        return false;
+      }
+    
+      this.currentUser.onMySentInvitations = function(callback) {
+        $.ajax({
+          url: webContext + '/services/invitations/outbox',
+          type: 'GET',
+          dataType: 'json',
+          cache: false,
+          success: function(invitations, status, jqXHR) {
+            this.sentInvitations = invitations;
+            if (callback)
+              callback(invitations);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+          }
+        });
+      }
+      
+      this.initialized = true;
+    }
   };
   
   function openWindow(url, windowName, width, height, options) {
@@ -48,44 +105,41 @@
       var onlineStatus = webContext + '/util/icons/offline.gif';
       var onlineStatusAlt = $.i18n.prop('notConnected');
     }
-    return $('<img>', {src: onlineStatus, alt: onlineStatusAlt});
-  }
-  
-  function isInMyContacts(user) {
-    var contacts = user.relationships();
-    for(var i in contacts) {
-      if ($.userZoom.currentUser.id == contacts[i].id) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
-  function isInMyInvitations(user) {
-    var invitations = $.userZoom.currentUser.sentInvitations;
-    for(var i in invitations) {
-      if (invitations[i].receiverId == user.id) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
-  function onMySentInvitations(callback) {
-    $.ajax({
-      url: webContext + '/services/invitations/outbox',
-      type: 'GET',
-      dataType: 'json',
-      cache: false,
-      success: function(invitations, status, jqXHR) {
-        $.userZoom.currentUser.sentInvitations = invitations;
-        if (callback)
-          callback(invitations);
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
-      }
+    return $('<img>', {
+      src: onlineStatus, 
+      alt: onlineStatusAlt
     });
+  }
+  
+  function interactionWith(user) {
+    var disabledCss = '', interactionBox = $('<div>').addClass('userzoom-tooltip-interaction');
+    if (!user.connected)
+      disabledCss = ' disabled';
+    if (!$.userZoom.currentUser.isInMyContacts(user) && !$.userZoom.currentUser.isInMyInvitations(user))
+      interactionBox.append($('<div>').addClass('userzoom-tooltip-interaction-action').append($('<a>', {
+        href: '#'
+      }).addClass('userzoom-tooltip-interaction-action-invitation invitation').append($('<span>').append($.i18n.prop('invitation.send'))).invitMe(user)));
+    interactionBox.append($('<a>', {
+      href: user.webPage
+    }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append($.i18n.prop('myProfile.tab.profile')))).
+    append($('<a>', {
+      href: '#'
+    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append($.i18n.prop('ToContact'))).messageMe(user)).
+    append($('<a>', {
+      href: '#'
+    }).addClass('userzoom-tooltip-interaction-accessTchat' + disabledCss).append($('<span>').append($.i18n.prop('tchat'))).click(function() {
+      if (user.connected)
+        tchatWith(user);
+    })).
+    append($('<div>').addClass('userzoom-tooltip-arrow'));
+    
+    return interactionBox;
+  }
+  
+  function positionBetween(tooltip, target) {
+    var targetPosition = target.offset(), tooltipPosition = tooltip.offset();
+    var position = (targetPosition.top > tooltipPosition.top ? 'above':'below');
+    return position + (targetPosition.left > tooltipPosition.left ? ' right':' left');
   }
   
   /**
@@ -106,8 +160,7 @@
         language: '$$', /* by default the language of the user in the current session */
         mode: 'map'
       });
-      $.userZoom.currentUser = new UserProfile({id: 'me'}).load();
-      $.userZoom.initialized = true;
+      $.userZoom.initialize();
     }
     
     return this.each(function() {
@@ -132,23 +185,22 @@
    */
   function render( target, user ) {
     var status = connectionStatus(user);
-    target.append('&nbsp;').append(status.css('width', '8px')).hover(function() {
-      $('.userzoom-tooltip').hide();
+    target.append('&nbsp;').append($('<span>').addClass('userzoom-infoConnection').append(status)).hover(function() {
+      if ($.userZoom.target != null && $.userZoom.target == target)
+        return;
       user.onRelationships($.userZoom.currentUser.lastName, true, function() {
-        onMySentInvitations(function() {
+        $.userZoom.currentUser.onMySentInvitations(function() {
           var element = tooltip(target, user);
-          element.show();
-          $.userZoom.currentTooltip = element;
+          $.userZoom.set(target, element);
         });
       });
     });
     $(document).mousedown(function(event) {
-      if (!$.userZoom.currentTooltip)
-        return;
-      var target = $(event.target);
-      if (!target.hasClass('userzoom-tooltip') && target.parents('.userzoom-tooltip').length == 0) {
-        $('.userzoom-tooltip').hide();
-        $.userZoom.currentTooltip = null;
+      if ($.userZoom.currentTooltip != null) {
+        var target = $(event.target);
+        if (!target.hasClass('userzoom-tooltip') && target.parents('.userzoom-tooltip').length == 0) {
+          $.userZoom.clear();
+        }
       }
     });
   }
@@ -159,44 +211,42 @@
    * The tooltip is hidden.
    */
   function tooltip( target, user ) {
-    var userinfo = target.parent().children('.userzoom-tooltip');
-    if (userinfo.length == 0) {
-      userinfo = $('<div>').addClass('userzoom-tooltip ui-widget ui-widget-content ui-helper-clearfix ui-corner-all').
-      css({
-        'position': 'absolute', 
-        'display': 'block', 
-        'z-index': '1000'
-      }).
-      append($('<img>', {
+    var userinfo = $('<div>').addClass('userzoom-tooltip').
+    append($('<div>').addClass('userzoom-tooltip-profilPhoto profilPhoto').
+      append($('<a>', {
+        href: user.webPage
+      }).append($('<img>', {
         src: user.avatar, 
-        alt: user.fullName
-      }).addClass('avatar')).
-      append($('<p>').addClass('name').append(user.fullName)).
-      append($('<p>').addClass('message').append(user.status)).
-      append($('<p>').addClass('connection').append(connectionStatus(user)));
+        alt: 'viewUser'
+      }).addClass('avatar')))).
       
-      if (!isInMyContacts(user) && !isInMyInvitations(user))
-        userinfo.append($('<a>', {href: '#'}).addClass('link invitation').append($.i18n.prop('invitation.send')).invitMe(user));
-      userinfo.append($('<a>', {href: '#'}).addClass('link notification').append($.i18n.prop('GML.notification.send')).messageMe(user));
-      
-      userinfo.append($('<button>').append($.i18n.prop('myProfile.tab.profile')).click(function() {
-        document.location.href = user.webPage;
-      })).
-      append($('<button>').attr('disabled', !user.connected).append($.i18n.prop('tchat')).click(function() {
-        tchatWith(user);
-      })).
-      appendTo(target).data('user', user.id);
-    }
+    append($('<div>').addClass('userzoom-tooltip-info').
+      append($('<div>').addClass('userzoom-tooltip-info-userName').append($('<a>', {
+        href: user.webPage
+      }).append(user.fullName))).
+      append($('<div>').addClass('userzoom-tooltip-info-infoConnection').append(connectionStatus(user))).
+      append($('<div>').addClass('userzoom-tooltip-info-status').append(user.status))).
+    append(interactionWith(user)).
+    appendTo($(document.body)).
+    position({
+      of: target,
+      at: 'right bottom',
+      my: 'left top',
+      offset: '-50 7',
+      collision: 'flip'
+    });
+    userinfo.addClass(positionBetween(userinfo, target));
     return userinfo;
   }
   
 })( jQuery );
 
 $(function() {
-  $('.userToZoom').each(function(i, element) {
-    if ($(element).data('userZoom') == null)
-      $(element).userZoom({
-        id: $(element).attr('rel')
+  $('.userToZoom').each(function() {
+    var $this = $(this);
+    if ($this.data('userZoom') == null)
+      $this.userZoom({
+        id: $this.attr('rel')
       });
   });
 });
