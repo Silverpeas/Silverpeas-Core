@@ -240,7 +240,7 @@ ds-cfg-disk-full-threshold: 20 megabytes
 ds-cfg-db-evictor-keep-alive: 600 seconds
 ds-cfg-disk-low-threshold: 100 megabytes
 ds-cfg-db-directory: db
-ds-cfg-base-dn: dc=silverpeas,dc=org
+ds-cfg-base-dn: dc=example,dc=com
 ds-cfg-backend-id: userRoot
 ds-cfg-enabled: true
 ds-cfg-index-entry-limit: 4000
@@ -1849,7 +1849,7 @@ objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: ds-cfg-root-dn-user
 objectClass: top
-userpassword: {SSHA512}dhOqq1S36h05UtFh2Nrn1O+ig/hA1+W2sgF2FcyEnyysScDqxjLW7eLA6C1rfjKLl9cS9G1MsKQFw0dSmORCvZIk1s/8mV7P
+userpassword: {SSHA512}7ANxmJxXQhb7ZU1SEjc1CEaeq+w8IPvD8CoRIdTlY0z9Q4CwnoFIBC15prLy8n8jK1g+MqjIstf3KHw15cTAiNiGQ4Y+RpBT
 givenName: Directory
 cn: Directory Manager
 ds-cfg-alternate-bind-dn: cn=Directory Manager

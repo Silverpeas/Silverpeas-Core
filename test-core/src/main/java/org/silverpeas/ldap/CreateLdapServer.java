@@ -60,5 +60,11 @@ public @interface CreateLdapServer {
    * The backendID of the backend where the ldif will be loaded.
    * @return backendId of the backend where the ldif will be loaded.
    */
-  String backendID() default "userRoot";
+  String backendID() default "silverpeas";
+  
+  /**
+   * The backendID of the backend where the ldif will be loaded.
+   * @return backendId of the backend where the ldif will be loaded.
+   */
+  String baseDN() default "dc=silverpeas,dc=org";
 }
