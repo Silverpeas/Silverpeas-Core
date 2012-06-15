@@ -151,7 +151,7 @@
       <artifactId>commons-dbcp</artifactId>
       <scope>compile</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
     </dependency>
@@ -162,6 +162,11 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.forgerock.opendj</groupId>
+      <artifactId>opendj-server</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
