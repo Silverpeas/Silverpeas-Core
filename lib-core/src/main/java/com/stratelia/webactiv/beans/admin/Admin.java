@@ -5736,7 +5736,6 @@ public final class Admin {
   public String synchronizeSilverpeasWithDomain(String sDomainId, boolean threaded)
       throws AdminException {
     String sReport = "Starting synchronization...\n\n";
-    Map<String, String> userIds = new HashMap<String, String>();
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
         getCurrentDomainDriverManager();
     synchronized (semaphore) {
@@ -5763,38 +5762,29 @@ public final class Admin {
             "root.MSG_GEN_ENTER_METHOD", "TimeStamps from " + fromTimeStamp + " to "
             + toTimeStamp);
 
-        if (fromTimeStamp.equals(toTimeStamp)) {
-          String uptodate =
-              "Domain '" + domainDriverManager.getDomain(sDomainId).getName()
-              + "' is already up-to-date !";
-          SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", uptodate, null);
-          sReport += uptodate + "\n";
-        } else {
-          // Start transaction
-          domainDriverManager.startTransaction(false);
-          domainDriverManager.startTransaction(sDomainId, false);
+        // Start transaction
+        domainDriverManager.startTransaction(false);
+        domainDriverManager.startTransaction(sDomainId, false);
 
-          // Synchronize users
-          if (synchroDomain.mustImportUsers() || threaded) {
-            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded,
-                true);
-          } else {
-            sReport += synchronizeUsers(sDomainId, userIds, fromTimeStamp, toTimeStamp, threaded,
-                false);
-          }
+        // Synchronize users
+        boolean importUsers = synchroDomain.mustImportUsers() || threaded;
+        sReport += synchronizeUsers(sDomainId, fromTimeStamp, toTimeStamp, threaded, importUsers);
 
-          // Synchronize groups
-          sReport += "\n" + synchronizeGroups(sDomainId, userIds, fromTimeStamp, toTimeStamp);
+        // Synchronize groups
+        // Get all users of the domain from Silverpeas
+        UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, sDomainId);
+        HashMap<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
+        sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping, fromTimeStamp, toTimeStamp);
 
-          // All the synchro is finished -> set the new timestamp
-          // ----------------------------------------------------
-          theDomain.setTheTimeStamp(toTimeStamp);
-          updateDomain(theDomain);
+        // All the synchro is finished -> set the new timestamp
+        // ----------------------------------------------------
+        theDomain.setTheTimeStamp(toTimeStamp);
+        updateDomain(theDomain);
 
-          // Commit the transaction
-          domainDriverManager.commit();
-          domainDriverManager.commit(sDomainId);
-        }
+        // Commit the transaction
+        domainDriverManager.commit();
+        domainDriverManager.commit(sDomainId);
+        
         // End synchronization
         String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", "----------------"
@@ -5828,9 +5818,8 @@ public final class Admin {
   /**
    * Synchronize users between cache and domain's datastore
    */
-  private String synchronizeUsers(String domainId, Map<String, String> userIds,
-      String fromTimeStamp, String toTimeStamp, boolean threaded, boolean importUsers)
-      throws AdminException {
+  private String synchronizeUsers(String domainId, String fromTimeStamp, String toTimeStamp,
+      boolean threaded, boolean importUsers) throws AdminException {
     boolean bFound;
     String specificId;
     String sReport = "User synchronization : \n";
@@ -5843,8 +5832,6 @@ public final class Admin {
 
     SynchroReport.warn("admin.synchronizeUsers", "Starting users synchronization...", null);
     try {
-      // Clear conversion table
-      userIds.clear();
       // Get all users of the domain from distant datasource
       DomainDriver domainDriver = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
       UserDetail[] distantUDs = domainDriver.getAllChangedUsers(fromTimeStamp, toTimeStamp);
@@ -5873,7 +5860,6 @@ public final class Admin {
             bFound = true;
             distantUD.setId(silverpeasUDs[nJ].getId());
             distantUD.setAccessLevel(silverpeasUDs[nJ].getAccessLevel());
-            userIds.put(specificId, silverpeasUDs[nJ].getId());
           }
         }
 
@@ -5884,7 +5870,7 @@ public final class Admin {
           updateUserDuringSynchronization(domainDriverManager, distantUD, updateUsers, sReport);
         } else if (importUsers) {
           // add user
-          addUserDuringSynchronization(domainDriverManager, distantUD, addedUsers, userIds, sReport);
+          addUserDuringSynchronization(domainDriverManager, distantUD, addedUsers, sReport);
         }
       }
 
@@ -5933,6 +5919,18 @@ public final class Admin {
           "domainId : '" + domainId + "'\nReport:" + sReport, e);
     }
   }
+  
+  /**
+   * @param silverpeasUDs existing users after synchronization
+   * @return a Map <specificId, userId>
+   */
+  private HashMap<String, String> getUserIdsMapping(UserDetail[] silverpeasUDs) {
+    HashMap<String, String> ids = new HashMap<String, String>();
+    for (UserDetail user : silverpeasUDs) {
+      ids.put(user.getSpecificId(), user.getId());
+    }
+    return ids;
+  }
 
   private void updateUserDuringSynchronization(DomainDriverManager domainDriverManager,
       UserDetail distantUD, Collection<UserDetail> updatedUsers, String sReport) {
@@ -5962,8 +5960,7 @@ public final class Admin {
   }
 
   private void addUserDuringSynchronization(DomainDriverManager domainDriverManager,
-      UserDetail distantUD, Collection<UserDetail> addedUsers, Map<String, String> userIds,
-      String sReport) {
+          UserDetail distantUD, Collection<UserDetail> addedUsers, String sReport) {
     String specificId = distantUD.getSpecificId();
     try {
       String silverpeasId = userManager.addUser(domainDriverManager, distantUD, true);
@@ -5984,7 +5981,6 @@ public final class Admin {
             + " / specificId:" + specificId + ")";
         sReport += message + "\n";
         SynchroReport.warn("admin.synchronizeUsers", message, null);
-        userIds.put(specificId, silverpeasId);
       }
     } catch (AdminException ae) {
       SilverTrace.info("admin", "admin.addUserDuringSynchronization",
@@ -6203,11 +6199,11 @@ public final class Admin {
               superGroupId).getSpecificId() + " d'Id base " + superGroupId, null);
         }
       }
-      String[] groupUserIds = testedGroup.getUserIds();
+      String[] userSpecificIds = testedGroup.getUserIds();
       List<String> convertedUserIds = new ArrayList<String>();
-      for (String groupUserId : groupUserIds) {
-        if (userIds.get(groupUserId) != null) {
-          convertedUserIds.add(userIds.get(groupUserId));
+      for (String userSpecificId : userSpecificIds) {
+        if (userIds.get(userSpecificId) != null) {
+          convertedUserIds.add(userIds.get(userSpecificId));
         }
       }
       // Le groupe contiendra une liste d'IDs de users existant ds la base et
