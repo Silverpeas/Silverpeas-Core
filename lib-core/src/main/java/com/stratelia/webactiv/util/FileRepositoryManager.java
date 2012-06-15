@@ -79,13 +79,13 @@ public class FileRepositoryManager {
   static public String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
-    return upLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + File.separatorChar + sComponentId + File.separatorChar;
   }
 
   static public String getAbsolutePath(String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
-    return upLoadPath + File.separator + sComponentId + File.separator;
+    return upLoadPath + File.separatorChar + sComponentId + File.separatorChar;
   }
 
   static public String getAvatarPath() {
@@ -98,7 +98,7 @@ public class FileRepositoryManager {
    * @return the path of the root repository for uploads.
    */
   static public String getUploadPath() {
-    return upLoadPath + File.separator;
+    return upLoadPath + File.separatorChar;
   }
 
   // Add by Jean-Claude Groccia

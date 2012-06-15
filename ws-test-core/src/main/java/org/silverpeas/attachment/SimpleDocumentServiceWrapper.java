@@ -26,6 +26,7 @@ package org.silverpeas.attachment;
 import com.silverpeas.util.Default;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
@@ -172,5 +173,32 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   @Override
   public List<SimpleDocument> listDocumentsToUnlock(Date expiryDate, String language) {
     return realService.listDocumentsToUnlock(expiryDate, language);
+  }
+
+  @Override
+  public void addContent(SimpleDocument document, File content, boolean indexIt,
+      boolean invokeCallback) {
+    realService.addContent(document, content, indexIt, invokeCallback);
+  }
+
+  @Override
+  public void getBinaryContent(File file, SimpleDocumentPK pk, String lang) {
+    realService.getBinaryContent(file, pk, lang);
+  }
+
+  @Override
+  public SimpleDocument createAttachment(SimpleDocument document, File content) throws AttachmentException {
+    return realService.createAttachment(document, content);
+  }
+
+  @Override
+  public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt) {
+    return realService.createAttachment(document, content, indexIt);
+  }
+
+  @Override
+  public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
+      boolean invokeCallback) {
+    return realService.createAttachment(document, content, indexIt, invokeCallback);
   }
 }

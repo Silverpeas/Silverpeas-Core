@@ -28,7 +28,11 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import java.util.Date;
+
+import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static java.io.File.separatorChar;
 
 /**
  *
@@ -338,7 +342,8 @@ public class SimpleDocument {
 
   /**
    * Return the icon correponding to the file.
-   * @return 
+   *
+   * @return
    */
   public String getDisplayIcon() {
     return FileRepositoryManager.getFileIcon(FileRepositoryManager.getFileExtension(getFilename()));
@@ -355,6 +360,27 @@ public class SimpleDocument {
 
   public boolean isReadOnly() {
     return StringUtil.isDefined(getEditedBy());
+  }
+
+  /**
+   * Path to the file stored on the filesystem.
+   * @return 
+   */
+  public String getAttachmentPath() {
+    String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
+    directory = directory.replace('/', separatorChar);
+    directory = directory + getId() + separatorChar;
+    String lang = getLanguage();
+    if (!StringUtil.isDefined(lang)) {
+      lang = defaultLanguage;
+    }
+    directory = directory + lang + separatorChar;
+    return directory + getFilename();
+  }
+  
+  public String getAttachmentURL() {
+    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
+        getLanguage());
   }
 
   @Override

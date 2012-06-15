@@ -169,7 +169,7 @@ public class SimpleAttachment {
   public void setXmlFormId(String xmlFormId) {
     this.xmlFormId = xmlFormId;
   }
-
+  
   @Override
   public int hashCode() {
     int hash = 7;

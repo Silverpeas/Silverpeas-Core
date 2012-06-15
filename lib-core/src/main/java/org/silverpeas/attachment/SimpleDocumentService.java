@@ -29,6 +29,7 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -43,6 +44,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +58,7 @@ import java.util.List;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -68,23 +76,11 @@ public class SimpleDocumentService implements AttachmentService {
       "com.stratelia.webactiv.util.attachment.Attachment", "");
   private final DocumentRepository repository = new DocumentRepository();
 
-  /**
-   *
-   * @param document
-   * @param lang
-   */
   @Override
   public void createIndex(SimpleDocument document) {
     createIndex(document, null, null);
   }
 
-  /**
-   *
-   * @param document
-   * @param lang
-   * @param startOfVisibilityPeriod
-   * @param endOfVisibilityPeriod
-   */
   @Override
   public void createIndex(SimpleDocument document, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) {
@@ -146,8 +142,8 @@ public class SimpleDocumentService implements AttachmentService {
    * @param lang
    */
   private void deleteIndex(SimpleDocument document, String lang) {
-    SilverTrace.debug("attachment", "DocumentService.deleteIndex",
-        "root.MSG_GEN_ENTER_METHOD", document.getId());
+    SilverTrace.debug("attachment", "DocumentService.deleteIndex", "root.MSG_GEN_ENTER_METHOD",
+        document.getId());
     String language = lang;
     if (language == null) {
       language = I18NHelper.defaultLanguage;
@@ -256,6 +252,7 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocumentPK docPk = repository.createDocument(session, document, content);
       SimpleDocument currentDocument = repository.findDocumentById(session, docPk, document.
           getLanguage());
+      storeContent(session, currentDocument);
       if (invokeCallback && StringUtil.isDefined(currentDocument.getCreatedBy())) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer.
@@ -269,8 +266,22 @@ public class SimpleDocumentService implements AttachmentService {
       return currentDocument;
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
+    }
+  }
+
+  private void storeContent(Session session, SimpleDocument document) throws RepositoryException,
+      IOException {
+    File file = new File(document.getAttachmentPath());
+    InputStream in = null;
+    try {
+      in = repository.getContent(session, document.getPk(), document.getLanguage());
+      FileUtils.copyInputStreamToFile(in, file);
+    } finally {
+      IOUtils.closeQuietly(in);
     }
   }
 
@@ -298,6 +309,7 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       repository.deleteDocument(session, document.getPk());
+      FileUtils.deleteQuietly(new File(document.getAttachmentPath()));
       for (String lang : I18NHelper.getAllSupportedLanguages()) {
         deleteIndex(document, lang);
       }
@@ -321,16 +333,6 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
-  /**
-   * to search all file attached
-   *
-   * @param primaryKey the primary key of object AttachmentDetail
-   * @return java.util.Vector: a collection of AttachmentDetail
-   * @throws AttachmentRuntimeException when is impossible to search
-   * @author Jean-Claude Groccia
-   * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   */
   @Override
   public SimpleDocument searchAttachmentById(SimpleDocumentPK primaryKey, String lang) {
     Session session = null;
@@ -348,14 +350,6 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
-  /**
-   * to search all file attached to an object who is identified by "PK"
-   *
-   * @param foreignKey : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer
-   * object but this key must be transformed to AttachmentPK
-   * @return java.util.Vector: a collection of AttachmentDetail
-   * @throws AttachmentRuntimeException when is impossible to search
-   */
   @Override
   public List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey, String lang) {
     Session session = null;
@@ -370,19 +364,6 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
-  /**
-   * to update file information (title and description) AttachmentDetail object to update.
-   *
-   * @param attachDetail : AttachmentDetail.
-   * @param indexIt - indicates if attachment must be indexed or not
-   */
-  /**
-   * To update the document : status, informations but not its content.
-   *
-   * @param document
-   * @param indexIt
-   * @param invokeCallback
-   */
   @Override
   public void updateAttachment(SimpleDocument document, boolean indexIt, boolean invokeCallback) {
     Session session = null;
@@ -419,13 +400,6 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
-  /**
-   * To update the document : status, informations but not its content.
-   *
-   * @param document
-   * @param indexIt
-   * @param invokeCallback
-   */
   @Override
   public void addContent(SimpleDocument document, InputStream in, boolean indexIt,
       boolean invokeCallback) {
@@ -433,6 +407,7 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       repository.addContent(session, document.getPk(), document.getFile(), in);
+      storeContent(session, document);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         RepositoryHelper.getJcrAttachmentService().updateNodeAttachment(document,
             document.getLanguage());
@@ -448,18 +423,13 @@ public class SimpleDocumentService implements AttachmentService {
       }
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
     }
   }
 
-  /**
-   * To remove the content of the document in the specified language.
-   *
-   * @param document
-   * @param lang
-   * @param invokeCallback
-   */
   @Override
   public void removeContent(SimpleDocument document, String lang, boolean invokeCallback) {
     Session session = null;
@@ -1295,6 +1265,58 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
+    }
+  }
+
+  @Override
+  public void addContent(SimpleDocument document, File content, boolean indexIt,
+      boolean invokeCallback) {
+    InputStream in = null;
+    try {
+      in = new BufferedInputStream(new FileInputStream(content));
+      addContent(document, in, indexIt, invokeCallback);
+    } catch (FileNotFoundException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
+  }
+
+  @Override
+  public void getBinaryContent(File file, SimpleDocumentPK pk, String lang) {
+    OutputStream out = null;
+    try {
+      out = new BufferedOutputStream(new FileOutputStream(file));
+      getBinaryContent(out, pk, lang);
+    } catch (FileNotFoundException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      IOUtils.closeQuietly(out);
+    }
+  }
+
+  @Override
+  public SimpleDocument createAttachment(SimpleDocument document, File content) throws
+      AttachmentException {
+    return createAttachment(document, content, true);
+  }
+
+  @Override
+  public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt) {
+    return createAttachment(document, content, indexIt, true);
+  }
+
+  @Override
+  public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
+      boolean invokeCallback) {
+    InputStream in = null;
+    try {
+      in = new BufferedInputStream(new FileInputStream(content));
+      return createAttachment(document, in, indexIt, invokeCallback);
+    } catch (FileNotFoundException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      IOUtils.closeQuietly(in);
     }
   }
 }

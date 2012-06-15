@@ -26,11 +26,11 @@ package org.silverpeas.attachment;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
-import javax.jcr.RepositoryException;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -45,13 +45,25 @@ public interface AttachmentService {
   String UPDATE_SHORTCUT_MODE = "2";
 
   /**
-   * To update the document : status, informations but not its content.
+   * To update a document content by updating or adding some content.
    *
    * @param document
+   * @param content
    * @param indexIt
    * @param invokeCallback
    */
-  void addContent(SimpleDocument document, InputStream in, boolean indexIt, boolean invokeCallback);
+  void addContent(SimpleDocument document, InputStream content, boolean indexIt,
+      boolean invokeCallback);
+
+  /**
+   * To update a document content by updating or adding some content.
+   *
+   * @param document
+   * @param content
+   * @param indexIt
+   * @param invokeCallback
+   */
+  void addContent(SimpleDocument document, File content, boolean indexIt, boolean invokeCallback);
 
   /**
    * Returns the binary content.
@@ -61,6 +73,16 @@ public interface AttachmentService {
    * @return a stream to the content.
    */
   InputStream getBinaryContent(SimpleDocumentPK pk, String lang);
+
+  /**
+   *  Writes the binary content into the specified File.
+   *
+   * @param file the file where the content is to be written.
+   * @param pk the id of the document.
+   * @param lang the language of the content.
+   * @return a stream to the content.
+   */
+  void getBinaryContent(File file, SimpleDocumentPK pk, String lang);
 
   /**
    * Writes the binary content into the specified OutputStream.
@@ -118,6 +140,44 @@ public interface AttachmentService {
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, InputStream content, boolean indexIt,
+      boolean invokeCallback);
+
+  /**
+   * Create file attached to an object who is identified by the foreignId.
+   *
+   * @param document the document to be created.
+   * @param content the binary content of the document.
+   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
+   * otherwhise.
+   * @return the stored document.
+   * @throws AttachmentException
+   */
+  SimpleDocument createAttachment(SimpleDocument document, File content) throws
+      AttachmentException;
+
+  /**
+   * Create file attached to an object who is identified by the foreignId.
+   *
+   * @param document the document to be created.
+   * @param content the binary content of the document.
+   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
+   * otherwhise.
+   * @return the stored document.
+   */
+  SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt);
+
+  /**
+   * Create file attached to an object who is identified by the foreignId.
+   *
+   * @param document the document to be created.
+   * @param content the binary content of the document.
+   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
+   * otherwhise.
+   * @param invokeCallback <code>true</code> if the callback methods of the components must be
+   * called, <code>false</code> for ignoring thoose callbacks.
+   * @return the stored document.
+   */
+  SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
       boolean invokeCallback);
 
   /**
@@ -194,12 +254,6 @@ public interface AttachmentService {
 
   void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey);
 
-  /**
-   * to update file information (title and description) AttachmentDetail object to update.
-   *
-   * @param attachDetail : AttachmentDetail.
-   * @param indexIt - indicates if attachment must be indexed or not
-   */
   /**
    * To update the document : status, informations but not its content.
    *

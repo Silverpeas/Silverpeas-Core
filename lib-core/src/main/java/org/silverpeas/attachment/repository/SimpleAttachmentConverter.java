@@ -23,7 +23,6 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.math.BigDecimal;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import org.silverpeas.attachment.model.SimpleAttachment;

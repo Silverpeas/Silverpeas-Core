@@ -1,35 +1,24 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.attachment.importExport;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
@@ -44,11 +33,25 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
+ *
  * @author sdevolder
  */
 public class AttachmentImportExport {
@@ -57,39 +60,38 @@ public class AttachmentImportExport {
   /**
    * Methode utilisee par l'import massive du moteur d'importExport de silverpeaseffectuant la copie
    * de fichier ainsi que sa liaison avec une publication cible.
+   *
    * @param pubId - publication dans laquelle creer l'attachement
    * @param componentId - id du composant contenant la publication (necessaire pour determiner le
    * chemin physique du fichier importe)
    * @param attachmentDetail - objet contenant les details necessaires a la creation du fichier
    * importe et a sa liaison avec la publication
-   * @param indexIt 
+   * @param indexIt
    */
   public void importAttachment(String pubId, String componentId, AttachmentDetail attachmentDetail,
-      boolean indexIt) {
-    importAttachment(pubId, componentId, attachmentDetail, indexIt, true);
+      InputStream file, boolean indexIt) {
+    importAttachment(pubId, componentId, attachmentDetail, file, indexIt, true);
   }
 
   public void importAttachment(String pubId, String componentId,
-      AttachmentDetail attachmentDetail, boolean indexIt,
+      AttachmentDetail attachmentDetail, InputStream file, boolean indexIt,
       boolean updateLogicalName) {
     this.copyFile(componentId, attachmentDetail, updateLogicalName);
     if (attachmentDetail.getSize() > 0) {
-      this.addAttachmentToPublication(pubId, componentId, attachmentDetail,
-          AbstractForm.CONTEXT_FORM_FILE, indexIt);
+      this.addAttachmentToPublication(pubId, componentId, attachmentDetail, file, indexIt);
     }
   }
 
-  public AttachmentDetail importWysiwygAttachment(String pubId,
-      String componentId, AttachmentDetail attachmentDetail, String context) {
-    AttachmentDetail a_detail = null;
-    this.copyFileWysiwyg(componentId, attachmentDetail, context);
-    if (attachmentDetail.getSize() > 0) {
-      a_detail = this.addAttachmentToPublication(pubId, componentId,
-          attachmentDetail, context, false);
-    }
-    return a_detail;
-  }
-
+  /* public AttachmentDetail importWysiwygAttachment(String pubId,
+   String componentId, AttachmentDetail attachmentDetail, String context) {
+   AttachmentDetail a_detail = null;
+   this.copyFileWysiwyg(componentId, attachmentDetail, context);
+   if (attachmentDetail.getSize() > 0) {
+   a_detail = this.addAttachmentToPublication(pubId, componentId,
+   attachmentDetail, context, false);
+   }
+   return a_detail;
+   }*/
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
       List<AttachmentDetail> attachments, String userId) {
     return importAttachments(pubId, componentId, attachments, userId, false);
@@ -105,17 +107,15 @@ public class AttachmentImportExport {
       if (xmlContent != null) {
         attDetail.setXmlForm(xmlContent.getName());
       }
-
-      this.addAttachmentToPublication(pubId, componentId, attDetail,
-          AbstractForm.CONTEXT_FORM_FILE, indexIt);
-
+      InputStream input = null;
       // Store xml content
       try {
+        input = new FileInputStream(attDetail.getAttachmentPath(null));
+        this.addAttachmentToPublication(pubId, componentId, attDetail, input, indexIt);
         if (xmlContent != null) {
           if (xmlIE == null) {
             xmlIE = new FormTemplateImportExport();
           }
-
           ForeignPK pk = new ForeignPK(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
           xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent,
               attDetail.getAuthor());
@@ -124,8 +124,10 @@ public class AttachmentImportExport {
         SilverTrace.error("attachment",
             "AttachmentImportExport.importAttachments()",
             "root.MSG_GEN_PARAM_VALUE", e);
+      } finally {
+        IOUtils.closeQuietly(input);
       }
-      
+
       if (attDetail.isRemoveAfterImport()) {
         boolean removed = FileUtils.deleteQuietly(new File(attDetail.getOriginalPath()));
         if (!removed) {
@@ -170,6 +172,7 @@ public class AttachmentImportExport {
   /**
    * Methode de copie de fichier utilisee par la methode
    * importAttachement(String,String,AttachmentDetail)
+   *
    * @param componentId - id du composant contenant la publication e laquelle est destine
    * l'attachement
    * @param a_Detail - objet contenant les informations sur le fichier e copier
@@ -230,20 +233,20 @@ public class AttachmentImportExport {
   /**
    * Methode utilisee par la methode importAttachement(String,String,AttachmentDetail) pour creer un
    * attachement sur la publication creee dans la methode citee.
+   *
    * @param pubId - id de la publication dans laquelle creer l'attachment
    * @param componentId - id du composant contenant la publication
    * @param a_Detail - obejt contenant les informations necessaire e la creation de l'attachment
    * @return AttachmentDetail cree
    */
-  private AttachmentDetail addAttachmentToPublication(String pubId, String componentId,
-      AttachmentDetail a_Detail, String context, boolean indexIt) {
+  private SimpleDocument addAttachmentToPublication(String pubId, String componentId,
+      AttachmentDetail a_Detail, InputStream input, boolean indexIt) {
 
     int incrementSuffixe = 0;
-    AttachmentDetail ad_toCreate = null;
-    AttachmentPK atPK = new AttachmentPK(null, componentId);
+    SimpleDocumentPK attachmentPk = new SimpleDocumentPK(null, componentId);
     AttachmentPK foreignKey = new AttachmentPK(pubId, componentId);
-    Vector<AttachmentDetail> attachments = AttachmentController.searchAttachmentByCustomerPK(
-        foreignKey);
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(foreignKey, null);
     int i = 0;
 
     String logicalName = a_Detail.getLogicalName();
@@ -257,11 +260,11 @@ public class AttachmentImportExport {
         "root.MSG_GEN_PARAM_VALUE", "updateRule=" + updateRule);
 
     // Verification s'il existe un attachment de meme nom, si oui, ajout
-    // d'un
-    // suffixe au nouveau fichier
+    // d'un suffixe au nouveau fichier
+    SimpleDocument ad_toCreate;
     while (i < attachments.size()) {
       ad_toCreate = attachments.get(i);
-      if (ad_toCreate.getLogicalName().equals(logicalName)) {
+      if (ad_toCreate.getFilename().equals(logicalName)) {
         if ((ad_toCreate.getSize() != a_Detail.getSize())
             && AttachmentDetail.IMPORT_UPDATE_RULE_ADD.equalsIgnoreCase(updateRule)) {
           logicalName = a_Detail.getLogicalName();
@@ -276,7 +279,7 @@ public class AttachmentImportExport {
           // genere n est pas lui meme un autre nom d'attachment de la publication
           i = 0;
         } else {// on efface l'ancien fichier joint et on stoppe la boucle
-          AttachmentController.deleteAttachment(ad_toCreate);
+          AttachmentServiceFactory.getAttachmentService().deleteAttachment(ad_toCreate);
           break;
         }
       } else {
@@ -286,23 +289,22 @@ public class AttachmentImportExport {
     a_Detail.setLogicalName(logicalName);
 
     // On instancie l'objet attachment e creer
-    ad_toCreate = new AttachmentDetail(atPK, a_Detail.getPhysicalName(),
-        a_Detail.getLogicalName(), null, a_Detail.getType(),
-        a_Detail.getSize(), context, new Date(), foreignKey, userId);
-    ad_toCreate.setTitle(a_Detail.getTitle());
-    ad_toCreate.setInfo(a_Detail.getInfo());
-    ad_toCreate.setXmlForm(a_Detail.getXmlForm());
-    AttachmentController.createAttachment(ad_toCreate, indexIt);
+    ad_toCreate = new SimpleDocument(attachmentPk, pubId, -1, false, new SimpleAttachment(a_Detail.
+        getLogicalName(),
+        null, a_Detail.getTitle(), a_Detail.getInfo(), a_Detail.getSize(), a_Detail.getType(),
+        userId, new Date(), a_Detail.getXmlForm()));
+    AttachmentServiceFactory.getAttachmentService().createAttachment(ad_toCreate, input, indexIt);
 
     return ad_toCreate;
   }
 
   /**
    * Methode de recuperation des attachements et de copie des fichiers dans le dossier d'exportation
+   *
    * @param pk - PrimaryKey de l'obijet dont on veut les attachments?
    * @param exportPath - Repertoire dans lequel copier les fichiers
    * @param relativeExportPath chemin relatif du fichier copie
-   * @param extensionFilter 
+   * @param extensionFilter
    * @return une liste des attachmentDetail trouves
    */
   public List<AttachmentDetail> getAttachments(WAPrimaryKey pk, String exportPath,
@@ -373,6 +375,7 @@ public class AttachmentImportExport {
   /**
    * Methode recuperant le chemin d'acces au dossier de stockage des fichiers importes dans un
    * composant.
+   *
    * @param componentId - id du composant dont on veut recuperer le chemin de stockage de ses
    * fichiers importes
    * @return le chemin recherche
