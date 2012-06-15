@@ -32,7 +32,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,8 +132,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @see
    */
   @Override
-  protected String[] getUserIds(String lds, LDAPEntry groupEntry)
-      throws AdminException {
+  protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
     Set<String> usersManaged = new HashSet<String>();
     Set<String> groupsManaged = new HashSet<String>();
     List<LDAPEntry> groupsSet = new ArrayList<LDAPEntry> ();
@@ -150,7 +148,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             if (!groupsManaged.contains(grId)) {
               groupsManaged.add(grId);
               usersManaged.addAll(getTRUEUserIds(lds, curGroup));
-              groupsCur.addAll(getTRUEChildGroupsEntry(lds, grId, curGroup));
+              groupsCur.addAll(getTRUEChildGroupsEntry(lds, curGroup));
             }
           } catch (AdminException e) {
             SilverTrace.info("admin", "LDAPGroupAllRoot.getUserIds()",
@@ -227,8 +225,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
       if (StringUtil.isDefined(extraFilter)) {
         theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
-      } else {
-        theFilter = driverSettings.getGroupsFullFilter();
       }
       try {
         SilverTrace.info("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
@@ -262,36 +258,26 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
-  protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, String parentId, LDAPEntry theEntry) {
-    List<LDAPEntry> entryVector = new ArrayList<LDAPEntry>();
-    if (StringUtil.isDefined(parentId)) {
-      SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
-          "root.MSG_GEN_PARAM_VALUE", "Root Group Search : " + parentId);
-      String[] stringVals = LDAPUtility.getAttributeValues(theEntry, driverSettings.
-          getGroupsMemberField());
-      for (String childDN : stringVals) {
-        try {
-          LDAPEntry childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds, childDN,
-              driverSettings.getScope(), driverSettings.getGroupsFullFilter(),
-              driverSettings.getGroupAttributes());
-          if (childGroupEntry != null) {
-            // Verify that the group exist in the scope
-            String groupSpecificId = LDAPUtility.getFirstAttributeValue(
-                childGroupEntry, driverSettings.getGroupsIdField());
-            if (LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.
-                getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
-                driverSettings.getGroupsIdFilter(groupSpecificId),
-                driverSettings.getGroupAttributes()) != null) {
-              entryVector.add(childGroupEntry);
-            }
+  protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, LDAPEntry theEntry) {
+    try {
+      LDAPEntry[] entries = LDAPUtility.search1000Plus(lds, theEntry.getDN(),
+          driverSettings.getScope(), driverSettings.getGroupsFullFilter(),
+          driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
+      if(entries != null) {
+        List<LDAPEntry> subGroups = new ArrayList<LDAPEntry>();
+        for (LDAPEntry entry : entries) {
+          if (!entry.getDN().equals(theEntry.getDN())) {
+            subGroups.add(entry);
           }
-        } catch (AdminException e) {
-          SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
-              "admin.MSG_ERR_LDAP_GENERAL", "GROUP NOT FOUND : " + childDN, e);
         }
+        return subGroups;
       }
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
+          "admin.MSG_ERR_LDAP_GENERAL", "GETTING SUBGROUPS FAILED FOR : "
+          + theEntry.getDN(), e);
     }
-    return entryVector;
+    return new ArrayList<LDAPEntry>();
   }
 
   @Override

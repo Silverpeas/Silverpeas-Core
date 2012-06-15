@@ -468,11 +468,9 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public LDAPEntry[] search1000Plus(String lds, String baseDN,
-      int scope, String filter, String varToSort, String[] args)
-      throws AdminException {
-    SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
-        "root.MSG_GEN_ENTER_METHOD");
+  static public LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter,
+      String varToSort, String[] args) throws AdminException {
+    SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_ENTER_METHOD");
     LDAPConnection ld = getConnection(lds);
     List<LDAPEntry> entriesVector = new ArrayList<LDAPEntry>();
     int nbReaded = 0;
@@ -484,22 +482,19 @@ public class LDAPUtility {
 
     try {
       LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
-      SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
-          "root.MSG_GEN_PARAM_VALUE", "LDAPImpl = "
-          + driverSettings.getLDAPImpl());
+      SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
+          "LDAPImpl = " + driverSettings.getLDAPImpl());
       if (args != null) {
         SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
             "root.MSG_GEN_PARAM_VALUE", "args = " + Arrays.toString(args));
       }
-      if (driverSettings.getLDAPImpl() != null
-          && "openldap".equalsIgnoreCase(driverSettings.getLDAPImpl())) {
+      if (!driverSettings.isSortControlSupported()) {
         // OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
         cons = null;
       } else {
         keys[0] = new LDAPSortKey(varToSort);
         // Create a LDAPSortControl object - Fail if cannot sort
         LDAPSortControl sort = new LDAPSortControl(keys, true);
-
         // Set sorted request on server
         cons = ld.getSearchConstraints();
         cons.setControls(sort);
@@ -508,20 +503,17 @@ public class LDAPUtility {
       boolean sizeLimitReached = false;
       boolean timeLimitReached = false;
       int nbRetryTimeLimit = 0;
-
-      // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
       String[] baseDNs = extractBaseDNs(baseDN);
       LDAPEntry entry = null;
       for (String baseDN1 : baseDNs) {
         theFullFilter = filter;
         while (theFullFilter != null) {
-          SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-              "LDAP query", "BaseDN=" + baseDN1 + " scope="
-              + Integer.toString(scope) + " Filter=" + theFullFilter);
+          SilverTrace.
+              debug("admin", "LDAPUtility.search1000Plus()", "LDAP query",
+              "BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter=" + theFullFilter);
           SynchroReport.debug("LDAPUtility.search1000Plus()",
-              "Requête sur le domaine LDAP distant (protocole v"
-              + ld.getProtocolVersion() + "), BaseDN=" + baseDN1
-              + " scope=" + Integer.toString(scope) + " Filter="
+              "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion()
+              + "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter="
               + theFullFilter, null);
 
           try {
@@ -532,11 +524,10 @@ public class LDAPUtility {
                 // res.next();
                 notTheFirst = false;
               } else {
-                SynchroReport.debug("LDAPUtility.search1000Plus()",
-                    "élément #" + nbReaded + " : " + entry.getDN(), null);
+                SynchroReport.debug("LDAPUtility.search1000Plus()", "élément #" + nbReaded + " : "
+                    + entry.getDN(), null);
                 SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                    "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded
-                    + " : " + entry.getDN());
+                    "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded + " : " + entry.getDN());
                 entriesVector.add(entry);
                 nbReaded++;
               }
@@ -544,28 +535,23 @@ public class LDAPUtility {
           } catch (LDAPException le) {
             if (le.getResultCode() == LDAPException.SIZE_LIMIT_EXCEEDED) {
               sizeLimitReached = true;
-              SynchroReport.debug("LDAPUtility.search1000Plus()",
-                  "Size Limit Reached...", null);
-              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                  "root.MSG_GEN_PARAM_VALUE", "Size Limit Reached...");
+              SynchroReport.debug("LDAPUtility.search1000Plus()", "Size Limit Reached...", null);
+              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
+                  "Size Limit Reached...");
             } else if (le.getResultCode() == LDAPException.TIME_LIMIT_EXCEEDED) {
               timeLimitReached = true;
               nbRetryTimeLimit++;
               lastException = le;
-              SynchroReport.debug("LDAPUtility.search1000Plus()",
-                  "Time Limit Reached (#" + nbRetryTimeLimit + ")", null);
-              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                  "root.MSG_GEN_PARAM_VALUE", "Time Limit Reached (#"
-                  + nbRetryTimeLimit + ")");
+              SynchroReport.debug("LDAPUtility.search1000Plus()", "Time Limit Reached (#"
+                  + nbRetryTimeLimit + ")", null);
+              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
+                  "Time Limit Reached (#" + nbRetryTimeLimit + ")");
             } else {
-              SilverTrace.error("admin", "LDAPUtility.search1000Plus",
-                  "admin.EX_ERR_LDAP_REFERRAL", "#"
-                  + Integer.toString(le.getResultCode()) + " "
-                  + le.getLDAPErrorMessage(), le);
+              SilverTrace.error("admin", "LDAPUtility.search1000Plus", "admin.EX_ERR_LDAP_REFERRAL",
+                  "#" + Integer.toString(le.getResultCode()) + " " + le.getLDAPErrorMessage(), le);
             }
           }
-          if (sizeLimitReached
-              || (timeLimitReached && nbRetryTimeLimit <= MAX_NB_RETRY_TIMELIMIT)) {
+          if (sizeLimitReached || (timeLimitReached && nbRetryTimeLimit <= MAX_NB_RETRY_TIMELIMIT)) {
             notTheFirst = true;
             sizeLimitReached = false;
             timeLimitReached = false;

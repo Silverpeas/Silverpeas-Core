@@ -27,16 +27,18 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.silverpeas.ldap.CreateLdapServer;
 import org.silverpeas.ldap.OpenDJRule;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 @CreateLdapServer(ldifConfig = "opendj/config/config.ldif", serverHome = "opendj", ldifFile =
 "silverpeas-ldap.ldif")
@@ -70,13 +72,12 @@ public class LDAPDriverTest {
   @Test
   public void getAllUsers() throws Exception {
     List<String> userNames = Arrays.asList(new String[]{"Nicolas", "Aaren", "Aarika", "Aaron",
-              "Aartjan", "Abagael", "Abagail",
-              "Abahri", "Abbas", "Abbe"});
+          "Aartjan", "Abagael", "Abagail", "Abahri", "Abbas", "Abbe"});
     UserDetail[] users = driver.getAllUsers();
     assertThat(users, notNullValue());
-    assertThat(users.length, is(10));
+    assertThat(users, arrayWithSize(10));
     for (UserDetail aUser : users) {
-      assertThat(userNames.contains(aUser.getFirstName()), is(true));
+      assertThat(userNames, hasItem(aUser.getFirstName()));
     }
   }
 
@@ -84,9 +85,14 @@ public class LDAPDriverTest {
   public void getAllGroups() throws Exception {
     Group[] groups = driver.getAllGroups();
     assertThat(groups, notNullValue());
-    assertThat(groups.length, is(1));
-    assertThat(groups[0].getName(), is("Groupe 1"));
-    assertThat(groups[0].getDescription(), is("Description du premier groupe"));
+    assertThat(groups, arrayWithSize(3));
+    List<String> groupNames = Arrays.asList(new String[]{"Groupe 1", "Groupe 2", "Groupe 3"});
+    List<String> groupDescriptions = Arrays.asList(new String[]{"Description du premier groupe",
+          "Description du second groupe", "Description du troisème groupe"});
+    for (Group group : groups) {
+      assertThat(groupNames, hasItem(group.getName()));
+      assertThat(groupDescriptions, hasItem(group.getDescription()));
+    }
   }
 
   @Test
