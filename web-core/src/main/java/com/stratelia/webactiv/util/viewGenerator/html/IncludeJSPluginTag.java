@@ -52,7 +52,11 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   private static final String SILVERPEAS_DATEPICKER = "silverpeas-defaultDatePicker.js";
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
-  private static final String JQUERY_BREADCRUMB = "silverpeas-breadcrumb.js";
+  private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
+  private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
+  private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
+  private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
+  private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -95,11 +99,30 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       xhtml.addElement(css);
       xhtml.addElement(pagination);
     } else if (breadcrumb.name().equals(getName())) {
-      script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + JQUERY_BREADCRUMB);
+      script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_BREADCRUMB);
       xhtml.addElement(breadcrumb);
+    } else if (userZoom.name().equals(getName())) {
+      script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
+      script messageMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_MESSAGEME);
+      script invitMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_INVITME);
+      script userZoom = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_USERZOOM);
+      xhtml.addElement(profile);
+      xhtml.addElement(messageMe);
+      xhtml.addElement(invitMe);
+      xhtml.addElement(userZoom);
+    } else if (invitme.name().equals(getName())) {
+      script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
+      script invitMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_INVITME);
+      xhtml.addElement(profile);
+      xhtml.addElement(invitMe);
+    } else if (messageme.name().equals(getName())) {
+      script profile = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PROFILE);
+      script messageMe = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_MESSAGEME);
+      xhtml.addElement(profile);
+      xhtml.addElement(messageMe);
     } else if (wysiwyg.name().equals(getName())) {
-      script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(wysiwygPath + JAVASCRIPT_CKEDITOR);
-      xhtml.addElement(breadcrumb);
+      script wysiwyg = new script().setType(JAVASCRIPT_TYPE).setSrc(wysiwygPath + JAVASCRIPT_CKEDITOR);
+      xhtml.addElement(wysiwyg);
     }
     xhtml.output(getJspContext().getOut());
   }

@@ -42,8 +42,8 @@
 <div class="action">
   $if(notMyself)$
   	$if(notAContact)$
-	  <a href="#" class="link invitation" onclick="OpenPopupInvitaion($user.id$,'$user.lastName$ $user.firstName$');">Envoyer une invitation</a>
+	  <a href="#" rel="$user.id$,$user.lastName$ $user.firstName$" class="link invitation">Envoyer une invitation</a>
 	$endif$
-	<a href="#" class="link notification" onclick="OpenPopup($user.id$,'$user.lastName$ $user.firstName$')">Envoyer un message</a>
+	<a href="#" rel="$user.id$,$user.lastName$ $user.firstName$" class="link notification">Envoyer un message</a>
   $endif$
 </div>

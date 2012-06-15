@@ -47,5 +47,12 @@
         
   <bean id="userPriviledgeValidationFactory" class="com.silverpeas.web.UserPriviledgeValidationFactory"
         factory-method="getFactory"/>
+        
+  <bean id="sessionManagementFactory"
+        class="com.silverpeas.session.SessionManagementFactory"
+        factory-method="getFactory" />
+        
+  <bean name="personalizationServiceFactory"
+        class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
 </beans>
 

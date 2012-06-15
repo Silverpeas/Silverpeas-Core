@@ -60,6 +60,7 @@
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
+  <ctx:component-scan base-package="com.silverpeas.bundle.web" />
   
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
 
@@ -75,11 +76,16 @@
   <bean id="authenticator"
         class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" />
 
-  <!-- The session manager -->
+  <!-- The session manager (implements the session management) -->
   <bean id="sessionManager"
         class="com.stratelia.silverpeas.peasCore.SessionManager"
         factory-method="getInstance"
         depends-on="schedulerFactory" />
+        
+  <!-- The session management factory -->
+  <bean id="sessionManagementFactory"
+        class="com.silverpeas.session.SessionManagementFactory"
+        factory-method="getFactory" />
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
   <bean id="organizationController"

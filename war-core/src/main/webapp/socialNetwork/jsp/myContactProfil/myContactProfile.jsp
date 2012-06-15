@@ -67,6 +67,7 @@
 <html>
 <head>
 <view:looknfeel />
+<view:includePlugin name="messageme"/>
 </head>
 <body id="myProfile">
 <view:window>
@@ -87,7 +88,7 @@
         </p>
         <!-- action  -->
         <div class="action">
-            <a href="#" class="link notification" onclick="initNotification(<%=userFull.getId() %>,'<%=userFull.getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
+            <a href="#" class="link notification" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="GML.notification.send" /></a>
         </div> <!-- /action  -->
         <div class="profilPhoto">
 			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
@@ -166,8 +167,6 @@
               
 </div>
 </view:window>
-
-<%@include file="../notificationDialog.jsp" %>
     
 </body>
 </html>

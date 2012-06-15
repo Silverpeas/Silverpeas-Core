@@ -21,36 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.profile.web.mock;
+package com.silverpeas.bundle.web;
 
-import com.silverpeas.socialNetwork.relationShip.RelationShip;
-import com.silverpeas.socialNetwork.relationShip.RelationShipService;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.silverpeas.web.TestResources;
+import static com.silverpeas.web.TestResources.TEST_RESOURCES_NAME;
 import javax.inject.Named;
 
 /**
- * A mock of the RelationShipService service dedicated to tests.
+ * The resources needed by the unit tests on the REST-based web service on the localized bundles.
  */
-@Named("relationShipService")
-public class MockedRelationShipService extends RelationShipService {
+@Named(TEST_RESOURCES_NAME)
+public class BundleTestResources extends TestResources {
   
-  private List<RelationShip> relationShips = new ArrayList<RelationShip>();
-  
-  public void setRelationShipsBetween(String userId, final UserDetail ... users) {
-    int userId1 = Integer.valueOf(userId);
-    for (UserDetail userDetail : users) {
-      int userId2 = Integer.valueOf(userDetail.getId());
-      relationShips.add(new RelationShip(userId1, userId2, 0, new Date(), userId1));
-    }
-  }
-
-  @Override
-  public List<RelationShip> getAllMyRelationShips(int myId) throws SQLException {
-    return relationShips;
-  }
+  public static final String JAVA_PACKAGE = "com.silverpeas.bundle.web";
+  public static final String SPRING_CONTEXT = "spring-bundle-webservice.xml";
   
 }
