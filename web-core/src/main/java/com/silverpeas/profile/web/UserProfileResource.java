@@ -45,8 +45,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -58,7 +58,7 @@ import org.springframework.stereotype.Service;
  * group of users in a given domain to the others domains in Silverpeas.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path(USERS_BASE_URI)
 @Authenticated
 public class UserProfileResource extends RESTWebService {

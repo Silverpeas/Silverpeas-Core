@@ -44,8 +44,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.sharing.model.Ticket;
@@ -67,7 +67,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  * It is a web service that provides an access to a node referenced by its URL.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("publications/{componentId}/{token}")
 public class PublicationResource extends RESTWebService {
   

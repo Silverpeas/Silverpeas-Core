@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.Service;
 import static com.silverpeas.pdc.web.PdcEntity.*;
 import static com.silverpeas.pdc.web.PdcServiceProvider.inComponentOfId;
 import com.silverpeas.personalization.UserPreferences;
@@ -36,8 +37,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC) as configured for a
@@ -57,7 +57,7 @@ import org.springframework.stereotype.Service;
  * unique URI in which the identifier of the Silverpeas component instance is referenced.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("pdc/{componentId}")
 @Authorized
 public class PdcResource extends RESTWebService {

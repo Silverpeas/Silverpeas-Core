@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
@@ -50,6 +47,7 @@ import java.util.StringTokenizer;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
+ *
  * @author tleroi
  */
 public class LDAPUtility {
@@ -62,15 +60,14 @@ public class LDAPUtility {
 
   /**
    * Method declaration
+   *
    * @param driverSettings
    * @return
    * @throws AdminException
    * @see
    */
-  static public String openConnection(LDAPSettings driverSettings)
-      throws AdminException {
-    String newId = null;
-
+  static public String openConnection(LDAPSettings driverSettings) throws AdminException {
+    String newId;
     synchronized (connectInfos) {
       newId = Integer.toString(connexionsLastId);
       connexionsLastId = connexionsLastId + 1;
@@ -85,6 +82,7 @@ public class LDAPUtility {
 
   /**
    * Method declaration
+   *
    * @param connectionId
    * @return
    * @throws AdminException
@@ -97,6 +95,7 @@ public class LDAPUtility {
 
   /**
    * Method declaration
+   *
    * @param connectionId
    * @param ex
    * @return
@@ -141,6 +140,7 @@ public class LDAPUtility {
 
   /**
    * Method declaration
+   *
    * @param connectionId
    * @throws AdminException
    * @see
@@ -152,12 +152,12 @@ public class LDAPUtility {
 
   /**
    * Method declaration
+   *
    * @param connectionId
    * @throws AdminException
    * @see
    */
-  static private void InternalOpenConnection(String connectionId)
-      throws AdminException {
+  static private void InternalOpenConnection(String connectionId) throws AdminException {
     LDAPSettings driverSettings = (connectInfos.get(connectionId)).driverSettings;
     LDAPConnection valret;
     if (driverSettings.isLDAPSecured()) {
@@ -171,7 +171,8 @@ public class LDAPUtility {
       if (StringUtil.isDefined(driverSettings.getLDAPAccessPasswd())) {
         passwd = driverSettings.getLDAPAccessPasswd().getBytes(Charsets.UTF_8);
       }
-      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), passwd);
+      valret.
+          bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), passwd);
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -197,6 +198,7 @@ public class LDAPUtility {
 
   /**
    * Method declaration
+   *
    * @param connectionId
    * @throws AdminException
    * @see
@@ -221,24 +223,22 @@ public class LDAPUtility {
   /**
    * Returns the first value of a specific attribute from an entry. If this attribute have multiple
    * values, only the first is returned
+   *
    * @param theEntry the LDAP entry
    * @param attributeName the name of the attribute to retreive
    * @return the first value as a string
    */
-  static public String getFirstAttributeValue(LDAPEntry theEntry,
-      String attributeName) {
-    String[] stringVals = null;
-
-    stringVals = getAttributeValues(theEntry, attributeName);
-    if (stringVals.length > 0) {
+  static public String getFirstAttributeValue(LDAPEntry theEntry, String attributeName) {
+    String[] stringVals = getAttributeValues(theEntry, attributeName);
+    if (stringVals != null && stringVals.length > 0) {
       return stringVals[0];
-    } else {
-      return "";
     }
+    return "";
   }
 
   /**
    * Search and returns the first Entry that match the parameters baseDN, scope and filter
+   *
    * @param lds the LDAP connection name
    * @param baseDN the base DN for the search
    * @param scope the scope (LDAPConnection.SCOPE_BASE, LDAPConnection.SCOPE_ONE or
@@ -250,11 +250,8 @@ public class LDAPUtility {
    */
   static public LDAPEntry getFirstEntryFromSearch(String lds, String baseDN,
       int scope, String filter, String[] attrs) throws AdminException {
-    LDAPConnection ld = getConnection(lds);
-    LDAPSearchResults res = null;
-    LDAPEntry theEntry = null;
+    LDAPConnection connection = getConnection(lds);
     String sureFilter;
-    LDAPSearchConstraints sc = ld.getSearchConstraints();
 
     if (!StringUtil.isDefined(filter)) {
       sureFilter = "(objectClass=*)";
@@ -262,23 +259,26 @@ public class LDAPUtility {
       sureFilter = filter;
     }
     // Return only one entry
+
+    LDAPSearchConstraints sc = connection.getSearchConstraints();
     sc.setBatchSize(1);
     sc.setMaxResults(1);
     SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
-        "LDAP query", "BaseDN=" + baseDN + " scope="
-        + Integer.toString(scope) + " Filter=" + sureFilter);
+        "LDAP query", "BaseDN=" + baseDN + " scope=" + Integer.toString(scope) + " Filter="
+        + sureFilter);
     // SynchroReport.debug("LDAPUtility.getFirstEntryFromSearch()",
     // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
     // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
     // and stop when first entry is found
     String[] baseDNs = extractBaseDNs(baseDN);
+    LDAPEntry theEntry = null;
     for (String baseDN1 : baseDNs) {
       try {
-        res = ld.search(baseDN1, scope, sureFilter, attrs, false, sc);
+        LDAPSearchResults res = connection.search(baseDN1, scope, sureFilter, attrs, false, sc);
         if (res.hasMore()) {
           theEntry = res.next();
-          SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
-              "Entry Founded : ", theEntry.getDN());
+          SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()", "Entry Founded : ",
+              theEntry.getDN());
           break;
         }
       } catch (LDAPReferralException re) {
@@ -296,7 +296,6 @@ public class LDAPUtility {
         }
       }
     }
-
     return theEntry;
   }
 
@@ -306,12 +305,12 @@ public class LDAPUtility {
 
   /**
    * Reads the values of an attribute and return the strings
+   *
    * @param theEntry entry to read the attribute
    * @param theAttributeName name of the attribute to retreive
    * @return the attribute's values as string
    */
-  static public String[] getAttributeValues(LDAPEntry theEntry,
-      String theAttributeName) {
+  static public String[] getAttributeValues(LDAPEntry theEntry, String theAttributeName) {
     SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
         "root.MSG_GEN_ENTER_METHOD", "theAttributeName = " + theAttributeName);
     LDAPAttribute theAttr;
@@ -377,6 +376,7 @@ public class LDAPUtility {
   /**
    * Escaping DN to prevent LDAP injection. Based on
    * http://blogs.sun.com/shankar/entry/what_is_ldap_injection
+   *
    * @param name the DN to be espaced.
    * @return the escaped DN.
    */
@@ -424,6 +424,7 @@ public class LDAPUtility {
    * http://blogs.sun.com/shankar/entry/what_is_ldap_injection rfc 2254 actually adresses how to fix
    * these ldap injection bugs in section 4 on page 4 Character ASCII value
    * --------------------------- * 0x2a ( 0x28 ) 0x29 \ 0x5c NUL 0x00
+   *
    * @param filter the search filter to be espaced.
    * @return the escaped search filter.
    */
@@ -456,6 +457,7 @@ public class LDAPUtility {
 
   /**
    * Method declaration
+   *
    * @param lds
    * @param baseDN
    * @param scope
@@ -466,11 +468,9 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public LDAPEntry[] search1000Plus(String lds, String baseDN,
-      int scope, String filter, String varToSort, String[] args)
-      throws AdminException {
-    SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
-        "root.MSG_GEN_ENTER_METHOD");
+  static public LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter,
+      String varToSort, String[] args) throws AdminException {
+    SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_ENTER_METHOD");
     LDAPConnection ld = getConnection(lds);
     List<LDAPEntry> entriesVector = new ArrayList<LDAPEntry>();
     int nbReaded = 0;
@@ -482,22 +482,19 @@ public class LDAPUtility {
 
     try {
       LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
-      SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
-          "root.MSG_GEN_PARAM_VALUE", "LDAPImpl = "
-          + driverSettings.getLDAPImpl());
+      SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
+          "LDAPImpl = " + driverSettings.getLDAPImpl());
       if (args != null) {
         SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
             "root.MSG_GEN_PARAM_VALUE", "args = " + Arrays.toString(args));
       }
-      if (driverSettings.getLDAPImpl() != null
-          && "openldap".equalsIgnoreCase(driverSettings.getLDAPImpl())) {
+      if (!driverSettings.isSortControlSupported()) {
         // OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
         cons = null;
       } else {
         keys[0] = new LDAPSortKey(varToSort);
         // Create a LDAPSortControl object - Fail if cannot sort
         LDAPSortControl sort = new LDAPSortControl(keys, true);
-
         // Set sorted request on server
         cons = ld.getSearchConstraints();
         cons.setControls(sort);
@@ -506,21 +503,18 @@ public class LDAPUtility {
       boolean sizeLimitReached = false;
       boolean timeLimitReached = false;
       int nbRetryTimeLimit = 0;
-
-      // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
       String[] baseDNs = extractBaseDNs(baseDN);
       LDAPEntry entry = null;
       for (String baseDN1 : baseDNs) {
         theFullFilter = filter;
         while (theFullFilter != null) {
-          SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-              "LDAP query", "BaseDN=" + baseDN1 + " scope="
-              + Integer.toString(scope) + " Filter=" + theFullFilter);
+          SilverTrace.
+              debug("admin", "LDAPUtility.search1000Plus()", "LDAP query",
+              "BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter=" + theFullFilter);
           SynchroReport.debug("LDAPUtility.search1000Plus()",
-              "Requête sur le domaine LDAP distant (protocole v"
-                  + ld.getProtocolVersion() + "), BaseDN=" + baseDN1
-                  + " scope=" + Integer.toString(scope) + " Filter="
-                  + theFullFilter, null);
+              "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion()
+              + "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter="
+              + theFullFilter, null);
 
           try {
             LDAPSearchResults res = ld.search(baseDN1, scope, theFullFilter, args, false, cons);
@@ -530,11 +524,10 @@ public class LDAPUtility {
                 // res.next();
                 notTheFirst = false;
               } else {
-                SynchroReport.debug("LDAPUtility.search1000Plus()",
-                    "élément #" + nbReaded + " : " + entry.getDN(), null);
+                SynchroReport.debug("LDAPUtility.search1000Plus()", "élément #" + nbReaded + " : "
+                    + entry.getDN(), null);
                 SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                    "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded
-                    + " : " + entry.getDN());
+                    "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded + " : " + entry.getDN());
                 entriesVector.add(entry);
                 nbReaded++;
               }
@@ -542,28 +535,23 @@ public class LDAPUtility {
           } catch (LDAPException le) {
             if (le.getResultCode() == LDAPException.SIZE_LIMIT_EXCEEDED) {
               sizeLimitReached = true;
-              SynchroReport.debug("LDAPUtility.search1000Plus()",
-                  "Size Limit Reached...", null);
-              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                  "root.MSG_GEN_PARAM_VALUE", "Size Limit Reached...");
+              SynchroReport.debug("LDAPUtility.search1000Plus()", "Size Limit Reached...", null);
+              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
+                  "Size Limit Reached...");
             } else if (le.getResultCode() == LDAPException.TIME_LIMIT_EXCEEDED) {
               timeLimitReached = true;
               nbRetryTimeLimit++;
               lastException = le;
-              SynchroReport.debug("LDAPUtility.search1000Plus()",
-                  "Time Limit Reached (#" + nbRetryTimeLimit + ")", null);
-              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                  "root.MSG_GEN_PARAM_VALUE", "Time Limit Reached (#"
-                  + nbRetryTimeLimit + ")");
+              SynchroReport.debug("LDAPUtility.search1000Plus()", "Time Limit Reached (#"
+                  + nbRetryTimeLimit + ")", null);
+              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
+                  "Time Limit Reached (#" + nbRetryTimeLimit + ")");
             } else {
-              SilverTrace.error("admin", "LDAPUtility.search1000Plus",
-                  "admin.EX_ERR_LDAP_REFERRAL", "#"
-                  + Integer.toString(le.getResultCode()) + " "
-                  + le.getLDAPErrorMessage(), le);
+              SilverTrace.error("admin", "LDAPUtility.search1000Plus", "admin.EX_ERR_LDAP_REFERRAL",
+                  "#" + Integer.toString(le.getResultCode()) + " " + le.getLDAPErrorMessage(), le);
             }
           }
-          if (sizeLimitReached
-              || (timeLimitReached && nbRetryTimeLimit <= MAX_NB_RETRY_TIMELIMIT)) {
+          if (sizeLimitReached || (timeLimitReached && nbRetryTimeLimit <= MAX_NB_RETRY_TIMELIMIT)) {
             notTheFirst = true;
             sizeLimitReached = false;
             timeLimitReached = false;
