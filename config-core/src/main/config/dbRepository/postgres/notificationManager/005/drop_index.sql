@@ -6,14 +6,14 @@ DROP INDEX IN_NotifSended;
 
 DROP INDEX IN_NotifSendedReceiver;
 
-DROP INDEX idx_st_delayednotification_id;
-DROP INDEX idx_st_delayednotification_userId;
-DROP INDEX idx_st_delayednotification_channel;
+DROP INDEX idx_st_dn_id;
+DROP INDEX idx_st_dn_userId;
+DROP INDEX idx_st_dn_channel;
 
-DROP INDEX idx_st_notificationresource_id;
-DROP INDEX idx_st_notificationresource_resourceId;
+DROP INDEX idx_st_nr_id;
+DROP INDEX idx_st_nr_resourceId;
 
-DROP INDEX idx_st_delayednotifusersetting_id;
-DROP INDEX idx_st_delayednotifusersetting_userId;
-DROP INDEX idx_st_delayednotifusersetting_channel;
-DROP INDEX idx_st_delayednotifusersetting_uc;
+DROP INDEX idx_st_dnus_id;
+DROP INDEX idx_st_dnus_userId;
+DROP INDEX idx_st_dnus_channel;
+DROP INDEX idx_st_dnus_uc;
