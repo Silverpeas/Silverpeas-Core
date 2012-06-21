@@ -40,5 +40,9 @@
         It bootstraps the actual messaging system backend -->
   <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherFactory"
         factory-method="getFactory"/>
+  
+  <!-- Factory of delayed notification handling -->
+  <bean class="com.silverpeas.notification.delayed.DelayedNotificationFactory"
+      factory-method="getInstance" />
 
 </beans>
