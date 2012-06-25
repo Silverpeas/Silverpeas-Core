@@ -30,8 +30,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.persistence.TypedParameter;
 import com.silverpeas.util.persistence.TypedParameterUtil;
@@ -46,11 +44,13 @@ public class NotificationResourceRepositoryImpl implements NotificationResourceR
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.notification.repository.NotificationResourceRepository#findResource(com.silverpeas.
-   * notification.model.NotificationResourceData)
+   * @see
+   * com.silverpeas.notification.repository.NotificationResourceRepositoryCustom#getResource(java
+   * .lang.String, java.lang.String, java.lang.String)
    */
   @Override
-  public List<NotificationResourceData> findResource(final NotificationResourceData notificationResourceData) {
+  public NotificationResourceData getExistingResource(final String resourceId,
+      final String resourceType, final String componentInstanceId) {
 
     // Parameters
     final List<TypedParameter<?>> parameters = new ArrayList<TypedParameter<?>>();
@@ -58,35 +58,12 @@ public class NotificationResourceRepositoryImpl implements NotificationResourceR
     // Query
     final StringBuffer query = new StringBuffer("from NotificationResourceData where");
     query.append(" resourceId = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceId",
-        notificationResourceData.getResourceId()));
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceId", resourceId));
     query.append(" and resourceType = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceType",
-        notificationResourceData.getResourceType()));
-    query.append(" and resourceName = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceName",
-        notificationResourceData.getResourceName()));
-    query.append(" and resourceLocation = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceLocation",
-        notificationResourceData.getResourceLocation()));
-
-    // resourceUrl parameter
-    if (StringUtils.isNotBlank(notificationResourceData.getResourceUrl())) {
-      query.append(" and resourceUrl = :");
-      query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceUrl",
-          notificationResourceData.getResourceUrl()));
-    } else {
-      query.append(" and resourceUrl is null");
-    }
-
-    // resourceDescription parameter
-    if (StringUtils.isNotBlank(notificationResourceData.getResourceDescription())) {
-      query.append(" and resourceDescription = :");
-      query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceDescription",
-          notificationResourceData.getResourceDescription()));
-    } else {
-      query.append(" and resourceDescription is null");
-    }
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceType", resourceType));
+    query.append(" and componentInstanceId = :");
+    query.append(TypedParameterUtil.addNamedParameter(parameters, "componentInstanceId",
+        componentInstanceId));
 
     // Typed query
     final TypedQuery<NotificationResourceData> tq =
@@ -96,6 +73,10 @@ public class NotificationResourceRepositoryImpl implements NotificationResourceR
     TypedParameterUtil.computeNamedParameters(tq, parameters);
 
     // Result
-    return tq.getResultList();
+    final List<NotificationResourceData> resources = tq.getResultList();
+    if (resources.size() == 1) {
+      return resources.get(0);
+    }
+    return null;
   }
 }

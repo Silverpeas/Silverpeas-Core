@@ -80,6 +80,20 @@ public class NotificationResourceData implements Cloneable {
     // NTD
   }
 
+  /**
+   * Copying all data from the given resource excepted the id
+   * @param notificationResourceData
+   */
+  public void fillFrom(final NotificationResourceData notificationResourceData) {
+    setResourceId(notificationResourceData.getResourceId());
+    setResourceType(notificationResourceData.getResourceType());
+    setResourceName(notificationResourceData.getResourceName());
+    setResourceDescription(notificationResourceData.getResourceDescription());
+    setResourceLocation(notificationResourceData.getResourceLocation());
+    setResourceUrl(notificationResourceData.getResourceUrl());
+    setComponentInstanceId(notificationResourceData.getComponentInstanceId());
+  }
+
   @PrePersist
   public void beforePersist() {
     forcesNullValues();

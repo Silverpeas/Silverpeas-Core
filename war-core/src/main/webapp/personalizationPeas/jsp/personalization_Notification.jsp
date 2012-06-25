@@ -32,6 +32,7 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="isMultiChannelNotif" value="<%=personalizationScc.isMultiChannelNotification()%>" />
+<c:set var="validationMessage" value="${requestScope.validationMessage}" />
 
 <%
   //Retrieve parameters
@@ -63,14 +64,17 @@
   	if (action.equals("setDefault")) {
   		personalizationScc.setDefaultAddress(id);  
   		action = "NotificationView";
+      %><fmt:message key='GML.validation.update' var="validationMessage" /><%
   	}
     if (action.equals("setFrequency")) {
       personalizationScc.saveDelayedUserNotificationFrequency(id);  
       action = "NotificationView";
+      %><fmt:message key='GML.validation.update' var="validationMessage" /><%
     }
   	if (action.equals("delete")) {
   		personalizationScc.deleteNotifAddress(id);
   		action = "NotificationView";
+      %><fmt:message key='GML.validation.delete' var="validationMessage" /><%
   	}
   } else
   	action = "NotificationView";
@@ -144,6 +148,7 @@ function onChangeFrequency()
 </script>
 </head>
 <body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+
 <%
   browseBar.setComponentName(resource.getString("MesNotifications"));
   browseBar.setPath(resource.getString("ParametrerNotification"));
@@ -170,12 +175,19 @@ function onChangeFrequency()
   		"personalization_Notification.jsp?Action=LanguageView",
   		true);
   out.println(tabbedPane.print());
-  
+%>
+<c:if test="${not empty validationMessage}">
+  <div class="inlineMessage-ok">
+    <c:out value="${validationMessage}" />
+  </div>
+</c:if>
+<%
   out.println(frame.printBefore());
 %>
+
 <!-- AFFICHAGE HEADER -->
+<p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
 <form name="channelForm">
-  <p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
   <input type="hidden" name="SelectedChannels">
   <input type="hidden" name="SelectedFrequency">
 <%

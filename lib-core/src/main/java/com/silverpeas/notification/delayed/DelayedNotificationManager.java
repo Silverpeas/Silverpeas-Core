@@ -136,10 +136,14 @@ public class DelayedNotificationManager implements DelayedNotification {
   @Override
   public void saveDelayedNotification(final DelayedNotificationData delayedNotificationData) {
     if (delayedNotificationData.getResource().getId() == null) {
-      final List<NotificationResourceData> resources =
-          findResource(delayedNotificationData.getResource());
-      if (resources.size() == 1) {
-        delayedNotificationData.setResource(resources.get(0));
+      final NotificationResourceData existingResource =
+          getExistingResource(delayedNotificationData.getResource().getResourceId(),
+              delayedNotificationData.getResource().getResourceType(), delayedNotificationData
+                  .getResource().getComponentInstanceId());
+      if (existingResource != null) {
+        existingResource.fillFrom(delayedNotificationData.getResource());
+        nrRepository.saveAndFlush(existingResource);
+        delayedNotificationData.setResource(existingResource);
         if (delayedNotificationData.getId() == null) {
           final List<DelayedNotificationData> exists =
               dnRepository.findDelayedNotification(delayedNotificationData);
@@ -179,9 +183,9 @@ public class DelayedNotificationManager implements DelayedNotification {
 
   @Override
   @Transactional(readOnly = true)
-  public List<NotificationResourceData> findResource(
-      final NotificationResourceData notificationResourceData) {
-    return nrRepository.findResource(notificationResourceData);
+  public NotificationResourceData getExistingResource(final String resourceId,
+      final String resourceType, final String componentInstanceId) {
+    return nrRepository.getExistingResource(resourceId, resourceType, componentInstanceId);
   }
 
   /*

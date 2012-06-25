@@ -117,31 +117,77 @@ public class DelayedNotificationManagerTest {
    */
 
   @Test
-  public void testFindResource() throws Exception {
+  public void testGetExistingResource() throws Exception {
+    
+    // Exists already several resources (extraordinary case)
     NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
-    List<NotificationResourceData> notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(2));
+    NotificationResourceData notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, nullValue());
 
-    query.setResourceUrl("   ");
-    notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(0));
-
+    // Exists one resource
     query = buildNotificationResourceData(TEST_CASE_2);
-    notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(1));
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, notNullValue());
 
-    query.setResourceDescription("   ");
-    notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(1));
+    // Exists no resource
+    query = buildNotificationResourceData(TEST_CASE_2);
+    query.setResourceId(-100);
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, nullValue());
 
-    query.setResourceDescription("no desc");
-    notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(0));
+    // Exists no resource
+    query = buildNotificationResourceData(TEST_CASE_2);
+    query.setResourceType("-Type");
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, nullValue());
+
+    // Exists no resource
+    query = buildNotificationResourceData(TEST_CASE_2);
+    query.setComponentInstanceId("-ComponentInstanceId");
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, nullValue());
+
+    // Exists one resource (searching data indiscriminate)
+    query = buildNotificationResourceData(TEST_CASE_2);
+    query.setResourceDescription("-Description");
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, notNullValue());
+
+    // Exists one resource (searching data indiscriminate)
+    query = buildNotificationResourceData(TEST_CASE_2);
+    query.setResourceLocation("-Location");
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, notNullValue());
+
+    // Exists one resource (searching data indiscriminate)
+    query = buildNotificationResourceData(TEST_CASE_2);
+    query.setResourceName("-Name");
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, notNullValue());
+
+    // Exists one resource (searching data indiscriminate)
+    query = buildNotificationResourceData(TEST_CASE_2);
+    query.setResourceUrl("-URL");
+    notificationResourceData =
+        manager.getExistingResource(query.getResourceId(), query.getResourceType(),
+            query.getComponentInstanceId());
+    assertThat(notificationResourceData, notNullValue());
   }
 
   private static NotificationResourceData buildNotificationResourceData(final int testCase) {
@@ -505,7 +551,7 @@ public class DelayedNotificationManagerTest {
           assertThat(delayedNotificationData.getFromUserId(), is(2 * userIdTest));
           assertThat(delayedNotificationData.getChannel(), is(channels[i]));
           assertThat(delayedNotificationData.getAction(), is(actions[j]));
-          assertThat(delayedNotificationData.getResource().getId(), is(50l));
+          assertThat(delayedNotificationData.getResource().getId(), is(10l));
           assertThat(delayedNotificationData.getCreationDate(), notNullValue());
           assertThat(delayedNotificationData.getCreationDate(),
               greaterThanOrEqualTo(dateBeforeSave));
@@ -522,38 +568,29 @@ public class DelayedNotificationManagerTest {
 
   @Test
   public void testDeleteDelayedNotifications() throws Exception {
-    final NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
-    List<NotificationResourceData> notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(2));
-
     int nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Long[] {}));
     assertThat(nbDeletes, is(0));
-    notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(2));
 
-    nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l }));
+    nbDeletes =
+        manager.deleteDelayedNotifications(Arrays
+            .asList(new Long[] { 100l, 200l, 300l, 400l, 500l }));
     assertThat(nbDeletes, is(5));
-    notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(1));
-
+    nbDeletes =
+        manager.deleteDelayedNotifications(Arrays
+            .asList(new Long[] { 100l, 200l, 300l, 400l, 500l }));
+    assertThat(nbDeletes, is(0));
   }
 
   @Test
   public void testDeleteDelayedNotifications2() throws Exception {
-    final NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
-    List<NotificationResourceData> notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(2));
-
-    final int nbDeletes =
-        manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l, 600l }));
+    int nbDeletes =
+        manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l,
+            600l }));
     assertThat(nbDeletes, is(6));
-    notificationResourceDataList = manager.findResource(query);
-    assertThat(notificationResourceDataList, notNullValue());
-    assertThat(notificationResourceDataList.size(), is(0));
+    nbDeletes =
+        manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l,
+            600l }));
+    assertThat(nbDeletes, is(0));
 
   }
 
