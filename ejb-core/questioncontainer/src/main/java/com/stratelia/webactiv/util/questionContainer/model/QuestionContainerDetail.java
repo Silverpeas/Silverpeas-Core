@@ -184,7 +184,7 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
     }
     return this.silverObjectId;
   }
-  
+
   protected void setSilverpeasContentId(String contentId) {
     this.silverObjectId = contentId;
   }
@@ -192,6 +192,11 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
   @Override
   public String getTitle() {
     return getHeader().getTitle();
+  }
+  
+  @Override
+  public String getDescription() {
+    return getHeader().getDescription();
   }
 
 }
