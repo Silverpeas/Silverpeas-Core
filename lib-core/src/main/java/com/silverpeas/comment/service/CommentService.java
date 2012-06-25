@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * User: ehugonnet Date: 21/03/11 Time: 09:54
  */
-public interface CommentService extends SilverpeasComponentService {
+public interface CommentService extends SilverpeasComponentService<Comment> {
   void createComment(Comment cmt);
 
   void createAndIndexComment(Comment cmt);

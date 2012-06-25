@@ -93,6 +93,13 @@ public interface SilverpeasContent extends Serializable {
   String getTitle();
   
   /**
+   * Gets the description of this content if any.
+   * @return the resource description. Can be empty if no description was set or no description is defined for a such
+   * content.
+   */
+  String getDescription();
+  
+  /**
    * Gets the type of this content.
    * @return the resource type. This can be Post, Message, Publication, Survey...
    */

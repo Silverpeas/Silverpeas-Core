@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * A Silverpeas component service to use in tests.
  */
-public class ClassifiedService implements SilverpeasComponentService {
+public class ClassifiedService implements SilverpeasComponentService<Classified> {
   
   public static final String COMPONENT_NAME = "classifieds";
 
