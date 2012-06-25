@@ -65,6 +65,7 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -880,24 +881,40 @@ public class NotificationManager extends AbstractNotification
    * @see
    */
   public String getComponentFullName(String compInst) throws NotificationManagerException {
-    return getComponentFullName(compInst, " - ");
+    return getComponentFullName(compInst, " - ", false);
   }
 
   /**
    * Method declaration
-   *
    * @param compInst
+   * @param separator
+   * @param isPathToComponent
    * @return
    * @throws NotificationManagerException
    * @see
    */
-  public String getComponentFullName(String compInst, String separator) throws NotificationManagerException {
+  public String getComponentFullName(String compInst, String separator, boolean isPathToComponent)
+      throws NotificationManagerException {
     try {
-      ComponentInst instance = AdminReference.getAdminService().getComponentInst(compInst);
-      SpaceInst space = AdminReference.getAdminService().getSpaceInstById(instance.getDomainFatherId());
-      return (space.getName() + separator + instance.getLabel());
+      final StringBuffer sb = new StringBuffer();
+      final ComponentInst instance = AdminReference.getAdminService().getComponentInst(compInst);
+      if (!isPathToComponent) {
+        final SpaceInst space =
+            AdminReference.getAdminService().getSpaceInstById(instance.getDomainFatherId());
+        sb.append(space.getName());
+        sb.append(separator);
+      } else {
+        final List<SpaceInstLight> spaces =
+            AdminReference.getAdminService().getPathToComponent(compInst);
+        for (final SpaceInstLight space : spaces) {
+          sb.append(space.getName());
+          sb.append(separator);
+        }
+      }
+      sb.append(instance.getLabel());
+      return sb.toString();
     } catch (AdminException e) {
-      throw new NotificationManagerException( "NotificationManager.getComponentFullName()",
+      throw new NotificationManagerException("NotificationManager.getComponentFullName()",
           SilverpeasException.ERROR, "notificationManager.EX_CANT_GET_COMPONENT_FULL_NAME",
           "CompInstId" + compInst, e);
     }
@@ -1532,7 +1549,8 @@ public class NotificationManager extends AbstractNotification
             if (delayedNotificationData.getResource() != null &&
                 StringUtils.isBlank(delayedNotificationData.getResource().getResourceLocation())) {
               delayedNotificationData.getResource().setResourceLocation(
-                  getComponentFullName("" + params.iComponentInstance, NotificationResourceData.LOCATION_SEPARATOR));
+                  getComponentFullName("" + params.iComponentInstance,
+                      NotificationResourceData.LOCATION_SEPARATOR, true));
             }
           } catch (Exception e) {
             SilverTrace.warn("notificationManager", "NotificationManager.createNotificationData()",
