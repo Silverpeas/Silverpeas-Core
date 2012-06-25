@@ -928,21 +928,24 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       PdcSearchSessionController pdcSC) {
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
+    String datatype = request.getParameter("datatypeFilter");
+    
     ResultFilterVO filter = new ResultFilterVO();
 
     // Check filter values
-    if (StringUtil.isDefined(userId) || StringUtil.isDefined(instanceId)) {
-      if (StringUtil.isDefined(userId)) {
-        filter.setAuthorId(userId);
-      }
-      if (StringUtil.isDefined(instanceId)) {
-        filter.setComponentId(instanceId);
-      }
+    if (StringUtil.isDefined(userId)) {
+      filter.setAuthorId(userId);
+    }
+    if (StringUtil.isDefined(instanceId)) {
+      filter.setComponentId(instanceId);
+    }
+    if (StringUtil.isDefined(datatype)) {
+      filter.setDatatype(datatype);
     }
     
     // check form field facets
     for (String facetId : pdcSC.getFieldFacets().keySet()) {
-      String param = request.getParameter(facetId);
+      String param = request.getParameter(facetId+"Filter");
       if (StringUtil.isDefined(param)) {
         filter.addFormFieldSelectedFacetEntry(facetId, param);
       }
