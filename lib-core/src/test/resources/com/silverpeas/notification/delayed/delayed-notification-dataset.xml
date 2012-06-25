@@ -30,19 +30,19 @@
   <!-- Commons -->
   <st_notificationresource id="1" resourceId="10" resourceType="publication" resourceName="Test resource name"
     resourceDescription="Test resource description" resourceLocation="Test > Resource > Location" resourceUrl="Test resource URL"
-    componentInstanceId="-1" />
+    componentInstanceId="aComponentInstanceId" />
   <st_notificationresource id="2" resourceId="10" resourceType="publication" resourceName="Test resource name"
     resourceDescription="Test resource description" resourceLocation="Test > Resource > Location" resourceUrl="Test resource URL"
-    componentInstanceId="-1" />
+    componentInstanceId="aComponentInstanceId" />
   <st_notificationresource id="10" resourceId="100" resourceType="publication" resourceName="Test resource name no desc"
     resourceLocation="Test > Resource > Location no desc" resourceUrl="Test resource URL no desc"
-    componentInstanceId="-1" />
+    componentInstanceId="aComponentInstanceId" />
   <st_notificationresource id="20" resourceId="200" resourceType="publication" resourceName="Test resource name no desc"
     resourceLocation="Test > Resource > Location no desc" resourceUrl="Test resource URL no desc"
-    componentInstanceId="-1" />
+    componentInstanceId="aComponentInstanceId" />
   <st_notificationresource id="40" resourceId="400" resourceType="delegateResourceTest" resourceName="Delegate test resource"
     resourceDescription="Test resource description" resourceLocation="Test > Delegate > Resource > Location" resourceUrl="Delegate test resource"
-    componentInstanceId="-1" />
+    componentInstanceId="aComponentInstanceId" />
 
   <uniqueId maxId="50" tablename="st_notificationresource" />
   <uniqueId maxId="1000" tablename="st_delayednotification" />

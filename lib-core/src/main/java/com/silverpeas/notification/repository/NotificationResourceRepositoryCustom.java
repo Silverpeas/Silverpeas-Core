@@ -23,8 +23,6 @@
  */
 package com.silverpeas.notification.repository;
 
-import java.util.List;
-
 import com.silverpeas.notification.model.NotificationResourceData;
 
 /**
@@ -32,5 +30,6 @@ import com.silverpeas.notification.model.NotificationResourceData;
  */
 public interface NotificationResourceRepositoryCustom {
 
-  List<NotificationResourceData> findResource(NotificationResourceData notificationResourceData);
+  NotificationResourceData getExistingResource(String resourceId, String resourceType,
+      String componentInstanceId);
 }

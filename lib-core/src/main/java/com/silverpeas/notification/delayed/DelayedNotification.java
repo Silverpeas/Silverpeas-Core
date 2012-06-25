@@ -60,7 +60,7 @@ public interface DelayedNotification {
    * Resource Data
    */
 
-  List<NotificationResourceData> findResource(NotificationResourceData notificationResourceData);
+  NotificationResourceData getExistingResource(String resourceId, String resourceType, String componentInstanceId);
 
   /*
    * User settings

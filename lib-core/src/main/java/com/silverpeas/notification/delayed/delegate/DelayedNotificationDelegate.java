@@ -144,7 +144,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
       result =
           DelayedNotificationFactory.getDelayedNotification().saveDelayedNotificationUserSetting(
               userId, channel, frequency);
-    } else {
+    } else if (oldSettings != null) {
       // User settings are deleted from persistence system. Default Silverpeas's frequency will be
       // use for the given user.
       DelayedNotificationFactory.getDelayedNotification().deleteDelayedNotificationUserSetting(

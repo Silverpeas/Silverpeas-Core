@@ -87,6 +87,8 @@ public class PersoPeasRequestRouter extends
         final String selectedFrequency = request.getParameter("SelectedFrequency");
         personalizationScc.saveChannels(selectedChannels);
         personalizationScc.saveDelayedUserNotificationFrequency(selectedFrequency);
+        request.setAttribute("validationMessage",
+            personalizationScc.getMultilang().getString("GML.validation.update"));
         destination = "/personalizationPeas/jsp/personalization_Notification.jsp";
       } else {
         destination = "/personalizationPeas/jsp/" + function;
