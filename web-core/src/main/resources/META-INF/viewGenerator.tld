@@ -11,6 +11,30 @@
 
   <tag>
     <description>
+      Tag to print out the full name of the current user and to use with it the userzoom silverpeas
+      plugin.
+    </description>
+    <name>username</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.UserNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the user</description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is the userzoom plugin has to be used with this user? By default, it is activated.
+      This attribute is to deactivate it.</description>
+      <name>zoom</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
       Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
       in charge by the tag. If the javascript requires a stylesheet, it is also included with
       the script. Currently, the supported plugins (JQuery as well Silverpeas ones) are defined in
