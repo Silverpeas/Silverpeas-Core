@@ -44,23 +44,23 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
+import org.junit.After;
+import org.junit.AfterClass;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-delayed-notification.xml",
-    "/spring-delayed-notification-datasource.xml" })
+@ContextConfiguration(locations = {"/spring-delayed-notification.xml",
+  "/spring-delayed-notification-datasource.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class DelayedNotificationDelegateTest {
 
   private static final Integer USER_ID = 1;
   private static final Integer FROM_USER_ID = 1;
-
   private static final String RESOURCE_DATA_ID_1 = "10";
   private static final String RESOURCE_DATA_TYPE = "publication";
   private static final String RESOURCE_DATA_NAME_1 = "Test resource name";
   private static final String RESOURCE_DATA_DESCRIPTION_1 = "Test resource description";
   private static final String RESOURCE_DATA_LOCATION_1 = "Test > Resource > Location";
   private static final String RESOURCE_DATA_URL_1 = "Test resource URL";
-
   private static ReplacementDataSet dataSet;
 
   public DelayedNotificationDelegateTest() {
@@ -69,16 +69,11 @@ public class DelayedNotificationDelegateTest {
   @BeforeClass
   public static void prepareDataSet() throws Exception {
     final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet =
-        new ReplacementDataSet(
-            builder
-                .build(DelayedNotificationDelegateTest.class
-                    .getClassLoader()
-                    .getResourceAsStream(
-                        "com/silverpeas/notification/delayed/delayed-notification-dataset.xml")));
+    dataSet = new ReplacementDataSet(builder.build(DelayedNotificationDelegateTest.class.
+        getClassLoader().getResourceAsStream(
+        "com/silverpeas/notification/delayed/delayed-notification-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
   }
-
   @Inject
   @Named("jpaDataSource")
   private DataSource dataSource;
@@ -88,6 +83,17 @@ public class DelayedNotificationDelegateTest {
     final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());
+  }
+  
+  @After
+  public void cleanData() throws Exception {
+    final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.DELETE_ALL.execute(myConnection, dataSet);
+  }
+  
+  @AfterClass
+  public static void cleanup() throws Exception {
+    DBUtil.clearTestInstance();
   }
 
   @Test
@@ -130,29 +136,29 @@ public class DelayedNotificationDelegateTest {
 
     // Has to be sent because of a bad priority
     dndTest = buildValidDelayedNotificationData();
-    for (final int priority : new int[] { NotificationParameters.ERROR,
-        NotificationParameters.URGENT, -1, 3, 7, 9 }) {
+    for (final int priority : new int[]{NotificationParameters.ERROR,
+          NotificationParameters.URGENT, -1, 3, 7, 9}) {
       dndTest.getNotificationParameters().iMessagePriority = priority;
       assertNewNotification(dndTest, 1);
     }
 
     // Has to be sent because of a bad frequency
     dndTest = buildValidDelayedNotificationData();
-    for (final int userId : new int[] { 10, -100 }) {
+    for (final int userId : new int[]{10, -100}) {
       dndTest.setUserId(userId);
       assertNewNotification(dndTest, 1);
     }
 
     // Has to be sent because of a bad language
     dndTest = buildValidDelayedNotificationData();
-    for (final String language : new String[] { null, "", "       " }) {
+    for (final String language : new String[]{null, "", "       "}) {
       dndTest.setLanguage(language);
       assertNewNotification(dndTest, 1);
     }
 
     // Has to be sent because of a bad resource id
     dndTest = buildValidDelayedNotificationData();
-    for (final String resourceId : new String[] { null, "", "       " }) {
+    for (final String resourceId : new String[]{null, "", "       "}) {
       dndTest.getResource().setResourceId(resourceId);
       assertNewNotification(dndTest, 1);
     }
@@ -161,35 +167,35 @@ public class DelayedNotificationDelegateTest {
 
     // Has to be sent because of a bad resource type
     dndTest = buildValidDelayedNotificationData();
-    for (final String resourceType : new String[] { null, "", "       " }) {
+    for (final String resourceType : new String[]{null, "", "       "}) {
       dndTest.getResource().setResourceType(resourceType);
       assertNewNotification(dndTest, 1);
     }
 
     // Has to be sent because of a bad resource name
     dndTest = buildValidDelayedNotificationData();
-    for (final String resourceName : new String[] { null, "", "       " }) {
+    for (final String resourceName : new String[]{null, "", "       "}) {
       dndTest.getResource().setResourceName(resourceName);
       assertNewNotification(dndTest, 1);
     }
 
     // Has to be sent because of a bad resource location
     dndTest = buildValidDelayedNotificationData();
-    for (final String resourceLocation : new String[] { null, "", "       " }) {
+    for (final String resourceLocation : new String[]{null, "", "       "}) {
       dndTest.getResource().setResourceLocation(resourceLocation);
       assertNewNotification(dndTest, 1);
     }
 
     // Has to be sent because of a bad resource url
     dndTest = buildValidDelayedNotificationData();
-    for (final String resourceUrl : new String[] { null, "", "       " }) {
+    for (final String resourceUrl : new String[]{null, "", "       "}) {
       dndTest.getResource().setResourceUrl(resourceUrl);
       assertNewNotification(dndTest, 1);
     }
 
     // Has to be sent because of a bad resource component instance id
     dndTest = buildValidDelayedNotificationData();
-    for (final String componentInstanceId : new String[] { null, "", "       " }) {
+    for (final String componentInstanceId : new String[]{null, "", "       "}) {
       dndTest.getResource().setComponentInstanceId(componentInstanceId);
       assertNewNotification(dndTest, 1);
     }
@@ -263,8 +269,8 @@ public class DelayedNotificationDelegateTest {
   @Test
   public void testDelayedNotifications_3() throws Exception {
     // Weekly
-    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[] {
-        51, 53, 54 }, "fr");
+    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[]{
+          51, 53, 54}, "fr");
     // Checks
     assertDelayedNotifications(0, 53);
     assertDelayedNotifications(1, 55);
@@ -272,14 +278,14 @@ public class DelayedNotificationDelegateTest {
 
   @Test
   public void testDelayedNotifications_3Bis() throws Exception {
-    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[] {
-        51, 53, 54 }, "en");
+    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[]{
+          51, 53, 54}, "en");
   }
 
   @Test
   public void testDelayedNotifications_3Ter() throws Exception {
-    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[] {
-        51, 53, 54 }, "de");
+    assertDelayedNotifications(java.sql.Timestamp.valueOf("2012-10-01 12:45:23.125"), new int[]{
+          51, 53, 54}, "de");
   }
 
   private DelayedNotificationDelegateMock assertDelayedNotifications(final int nbExpectedSendings,
@@ -304,8 +310,9 @@ public class DelayedNotificationDelegateTest {
 
     for (final Integer userId : userIds) {
       final Map<NotifChannel, List<DelayedNotificationData>> dndMap =
-          DelayedNotificationFactory.getDelayedNotification().findDelayedNotificationByUserIdGroupByChannel(userId,
-              DelayedNotificationFactory.getDelayedNotification().getWiredChannels());
+          DelayedNotificationFactory.getDelayedNotification().
+          findDelayedNotificationByUserIdGroupByChannel(userId,
+          DelayedNotificationFactory.getDelayedNotification().getWiredChannels());
       for (final List<DelayedNotificationData> dndList : dndMap.values()) {
         for (final DelayedNotificationData dnd : dndList) {
           dnd.setLanguage(language);
@@ -321,20 +328,22 @@ public class DelayedNotificationDelegateTest {
       assertThat(
           mock.sendedList.get(i).getMessage().replaceAll("[\r\n\t]", ""),
           is(IOUtils.toString(
-              DelayedNotificationDelegateTest.class.getClassLoader().getResourceAsStream(
-                  "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + "-" + language + ".txt"),
-              "UTF-8")
-              .replaceAll("[\r\n\t]", "")));
+          DelayedNotificationDelegateTest.class.getClassLoader().getResourceAsStream(
+          "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + "-" + language
+          + ".txt"),
+          "UTF-8")
+          .replaceAll("[\r\n\t]", "")));
     }
     return mock;
   }
 
   private Set<NotifChannel> getAimedChannelsBase() {
-    return new HashSet<NotifChannel>(Arrays.asList(new NotifChannel[] { NotifChannel.SMTP }));
+    return new HashSet<NotifChannel>(Arrays.asList(new NotifChannel[]{NotifChannel.SMTP}));
   }
 
   /**
    * Mock
+   *
    * @author Yohann Chastagnier
    */
   private class DelayedNotificationDelegateMock extends DelayedNotificationDelegate {

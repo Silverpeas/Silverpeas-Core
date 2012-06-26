@@ -896,7 +896,7 @@ public class NotificationManager extends AbstractNotification
   public String getComponentFullName(String compInst, String separator, boolean isPathToComponent)
       throws NotificationManagerException {
     try {
-      final StringBuffer sb = new StringBuffer();
+      final StringBuilder sb = new StringBuilder();
       final ComponentInst instance = AdminReference.getAdminService().getComponentInst(compInst);
       if (!isPathToComponent) {
         final SpaceInst space =
@@ -1544,12 +1544,13 @@ public class NotificationManager extends AbstractNotification
         if (params.iComponentInstance != -1) {
           try {
             // New feature : if source is not set, we display space's name and component's label
-            final String componentFullName = getComponentFullName("" + params.iComponentInstance);
+            final String componentFullName =
+                getComponentFullName(String.valueOf(params.iComponentInstance));
             theExtraParams.put(NotificationParameterNames.SOURCE, componentFullName);
             if (delayedNotificationData.getResource() != null &&
                 StringUtils.isBlank(delayedNotificationData.getResource().getResourceLocation())) {
               delayedNotificationData.getResource().setResourceLocation(
-                  getComponentFullName("" + params.iComponentInstance,
+                  getComponentFullName(String.valueOf(params.iComponentInstance),
                       NotificationResourceData.LOCATION_SEPARATOR, true));
             }
           } catch (Exception e) {

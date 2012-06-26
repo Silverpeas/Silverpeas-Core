@@ -4,41 +4,6 @@
  */
 package com.silverpeas.notification.delayed;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
@@ -47,28 +12,53 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.webactiv.util.DBUtil;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import org.apache.commons.lang3.ArrayUtils;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-delayed-notification.xml",
-    "/spring-delayed-notification-datasource.xml" })
+@ContextConfiguration(locations = {"/spring-delayed-notification.xml",
+  "/spring-delayed-notification-datasource.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class DelayedNotificationManagerTest {
 
   private static final int TEST_CASE_1 = 1;
   private static final int TEST_CASE_2 = 2;
   private static final int TEST_CASE_3 = 3;
-
   private static final String RESOURCE_DATA_ID_1 = "10";
   private static final String RESOURCE_DATA_TYPE = "publication";
   private static final String RESOURCE_DATA_NAME_1 = "Test resource name";
   private static final String RESOURCE_DATA_DESCRIPTION_1 = "Test resource description";
   private static final String RESOURCE_DATA_LOCATION_1 = "Test > Resource > Location";
   private static final String RESOURCE_DATA_URL_1 = "Test resource URL";
-
   private static final String RESOURCE_DATA_ID_100 = "100";
   private static final String RESOURCE_DATA_NAME_100 = "Test resource name no desc";
   private static final String RESOURCE_DATA_LOCATION_100 = "Test > Resource > Location no desc";
   private static final String RESOURCE_DATA_URL_100 = "Test resource URL no desc";
-
   private static ReplacementDataSet dataSet;
 
   public DelayedNotificationManagerTest() {
@@ -77,19 +67,12 @@ public class DelayedNotificationManagerTest {
   @BeforeClass
   public static void prepareDataSet() throws Exception {
     final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet =
-        new ReplacementDataSet(
-            builder
-                .build(DelayedNotificationManagerTest.class
-                    .getClassLoader()
-                    .getResourceAsStream(
-                        "com/silverpeas/notification/delayed/delayed-notification-dataset.xml")));
+    dataSet = new ReplacementDataSet(builder.build(DelayedNotificationManagerTest.class.
+        getResourceAsStream("delayed-notification-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
   }
-
   @Inject
   private DelayedNotification manager;
-
   @Inject
   @Named("jpaDataSource")
   private DataSource dataSource;
@@ -100,11 +83,22 @@ public class DelayedNotificationManagerTest {
     DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());
   }
+  
+  @After
+  public void cleanData() throws Exception {
+    final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.DELETE_ALL.execute(myConnection, dataSet);
+  }
+  
+  @AfterClass
+  public static void cleanup() throws Exception {
+    DBUtil.clearTestInstance();
+  }
+
 
   /*
    * Common
    */
-
   @Test
   public void testGetPossibleFrequencies() throws Exception {
     final Set<DelayedNotificationFrequency> possibleFrequencies = manager.getPossibleFrequencies();
@@ -115,22 +109,21 @@ public class DelayedNotificationManagerTest {
   /*
    * Resource Data
    */
-
   @Test
   public void testGetExistingResource() throws Exception {
-    
+
     // Exists already several resources (extraordinary case)
     NotificationResourceData query = buildNotificationResourceData(TEST_CASE_1);
     NotificationResourceData notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, nullValue());
 
     // Exists one resource
     query = buildNotificationResourceData(TEST_CASE_2);
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, notNullValue());
 
     // Exists no resource
@@ -138,7 +131,7 @@ public class DelayedNotificationManagerTest {
     query.setResourceId(-100);
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, nullValue());
 
     // Exists no resource
@@ -146,7 +139,7 @@ public class DelayedNotificationManagerTest {
     query.setResourceType("-Type");
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, nullValue());
 
     // Exists no resource
@@ -154,7 +147,7 @@ public class DelayedNotificationManagerTest {
     query.setComponentInstanceId("-ComponentInstanceId");
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, nullValue());
 
     // Exists one resource (searching data indiscriminate)
@@ -162,7 +155,7 @@ public class DelayedNotificationManagerTest {
     query.setResourceDescription("-Description");
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, notNullValue());
 
     // Exists one resource (searching data indiscriminate)
@@ -170,7 +163,7 @@ public class DelayedNotificationManagerTest {
     query.setResourceLocation("-Location");
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, notNullValue());
 
     // Exists one resource (searching data indiscriminate)
@@ -178,7 +171,7 @@ public class DelayedNotificationManagerTest {
     query.setResourceName("-Name");
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, notNullValue());
 
     // Exists one resource (searching data indiscriminate)
@@ -186,7 +179,7 @@ public class DelayedNotificationManagerTest {
     query.setResourceUrl("-URL");
     notificationResourceData =
         manager.getExistingResource(query.getResourceId(), query.getResourceType(),
-            query.getComponentInstanceId());
+        query.getComponentInstanceId());
     assertThat(notificationResourceData, notNullValue());
   }
 
@@ -195,13 +188,13 @@ public class DelayedNotificationManagerTest {
     if (testCase == TEST_CASE_1) {
       data =
           buildNotificationResourceData(RESOURCE_DATA_ID_1, RESOURCE_DATA_TYPE,
-              RESOURCE_DATA_NAME_1, RESOURCE_DATA_DESCRIPTION_1, RESOURCE_DATA_LOCATION_1,
-              RESOURCE_DATA_URL_1);
+          RESOURCE_DATA_NAME_1, RESOURCE_DATA_DESCRIPTION_1, RESOURCE_DATA_LOCATION_1,
+          RESOURCE_DATA_URL_1);
     } else if (testCase == TEST_CASE_2 || testCase == TEST_CASE_3) {
       data =
           buildNotificationResourceData(RESOURCE_DATA_ID_100, RESOURCE_DATA_TYPE,
-              RESOURCE_DATA_NAME_100, null, RESOURCE_DATA_LOCATION_100,
-              RESOURCE_DATA_URL_100);
+          RESOURCE_DATA_NAME_100, null, RESOURCE_DATA_LOCATION_100,
+          RESOURCE_DATA_URL_100);
       if (testCase == TEST_CASE_3) {
         data.setResourceDescription(RESOURCE_DATA_DESCRIPTION_1);
       }
@@ -226,7 +219,6 @@ public class DelayedNotificationManagerTest {
   /*
    * Delayed Notification Data
    */
-
   @Test
   public void testFindAllUsersToBeNotified() throws Exception {
     Set<NotifChannel> ac = getAimedChannelsBase();
@@ -240,18 +232,19 @@ public class DelayedNotificationManagerTest {
 
   @Test
   public void testFindUsersToBeNotified_Daily() throws Exception {
-    for (final Date date : new Date[] { java.sql.Timestamp.valueOf("2012-05-08 12:45:23.125"),
-        java.sql.Timestamp.valueOf("2012-05-09 12:45:23.125"),
-        java.sql.Timestamp.valueOf("2012-05-10 12:45:23.125"),
-        java.sql.Timestamp.valueOf("2012-05-11 12:45:23.125"),
-        java.sql.Timestamp.valueOf("2012-05-12 12:45:23.125"),
-        java.sql.Timestamp.valueOf("2012-05-13 12:45:23.125") }) {
+    for (final Date date : new Date[]{java.sql.Timestamp.valueOf("2012-05-08 12:45:23.125"),
+          java.sql.Timestamp.valueOf("2012-05-09 12:45:23.125"),
+          java.sql.Timestamp.valueOf("2012-05-10 12:45:23.125"),
+          java.sql.Timestamp.valueOf("2012-05-11 12:45:23.125"),
+          java.sql.Timestamp.valueOf("2012-05-12 12:45:23.125"),
+          java.sql.Timestamp.valueOf("2012-05-13 12:45:23.125")}) {
       assertFindUsersToBeNotified_Daily(date);
     }
   }
 
   /**
    * Centralizing assertions
+   *
    * @param date
    * @throws Exception
    */
@@ -273,9 +266,9 @@ public class DelayedNotificationManagerTest {
     assertFindUsersToBeNotified(date, ac, DelayedNotificationFrequency.DAILY, 51, 52, 54);
 
     // Others
-    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[] {
-        DelayedNotificationFrequency.NONE, DelayedNotificationFrequency.WEEKLY,
-        DelayedNotificationFrequency.MONTHLY }) {
+    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[]{
+          DelayedNotificationFrequency.NONE, DelayedNotificationFrequency.WEEKLY,
+          DelayedNotificationFrequency.MONTHLY}) {
 
       // OK
       ac = getAimedChannelsBase();
@@ -301,8 +294,8 @@ public class DelayedNotificationManagerTest {
     Set<NotifChannel> ac;
 
     // DAILY & WEEKLY
-    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[] {
-        DelayedNotificationFrequency.DAILY, DelayedNotificationFrequency.WEEKLY }) {
+    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[]{
+          DelayedNotificationFrequency.DAILY, DelayedNotificationFrequency.WEEKLY}) {
 
       // OK
       ac = getAimedChannelsBase();
@@ -320,8 +313,8 @@ public class DelayedNotificationManagerTest {
     }
 
     // Others
-    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[] {
-        DelayedNotificationFrequency.NONE, DelayedNotificationFrequency.MONTHLY }) {
+    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[]{
+          DelayedNotificationFrequency.NONE, DelayedNotificationFrequency.MONTHLY}) {
 
       // OK
       ac = getAimedChannelsBase();
@@ -347,8 +340,8 @@ public class DelayedNotificationManagerTest {
     Set<NotifChannel> ac;
 
     // DAILY & MONTHLY
-    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[] {
-        DelayedNotificationFrequency.DAILY, DelayedNotificationFrequency.MONTHLY }) {
+    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[]{
+          DelayedNotificationFrequency.DAILY, DelayedNotificationFrequency.MONTHLY}) {
 
       // OK
       ac = getAimedChannelsBase();
@@ -366,8 +359,8 @@ public class DelayedNotificationManagerTest {
     }
 
     // Others
-    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[] {
-        DelayedNotificationFrequency.NONE, DelayedNotificationFrequency.WEEKLY }) {
+    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[]{
+          DelayedNotificationFrequency.NONE, DelayedNotificationFrequency.WEEKLY}) {
 
       // OK
       ac = getAimedChannelsBase();
@@ -393,9 +386,9 @@ public class DelayedNotificationManagerTest {
     Set<NotifChannel> ac;
 
     // DAILY & WEEKLY & MONTHLY
-    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[] {
-        DelayedNotificationFrequency.DAILY, DelayedNotificationFrequency.WEEKLY,
-        DelayedNotificationFrequency.MONTHLY }) {
+    for (final DelayedNotificationFrequency defaultDNF : new DelayedNotificationFrequency[]{
+          DelayedNotificationFrequency.DAILY, DelayedNotificationFrequency.WEEKLY,
+          DelayedNotificationFrequency.MONTHLY}) {
 
       // OK
       ac = getAimedChannelsBase();
@@ -431,6 +424,7 @@ public class DelayedNotificationManagerTest {
 
   /**
    * Centralizing assertions
+   *
    * @param date
    * @param aimedChannels
    * @param defaultDelayedNotificationFrequency
@@ -439,7 +433,7 @@ public class DelayedNotificationManagerTest {
   private void assertFindUsersToBeNotified(final Date date, final Set<NotifChannel> aimedChannels,
       final DelayedNotificationFrequency defaultDelayedNotificationFrequency,
       final Integer... expectedUsers) {
-    Integer[] notExpectedUsers = new Integer[] { 51, 52, 53, 54, 55, 56 };
+    Integer[] notExpectedUsers = new Integer[]{51, 52, 53, 54, 55, 56};
     final List<Integer> usersToNotify =
         manager.findUsersToBeNotified(date, aimedChannels, defaultDelayedNotificationFrequency);
     usersToNotify.retainAll(Arrays.asList(notExpectedUsers));
@@ -449,16 +443,16 @@ public class DelayedNotificationManagerTest {
     }
     assertThat(usersToNotify, notNullValue());
     if (expectedUsers != null && expectedUsers.length > 0) {
-      assertThat(usersToNotify.toArray(new Integer[] {}), arrayContainingInAnyOrder(expectedUsers));
+      assertThat(usersToNotify.toArray(new Integer[]{}), arrayContainingInAnyOrder(expectedUsers));
     }
     if (notExpectedUsers.length > 0) {
-      assertThat(usersToNotify.toArray(new Integer[] {}),
+      assertThat(usersToNotify.toArray(new Integer[]{}),
           not(arrayContainingInAnyOrder(notExpectedUsers)));
     }
   }
 
   private Set<NotifChannel> getAimedChannelsBase() {
-    return new HashSet<NotifChannel>(Arrays.asList(new NotifChannel[] { NotifChannel.SMTP }));
+    return new HashSet<NotifChannel>(Arrays.asList(new NotifChannel[]{NotifChannel.SMTP}));
   }
 
   private Set<NotifChannel> getAimedChannelsAll() {
@@ -541,7 +535,8 @@ public class DelayedNotificationManagerTest {
           manager.findDelayedNotificationByUserIdGroupByChannel(userIdTest, getAimedChannelsAll());
       assertThat(delayedNotificationDataMap, notNullValue());
       assertThat(delayedNotificationDataMap.size(), is(1));
-      for (final Map.Entry<NotifChannel, List<DelayedNotificationData>> mapEntry : delayedNotificationDataMap
+      for (final Map.Entry<NotifChannel, List<DelayedNotificationData>> mapEntry :
+          delayedNotificationDataMap
           .entrySet()) {
         assertThat(mapEntry.getValue().size(), is(actions.length));
         for (int j = 0; j < actions.length; j++) {
@@ -568,28 +563,28 @@ public class DelayedNotificationManagerTest {
 
   @Test
   public void testDeleteDelayedNotifications() throws Exception {
-    int nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Long[] {}));
+    int nbDeletes = manager.deleteDelayedNotifications(Arrays.asList(new Long[]{}));
     assertThat(nbDeletes, is(0));
 
     nbDeletes =
         manager.deleteDelayedNotifications(Arrays
-            .asList(new Long[] { 100l, 200l, 300l, 400l, 500l }));
+        .asList(new Long[]{100l, 200l, 300l, 400l, 500l}));
     assertThat(nbDeletes, is(5));
     nbDeletes =
         manager.deleteDelayedNotifications(Arrays
-            .asList(new Long[] { 100l, 200l, 300l, 400l, 500l }));
+        .asList(new Long[]{100l, 200l, 300l, 400l, 500l}));
     assertThat(nbDeletes, is(0));
   }
 
   @Test
   public void testDeleteDelayedNotifications2() throws Exception {
     int nbDeletes =
-        manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l,
-            600l }));
+        manager.deleteDelayedNotifications(Arrays.asList(new Long[]{100l, 200l, 300l, 400l, 500l,
+          600l}));
     assertThat(nbDeletes, is(6));
     nbDeletes =
-        manager.deleteDelayedNotifications(Arrays.asList(new Long[] { 100l, 200l, 300l, 400l, 500l,
-            600l }));
+        manager.deleteDelayedNotifications(Arrays.asList(new Long[]{100l, 200l, 300l, 400l, 500l,
+          600l}));
     assertThat(nbDeletes, is(0));
 
   }
@@ -597,7 +592,6 @@ public class DelayedNotificationManagerTest {
   /*
    * User settings
    */
-
   @Test
   public void testFindDelayedNotificationUserSettingByUserId() throws Exception {
     List<DelayedNotificationUserSetting> delayedNotificationUserSettings =

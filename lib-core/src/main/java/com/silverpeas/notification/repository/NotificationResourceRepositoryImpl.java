@@ -56,7 +56,7 @@ public class NotificationResourceRepositoryImpl implements NotificationResourceR
     final List<TypedParameter<?>> parameters = new ArrayList<TypedParameter<?>>();
 
     // Query
-    final StringBuffer query = new StringBuffer("from NotificationResourceData where");
+    final StringBuilder query = new StringBuilder("from NotificationResourceData where");
     query.append(" resourceId = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceId", resourceId));
     query.append(" and resourceType = :");

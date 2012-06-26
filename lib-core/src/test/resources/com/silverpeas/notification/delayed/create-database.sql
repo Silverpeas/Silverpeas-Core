@@ -1,5 +1,5 @@
 /* Tables */
-CREATE TABLE uniqueId (
+CREATE TABLE IF NOT EXISTS uniqueId (
 	maxId int NOT NULL ,
 	tableName varchar(100) NOT NULL
 );
