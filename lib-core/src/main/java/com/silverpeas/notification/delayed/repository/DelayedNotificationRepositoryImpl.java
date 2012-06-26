@@ -64,7 +64,7 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
     final List<TypedParameter<?>> parameters = new ArrayList<TypedParameter<?>>();
 
     // Query
-    final StringBuffer query = new StringBuffer();
+    final StringBuilder query = new StringBuilder();
     query.append("select distinct d.userId from DelayedNotificationData d ");
     query.append("  left outer join d.delayedNotificationUserSetting p ");
     query.append("where d.channel in (:");
@@ -102,7 +102,7 @@ public class DelayedNotificationRepositoryImpl implements DelayedNotificationRep
     final List<TypedParameter<?>> parameters = new ArrayList<TypedParameter<?>>();
 
     // Query
-    final StringBuffer query = new StringBuffer("from DelayedNotificationData where");
+    final StringBuilder query = new StringBuilder("from DelayedNotificationData where");
     query.append(" userId = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "userId", delayedNotification.getUserId()));
     query.append(" and fromUserId = :");
