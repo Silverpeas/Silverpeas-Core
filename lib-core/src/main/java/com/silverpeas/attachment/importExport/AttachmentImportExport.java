@@ -82,16 +82,25 @@ public class AttachmentImportExport {
     }
   }
 
-  /* public AttachmentDetail importWysiwygAttachment(String pubId,
-   String componentId, AttachmentDetail attachmentDetail, String context) {
-   AttachmentDetail a_detail = null;
-   this.copyFileWysiwyg(componentId, attachmentDetail, context);
-   if (attachmentDetail.getSize() > 0) {
-   a_detail = this.addAttachmentToPublication(pubId, componentId,
-   attachmentDetail, context, false);
-   }
-   return a_detail;
-   }*/
+  /* TODO : à reprendre pour feature_82
+   * 
+   * public AttachmentDetail importWysiwygAttachment(String pubId,
+      String componentId, AttachmentDetail attachmentDetail, String context) {
+    AttachmentDetail a_detail = null;
+    this.copyFileWysiwyg(componentId, attachmentDetail, context);
+    if (attachmentDetail.getSize() > 0) {
+      a_detail = this.addAttachmentToPublication(pubId, componentId, attachmentDetail, context,
+          false);
+    }
+    return a_detail;
+  }*/
+  
+  @Deprecated
+  public AttachmentDetail importWysiwygAttachment(String pubId,
+      String componentId, AttachmentDetail attachmentDetail, String context) {
+    return null;
+  }
+
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
       List<AttachmentDetail> attachments, String userId) {
     return importAttachments(pubId, componentId, attachments, userId, false);

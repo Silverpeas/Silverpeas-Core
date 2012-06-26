@@ -83,7 +83,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
     BufferedReader input = new BufferedReader(new InputStreamReader(TestDynamicValueReplacement.class
         .getResourceAsStream(fileName)));
     try {
-      String line = null;
+      String line;
       while ((line = input.readLine()) != null) {
         contents.append(line);
       }

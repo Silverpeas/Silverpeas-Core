@@ -357,7 +357,28 @@
   <build>
     <testResources>
       <testResource>
-        <directory>src/test/resources</directory>
+        <directory>${basedir}/src/test/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*.xml</include>
+          <include>**/*.st</include>
+          <include>**/*.html</include>
+          <include>**/*.ldif</include>     
+          <include>index/kmelia*/**/*.*</include>     
+          <include>**/*.txt</include>
+          <include>**/*.odp</include>
+          <include>**/*.odt</include>
+          <include>**/*.doc</include>
+          <include>**/*.docx</include>
+          <include>**/*.zip</include>
+          <include>**/*.tar.gz</include>
+          <include>**/*.tar.bz2</include>
+          <include>**/*.sql</include>
+          <include>opendj/**</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
         <filtering>true</filtering>
         <excludes>
           <exclude>**/*.odp</exclude>
@@ -371,26 +392,10 @@
           <exclude>**/*.sql</exclude>
           <exclude>opendj/**</exclude>
         </excludes>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>index/kmelia*/**/*.*</include>
-          <include>**/*.odp</include>
-          <include>**/*.odt</include>
-          <include>**/*.doc</include>
-          <include>**/*.docx</include>
-          <include>**/*.zip</include>
-          <include>**/*.tar.gz</include>
-          <include>**/*.tar.bz2</include>
-          <include>**/*.sql</include>
-          <include>opendj/**</include>
-        </includes>
-      </testResource>
+      </testResource>      
     </testResources>
     <filters>
-      <filter>src/test/filters/filters.properties</filter>
+      <filter>${basedir}/src/test/filters/filters.properties</filter>
     </filters>
     <plugins>
       <plugin>

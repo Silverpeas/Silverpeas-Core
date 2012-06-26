@@ -50,9 +50,13 @@ public class BinaryInputStream extends InputStream {
   public BinaryInputStream(String path) throws IOException {
     try {
       session = BasicDaoFactory.getSystemSession();
+      String relativePath = path;
+      if(path.startsWith("/")) {
+        relativePath = path.substring(1);
+      }
       Node rootNode = session.getRootNode();
       if (session.itemExists(path) && session.itemExists(path + '/' + JCR_CONTENT)) {
-        Node contentNode = rootNode.getNode(path + '/' + JCR_CONTENT);
+        Node contentNode = rootNode.getNode(relativePath + '/' + JCR_CONTENT);
         binary = contentNode.getProperty(JCR_DATA).getBinary();
         in = binary.getStream();
       } else {

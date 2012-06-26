@@ -37,6 +37,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
@@ -78,19 +80,15 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
-@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class SimpleDocumentConverterTest {
 
   private static final String instanceId = "kmelia74";
   private static final SimpleDocumentConverter instance = new SimpleDocumentConverter();
   private boolean registred = false;
-    
   private static BetterRepositoryFactoryBean shutdown;
-  
   @Inject
   private BetterRepositoryFactoryBean helper;
-  
-  
   @Resource
   private Repository repository;
   private static EmbeddedDatabase dataSource;
@@ -105,9 +103,14 @@ public class SimpleDocumentConverterTest {
   @Before
   public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
     if (!registred) {
-      String cndFileName = AbstractJcrRegisteringTestCase.class.getClassLoader().getResource(
-          "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
-      SilverpeasRegister.registerNodeTypes(cndFileName);
+      Reader reader = null;
+      try {
+        reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
+            getResourceAsStream("silverpeas-jcr.txt"));
+        SilverpeasRegister.registerNodeTypes(reader);
+      } finally {
+        IOUtils.closeQuietly(reader);
+      }
       registred = true;
       DBUtil.getInstanceForTest(dataSource.getConnection());
     } else {
@@ -125,7 +128,7 @@ public class SimpleDocumentConverterTest {
         session.logout();
       }
     }
-    if(shutdown == null) {
+    if (shutdown == null) {
       shutdown = helper;
     }
   }
@@ -559,7 +562,8 @@ public class SimpleDocumentConverterTest {
       creatorId = "73";
       formId = "38";
       creationDate = new Date();
-      attachment = new SimpleAttachment(fileName, language, title, description,
+      attachment =
+          new SimpleAttachment(fileName, language, title, description,
           "Contenu de test".getBytes(CharEncoding.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
           creatorId, creationDate, formId);
       instance.addAttachment(documentNode, attachment, new ByteArrayInputStream("Contenu de test".
@@ -587,7 +591,8 @@ public class SimpleDocumentConverterTest {
       in.close();
       binaryContent.dispose();
       assertThat(new String(buffer.toByteArray(), CharEncoding.UTF_8), is("Contenu de test"));
-      assertThat(contentNode.getProperty(JCR_MIMETYPE).getString(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(contentNode.getProperty(JCR_MIMETYPE).getString(), is(
+          MimeTypes.MIME_TYPE_OO_PRESENTATION));
       assertThat(contentNode.getProperty(JCR_ENCODING).getString(), is(CharEncoding.UTF_8));
     } finally {
       BasicDaoFactory.logout(session);

@@ -383,7 +383,7 @@ public class SimpleDocument {
     directory = directory.replace('/', separatorChar);
     directory = directory + getId() + separatorChar;
     directory = directory + lang + separatorChar;
-    return directory + getFilename();
+    return directory;
   }
   
   public String getAttachmentURL() {

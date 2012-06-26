@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.thumbnail.servlets;
 
@@ -27,6 +24,7 @@ import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.ThumbnailSessionController;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -34,7 +32,6 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -48,12 +45,12 @@ import java.util.List;
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-          "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
+      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
   private static final long serialVersionUID = -2685660972761271210L;
 
-  public String getDestination(String function,
-      ThumbnailSessionController thumbnailSC, HttpServletRequest request) {
-
+  @Override
+  public String getDestination(String function, ThumbnailSessionController thumbnailSC,
+      HttpServletRequest request) {
     String destination = "";
     if (!function.startsWith("images")) {
       String action = getAction(request);
@@ -63,8 +60,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         try {
           parameters = FileUploadUtil.parseRequest(request);
         } catch (UtilException e) {
-          SilverTrace.error("Thumbnail",
-              "ThumbnailRequestRouter.getAction",
+          SilverTrace.error("Thumbnail", "ThumbnailRequestRouter.getAction",
               "root.MSG_GEN_PARAM_VALUE", e);
         }
         action = FileUploadUtil.getParameter(parameters, "Action");
@@ -126,8 +122,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   }
 
-  private String updateFile(HttpServletRequest req,
-      List<FileItem> parameters, ThumbnailSessionController thumbnailSC) {
+  private String updateFile(HttpServletRequest req, List<FileItem> parameters,
+      ThumbnailSessionController thumbnailSC) {
 
     // make some control before delete
     ResourceLocator settings = new ResourceLocator(
@@ -136,23 +132,18 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     FileItem item = FileUploadUtil.getFile(parameters, "OriginalFile");
 
     String type = null;
-    String fullFileName = null;
+    String fullFileName;
     if (!item.isFormField()) {
 
       fullFileName = item.getName();
       if (fullFileName != null && runOnUnix) {
-        fullFileName = fullFileName.replace('\\',
-            File.separatorChar);
-        SilverTrace.info("thumbnail",
-            "ThumbnailRequestRouter.createAttachment",
-            "root.MSG_GEN_PARAM_VALUE",
-            "fullFileName on Unix = " + fullFileName);
+        fullFileName = fullFileName.replace('\\', File.separatorChar);
+        SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
+            "root.MSG_GEN_PARAM_VALUE", "fullFileName on Unix = " + fullFileName);
       }
 
-      String fileName = fullFileName
-          .substring(
-              fullFileName.lastIndexOf(File.separator) + 1,
-              fullFileName.length());
+      String fileName = fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1,
+          fullFileName.length());
 
       if (fileName.lastIndexOf(".") != -1) {
         type = fileName.substring(fileName.lastIndexOf(".") + 1,
@@ -281,26 +272,22 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
   private String createThumbnail(HttpServletRequest req,
       List<FileItem> parameters, ThumbnailSessionController thumbnailSC) {
     // save file on disk
-    ThumbnailDetail thumb = null;
+    ThumbnailDetail thumb;
     try {
       thumb = saveFile(req, parameters, thumbnailSC);
     } catch (ThumbnailRuntimeException e) {
       // only one case -> no .type for the file
-      SilverTrace.info("Thumbnail",
-          "ThumbnailRequestRouter.addThumbnail",
+      SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
           "root.MSG_GEN_PARAM_VALUE", e);
       return "EX_MSG_NO_TYPE_ERROR";
     } catch (Exception exp) {
-      SilverTrace.info("Thumbnail",
-          "ThumbnailRequestRouter.addThumbnail",
+      SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
           "root.MSG_GEN_PARAM_VALUE", exp);
       return "EX_MSG_SAVE_FILE_ERROR";
     }
 
-    String thumbnailHeight = FileUploadUtil.getParameter(parameters,
-        "ThumbnailHeight");
-    String thumbnailWidth = FileUploadUtil.getParameter(parameters,
-        "ThumbnailWidth");
+    String thumbnailHeight = FileUploadUtil.getParameter(parameters, "ThumbnailHeight");
+    String thumbnailWidth = FileUploadUtil.getParameter(parameters, "ThumbnailWidth");
     int intThumbnailHeight = -1;
     if (thumbnailHeight != null) {
       intThumbnailHeight = Integer.parseInt(thumbnailHeight);
@@ -313,25 +300,18 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
     // create line in db
     try {
-
-      if (ThumbnailController.createThumbnail(thumb,
-          intThumbnailWidth,
-          intThumbnailHeight) != null) {
+      if (ThumbnailController.createThumbnail(thumb, intThumbnailWidth, intThumbnailHeight) != null) {
         return null;
-      } else {
-        return "error";
       }
-
+      return "error";
     } catch (ThumbnailRuntimeException e) {
-      SilverTrace.error("Thumbnail",
-          "ThumbnailRequestRouter.addThumbnail",
+      SilverTrace.error("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
           "root.MSG_GEN_PARAM_VALUE", e);
       // need remove the file on disk
       try {
         ThumbnailController.deleteThumbnail(thumb);
       } catch (Exception exp) {
-        SilverTrace.info("Thumbnail",
-            "ThumbnailRequestRouter.addThumbnail - remove after error",
+        SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail - remove after error",
             "root.MSG_GEN_PARAM_VALUE", exp);
       }
       return "EX_MSG_NOT_AN_IMAGE";
@@ -340,16 +320,14 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   private ThumbnailDetail saveFile(HttpServletRequest req,
       List<FileItem> parameters, ThumbnailSessionController thumbnailSC) throws Exception {
-    SilverTrace.info("thumbnail",
-        "ThumbnailRequestRouter.createAttachment",
+    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
         "root.MSG_GEN_ENTER_METHOD");
 
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.Attachment", "");
     boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
 
-    SilverTrace.info("thumbnail",
-        "ThumbnailRequestRouter.createAttachment",
+    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
         "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " + runOnUnix);
 
     String componentId = FileUploadUtil.getParameter(parameters,
@@ -379,8 +357,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
       String fileName = fullFileName
           .substring(
-              fullFileName.lastIndexOf(File.separator) + 1,
-              fullFileName.length());
+          fullFileName.lastIndexOf(File.separator) + 1,
+          fullFileName.length());
       SilverTrace.info("thumbnail",
           "ThumbnailRequestRouter.createAttachment",
           "root.MSG_GEN_PARAM_VALUE", "file = " + fileName);
@@ -398,15 +376,13 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
       if (type == null || type.length() == 0) {
         throw new ThumbnailRuntimeException(
-                  "ThumbnailRequestRouter.saveFile()",
-                  SilverpeasRuntimeException.ERROR, "thumbnail_MSG_TYPE_KO");
+            "ThumbnailRequestRouter.saveFile()",
+            SilverpeasRuntimeException.ERROR, "thumbnail_MSG_TYPE_KO");
       }
 
-      String physicalName = new Long(new Date().getTime()).toString()
-          + "." + type;
+      String physicalName = System.currentTimeMillis() + "." + type;
 
-      String filePath = FileRepositoryManager
-          .getAbsolutePath(componentId)
+      String filePath = FileRepositoryManager.getAbsolutePath(componentId)
           + publicationSettings.getString("imagesSubDirectory") + File.separator + physicalName;
       File file = new File(filePath);
 
@@ -416,7 +392,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       }
 
       item.write(file);
-      String mimeType = AttachmentController.getMimeType(fileName);
+      String mimeType = FileUtil.getMimeType(fileName);
 
       String objectType = FileUploadUtil.getParameter(parameters, "ObjectType");
       ThumbnailDetail thumbToAdd = new ThumbnailDetail(componentId,
@@ -446,7 +422,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   @Override
   public ThumbnailSessionController createComponentSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext context) {
+      MainSessionController mainSessionCtrl, ComponentContext context) {
     return new ThumbnailSessionController(mainSessionCtrl, context);
   }
 
@@ -454,5 +430,4 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
   public String getSessionControlBeanName() {
     return "thumbnail";
   }
-
 }

@@ -36,11 +36,9 @@
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
-<%@ page import="java.util.Collection, java.util.ArrayList, java.util.Iterator, java.util.Date"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
@@ -59,6 +57,11 @@
 <%@ page import="com.stratelia.webactiv.util.attachment.ejb.AttachmentException"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocumentPK" %>
+<%@ page import="com.silverpeas.util.ForeignPK" %>
+<%@ page import="java.util.*" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -71,18 +74,21 @@
         String idAttachment = request.getParameter("IdAttachment");
 
        //create AttachmentPK with id and spaceId and componentId
-       AttachmentPK atPK = new AttachmentPK(idAttachment, componentId);
+       SimpleDocumentPK atPK = new SimpleDocumentPK(idAttachment, componentId);
 
-        //recup�ration de l'objet
-        AttachmentDetail atDetail = AttachmentController.searchAttachmentByPK(atPK);
-        //suppresion de l'objet
-        AttachmentController.moveUpAttachment(atDetail);
-        if (url.indexOf('?') >= 0)
-        {
-            response.sendRedirect(URLManager.getApplicationURL()+ url + "&Id="+id);
+        //recuperation de l'objet
+        SimpleDocument atDetail =
+                AttachmentServiceFactory.getAttachmentService().searchAttachmentById(atPK, null);
+        List<SimpleDocument> docs  = AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(new
+                ForeignPK(atDetail.getForeignId(), atDetail.getInstanceId()), null);
+        int index = docs.indexOf(atDetail);
+        if(index > 0)  {
+            Collections.swap(docs, index - 1, index);
         }
-        else
-        {
+        AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
+        if (url.indexOf('?') >= 0) {
+            response.sendRedirect(URLManager.getApplicationURL()+ url + "&Id="+id);
+        } else {
             response.sendRedirect(URLManager.getApplicationURL()+ url + "?Id="+id);
         }
    

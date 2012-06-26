@@ -27,6 +27,7 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
@@ -37,6 +38,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,6 +51,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -76,18 +80,15 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
-@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class DocumentRepositoryTest {
 
   private static final String instanceId = "kmelia73";
   private static EmbeddedDatabase dataSource;
   private boolean registred = false;
-  
   private static BetterRepositoryFactoryBean shutdown;
-  
   @Inject
   private BetterRepositoryFactoryBean helper;
-  
   @Resource
   private Repository repository;
   private DocumentRepository instance = new DocumentRepository();
@@ -95,16 +96,21 @@ public class DocumentRepositoryTest {
   public Repository getRepository() {
     return this.repository;
   }
-  
+
   public DocumentRepositoryTest() {
   }
 
   @Before
   public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
     if (!registred) {
-      String cndFileName = DocumentRepositoryTest.class.getClassLoader().getResource(
-          "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
-      SilverpeasRegister.registerNodeTypes(cndFileName);
+      Reader reader = null;
+      try {
+        reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
+            getResourceAsStream("silverpeas-jcr.txt"));
+        SilverpeasRegister.registerNodeTypes(reader);
+      } finally {
+        IOUtils.closeQuietly(reader);
+      }
       registred = true;
       DBUtil.getInstanceForTest(dataSource.getConnection());
     } else {
@@ -122,7 +128,7 @@ public class DocumentRepositoryTest {
         session.logout();
       }
     }
-    if(shutdown == null) {
+    if (shutdown == null) {
       shutdown = helper;
     }
   }
@@ -152,7 +158,7 @@ public class DocumentRepositoryTest {
   }
 
   @AfterClass
-  public static void tearDown() throws Exception {    
+  public static void tearDown() throws Exception {
     dataSource.shutdown();
     DBUtil.clearTestInstance();
     shutdown.destroy();
@@ -381,9 +387,9 @@ public class DocumentRepositoryTest {
       NodeIterator nodes = instance.selectDocumentsByForeignId(session, instanceId, "node18");
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
-      assertThat(nodes.nextNode().getIdentifier(), is(docNode18_2.getId()));
-      assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docNode18_1.getId()));
+      assertThat(nodes.hasNext(), is(true));
+      assertThat(nodes.nextNode().getIdentifier(), is(docNode18_2.getId()));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -486,30 +492,17 @@ public class DocumentRepositoryTest {
   }
 
   private SimpleAttachment createEnglishSimpleAttachment() {
-    String language = "en";
-    String fileName = "test.pdf";
-    String title = "My test document";
-    String description = "This is a test document";
-    String formId = "18";
-    String creatorId = "0";
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    return new SimpleAttachment(fileName, language, title, description,
-        "This is a test".getBytes(Charsets.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
-        creationDate, formId);
+    return new SimpleAttachment("test.pdf", "en", "My test document", "This is a test document",
+        "This is a test".getBytes(Charsets.UTF_8).length, MimeTypes.PDF_MIME_TYPE, "0",
+        RandomGenerator.getRandomCalendar().getTime(), "18");
 
   }
 
   private SimpleAttachment createFrenchSimpleAttachment() {
-    String language = "fr";
-    String fileName = "test.odp";
-    String title = "Mon document de test";
-    String description = "Ceci est un document de test";
-    String formId = "5";
-    String creatorId = "10";
-    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    return new SimpleAttachment(fileName, language, title, description,
+    return new SimpleAttachment("test.odp", "fr", "Mon document de test",
+        "Ceci est un document de test",
         "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
-        creatorId, creationDate, formId);
+        "10", RandomGenerator.getRandomCalendar().getTime(), "5");
   }
 
   private void checkEnglishSimpleDocument(SimpleDocument doc) {
@@ -865,16 +858,18 @@ public class DocumentRepositoryTest {
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
       instance.createDocument(session, document, content);
       session.save();
-      foreignId = "kmelia36";
-      SimpleDocumentPK result = instance.copyDocument(session, document, new ForeignPK("45",
-          foreignId));
-      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), foreignId);
+      foreignId = "node36";
+      SimpleDocumentPK result = instance.copyDocument(session, document, new ForeignPK(foreignId,
+          instanceId));
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
       SimpleDocument doc = instance.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
       assertThat(doc.getCreated(), is(creationDate));
+      document.setForeignId(foreignId);
+      document.setPK(result);
       assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
       checkEnglishSimpleDocument(doc);
     } finally {

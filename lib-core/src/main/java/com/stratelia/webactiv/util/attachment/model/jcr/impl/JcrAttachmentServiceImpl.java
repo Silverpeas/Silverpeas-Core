@@ -56,8 +56,7 @@ public class JcrAttachmentServiceImpl implements JcrAttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      jcrAttachmentDao.createAttachmentNode(session, attachment,
-          getLanguage(language));
+      jcrAttachmentDao.createAttachmentNode(session, attachment, getLanguage(language));
       session.save();
     } catch (RepositoryException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",

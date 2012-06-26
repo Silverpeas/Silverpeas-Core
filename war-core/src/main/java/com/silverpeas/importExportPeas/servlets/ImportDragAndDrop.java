@@ -34,17 +34,17 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import org.apache.commons.fileupload.FileItem;
+import java.io.File;
+import java.io.IOException;
 
+import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import org.apache.commons.fileupload.FileItem;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 

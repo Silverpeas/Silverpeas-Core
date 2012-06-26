@@ -208,8 +208,6 @@ public class SimpleDocumentService implements AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwhise.
    * @return the stored document.
    * @throws AttachmentException
    */
@@ -290,8 +288,6 @@ public class SimpleDocumentService implements AttachmentService {
       }
     }
   }
-  
-
 
   /**
    * Delete a given attachment.
@@ -306,10 +302,9 @@ public class SimpleDocumentService implements AttachmentService {
   /**
    * Delete a given attachment.
    *
-   * @param attachmentDetail the attachmentDetail object to deleted.
+   * @param document the attachmentDetail object to deleted.
    * @param invokeCallback   <code>true</code> if the callback methods of the components must be
-   * called, <code>false</code> for ignoring thoose callbacks.
-   * @throws AttachmentRuntimeException if the attachement cannot be deleted.
+   * called, <code>false</code> for ignoring those callbacks.
    */
   @Override
   public void deleteAttachment(SimpleDocument document, boolean invokeCallback) {
@@ -415,7 +410,7 @@ public class SimpleDocumentService implements AttachmentService {
       boolean invokeCallback) {
     Session session = null;
     try {
-      session = BasicDaoFactory.getSystemSession();
+      session = BasicDaoFactory.getSystemSession();      
       repository.addContent(session, document.getPk(), document.getFile(), in);
       storeContent(session, document);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
@@ -1172,11 +1167,14 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocumentPK clonePk = repository.copyDocument(session, original, new ForeignPK(
           foreignCloneId, original.getInstanceId()));
       SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
-      clone.setCloneId(foreignCloneId);
-      repository.updateDocument(session, clone);
+      original.setCloneId(clonePk.getId());
+      repository.updateDocument(session, original);
+      storeContent(session, clone);
       session.save();
       return clonePk;
     } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
@@ -1197,6 +1195,32 @@ public class SimpleDocumentService implements AttachmentService {
       int i = 5;
       for (SimpleDocumentPK pk : pks) {
         SimpleDocument doc = repository.findDocumentById(session, pk, null);
+        doc.setOrder(i);
+        repository.updateDocument(session, doc);
+        i = i + 5;
+      }
+      session.save();
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Reorder the attachments according to the order in the list.
+   *
+   *
+   * @param documents
+   * @throws AttachmentException
+   */
+  @Override
+  public void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      int i = 5;
+      for (SimpleDocument doc : documents) {
         doc.setOrder(i);
         repository.updateDocument(session, doc);
         i = i + 5;

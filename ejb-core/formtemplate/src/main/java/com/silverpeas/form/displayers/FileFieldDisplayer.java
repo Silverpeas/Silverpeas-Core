@@ -25,6 +25,8 @@
 package com.silverpeas.form.displayers;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -65,6 +67,12 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.server.io.IOUtil;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -343,8 +351,9 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
             attachmentId = createDocument(objectId, ad);
           } else {
             // mode classique
-            ad = AttachmentController.createAttachment(ad, true);
-            attachmentId = ad.getPK().getId();
+            SimpleDocument document = createSimpleDocument(objectId, componentId, item,
+                logicalName, userId);
+            attachmentId = document.getId();
           }
         } else {
           // le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le
@@ -356,6 +365,23 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       }
     }
     return attachmentId;
+  }
+
+
+  private SimpleDocument createSimpleDocument(String objectId, String componentId,FileItem item,
+                                              String logicalName, String userId)
+      throws IOException {
+    SimpleDocumentPK documentPk = new SimpleDocumentPK(null, componentId);
+    SimpleDocument document = new SimpleDocument(documentPk, objectId, 0,false, userId,
+        new SimpleAttachment(logicalName, null, null, null, item.getSize(),
+            FileUtil.getMimeType(logicalName),userId, new Date(), null));
+    InputStream in = item.getInputStream();
+    try {
+    return AttachmentServiceFactory.getAttachmentService().createAttachment(document, in, false);
+    }finally {
+      IOUtils.closeQuietly(in);
+    }
+
   }
 
   private AttachmentDetail createAttachmentDetail(String objectId, String componentId,

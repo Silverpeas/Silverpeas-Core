@@ -45,7 +45,7 @@ public class FileRepositoryManager {
   static final String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   static final String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath
       + separatorChar + "avatar");
-  static String tempPath = "";
+  final static String tempPath;
   final static ResourceLocator uploadSettings = new ResourceLocator(
       "com.stratelia.webactiv.util.uploads.uploadSettings", "");
   static final ResourceLocator utilMessages = new ResourceLocator(
@@ -58,15 +58,11 @@ public class FileRepositoryManager {
   static final long to = go * 1024;
 
   static {
-    try {
-      tempPath = GeneralPropertiesManager.getString("tempPath");
-      if (!tempPath.endsWith(separator)) {
-        tempPath = tempPath + separatorChar;
-      }
-    } catch (Exception e) {
-      SilverTrace.error("util", "FileRepositoryManager static",
-          "util.MSG_ERROR_LOADING_PROPS",
-          "com.stratelia.webactiv.general.properties");
+    String temporaryPath = GeneralPropertiesManager.getString("tempPath");
+    if (!temporaryPath.endsWith(separator)) {
+      tempPath = temporaryPath + separatorChar;
+    } else {
+      tempPath = temporaryPath;
     }
   }
 
@@ -150,15 +146,15 @@ public class FileRepositoryManager {
   }
 
   static public String getTemporaryPath() {
-    return tempPath + separator;
+    return tempPath + separatorChar;
   }
 
   static public String getTemporaryPath(String sSpaceId, String sComponentId) {
-    return tempPath + separator;
+    return tempPath + separatorChar;
   }
 
   static public String getComponentTemporaryPath(String sComponentId) {
-    return getAbsolutePath(sComponentId) + "Temp" + separator;
+    return getAbsolutePath(sComponentId) + "Temp" + separatorChar;
   }
 
   static public String getAbsoluteIndexPath(String particularSpace, String componentId) {
@@ -166,10 +162,10 @@ public class FileRepositoryManager {
         "particularSpace = " + particularSpace + " sComponentId= " + componentId);
     if (particularSpace != null && (particularSpace.startsWith("user@") || particularSpace.equals(
         "transverse"))) {
-      return indexUpLoadPath + separator + particularSpace + separator + componentId + separator
-          + "index";
+      return indexUpLoadPath + separatorChar + particularSpace + separatorChar + componentId 
+          + separatorChar + "index";
     }
-    return indexUpLoadPath + separator + componentId + separator + "index";
+    return indexUpLoadPath + separatorChar + componentId + separatorChar + "index";
   }
 
   /**

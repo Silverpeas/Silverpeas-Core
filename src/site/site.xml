@@ -60,8 +60,10 @@
     <logo name="Eclipse 3.7"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
     <logo name="Intellij Idea" href="http://www.jetbrains.com/idea/" img="http://www.jetbrains.com/idea/opensource/img/all/banners/idea120x60_white.gif" />
     <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
-    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" />
+    <!-- logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" / -->
     <logo name="Izpack" href="http://izpack.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_izPack.png" />
+    <logo name="Subshell Toromiro" href="http://www.subshell.com/en/toromiro/" img="http://repository.silverpeas.org/docs/core/images/logos/toromiro-logo.png" />
+    <logo name="Yourkit" href="http://www.yourkit.com" img="http://repository.silverpeas.org/docs/core/images/logos/yourkit-logo.png" />
   </poweredBy>
   <body>
     <head>

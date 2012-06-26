@@ -32,6 +32,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * @author neysseri
@@ -65,23 +68,18 @@ public class AttachmentCallBack implements CallBack {
       Hashtable<String, String> params = (Hashtable<String, String>) extraParam;
       String objectId = params.get("ObjectId");
       String objectLanguage = params.get("ObjectLanguage");
-      AttachmentPK pk = new AttachmentPK(objectId, componentId);
-      try {
+      SimpleDocumentPK pk = new SimpleDocumentPK(objectId, componentId);
         if (action == CallBackManager.ACTION_XMLCONTENT_CREATE) {
           // Store xmlForm associated to this file
           String xmlFormName = params.get("XMLFormName");
-          AttachmentController.addXmlForm(pk, objectLanguage, xmlFormName);
+          AttachmentServiceFactory.getAttachmentService().addXmlForm(pk, objectLanguage, xmlFormName);
         } else if (action == CallBackManager.ACTION_XMLCONTENT_DELETE) {
           // Remove xmlForm associated to this file
-          AttachmentController.addXmlForm(pk, objectLanguage, null);
+          AttachmentServiceFactory.getAttachmentService().addXmlForm(pk, objectLanguage, null);
         }
-      } catch (AttachmentException e) {
-        SilverTrace.error("attachment", "AttachmentCallBack.doInvoke()",
-            "root.MSG_GEN_PARAM_VALUE", e);
-      }
-
-      // Force file indexing
-      AttachmentController.createIndex(pk);
+      SimpleDocument document =  AttachmentServiceFactory.getAttachmentService()
+          .searchAttachmentById(pk, objectLanguage);
+      AttachmentServiceFactory.getAttachmentService().createIndex(document);
     }
   }
 

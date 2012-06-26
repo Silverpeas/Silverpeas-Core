@@ -67,11 +67,6 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public InputStream getBinaryContent(SimpleDocumentPK pk, String lang) {
-    return realService.getBinaryContent(pk, lang);
-  }
-
-  @Override
   public void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang) {
     realService.getBinaryContent(output, pk, lang);
   }
@@ -132,7 +127,7 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
 
   @Override
   public void reorderAttachments(List<SimpleDocumentPK> pks) throws AttachmentException {
-    realService.reorderAttachments(pks);
+    realService.reorderDocuments(pks);
   }
 
   @Override

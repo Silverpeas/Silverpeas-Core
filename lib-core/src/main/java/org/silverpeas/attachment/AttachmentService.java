@@ -222,14 +222,20 @@ public interface AttachmentService {
   void reorderAttachments(List<SimpleDocumentPK> pks) throws AttachmentException;
 
   /**
+   * Reorder the attachments according to the order in the list.
+   *
+   *
+   * @param documents
+   * @throws AttachmentException
+   */
+  void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException;
+
+  /**
    * to search all file attached
    *
    * @param primaryKey the primary key of object AttachmentDetail
    * @return java.util.Vector: a collection of AttachmentDetail
    * @throws AttachmentRuntimeException when is impossible to search
-   * @author Jean-Claude Groccia
-   * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   SimpleDocument searchAttachmentById(SimpleDocumentPK primaryKey, String lang);
 

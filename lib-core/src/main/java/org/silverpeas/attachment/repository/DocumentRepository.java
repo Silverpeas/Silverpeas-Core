@@ -132,7 +132,7 @@ public class DocumentRepository {
    *
    * @param session
    * @param document
-   * @param destination
+   * @param destination the foreingId holding reference to the copy.
    * @return
    * @throws RepositoryException
    */
@@ -146,6 +146,7 @@ public class DocumentRepository {
     session.getWorkspace().copy(document.getFullPath(), targetDoc.getFullPath());
     Node copy = session.getNode(targetDoc.getFullPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
+    copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     pk.setId(copy.getIdentifier());
     return pk;
   }
@@ -163,7 +164,6 @@ public class DocumentRepository {
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
     converter.fillNode(document, null, documentNode);
-    session.save();
   }
 
   /**
@@ -250,8 +250,11 @@ public class DocumentRepository {
   public SimpleDocument findLast(Session session, String instanceId, String foreignId) throws
       RepositoryException {
     NodeIterator iter = selectDocumentsByForeignId(session, instanceId, foreignId);
-    if (iter.hasNext()) {
-      return converter.convertNode(iter.nextNode(), I18NHelper.defaultLanguage);
+    while (iter.hasNext()) {
+      Node node = iter.nextNode();
+      if (!iter.hasNext()) {
+        return converter.convertNode(node, I18NHelper.defaultLanguage);
+      }
     }
     return null;
   }
@@ -318,7 +321,7 @@ public class DocumentRepository {
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
-    Ordering order = factory.descending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
@@ -540,8 +543,8 @@ public class DocumentRepository {
     Node componentNode = session.getNodeByIdentifier(documentPk.getId());
     converter.removeAttachment(componentNode, language);
     componentNode = session.getNodeByIdentifier(documentPk.getId());
-    if(!componentNode.hasNodes()) {
+    if (!componentNode.hasNodes()) {
       componentNode.remove();
-    }    
+    }
   }
 }

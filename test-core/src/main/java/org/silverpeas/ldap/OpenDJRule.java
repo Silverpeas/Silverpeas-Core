@@ -117,15 +117,15 @@ public class OpenDJRule implements TestRule {
     File directoryServerRoot = getServerRoot(serverHome);
     new File(directoryServerRoot, "locks").mkdir();
     new File(directoryServerRoot, "logs").mkdir();
-    DirectoryEnvironmentConfig envConfig = new DirectoryEnvironmentConfig();
-    envConfig.setServerRoot(directoryServerRoot);
-    envConfig.setConfigFile(getFile(ldifConfigFile));
-    envConfig.setDisableConnectionHandlers(false);
-    envConfig.setMaintainConfigArchive(false);
     // Start the OpenDS server.
     if (EmbeddedUtils.isRunning()) {
       return;
     } else {
+      DirectoryEnvironmentConfig envConfig = new DirectoryEnvironmentConfig();
+      envConfig.setServerRoot(directoryServerRoot);
+      envConfig.setConfigFile(getFile(ldifConfigFile));
+      envConfig.setDisableConnectionHandlers(false);
+      envConfig.setMaintainConfigArchive(false);
       EmbeddedUtils.startServer(envConfig);
     }
     // Get an internal, root connection to the OpenDJ instance.
