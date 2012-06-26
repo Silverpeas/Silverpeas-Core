@@ -32,7 +32,7 @@ import java.util.Set;
  * by the DAOs.
  */
 public class UserSearchCriteriaForDAO implements UserSearchCriteria {
-
+  
   private StringBuilder query = new StringBuilder();
   private Set<String> tables = new HashSet<String>();
 
@@ -73,8 +73,14 @@ public class UserSearchCriteriaForDAO implements UserSearchCriteria {
     tables.add("st_group_user_rel");
     query.append("(st_group_user_rel.userid = st_user.id");
     if (groupIds != ANY) {
-      query.append(" and st_group_user_rel.groupId in ").
-            append(asSQLList(groupIds));
+      StringBuilder[] sqlLists = asSQLList(groupIds);
+      query.append(" and (st_group_user_rel.groupId in ").
+            append(sqlLists[0]);
+      for(int i = 1; i < sqlLists.length; i++) {
+        query.append(" or st_group_user_rel.groupId in ").
+            append(sqlLists[i]);
+      }
+      query.append(")");
     }
     query.append(")");
     return this;
@@ -90,7 +96,12 @@ public class UserSearchCriteriaForDAO implements UserSearchCriteria {
   @Override
   public UserSearchCriteria onUserIds(String... userIds) {
     tables.add("st_user");
-    query.append("(st_user.id in ").append(asSQLList(userIds)).append(")");
+    StringBuilder[] sqlLists = asSQLList(userIds);
+    query.append("(st_user.id in ").append(sqlLists[0]);
+    for(int i = 0; i < sqlLists.length; i++) {
+      query.append(" or st_user.id in ").append(sqlLists[i]);
+    }
+    query.append(")");
     return this;
   }
   
@@ -116,16 +127,26 @@ public class UserSearchCriteriaForDAO implements UserSearchCriteria {
     
   }
   
-  private String asSQLList(String ... items) {
-    StringBuilder list = new StringBuilder("(");
+  // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
+  // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
+  private StringBuilder[] asSQLList(String ... items) {
+    StringBuilder[] lists = new StringBuilder[(int)Math.ceil(items.length / 1000) + 1];
+    int count = 0;
+    int i = 0;
+    lists[i] = new StringBuilder("(");
     for (String anItem : items) {
-      list.append(anItem).append(",");
+      if (++count >= 1000) {
+        lists[i].setCharAt(lists[i].length() - 1, ')');
+        lists[++i] = new StringBuilder("(");
+        count = 0;
+      }
+      lists[i].append(anItem).append(",");
     }
-    if (list.toString().endsWith(",")) {
-      list.setCharAt(list.length() - 1, ')');
+    if (lists[i].toString().endsWith(",")) {
+      lists[i].setCharAt(lists[i].length() - 1, ')');
     } else {
-      list.append("null").append(")");
+      lists[i].append("null").append(")");
     }
-    return list.toString();
+    return lists;
   }
 }
