@@ -57,6 +57,15 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   /**
    * Default constructor
    * @param resource
+   * @param fileName
+   */
+  public AbstractTemplateUserNotificationBuilder(final T resource, final String fileName) {
+    super(resource, null, fileName);
+  }
+
+  /**
+   * Default constructor
+   * @param resource
    * @param title
    * @param fileName
    */
