@@ -39,6 +39,15 @@ public final class ProfileResourceBaseURIs {
   
   public static final String GROUPS_BASE_URI = "profile/groups";
   
+  public static URI uriOfUser(final String userId) {
+    try {
+      return new URI(USERS_BASE_URI + "/" + userId);
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(ProfileResourceBaseURIs.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+  }
+  
   public static URI uriOfUser(final UserDetail user, String atUsersUri) {
     try {
       return new URI(atUsersUri + "/" + user.getId());

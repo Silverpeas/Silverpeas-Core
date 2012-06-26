@@ -31,7 +31,9 @@ import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -68,7 +70,7 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name) {
-    List<String> groupIds = new ArrayList<String>();
+    Set<String> groupIds = new HashSet<String>();
     if (getUserDetail().isDomainRestricted()) {
       String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
               name, "-1"));

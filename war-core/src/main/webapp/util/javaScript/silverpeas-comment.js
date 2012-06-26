@@ -23,8 +23,9 @@
  */
 
 /**
- * This JQuery plugin is developed for the Silverpeas application.
- * It requires the JQuery plugin autoresize.
+ * This Silverpeas plugin renders the comments on a given contribution in the Silverpeas portal.
+ * It is built upon the JQuery framework and requires the JQuery plugin autoresize and the
+ * Silverpeas plugin userZoom.
  * It provides functions to:
  * - print an area for editing new comments,
  * - print a list of comments,
@@ -46,7 +47,9 @@
    * The parameter settings of the plugin with, for some, the default value.
    * - uri: the URI at which the comments are located in the web. To access or to update one
    * comment.
-   * - avatar: the avatar representing the current user.
+   * - author: the author of the commented resource with the following attributes:
+   *    - id: the unique identifier of the user,
+   *    - avatar: the avatar representing the user,
    * - update: an object about the update information on a given comment having the following
    * attributes:
    *    - activated: a function that accepts as argument a comment and that should return a boolean
@@ -77,7 +80,10 @@
    */
   var settings = {
     url: 'http://localhost/comments',
-    avatar: '',
+    author: {
+      id: null,
+      avatar: ''
+    },
     update: {
       activated: function( comment ) {
         return false;
@@ -198,8 +204,8 @@
         var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
         var legende = $("<div>").addClass("legende");
         $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
-        if (settings.avatar != null && settings.avatar.length > 0)
-          $("<img>").attr("src", settings.avatar).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
+        if (settings.author && settings.author.avatar != null && settings.author.avatar.length > 0)
+          $("<img>").attr("src", settings.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
         $("<textarea>").addClass("text").appendTo(editionBox).autoResize();
         $("<span>").html("&nbsp;").appendTo(editionBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
@@ -242,7 +248,10 @@
     }
     var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
     $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
-    $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
+    if (settings.author && settings.author.id == comment.author.id)
+      $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
+    else
+      $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").append($('<span>').text(comment.author.fullName).userZoom(comment.author)).appendTo(commentBox));
     $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
 
     if (update['activated']( comment )) {
