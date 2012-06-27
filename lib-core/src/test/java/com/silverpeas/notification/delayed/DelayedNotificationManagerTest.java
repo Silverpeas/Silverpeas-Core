@@ -10,14 +10,7 @@ import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import com.stratelia.webactiv.util.DBUtil;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
@@ -27,8 +20,8 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,9 +29,6 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-delayed-notification.xml",
@@ -81,20 +71,7 @@ public class DelayedNotificationManagerTest {
   public void generalSetUp() throws Exception {
     final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
   }
-  
-  @After
-  public void cleanData() throws Exception {
-    final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.DELETE_ALL.execute(myConnection, dataSet);
-  }
-  
-  @AfterClass
-  public static void cleanup() throws Exception {
-    DBUtil.clearTestInstance();
-  }
-
 
   /*
    * Common
@@ -452,11 +429,11 @@ public class DelayedNotificationManagerTest {
   }
 
   private Set<NotifChannel> getAimedChannelsBase() {
-    return new HashSet<NotifChannel>(Arrays.asList(new NotifChannel[]{NotifChannel.SMTP}));
+    return EnumSet.of(NotifChannel.SMTP);
   }
 
   private Set<NotifChannel> getAimedChannelsAll() {
-    return new HashSet<NotifChannel>(Arrays.asList(NotifChannel.values()));
+    return EnumSet.allOf(NotifChannel.class);
   }
 
   @Test
