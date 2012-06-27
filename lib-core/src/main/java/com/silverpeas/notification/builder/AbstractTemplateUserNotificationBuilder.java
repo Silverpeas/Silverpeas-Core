@@ -93,7 +93,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   }
 
   @Override
-  protected IUserNotification createNotification() {
+  protected UserNotification createNotification() {
     return new DefaultUserNotification(getTitle(), templates, getFileName());
   }
 
@@ -110,7 +110,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       performTemplateData(curLanguage, resource, template);
       notificationResourceData = nRDBase.clone();
       performNotificationResource(curLanguage, resource, notificationResourceData);
-      getNotification().setNotificationResourceData(curLanguage, notificationResourceData);
+      getNotificationMetaData().setNotificationResourceData(curLanguage, notificationResourceData);
     }
   }
 

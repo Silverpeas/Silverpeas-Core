@@ -26,10 +26,10 @@ package com.silverpeas.notification.builder;
 /**
  * @author Yohann Chastagnier
  */
-public interface IUserNotificationBuider {
+public interface UserNotificationBuider {
 
   /**
    * Builds the notification data container
    */
-  IUserNotification build();
+  UserNotification build();
 }

@@ -29,13 +29,13 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 /**
  * @author Yohann Chastagnier
  */
-public interface IUserNotification {
+public interface UserNotification {
 
   /**
    * Gets the notification data container
    * @return
    */
-  NotificationMetaData getNotification();
+  NotificationMetaData getNotificationMetaData();
 
   /**
    * Sends the notification
