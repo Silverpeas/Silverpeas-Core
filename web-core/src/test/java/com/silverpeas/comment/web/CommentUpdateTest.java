@@ -23,18 +23,18 @@
  */
 package com.silverpeas.comment.web;
 
-import org.junit.AfterClass;
 import com.silverpeas.comment.BaseCommentTest;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
+import static com.silverpeas.comment.web.CommentTestResources.*;
 import com.silverpeas.web.ResourceUpdateTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import static org.hamcrest.Matchers.equalTo;
+import org.junit.AfterClass;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.comment.web.CommentTestResources.*;
 
 /**
  * Unit tests on the update of a comment through the CommentResource web service.
@@ -61,7 +61,7 @@ public class CommentUpdateTest extends ResourceUpdateTest<CommentTestResources> 
 
   @Before
   public void prepareTestResources() {
-    user = save(aUser());
+    user = aUser();
     sessionKey = authenticate(user);
     Comment commentToUseInTest =
         theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(

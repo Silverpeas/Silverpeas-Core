@@ -27,14 +27,17 @@ import static com.silverpeas.profile.web.UserProfileTestResources.*;
 import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.SearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import java.util.List;
 import javax.ws.rs.core.Response;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,6 +48,7 @@ import org.junit.Test;
 public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTestResources> {
 
   private String sessionKey;
+  private UserDetail currentUser;
 
   public UserProfileResourceTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -53,14 +57,16 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Before
   public void prepareTestResources() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
-    sessionKey = authenticate(aUser());
-    getTestResources().allocate();
+    currentUser = aUser();
+    sessionKey = authenticate(currentUser);
   }
 
   @Test
   public void gettingAllUsersWhateverTheDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
+    getTestResources().whenSearchUsersByCriteriaThenReturn(new SearchCriteria(), expectedUsers);
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
@@ -70,8 +76,11 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAllUsersInItsOwnsDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
-    getTestResources().getWebServiceCaller().setDomainId(domainId);
+    currentUser.setDomainId(domainId);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
+    getTestResources().whenSearchUsersByCriteriaThenReturn(new SearchCriteria().onDomainId(domainId),
+            expectedUsers);
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
@@ -81,6 +90,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAllUsersWhateverTheDomainWhenInSilverpeasDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
+    getTestResources().whenSearchUsersByCriteriaThenReturn(new SearchCriteria(), expectedUsers);
 
     UserProfileEntity[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
@@ -91,8 +101,10 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAllUsersInItsOwnDomainWhenNotInSilverpeasDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((1));
-    getTestResources().getWebServiceCaller().setDomainId(domainId);
+    currentUser.setDomainId(domainId);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
+    getTestResources().whenSearchUsersByCriteriaThenReturn(new SearchCriteria().onDomainId(domainId),
+            expectedUsers);
 
     UserProfileEntity[] actualUsers = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
@@ -113,7 +125,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAGivenUserInItsOwnsDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
     UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
-    getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId());
+    currentUser.setDomainId(expectedUser.getDomainId());
     UserProfileEntity actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
             UserProfileEntity.class);
     assertThat(actualUser, notNullValue());
@@ -134,7 +146,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAGivenUserInItsOwnDomainWhenNotInSilverpeasDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
-    getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId());
+    currentUser.setDomainId(expectedUser.getDomainId());
     UserProfileEntity actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
             UserProfileEntity.class);
     assertThat(actualUser, notNullValue());
@@ -146,7 +158,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     try {
       GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
       UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
-      getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId() + "0");
+      currentUser.setDomainId(expectedUser.getDomainId() + "0");
       getAt(aResourceURI() + "/" + expectedUser.getId(), UserProfileEntity.class);
       fail("The user shouldn't be get as it is unaccessible");
     } catch (UniformInterfaceException ex) {
@@ -161,7 +173,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     try {
       GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
       UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
-      getTestResources().getWebServiceCaller().setDomainId(expectedUser.getDomainId() + "0");
+      currentUser.setDomainId(expectedUser.getDomainId() + "0");
       getAt(aResourceURI() + "/" + expectedUser.getId(), UserProfileEntity.class);
       fail("The user shouldn't be get as it is unaccessible");
     } catch (UniformInterfaceException ex) {
@@ -176,6 +188,13 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
+    SearchCriteria criteria = new SearchCriteria().onGroupId(aGroup.getId());
+    if (Integer.valueOf(aGroup.getDomainId()) > 0) {
+      criteria.onDomainId(aGroup.getDomainId());
+    }
+    getTestResources().whenSearchUsersByCriteriaThenReturn(criteria,
+            expectedUsers.toArray(new UserDetail[expectedUsers.size()]));
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -186,8 +205,12 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAllUsersOfAGivenGroupInItsOwnsDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
-    getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId());
+    currentUser.setDomainId(aGroup.getDomainId());
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
+    getTestResources().whenSearchUsersByCriteriaThenReturn(
+            new SearchCriteria().onGroupId(aGroup.getId()).onDomainId(aGroup.getDomainId()),
+            expectedUsers.toArray(new UserDetail[expectedUsers.size()]));
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -199,6 +222,13 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
+    SearchCriteria criteria = new SearchCriteria().onGroupId(aGroup.getId());
+    if (Integer.valueOf(aGroup.getDomainId()) > 0) {
+      criteria.onDomainId(aGroup.getDomainId());
+    }
+    getTestResources().whenSearchUsersByCriteriaThenReturn(criteria,
+            expectedUsers.toArray(new UserDetail[expectedUsers.size()]));
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -209,8 +239,15 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   public void getAllUsersOfAGivenGroupInItsOwnDomainWhenNotInSilverpeasDomain() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
-    getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId());
+    currentUser.setDomainId(aGroup.getDomainId());
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
+    SearchCriteria criteria = new SearchCriteria().onGroupId(aGroup.getId());
+    if (Integer.valueOf(aGroup.getDomainId()) > 0) {
+      criteria.onDomainId(aGroup.getDomainId());
+    }
+    getTestResources().whenSearchUsersByCriteriaThenReturn(criteria,
+            expectedUsers.toArray(new UserDetail[expectedUsers.size()]));
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + aGroup.getId(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
@@ -222,7 +259,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
     try {
       GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
       Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
-      getTestResources().getWebServiceCaller().setDomainId(aGroup.getDomainId() + "0");
+      currentUser.setDomainId(aGroup.getDomainId() + "0");
       List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
       getAt(aResourceURI() + "?group=" + aGroup.getId(), getWebEntityClass());
       fail("The user shouldn't be get as it is unaccessible");
@@ -232,48 +269,88 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
       assertThat(receivedStatus, is(forbidden));
     }
   }
-  
+
   @Test
   public void getAUserByItsFirstName() {
-    UserDetail expectedUser =  getTestResources().anExistingUser();
+    UserDetail expectedUser = getTestResources().anExistingUser();
+    getTestResources().whenSearchUsersByCriteriaThenReturn(
+            new SearchCriteria().onName(expectedUser.getFirstName()),
+            new UserDetail[]{expectedUser});
+
     UserDetail[] actualUsers = getAt(aResourceURI() + "?name=" + expectedUser.getFirstName(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(1));
     assertThat(actualUsers[0], is(expectedUser));
   }
-  
+
   @Test
   public void getAUserByItsLastName() {
-    UserDetail expectedUser =  getTestResources().anExistingUser();
+    UserDetail expectedUser = getTestResources().anExistingUser();
+    getTestResources().whenSearchUsersByCriteriaThenReturn(
+            new SearchCriteria().onName(expectedUser.getLastName()),
+            new UserDetail[]{expectedUser});
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?name=" + expectedUser.getLastName(),
             getWebEntityClass());
     assertThat(actualUsers.length, is(1));
     assertThat(actualUsers[0], is(expectedUser));
   }
-  
+
   @Test
   public void getAUserByTheFirstCharactersOfItsName() {
-    UserDetail[] expectedUsers =  getTestResources().getAllExistingUsers();
+    UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
     String name = expectedUsers[0].getFirstName().substring(0, 2) + "*";
+    getTestResources().whenSearchUsersByCriteriaThenReturn(
+            new SearchCriteria().onName(name.replaceAll("\\*", "%")),
+            expectedUsers);
+
     UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?name=" + name,
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.length));
     assertThat(actualUsers, contains(expectedUsers));
   }
-  
+
   @Test
   public void getAUserInAGivenGroupByTheFirstCharactersOfItsName() {
     Group group;
     List<? extends UserDetail> expectedUsers;
     do {
       group = getTestResources().getAGroupNotInAnInternalDomain();
-      expectedUsers =  group.getAllUsers();
-    } while(expectedUsers.isEmpty());
+      expectedUsers = group.getAllUsers();
+    } while (expectedUsers.isEmpty());
     String name = expectedUsers.get(0).getFirstName().substring(0, 2) + "*";
-    UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + group.getId() + "?name=" + name,
+    SearchCriteria criteria = new SearchCriteria().onGroupId(group.getId()).onName(name.replaceAll(
+            "\\*", "%"));
+    if (Integer.valueOf(group.getDomainId()) > 0) {
+      criteria.onDomainId(group.getDomainId());
+    }
+    getTestResources().whenSearchUsersByCriteriaThenReturn(criteria,
+            expectedUsers.toArray(new UserDetail[expectedUsers.size()]));
+
+    UserProfileEntity[] actualUsers = getAt(aResourceURI() + "?group=" + group.getId() + "&name="
+            + name,
             getWebEntityClass());
     assertThat(actualUsers.length, is(expectedUsers.size()));
     assertThat(actualUsers, contains(expectedUsers));
+  }
+
+  @Test
+  public void getTheCurrentUserInTheSession() {
+    UserProfileEntity me = getAt(aResourceURI() + "/me", UserProfileEntity.class);
+    assertThat(me, is(currentUser));
+  }
+
+  @Test
+  public void getTheContactsOfAGivenUser() {
+    UserDetail aUser = getTestResources().anExistingUser();
+    UserDetail[] expectedContacts = getTestResources().getRelationShipsOfUser(aUser.getId());
+    getTestResources().whenSearchUsersByCriteriaThenReturn(
+            new SearchCriteria().onUserIds(getTestResources().getUserIds(expectedContacts)),
+            expectedContacts);
+    
+    UserProfileEntity[] actualContacts = getAt(aResourceURI() + "/" + aUser.getId() + "/contacts",
+            getWebEntityClass());
+    assertThat(actualContacts.length, is(expectedContacts.length));
   }
 
   @Override

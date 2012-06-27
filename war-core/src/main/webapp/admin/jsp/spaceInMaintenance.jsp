@@ -31,6 +31,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -119,12 +121,9 @@ out.println(gef.getLookStyleSheet());
 <div align="center" class="textePetitBold"><img src="../../util/icons/attachment_to_upload.gif" alt=""/></div><br/>
 &nbsp;&nbsp;
 <div align="center"><%=message.getString("homePage.feedback")%><br/>
-<%
- for (int i = 0; i < listAdmins.length; i++)
- {
-     out.println("<a href=\"mailto:"+listAdmins[i].geteMail()+"\"><img src=\"../../admin/jsp/icons/icoOutilsMail.gif\" align=\"absmiddle\" border=\"0\" alt=\"\"/>"+listAdmins[i].getDisplayedName()+"</a><br/>");
- }
-%>
+<% for (int i = 0; i < listAdmins.length; i++) { %>
+	<a href="mailto:<%=listAdmins[i].geteMail() %>"><img src="../../admin/jsp/icons/icoOutilsMail.gif" align="absmiddle" border="0" alt=""/><view:username userId="<%=listAdmins[i].getId()%>"/></a><br/>
+<% } %>
 </div>
  </td>
   </tr>

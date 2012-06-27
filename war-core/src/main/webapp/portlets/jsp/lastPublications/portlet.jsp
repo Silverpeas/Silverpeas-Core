@@ -63,35 +63,31 @@ function jumpToComponent(componentId) {
 }
 </script>
 <%
-Iterator publications = ((List) pReq.getAttribute("Publications")).iterator();  
-  while (publications.hasNext()) {
-    PublicationDetail pub = (PublicationDetail) publications.next();
-    UserDetail pubUpdater = m_MainSessionCtrl.getOrganizationController().getUserDetail(pub.
-        getUpdaterId());
-    String url = m_sContext + URLManager.getURL("kmelia", null, pub.getPK().getInstanceId()) + pub.
-        getURL();
-    out.println("<a href=\"javaScript:goTo('" + url + "','" + pub.getPK().getInstanceId() + "')\"><b>" + EncodeHelper.
-        convertHTMLEntities(pub.getName(language)) + "</b></a>");
-    if (pubUpdater != null && pub.getUpdateDate() != null) {
-      out.println("<br/>" + EncodeHelper.convertHTMLEntities(pubUpdater.getDisplayedName()) + " - " + DateUtil.
-          getOutputDate(pub.getUpdateDate(), language));
-    } else if (pubUpdater != null && pub.getUpdateDate() == null) {
-      out.println("<br/>" + EncodeHelper.convertHTMLEntities(pubUpdater.getDisplayedName()));
-    }
-    if (pubUpdater == null && pub.getUpdateDate() != null) {
-      out.println("<br/>" + DateUtil.getOutputDate(pub.getUpdateDate(), language));
-    }
-    if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil.isDefined(pub.
-        getDescription(language))) {
-      out.println("<br/>" + EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pub.
-          getDescription(language))));
-    }
-      
-    if (publications.hasNext()) {
-      out.println("<br/><br/>");
-    }
-  }
+List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
+int i = 0;
+for (PublicationDetail pub : publications) {
+    UserDetail pubUpdater = m_MainSessionCtrl.getOrganizationController().getUserDetail(pub.getUpdaterId());
+    String url = m_sContext + URLManager.getURL("kmelia", null, pub.getPK().getInstanceId()) + pub.getURL();
 %>
+	<% if (i != 0) { %>
+		<br/><br/>
+	<% } %>
+    <a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=EncodeHelper.convertHTMLEntities(pub.getName(language))%></b></a>
+    <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
+      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil.getOutputDate(pub.getUpdateDate(), language)%>
+    <% } else if (pubUpdater != null && pub.getUpdateDate() == null) { %>
+      <br/><view:username userId="<%=pubUpdater.getId() %>"/>
+    <% } %>
+    <% if (pubUpdater == null && pub.getUpdateDate() != null) { %>
+      <br/><%=DateUtil.getOutputDate(pub.getUpdateDate(), language) %>
+    <% } %>
+    <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil.isDefined(pub.getDescription(language))) { %>
+      <br/><%=EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pub.getDescription(language))) %>
+    <% } %>
+    
+    <% i++; %>
+     
+<% } %>
 <br/>
 <c:if test="${rssUrl != null}">
 <a href="<c:url value="${rssUrl}" />" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a>
