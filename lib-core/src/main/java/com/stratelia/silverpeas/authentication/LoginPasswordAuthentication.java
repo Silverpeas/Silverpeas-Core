@@ -79,6 +79,7 @@ public class LoginPasswordAuthentication {
   static final protected String m_UserDomainColumnName;
 
   static protected int m_AutoInc = 1;
+  public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
 
   static {
     ResourceLocator propFile = new ResourceLocator(
@@ -207,12 +208,6 @@ public class LoginPasswordAuthentication {
 
       AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
 
-      // Authentification test
-      authenticationServer.authenticate(login, password, request);
-
-      // Generate a random key and store it in database
-      String key = getAuthenticationKey(login, domainId);
-
       if (request != null) {
         // Store information about password change capabilities in HTTP session
         HttpSession session = request.getSession();
@@ -220,9 +215,15 @@ public class LoginPasswordAuthentication {
             (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
       }
 
+      // Authentification test
+      authenticationServer.authenticate(login, password, request);
+
+      // Generate a random key and store it in database
+      String key = getAuthenticationKey(login, domainId);
+
       return key;
     } catch (AuthenticationException ex) {
-      SilverTrace.warn("authentication",
+      SilverTrace.error("authentication",
           "LoginPasswordAuthentication.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
               + login, ex);
@@ -239,6 +240,8 @@ public class LoginPasswordAuthentication {
         errorCause = "Error_2";
       } else if (ex instanceof AuthenticationPwdNotAvailException) {
         errorCause = "Error_5";
+      } else if (ex instanceof AuthenticationPasswordExpired) {
+        errorCause = ERROR_PWD_EXPIRED;
       }
       return errorCause;
     } finally {
