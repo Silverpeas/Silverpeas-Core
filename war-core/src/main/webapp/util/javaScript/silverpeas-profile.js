@@ -93,6 +93,7 @@ function UserProfile(user) {
    * - optionally the page number or null if all the users must be fetched (by default set at null)
    * - optionally the page size in users count (by default it is set at CountPerPage). The page size
    *   cannot be set without passing the page number.
+   * - optionally a boolean to force the loading of the relationships (reload or not them).
    * - the callback operation to call once the users loaded.
    */
   this.onRelationships = function() {
@@ -104,6 +105,8 @@ function UserProfile(user) {
       if (typeof arguments[arg] == 'number')
         pagesize = arguments[arg++];
     }
+    if (typeof arguments[arg] == 'boolean')
+      toload = arguments[arg++];
     if (arg == arguments.length || arguments[arg] == null) {
       alert('Error in arguments: the callback is mandtory');
       return self;

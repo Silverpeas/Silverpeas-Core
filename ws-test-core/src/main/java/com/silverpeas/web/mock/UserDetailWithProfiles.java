@@ -25,10 +25,7 @@ package com.silverpeas.web.mock;
 
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -80,5 +77,16 @@ public class UserDetailWithProfiles extends UserDetail {
       return result.toArray(new String[result.size()]);
     }
     return new String[0];
+  }
+  
+  /**
+   * Gets the identifier of the Silverpeas components this user can access. A user can access a
+   * given component when it plays a defined role in this component; if it has a profile defined
+   * for this component.
+   * @return an array with the identifier of all of its accessible components.
+   */
+  public String[] getAccessibleComponentIds() {
+    Set<String> componentIds = profiles.keySet();
+    return componentIds.toArray(new String[componentIds.size()]);
   }
 }

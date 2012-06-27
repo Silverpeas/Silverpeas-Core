@@ -54,7 +54,7 @@ while (infos.hasNext())
 
     %>
 
-	<table cellpadding="3" cellspacing="0" border="0" width="98%"><tr><td><span class="textePetitBold"><%=EncodeHelper.convertHTMLEntities(pub.getName(language)) %></span><br/><%=pubCreator.getDisplayedName()%> - <%=DateUtil.getOutputDate(pub.getCreationDate(), language)%></td></tr></table>
+	<table cellpadding="3" cellspacing="0" border="0" width="98%"><tr><td><span class="textePetitBold"><%=EncodeHelper.convertHTMLEntities(pub.getName(language)) %></span><br/><view:username userId="<%=pubCreator.getId()%>"/> - <%=DateUtil.getOutputDate(pub.getCreationDate(), language)%></td></tr></table>
 	<table cellpadding="1" cellspacing="0" border="0" class="intfdcolor" width="98%"><tr><td>
 	<table cellpadding="3" cellspacing="0" border="0" class="intfdcolor4" width="100%"><tr><td>
 
