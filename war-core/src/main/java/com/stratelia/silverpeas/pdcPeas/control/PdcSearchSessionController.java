@@ -20,37 +20,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.TypeManager;
+import com.silverpeas.form.*;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.interestCenter.util.InterestCenterUtil;
@@ -62,10 +32,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.*;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
@@ -77,22 +44,10 @@ import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.pdc.control.Pdc;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
-import com.stratelia.silverpeas.pdcPeas.vo.ExternalSPConfigVO;
-import com.stratelia.silverpeas.pdcPeas.vo.Facet;
-import com.stratelia.silverpeas.pdcPeas.vo.FacetEntryVO;
-import com.stratelia.silverpeas.pdcPeas.vo.ResultFilterVO;
-import com.stratelia.silverpeas.pdcPeas.vo.ResultGroupFilter;
-import com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO;
+import com.stratelia.silverpeas.pdcPeas.vo.*;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -107,26 +62,28 @@ import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.PlainSearchResult;
+import org.silverpeas.search.SearchEngine;
 import org.silverpeas.search.SearchEngineFactory;
+
+import java.io.*;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
@@ -1075,7 +1032,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           // open the linked file inside a popup window
           downloadLink =
             FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(),
-            AttachmentController.getMimeType(indexEntry.getTitle()));
+            FileUtil.getMimeType(indexEntry.getTitle()));
           // window opener is reloaded on the main page of the component
           underLink = m_sContext + URLManager.getURL("useless", componentId) + "Main";
           titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, false);
@@ -1492,8 +1449,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return "";
   }
 
-  private String getAttachmentUrl(String objectType, String componentId)
-    throws Exception {
+  private String getAttachmentUrl(String objectType, String componentId) throws Exception {
     String id = objectType.substring(10); // object type is Attachment1245 or
     // Attachment1245_en
     String language = I18NHelper.defaultLanguage;
@@ -1503,10 +1459,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       id = id.substring(0, id.indexOf('_'));
     }
 
-    AttachmentPK attachmentPK = new AttachmentPK(id, "useless", componentId);
-    AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPK);
+    SimpleDocumentPK documentPk = new SimpleDocumentPK(id, componentId);
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
+        .searchAttachmentById(documentPk, language);
 
-    String urlAttachment = attachmentDetail.getAttachmentURL(language);
+    String urlAttachment = document.getAttachmentURL();
 
     // Utilisation de l'API Acrobat Reader pour ouvrir le document PDF en mode
     // recherche (paramètre 'search')
@@ -1515,7 +1472,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (queryParameters != null) {
       String keywords = queryParameters.getKeywords();
       if (keywords != null && keywords.trim().length() > 0
-        && MimeTypes.PDF_MIME_TYPE.equals(attachmentDetail.getType(language))) {
+        && MimeTypes.PDF_MIME_TYPE.equals(document.getContentType())) {
         // Suppression des éventuelles quotes (ne sont pas acceptées)
         if (keywords.startsWith("\"")) {
           keywords = keywords.substring(1);

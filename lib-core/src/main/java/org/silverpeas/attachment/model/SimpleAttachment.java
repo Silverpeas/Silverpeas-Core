@@ -24,6 +24,7 @@
 package org.silverpeas.attachment.model;
 
 import com.silverpeas.util.i18n.I18NHelper;
+
 import java.util.Date;
 
 /**
@@ -49,7 +50,7 @@ public class SimpleAttachment {
   public SimpleAttachment(String filename, String language, String title, String description,
       long size, String contentType, String createdBy, Date created, String xmlFormId) {
     this.filename = filename;
-    this.language = language;
+    this.language = I18NHelper.checkLanguage(language);
     this.title = title;
     this.description = description;
     this.size = size;
@@ -79,7 +80,7 @@ public class SimpleAttachment {
   }
 
   public void setLanguage(String language) {
-    this.language = language;
+    this.language =  I18NHelper.checkLanguage(language);
   }
 
   public String getTitle() {

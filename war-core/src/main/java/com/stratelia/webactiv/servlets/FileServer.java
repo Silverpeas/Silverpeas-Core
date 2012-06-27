@@ -23,24 +23,7 @@
  */
 package com.stratelia.webactiv.servlets;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -49,17 +32,24 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
-import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import static com.stratelia.webactiv.util.FileServerUtils.*;
 
 /**
@@ -191,19 +181,17 @@ public class FileServer extends HttpServlet {
 
     String attachmentId = req.getParameter(ATTACHMENT_ID_PARAMETER);
     String language = req.getParameter(LANGUAGE_PARAMETER);
-    AttachmentDetail attachment = null;
     long fileSize = 0;
     if (StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
-      attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-          attachmentId));
+      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+          .searchAttachmentById(new
+              SimpleDocumentPK(attachmentId, componentId), language);
       if (attachment != null) {
-        mimeType = attachment.getType(language);
-        sourceFile = attachment.getPhysicalName(language);
-        directory = FileRepositoryManager.getRelativePath(
-            FileRepositoryManager.getAttachmentContext(attachment.
-                getContext()));
-        fileSize = attachment.getSize(language);
+        mimeType = attachment.getContentType();
+        sourceFile = attachment.getFilename();
+        directory = FileRepositoryManager.getRelativePath(ArrayUtil.EMPTY_STRING_ARRAY);
+        fileSize = attachment.getSize();
       }
     }
 
@@ -291,9 +279,8 @@ public class FileServer extends HttpServlet {
       ForeignPK pubPK = null;
 
       try {
-        StatisticBmHome statisticBmHome = (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.STATISTICBM_EJBHOME,
-            StatisticBmHome.class);
+        StatisticBmHome statisticBmHome = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
         StatisticBm statisticBm = statisticBmHome.create();
 
         pubPK = new ForeignPK(pubId, componentId);

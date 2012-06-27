@@ -25,6 +25,7 @@ package com.silverpeas.versioning.importExport;
 
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.versioning.VersioningIndexer;
@@ -33,35 +34,21 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
 import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
+import com.stratelia.silverpeas.versioning.model.*;
 import com.stratelia.silverpeas.versioning.model.Reader;
-import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * @author neysseri
@@ -529,7 +516,7 @@ public class VersioningImportExport {
     // Préparation des paramètres du fichier à creer
     String logicalName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
     String type = FileRepositoryManager.getFileExtension(logicalName);
-    String mimeType = AttachmentController.getMimeType(logicalName);
+    String mimeType = FileUtil.getMimeType(logicalName);
     String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
 
     File fileToCreate = new File(path + physicalName);

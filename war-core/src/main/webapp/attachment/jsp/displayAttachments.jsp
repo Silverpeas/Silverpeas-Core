@@ -30,6 +30,10 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@page import="java.io.IOException"%>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
+<%@ page import="com.silverpeas.util.ForeignPK" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="com.silverpeas.util.FileUtil" %>
 <%@ include file="checkAttachment.jsp"%>
 
 <view:includePlugin name="qtip"/>
@@ -119,9 +123,11 @@
       boolean indexIt = StringUtil.getBooleanValue(sIndexIt);
       session.setAttribute("Silverpeas_Attachment_IndexIt", Boolean.valueOf(indexIt));
 
-      AttachmentPK foreignKey = new AttachmentPK(id, componentId);
+      ForeignPK foreignKey = new ForeignPK(id, componentId);
 
-      Collection attachments = AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
+      Collection<SimpleDocument> attachments =
+    AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+              foreignKey, contentLanguage);
       Iterator itAttachments = attachments.iterator();
 
       if (itAttachments.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
@@ -143,21 +149,20 @@
         out.println("<ul id=\"attachmentList\">");
         while (itAttachments.hasNext()) {
           String author = "";
-          AttachmentDetail attachmentDetail = (AttachmentDetail) itAttachments.next();
-          String title = attachmentDetail.getTitle(contentLanguage);
+          SimpleDocument attachmentDetail = (SimpleDocument) itAttachments.next();
+          String title = attachmentDetail.getTitle();
           if (!StringUtil.isDefined(title) || !showTitle) {
-            title = attachmentDetail.getLogicalName(contentLanguage);
+            title = attachmentDetail.getFilename();
           }
-          String info = attachmentDetail.getInfo(contentLanguage);
-          if (StringUtil.isDefined(attachmentDetail.getAuthor(contentLanguage))) {
-            author = "<br/><i>" + attachmentDetail.getAuthor(contentLanguage) + "</i>";
+          String info = attachmentDetail.getDescription();
+          if (StringUtil.isDefined(attachmentDetail.getCreatedBy())) {
+            author = "<br/><i>" + attachmentDetail.getCreatedBy() + "</i>";
           }
 
           if ("bottom".equals(attachmentPosition) && a == 1) {
-           /* out.println("<tr id=\"attachment" + attachmentDetail.getPK().getId() + "\">");*/
           } else if ("right".equals(attachmentPosition)) {
             out.println(
-                "<li id=\"attachment_" + attachmentDetail.getPK().getId() + "\" class=\"attachmentListItem\" "+iconStyle+">");
+                "<li id=\"attachment_" + attachmentDetail.getOldSilverpeasId() + "\" class=\"attachmentListItem\" "+iconStyle+">");
           }
           
           if (contextualMenuEnabled) {
@@ -169,47 +174,45 @@
           out.print("<span class=\"lineMain\">");
 		  
 		  if (contextualMenuEnabled && !useContextualMenu) {
-          	out.println("<img id=\"edit_"+attachmentDetail.getPK().getId()+"\" src=\""+m_Context + "/util/icons/arrow/menuAttachment.gif\" class=\"moreActions\"/>");
+          	out.println("<img id=\"edit_"+attachmentDetail.getOldSilverpeasId()+"\" src=\""+m_Context + "/util/icons/arrow/menuAttachment.gif\" class=\"moreActions\"/>");
           }
 		  
           if (showIcon) {
-            out.println(
-                "<img id=\"img_" + attachmentDetail.getPK().getId() + "\" src=\"" + attachmentDetail.
-                getAttachmentIcon(contentLanguage) + "\" class=\"icon\"/>");
+            out.println("<img id=\"img_" + attachmentDetail.getOldSilverpeasId() + "\" src=\"" + attachmentDetail.getDisplayIcon() + "\" class=\"icon\"/>");
           }
 
-          String url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
+          String url = m_Context +  attachmentDetail.getAttachmentURL();
           if (fromAlias) {
-            url = attachmentDetail.getAliasURL(contentLanguage);
+            url = attachmentDetail.getAliasURL();
           }
 
-          out.println("<a id=\"url" + attachmentDetail.getPK().getId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
+          out.println("<a id=\"url" + attachmentDetail.getOldSilverpeasId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
 			
           
 
           out.print("</span>");
           out.println("<span class=\"lineSize\">");
           if (displayUniversalLinks) {
-            String link = URLManager.getSimpleURL(URLManager.URL_FILE, attachmentDetail.getPK().getId());
+            String link = URLManager.getSimpleURL(URLManager.URL_FILE, attachmentDetail.getId());
             String linkIcon = m_Context + "/util/icons/link.gif";
             out.print(
                 " <a href=\"" + link + "\"><img src=\"" + linkIcon + "\" border=\"0\" alt=\"" + attResources.
                 getString("CopyLink") + "\" title=\"" + attResources.getString("CopyLink") + "\"></a>");
           }
           if (showFileSize) {
-            out.print(attachmentDetail.getAttachmentFileSize(contentLanguage));
+            out.print(attachmentDetail.getSize());
           }
           if (showFileSize && showDownloadEstimation) {
             out.print(" / ");
           }
           if (showDownloadEstimation) {
-            out.print(attachmentDetail.getAttachmentDownloadEstimation(contentLanguage));
+            out.print( FileRepositoryManager.getFileDownloadTime(attachmentDetail.getSize()));
           }
-          out.println(" - " + attResources.getOutputDate(attachmentDetail.getCreationDate()));
+          out.println(" - " + attResources.getOutputDate(attachmentDetail.getCreated()));
           out.println("</span>");
-          if (StringUtil.isDefined(attachmentDetail.getTitle(contentLanguage)) && showTitle) {
+          if (StringUtil.isDefined(attachmentDetail.getTitle()) && showTitle) {
             out.println("<span class=\"fileName\">");
-            out.println(attachmentDetail.getLogicalName(contentLanguage));
+            out.println(attachmentDetail.getFilename());
             out.print("</span>");
           }
           if (StringUtil.isDefined(info) && showInfo) {
@@ -218,9 +221,9 @@
             out.print("</span>");
           }
 
-          if (StringUtil.isDefined(attachmentDetail.getXmlForm(contentLanguage))) {
+          if (StringUtil.isDefined(attachmentDetail.getXmlFormId())) {
             String xmlURL = m_Context + "/RformTemplate/jsp/View?width=400&ObjectId=" + attachmentDetail.
-                getPK().getId() + "&ObjectLanguage=" + contentLanguage + "&ComponentId=" + componentId + "&ObjectType=Attachment&XMLFormName=" + URLEncoder.encode(attachmentDetail.getXmlForm(contentLanguage), "UTF-8");
+                getId() + "&ObjectLanguage=" + contentLanguage + "&ComponentId=" + componentId + "&ObjectType=Attachment&XMLFormName=" + URLEncoder.encode(attachmentDetail.getXmlFormId(), "UTF-8");
 %>
 <br/><a rel="<%=xmlURL%>" href="#" title="<%=title%>"><%=attResources.getString("attachment.xmlForm.View")%></a>
 <%
@@ -228,24 +231,24 @@
           
           if (contextualMenuEnabled) {
            	if (attachmentDetail.isReadOnly()) {
-              out.println("<div class=\"workerInfo\" id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:visible\"> " + attResources.
+              out.println("<div class=\"workerInfo\" id=\"worker" + attachmentDetail.getOldSilverpeasId() + "\" style=\"visibility:visible\"> " + attResources.
                   getString("readOnly") + " " + m_MainSessionCtrl.getOrganizationController().
-                  getUserDetail(attachmentDetail.getWorkerId()).getDisplayedName() + " " + attResources.
-                  getString("at") + " " + attResources.getOutputDate(attachmentDetail.
-                  getReservationDate()) + "</div>");
+                  getUserDetail(attachmentDetail.getEditedBy()).getDisplayedName() + " " + attResources.
+                  getString("at") + " " + attResources.getOutputDate(attachmentDetail.getReservation()) +
+                      "</div>");
             } else {
               out.println(
-                  "<div class=\"workerInfo\"  id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:hidden\"> </div>");
+                  "<div class=\"workerInfo\"  id=\"worker" + attachmentDetail.getId() + "\" style=\"visibility:hidden\"> </div>");
             }
           }
 
-          if (attachmentDetail.isSpinfireDocument(contentLanguage) && spinfireViewerEnable) {
+            if (FileUtil.isSpinfireDocument(attachmentDetail.getFilename()) && spinfireViewerEnable) {
 			%>		
 					
 					<div id="switchView" name="switchView" style="display: none">
-					  <a href="#" onClick="changeView3d(<%=attachmentDetail.getPK().getId()%>)"><img name="iconeView<%=attachmentDetail.getPK().getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
+					  <a href="#" onClick="changeView3d(<%=attachmentDetail.getId()%>)"><img name="iconeView<%=attachmentDetail.getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
 					</div>
-					<div id="<%=attachmentDetail.getPK().getId()%>" style="display: none">
+					<div id="<%=attachmentDetail.getId()%>" style="display: none">
 						  <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
 						          width="300" height="200" id="XV" >
 								    <param name="ModelName" value="<%=url%>">
@@ -266,19 +269,10 @@
 		}
 
         if ("bottom".equals(attachmentPosition) && a < nbAttachmentPerLine) {
-          /*out.println("<td width=\"30\">&nbsp;</td>");*/
         } else if ("right".equals(attachmentPosition)) {
             out.println("</li>");
           }
 
-        if ("bottom".equals(attachmentPosition) && a == nbAttachmentPerLine) {
-          /* out.println("</tr>");*/
-          if (itAttachments.hasNext()) {
-             /*out.println(
-                "<tr><td colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\">&nbsp;</td></tr>");*/
-          }
-        }
-          
         author = "";
         if (a == 3) {
           a = 1;
@@ -448,9 +442,7 @@
     }
 
     function checkin(id,webdav,forceRelease)
-    {	
-    	//alert("checkin BEGIN");
-        //alert("checkin :"+id+", "+webdav+", "+forceRelease);
+    {
       if (id > 0) {
         var webdavUpdate = 'false';
         if (webdav)
@@ -543,8 +535,6 @@
           }
         }
       }
-
-      //alert("sLanguages = "+sLanguages);
 	
       $.get('<%=m_Context%>/Attachment', { id:attachmentId,Action:'Delete',languagesToDelete:sLanguages},
       function(data){

@@ -127,7 +127,7 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
 
   @Override
   public void reorderAttachments(List<SimpleDocumentPK> pks) throws AttachmentException {
-    realService.reorderDocuments(pks);
+    realService.reorderAttachments(pks);
   }
 
   @Override
@@ -195,5 +195,10 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   public SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
       boolean invokeCallback) {
     return realService.createAttachment(document, content, indexIt, invokeCallback);
+  }
+
+  @Override
+  public void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException {
+    realService.reorderDocuments(documents);
   }
 }

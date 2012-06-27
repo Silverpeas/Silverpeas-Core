@@ -35,6 +35,9 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.attachment.web"/>
+  <ctx:component-scan base-package="org.silverpeas.attachment"/>
+
+
 
 </beans>
 

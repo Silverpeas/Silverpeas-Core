@@ -31,6 +31,10 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@ page import="com.stratelia.webactiv.util.ClientBrowserUtil"%>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocumentPK" %>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
+<%@ page import="com.silverpeas.util.ForeignPK" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ include file="checkAttachment.jsp"%>
 <%
       String sURI = request.getRequestURI();
@@ -94,10 +98,13 @@
       //recuperation des fichiers attaches a un evenement
       //create foreignKey with componentId and customer id
       //use AttachmentPK to build the foreign key of customer object.
-      AttachmentPK foreignKey = new AttachmentPK(id, componentId);
+      ForeignPK foreignKey = new ForeignPK(id, componentId);
 
-      Vector vectAttachment = AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
-      Iterator itAttachment = vectAttachment.iterator();
+      List<SimpleDocument> vectAttachment =
+              AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+                      foreignKey,
+                      contentLanguage);
+      Iterator<SimpleDocument> itAttachment = vectAttachment.iterator();
 
       Window window = gef.getWindow();
       Board board = gef.getBoard();
@@ -349,55 +356,48 @@
                   String zipIcone = URLManager.getApplicationURL()
                           + "/util/icons/fileType/gif.gif";
                   boolean isFirst = true;
-                  AttachmentDetail attachmentDetail = null;
-
                   while (itAttachment.hasNext()) {
-                    attachmentDetail = (AttachmentDetail) (itAttachment.next());
-                    String urlAttachment = request.getContextPath() + attachmentDetail.getAttachmentURL(contentLanguage);
-                    String onlineURL = attachmentDetail.getOnlineURL(contentLanguage);
-                    String logicalName = attachmentDetail.getLogicalName(contentLanguage);
-                    String attachmentId = attachmentDetail.getPK().getId();
+                      SimpleDocument attachmentDetail = itAttachment.next();
+                    String urlAttachment = request.getContextPath() + attachmentDetail.getAttachmentURL();
+                    String onlineURL = attachmentDetail.getOnlineURL();
+                    String logicalName = attachmentDetail.getFilename();
+                    String attachmentId = attachmentDetail.getId();
 %>
-            <tr id="attachment_<%=attachmentDetail.getPK().getId()%>">
+            <tr id="attachment_<%=attachmentDetail.getId()%>">
               <td class="odd" align="center">
                 <%
                             if (attachmentDetail.isReadOnly()
-                                    && attachmentDetail.isOpenOfficeCompatible(contentLanguage)
+                                    && attachmentDetail.isOpenOfficeCompatible()
                                     && webdavEditingEnable
-                                    && (userId.equals(attachmentDetail.getWorkerId()) || profile.equals("admin"))) {
+                                    && (userId.equals(attachmentDetail.getEditedBy()) ||
+                                    "admin".equals(profile))) {
                               String ooUrl = URLManager.getServerURL(request);
                               pageContext.setAttribute("httpServerBase", URLManager.getFullApplicationURL(request));
-                              pageContext.setAttribute("ooo_url", ooUrl + attachmentDetail.getWebdavUrl(contentLanguage));
+                              pageContext.setAttribute("ooo_url", ooUrl + attachmentDetail.getWebdavUrl());
                 %>
                 <c:url var="webdavUrl" value="${pageScope.httpServerBase}/attachment/jsp/launch.jsp">
                   <c:param name="documentUrl" value="${pageScope.ooo_url}" />
                 </c:url>
-                <a href="<c:out value="${webdavUrl}"/>" id="webdav"><img src="<%=attachmentDetail.getAttachmentIcon(contentLanguage)%>" border="0" alt=""/></a>
+                <a href="<c:out value="${webdavUrl}"/>" id="webdav"><img src="<%=attachmentDetail.getDisplayIcon()%>" border="0" alt=""/></a>
               </td>
               <%
                         } else {
               %>
-            <a id="other" href="<%=urlAttachment%>" target="_blank"><img src="<%=attachmentDetail.getAttachmentIcon(contentLanguage)%>" border="0" alt=""/></a>
+            <a id="other" href="<%=urlAttachment%>" target="_blank"><img src="<%=attachmentDetail.getDisplayIcon()%>" border="0" alt=""/></a>
             </td>
             <%
                         }
             %>
             <td class="odd" align="left">
               <%
-                          if (attachmentDetail.isAttachmentOffset(lastDirContext)) {
-                            out.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-                          } else if (attachmentDetail.getAttachmentGroup() == AttachmentDetail.GROUP_DIR) {
-                            lastDirContext = attachmentDetail.getContext();
-                          } else {
-                            lastDirContext = "";
-                          }
+                           lastDirContext = "";
                           if (originWysiwyg) {
-              %> <a href="javascript:SelectFile('<%=EncodeHelper.javaStringToJsString(urlAttachment)%>');"><%=attachmentDetail.getLogicalName(contentLanguage)%></a> <%
+              %> <a href="javascript:SelectFile('<%=EncodeHelper.javaStringToJsString(urlAttachment)%>');"><%=attachmentDetail.getFilename()%></a> <%
                           } else {
                             if (attachmentDetail.isReadOnly()
-                                    && attachmentDetail.isOpenOfficeCompatible(contentLanguage)
+                                    && attachmentDetail.isOpenOfficeCompatible()
                                     && webdavEditingEnable
-                                    && (userId.equals(attachmentDetail.getWorkerId()) || profile.equals("admin"))) {
+                                    && (userId.equals(attachmentDetail.getEditedBy()) || profile.equals("admin"))) {
               %>
               <a href="<c:out value="${webdavUrl}"/>" id="webdav_name"><%=logicalName%></a> <%
                        } else {
@@ -407,8 +407,8 @@
                           if (attachmentDetail.isReadOnly()) {
                             out.println("<br>(" + messages.getString("readOnly"));
                             String displayedName = "?????";
-                            if (attachmentDetail.getWorkerId() != null) {
-                              UserDetail worker = AttachmentController.getUserDetail(attachmentDetail.getWorkerId());
+                            if (attachmentDetail.getEditedBy() != null) {
+                              UserDetail worker = AttachmentController.getUserDetail(attachmentDetail.getEditedBy());
                               if (worker != null) {
                                 displayedName = worker.getDisplayedName();
                               }
@@ -416,10 +416,10 @@
 
                             out.print(displayedName + " ");
                             out.print(messages.getString("at") + " "
-                                    + attResources.getOutputDate(attachmentDetail.getReservationDate()));
-                            if (StringUtil.isDefined(attResources.getOutputDate(attachmentDetail.getExpiryDate()))) {
+                                    + attResources.getOutputDate(attachmentDetail.getReservation()));
+                            if (StringUtil.isDefined(attResources.getOutputDate(attachmentDetail.getExpiry()))) {
                               out.print(" " + messages.getString("until") + " "
-                                      + attResources.getOutputDate(attachmentDetail.getExpiryDate()));
+                                      + attResources.getOutputDate(attachmentDetail.getExpiry()));
                             }
                             out.println(")");
                             out.print("<br>");
@@ -428,7 +428,7 @@
             </td>
             <td class="odd" align="left">
               <%
-                          String title = attachmentDetail.getTitle(contentLanguage);
+                          String title = attachmentDetail.getTitle();
                           if (title != null && title.length() > 0) {
                             out.println(title);
                           } else {
@@ -438,7 +438,7 @@
             </td>
             <td class="odd" align="center">
               <%
-                          String info = attachmentDetail.getInfo(contentLanguage);
+                          String info = attachmentDetail.getDescription();
                           if (info != null && info.length() > 0) {
                             IconPane descriptionIP = gef.getIconPane();
                             Icon descIcon = descriptionIP.addIcon();
@@ -449,8 +449,8 @@
                           }
               %>
             </td>
-            <td class="odd" align="left"><%=attachmentDetail.getAttachmentFileSize(contentLanguage)%></td>
-              <td class="odd" align="left"><%=DateUtil.getOutputDate(attachmentDetail.getCreationDate(contentLanguage), language)%></td>
+            <td class="odd" align="left"><%=attachmentDetail.getSize()%></td>
+              <td class="odd" align="left"><%=DateUtil.getOutputDate(attachmentDetail.getCreated(), language)%></td>
             <td class="odd" align="right">
               <%
                           IconPane iconPane = gef.getIconPane();
@@ -461,16 +461,16 @@
                                     m_Context + "/util/icons/checkoutFile.gif", messages.getString("checkOut"),
                                     "javascript:onClick=checkoutOfficeFile(" + attachmentId + ")");
                           } else if (attachmentDetail.isReadOnly()
-                                  && attachmentDetail.isOpenOfficeCompatible(contentLanguage)
+                                  && attachmentDetail.isOpenOfficeCompatible()
                                   && webdavEditingEnable
-                                  && (userId.equals(attachmentDetail.getWorkerId()) || profile.equals("admin"))) {
+                                  && (userId.equals(attachmentDetail.getEditedBy()) || profile.equals("admin"))) {
                             Icon checkinIcon = iconPane.addIcon();
                             checkinIcon.setProperties(m_Context + "/util/icons/checkinFile.gif",
                                     messages.getString("checkIn"),
                                     "javascript:onClick=checkinOpenOfficeFile('" + attachmentId
                                     + "','" + EncodeHelper.javaStringToJsString(logicalName) + "');");
                           } else if (attachmentDetail.isReadOnly()
-                                  && (userId.equals(attachmentDetail.getWorkerId()) || profile.equals("admin"))) {
+                                  && (userId.equals(attachmentDetail.getEditedBy()) || profile.equals("admin"))) {
                             Icon checkinIcon = iconPane.addIcon();
                             checkinIcon.setProperties(m_Context + "/util/icons/checkinFile.gif",
                                     messages.getString("checkIn"),
@@ -482,7 +482,7 @@
                           Icon shareIcon = iconPane.addIcon();
 
                           if (attachmentDetail.isReadOnly()) {
-                            if (userId.equals(attachmentDetail.getWorkerId())) {
+                            if (userId.equals(attachmentDetail.getEditedBy())) {
                               updateIcon.setProperties(m_Context + "/util/icons/update.gif",
                                       attResources.getString("GML.modify"),
                                       "javascript:onClick=updateAttachment('" + attachmentId + "');");

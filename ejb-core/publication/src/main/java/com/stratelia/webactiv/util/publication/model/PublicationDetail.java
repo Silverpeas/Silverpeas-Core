@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * This object contains the description of a publication
@@ -909,13 +910,11 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
             // case of an image provided by a gallery
             fieldValue = attachmentId;
           } else {
-            AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
-                new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
+            SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+                .searchAttachmentById(new SimpleDocumentPK(attachmentId,getPK().getInstanceId()),
+                 language);
             if (attachment != null) {
-              attachment.setLogicalName(attachment.getLogicalName(language));
-              attachment.setPhysicalName(attachment.getPhysicalName(language));
-              attachment.setType(attachment.getType(language));
-              fieldValue = attachment.getWebURL();
+              fieldValue = attachment.getAttachmentURL();
             }
           }
         } else {
@@ -933,7 +932,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   private FormTemplateBm getFormTemplateBm() {
     try {
-      FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
+      FormTemplateBmHome formTemplateBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
       return formTemplateBmHome.create();
     } catch (Exception e) {

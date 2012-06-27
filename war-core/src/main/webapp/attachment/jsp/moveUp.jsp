@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<!--D�finition des informations globales de la page --->
+<!--Definition des informations globales de la page --->
 <%@ page language="java" %>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
@@ -77,11 +77,11 @@
        SimpleDocumentPK atPK = new SimpleDocumentPK(idAttachment, componentId);
 
         //recuperation de l'objet
-        SimpleDocument atDetail =
+        SimpleDocument document =
                 AttachmentServiceFactory.getAttachmentService().searchAttachmentById(atPK, null);
         List<SimpleDocument> docs  = AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(new
-                ForeignPK(atDetail.getForeignId(), atDetail.getInstanceId()), null);
-        int index = docs.indexOf(atDetail);
+                ForeignPK(document.getForeignId(), document.getInstanceId()), null);
+        int index = docs.indexOf(document);
         if(index > 0)  {
             Collections.swap(docs, index - 1, index);
         }

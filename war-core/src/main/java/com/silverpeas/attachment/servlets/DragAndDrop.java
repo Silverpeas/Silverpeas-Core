@@ -23,24 +23,21 @@ package com.silverpeas.attachment.servlets;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.FileItem;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.InputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -135,7 +132,7 @@ public class DragAndDrop extends HttpServlet {
             SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "item size = " + item.getSize());
             SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, componentId),
-                id, 0, false, userId, new SimpleAttachment(fileName, null, fileName, null, item.
+                id, 0, false, new SimpleAttachment(fileName, null, fileName, null, item.
                 getSize(), mimeType, userId, new Date(), null));
             // create AttachmentDetail Object
             InputStream in = item.getInputStream();

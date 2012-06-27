@@ -25,14 +25,18 @@ package org.silverpeas.attachment.model;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
-import java.util.Date;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
+
+import java.util.Date;
 
 /**
  *
@@ -40,6 +44,7 @@ import static java.io.File.separatorChar;
  */
 public class SimpleDocument {
 
+  public static final String ATTACHMENTS_FOLDER = "attachments";
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
   public final static String FILE_PREFIX = "file_";
@@ -83,6 +88,33 @@ public class SimpleDocument {
     this(pk, foreignId, order, versioned, editedBy, null, null, null, null, file);
   }
 
+  public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
+      Date reservation, Date alert, Date expiry, String status,
+      SimpleAttachment file) {
+    this.pk = pk;
+    this.foreignId = foreignId;
+    this.order = order;
+    this.versioned = versioned;
+    this.reservation = reservation;
+    this.alert = DateUtil.getBeginOfDay(alert);
+    this.expiry = DateUtil.getBeginOfDay(expiry);
+    this.status = status;
+    this.file = file;
+  }
+
+  /**
+   *
+   * @param pk
+   * @param foreignId
+   * @param order
+   * @param versioned
+   * @param editedBy
+   * @param reservation
+   * @param alert
+   * @param expiry
+   * @param status
+   * @param file
+   */
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       String editedBy, Date reservation, Date alert, Date expiry, String status,
       SimpleAttachment file) {
@@ -364,6 +396,7 @@ public class SimpleDocument {
 
   /**
    * Path to the file stored on the filesystem.
+   *
    * @return the path to the file stored on the filesystem.
    */
   public String getAttachmentPath() {
@@ -373,22 +406,25 @@ public class SimpleDocument {
     }
     return getDirectoryPath(lang) + getFilename();
   }
-  
+
   /**
    * Path to the directory where the file is to be stored.
+   *
    * @return the path to the directory where the file is to be stored.
    */
   public String getDirectoryPath(String lang) {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
     directory = directory.replace('/', separatorChar);
-    directory = directory + getId() + separatorChar;
-    directory = directory + lang + separatorChar;
-    return directory;
+    return directory + getRelativeDirectoryPath(lang);
   }
-  
-  public String getAttachmentURL() {
-    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
-        getLanguage());
+
+  /**
+   * Path to the directory where the file is to be stored.
+   *
+   * @return the path to the directory where the file is to be stored.
+   */
+  public String getRelativeDirectoryPath(String lang) {
+    return getId() + separatorChar + lang + separatorChar;
   }
 
   @Override
@@ -419,5 +455,70 @@ public class SimpleDocument {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Retourne l'URL de l'attachment. Cette URL est construite a partir des autres informations
+   */
+  public String getAttachmentURL() {
+    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
+        getLanguage());
+  }
+
+  public String getOnlineURL() {
+    String onlineUrl = FileServerUtils.getOnlineURL(pk.getComponentName(), getFilename(), "",
+        getContentType(), "");
+    String extension = FileRepositoryManager.getFileExtension(getFilename());
+    if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
+      onlineUrl += "&logicalName=" + FileServerUtils.replaceSpecialChars(getFilename());
+    }
+    return onlineUrl;
+  }
+
+  public String getAliasURL() {
+    String aliasUrl = FileServerUtils.getAliasURL(pk.getInstanceId(), getFilename(), pk.getId());
+    if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(getLanguage())) {
+      aliasUrl += "&lang=" + getLanguage();
+    }
+    String extension = FileRepositoryManager.getFileExtension(getFilename());
+    if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
+      aliasUrl += "&logicalName=" + FileServerUtils.replaceSpecialChars(getFilename());
+    }
+    return aliasUrl;
+  }
+
+  public String getWebdavUrl() {
+    StringBuilder url = new StringBuilder(500);
+    String webAppContext = URLManager.getApplicationURL();
+    if (!webAppContext.endsWith("/")) {
+      webAppContext = webAppContext + '/';
+    }
+    url.append(webAppContext).append(GeneralPropertiesManager.getString("webdav.respository")).
+        append('/').append(GeneralPropertiesManager.getString("webdav.workspace")).append('/').
+        append(getJcrPath());
+    return url.toString();
+  }
+
+  public String getJcrPath() {
+    StringBuilder jcrPath = new StringBuilder(500);
+    jcrPath.append(ATTACHMENTS_FOLDER).append('/').append(getInstanceId()).append('/');
+    if (getId() != null) {
+      jcrPath.append(getId()).append('/');
+    }
+    if (getLanguage() != null) {
+      jcrPath.append(getLanguage()).append('/');
+    }
+    jcrPath.append(StringUtil.escapeQuote(getFilename()));
+    return jcrPath.toString();
+  }
+
+  /**
+   *
+   * @return @deprecated use getAttachmentURL instead.
+   */
+  @Deprecated
+  public String getWebURL() {
+    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
+        getLanguage());
   }
 }

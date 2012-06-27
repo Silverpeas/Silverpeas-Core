@@ -25,14 +25,13 @@ import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.services.SimpleFileAccessControl;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.UuidPk;
-
+import java.util.Date;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import java.util.Date;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.UuidPk;
 
 /**
  * Ticket for attached files.

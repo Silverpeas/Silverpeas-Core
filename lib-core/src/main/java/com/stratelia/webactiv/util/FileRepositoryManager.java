@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -71,19 +72,20 @@ public class FileRepositoryManager {
    * @param sComponentId
    * @return
    */
-  static public String getAbsolutePath(String sSpaceId, String sComponentId) {
+  @Deprecated  
+  public static String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
     return upLoadPath + separatorChar + sComponentId + separatorChar;
   }
 
-  static public String getAbsolutePath(String sComponentId) {
+  public static String getAbsolutePath(String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
     return upLoadPath + separatorChar + sComponentId + separatorChar;
   }
 
-  static public String getAvatarPath() {
+  public static String getAvatarPath() {
     return avatarPath;
   }
 
@@ -93,7 +95,7 @@ public class FileRepositoryManager {
    *
    * @return the path of the root repository for uploads.
    */
-  static public String getUploadPath() {
+  public static String getUploadPath() {
     return upLoadPath + separatorChar;
   }
 
@@ -128,36 +130,28 @@ public class FileRepositoryManager {
     return path;
   }
 
-  // Add by Jean-Claude Groccia
-  // @param: sDirectoryName: type of String: the name of sub directory.
-  // @return path1/path2/
-  static public String getRelativePath(String[] sDirectoryName) {
-    int lg = sDirectoryName.length;
-    String path = sDirectoryName[0];
-    path = path.concat(separator);
-    for (int k = 1; k < lg; k++) {
-      SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
-          "concat: path = " + path + " sDirectoryName[" + k + "]="
-          + sDirectoryName[k]);
-      path = path.concat(sDirectoryName[k]);
-      path = path.concat(separator);
-    }
-    return path;
+  /**
+   * Construct an OS specific relative path.
+   * @param directories the names of sub directory. (path1, path2,...)
+   * @return path1/path2/.../
+   */
+   public static String getRelativePath(String... directories) {
+    return StringUtil.join(directories, separatorChar) + separatorChar;
   }
 
-  static public String getTemporaryPath() {
+  public static String getTemporaryPath() {
     return tempPath + separatorChar;
   }
 
-  static public String getTemporaryPath(String sSpaceId, String sComponentId) {
+  public static String getTemporaryPath(String sSpaceId, String sComponentId) {
     return tempPath + separatorChar;
   }
 
-  static public String getComponentTemporaryPath(String sComponentId) {
+  public static String getComponentTemporaryPath(String sComponentId) {
     return getAbsolutePath(sComponentId) + "Temp" + separatorChar;
   }
 
-  static public String getAbsoluteIndexPath(String particularSpace, String componentId) {
+  public static String getAbsoluteIndexPath(String particularSpace, String componentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsoluteIndexPath",
         "particularSpace = " + particularSpace + " sComponentId= " + componentId);
     if (particularSpace != null && (particularSpace.startsWith("user@") || particularSpace.equals(
@@ -175,11 +169,12 @@ public class FileRepositoryManager {
    * @throws Exception
    * @deprecated
    */
-  static public void createAbsolutePath(String spaceId, String componentId, String directoryName) {
+  @Deprecated  
+  public static void createAbsolutePath(String spaceId, String componentId, String directoryName) {
     FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }
 
-  static public void createAbsolutePath(String componentId, String directoryName) {
+  public static void createAbsolutePath(String componentId, String directoryName) {
     FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }
 
@@ -191,44 +186,44 @@ public class FileRepositoryManager {
    * @deprecated
    */
   @Deprecated
-  static public void createTempPath(String spaceId, String componentId, String directoryName) {
+  public static void createTempPath(String spaceId, String componentId, String directoryName) {
     FileFolderManager.createFolder(getAbsolutePath(componentId));
   }
 
-  static public void createTempPath(String sComponentId, String sDirectoryName) {
+  public static void createTempPath(String sComponentId, String sDirectoryName) {
     FileFolderManager.createFolder(getAbsolutePath(sComponentId));
   }
 
-  static public void createGlobalTempPath(String sDirectoryName) {
+  public static void createGlobalTempPath(String sDirectoryName) {
     FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
 
-  static public void createAbsoluteIndexPath(String particularSpace,
+  public static void createAbsoluteIndexPath(String particularSpace,
       String sComponentId) {
     FileFolderManager.createFolder(getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
 
-  static public void deleteAbsolutePath(String sSpaceId, String sComponentId,
+  public static void deleteAbsolutePath(String sSpaceId, String sComponentId,
       String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId)
         + sDirectoryName);
   }
 
-  static public void deleteTempPath(String sSpaceId, String sComponentId,
+  public static void deleteTempPath(String sSpaceId, String sComponentId,
       String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
   }
 
-  static public void deleteAbsoluteIndexPath(String particularSpace, String sComponentId) {
+  public static void deleteAbsoluteIndexPath(String particularSpace, String sComponentId) {
     FileFolderManager.deleteFolder(getAbsoluteIndexPath(particularSpace, sComponentId));
   }
 
-  static public String getFileIcon(boolean small, String extension) {
+  public static String getFileIcon(boolean small, String extension) {
     return getFileIcon(small, extension, false);
   }
 
-  static public String getFileIcon(String extension) {
+  public static String getFileIcon(String extension) {
     return getFileIcon(false, extension);
   }
 
@@ -239,11 +234,11 @@ public class FileRepositoryManager {
    * @param isReadOnly
    * @return
    */
-  static public String getFileIcon(String extension, boolean isReadOnly) {
+  public static String getFileIcon(String extension, boolean isReadOnly) {
     return getFileIcon(false, extension, isReadOnly);
   }
 
-  static public String getFileIcon(boolean small, String extension, boolean isReadOnly) {
+  public static String getFileIcon(boolean small, String extension, boolean isReadOnly) {
     String path = URLManager.getApplicationURL() + uploadSettings.getString("FileIconsPath");
 
     String fileIcon = uploadSettings.getString(extension.toLowerCase());
@@ -262,7 +257,7 @@ public class FileRepositoryManager {
     return path + fileIcon;
   }
 
-  static public String getFileExtension(String fileName) {
+  public static String getFileExtension(String fileName) {
     return FilenameUtils.getExtension(fileName);
   }
 
@@ -272,7 +267,7 @@ public class FileRepositoryManager {
    * @param lSize : size
    * @return String
    */
-  static public String formatFileSize(long lSize) {
+  public static String formatFileSize(long lSize) {
     String sTo = utilMessages.getString("to", "Tb");
     String sGo = utilMessages.getString("go", "Gb");
     String sMo = utilMessages.getString("mo", "Mb");
@@ -306,7 +301,7 @@ public class FileRepositoryManager {
    * @param sourceFile
    * @return int
    */
-  static public long getFileSize(String sourceFile) {
+  public static long getFileSize(String sourceFile) {
     return new File(sourceFile).length();
   }
 
@@ -316,7 +311,7 @@ public class FileRepositoryManager {
    * @param size the file's size
    * @return String
    */
-  static public String getFileDownloadTime(long size) {
+  public static String getFileDownloadTime(long size) {
     int fileSizeReference = Integer.parseInt(uploadSettings.getString("FileSizeReference"));
     int theoricDownloadTime = Integer.parseInt(uploadSettings.getString("DownloadTime"));
     long fileDownloadEstimation = ((size * theoricDownloadTime) / fileSizeReference) / 60;
@@ -338,11 +333,11 @@ public class FileRepositoryManager {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  static public void copyFile(String from, String to) throws IOException {
+  public static void copyFile(String from, String to) throws IOException {
     FileUtils.copyFile(new File(from), new File(to));
   }
 
-  static public String formatFileUploadTime(long size) {
+  public static String formatFileUploadTime(long size) {
     String min = " m";
     String sec = " s";
     String ms = " ms";

@@ -647,10 +647,6 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     return valret;
   }
 
-  public String getAliasURL() {
-    return getOnlineURL(null);
-  }
-
   protected String getLanguage(String language) {
     if (language != null && ("fr".equalsIgnoreCase(language) || "".equals(language.trim()))) {
       return null;

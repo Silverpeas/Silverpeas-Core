@@ -29,8 +29,12 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkAttachment.jsp"%>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="java.util.StringTokenizer"%>
+<%@ page import="com.silverpeas.util.*" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocumentPK" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleAttachment" %>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 
 <%
       String id = (String) session.getAttribute("Silverpeas_Attachment_ObjectId");
@@ -84,13 +88,8 @@
               mimeType = "application/xview3d-3d";
             }
           } else if (type.equalsIgnoreCase("rtf")) {
-            mimeType = AttachmentController.getMimeType(logicalName);
+            mimeType = FileUtil.getMimeType(logicalName);
           }
-
-          File dir = new File(path + physicalName);
-
-          file.write(dir);
-
           SilverTrace.info("attachment", "SaveFile.jsp", "root.MSG_GEN_PARAM_VALUE", "mimetype=" + mimeType);
         }
       }
@@ -99,21 +98,25 @@
       //sinon cela indique que le fichier n'est pas valide (chemin non valide, fichier non accessible)
       if (size > 0) {
         //create AttachmentPK with componentId
-        AttachmentPK atPK = new AttachmentPK(null, componentId);
+        SimpleDocumentPK atPK = new SimpleDocumentPK(null, componentId);
 
         //create foreignKey with spaceId, componentId and id
         //use AttachmentPK to build the foreign key of customer object.
-        AttachmentPK foreignKey = new AttachmentPK(id, componentId);
+        com.silverpeas.util.ForeignPK foreignKey = new ForeignPK(id, componentId);
 
         //create AttachmentDetail Object
-        AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, context, creationDate, foreignKey);
-        ad.setAuthor(m_MainSessionCtrl.getUserId());
+        SimpleDocument ad = new SimpleDocument(atPK, id, 0, false, new SimpleAttachment(
+                logicalName, null, title, info, size, mimeType, m_MainSessionCtrl.getUserId(),
+                creationDate, null));
+        ad.setCreatedBy(m_MainSessionCtrl.getUserId());
         ad.setTitle(title);
-        ad.setInfo(info);
-
+        ad.setDescription(info);
+          AttachmentServiceFactory.getAttachmentService().createAttachment(ad,
+                  file.getInputStream()) ;
+        /*
         I18NHelper.setI18NInfo(ad, items);
 
-        AttachmentController.createAttachment(ad, indexIt);
+        AttachmentController.createAttachment(ad, indexIt); */
 
         //Specific case: 3d file to convert by Actify Publisher
         if (actifyPublisherEnable) {

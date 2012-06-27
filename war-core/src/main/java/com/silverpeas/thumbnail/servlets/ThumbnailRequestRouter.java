@@ -35,12 +35,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
 
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
@@ -318,8 +316,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     }
   }
 
-  private ThumbnailDetail saveFile(HttpServletRequest req,
-      List<FileItem> parameters, ThumbnailSessionController thumbnailSC) throws Exception {
+  private ThumbnailDetail saveFile(HttpServletRequest req, List<FileItem> parameters,
+      ThumbnailSessionController thumbnailSC) throws Exception {
     SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
         "root.MSG_GEN_ENTER_METHOD");
 
@@ -332,17 +330,15 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
     String componentId = FileUploadUtil.getParameter(parameters,
         "ComponentId");
-    SilverTrace.info("thumbnail",
-        "ThumbnailRequestRouter.createAttachment",
+    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
     String id = FileUploadUtil.getParameter(parameters, "ObjectId");
-    SilverTrace.info("thumbnail",
-        "ThumbnailRequestRouter.createAttachment",
+    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
         "root.MSG_GEN_PARAM_VALUE", "id = " + id);
 
     FileItem item = FileUploadUtil.getFile(parameters, "OriginalFile");
 
-    String fullFileName = null;
+    String fullFileName;
     if (!item.isFormField()) {
 
       fullFileName = item.getName();

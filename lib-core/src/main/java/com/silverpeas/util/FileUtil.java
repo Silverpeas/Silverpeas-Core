@@ -23,6 +23,11 @@
  */
 package com.silverpeas.util;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import javax.activation.MimetypesFileTypeMap;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -36,15 +41,9 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
-import javax.activation.MimetypesFileTypeMap;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 public class FileUtil implements MimeTypes {
 
@@ -175,6 +174,15 @@ public class FileUtil implements MimeTypes {
    */
   public static boolean isWindows() {
     return OsEnum.getOS().isWindows();
+  }
+  
+  /**
+   * If 3D document.
+   * @param filename the name of the file. 
+   * @return true or false
+   */
+  public static boolean isSpinfireDocument(String filename) {
+    return SPINFIRE_MIME_TYPE.equals(getMimeType(filename));
   }
 
   /**

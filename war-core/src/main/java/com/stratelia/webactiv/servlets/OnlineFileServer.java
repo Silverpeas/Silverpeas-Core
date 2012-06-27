@@ -24,21 +24,6 @@
 
 package com.stratelia.webactiv.servlets;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringReader;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
@@ -46,10 +31,18 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 
 /**
  * Class declaration
@@ -86,16 +79,14 @@ public class OnlineFileServer extends HttpServlet {
 
     String attachmentId = req.getParameter("attachmentId");
     String language = req.getParameter("lang");
-    AttachmentDetail attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
-      attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-          attachmentId));
+      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+          .searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
-        mimeType = attachment.getType(language);
-        sourceFile = attachment.getPhysicalName(language);
-        directory = FileRepositoryManager.getRelativePath(FileRepositoryManager
-            .getAttachmentContext(attachment.getContext()));
+        mimeType = attachment.getContentType();
+        sourceFile = attachment.getFilename();
+        directory = attachment.getDirectoryPath(language);
       }
     }
 

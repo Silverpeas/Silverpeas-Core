@@ -25,10 +25,11 @@ package com.silverpeas.attachment;
 
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import javax.servlet.jsp.JspWriter;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import java.io.IOException;
 import java.net.URLEncoder;
-import javax.servlet.jsp.JspWriter;
 
 /**
  * @author ehugonnet
@@ -43,21 +44,21 @@ public class MenuHelper {
     return organisation.getUserDetail(userId).isAccessAdmin();
   }
 
-  public static boolean isWorker(String userId, AttachmentDetail attachment) {
-    return userId.equals(attachment.getWorkerId());
+  public static boolean isWorker(String userId, SimpleDocument attachment) {
+    return userId.equals(attachment.getEditedBy());
   }
 
-  public static boolean isEditable(String userId, AttachmentDetail attachment, boolean useWebDAV) {
+  public static boolean isEditable(String userId, SimpleDocument attachment, boolean useWebDAV) {
     return useWebDAV && attachment.isOpenOfficeCompatible() && isWorker(userId, attachment);
   }
 
-  public static void displayActions(AttachmentDetail attachment, boolean useXMLForm,
+  public static void displayActions(SimpleDocument attachment, boolean useXMLForm,
       boolean useFileSharing, boolean useWebDAV, String userId, String language,
       ResourcesWrapper resources, String httpServerBase, boolean showMenuNotif,
       boolean useContextualMenu, JspWriter out)
       throws IOException {
 
-    String attachmentId = attachment.getPK().getId();
+    String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(1024);
     builder.append("<div id=\"basicmenu").append(attachmentId).append("\" class=\"yuimenu\">").
@@ -118,7 +119,7 @@ public class MenuHelper {
 
     builder.append("var ").append(oMenuId).append(";");
     builder.append("var webDav").append(attachmentId).append(" = \"");
-    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(language), "UTF-8")).
+    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(), "UTF-8")).
         append("\";");
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");
@@ -126,9 +127,8 @@ public class MenuHelper {
       builder.append(oMenuId).append(" = new YAHOO.widget.ContextMenu(\"basicmenu").append(attachmentId).append("\"");
       builder.append(", { trigger: \"img_").append(attachmentId).append("\", ");
     } else {
-      builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).append("\"");;
+      builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).append("\"");
       builder.append(", {");
-      //builder.append("context:[\"edit_"+attachmentId+"\", \"tr\", \"bl\"], ");
     }
     builder.append("hidedelay: 100, ");
     builder.append("effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
@@ -142,7 +142,7 @@ public class MenuHelper {
           !isWorker(userId, attachment) && !isAdmin(userId)));
       builder.append(configureUpdate(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureDelete(attachmentId, useXMLForm, true));
-      if (!userId.equals(attachment.getWorkerId())) {
+      if (!userId.equals(attachment.getEditedBy())) {
         // disable xmlForm
         if (useXMLForm) {
           builder.append(configureXmlForm(attachmentId, true));

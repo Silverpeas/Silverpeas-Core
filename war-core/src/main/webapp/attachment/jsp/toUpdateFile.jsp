@@ -27,20 +27,22 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkAttachment.jsp"%>
-<%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory"%>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocumentPK" %>
 
 <%
       //initialisation des variables
       String attachmentId = request.getParameter("IdAttachment");
-
       String componentId = (String) session.getAttribute("Silverpeas_Attachment_ComponentId");
 
-      AttachmentPK primaryKey = new AttachmentPK(attachmentId, componentId);
-      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(primaryKey);
+      SimpleDocumentPK primaryKey = new SimpleDocumentPK(attachmentId, componentId);
+      SimpleDocument attachment =
+              AttachmentServiceFactory.getAttachmentService().searchAttachmentById(primaryKey, language);
 
-      String title = attachment.getTitle(language);
-      String info = attachment.getInfo(language);
-      String fileName = attachment.getLogicalName(language);
+      String title = attachment.getTitle();
+      String info = attachment.getDescription();
+      String fileName = attachment.getFilename();
 
       if (!StringUtil.isDefined(title)) {
         title = "";
@@ -76,20 +78,6 @@
           document.updateForm.submit();
         }
       }
-
-      <%
-          if (attachment != null) {
-            String lang = "";
-            Iterator codes = attachment.getTranslations().keySet().iterator();
-            while (codes.hasNext()) {
-              lang = (String) codes.next();
-              out.println("var name_" + lang + " = \"" + Encode.javaStringToJsString(attachment.getLogicalName(lang)) + "\";");
-              out.println("var title_" + lang + " = \"" + Encode.javaStringToJsString(attachment.getTitle(lang)) + "\";");
-              out.println("var desc_" + lang + " = \"" + Encode.javaStringToJsString(attachment.getInfo(lang)) + "\";");
-            }
-          }
-      %>
-
       function showTranslation(lang)
       {
         try

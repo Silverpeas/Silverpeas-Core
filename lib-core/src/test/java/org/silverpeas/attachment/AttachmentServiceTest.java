@@ -584,7 +584,7 @@ public class AttachmentServiceTest {
       reorderedList.add(document1.getPk());
       reorderedList.add(document2.getPk());
       reorderedList.add(document3.getPk());
-      instance.reorderDocuments(reorderedList);
+      instance.reorderAttachments(reorderedList);
       result = instance.searchAttachmentsByExternalObject(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));

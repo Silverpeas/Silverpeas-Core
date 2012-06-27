@@ -49,10 +49,11 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * Class declaration
@@ -105,17 +106,16 @@ public class RestOnlineFileServer extends HttpServlet {
     String attachmentId = restRequest.getElementValue("attachmentId");
     String language = restRequest.getElementValue("lang");
     if (StringUtil.isDefined(attachmentId)) {
-      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-          attachmentId));
+      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(
+          new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
         if (isUserAuthorized(restRequest, componentId, attachment)) {
-          file = new OnlineFile(attachment.getType(language), attachment.getPhysicalName(language),
-              FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(
-              attachment.getContext())));
+          file = new OnlineFile(attachment.getContentType(), attachment.getFilename(),
+              attachment.getRelativeDirectoryPath(language));
           file.setComponentId(componentId);
         } else {
           throw new IllegalAccessException(
-              "You can't access this file " + attachment.getLogicalName());
+              "You can't access this file " + attachment.getFilename());
         }
       }
     }

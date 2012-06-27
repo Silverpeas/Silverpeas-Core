@@ -23,20 +23,21 @@
  */
 package com.stratelia.webactiv.servlets;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class GoToFile extends GoTo {
 
@@ -45,14 +46,19 @@ public class GoToFile extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
+    MainSessionController mainSessionCtrl = util.getMainSessionController(req);
+    String language = I18NHelper.defaultLanguage;
+    if(mainSessionCtrl != null) {
+      language = mainSessionCtrl.getFavoriteLanguage();
+    }
     // Check first if attachment exists
-    AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-        objectId));
+    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+        .searchAttachmentById(new SimpleDocumentPK(objectId), language);
     if (attachment == null) {
       return null;
     }
     String componentId = attachment.getInstanceId();
-    String foreignId = attachment.getForeignKey().getId();
+    String foreignId = attachment.getForeignId();
 
     if (isUserLogin(req) && isUserAllowed(req, componentId)) {
       // L'utilisateur a-t-il le droit de consulter le fichier/la publication
@@ -64,8 +70,7 @@ public class GoToFile extends GoTo {
           isAccessAuthorized = security.isAccessAuthorized(componentId,
               getUserId(req), foreignId);
         } catch (Exception e) {
-          SilverTrace.error("peasUtil", "GoToFile.doPost",
-              "root.EX_CLASS_NOT_INITIALIZED",
+          SilverTrace.error("peasUtil", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",
               "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
           return null;
         }
@@ -73,7 +78,7 @@ public class GoToFile extends GoTo {
       if (isAccessAuthorized) {
         res.setCharacterEncoding("UTF-8");
         res.setContentType("text/html; charset=utf-8");
-        String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getLogicalName());
+        String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
         res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
         return URLManager.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
       }

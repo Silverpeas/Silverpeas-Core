@@ -24,26 +24,26 @@
 
 package com.silverpeas.attachment.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class AjaxServlet extends HttpServlet {
 
@@ -142,48 +142,35 @@ public class AjaxServlet extends HttpServlet {
     int nbTranslationsToDelete = tokenizer.countTokens();
 
     // create AttachmentPK with id and componentId
-    AttachmentPK atPK = new AttachmentPK(id, getForeignPK(req).getInstanceId());
+    SimpleDocumentPK atPK = new SimpleDocumentPK(id, getForeignPK(req).getInstanceId());
 
     try {
       if (tokenizer.hasMoreElements()) {
         String lang = tokenizer.nextToken();
-        if (lang.equals("all")) {
+        if ("all".equals(lang)) {
           // suppresion de l'objet
-          AttachmentController.deleteAttachment(atPK);
+          SimpleDocument doc =  AttachmentServiceFactory.getAttachmentService()
+              .searchAttachmentById(atPK, null);
+          AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
           return "attachmentRemoved";
         } else {
-          AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(atPK);
-          if (nbTranslationsToDelete >= attachment.getTranslations().size()) {
-            // suppresion de l'objet
-            AttachmentController.deleteAttachment(atPK);
+          SimpleDocument doc =  AttachmentServiceFactory.getAttachmentService()
+              .searchAttachmentById(atPK, lang);
 
-            return "attachmentRemoved";
-          } else {
             boolean hasMoreTranslations = true;
             while (hasMoreTranslations) {
-              attachment.setRemoveTranslation(true);
-
-              // search translation id according to language
-              AttachmentDetailI18N translation =
-                  (AttachmentDetailI18N) attachment.getTranslation(lang);
-              attachment.setLanguage(lang);
-              attachment.setTranslationId(Integer.toString(translation.getId()));
-
-              AttachmentController.updateAttachment(attachment, indexIt);
-
+              AttachmentServiceFactory.getAttachmentService().removeContent(doc,lang, indexIt);
               hasMoreTranslations = tokenizer.hasMoreTokens();
               if (hasMoreTranslations) {
                 lang = tokenizer.nextToken();
               }
             }
-
             return "translationsRemoved";
           }
-        }
       } else {
-        // suppresion de l'objet
-        AttachmentController.deleteAttachment(atPK);
-
+        SimpleDocument doc =  AttachmentServiceFactory.getAttachmentService()
+            .searchAttachmentById(atPK, null);
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
         return "attachmentRemoved";
       }
     } catch (Exception e) {

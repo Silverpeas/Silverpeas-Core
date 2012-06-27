@@ -22,7 +22,6 @@ package com.silverpeas.sharing.servlets;
 
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.SimpleFileTicket;
-
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
