@@ -23,7 +23,7 @@
  */
 package com.silverpeas.notification.builder.helper;
 
-import com.silverpeas.notification.builder.IUserNotificationBuider;
+import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 
@@ -37,7 +37,7 @@ public class UserNotificationHelper {
    * @param notificationBuider
    * @return
    */
-  public static void buildAndSend(final IUserNotificationBuider notificationBuider) {
+  public static void buildAndSend(final UserNotificationBuider notificationBuider) {
     notificationBuider.build().send();
   }
 
@@ -49,7 +49,7 @@ public class UserNotificationHelper {
    * @return
    */
   public static void buildAndSend(final NotifMediaType mediaType,
-      final IUserNotificationBuider notificationBuider) {
+      final UserNotificationBuider notificationBuider) {
     notificationBuider.build().send(mediaType);
   }
 
@@ -58,7 +58,7 @@ public class UserNotificationHelper {
    * @param notificationBuider
    * @return
    */
-  public static NotificationMetaData build(final IUserNotificationBuider notificationBuider) {
-    return notificationBuider.build().getNotification();
+  public static NotificationMetaData build(final UserNotificationBuider notificationBuider) {
+    return notificationBuider.build().getNotificationMetaData();
   }
 }

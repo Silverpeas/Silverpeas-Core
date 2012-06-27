@@ -23,30 +23,13 @@
  */
 package com.silverpeas.notification.builder;
 
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
-
 /**
  * @author Yohann Chastagnier
  */
-public interface IUserNotification {
+public interface UserNotificationBuider {
 
   /**
-   * Gets the notification data container
-   * @return
+   * Builds the notification data container
    */
-  NotificationMetaData getNotification();
-
-  /**
-   * Sends the notification
-   * @return
-   */
-  void send();
-
-  /**
-   * Sends the notification for the given media type
-   * @param mediaType
-   * @param notification
-   */
-  void send(final NotifMediaType mediaType);
+  UserNotification build();
 }

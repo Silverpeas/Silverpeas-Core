@@ -29,14 +29,14 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 /**
  * @author Yohann Chastagnier
  */
-public class NullUserNotification implements IUserNotification {
+public class NullUserNotification implements UserNotification {
 
   public NullUserNotification() {
     // Nothing to do
   }
 
   @Override
-  public NotificationMetaData getNotification() {
+  public NotificationMetaData getNotificationMetaData() {
     return null;
   }
 
