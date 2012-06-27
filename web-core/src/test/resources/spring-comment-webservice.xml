@@ -34,7 +34,9 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.notification"/>
+  <ctx:component-scan base-package="com.silverpeas.notification">
+    <ctx:exclude-filter type="regex" expression="com.silverpeas.notification.delayed.*" />
+  </ctx:component-scan>
   <ctx:component-scan base-package="com.silverpeas.comment.web"/>
 
   <!-- the notification publisher factory through which a notification publisher is accessed.
@@ -43,7 +45,5 @@
         factory-method="getFactory"/>
         
   <import resource="spring-webservice.xml" />
-  <import resource="spring-personalization.xml" />
-  <import resource="spring-jpa-datasource.xml" />
 </beans>
 

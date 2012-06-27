@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.notificationManager;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
 import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -77,7 +78,7 @@ public class NotificationSender implements java.io.Serializable {
    */
   public void notifyUser(NotificationMetaData metaData)
           throws NotificationManagerException {
-    notifyUser(NotificationParameters.ADDRESS_COMPONENT_DEFINED, metaData);
+    notifyUser(NotifMediaType.COMPONENT_DEFINED.getId(), metaData);
   }
 
   /**
@@ -168,6 +169,7 @@ public class NotificationSender implements java.io.Serializable {
       }
       params.sMessage = metaData.getContent(language);
       params.sLanguage = language;
+      params.nNotificationResourceData = metaData.getNotificationResourceData(language);
 
       // Notify users with their native language
       userIds = getUserIds(language, usersLanguage);
@@ -179,7 +181,7 @@ public class NotificationSender implements java.io.Serializable {
       notificationManager.notifyUsers(params, userIds.toArray(new String[userIds.size()]));
     }
 
-    // Notify other user in language of the sender.
+    // Notify other users in language of the sender.
     notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
 
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
@@ -366,6 +368,8 @@ public class NotificationSender implements java.io.Serializable {
     params.sSource = metaData.getSource();
     params.sURL = metaData.getLink();
     params.sSessionId = metaData.getSessionId();
+    params.sOriginalExtraMessage = metaData.getOriginalExtraMessage();
+    params.bSendImmediately = metaData.isSendImmediately();
     if (instanceId != -1) {
       params.iComponentInstance = instanceId;
     } else {
@@ -388,6 +392,7 @@ public class NotificationSender implements java.io.Serializable {
       params.iFromUserId = -1;
       params.senderName = sender;
     }
+    params.eAction = metaData.getAction();
     return params;
   }
 

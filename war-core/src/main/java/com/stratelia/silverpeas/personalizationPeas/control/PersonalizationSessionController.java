@@ -24,6 +24,11 @@
 package com.stratelia.silverpeas.personalizationPeas.control;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Properties;
+
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
@@ -33,12 +38,9 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.personalizationPeas.bean.DelayedNotificationBean;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Properties;
 
 /**
  * Class declaration
@@ -505,6 +507,26 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS", 
           "aNotifAddressId=" + notifAddressId, e);
+    }
+  }
+  
+  /*
+   * Delayed Notifications 
+   */
+  
+  public DelayedNotificationBean getDelayedNotificationBean() {
+    return new DelayedNotificationBean(getUserId());
+  }
+
+  public void saveDelayedUserNotificationFrequency(final String frequencyCode)
+      throws PeasCoreException {
+    try {
+      getDelayedNotificationBean().saveFrequency(frequencyCode);
+    } catch (Exception e) {
+      throw new PeasCoreException(
+          "PersonalizationSessionController.saveDelayedUserNotificationFrequency()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
+          "userId=" + getUserId(), e);
     }
   }
 }

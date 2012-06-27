@@ -23,26 +23,22 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import java.util.Arrays;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.div;
-import org.apache.ecs.xhtml.script;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Arrays;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.div;
+import org.apache.ecs.xhtml.script;
 
 /**
  * It defines the base class of a widget for the rendering and handling of comments in Silverpeas.
@@ -104,11 +100,20 @@ public abstract class CommentWidget extends TagSupport {
     script autoresizePlugin = new script().setType("text/javascript").
             setSrc(URLManager.getApplicationURL()
             + "/util/javaScript/jquery/autoresize.jquery.min.js");
+    script userProfilePlugin = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-profile.js");
+    script invitMePlugin = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-invitme.js");
+    script userZoomPlugin = new script().setType("text/javascript").
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-userZoom.js");
     script commentJqueryScript = new script().setType("text/javascript").
-            setSrc(URLManager.getApplicationURL() + "/util/javaScript/jquery/jquery-comment.js");
+            setSrc(URLManager.getApplicationURL() + "/util/javaScript/silverpeas-comment.js");
 
     xhtmlcontainer.addElement(checkForm).
             addElement(autoresizePlugin).
+            addElement(userProfilePlugin).
+            addElement(invitMePlugin).
+            addElement(userZoomPlugin).
             addElement(commentJqueryScript).
             addElement(comments).
             addElement(initCommentPlugin);
@@ -242,8 +247,9 @@ public abstract class CommentWidget extends TagSupport {
 
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
             + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
-            + "', avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
-            + "', update: { activated: function( comment ) {"
+            + "', author: { avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
+            + "', id: '" + getUserId()
+            + "'}, update: { activated: function( comment ) {"
             + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
             + "return true; else return false;},icon: '" + getUpdateIconURL() + "'," + "altText: '"
             + settings.getString("GML.update") + "'},"

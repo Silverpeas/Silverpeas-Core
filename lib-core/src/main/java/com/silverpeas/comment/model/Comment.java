@@ -181,6 +181,11 @@ public class Comment implements SilverpeasContent {
   }
 
   @Override
+  public String getDescription() {
+    return "";
+  }
+
+  @Override
   public String getId() {
     return pk.getId();
   }

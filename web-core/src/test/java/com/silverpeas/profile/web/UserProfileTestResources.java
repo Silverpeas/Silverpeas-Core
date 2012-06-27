@@ -23,13 +23,23 @@
  */
 package com.silverpeas.profile.web;
 
+import com.silverpeas.profile.web.mock.RelationShipServiceMock;
+import com.silverpeas.socialNetwork.relationShip.RelationShip;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.web.TestResources;
-import com.silverpeas.web.mock.OrganizationControllerMock;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * The resources to use in the test on the UserProfileResource REST service. Theses objects manage
@@ -44,58 +54,164 @@ public class UserProfileTestResources extends TestResources {
   public static final String USER_PROFILE_PATH = "/profile/users";
   public static final String GROUP_PROFILE_PATH = "/profile/groups";
   @Inject
-  private OrganizationControllerMock organization;
+  private RelationShipServiceMock relationShipServiceMock;
   private Set<String> domainIds = new HashSet<String>();
 
   /**
    * Allocates the resources required by the unit tests.
    */
+  @PostConstruct
   public void allocate() {
     prepareSeveralUsers();
     prepareSeveralGroups();
     putUsersInGroups();
   }
-  
-  public void deallocate() {
-    organization.clearAll();
-  }
 
   public UserDetail[] getAllExistingUsers() {
-    return organization.getAllUsers();
+    UserDetail[] users = getOrganizationControllerMock().getAllUsers();
+    if (users == null) {
+      users = new UserDetail[0];
+    }
+    return users;
+  }
+
+  public void whenSearchGroupsThenReturn(final Group[] groups) {
+    OrganizationController mock = getOrganizationControllerMock();
+    String[] groupIds = getGroupIds(groups);
+    when(mock.searchGroupsIds(anyBoolean(), anyString(), any(String[].class), any(Group.class))).
+            thenReturn(groupIds);
+    doAnswer(new Answer<Group[]>() {
+
+      @Override
+      public Group[] answer(InvocationOnMock invocation) throws Throwable {
+        Group[] emptyGroup = new Group[0];
+        String[] passedGroupIds = (String[]) invocation.getArguments()[0];
+        String[] groupIds = getGroupIds(groups);
+        if (passedGroupIds.length == groupIds.length) {
+          if (Arrays.asList(passedGroupIds).containsAll(Arrays.asList(groupIds))) {
+            return groups;
+          }
+        }
+        return emptyGroup;
+      }
+    }).when(mock).getGroups(any(String[].class));
+  }
+
+  public void whenSearchUsersByCriteriaThenReturn(final SearchCriteria criteria,
+          final UserDetail[] users) {
+    OrganizationController mock = getOrganizationControllerMock();
+    doAnswer(new Answer<UserDetail[]>() {
+
+      @Override
+      public UserDetail[] answer(InvocationOnMock invocation) throws Throwable {
+        UserDetail[] emptyUsers = new UserDetail[0];
+        SearchCriteria passedCriteria = (SearchCriteria) invocation.getArguments()[0];
+        if (criteria.isCriterionOnComponentInstanceIdSet() && passedCriteria.
+                isCriterionOnComponentInstanceIdSet()) {
+          if (!criteria.getCriterionOnComponentInstanceId().equals(passedCriteria.
+                  getCriterionOnComponentInstanceId())) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnComponentInstanceIdSet() && passedCriteria.
+                isCriterionOnComponentInstanceIdSet()) || (criteria.
+                isCriterionOnComponentInstanceIdSet() && !passedCriteria.
+                isCriterionOnComponentInstanceIdSet())) {
+          return emptyUsers;
+        }
+        if (criteria.isCriterionOnDomainIdSet() && passedCriteria.isCriterionOnDomainIdSet()) {
+          if (!criteria.getCriterionOnDomainId().equals(passedCriteria.getCriterionOnDomainId())) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnDomainIdSet()
+                && passedCriteria.isCriterionOnDomainIdSet()) || (criteria.isCriterionOnDomainIdSet()
+                && !passedCriteria.isCriterionOnDomainIdSet())) {
+          return emptyUsers;
+        }
+        if (criteria.isCriterionOnGroupIdSet() && passedCriteria.isCriterionOnGroupIdSet()) {
+          if (!criteria.getCriterionOnGroupId().equals(passedCriteria.getCriterionOnGroupId())) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnGroupIdSet()
+                && passedCriteria.isCriterionOnGroupIdSet()) || (criteria.isCriterionOnGroupIdSet()
+                && !passedCriteria.isCriterionOnGroupIdSet())) {
+          return emptyUsers;
+        }
+        if (criteria.isCriterionOnNameSet() && passedCriteria.isCriterionOnNameSet()) {
+          if (!criteria.getCriterionOnName().equals(passedCriteria.getCriterionOnName())) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnNameSet()
+                && passedCriteria.isCriterionOnNameSet()) || (criteria.isCriterionOnNameSet()
+                && !passedCriteria.isCriterionOnNameSet())) {
+          return emptyUsers;
+        }
+        if (criteria.isCriterionOnRoleIdsSet() && passedCriteria.isCriterionOnRoleIdsSet()) {
+          List<String> roles = Arrays.asList(criteria.getCriterionOnRoleIds());
+          List<String> passedRoles = Arrays.asList(passedCriteria.getCriterionOnRoleIds());
+          if (roles.size() != passedRoles.size() || !roles.containsAll(passedRoles)) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnRoleIdsSet()
+                && passedCriteria.isCriterionOnRoleIdsSet()) || (criteria.isCriterionOnRoleIdsSet()
+                && !passedCriteria.isCriterionOnRoleIdsSet())) {
+          return emptyUsers;
+        }
+        if (criteria.isCriterionOnUserIdsSet() && passedCriteria.isCriterionOnUserIdsSet()) {
+          List<String> userIds = Arrays.asList(criteria.getCriterionOnUserIds());
+          List<String> passedUserIds = Arrays.asList(passedCriteria.getCriterionOnUserIds());
+          if (userIds.size() != passedUserIds.size() || !userIds.containsAll(passedUserIds)) {
+            return emptyUsers;
+          }
+        } else if ((!criteria.isCriterionOnUserIdsSet()
+                && passedCriteria.isCriterionOnUserIdsSet()) || (criteria.isCriterionOnUserIdsSet()
+                && !passedCriteria.isCriterionOnUserIdsSet())) {
+          return emptyUsers;
+        }
+
+        return users;
+      }
+    }).when(mock).searchUsers(any(SearchCriteria.class));
   }
 
   public UserDetail[] getAllExistingUsersInDomain(String domainId) {
-    return organization.getAllUsersInDomain(domainId);
+    List<UserDetail> usersInDomain = new ArrayList<UserDetail>();
+    UserDetail[] existingUsers = getAllExistingUsers();
+    for (UserDetail aUser : existingUsers) {
+      if (aUser.getDomainId().equals(domainId)) {
+        usersInDomain.add(aUser);
+      }
+    }
+    return usersInDomain.toArray(new UserDetail[usersInDomain.size()]);
   }
 
   public Group[] getAllExistingRootGroups() {
-    return organization.getAllRootGroups();
+    Group[] groups = getOrganizationControllerMock().getAllRootGroups();
+    if (groups == null) {
+      groups = new Group[0];
+    }
+    return groups;
   }
 
   public Group[] getAllExistingRootGroupsInDomain(String domainId) {
-    return organization.getAllRootGroupsInDomain(domainId);
-  }
-  
-  public Group[] getAllRootGroupsAccessibleFromDomain(String domainId) {
-    List<Group> groups = new ArrayList<Group>();
-    groups.addAll(Arrays.asList(organization.getAllRootGroupsInDomain(domainId)));
-    groups.addAll(Arrays.asList(organization.getAllRootGroupsInDomain("-1")));
-    return groups.toArray(new Group[groups.size()]);
-  }
-  
-  public Group getGroupById(String groupId) {
-    return organization.getGroup(groupId);
-  }
-
-  public UserDetail getWebServiceCaller() {
-    UserDetail caller = null;
-    for (UserDetail userDetail : getAllExistingUsers()) {
-      if (userDetail.getId().equals(USER_ID_IN_TEST)) {
-        caller = userDetail;
-        break;
+    List<Group> rootGroupsInDomain = new ArrayList<Group>();
+    Group[] existingGroups = getAllExistingRootGroups();
+    for (Group aGroup : existingGroups) {
+      if (aGroup.getDomainId().equals(domainId)) {
+        rootGroupsInDomain.add(aGroup);
       }
     }
-    return caller;
+    return rootGroupsInDomain.toArray(new Group[rootGroupsInDomain.size()]);
+  }
+
+  public Group[] getAllRootGroupsAccessibleFromDomain(String domainId) {
+    List<Group> groups = new ArrayList<Group>();
+    groups.addAll(Arrays.asList(getAllExistingRootGroupsInDomain(domainId)));
+    groups.addAll(Arrays.asList(getAllExistingRootGroupsInDomain("-1")));
+    return groups.toArray(new Group[groups.size()]);
+  }
+
+  public Group getGroupById(String groupId) {
+    return getOrganizationControllerMock().getGroup(groupId);
   }
 
   public List<String> getAllDomainIds() {
@@ -111,67 +227,94 @@ public class UserProfileTestResources extends TestResources {
     }
     return otherDomainIds;
   }
-  
+
   /**
    * Gets randomly an existing user detail among the available resources for tests.
+   *
    * @return a user detail.
    */
   public UserDetail anExistingUser() {
-    UserDetail[] allUsers = organization.getAllUsers();
+    UserDetail[] allUsers = getOrganizationControllerMock().getAllUsers();
     return allUsers[new Random().nextInt(allUsers.length)];
   }
-  
+
   public UserDetail anExistingUserNotInSilverpeasDomain() {
     UserDetail user;
     do {
       user = anExistingUser();
-    } while("0".equals(user.getDomainId()));
+    } while ("0".equals(user.getDomainId()));
     return user;
   }
-  
+
   /**
    * Gets randomly an existing group among the available resources for tests.
+   *
    * @return a group.
    */
   public Group anExistingGroup() {
-    Group[] allGroups = organization.getAllGroups();
+    Group[] allGroups = getOrganizationControllerMock().getAllGroups();
     return allGroups[new Random().nextInt(allGroups.length)];
   }
-  
+
   public Group anExistingRootGroup() {
     Group group = null;
     do {
       group = anExistingGroup();
-    } while(!group.isRoot());
+    } while (!group.isRoot());
     return group;
   }
-  
+
   /**
    * Gets a group that isn't in an internal domain.
+   *
    * @return a group in a domain other than internal one.
    */
   public Group getAGroupNotInAnInternalDomain() {
     Group group = anExistingGroup();
-    while(group.getDomainId().equals("-1")) {
+    while (group.getDomainId().equals("-1")) {
       group = anExistingGroup();
     }
     return group;
   }
 
+  public UserDetail[] getRelationShipsOfUser(String userId) {
+    UserDetail[] users = getAllExistingUsers();
+    UserDetail[] contacts = new UserDetail[users.length - 1];
+    List<RelationShip> relationships = new ArrayList<RelationShip>(users.length - 1);
+    int currentUserId = Integer.valueOf(userId);
+    int i = 0;
+    for (UserDetail aUser : users) {
+      if (!aUser.getId().equals(userId)) {
+        contacts[i++] = aUser;
+        relationships.add(new RelationShip(Integer.valueOf(aUser.getId()), currentUserId, 1,
+                new Date(), currentUserId));
+      }
+    }
+    RelationShipService mock = relationShipServiceMock.getMockedRelationShipService();
+    try {
+      when(mock.getAllMyRelationShips(currentUserId)).thenReturn(relationships);
+    } catch (SQLException ex) {
+      Logger.getLogger(UserProfileTestResources.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return contacts;
+  }
+
+  @Override
+  public UserDetail registerUser(UserDetail user) {
+    UserDetail[] existingUsers = getAllExistingUsers();
+    UserDetail[] actualUsers = Arrays.copyOf(existingUsers, existingUsers.length + 1);
+    actualUsers[actualUsers.length - 1] = user;
+    OrganizationController mock = getOrganizationControllerMock();
+    when(mock.getAllUsers()).thenReturn(actualUsers);
+    return super.registerUser(user);
+  }
+
   private void prepareSeveralUsers() {
-    UserDetail[] users = new UserDetail[5];
     for (int i = 0; i < 5; i++) {
       String suffix = String.valueOf(10 + i);
       String domainId = (i == 0 ? "0" : (i < 3 ? "1" : "2"));
       domainIds.add(domainId);
-      users[i] = aUser("Toto" + suffix, "Foo" + suffix, suffix, domainId);
-    }
-    addSomeUsers(users);
-  }
-
-  private void addSomeUsers(final UserDetail... users) {
-    for (UserDetail userDetail : users) {
-      organization.addUserDetail(userDetail);
+      registerUser(aUser("Toto" + suffix, "Foo" + suffix, suffix, domainId));
     }
   }
 
@@ -185,7 +328,7 @@ public class UserProfileTestResources extends TestResources {
   }
 
   private void prepareSeveralGroups() {
-    addSomeGroups(aGroup("Groupe 1", "1", null, "-1"),
+    registerSomeGroups(aGroup("Groupe 1", "1", null, "-1"),
             aGroup("Groupe 2", "2", null, "-1"),
             aGroup("Groupe 3", "3", null, "0"),
             aGroup("Groupe 4 - 3", "4", "3", "0"),
@@ -195,25 +338,65 @@ public class UserProfileTestResources extends TestResources {
             aGroup("Groupe 8 - 6", "8", "6", "1"),
             aGroup("Groupe 9 - 7", "9", "7", "1"));
   }
-  
+
   private void putUsersInGroups() {
-    Group internalGroup = organization.getGroup("1");
-    UserDetail[] users = organization.getAllUsers();
+    OrganizationController mock = getOrganizationControllerMock();
+    Group[] groups = mock.getAllGroups();
+    for (Group group : groups) {
+      when(mock.getAllUsersOfGroup(group.getId())).thenReturn(new UserDetail[0]);
+    }
+    Group internalGroup = mock.getGroup("1");
+    UserDetail[] users = getAllExistingUsers();
     internalGroup.setUserIds(getUserIds(users));
-    
+
     for (int i = 0; i <= 1; i++) {
       String domainId = String.valueOf(i);
-      users = organization.getAllUsersInDomain(domainId);
+      users = getAllExistingUsersInDomain(domainId);
       if (users != null) {
-        Group[] groups = organization.getAllRootGroupsInDomain(domainId);
+        groups = getAllExistingRootGroupsInDomain(domainId);
         groups[0].setUserIds(getUserIds(users));
+        when(mock.getAllUsersOfGroup(groups[0].getId())).thenReturn(users);
+        for (int j = 1; j < groups.length; j++) {
+          when(mock.getAllUsersOfGroup(groups[j].getId())).thenReturn(new UserDetail[0]);
+        }
       }
     }
   }
 
-  private void addSomeGroups(final Group... groups) {
-    for (Group group : groups) {
-      organization.addGroup(group);
+  private void registerSomeGroups(final Group... someGroups) {
+    OrganizationController mock = getOrganizationControllerMock();
+    List<Group> rootGroups = new ArrayList<Group>();
+    for (int i = 0; i < someGroups.length; i++) {
+      when(mock.getGroup(someGroups[i].getId())).thenReturn(someGroups[i]);
+      if (someGroups[i].isRoot()) {
+        rootGroups.add(someGroups[i]);
+      }
+      Domain domain = mock.getDomain(someGroups[i].getDomainId());
+      if (domain == null) {
+        domain = new Domain();
+        domain.setId(someGroups[i].getDomainId());
+        domain.setName("Domaine " + someGroups[i].getDomainId());
+        when(mock.getDomain(someGroups[i].getDomainId())).thenReturn(domain);
+      }
+    }
+    when(mock.getAllRootGroups()).thenReturn(rootGroups.toArray(new Group[rootGroups.size()]));
+    when(mock.getAllGroups()).thenReturn(someGroups);
+
+    for (Group group : someGroups) {
+      if (!group.isRoot()) {
+        Group[] subgroups = mock.getAllSubGroups(group.getSuperGroupId());
+        if (subgroups == null) {
+          subgroups = new Group[1];
+        } else {
+          subgroups = Arrays.copyOf(subgroups, subgroups.length + 1);
+        }
+        subgroups[subgroups.length - 1] = group;
+        when(mock.getAllSubGroups(group.getSuperGroupId())).thenReturn(subgroups);
+      }
+      Group[] subgroups = mock.getAllSubGroups(group.getId());
+      if (subgroups == null) {
+        when(mock.getAllSubGroups(group.getId())).thenReturn(new Group[0]);
+      }
     }
   }
 
@@ -226,11 +409,19 @@ public class UserProfileTestResources extends TestResources {
     group.setDomainId(domainId);
     return group;
   }
-  
-  private String[] getUserIds(final UserDetail ... users) {
+
+  public String[] getUserIds(final UserDetail... users) {
     String[] ids = new String[users.length];
-    for(int i = 0; i < users.length; i++) {
+    for (int i = 0; i < users.length; i++) {
       ids[i] = users[i].getId();
+    }
+    return ids;
+  }
+
+  public String[] getGroupIds(final Group... groups) {
+    String[] ids = new String[groups.length];
+    for (int i = 0; i < groups.length; i++) {
+      ids[i] = groups[i].getId();
     }
     return ids;
   }

@@ -23,7 +23,6 @@
  */
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
@@ -82,16 +81,12 @@ public class SubscribePostTest extends RESTWebServiceTest<SubscriptionTestResour
   @SuppressWarnings("unchecked")
   public void subscribeToComponentByAnAuthenticatedUser() throws Exception {
     WebResource resource = resource();
-    UserDetailWithProfiles user = new UserDetailWithProfiles();
-    user.setFirstName("Bart");
-    user.setLastName("Simpson");
-    user.setId("10");
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    getMockedPersonalizationService().setPersonalizationService(mock(PersonalizationService.class));
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
-    ComponentSubscription subscription = new ComponentSubscription("10", COMPONENT_ID);
+    ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
     getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
     String result = resource.path(SUBSCRIBE_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).accept(
             MediaType.APPLICATION_JSON).post(String.class);
@@ -104,16 +99,12 @@ public class SubscribePostTest extends RESTWebServiceTest<SubscriptionTestResour
   @SuppressWarnings("unchecked")
   public void subscribeToTopicByAnAuthenticatedUser() throws Exception {
     WebResource resource = resource();
-    UserDetailWithProfiles user = new UserDetailWithProfiles();
-    user.setFirstName("Bart");
-    user.setLastName("Simpson");
-    user.setId("10");
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    getMockedPersonalizationService().setPersonalizationService(mock(PersonalizationService.class));
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
-    NodeSubscription subscription = new NodeSubscription("10", new NodePK("205", COMPONENT_ID));
+    NodeSubscription subscription = new NodeSubscription(user.getId(), new NodePK("205", COMPONENT_ID));
     getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
     String result = resource.path(SUBSCRIBE_RESOURCE_PATH + "/topic/205").header(HTTP_SESSIONKEY, sessionKey).accept(
             MediaType.APPLICATION_JSON).post(String.class);

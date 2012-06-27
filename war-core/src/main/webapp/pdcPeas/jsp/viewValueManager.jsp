@@ -29,6 +29,8 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
 ArrayList 		groups 			= (ArrayList) request.getAttribute("Groups");
 ArrayList 		users 			= (ArrayList) request.getAttribute("Users");
@@ -129,7 +131,7 @@ function ConfirmAndSend(textToDisplay,targetURL)
 		%>
 			<TR>
 				<TD align="center"><IMG SRC="<%=resource.getIcon("pdcPeas.user")%>"/></TD>
-				<TD align="center"><%out.println(user.getDisplayedName());%></TD>
+				<TD align="center"><view:username userId="<%=user.getId()%>"/></TD>
 			</TR>
 		<%
 			i++;
@@ -178,7 +180,7 @@ function ConfirmAndSend(textToDisplay,targetURL)
 		%>
 			<TR>
 				<TD align="center"><IMG SRC="<%=resource.getIcon("pdcPeas.user")%>"/></TD>
-				<TD align="center"><%out.println(user.getDisplayedName());%></TD>
+				<TD align="center"><view:username userId="<%=user.getId()%>"/></TD>
 			</TR>
 		<%
 			i++;

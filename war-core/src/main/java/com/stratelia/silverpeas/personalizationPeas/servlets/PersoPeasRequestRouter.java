@@ -24,19 +24,20 @@
 
 package com.stratelia.silverpeas.personalizationPeas.servlets;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * Class declaration
  * @author
  */
-public class PersoPeasRequestRouter extends ComponentRequestRouter<PersonalizationSessionController> {
+public class PersoPeasRequestRouter extends
+    ComponentRequestRouter<PersonalizationSessionController> {
 
   private static final long serialVersionUID = 1L;
 
@@ -49,7 +50,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter<Personalizati
    */
   @Override
   public PersonalizationSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      final MainSessionController mainSessionCtrl, final ComponentContext componentContext) {
     return new PersonalizationSessionController(mainSessionCtrl, componentContext);
   }
 
@@ -69,11 +70,11 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter<Personalizati
    * @param function The entering request function (ex : "Main.jsp")
    * @param personalizationScc The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,PersonalizationSessionController personalizationScc, HttpServletRequest request) {
+  public String getDestination(final String function,
+      final PersonalizationSessionController personalizationScc, final HttpServletRequest request) {
     SilverTrace.info(getSessionControlBeanName(),
         "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "function = " + function);
@@ -82,13 +83,18 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter<Personalizati
 
     try {
       if (function.startsWith("SaveChannels")) {
-        String selectedChannels = request.getParameter("SelectedChannels");
+        final String selectedChannels = request.getParameter("SelectedChannels");
+        final String selectedFrequency = request.getParameter("SelectedFrequency");
         personalizationScc.saveChannels(selectedChannels);
+        personalizationScc.saveDelayedUserNotificationFrequency(selectedFrequency);
+        request.setAttribute("validationMessage",
+            personalizationScc.getMultilang().getString("GML.validation.update"));
         destination = "/personalizationPeas/jsp/personalization_Notification.jsp";
       } else {
         destination = "/personalizationPeas/jsp/" + function;
       }
-    } catch (Exception e) {
+      performDelayedNotificationFrequency(personalizationScc, request);
+    } catch (final Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
@@ -97,5 +103,15 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter<Personalizati
         "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "destination = " + destination);
     return destination;
+  }
+
+  /**
+   * This method handles data about delayed notification
+   * @param componentSC
+   * @param request
+   */
+  private void performDelayedNotificationFrequency(
+      final PersonalizationSessionController componentSC, final HttpServletRequest request) {
+    request.setAttribute("delayedNotification", componentSC.getDelayedNotificationBean());
   }
 }
