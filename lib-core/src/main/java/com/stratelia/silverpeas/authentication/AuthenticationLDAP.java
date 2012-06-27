@@ -95,7 +95,7 @@ public class AuthenticationLDAP extends Authentication {
     m_UserBaseDN = propFile.getString(authenticationServerName + ".LDAPUserBaseDN");
     m_UserLoginFieldName = propFile.getString(authenticationServerName + ".LDAPUserLoginFieldName");
 
-    // get parameters about user alert if password is about to expire
+    // get parameters about user alert if password is about to expire or is already expired
     m_MustAlertPasswordExpiration = getBooleanProperty(propFile, authenticationServerName
         + ".MustAlertPasswordExpiration", false);
     if (m_MustAlertPasswordExpiration) {
@@ -204,6 +204,9 @@ public class AuthenticationLDAP extends Authentication {
         throw new AuthenticationHostException("AuthenticationLDAP.internalAuthentication()",
             SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
       }
+    }
+    if (nbDaysBeforeExpiration < 0){
+      throw new AuthenticationPasswordExpired("User=" + login);
     }
     if (userFullDN == null) {
       throw new AuthenticationBadCredentialException("AuthenticationLDAP.internalAuthentication()",
@@ -338,40 +341,63 @@ public class AuthenticationLDAP extends Authentication {
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
 
-      // re bind with the requested user to verify old password
-      m_LDAPConnection.bind(LDAPConnection.LDAP_V3, userFullDN, oldPassword.getBytes(Charsets.UTF_8));
-
-      LDAPModification mod = null;
-      if (!StringUtil.isDefined(ldapImpl) || "ad".equalsIgnoreCase(ldapImpl)) {
-        // prepare password change
-        mod = changeActiveDirectoryPassword(newPassword);        
-      } else if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
+      LDAPModification[] mod;
+      if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
+        // re bind with the requested user to verify old password
+        m_LDAPConnection.bind(LDAPConnection.LDAP_V3, userFullDN, oldPassword.getBytes(Charsets.UTF_8));
         // prepare password change
         mod = changeOpenDSPassword(newPassword);
+      } else { //Active Directory (something else ?)
+        // Connection must be secure on an ActiveDirectory
+        if (!m_IsSecured) {
+          Exception e = new UnsupportedOperationException(
+              "LDAP connection must be secured to allow password update");
+          throw new AuthenticationException("AuthenticationLDAP.changePassword",
+              SilverpeasException.ERROR,
+              "authentication.EX_CANT_CHANGE_USERPASSWORD", e);
+        }
+
+        // prepare password change (old password will be verified by DELETE modification)
+        mod = getActiveDirectoryPasswordChange(oldPassword, newPassword);
       }
+
       // Perform the update
       m_LDAPConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
       throw new AuthenticationHostException(
-          "AuthenticationLDAP.internalAuthentication()",
+          "AuthenticationLDAP.internalChangePassword()",
           SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
     }
   }
-  
-  private LDAPModification changeActiveDirectoryPassword(String newPassword) {
-    // Convert password to UTF-16LE
-    String newQuotedPassword = "\"" + newPassword + "\"";
-    byte[] newUnicodePassword = newQuotedPassword.getBytes(Charsets.UTF_16LE);
 
-    // prepare password change
-    return new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("unicodePwd",
+  private LDAPModification[] getActiveDirectoryPasswordChange(String oldPassword,String newPassword) {
+    // Convert passwords to UTF-16LE
+    byte[] oldUnicodePassword = getActiveDirectoryUnicodePwd(oldPassword);
+    byte[] newUnicodePassword = getActiveDirectoryUnicodePwd(newPassword);
+    LDAPModification[] res = new LDAPModification[2];
+    res[0] = new LDAPModification(LDAPModification.DELETE, new LDAPAttribute("unicodePwd",
+        oldUnicodePassword));
+    res[1] = new LDAPModification(LDAPModification.ADD, new LDAPAttribute("unicodePwd",
         newUnicodePassword));
+    return res;
   }
-  
-  private LDAPModification changeOpenDSPassword(String newPassword) throws UnsupportedEncodingException {
+
+  private LDAPModification[] getActiveDirectoryPasswordReset(String newPassword) {
+    // Convert password to UTF-16LE
+    byte[] newUnicodePassword = getActiveDirectoryUnicodePwd(newPassword);
+    return new LDAPModification[]{new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("unicodePwd",
+        newUnicodePassword))};
+  }
+
+  private byte[] getActiveDirectoryUnicodePwd(String password){
+    String newQuotedPassword = "\"" + password + "\"";
+    return newQuotedPassword.getBytes(Charsets.UTF_16LE);
+  }
+
+  private LDAPModification[] changeOpenDSPassword(String newPassword) throws UnsupportedEncodingException {
     // prepare password change
-    return new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("userPassword",
-        newPassword));
+    return new LDAPModification[]{new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("userPassword",
+        newPassword))};
   }
 
   static String[] extractBaseDNs(String baseDN) {
@@ -414,11 +440,11 @@ public class AuthenticationLDAP extends Authentication {
       }
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
-      
-      LDAPModification mod = null;
+
+      LDAPModification[] mod = null;
       if (!StringUtil.isDefined(ldapImpl) || "ad".equalsIgnoreCase(ldapImpl)) {
         // prepare password change
-        mod = changeActiveDirectoryPassword(newPassword);
+        mod = getActiveDirectoryPasswordReset(newPassword);
       } else if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
         // prepare password change
         mod = changeOpenDSPassword(newPassword);
