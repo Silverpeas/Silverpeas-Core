@@ -108,7 +108,7 @@
         	<div class="profilPhotoContact">
         		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
         	</div>
-	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
+        	<view:username userId="<%=contact.getId() %>" />
 	   	</div> <!-- /unContact  -->
   	<% } %>
     

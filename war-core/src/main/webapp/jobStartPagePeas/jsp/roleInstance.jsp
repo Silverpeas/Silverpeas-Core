@@ -203,15 +203,14 @@ out.println(board.printBefore());
 		// La boucle sur les users
 		Iterator users = inheritedUsers.iterator();
 		UserDetail user = null;
-		while (users.hasNext())
-		{
+		while (users.hasNext()) {
 			user = (UserDetail) users.next();
-			out.println("<TR>");
-			out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.user")+"\" class=\"user-icon\"/></TD>");
-			out.println("<TD align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</TD>");
-			out.println("</TR>");
-		}
 		%>
+			<tr>
+			<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
+			<td align="center"><view:username userId="<%=user.getId()%>"/></td>
+			</tr>
+		<% } %>
 		<TR>
 			<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
 		</TR>
@@ -255,15 +254,14 @@ out.println(board.printBefore());
 		// La boucle sur les users
 		Iterator users = m_listUser.iterator();
 		UserDetail user = null;
-		while (users.hasNext())
-		{
+		while (users.hasNext()) {
 			user = (UserDetail) users.next();
-			out.println("<TR>");
-			out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.user")+"\" class=\"user-icon\"/></TD>");
-			out.println("<TD align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</TD>");
-			out.println("</TR>");
-		}
-		%>			
+		%>
+			<tr>
+			<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
+			<td align="center"><view:username userId="<%=user.getId()%>"/></td>
+			</tr>
+		<% } %>			
 		<TR>
 			<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
 		</TR>

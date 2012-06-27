@@ -26,7 +26,6 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.includeUserZoom;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
@@ -92,12 +91,7 @@ public class UserNameTag extends SimpleTagSupport {
   @Override
   public void doTag() throws JspException, IOException {
     if (isDefined(userId)) {
-      UserDetail user = UserDetail.getById(userId);
-      span userName = new span(user.getDisplayedName());
-      if (!userId.equals(getCurrentUserIdInSession())) {
-        userName.setClass("userToZoom");
-        userName.addAttribute("rel", userId);
-      }
+      span userName = UserNameGenerator.generate(userId, getCurrentUserIdInSession());
       ElementContainer container = includeUserZoom(new ElementContainer());
       container.addElement(userName);
       container.output(getOut());

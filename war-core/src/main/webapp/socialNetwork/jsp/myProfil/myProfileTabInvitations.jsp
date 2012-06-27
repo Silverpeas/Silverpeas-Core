@@ -11,6 +11,8 @@
 <%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%>
 <%@page import="com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONActions"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
 	List invitations = null;
 	String receivedCssClass = "";
@@ -187,7 +189,7 @@ function showEmptyListMessage() {
 					</div>
 					<div class="txt">
 	                	<p>
-	                    	<a class="name" href="<%=URLManager.getApplicationURL() %>/Rprofil/jsp/Main?userId=<%=senderId%>"> <%=invitation.getUserDetail().getDisplayedName() %> </a>
+	                		<view:username userId="<%=invitation.getUserDetail().getId()%>"/>
 	                    </p>
 	                    <p>
 	                    	<fmt:message key="myProfile.invitations.date" /> <%= resource.getOutputDateAndHour(invitation.getInvitation().getInvitationDate())%>

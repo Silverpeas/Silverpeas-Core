@@ -31,6 +31,8 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="check.jsp" %>
 
 <%!
@@ -240,7 +242,7 @@ out.println(board.printBefore());
 		<td align="left" valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(compoInst.getCreateDate())%>
 			<% if (compoInst.getCreator() != null) { %> 
-				<%=resource.getString("GML.by") %> <%=compoInst.getCreator().getDisplayedName() %>
+				<%=resource.getString("GML.by") %> <view:username userId="<%=compoInst.getCreator().getId()%>" />
 			<% } %>
 		</td>
 	</tr>
@@ -251,7 +253,7 @@ out.println(board.printBefore());
 		<td align="left" valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(compoInst.getUpdateDate())%>
 			<% if (compoInst.getUpdater() != null) { %>  
-				<%=resource.getString("GML.by") %> <%=compoInst.getUpdater().getDisplayedName() %>
+				<%=resource.getString("GML.by") %> <view:username userId="<%=compoInst.getUpdater().getId()%>" />
 			<% } %>
 		</td>
 	</tr>
