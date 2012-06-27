@@ -48,5 +48,5 @@ public interface UserNotification {
    * @param mediaType
    * @param notification
    */
-  void send(final NotifMediaType mediaType);
+  void send(NotifMediaType mediaType);
 }
