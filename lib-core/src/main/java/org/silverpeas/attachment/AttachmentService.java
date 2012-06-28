@@ -23,14 +23,15 @@
  */
 package org.silverpeas.attachment;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -288,4 +289,29 @@ public interface AttachmentService {
    * @return an ordered list of the documents.
    */
   List<SimpleDocument> listDocumentsToUnlock(Date expiryDate, String language);
+  
+   /**
+   * Checkout a file to be updated by user
+   *
+   * @param attachmentId
+   * @param userId
+   * @param language
+   * @return false if the attachment is already checkout - true if the attachment was successfully
+   * checked out.
+   */
+  public boolean lock(String attachmentId, String userId, String language);
+  
+    /**
+   * Release a locked file.
+   *
+   * @param attachmentId
+   * @param userId
+   * @param upload : indicates if the file has been uploaded throught a form.
+   * @param force if the user is an Admin he can force the release.
+   * @param language the language for the attachment.
+   * @return false if the file is locked - true if the checkin succeeded.
+   * @throws AttachmentException
+   */
+  public boolean unlock(String attachmentId, String userId, boolean upload,
+      boolean update, boolean force, String language);
 }

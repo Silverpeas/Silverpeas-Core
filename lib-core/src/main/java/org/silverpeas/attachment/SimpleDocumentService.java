@@ -23,6 +23,18 @@
  */
 package org.silverpeas.attachment;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.jcrutil.BasicDaoFactory;
@@ -39,20 +51,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.RepositoryHelper;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 import javax.inject.Named;
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -410,7 +412,7 @@ public class SimpleDocumentService implements AttachmentService {
       boolean invokeCallback) {
     Session session = null;
     try {
-      session = BasicDaoFactory.getSystemSession();      
+      session = BasicDaoFactory.getSystemSession();
       repository.addContent(session, document.getPk(), document.getFile(), in);
       storeContent(session, document);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
@@ -461,45 +463,7 @@ public class SimpleDocumentService implements AttachmentService {
       BasicDaoFactory.logout(session);
     }
   }
-  /* public void moveDownAttachment(AttachmentDetail attachDetail) {
-
-   try {
-   AttachmentDetail next = attachmentBm.findNext(attachDetail);
-
-   if (next != null) {
-   int stockNum = next.getOrderNum();
-   next.setOrderNum(attachDetail.getOrderNum());
-   attachDetail.setOrderNum(stockNum);
-   attachmentBm.updateAttachment(next);
-   attachmentBm.updateAttachment(attachDetail);
-   }
-   } catch (Exception e) {
-   throw new AttachmentRuntimeException(
-   "AttachmentController.moveDownAttachment()",
-   SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-   e);
-   }
-   }
-
-   public void moveUpAttachment(AttachmentDetail attachDetail) {
-
-   try {
-   AttachmentDetail prev = attachmentBm.findPrevious(attachDetail);
-
-   if (prev != null) {
-   int stockNum = prev.getOrderNum();
-   prev.setOrderNum(attachDetail.getOrderNum());
-   attachDetail.setOrderNum(stockNum);
-   attachmentBm.updateAttachment(prev);
-   attachmentBm.updateAttachment(attachDetail);
-   }
-   } catch (Exception e) {
-   throw new AttachmentRuntimeException(
-   "AttachmentController.moveUpAttachment()",
-   SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-   e);
-   }
-   }
+  /*
 
    public void moveAttachments(ForeignPK fromPK, ForeignPK toPK,
    boolean indexIt) throws AttachmentException {
@@ -1233,21 +1197,6 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
-  //@Override
-  public InputStream getBinaryContent(SimpleDocumentPK pk, String lang) {
-    Session session = null;
-    try {
-      session = BasicDaoFactory.getSystemSession();
-      return repository.getContent(session, pk, lang);
-    } catch (IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      BasicDaoFactory.logout(session);
-    }
-  }
-
   @Override
   public void getBinaryContent(OutputStream output, SimpleDocumentPK pk, String lang) {
     Session session = null;
@@ -1355,5 +1304,95 @@ public class SimpleDocumentService implements AttachmentService {
     } finally {
       IOUtils.closeQuietly(in);
     }
+  }
+
+  /**
+   * Release a locked file.
+   *
+   * @param attachmentId
+   * @param userId
+   * @param upload : indicates if the file has been uploaded throught a form.
+   * @param force if the user is an Admin he can force the release.
+   * @param language the language for the attachment.
+   * @return false if the file is locked - true if the checkin succeeded.
+   * @throws AttachmentException
+   */
+  @Override
+  public boolean unlock(String attachmentId, String userId, boolean upload,
+      boolean update, boolean force, String language) {
+    try {
+      SilverTrace.debug("attachment", "AttachmentController.checkinOfficeFile()",
+          "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId);
+
+      SimpleDocument document = searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
+      if (document.isOpenOfficeCompatible() && !force && RepositoryHelper.getJcrAttachmentService().
+          isNodeLocked(document, language)) {
+        SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
+            "attachment.NODE_LOCKED");
+        return false;
+      }
+      if (!force && document.isReadOnly() && !document.getEditedBy().equals(userId)) {
+        SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
+            "attachment.INCORRECT_USER");
+        return false;
+      }
+
+      String componentId = document.getInstanceId();
+      boolean invokeCallback = false;
+
+      if (update || upload) {
+        String workerId = document.getEditedBy();
+        document.setUpdated(new Date());
+        document.setUpdatedBy(workerId);
+        invokeCallback = true;
+      }
+/*
+      if (upload) {
+        String uploadedFile = FileRepositoryManager.getAbsolutePath(componentId)
+            + CONTEXT_ATTACHMENTS + attachmentDetail.getPhysicalName(language);
+        long newSize = FileRepositoryManager.getFileSize(uploadedFile);
+        attachmentDetail.setSize(newSize);
+      }*/
+
+      if (document.isOpenOfficeCompatible() && !upload && update) {
+        RepositoryHelper.getJcrAttachmentService().getUpdatedDocument(document, language);
+      } else if (document.isOpenOfficeCompatible() && (upload || !update)) {
+        RepositoryHelper.getJcrAttachmentService().deleteAttachment(document, language);
+      }
+      // Remove workerId from this attachment
+      document.release();
+      updateAttachment(document, false, invokeCallback);
+    } catch (Exception e) {
+      SilverTrace.error("attachment", "AttachmentController.checkinOfficeFile()",
+          "attachment.CHECKIN_FAILED", e);
+      throw new AttachmentException("AttachmentController.checkinOfficeFile()",
+          SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
+    }
+    return true;
+  }
+
+  /**
+   * Lock a file so it can be edited by an user.
+   *
+   * @param attachmentId
+   * @param userId
+   * @param language
+   * @return false if the attachment is already checkout - true if the attachment was successfully
+   * checked out.
+   */
+  @Override
+  public boolean lock(String attachmentId, String userId, String language) {
+    SilverTrace.debug("attachment", "AttachmentController.checkoutFile()",
+        "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId + ", userId = " + userId);
+    SimpleDocument document = searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
+    if (document.isReadOnly()) {
+      return document.getEditedBy().equals(userId);
+    }
+    document.edit(userId);
+    if (document.isOpenOfficeCompatible()) {
+      RepositoryHelper.getJcrAttachmentService().createAttachment(document, language);
+    }
+    updateAttachment(document, false, false);
+    return true;
   }
 }

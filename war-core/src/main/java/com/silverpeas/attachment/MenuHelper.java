@@ -23,13 +23,13 @@
  */
 package com.silverpeas.attachment;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import javax.servlet.jsp.JspWriter;
 import org.silverpeas.attachment.model.SimpleDocument;
-
-import java.io.IOException;
-import java.net.URLEncoder;
 
 /**
  * @author ehugonnet
@@ -66,20 +66,20 @@ public class MenuHelper {
     builder.append("<div class=\"bd\">").append(NEW_LINE);
     builder.append("<ul class=\"first-of-type\">").append(NEW_LINE);
     builder.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkout(").
-        append(attachmentId).append(',').append(webDavOK).append(")\">").append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkout('").
+        append(attachment.getId()).append("',").append(webDavOK).append(")\">").append(
         resources.getString("checkOut")).append("</a></li>").append(NEW_LINE);
     builder.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload(").
-        append(attachmentId).append(',').append(webDavOK).append(")\">").append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload('").
+        append(attachment.getId()).append("',").append(webDavOK).append(")\">").append(
         resources.getString("attachment.checkOutAndDownload")).append("</a></li>").append(NEW_LINE);
     builder.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit(").
-        append(attachmentId).append(")\">").
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit('").
+        append(attachment.getId()).append("')\">").
         append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>");
     builder.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin(").
-        append(attachmentId).append(",").append(attachment.isOpenOfficeCompatible()).
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin('").
+        append(attachment.getId()).append("',").append(attachment.isOpenOfficeCompatible()).
         append(", false)\">").append(resources.getString("checkIn")).append("</a></li>");
     builder.append("</ul>");
     builder.append("<ul>");

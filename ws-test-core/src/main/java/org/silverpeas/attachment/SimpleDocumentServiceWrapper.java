@@ -23,14 +23,15 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.util.Default;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+
+import com.silverpeas.util.Default;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import javax.inject.Named;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -200,5 +201,16 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   @Override
   public void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException {
     realService.reorderDocuments(documents);
+  }
+
+  @Override
+  public boolean lock(String attachmentId, String userId, String language) {
+    return realService.lock(attachmentId, userId, language);
+  }
+
+  @Override
+  public boolean unlock(String attachmentId, String userId, boolean upload, boolean update,
+      boolean force, String language) {
+    return unlock(attachmentId, userId, upload, update, force, language);
   }
 }

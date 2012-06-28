@@ -23,20 +23,23 @@
  */
 package org.silverpeas.attachment.model;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
-
-import java.util.Date;
 
 /**
  *
@@ -44,6 +47,8 @@ import java.util.Date;
  */
 public class SimpleDocument {
 
+  private final static ResourceLocator resources = new ResourceLocator(
+      "com.stratelia.webactiv.util.attachment.Attachment", "");
   public static final String ATTACHMENTS_FOLDER = "attachments";
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
@@ -185,10 +190,6 @@ public class SimpleDocument {
     return file.getCreatedBy();
   }
 
-  public void setCreatedBy(String createdBy) {
-    file.setCreatedBy(createdBy);
-  }
-
   public Date getCreated() {
     return file.getCreated();
   }
@@ -267,6 +268,33 @@ public class SimpleDocument {
 
   public void edit(String currentEditor) {
     this.editedBy = currentEditor;
+    this.reservation = new Date();
+    String day = OrganizationControllerFactory.getFactory().getOrganizationController().
+        getComponentParameterValue(getInstanceId(), "nbDayForReservation");
+
+    if (StringUtil.isInteger(day)) {
+      int nbDay = Integer.parseInt(day);
+      Calendar calendar = Calendar.getInstance();
+      DateUtil.addDaysExceptWeekEnds(calendar, nbDay);
+      setExpiry(calendar.getTime());
+
+      int delayReservedFile = resources.getInteger("DelayReservedFile", -1);
+      if ((delayReservedFile >= 0) && (delayReservedFile <= 100)) {
+        int result = (nbDay * delayReservedFile) / 100;
+        if (result > 2) {
+          calendar = Calendar.getInstance();
+          DateUtil.addDaysExceptWeekEnds(calendar, result);
+          setAlert(calendar.getTime());
+        }
+      }
+    }
+  }
+
+  public void release() {
+    this.editedBy = null;
+    this.reservation = null;
+    setExpiry(null);
+    setAlert(null);
   }
 
   public String getXmlFormId() {

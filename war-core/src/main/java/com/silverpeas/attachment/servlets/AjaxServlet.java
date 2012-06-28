@@ -1,28 +1,30 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.attachment.servlets;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -30,20 +32,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 public class AjaxServlet extends HttpServlet {
 
@@ -92,7 +88,8 @@ public class AjaxServlet extends HttpServlet {
 
   private String getUserId(HttpServletRequest req) {
     MainSessionController msc =
-        (MainSessionController) req.getSession().getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        (MainSessionController) req.getSession().getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return msc.getCurrentUserDetail().getId();
   }
 
@@ -100,14 +97,8 @@ public class AjaxServlet extends HttpServlet {
     String idAttachment = req.getParameter("Id");
     String userId = getUserId(req);
     String fileLanguage = req.getParameter("FileLanguage");
-
-    boolean checkOutOK = false;
-    try {
-      checkOutOK = AttachmentController.checkoutFile(idAttachment, userId, fileLanguage);
-    } catch (AttachmentException e) {
-      SilverTrace.error("attachment", "AjaxServlet.checkout", "root.MSG_GEN_PARAM_VALUE", e);
-    }
-
+    boolean checkOutOK = AttachmentServiceFactory.getAttachmentService().lock(idAttachment, userId,
+        fileLanguage);
     if (checkOutOK) {
       return "ok";
     }
@@ -118,19 +109,13 @@ public class AjaxServlet extends HttpServlet {
     String idAttachment = req.getParameter("Id");
     String fileLanguage = req.getParameter("FileLanguage");
     boolean update = Boolean.parseBoolean(req.getParameter("update_attachment"));
-    boolean force =
-        Boolean.parseBoolean(req.getParameter("force_release")) && getMainSessionController(
-        req).getCurrentUserDetail().isAccessAdmin();
-    try {
-      if (!AttachmentController.checkinFile(idAttachment, getUserId(req), false, update, force, 
-          fileLanguage)) {
+    boolean force = Boolean.parseBoolean(req.getParameter("force_release"))
+        && getMainSessionController(req).getCurrentUserDetail().isAccessAdmin();
+      if (!AttachmentServiceFactory.getAttachmentService().unlock(idAttachment, getUserId(req),
+          false, update, force,fileLanguage)) {
         return "locked";
       }
       return "ok";
-    } catch (AttachmentException e) {
-      SilverTrace.error("attachment", "AjaxServlet.checkin", "root.MSG_GEN_PARAM_VALUE", e);
-    }
-    return "error";
   }
 
   private String deleteAttachment(HttpServletRequest req) {
@@ -139,8 +124,6 @@ public class AjaxServlet extends HttpServlet {
     boolean indexIt = isIndexable(req);
 
     StringTokenizer tokenizer = new StringTokenizer(languagesToRemove, ",");
-    int nbTranslationsToDelete = tokenizer.countTokens();
-
     // create AttachmentPK with id and componentId
     SimpleDocumentPK atPK = new SimpleDocumentPK(id, getForeignPK(req).getInstanceId());
 
@@ -149,26 +132,26 @@ public class AjaxServlet extends HttpServlet {
         String lang = tokenizer.nextToken();
         if ("all".equals(lang)) {
           // suppresion de l'objet
-          SimpleDocument doc =  AttachmentServiceFactory.getAttachmentService()
+          SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
               .searchAttachmentById(atPK, null);
           AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
           return "attachmentRemoved";
         } else {
-          SimpleDocument doc =  AttachmentServiceFactory.getAttachmentService()
+          SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
               .searchAttachmentById(atPK, lang);
 
-            boolean hasMoreTranslations = true;
-            while (hasMoreTranslations) {
-              AttachmentServiceFactory.getAttachmentService().removeContent(doc,lang, indexIt);
-              hasMoreTranslations = tokenizer.hasMoreTokens();
-              if (hasMoreTranslations) {
-                lang = tokenizer.nextToken();
-              }
+          boolean hasMoreTranslations = true;
+          while (hasMoreTranslations) {
+            AttachmentServiceFactory.getAttachmentService().removeContent(doc, lang, indexIt);
+            hasMoreTranslations = tokenizer.hasMoreTokens();
+            if (hasMoreTranslations) {
+              lang = tokenizer.nextToken();
             }
-            return "translationsRemoved";
           }
+          return "translationsRemoved";
+        }
       } else {
-        SimpleDocument doc =  AttachmentServiceFactory.getAttachmentService()
+        SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
             .searchAttachmentById(atPK, null);
         AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
         return "attachmentRemoved";
@@ -206,6 +189,7 @@ public class AjaxServlet extends HttpServlet {
   }
 
   private MainSessionController getMainSessionController(HttpServletRequest request) {
-    return (MainSessionController) request.getSession().getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    return (MainSessionController) request.getSession().getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   }
 }

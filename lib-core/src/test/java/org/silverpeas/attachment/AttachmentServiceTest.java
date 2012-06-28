@@ -700,9 +700,9 @@ public class AttachmentServiceTest {
     result.setAlert(alertDate);
     result.setContentType(MimeTypes.BZ2_ARCHIVE_MIME_TYPE);//shouldn't change
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    result.setCreated(creationDate);
+    result.setUpdated(creationDate);
     String creatorId = "150";
-    result.setCreatedBy(creatorId);
+    result.setUpdatedBy(creatorId);
     String description = "Ceci est mon document de test mis à jour";
     result.setDescription(description);
     Date expiryDate = RandomGenerator.getRandomCalendar().getTime();
