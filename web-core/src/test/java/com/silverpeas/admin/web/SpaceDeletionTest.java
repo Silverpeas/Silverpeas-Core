@@ -27,7 +27,6 @@ import static com.silverpeas.admin.web.AdminResourceURIs.SPACES_BASE_URI;
 import static com.silverpeas.admin.web.AdminResourceURIs.SPACES_PERSONAL_URI_PART;
 import static com.silverpeas.admin.web.AdminTestResources.JAVA_PACKAGE;
 import static com.silverpeas.admin.web.AdminTestResources.SPRING_CONTEXT;
-import static com.silverpeas.admin.web.AdminTestResources.saveUser;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -57,7 +56,7 @@ public class SpaceDeletionTest extends ResourceDeletionTest<AdminTestResources> 
 
   @Before
   public void prepareTestResources() {
-    user = saveUser(aUser());
+    user = aUser();
     sessionKey = authenticate(user);
   }
 

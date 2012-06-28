@@ -23,14 +23,25 @@
  */
 package com.silverpeas.admin.web;
 
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Named;
 
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import com.silverpeas.util.MapUtil;
 import com.silverpeas.web.TestResources;
-import com.silverpeas.web.mock.OrganizationControllerMock;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * Resources required by all the unit tests on the comment web resource.
@@ -41,12 +52,81 @@ public class AdminTestResources extends TestResources {
   public static final String JAVA_PACKAGE = "com.silverpeas.admin.web";
   public static final String SPRING_CONTEXT = "spring-admin-webservice.xml";
 
-  public static UserDetail saveUser(final UserDetail user) {
-    final OrganizationControllerFactory factory = OrganizationControllerFactory.getFactory();
-    final OrganizationControllerMock mock =
-        (OrganizationControllerMock) factory.getOrganizationController();
-    mock.addUserDetail(user);
-    return user;
+  private final Collection<String> rootSpaceIds = new ArrayList<String>();
+  private final Map<String, List<String>> subSpaceInstLights = new HashMap<String, List<String>>();
+  private final Map<String, List<String>> spaceComponents = new HashMap<String, List<String>>();
+
+  /**
+   * "thenAnswer" is used at this level because the returned value is calculated when the method is
+   * called in contrary to "thenReturn" which is only calculated on the initialization
+   */
+  protected void initializeMocks() {
+
+    // getAllRootSpaceIds
+    when(getOrganizationControllerMock().getAllRootSpaceIds(Matchers.anyString())).thenAnswer(
+        new Answer<String[]>() {
+
+          @Override
+          public String[] answer(final InvocationOnMock invocation) throws Throwable {
+            return rootSpaceIds.toArray(new String[] {});
+          }
+        });
+
+    // getAllSubSpaceIds
+    when(
+        getOrganizationControllerMock().getAllSubSpaceIds(Matchers.anyString(),
+            Matchers.anyString())).thenAnswer(new Answer<String[]>() {
+
+      @Override
+      public String[] answer(final InvocationOnMock invocation) throws Throwable {
+        final String spaceId = (String) invocation.getArguments()[0];
+        final Collection<String> subSpaceIds = subSpaceInstLights.get(spaceId);
+        if (subSpaceIds == null) {
+          return new String[0];
+        }
+        return subSpaceIds.toArray(new String[] {});
+      }
+    });
+
+    // getAvailCompoIdsAtRoot
+    when(
+        getOrganizationControllerMock().getAvailCompoIdsAtRoot(Matchers.anyString(),
+            Matchers.anyString())).thenAnswer(new Answer<String[]>() {
+
+      @Override
+      public String[] answer(final InvocationOnMock invocation) throws Throwable {
+        final String spaceId = (String) invocation.getArguments()[0];
+        final Collection<String> spaceComponentIds = spaceComponents.get(spaceId);
+        if (spaceComponentIds == null) {
+          return new String[0];
+        }
+        return spaceComponentIds.toArray(new String[] {});
+      }
+    });
+  }
+
+  public void save(final ComponentInstLight... components) {
+    String componentId;
+    String spaceId;
+    for (final ComponentInstLight component : components) {
+      componentId = component.getId().replaceFirst(component.getName(), "");
+      spaceId = component.getDomainFatherId().replaceFirst(Admin.SPACE_KEY_PREFIX, "");
+      MapUtil.putAddList(spaceComponents, spaceId, componentId);
+      when(getOrganizationControllerMock().getComponentInstLight(componentId))
+          .thenReturn(component);
+    }
+  }
+
+  public void save(final SpaceInstLight... spaces) {
+    for (final SpaceInstLight space : spaces) {
+      if (space.isRoot()) {
+        rootSpaceIds.add(space.getShortId());
+      } else {
+        MapUtil.putAddList(subSpaceInstLights, space.getFatherId(), space.getShortId());
+      }
+      when(getOrganizationControllerMock().getSpaceInstLightById(space.getShortId())).thenReturn(
+          space);
+    }
   }
 
   public static SpaceBuilder getSpaceBuilder(final int id) {
@@ -55,18 +135,5 @@ public class AdminTestResources extends TestResources {
 
   public static ComponentBuilder getComponentBuilder(final int id) {
     return new ComponentBuilder().withId(id);
-  }
-
-  public UserDetail save(final UserDetail user) {
-    getOrganizationControllerMock().addUserDetail(user);
-    return user;
-  }
-
-  public void save(final ComponentInstLight... components) {
-    getOrganizationControllerMock().addComponentInstLight(components);
-  }
-
-  public void save(final SpaceInstLight... spaces) {
-    getOrganizationControllerMock().addSpaceInstLight(spaces);
   }
 }

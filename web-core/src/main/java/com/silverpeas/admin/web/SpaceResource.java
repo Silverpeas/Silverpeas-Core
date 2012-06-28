@@ -38,7 +38,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -287,7 +286,6 @@ public class SpaceResource extends AbstractAdminResource {
   @PUT
   @Path(SPACES_PERSONAL_URI_PART + "/{componentName}")
   @Produces(APPLICATION_JSON)
-  @Consumes(APPLICATION_JSON)
   public PersonalComponentEntity useComponent(@PathParam("componentName") final String componentName) {
     try {
       return asWebPersonalEntity(getAdminPersonalDelegate().useComponent(componentName));
@@ -315,7 +313,6 @@ public class SpaceResource extends AbstractAdminResource {
   @DELETE
   @Path(SPACES_PERSONAL_URI_PART + "/{componentName}")
   @Produces(APPLICATION_JSON)
-  @Consumes(APPLICATION_JSON)
   public PersonalComponentEntity discardComponent(
       @PathParam("componentName") final String componentName) {
     try {

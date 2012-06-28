@@ -24,7 +24,6 @@
 package com.silverpeas.web;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -40,9 +39,9 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.web.mock.AccessControllerMock;
+import com.silverpeas.web.mock.SpaceAccessControllerMock;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.silverpeas.web.mock.SpaceAccessControllerMock;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -53,13 +52,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import java.util.UUID;
-import javax.ws.rs.core.MultivaluedMap;
-import org.junit.Before;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.request.RequestContextListener;
 
 /**
  * The base class for testing REST web services in Silverpeas.
@@ -207,9 +199,8 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     return getTestResources().getAccessControllerMock();
   }
 
-
   protected SpaceAccessControllerMock getMockedSpaceAccessController() {
-    return (SpaceAccessControllerMock) getTestResources().getSpaceAccessControllerMock();
+    return getTestResources().getSpaceAccessControllerMock();
   }
 
   protected PersonalizationService getPersonalizationServiceMock() {

@@ -38,7 +38,5 @@
     <ctx:exclude-filter type="regex" expression="com.silverpeas.admin.web.SpaceResource*"/>
   </ctx:component-scan>
   <import resource="spring-webservice.xml" />
-  <import resource="spring-personalization.xml" />
-  <import resource="spring-jpa-datasource.xml" />
 </beans>
 

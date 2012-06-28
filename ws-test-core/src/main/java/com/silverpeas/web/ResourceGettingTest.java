@@ -65,14 +65,14 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
   /**
    * Gets the web resource at the specified URI as an instance of the specified class in the way
    * it is sent back by the web resource in the specified media type.
-   * @param <T> the type of the resource to return.
+   * @param <C> the type of the resource to return.
    * @param uri the URI identifying uniquely the resource. the uri can be compound of a query
    * string (starts at ?).
    * @param mediaType the expected media type in which the returned resource state is encoded.
    * @param c the class of which the returned resource should be an instance.
    * @return the web entity representing the resource at the specified URI.
    */
-  public <T> T getAt(String uri, MediaType mediaType, Class<T> c) {
+  public <C> C getAt(String uri, MediaType mediaType, Class<C> c) {
     String thePath = uri;
     WebResource resource = resource();
     if (thePath.contains("?")) {
