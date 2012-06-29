@@ -370,6 +370,7 @@
           <exclude>**/*.doc</exclude>
           <exclude>**/*.docx</exclude>
           <exclude>**/*.zip</exclude>
+          <exclude>**/*.tif</exclude>
           <exclude>**/*.tar.gz</exclude>
           <exclude>**/*.tar.bz2</exclude>
           <exclude>**/*.sql</exclude>
@@ -384,6 +385,7 @@
           <include>**/*.odp</include>
           <include>**/*.odt</include>
           <include>**/*.doc</include>
+          <include>**/*.tif</include>
           <include>**/*.docx</include>
           <include>**/*.zip</include>
           <include>**/*.tar.gz</include>
