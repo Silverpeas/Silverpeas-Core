@@ -23,6 +23,7 @@ package com.silverpeas.util;
 
 import java.io.File;
 import java.util.Date;
+
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
@@ -37,8 +38,10 @@ public class MetadataExtractorTest {
       PathTestUtil.TARGET_DIR + "test-classes" + PathTestUtil.SEPARATOR + "Liste_ECCA.doc";
   private static final String docxFile =
       PathTestUtil.TARGET_DIR + "test-classes" + PathTestUtil.SEPARATOR + "Test.docx";
-   private static final String ooFile =
+  private static final String ooFile =
       PathTestUtil.TARGET_DIR + "test-classes" + PathTestUtil.SEPARATOR + "LibreOffice.odt";
+  private static final String tifFile =
+      PathTestUtil.TARGET_DIR + "test-classes" + PathTestUtil.SEPARATOR + "logo-silverpeas-2010.tif";
 
   public MetadataExtractorTest() {
   }
@@ -59,13 +62,13 @@ public class MetadataExtractorTest {
     assertThat(result.getKeywords(), is("test formation SA"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
-     assertThat(result.getCreationDate().getTime(), is(1122998040000L));
+    assertThat(result.getCreationDate().getTime(), is(1122998040000L));
     assertThat(result.getLastSaveDateTime().getTime(), is(1316063700000L));
   }
 
   @Test
   public void testExtractMetadataFrom2007WordDocument() {
-    MetadataExtractor instance = new MetadataExtractor();    
+    MetadataExtractor instance = new MetadataExtractor();
     File file = new File(docxFile);
     assertThat(file.exists(), is(true));
     MetaData result = instance.extractMetadata(file);
@@ -76,12 +79,12 @@ public class MetadataExtractorTest {
     assertThat(result.getComments(), is("Commentaires accentués"));
     assertThat(result.getKeywords(), is("mots clés du documents"));
     assertThat(result.getSilverId(), is(nullValue()));
-    assertThat(result.getSilverName(), is(nullValue()));   
+    assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate(), is(new Date(1315916400000L)));
-    assertThat(result.getLastSaveDateTime(),  is(nullValue()));
+    assertThat(result.getLastSaveDateTime().getTime(), is(1316001900000L));
   }
-  
-   @Test
+
+  @Test
   public void testExtractMetadataFromOpenOfficeDocument() {
     MetadataExtractor instance = new MetadataExtractor();
     File file = new File(ooFile);
@@ -93,10 +96,25 @@ public class MetadataExtractorTest {
     assertThat(result.getComments(), is("Comments"));
     assertThat(result.getKeywords(), is("Tika Keywords Test"));
     assertThat(result.getSilverId(), is(nullValue()));
-    assertThat(result.getSilverName(), is(nullValue()));   
+    assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1239874322000L));
     assertThat(result.getLastSaveDateTime(), is(nullValue()));
   }
 
-  
+  @Test
+  public void testExtractMetadataFromTifImage() {
+    MetadataExtractor instance = new MetadataExtractor();
+    File file = new File(tifFile);
+    MetaData result = instance.extractMetadata(file);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.getTitle(), is("Logo Silverpeas"));
+    assertThat(result.getSubject(), is("silverpeas"));
+    assertThat(result.getAuthor(), is("AuroreAllibe"));
+    assertThat(result.getComments(), is("Logo silverpeas txt noir"));
+    assertThat(result.getKeywords(), is(nullValue()));
+    assertThat(result.getSilverId(), is(nullValue()));
+    assertThat(result.getSilverName(), is(nullValue()));
+    assertThat(result.getCreationDate().getTime(), is(1340963223000L));
+    assertThat(result.getLastSaveDateTime(), is(nullValue()));
+  }
 }
