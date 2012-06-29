@@ -23,13 +23,6 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +30,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import javax.inject.Named;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -60,6 +62,7 @@ import static com.silverpeas.jcrutil.JcrConstants.*;
  *
  * @author ehugonnet
  */
+@Named("documentRepository")
 public class DocumentRepository {
 
   SimpleDocumentConverter converter = new SimpleDocumentConverter();
@@ -120,8 +123,8 @@ public class DocumentRepository {
     targetDoc.setPK(pk);
     prepareComponentAttachments(session, destination.getInstanceId());
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
-    session.move(originDocumentNode.getPath(), targetDoc.getFullPath());
-    Node targetDocumentNode = session.getNode(targetDoc.getFullPath());
+    session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
+    Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     pk.setId(targetDocumentNode.getIdentifier());
     return pk;
@@ -143,8 +146,8 @@ public class DocumentRepository {
     SimpleDocument targetDoc = findDocumentById(session, document.getPk(), document.getLanguage());
     targetDoc.setPK(pk);
     targetDoc.setForeignId(destination.getId());
-    session.getWorkspace().copy(document.getFullPath(), targetDoc.getFullPath());
-    Node copy = session.getNode(targetDoc.getFullPath());
+    session.getWorkspace().copy(document.getFullJcrPath(), targetDoc.getFullJcrPath());
+    Node copy = session.getNode(targetDoc.getFullJcrPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
     copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     pk.setId(copy.getIdentifier());

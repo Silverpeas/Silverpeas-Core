@@ -20,18 +20,19 @@
  */
 package com.silverpeas.attachment.servlets;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -114,7 +115,6 @@ public class DragAndDrop extends HttpServlet {
       String userId = req.getParameter("UserId");
       SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "userId = "
           + userId);
-      String context = req.getParameter("Context");
       boolean bIndexIt = StringUtil.getBooleanValue(req.getParameter("IndexIt"));
 
       List<FileItem> items = FileUploadUtil.parseRequest(req);
@@ -138,7 +138,7 @@ public class DragAndDrop extends HttpServlet {
             InputStream in = item.getInputStream();
             try {
               document = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-                  in);
+                  in, bIndexIt);
             } catch (Exception e) {
               throw e;
             } finally {

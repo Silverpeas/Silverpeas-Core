@@ -28,10 +28,6 @@ import java.util.StringTokenizer;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -111,11 +107,11 @@ public class AjaxServlet extends HttpServlet {
     boolean update = Boolean.parseBoolean(req.getParameter("update_attachment"));
     boolean force = Boolean.parseBoolean(req.getParameter("force_release"))
         && getMainSessionController(req).getCurrentUserDetail().isAccessAdmin();
-      if (!AttachmentServiceFactory.getAttachmentService().unlock(idAttachment, getUserId(req),
-          false, update, force,fileLanguage)) {
-        return "locked";
-      }
-      return "ok";
+    if (!AttachmentServiceFactory.getAttachmentService().unlock(idAttachment, getUserId(req),
+        false, update, force, fileLanguage)) {
+      return "locked";
+    }
+    return "ok";
   }
 
   private String deleteAttachment(HttpServletRequest req) {
@@ -166,26 +162,16 @@ public class AjaxServlet extends HttpServlet {
     String componentId = getForeignPK(req).getInstanceId();
 
     StringTokenizer tokenizer = new StringTokenizer(orderedList, ",");
-    List<AttachmentPK> attachmentPKs = new ArrayList<AttachmentPK>();
+    List<SimpleDocumentPK> attachmentPKs = new ArrayList<SimpleDocumentPK>();
     while (tokenizer.hasMoreTokens()) {
-      attachmentPKs.add(new AttachmentPK(tokenizer.nextToken(), componentId));
+      attachmentPKs.add(new SimpleDocumentPK(tokenizer.nextToken(), componentId));
     }
-
-    // Save attachment order
-    try {
-      AttachmentController.sortAttachments(attachmentPKs);
-      return "ok";
-    } catch (AttachmentException e) {
-      SilverTrace.error("attachment", "AjaxServlet.sort", "root.MSG_GEN_PARAM_VALUE", e);
-    }
-
-    return "error";
-
+    AttachmentServiceFactory.getAttachmentService().reorderAttachments(attachmentPKs);
+    return "ok";
   }
 
   private boolean isIndexable(HttpServletRequest req) {
-    return ((Boolean) req.getSession().getAttribute("Silverpeas_Attachment_IndexIt"))
-        .booleanValue();
+    return ((Boolean) req.getSession().getAttribute("Silverpeas_Attachment_IndexIt"));
   }
 
   private MainSessionController getMainSessionController(HttpServletRequest request) {

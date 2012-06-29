@@ -23,15 +23,7 @@
  */
 package org.silverpeas.attachment;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +47,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -66,6 +59,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.webdav.WebdavRepository;
 
 import static javax.jcr.Property.JCR_CONTENT;
 import static javax.jcr.Property.JCR_DATA;
@@ -77,9 +71,17 @@ import static javax.jcr.Property.JCR_DATA;
 @Named("simpleDocumentService")
 public class SimpleDocumentService implements AttachmentService {
 
+  @Inject
+  @Named("webdavRepository")
+  private WebdavRepository webdavRepository;
+  
+  
+  @Inject
+  @Named("documentRepository")
+  private DocumentRepository repository;
+  
   private final ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
-  private final DocumentRepository repository = new DocumentRepository();
 
   @Override
   public void createIndex(SimpleDocument document) {
@@ -1320,13 +1322,16 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public boolean unlock(String attachmentId, String userId, boolean upload,
       boolean update, boolean force, String language) {
+    Session session = null;
     try {
+      session = BasicDaoFactory.getSystemSession();
       SilverTrace.debug("attachment", "AttachmentController.checkinOfficeFile()",
           "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId);
 
-      SimpleDocument document = searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
-      if (document.isOpenOfficeCompatible() && !force && RepositoryHelper.getJcrAttachmentService().
-          isNodeLocked(document, language)) {
+      SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
+          attachmentId), language);
+      if (document.isOpenOfficeCompatible() && !force && webdavRepository.isNodeLocked(session,
+          document)) {
         SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
             "attachment.NODE_LOCKED");
         return false;
@@ -1346,18 +1351,18 @@ public class SimpleDocumentService implements AttachmentService {
         document.setUpdatedBy(workerId);
         invokeCallback = true;
       }
-/*
-      if (upload) {
-        String uploadedFile = FileRepositoryManager.getAbsolutePath(componentId)
-            + CONTEXT_ATTACHMENTS + attachmentDetail.getPhysicalName(language);
-        long newSize = FileRepositoryManager.getFileSize(uploadedFile);
-        attachmentDetail.setSize(newSize);
-      }*/
+      /*
+       if (upload) {
+       String uploadedFile = FileRepositoryManager.getAbsolutePath(componentId)
+       + CONTEXT_ATTACHMENTS + attachmentDetail.getPhysicalName(language);
+       long newSize = FileRepositoryManager.getFileSize(uploadedFile);
+       attachmentDetail.setSize(newSize);
+       }*/
 
       if (document.isOpenOfficeCompatible() && !upload && update) {
-        RepositoryHelper.getJcrAttachmentService().getUpdatedDocument(document, language);
+        webdavRepository.updateAttachment(session, document);
       } else if (document.isOpenOfficeCompatible() && (upload || !update)) {
-        RepositoryHelper.getJcrAttachmentService().deleteAttachment(document, language);
+        webdavRepository.deleteAttachmentNode(session, document);
       }
       // Remove workerId from this attachment
       document.release();
@@ -1367,6 +1372,8 @@ public class SimpleDocumentService implements AttachmentService {
           "attachment.CHECKIN_FAILED", e);
       throw new AttachmentException("AttachmentController.checkinOfficeFile()",
           SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
+    } finally {
+      BasicDaoFactory.logout(session);
     }
     return true;
   }
@@ -1382,17 +1389,53 @@ public class SimpleDocumentService implements AttachmentService {
    */
   @Override
   public boolean lock(String attachmentId, String userId, String language) {
-    SilverTrace.debug("attachment", "AttachmentController.checkoutFile()",
-        "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId + ", userId = " + userId);
-    SimpleDocument document = searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
-    if (document.isReadOnly()) {
-      return document.getEditedBy().equals(userId);
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
+          attachmentId), language);
+      if (document.isReadOnly()) {
+        return document.getEditedBy().equals(userId);
+      }
+      document.edit(userId);
+      if (document.isOpenOfficeCompatible()) {
+        webdavRepository.createAttachmentNode(session, document);
+      }
+      updateAttachment(session, document, false, false);
+      session.save();
+      return true;
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
     }
-    document.edit(userId);
-    if (document.isOpenOfficeCompatible()) {
-      RepositoryHelper.getJcrAttachmentService().createAttachment(document, language);
+  }
+
+  private void updateAttachment(Session session, SimpleDocument document, boolean indexIt,
+      boolean invokeCallback) throws RepositoryException {
+    SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
+        document.getLanguage());
+
+    String language = document.getLanguage();
+    repository.updateDocument(session, document);
+    if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
+      // le fichier est renommé
+      if (!oldAttachment.getFilename().equals(document.getFilename())) {
+        RepositoryHelper.getJcrAttachmentService().deleteAttachment(oldAttachment, language);
+        RepositoryHelper.getJcrAttachmentService().createAttachment(document, language);
+      } else {
+        RepositoryHelper.getJcrAttachmentService().updateNodeAttachment(document,
+            document.getLanguage());
+      }
     }
-    updateAttachment(document, false, false);
-    return true;
+    String userId = document.getCreatedBy();
+    if ((userId != null) && (userId.length() > 0) && invokeCallback) {
+      CallBackManager callBackManager = CallBackManager.get();
+      callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
+          document.getInstanceId(), document.getForeignId());
+    }
+    if (indexIt) {
+      createIndex(document);
+    }
   }
 }

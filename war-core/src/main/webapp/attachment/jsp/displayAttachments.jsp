@@ -24,12 +24,14 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%@page import="java.io.IOException"%>
+<%@ page import="java.io.IOException" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
@@ -39,7 +41,6 @@
 <view:includePlugin name="qtip"/>
 <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
-
 <script type="text/javascript" src='<c:url value="/util/yui/yahoo-dom-event/yahoo-dom-event.js" /> '></script>
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
@@ -110,10 +111,8 @@
 
       boolean spinfireViewerEnable = attSettings.getBoolean("SpinfireViewerEnable", false);
 
-      String sURI = request.getRequestURI();
       String sRequestURL = request.getRequestURL().toString();
-      String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length()
-          - request.getRequestURI().length());
+      String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 
       session.setAttribute("Silverpeas_Attachment_ObjectId", id);
       session.setAttribute("Silverpeas_Attachment_ComponentId", componentId);
@@ -393,13 +392,13 @@
   
     function checkout(id, webdav, edit, download)
     {
-      if (id > 0) {
+      if (id.length > 0) {
         $.get('<%=m_Context%>/Attachment', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkout'},
-        function(data){
-			if(data == 'ok') {
-          		var oMenu = eval("oMenu"+id);
-				oMenu.getItem(3).cfg.setProperty("disabled", false);
-		        oMenu.getItem(0).cfg.setProperty("disabled", true);
+        function(data) {
+          if(data == 'ok') {
+            var oMenu = eval("oMenu"+id);
+            oMenu.getItem(3).cfg.setProperty("disabled", false);
+            oMenu.getItem(0).cfg.setProperty("disabled", true);
 		        oMenu.getItem(1).cfg.setProperty("disabled", true);
           		if (!webdav)
           		{
@@ -443,7 +442,7 @@
 
     function checkin(id,webdav,forceRelease)
     {
-      if (id > 0) {
+      if (id.length > 0) {
         var webdavUpdate = 'false';
         if (webdav)
         {

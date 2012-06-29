@@ -1,34 +1,25 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.servlets;
 
-import com.silverpeas.accesscontrol.AttachmentAccessController;
-import com.silverpeas.accesscontrol.ComponentAccessController;
-import com.silverpeas.accesscontrol.DocumentVersionAccessController;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -38,9 +29,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.web.OnlineAttachment;
+
+import com.silverpeas.accesscontrol.AttachmentAccessController;
+import com.silverpeas.accesscontrol.ComponentAccessController;
+import com.silverpeas.accesscontrol.DocumentVersionAccessController;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.RestRequest;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -50,13 +51,10 @@ import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class RestOnlineFileServer extends HttpServlet {
@@ -106,16 +104,13 @@ public class RestOnlineFileServer extends HttpServlet {
     String attachmentId = restRequest.getElementValue("attachmentId");
     String language = restRequest.getElementValue("lang");
     if (StringUtil.isDefined(attachmentId)) {
-      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(
-          new SimpleDocumentPK(attachmentId), language);
+      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+          searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
         if (isUserAuthorized(restRequest, componentId, attachment)) {
-          file = new OnlineFile(attachment.getContentType(), attachment.getFilename(),
-              attachment.getRelativeDirectoryPath(language));
-          file.setComponentId(componentId);
+          file = new OnlineAttachment(attachment);
         } else {
-          throw new IllegalAccessException(
-              "You can't access this file " + attachment.getFilename());
+          throw new IllegalAccessException("You can't access this file " + attachment.getFilename());
         }
       }
     }
@@ -137,11 +132,9 @@ public class RestOnlineFileServer extends HttpServlet {
           String[] path = new String[1];
           path[0] = "Versioning";
           file = new OnlineFile(version.getMimeType(), version.getPhysicalName(),
-              FileRepositoryManager.getRelativePath(path));
-          file.setComponentId(componentId);
+              FileRepositoryManager.getRelativePath(path), componentId);
         } else {
-          throw new IllegalAccessException(
-              "You can't access this file " + version.getLogicalName());
+          throw new IllegalAccessException("You can't access this file " + version.getLogicalName());
         }
       }
     }
@@ -150,78 +143,41 @@ public class RestOnlineFileServer extends HttpServlet {
 
   /**
    * This method writes the result of the preview action.
+   *
    * @param res - The HttpServletResponse where the html code is write
    * @param htmlFilePath - the canonical path of the html document generated by the parser tools. if
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void display(HttpServletResponse res, OnlineFile file) throws IOException {
-    String filePath = FileRepositoryManager.getAbsolutePath(file.getComponentId())
-        + file.getDirectory() + File.separator + file.getSourceFile();
-
-    File realFile = new File(filePath);
-    if (!realFile.exists() && !realFile.isFile()) {
-      displayWarningHtmlCode(res);
-      return;
-    }
-    OutputStream out2 = res.getOutputStream();
-    BufferedInputStream input = null; // for the html document generated
+  private void display(HttpServletResponse res, OnlineFile onlineFile) throws IOException {
+    res.setContentType(onlineFile.getMimeType());
+    OutputStream output = res.getOutputStream();
     SilverTrace.info("peasUtil", "OnlineFileServer.display()",
-        "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + filePath);
+        "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + onlineFile.getSourceFile());
     try {
-      res.setContentType(file.getMimeType());
-      input = new BufferedInputStream(new FileInputStream(realFile));
-      IOUtils.copy(input, out2);
-    } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "OnlineFileServer.doPost",
-          "root.EX_CANT_READ_FILE", "file name=" + filePath);
+      onlineFile.write(output);
+    } catch (IOException ioex) {
+      SilverTrace.warn("peasUtil", "OnlineFileServer.doPost", "root.EX_CANT_READ_FILE", "file name="
+          + onlineFile.getSourceFile(), ioex);
       displayWarningHtmlCode(res);
     } finally {
-      SilverTrace.info("peasUtil", "OnlineFileServer.display()", "",
-          " finally ");
-      // we must close the in and out streams
-      try {
-        if (input != null) {
-          input.close();
-        }
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "OnlineFileServer.display", "root.EX_CANT_READ_FILE",
-            "close failed");
-      }
+      IOUtils.closeQuietly(output);
     }
   }
 
-  // Add By Mohammed Hguig
-  private void displayWarningHtmlCode(HttpServletResponse res)
-      throws IOException {
-    StringReader sr = null;
-    OutputStream out2 = res.getOutputStream();
-    int read;
+  private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
+    OutputStream output = res.getOutputStream();
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
-    sr = new StringReader(resourceLocator.getString("warning"));
+    StringReader message = new StringReader(resourceLocator.getString("warning"));
     try {
-      read = sr.read();
-      while (read != -1) {
-        SilverTrace.info("peasUtil", "OnlineFileServer.displayHtmlCode()",
-            "root.MSG_GEN_ENTER_METHOD", " StringReader read " + read);
-        out2.write(read); // writes bytes into the response
-        read = sr.read();
-      }
+      IOUtils.copy(message, output);
     } catch (Exception e) {
       SilverTrace.warn("peasUtil", "OnlineFileServer.displayWarningHtmlCode",
           "root.EX_CANT_READ_FILE", "warning properties");
     } finally {
-      try {
-        if (sr != null) {
-          sr.close();
-        }
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "OnlineFileServer.displayHtmlCode", "root.EX_CANT_READ_FILE",
-            "close failed");
-      }
+      IOUtils.closeQuietly(output);
+      IOUtils.closeQuietly(message);
     }
   }
 

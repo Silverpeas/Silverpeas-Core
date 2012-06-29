@@ -76,7 +76,7 @@ public class I18NHelper {
     isI18N = (nbLanguages > 1);
   }
 
-  static public String getLanguageLabel(String code, String userLanguage) {
+  public static String getLanguageLabel(String code, String userLanguage) {
     List<I18NLanguage> labels = allLanguages.get(userLanguage);
     for (I18NLanguage language : labels) {
       if (language.getCode().equalsIgnoreCase(code)) {
@@ -90,26 +90,26 @@ public class I18NHelper {
     return allLanguages.get(userLanguage);
   }
 
-  static public Iterator<String> getLanguages() {
+  public static Iterator<String> getLanguages() {
     return allLanguages.keySet().iterator();
   }
 
-  static public Set<String> getAllSupportedLanguages() {
+  public static Set<String> getAllSupportedLanguages() {
     return allLanguages.keySet();
   }
 
-  static public int getNumberOfLanguages() {
+  public static int getNumberOfLanguages() {
     return allLanguages.size();
   }
 
-  static public boolean isDefaultLanguage(String language) {
+  public static boolean isDefaultLanguage(String language) {
     if (StringUtil.isDefined(language)) {
       return defaultLanguage.equalsIgnoreCase(language);
     }
     return true;
   }
 
-  static public String checkLanguage(String language) {
+  public static String checkLanguage(String language) {
     String lang = language;
     if (!StringUtil.isDefined(language)) {
       lang = defaultLanguage;
@@ -117,7 +117,7 @@ public class I18NHelper {
     return lang;
   }
 
-  static public String getHTMLLinks(String url, String currentLanguage) {
+  public static String getHTMLLinks(String url, String currentLanguage) {
     if (!isI18N) {
       return "";
     }
@@ -157,7 +157,7 @@ public class I18NHelper {
     return links;
   }
 
-  static public String getHTMLLinks(List<String> languages, String currentLanguage) {
+  public static String getHTMLLinks(List<String> languages, String currentLanguage) {
     if (!isI18N || languages == null) {
       return "";
     }
@@ -196,7 +196,7 @@ public class I18NHelper {
     return links;
   }
 
-  static public String getHTMLLinks(I18NBean bean, String currentLanguage) {
+  public static String getHTMLLinks(I18NBean bean, String currentLanguage) {
     String lang = currentLanguage;
     if (!isI18N || bean == null) {
       return "";
@@ -212,12 +212,11 @@ public class I18NHelper {
     return getHTMLLinks(languages, lang);
   }
 
-  static public String getFormLine(ResourcesWrapper resources) {
+  public static String getFormLine(ResourcesWrapper resources) {
     return getFormLine(resources, null, null);
   }
 
-  static public String getFormLine(ResourcesWrapper resources, I18NBean bean,
-      String translation) {
+  public static String getFormLine(ResourcesWrapper resources, I18NBean bean, String translation) {
     if (nbLanguages == 1) {
       return "";
     }
@@ -225,13 +224,16 @@ public class I18NHelper {
     tr.append("<tr>\n");
     tr.append("<td class=\"txtlibform\">").append(
         resources.getString("GML.language")).append(" :</td>\n");
-    tr.append("<td>").append(
-        getHTMLSelectObject(resources.getLanguage(), bean, translation)).append("</td>");
+    tr.append("<td>").append(getHTMLSelectObject(resources.getLanguage(), bean, translation)).
+        append("</td>");
     tr.append("</tr>\n");
     return tr.toString();
   }
+  
+  
+  
 
-  static public String getHTMLSelectObject(String userLanguage, I18NBean bean,
+  public static String getHTMLSelectObject(String userLanguage, I18NBean bean,
       String selectedTranslation) {
     List<I18NLanguage> languages = getAllLanguages(userLanguage);
 
@@ -301,7 +303,7 @@ public class I18NHelper {
     return list;
   }
 
-  static public String updateHTMLLinks(I18NBean bean) {
+  public static String updateHTMLLinks(I18NBean bean) {
     String javaScript = "";
 
     Set<String> codes = bean.getTranslations().keySet();
@@ -317,7 +319,7 @@ public class I18NHelper {
     return javaScript;
   }
 
-  static public String[] getLanguageAndTranslationId(HttpServletRequest request) {
+  public static String[] getLanguageAndTranslationId(HttpServletRequest request) {
     String param = request.getParameter(HTMLSelectObjectName);
     return getLanguageAndTranslationId(param);
   }
@@ -333,7 +335,7 @@ public class I18NHelper {
     return null;
   }
 
-  static public String getSelectedLanguage(HttpServletRequest request) {
+  public static String getSelectedLanguage(HttpServletRequest request) {
     String[] param = getLanguageAndTranslationId(request);
     if (param != null) {
       return param[0];
@@ -341,14 +343,14 @@ public class I18NHelper {
     return null;
   }
 
-  static public void setI18NInfo(I18NBean bean, HttpServletRequest request) {
+  public static void setI18NInfo(I18NBean bean, HttpServletRequest request) {
     String languageAndTranslationId = request.getParameter(HTMLSelectObjectName);
     String removeTranslation = request.getParameter(HTMLHiddenRemovedTranslationMode);
 
     setI18NInfo(bean, languageAndTranslationId, removeTranslation);
   }
 
-  static public void setI18NInfo(I18NBean bean, List<FileItem> parameters) {
+  public static void setI18NInfo(I18NBean bean, List<FileItem> parameters) {
     String languageAndTranslationId = getParameterValue(parameters,
         HTMLSelectObjectName);
     String removeTranslation = getParameterValue(parameters,

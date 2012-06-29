@@ -25,6 +25,12 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkAttachment.jsp"%>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory"%>

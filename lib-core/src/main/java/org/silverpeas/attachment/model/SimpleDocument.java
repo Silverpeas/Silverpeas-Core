@@ -49,6 +49,7 @@ public class SimpleDocument {
 
   private final static ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
+  public static final String WEBDAV_FOLDER = "webdav";
   public static final String ATTACHMENTS_FOLDER = "attachments";
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
@@ -392,11 +393,19 @@ public class SimpleDocument {
     return ATTACHMENT_PREFIX + getOldSilverpeasId();
   }
 
-  public String getFullContentPath() {
-    return getFullPath() + '/' + file.getNodeName();
+   /**
+   * Full JCR path to the file node.
+   * @return the full JCR path to the file node (starting with /).
+   */
+  public String getFullJcrContentPath() {
+    return getFullJcrPath() + '/' + file.getNodeName();
   }
 
-  public String getFullPath() {
+  /**
+   * Full JCR path to the document node.
+   * @return the full JCR path to the document node (starting with /).
+   */
+  public String getFullJcrPath() {
     return '/' + getInstanceId() + "/attachments/" + getNodeName();
   }
 
@@ -443,16 +452,7 @@ public class SimpleDocument {
   public String getDirectoryPath(String lang) {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
     directory = directory.replace('/', separatorChar);
-    return directory + getRelativeDirectoryPath(lang);
-  }
-
-  /**
-   * Path to the directory where the file is to be stored.
-   *
-   * @return the path to the directory where the file is to be stored.
-   */
-  public String getRelativeDirectoryPath(String lang) {
-    return getId() + separatorChar + lang + separatorChar;
+    return directory + getId() + separatorChar + lang + separatorChar;
   }
 
   @Override
@@ -523,13 +523,14 @@ public class SimpleDocument {
     }
     url.append(webAppContext).append(GeneralPropertiesManager.getString("webdav.respository")).
         append('/').append(GeneralPropertiesManager.getString("webdav.workspace")).append('/').
-        append(getJcrPath());
+        append(getWebdavJcrPath());
     return url.toString();
   }
 
-  public String getJcrPath() {
+  public String getWebdavJcrPath() {
     StringBuilder jcrPath = new StringBuilder(500);
-    jcrPath.append(ATTACHMENTS_FOLDER).append('/').append(getInstanceId()).append('/');
+    jcrPath.append(WEBDAV_FOLDER).append('/').append(ATTACHMENTS_FOLDER).append('/').
+        append(getInstanceId()).append('/');
     if (getId() != null) {
       jcrPath.append(getId()).append('/');
     }

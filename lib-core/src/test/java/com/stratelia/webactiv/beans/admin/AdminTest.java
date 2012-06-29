@@ -4,15 +4,15 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import java.util.List;
+import java.util.Map;
+
 import com.silverpeas.components.model.AbstractTestDao;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertThat;
 
