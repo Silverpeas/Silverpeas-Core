@@ -65,6 +65,12 @@ public enum SupportedJavaScriptPlugins {
    */
   messageme,
   /**
+   * Silverpeas plugin to render a calendar with events. This plugin is based upon a JQuery one
+   * and abstracts the way it is used. Its provides also additional features to the used JQuery plugin
+   * calendar.
+   */
+  calendar,
+  /**
    * The CKEditor script to write and render WYSIWYG content.
    */
   wysiwyg;
