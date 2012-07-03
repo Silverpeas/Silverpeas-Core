@@ -21,16 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util;
 
-import com.stratelia.webactiv.util.DateUtil;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Property;
+
+import com.stratelia.webactiv.util.DateUtil;
 
 public class MetaData {
 
@@ -50,6 +51,7 @@ public class MetaData {
 
   /**
    * Return Title of an Office document
+   *
    * @return String
    */
   public String getTitle() {
@@ -58,6 +60,7 @@ public class MetaData {
 
   /**
    * Return Subject of an Office document
+   *
    * @return String
    */
   public String getSubject() {
@@ -66,6 +69,7 @@ public class MetaData {
 
   /**
    * Return Author of an Office document
+   *
    * @return String
    */
   public String getAuthor() {
@@ -78,6 +82,7 @@ public class MetaData {
 
   /**
    * Return Comments of an Office document
+   *
    * @return String
    */
   public String getComments() {
@@ -90,6 +95,7 @@ public class MetaData {
 
   /**
    * Return Security of an Office document
+   *
    * @return String
    */
   public int getSecurity() {
@@ -98,6 +104,7 @@ public class MetaData {
 
   /**
    * Return Keywords of an Office document
+   *
    * @return String
    */
   public String getKeywords() {
@@ -106,6 +113,7 @@ public class MetaData {
 
   /**
    * Return SILVERID of an Office document
+   *
    * @return String
    */
   public String getSilverId() {
@@ -114,18 +122,45 @@ public class MetaData {
 
   /**
    * Return SILVERNAME of an Office document
+   *
    * @return String
    */
   public String getSilverName() {
     return metadata.get("SILVERNAME");
   }
 
-  /**
-   * Return LastSaveDateTime of an Office document
-   * @return String
-   */
   public Date getLastSaveDateTime() {
-    String date = metadata.get(Metadata.LAST_SAVED);
+    Date date = parseDate(Metadata.LAST_SAVED);
+    if (date == null) {
+      return parseDate(Metadata.LAST_MODIFIED);
+    }
+    return date;
+  }
+
+  /**
+   * Return CreateDateTime of an Office document
+   */
+  public Date getCreationDate() {
+    Date result = getDate(Metadata.CREATION_DATE);
+    if (result == null) {
+      result = metadata.getDate(Metadata.DATE_CREATED);
+    }
+    if (result == null) {
+      result = metadata.getDate(Metadata.DATE);
+    }
+    return result;
+  }
+
+  protected Date getDate(Property property) {
+    Date result = metadata.getDate(property);
+    if (result == null) {
+      return parseDate(property);
+    }
+    return result;
+  }
+
+  protected Date parseDate(Property property) {
+    String date = metadata.get(property);
     if (date != null) {
       try {
         return DateUtil.parse(date, "yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -134,23 +169,5 @@ public class MetaData {
       }
     }
     return null;
-  }
-
-  /**
-   * Return CreateDateTime of an Office document
-   */
-  public Date getCreationDate() {
-    Date result = metadata.getDate(Metadata.CREATION_DATE);
-    if (result == null) {
-      String date = metadata.get(Metadata.CREATION_DATE);
-      if (date != null) {
-        try {
-          return DateUtil.parse(date, "yyyy-MM-dd'T'HH:mm:ss'Z'");
-        } catch (ParseException ex) {
-          return null;
-        }
-      }
-    }
-    return result;
   }
 }
