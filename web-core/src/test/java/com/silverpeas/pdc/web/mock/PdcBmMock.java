@@ -25,29 +25,25 @@
 package com.silverpeas.pdc.web.mock;
 
 import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.web.TestConstants.COMPONENT_INSTANCE_ID;
+import static com.silverpeas.pdc.web.TestConstants.CONTENT_ID;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
+import static com.silverpeas.pdc.web.beans.ClassificationPlan.aClassificationPlan;
+import static com.silverpeas.pdc.web.beans.TestPdcClassification.aClassificationFromPositions;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.pdc.model.ValuePK;
+import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Named;
-
-import static org.mockito.Mockito.*;
-import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
-import static com.silverpeas.pdc.web.beans.TestPdcClassification.*;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A decorator of the PdcBm implementation by mocking some of its services for testing purpose.

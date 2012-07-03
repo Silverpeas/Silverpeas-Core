@@ -40,6 +40,8 @@ import static org.hamcrest.Matchers.*;
 
 public class DefaultCommentServiceTest extends AbstractCommentTest {
 
+  public static final String TEST_RESOURCE_TYPE = "RtypeTest";
+
   @Inject
   private MyCommentActionListener listener;
 
@@ -76,7 +78,8 @@ public class DefaultCommentServiceTest extends AbstractCommentTest {
    */
   @Test
   public void subscribersShouldBeInvokedAtCommentAdding() throws Exception {
-    getCommentService().createComment(CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé"));
+    getCommentService()
+        .createComment(CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé"));
     assertThat(listener.isInvoked(), is(true));
     assertEquals(1, listener.getInvocationCount());
     assertTrue(listener.isCommentAdded());
@@ -90,7 +93,7 @@ public class DefaultCommentServiceTest extends AbstractCommentTest {
   @Test
   public void subscribersShouldBeInvokedAtCommentDeletion() throws Exception {
     CommentService commentController = getCommentService();
-    List<Comment> allComments = commentController.getAllCommentsOnPublication(
+    List<Comment> allComments = commentController.getAllCommentsOnPublication(TEST_RESOURCE_TYPE,
         CommentBuilder.getResourcePrimaryPK());
     commentController.deleteComment(allComments.get(0).getCommentPK());
     assertThat(listener.isInvoked(), is(true));
@@ -100,16 +103,17 @@ public class DefaultCommentServiceTest extends AbstractCommentTest {
   }
 
   /**
-   * When several comments are deleted, then any listeners subscribed for a such events
-   * should be invoked.
+   * When several comments are deleted, then any listeners subscribed for a such events should be
+   * invoked.
    * @throws Exception if an error occurs during the test execution.
    */
   @Test
   public void subscribersShouldBeInvokedAtSeveralCommentsDeletion() throws Exception {
     CommentService commentController = getCommentService();
-    List<Comment> allComments = commentController.getAllCommentsOnPublication(
+    List<Comment> allComments = commentController.getAllCommentsOnPublication(TEST_RESOURCE_TYPE,
         CommentBuilder.getResourcePrimaryPK());
-    commentController.deleteAllCommentsOnPublication(CommentBuilder.getResourcePrimaryPK());
+    commentController.deleteAllCommentsOnPublication(TEST_RESOURCE_TYPE,
+        CommentBuilder.getResourcePrimaryPK());
     assertThat(listener.isInvoked(), is(true));
     assertEquals(allComments.size(), listener.getInvocationCount());
     assertFalse(listener.isCommentAdded());
@@ -121,9 +125,8 @@ public class DefaultCommentServiceTest extends AbstractCommentTest {
    * @return a DefaultCommentService object to test.
    */
   protected CommentService getCommentService() {
-    //return new MyDefaultCommentService();
+    // return new MyDefaultCommentService();
     return commentService;
   }
-
 
 }

@@ -237,15 +237,14 @@ String			createBeforeDate	= null;
 String			updateAfterDate		= null;
 String			updateBeforeDate	= null;
 UserDetail		userDetail			= null;
-if (query != null)
-{
+if (query != null) {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
 	keywords			= EncodeHelper.javaStringToHtmlString(query.getKeywords());
-	createAfterDate		= query.getAfterDate();
-	createBeforeDate	= query.getBeforeDate();
-	updateAfterDate		= query.getAfterUpdateDate();
-	updateBeforeDate	= query.getBeforeUpdateDate();
+	createAfterDate		= DateUtil.getInputDate(query.getAfterDate(), language);
+	createBeforeDate	= DateUtil.getInputDate(query.getBeforeDate(), language);
+	updateAfterDate		= DateUtil.getInputDate(query.getAfterUpdateDate(), language);
+	updateBeforeDate	= DateUtil.getInputDate(query.getBeforeUpdateDate(), language);
 	userDetail			= query.getCreatorDetail();
 }
 

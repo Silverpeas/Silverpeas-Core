@@ -331,6 +331,7 @@ public class ExportIcalManager {
    * @throws RemoteException if the events cannot be fetched from the user calendar.
    * @throws ParseException if the specified dates are not formatted as expected.
    */
+  @SuppressWarnings("rawtypes")
   private List<CalendarEvent> getCalendarEvents(String startDate, String endDate) throws
       RemoteException, ParseException {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
@@ -344,7 +345,7 @@ public class ExportIcalManager {
           StringUtil.isDefined(schedulable.getStartHour()));
       Datable<?> eventEndDate = DateUtil.asDatable(schedulable.getEndDate(),
           StringUtil.isDefined(schedulable.getEndHour()));
-      CalendarEvent event = anEventAt(eventStartDate, eventEndDate).
+      CalendarEvent event = anEventAt((Datable)eventStartDate, eventEndDate).
           withTitle(schedulable.getName()).
           withDescription(schedulable.getDescription());
 

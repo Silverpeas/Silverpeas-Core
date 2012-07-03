@@ -31,7 +31,7 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.List;
 import javax.inject.Inject;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

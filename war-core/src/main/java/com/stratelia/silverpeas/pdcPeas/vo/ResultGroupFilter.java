@@ -33,6 +33,7 @@ public class ResultGroupFilter {
   
   private Facet authorFacet = null;
   private Facet componentFacet = null;
+  private Facet datatypeFacet = null;
   private List<Facet> formfieldFacets;
 
   /**
@@ -78,12 +79,21 @@ public class ResultGroupFilter {
     EntryComparator comparator = new EntryComparator();
     Collections.sort(authorFacet.getEntries(), comparator);
     Collections.sort(componentFacet.getEntries(), comparator);
+    Collections.sort(datatypeFacet.getEntries(), comparator);
     
     for (Facet formFieldFacet : formfieldFacets) {
       Collections.sort(formFieldFacet.getEntries(), comparator);
     }
   }
   
+  public void setDatatypeFacet(Facet datatypeFacet) {
+    this.datatypeFacet = datatypeFacet;
+  }
+
+  public Facet getDatatypeFacet() {
+    return datatypeFacet;
+  }
+
   private class EntryComparator implements Comparator<FacetEntryVO>{
     @Override
     public int compare(FacetEntryVO o1, FacetEntryVO o2) {

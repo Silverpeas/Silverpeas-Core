@@ -24,31 +24,17 @@
 
 package com.stratelia.webactiv.servlets;
 
-import com.stratelia.webactiv.servlets.credentials.ChangePasswordHandler;
-import com.stratelia.webactiv.servlets.credentials.ChangeQuestionHandler;
-import com.stratelia.webactiv.servlets.credentials.EffectiveChangePasswordBeforeExpirationHandler;
-import com.stratelia.webactiv.servlets.credentials.EffectiveChangePasswordHandler;
-import com.stratelia.webactiv.servlets.credentials.ForcePasswordChangeHandler;
-import com.stratelia.webactiv.servlets.credentials.ForgotPasswordHandler;
-import com.stratelia.webactiv.servlets.credentials.FunctionHandler;
-import com.stratelia.webactiv.servlets.credentials.LoginQuestionHandler;
-import com.stratelia.webactiv.servlets.credentials.NewRegistrationHandler;
-import com.stratelia.webactiv.servlets.credentials.RegisterHandler;
-import com.stratelia.webactiv.servlets.credentials.ResetLoginPasswordHandler;
-import com.stratelia.webactiv.servlets.credentials.ResetPasswordHandler;
-import com.stratelia.webactiv.servlets.credentials.SendMessageHandler;
-import com.stratelia.webactiv.servlets.credentials.ValidationAnswerHandler;
-import com.stratelia.webactiv.servlets.credentials.ValidationQuestionHandler;
+import com.stratelia.webactiv.servlets.credentials.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.Cookie;
 
 /**
  * Controller tier for credential management (called by MandatoryQuestionChecker)
@@ -78,6 +64,7 @@ public class CredentialsServlet extends HttpServlet {
     handlers.put("LoginQuestion", new LoginQuestionHandler());
     handlers.put("ValidateAnswer", new ValidationAnswerHandler());
     handlers.put("ChangePassword", new ChangePasswordHandler());
+    handlers.put("ChangeExpiredPassword", new ChangeExpiredPasswordHandler());
     // Password reset management
     handlers.put("ForgotPassword", new ForgotPasswordHandler());
     handlers.put("ResetPassword", new ResetPasswordHandler());

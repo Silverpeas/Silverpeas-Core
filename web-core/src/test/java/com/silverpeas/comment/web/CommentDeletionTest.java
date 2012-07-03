@@ -52,30 +52,32 @@ public class CommentDeletionTest extends ResourceDeletionTest<CommentTestResourc
   public static void prepareMessagingContext() throws Exception {
     BaseCommentTest.boostrapMessagingSystem();
   }
-  
+
   @AfterClass
   public static void releaseMessagingContext() throws Exception {
     BaseCommentTest.shutdownMessagingSystem();
   }
-  
+
   @Before
   public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    theComment = theUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
-        withAsText("ceci est un commentaire");
+    theComment =
+        theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID)
+            .inComponent(COMPONENT_INSTANCE_ID).
+            withAsText("ceci est un commentaire");
     getTestResources().save(theComment);
   }
 
-  @Test(expected=CommentRuntimeException.class)
-  public void deleteAnExistingComment(){
+  @Test(expected = CommentRuntimeException.class)
+  public void deleteAnExistingComment() {
     deleteAt(aResourceURI());
     getTestResources().getCommentService().getComment(theComment.getCommentPK());
   }
 
   @Override
   public String aResourceURI() {
-    return RESOURCE_PATH + "/"  + theComment.getCommentPK().getId();
+    return RESOURCE_PATH + "/" + theComment.getCommentPK().getId();
   }
 
   @Override

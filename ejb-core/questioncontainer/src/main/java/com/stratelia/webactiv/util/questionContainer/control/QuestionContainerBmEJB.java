@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://repository.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,23 @@
  */
 
 package com.stratelia.webactiv.util.questionContainer.control;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -58,22 +75,6 @@ import com.stratelia.webactiv.util.score.control.ScoreBm;
 import com.stratelia.webactiv.util.score.control.ScoreBmHome;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 import com.stratelia.webactiv.util.score.model.ScorePK;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * Class declaration
@@ -919,8 +920,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK + ", userId = " + userId + ", comment = "
-        + comment);
+            + questionContainerPK + ", userId = " + userId + ", comment = "
+            + comment);
     recordReplyToQuestionContainerByUser(questionContainerPK, userId, reply);
     addComment(questionContainerPK, userId, comment, isAnonymousComment);
   }
@@ -930,7 +931,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
       throws RemoteException {
     SilverTrace.info("questionContainer", "QuestionContainerBmEJB.addComment()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK + ", userId = "
-        + userId + ", comment = " + comment);
+            + userId + ", comment = " + comment);
     Connection con = null;
     try {
       con = getConnection();
@@ -949,18 +950,18 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
       QuestionContainerDetail questionContainerDetail, String userId) throws RemoteException {
     SilverTrace.info("questionContainer", "QuestionContainerBmEJB.createQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK
-        + ", questionContainerDetail = " + questionContainerDetail + ", userId = " + userId);
+            + ", questionContainerDetail = " + questionContainerDetail + ", userId = " + userId);
     Connection con = null;
     QuestionContainerHeader questionContainerHeader = questionContainerDetail.getHeader();
     questionContainerHeader.setPK(questionContainerPK);
     questionContainerHeader.setCreatorId(userId);
     try {
       con = getConnection();
-      questionContainerPK = QuestionContainerDAO.createQuestionContainerHeader(
-          con, questionContainerHeader);
+      questionContainerPK =
+          QuestionContainerDAO.createQuestionContainerHeader(con, questionContainerHeader);
       questionContainerHeader.setPK(questionContainerPK);
-      QuestionContainerContentManager.createSilverContent(con,
-          questionContainerHeader, userId, true);
+      QuestionContainerContentManager.createSilverContent(con, questionContainerHeader, userId,
+          true);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
           "QuestionContainerBmEJB.createQuestionContainer()",

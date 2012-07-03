@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://repository.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,30 +38,58 @@ body {
 	font-family:Arial, Helvetica, sans-serif;
 	/*overflow:hidden;*/
 	color:#666666;
-	height:1000px;
 }
 #top {
-	background-color:#cccccc;
-	height:60px;
-	margin-bottom:50px;
+	background-color:#7eb73b;
+	height:35px;
+	margin-bottom:40px;
+	color: #FFFFFF;
+	line-height: 35px;
+}
+
+#top a {
+	color: #FFFFFF;
 }
 .clear {
 	clear:both;
 }
-.page {
+.page,
+#login-socialnetwork{
 	margin:0px auto;
 	width:960px;
+	position:relative;
+	z-index: 1;
 }
+
+.page {
+	padding-top: 31px;
+	margin-top: 60px;
+}
+
+#login-socialnetwork{
+	text-align:left;
+	padding-left:351px;
+	z-index: 3;
+	margin-bottom: -120px;
+	padding-bottom: 27px;
+	background: transparent url("util/icons/external/deco-login-btn.png") 350px bottom no-repeat;
+}
+
+#login-socialnetwork a {
+	display: block;
+	clear: left;
+	width: 164px;
+	padding-left: 30px;
+}
+
 #background {
 	background:url(images/bg.gif) no-repeat;
 	min-height:424px;
-	height:800px;
 }
 
 #backgroundBig {
 	background:url(images/bgBig.gif) no-repeat;
 	min-height:524px;
-	height:800px;
 }
 
 #backgroundBig .submit{
@@ -97,13 +125,14 @@ select option {
 	text-align:left;
 }
 .titre {
-	color:#D2D2D2;
-	font-family:Arial,Helvetica,sans-serif;
-	font-size:48px;
-	position:relative;
-	top:24px;
-	left:555px;
-	text-align:left;
+	color: #D2D2D2;
+    display: inline;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 48px;
+    position: absolute;
+    right: 242px;
+    text-align: left;
+    top: 0px;
 }
 
 #header {
@@ -137,7 +166,6 @@ p label span {
 }
 .submit {
 	position:relative;
-	/*right:-172px;*/
 	text-align:left;
 	top:-10px;
 }

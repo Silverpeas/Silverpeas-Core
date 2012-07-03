@@ -25,19 +25,19 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.BaseCommentTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import com.silverpeas.comment.model.Comment;
+import static com.silverpeas.comment.web.CommentEntityMatcher.matches;
+import static com.silverpeas.comment.web.CommentTestResources.*;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.Matchers.equalTo;
+import org.junit.AfterClass;
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.comment.web.CommentEntityMatcher.*;
-import static com.silverpeas.comment.web.CommentTestResources.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
@@ -51,12 +51,12 @@ public class CommentGettingTest extends ResourceGettingTest<CommentTestResources
   public CommentGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
-  
+
   @BeforeClass
   public static void prepareMessagingContext() throws Exception {
     BaseCommentTest.boostrapMessagingSystem();
   }
-  
+
   @AfterClass
   public static void releaseMessagingContext() throws Exception {
     BaseCommentTest.shutdownMessagingSystem();
@@ -66,8 +66,10 @@ public class CommentGettingTest extends ResourceGettingTest<CommentTestResources
   public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    theComment = theUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
-        withAsText("ceci est un commentaire");
+    theComment =
+        theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID)
+            .inComponent(COMPONENT_INSTANCE_ID).
+            withAsText("ceci est un commentaire");
     getTestResources().save(theComment);
   }
 
@@ -80,13 +82,13 @@ public class CommentGettingTest extends ResourceGettingTest<CommentTestResources
 
   @Test
   public void getAllComments() {
-    Comment theComment1 = theUser(user).commentTheResource(CONTENT_ID).inComponent(
+    Comment theComment1 = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire 1");
-    Comment theComment2 = theUser(user).commentTheResource(CONTENT_ID).inComponent(
+    Comment theComment2 = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire 2");
-    Comment theComment3 = theUser(user).commentTheResource(CONTENT_ID).inComponent(
+    Comment theComment3 = theUser(user).commentTheResource(CONTENT_TYPE, CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
         withAsText("ceci est un commentaire 3");
     getTestResources().save(theComment1, theComment2, theComment3);

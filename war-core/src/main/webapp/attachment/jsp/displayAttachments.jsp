@@ -229,15 +229,14 @@
           
           if (contextualMenuEnabled) {
            	if (attachmentDetail.isReadOnly()) {
-              out.println("<div class=\"workerInfo\" id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:visible\"> " + attResources.
-                  getString("readOnly") + " " + m_MainSessionCtrl.getOrganizationController().
-                  getUserDetail(attachmentDetail.getWorkerId()).getDisplayedName() + " " + attResources.
-                  getString("at") + " " + attResources.getOutputDate(attachmentDetail.
-                  getReservationDate()) + "</div>");
-            } else {
-              out.println(
-                  "<div class=\"workerInfo\"  id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:hidden\"> </div>");
-            }
+           	  %>
+              <div class="workerInfo" id="worker<%=attachmentDetail.getPK().getId() %>" style="visibility:visible">
+              	<%= attResources.getString("readOnly")%> <view:username userId="<%=attachmentDetail.getWorkerId()%>"/>
+              	<%= attResources.getString("at")%> <%=attResources.getOutputDate(attachmentDetail.getReservationDate())%>
+              </div>
+            <% } else { %>
+              <div class="workerInfo"  id="worker<%=attachmentDetail.getPK().getId() %>" style="visibility:hidden"> </div>
+            <% } 
           }
 
           if (attachmentDetail.isSpinfireDocument(contentLanguage) && spinfireViewerEnable) {

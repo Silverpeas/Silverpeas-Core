@@ -26,7 +26,6 @@ package com.silverpeas.admin.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -55,23 +54,14 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 @Named("silverpeasUserService")
 public class UserServiceLegacy implements UserService {
 
-  ResourceLocator settings = null;
   ResourceLocator multilang = null;
-  String templatePath = null;
-  String customersTemplatePath = null;
-
+  
   @PostConstruct
   void init() {
-    settings = new ResourceLocator(
-        "com.silverpeas.socialnetwork.settings.socialNetworkSettings", "");
-
-    multilang =
+      multilang =
         new ResourceLocator(
         "com.silverpeas.socialnetwork.multilang.registration", DisplayI18NHelper
         .getDefaultLanguage());
-
-    templatePath = settings.getString("templatePath");
-    customersTemplatePath = settings.getString("customersTemplatePath");
   }
 
   @Override
@@ -187,7 +177,6 @@ public class UserServiceLegacy implements UserService {
       notifMetaData.setSender("0");
       notifMetaData.addUserRecipients(new UserRecipient[] { new UserRecipient(user.getId()) });
 
-      notifMetaData.setLink(URLManager.getApplicationURL());
       notifyUser(notifMetaData, null);
     } catch (Exception e) {
       SilverTrace.error("socialNetwork", "UserServiceLegacy.sendCredentialsToUser",
@@ -196,11 +185,7 @@ public class UserServiceLegacy implements UserService {
   }
 
   private SilverpeasTemplate getNewTemplate() {
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, templatePath);
-    templateConfiguration
-        .setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, customersTemplatePath);
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("socialNetwork");
   }
 
   private void notifyUser(NotificationMetaData notifMetaData, String componentId)

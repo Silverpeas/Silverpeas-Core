@@ -1,11 +1,11 @@
 function initFB() {
     FB.getLoginStatus(function(response) {
     	  if (response.status === 'connected') {
-    		  $('#FBpublishButton').show();
+    		  $('#FBPublishButton').show();
     	  } else if (response.status === 'not_authorized') {
-    		  $('#FBloginButton').show();
+    		  $('#FBLoginButton').show();
     	  } else {
-      	    $('#FBloginButton').show();
+      	    $('#FBLoginButton').show();
     	  }
     	 });
 }
@@ -13,8 +13,8 @@ function initFB() {
 function logIntoFB() {
 	  FB.login(function(response) {
 		   if (response.authResponse) {
-			   $('#FBloginButton').hide();
-			   $('#FBpublishButton').show();
+			   $('#FBLoginButton').hide();
+			   $('#FBPublishButton').show();
 		   } else {
 		     // User cancelled login or did not fully authorize
 		   }

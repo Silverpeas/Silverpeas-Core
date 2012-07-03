@@ -25,11 +25,11 @@ package com.silverpeas.web;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.web.mock.AccessControllerMock;
-import com.silverpeas.web.mock.OrganizationControllerMock;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -44,9 +44,9 @@ import java.util.UUID;
 import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Before;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
 
 /**
 * The base class for testing REST web services in Silverpeas.
@@ -71,8 +71,8 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     super(new WebAppDescriptor.Builder(webServicePackage).contextPath(CONTEXT_NAME).
             contextParam("contextConfigLocation", "classpath:/" + springContext).
             initParam(JSONConfiguration.FEATURE_POJO_MAPPING, "true").
-            requestListenerClass(
-            org.springframework.web.context.request.RequestContextListener.class).
+            initParam("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;com.silverpeas.web.mappers").
+            requestListenerClass(RequestContextListener.class).
             servletClass(SpringServlet.class).
             contextListenerClass(ContextLoaderListener.class).
             build());
@@ -90,6 +90,16 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 */
   abstract public String[] getExistingComponentInstances();
 
+  /**
+   * Gets tools to take into account in tests. Theses tools will be considered as existing. Others
+   * than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+   * @return an array with the identifier of tools to take into account in tests. The array cannot
+   * be null but it can be empty.
+   */
+  public String[] getExistingTools() {
+    return new String[]{};
+  }
+
   @Override
   public WebResource resource() {
     return webClient.resource(getBaseURI() + CONTEXT_NAME + "/");
@@ -98,13 +108,15 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   @Before
   public void prepareMockedResources() {
     testResources = (T) TestResources.getTestResources();
-    PersonalizationService mockedPersonalizationService = mock(PersonalizationService.class);
+    PersonalizationService mock = testResources.getPersonalizationServiceMock();
     UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
             true, true, UserMenuDisplay.DISABLE);
-    when(mockedPersonalizationService.getUserSettings(anyString())).thenReturn(preferences);
-    getMockedPersonalizationService().setPersonalizationService(mockedPersonalizationService);
+    when(mock.getUserSettings(anyString())).thenReturn(preferences);
     for (String componentId : getExistingComponentInstances()) {
-      getMockedOrganizationController().addComponentInstance(componentId);
+      addComponentInstance(componentId);
+    }
+    for (String toolId : getExistingTools()) {
+      addTool(toolId);
     }
   }
 
@@ -115,17 +127,20 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 * @return the key of the opened session.
 */
   public String authenticate(final UserDetail theUser) {
-    getMockedOrganizationController().addUserDetail(theUser);
+    getTestResources().registerUser(theUser);
+    for (String componentId : getExistingComponentInstances()) {
+      setComponentAccessibilityToUser(componentId, theUser.getId());
+    }
     SessionInfo session = new SessionInfo(UUID.randomUUID().toString(), theUser);
     return getTestResources().getSessionManagerMock().openSession(session);
   }
 
   /**
-* Gets a user to use in the test case. The user is managed by the test resources. So, to override
-* it, please override the TestResources class.
-* @return the detail about the user in use in the current test case.
-*/
-  public UserDetail aUser() {
+   * Gets a user to use in the test case. The user is managed by the test resources. So, to override
+   * it, please override the TestResources class.
+   * @return the detail about the user in use in the current test case.
+   */
+  public UserDetailWithProfiles aUser() {
     return getTestResources().aUser();
   }
 
@@ -133,7 +148,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 * Denies the access to the silverpeas resources to all users.
 */
   public void denieAuthorizationToUsers() {
-    getMockedAccessController().setAuthorization(false);
+    getAccessControllerMock().setAuthorization(false);
   }
 
   /**
@@ -149,19 +164,30 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 * @param componentId the unique identifier of the component instance to use in tests.
 */
   public void addComponentInstance(String componentId) {
-    getMockedOrganizationController().addComponentInstance(componentId);
+    OrganizationController mock = getOrganizationControllerMock();
+    when(mock.isComponentExist(componentId)).thenReturn(true);
+  }
+  
+  public void addTool(String toolId) {
+    OrganizationController mock = getOrganizationControllerMock();
+    when(mock.isToolAvailable(toolId)).thenReturn(true);
+  }
+  
+  public void setComponentAccessibilityToUser(String componentId, String userId) {
+    OrganizationController mock = getOrganizationControllerMock();
+    when(mock.isComponentAvailable(componentId, userId)).thenReturn(true);
   }
 
-  protected OrganizationControllerMock getMockedOrganizationController() {
-    return (OrganizationControllerMock) getTestResources().getOrganizationControllerMock();
+  protected OrganizationController getOrganizationControllerMock() {
+    return getTestResources().getOrganizationControllerMock();
   }
 
-  protected AccessControllerMock getMockedAccessController() {
-    return (AccessControllerMock) getTestResources().getAccessControllerMock();
+  protected AccessControllerMock getAccessControllerMock() {
+    return getTestResources().getAccessControllerMock();
   }
 
-  protected MockablePersonalizationService getMockedPersonalizationService() {
-    return (MockablePersonalizationService) getTestResources().getPersonalizationServiceMock();
+  protected PersonalizationService getPersonalizationServiceMock() {
+    return getTestResources().getPersonalizationServiceMock();
   }
   
   protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {

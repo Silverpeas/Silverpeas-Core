@@ -23,22 +23,23 @@
 */
 package com.silverpeas.web;
 
-import javax.ws.rs.core.MultivaluedMap;
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import java.util.UUID;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
-* Unit tests on the update of a resource in Silverpeas through a REST web service.
-* This class is an abstract one and it implements some tests that are redondant over all
-* web resources in Silverpeas (about authorization failure, authentication failure, ...)
-*/
+ * Unit tests on the update of a resource in Silverpeas through a REST web service. This class is an
+ * abstract one and it implements some tests that are redondant over all web resources in Silverpeas
+ * (about authorization failure, authentication failure, ...)
+ */
 public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWebServiceTest<T>
         implements WebResourceTesting {
 
@@ -50,27 +51,29 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   }
 
   public abstract <T> T anInvalidResource();
-  
+
   /**
-* A convenient method to improve the readability of the method calls.
-* @param uri a resource URI.
-* @return the specified resource URI.
-*/
+   * A convenient method to improve the readability of the method calls.
+   *
+   * @param uri a resource URI.
+   * @return the specified resource URI.
+   */
   private static String at(String uri) {
     return uri;
   }
-  
+
   private static String withAsSessionKey(String sessionKey) {
     return sessionKey;
   }
 
   /**
-* Puts at the specified URI the specified new state of the resource.
-* @param <T> the type of the resource's state.
-* @param uri the URI at which the resource is.
-* @param newResourceState the new state of the resource.
-* @return
-*/
+   * Puts at the specified URI the specified new state of the resource.
+   *
+   * @param <T> the type of the resource's state.
+   * @param uri the URI at which the resource is.
+   * @param newResourceState the new state of the resource.
+   * @return
+   */
   public <T> T putAt(String uri, T newResourceState) {
     return put(newResourceState, at(uri), withAsSessionKey(getSessionKey()));
   }
@@ -135,7 +138,18 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
       assertThat(receivedStatus, is(notFound));
     }
   }
-  
+
+  @Test
+  public void updateWithAnInvalidResourceState() {
+    try {
+      putAt(aResourceURI(), "{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}");
+    } catch (UniformInterfaceException ex) {
+      int recievedStatus = ex.getResponse().getStatus();
+      int badRequest = Status.BAD_REQUEST.getStatusCode();
+      assertThat(recievedStatus, is(badRequest));
+    }
+  }
+
   private <T> T put(final T entity, String atURI, String withSessionKey) {
     String thePath = atURI;
     WebResource resource = resource();

@@ -130,6 +130,10 @@ label {
 	margin:0;
 }
 
+.champs input[type="checkbox"] {
+	width: auto;
+}
+
 #languageArea .champs select {
 	width:auto; 
 }

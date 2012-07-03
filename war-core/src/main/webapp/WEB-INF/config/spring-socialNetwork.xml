@@ -31,10 +31,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.socialNetwork.relationShip"/>
-  <ctx:component-scan base-package="com.silverpeas.socialnetwork.model"/>
-  <ctx:component-scan base-package="com.silverpeas.socialnetwork.connectors"/>
-  <ctx:component-scan base-package="com.silverpeas.admin.service"/>
+  <ctx:component-scan base-package="com.silverpeas.socialnetwork"/>
 
   <bean id="socialNetworkService"  factory-method="getInstance" class="com.silverpeas.socialnetwork.service.SocialNetworkService"/>
 
@@ -60,7 +57,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
   </bean>
   <bean id="socialGallery" class="com.silverpeas.gallery.socialNetwork.SocialGallery">
   </bean>
-  <bean id="socialPublications" class="com.stratelia.webactiv.publication.socialnetwork.SocialPublications">
+  <bean id="socialPublications" class="com.stratelia.webactiv.publication.socialNetwork.SocialPublications">
   </bean>
   <bean id="socialStatus" class="com.silverpeas.socialnetwork.status.SocialStatus">
   </bean>

@@ -155,7 +155,7 @@ out.println(board.printBefore());
 		<% for (UserDetail user : inheritedUsers) { %>
 			<tr>
 				<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
-				<td align="center"><%=user.getDisplayedName() %></td>
+				<td align="center"><view:username userId="<%=user.getId()%>" /></td>
 			</tr>
 		<% } %>
 		<tr>
@@ -195,7 +195,7 @@ out.println(board.printBefore());
 		<% for (UserDetail user : m_listUser) { %>
 			<tr>
 				<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
-				<td align="center"><%=user.getDisplayedName() %></td>
+				<td align="center"><view:username userId="<%=user.getId()%>" /></td>
 			</tr>
 		<% } %>
 		<tr>

@@ -28,6 +28,9 @@
 
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="checkStatistic.jsp" %>
 
 <%
@@ -39,6 +42,7 @@
     String objectType	= request.getParameter("objectType");
     List<String> 	userIds 	= (List<String>) request.getAttribute("UserIds");
     %>
+    <view:includePlugin name="userZoom"/>
     <script language="javascript">
     function editDetail(userId, actorName)
     {
@@ -67,8 +71,7 @@
     	ArrayLine ligne = arrayPane.addArrayLine();
     	
     	HistoryByUser historyByUser = (HistoryByUser) it.next();
-    	String actorName = historyByUser.getUser().getLastName() + " " + historyByUser.getUser().getFirstName();
-    	ligne.addArrayCellText(actorName);
+    	ligne.addArrayCellText(UserNameGenerator.toString(historyByUser.getUser(), "unknown"));
     	Date haveRead = historyByUser.getLastAccess();
     	String readingDate = "";
         if (haveRead == null) {
@@ -90,7 +93,7 @@
         IconPane iconPane = gef.getIconPane();
 		Icon detailIcon = iconPane.addIcon();
 		
-		detailIcon.setProperties(m_context + "/util/icons/info.gif", messages.getString("statistic.detail"), "javascript:editDetail('"+historyUserId+"','"+actorName+"')");
+		detailIcon.setProperties(m_context + "/util/icons/info.gif", messages.getString("statistic.detail"), "javascript:editDetail('"+historyUserId+"','"+historyByUser.getUser().getDisplayedName()+"')");
 
    		ligne.addArrayCellIconPane(iconPane);
         }

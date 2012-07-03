@@ -28,16 +28,16 @@
 <ConnectionInformation  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ConnectionSettings.xsd">
 	<!--
 		three possible choices for the connection type : JNDI,JDBC
-		JNDI : use existing JNDI resource to access database 
+		JNDI : use existing JNDI resource to access database
 		JDBC : use  JDBC url to access database
 	-->
 	<connectionType>JNDI</connectionType>
-	<JndiName>Silverpeas</JndiName>
-	<!-- complete following information only if you use JDBC to access database --> 
+	<JndiName>java:/datasources/silverpeas-jdbc</JndiName>
+	<!-- complete following information only if you use JDBC to access database -->
 	<driver>org.postgresql.Driver</driver>
 	<url>jdbc:postgresql://localhost:5432/SilverpeasV5</url>
 	<user>postgres</user>
-	<password>postgres</password>	
+	<password>postgres</password>
 	<!--connection pool parameters-->
 	   <!-- the number of objects to examine during each run of the idle object evictor thread (if any). -->
 	    <numTestsPerEvictionRun>-1</numTestsPerEvictionRun>
@@ -52,5 +52,5 @@
 		<timeBetweenEvictionRunsMillis>-1</timeBetweenEvictionRunsMillis>
 		<!--The minimum amount of time an object, if active, may sit idle in the pool before it is eligible -->
 		<!--for eviction by the idle-object evictor. If a negative value is supplied, no objects are evicted due to idle time alone.-->
-		<minEvictableIdleTimeMillis>30000</minEvictableIdleTimeMillis>		
+		<minEvictableIdleTimeMillis>30000</minEvictableIdleTimeMillis>
 </ConnectionInformation>

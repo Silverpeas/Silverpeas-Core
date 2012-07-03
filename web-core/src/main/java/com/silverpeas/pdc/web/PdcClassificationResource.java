@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.Service;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.PdcServiceProvider.forContentOfId;
 import static com.silverpeas.pdc.web.PdcServiceProvider.inComponentOfId;
@@ -41,8 +42,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
 
 /**
 * A REST Web resource that represents the classification of a Silverpeas's resource on the
@@ -59,7 +59,7 @@ import org.springframework.stereotype.Service;
 * uniquely identified by an URI in the Web.
 */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("pdc/{componentId}/{contentId}")
 @Authorized
 public class PdcClassificationResource extends RESTWebService {

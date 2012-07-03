@@ -26,5 +26,5 @@
 -->
 
 <dataset>
-  <sb_socialnetwork_externalaccount profileid="1234" networkId="LINKEDIN" silverpeasUserId="11"/>
+  <sb_sn_externalaccount profileid="1234" networkId="LINKEDIN" silverpeasUserId="11"/>
 </dataset>

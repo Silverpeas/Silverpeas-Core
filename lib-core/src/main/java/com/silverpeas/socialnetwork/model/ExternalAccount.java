@@ -27,17 +27,13 @@ package com.silverpeas.socialnetwork.model;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 // @IdClass(AccountId.class)
-@Table(name = "sb_socialnetwork_externalaccount")
+@Table(name = "sb_sn_externalaccount")
 @NamedQueries( { @NamedQuery(name = "ExternalAccount.findBySilverpeasUserId", query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId") })
 public class ExternalAccount {
 

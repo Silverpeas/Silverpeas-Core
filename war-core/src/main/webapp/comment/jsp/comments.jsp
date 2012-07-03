@@ -31,6 +31,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<c:set var="resourceType" value="${param.type}"/>
 <c:set var="resourceId" value="${param.id}"/>
 <c:set var="userId" value="${param.userid}"/>
 <c:set var="componentId" value="${param.component_id}"/>
@@ -43,5 +44,5 @@
 </view:board>
 
 <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-<view:comments userId="${userId}" componentId="${componentId}" resourceId="${resourceId}" indexed="${indexation}"/>
+<view:comments userId="${userId}" componentId="${componentId}" resourceType="${resourceType}" resourceId="${resourceId}" indexed="${indexation}"/>
 

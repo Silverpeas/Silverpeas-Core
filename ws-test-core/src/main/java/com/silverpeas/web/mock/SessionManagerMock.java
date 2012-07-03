@@ -27,7 +27,6 @@ package com.silverpeas.web.mock;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +66,16 @@ public class SessionManagerMock implements SessionManagement {
   @Override
   public void closeSession(String sessionKey) {
     sessions.remove(sessionKey);
+  }
+
+  @Override
+  public boolean isUserConnected(UserDetail user) {
+    for (SessionInfo session : sessions.values()) {
+      if (user.getId().equals(session.getUserDetail().getId())) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

@@ -61,10 +61,11 @@
 Please find a list of the tools you will need to install Silverpeas below.<br/>
       </p>
       <subsection name="Java 6">
-        <p>Silverpeas needs a Java SE Development Kit (JDK) at least of version 6, which can be downloaded from Sun
+        <p>Silverpeas needs a Java SE Development Kit (JDK) of version 6, which can be downloaded from Oracle
           <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html#jdk">here</a>.<br/>
           Don't forget to set-up the environment variable <b>JAVA_HOME</b>.
         </p>
+        <p>Users have encountered some problems when using JDK 7 with JBoss 6.x so we currently advise you against using Java 7 with Silverpeas.</p>
       </subsection>
       <subsection name="Apache Maven">
         <p>Apache Maven 3.0.x is used in Silverpeas for the building of components and the assembly. It must be installed on the target platform.<br/>
@@ -88,8 +89,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
             <li>Edit or create the file <code>~/.m2/settings.xml</code>.</li>
             <li>Add the follwing instructions according to your proxy configuration<br/>
               <source><![CDATA[<settings>
-  .
-  .
+  ...
   <proxies>
    <proxy>
       <active>true</active>
@@ -101,8 +101,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
       <nonProxyHosts>www.google.com|*.somewhere.com</nonProxyHosts>
     </proxy>
   </proxies>
-  .
-  .
+  ...
 </settings>]]></source></li>
           </ul>
         </p>
@@ -112,7 +111,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         </p>
       </subsection>
       <subsection name="Postgresql">
-        <p>Silverpeas can use any JDBC compliant RDBMS, however the Open source solution is pre-configured to run on PostgreSQL 8.x.
+        <p>Silverpeas can use any JDBC compliant RDBMS, however the Open source solution is pre-configured to run on PostgreSQL 9.x.
         which can be downloaded from <a href="http://www.postgresql.org/download/">here</a>.
         </p>
         <p>You will have to create a database <i>SilverpeasV5</i> with a user <i>postgres/postgres</i> with administrative rights.
@@ -148,6 +147,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
           <li><i>$JBOSS_HOME/server/default/deploy/jmx-console-activator-jboss-beans.xml</i></li>
         </ul>
         <p>the Jboss community provides also a groovy script to secure your Jboss 6.x instance : follow the instructions from <a href="http://community.jboss.org/wiki/SimpleWayToLockUpYourJBossASInstance">this page</a>.</p>
+        <p>The first installation of Silverpeas will secure this for you since Silverpeas 5.9, but be careful, <b>the upgrade process doesn't secure your server.</b></p>
       </subsection>
       <subsection name="Preparing Silverpeas">
         <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download </p>
@@ -171,15 +171,14 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         Unzip the <b>silverpeas-${installer_stable_version}-jboss6.zip</b> file into <i>C:\Java</i>.<br/>
         The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:/Java/silverpeas-${installer_stable_version}-jboss6</i> (the slash instead of backslash characters are normal and the
         environment variable SILVERPEAS_HOME should be set as such).
-        </p>
-       
+        </p>       
       </subsection>
       <subsection name="Configuration">
         <p>Silverpeas configuration is defined in the directory <code>%SILVERPEAS_HOME%\setup\settings\</code>.
         There you should find three files :
           <ul>
-            <li><b>config.xml: </b>where you can configure the database connection and other Silverpeas parameters
-such as the JVM parameters for the application.</li>
+            <li><b>config.properties: </b>where you can configure the database connection and other Silverpeas parameters
+such as the JVM parameters for the application. We provide a <i>sample_config.properties</i> file which you can copy and edit to specify only your configuration changes.</li>
             <li><b>JBossSettings.xml: </b>this is used for configuraing JBoss, you should not have to edit it.</li>
             <li><b>SilverpeasSettings.xml: </b>this is a default configuration for Silverpeas. If you want your own specific configuration,
 you can copy and paste this file to <i>CustomerSettings.xml</i> where you can define your own configuration. Creating the

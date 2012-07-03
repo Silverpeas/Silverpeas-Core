@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response.Status;
 import com.sun.jersey.api.client.ClientResponse;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.web.ResourceCreationTest;
 import org.junit.Test;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -38,6 +39,7 @@ import static com.silverpeas.pdc.web.matchers.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcTestResources.*;
 import static com.silverpeas.pdc.web.beans.PdcClassificationBuilder.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests on the adding of positions with a predefined classification web resources.
@@ -68,7 +70,7 @@ public class PredefinedClassificationCreationTest extends ResourceCreationTest<P
     int receivedStatus = response.getStatus();
     int created = Status.CREATED.getStatusCode();
     assertThat(receivedStatus, is(created));
-
+    
     PdcClassification createdPredefinedClassification =
             getTestResources().getPredefinedClassification(NODE_ID, COMPONENT_INSTANCE_ID);
     assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(

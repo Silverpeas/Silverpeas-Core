@@ -32,7 +32,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
 import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
@@ -98,7 +97,7 @@ public class LinkedInConnector extends AbstractSocialNetworkConnector {
   @Override
   public String getUserProfileId(AccessToken authorizationToken) {
     return connectionFactory.createConnection(authorizationToken.getoAuthToken()).getApi()
-        .getProfileId();
+        .profileOperations().getProfileId();
   }
 
   /*

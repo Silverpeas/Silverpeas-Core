@@ -24,24 +24,24 @@
 
 package com.silverpeas.pdc.web;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import com.silverpeas.pdc.model.PdcAxisValue;
-import java.util.Collections;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.web.Exposable;
 import com.silverpeas.thesaurus.ThesaurusException;
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-
-import static com.silverpeas.util.StringUtil.isDefined;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Web representation of the position of a Silverpeas's resource in the classification plan
@@ -58,7 +58,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
 public class PdcPositionEntity implements Exposable {
 
   private static final long serialVersionUID = 6314816355055147378L;
-  @XmlElement(required = true)
+  @XmlElement(required = true) @NotNull @Size(min=1)
   private List<PdcPositionValueEntity> values = new ArrayList<PdcPositionValueEntity>();
   @XmlElement(defaultValue = "")
   private URI uri;

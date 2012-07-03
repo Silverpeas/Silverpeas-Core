@@ -25,34 +25,10 @@
 package com.silverpeas.pdc.service;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.pdc.dao.PdcAxisValueRepository;
-import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityNotFoundException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The service aiming at classifying the contents in Silverpeas on the classification plan (named
@@ -75,17 +51,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  * the contents in its children nodes. Therefore, if a predefined classification is not found for a
  * given node, then it is seeked back upto the root node (that is the component instance ifself).
  */
-@Named
-@Transactional
-public class PdcClassificationService {
-
-  @Inject
-  private PdcClassificationRepository classificationRepository;
-  @Inject
-  private PdcAxisValueRepository valueRepository;
-  private NodeBm nodeBm;
-  @Inject
-  private PdcBm pdcBm;
+public interface PdcClassificationService {
 
   /**
    * Finds a predefined classification on the PdC that was set for any new contents in the specified
@@ -101,33 +67,7 @@ public class PdcClassificationService {
    * @return a predefined classification on the PdC ready to be used to classify a content published
    * in the specified node or an empty classification.
    */
-  public PdcClassification findAPreDefinedClassification(String nodeId, String instanceId) {
-    try {
-      PdcClassification classification = null;
-      if (isDefined(nodeId)) {
-        NodePK nodeToSeek = new NodePK(nodeId, instanceId);
-        while (classification == null && !nodeToSeek.isUndefined()) {
-          classification =
-              classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
-              nodeToSeek.getInstanceId());
-          NodeDetail node = getNodeBm().getDetail(nodeToSeek);
-          nodeToSeek = node.getFatherPK();
-        }
-        if (classification == null) {
-          classification = getPreDefinedClassification(instanceId);
-        }
-      } else {
-        classification = getPreDefinedClassification(instanceId);
-      }
-      return classification;
-    } catch (RemoteException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".getPreDefinedClassification()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-          ex);
-    } catch (Exception ex) {
-      throw new EntityNotFoundException(ex.getMessage());
-    }
-  }
+  public PdcClassification findAPreDefinedClassification(String nodeId, String instanceId);
 
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the
@@ -140,19 +80,7 @@ public class PdcClassificationService {
    * @return a predefined classification on the PdC associated with the specified node or with the
    * specified component instance or an empty classification.
    */
-  public PdcClassification getPreDefinedClassification(String nodeId, String instanceId) {
-    if (!isDefined(nodeId)) {
-      return getPreDefinedClassification(instanceId);
-    }
-    NodePK nodeToSeek = new NodePK(nodeId, instanceId);
-    PdcClassification classification =
-        classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
-        nodeToSeek.getInstanceId());
-    if (classification == null) {
-      classification = NONE_CLASSIFICATION;
-    }
-    return classification;
-  }
+  public PdcClassification getPreDefinedClassification(String nodeId, String instanceId);
 
   /**
    * Gets the predefined classification on the PdC that was set for any new contents managed in the
@@ -163,15 +91,7 @@ public class PdcClassificationService {
    * @return a predefined classification on the PdC ready to be used to classify a content published
    * within the component instance or an empty classification.
    */
-  public PdcClassification getPreDefinedClassification(String instanceId) {
-    PdcClassification classification = classificationRepository.
-        findPredefinedClassificationByComponentInstanceId(
-        instanceId);
-    if (classification == null) {
-      classification = NONE_CLASSIFICATION;
-    }
-    return classification;
-  }
+  public PdcClassification getPreDefinedClassification(String instanceId);
 
   /**
    * Saves the specified predefined classification on the PdC. If a predefined classification
@@ -183,24 +103,7 @@ public class PdcClassificationService {
    * predefined classification will serv for the whole component instance.
    * @param classification either the saved predefined classification or NONE_CLASSIFICATION.
    */
-  public PdcClassification savePreDefinedClassification(final PdcClassification classification) {
-    if (!classification.isPredefined()) {
-      throw new IllegalArgumentException("The classification isn't a predefined one");
-    }
-    PdcClassification savedClassification = NONE_CLASSIFICATION;
-    if (classification.getId() != null && classificationRepository.exists(classification.getId())
-        && classification.isEmpty()) {
-      classificationRepository.delete(classification);
-    } else {
-      List<PdcAxisValue> allValues = new ArrayList<PdcAxisValue>();
-      for (PdcPosition aPosition : classification.getPositions()) {
-        allValues.addAll(aPosition.getValues());
-      }
-      valueRepository.save(allValues);
-      savedClassification = classificationRepository.saveAndFlush(classification);
-    }
-    return savedClassification;
-  }
+  public PdcClassification savePreDefinedClassification(final PdcClassification classification);
 
   /**
    * Deletes the predefined classification set for the specified node in the specified component
@@ -210,18 +113,7 @@ public class PdcClassificationService {
    * be deleted.
    * @param instanceId the unique identifier of the component instance to which the node belongs.
    */
-  public void deletePreDefinedClassification(String nodeId, String instanceId) {
-    PdcClassification classification;
-    // the node with 0 as identifier matches the component instance itself
-    if (!isDefined(nodeId) || "0".equals(nodeId)) {
-      classification = getPreDefinedClassification(instanceId);
-    } else {
-      classification = getPreDefinedClassification(nodeId, instanceId);
-    }
-    if (classification != NONE_CLASSIFICATION) {
-      classificationRepository.delete(classification);
-    }
-  }
+  public void deletePreDefinedClassification(String nodeId, String instanceId);
 
   /**
    * Classifies the specified content on the PdC with the specified classification. If the content
@@ -232,30 +124,7 @@ public class PdcClassificationService {
    * @param withClassification the classification with which the content is positioned on the PdC.
    */
   public void classifyContent(final SilverpeasContent content,
-      final PdcClassification withClassification) throws PdcRuntimeException {
-    List<ClassifyPosition> classifyPositions = withClassification.getClassifyPositions();
-    try {
-      int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
-      List<ClassifyPosition> existingPositions = pdcBm.getPositions(silverObjectId, content.
-          getComponentInstanceId());
-      for (ClassifyPosition aClassifyPosition : classifyPositions) {
-        int positionId = pdcBm.addPosition(silverObjectId, aClassifyPosition, content.
-            getComponentInstanceId());
-        aClassifyPosition.setPositionId(positionId);
-      }
-      if (!existingPositions.isEmpty()) {
-        for (ClassifyPosition anExistingPosition : existingPositions) {
-          if (!isFound(anExistingPosition, classifyPositions)) {
-            pdcBm.deletePosition(anExistingPosition.getPositionId(),
-                content.getComponentInstanceId());
-          }
-        }
-      }
-    } catch (PdcException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".classifyContent()", ex.
-          getErrorLevel(), ex.getMessage(), ex);
-    }
-  }
+          final PdcClassification withClassification) throws PdcRuntimeException;
 
   /**
    * Some values come to be removed from the PdC. Triggers the update of all concerned
@@ -271,20 +140,7 @@ public class PdcClassificationService {
    * </ul>
    * @param deletedValues the values that are removed from a PdC's axis.
    */
-  public void axisValuesDeleted(final List<PdcAxisValue> deletedValues) {
-    List<PdcClassification> concernedClassifications = classificationRepository.
-        findClassificationsByPdcAxisValues(deletedValues);
-    for (PdcClassification aClassification : concernedClassifications) {
-      aClassification.updateForPdcAxisValuesDeletion(deletedValues);
-      savePreDefinedClassification(aClassification);
-    }
-    classificationRepository.flush(); // apply now all the modifications
-
-    // for instance, the PdcAxisValue objects are taken in charge by this service as they are only
-    // used in the predefined classification. Nevertheless, it is planned they will be used when
-    // refactoring the PdC old code on the classification of contents and in the PdC definition.
-    valueRepository.delete(deletedValues);
-  }
+  public void axisValuesDeleted(final List<PdcAxisValue> deletedValues);
 
   /**
    * An axis comes to be removed from the PdC. Triggers the update of all concerned classifications
@@ -299,69 +155,5 @@ public class PdcClassificationService {
    * </ul>
    * @param axisId the unique identifier of the axis.
    */
-  public void axisDeleted(String axisId) {
-    List<PdcAxisValue> valuesToDelete = valueRepository.findByAxisId(Long.valueOf(axisId));
-    if (!valuesToDelete.isEmpty()) {
-      axisValuesDeleted(valuesToDelete);
-    }
-  }
-
-  /**
-   * A convenient method to enhance the readability of method calls.
-   * @param classification a classification on the PdC.
-   * @return the classification.
-   */
-  public static PdcClassification withClassification(final PdcClassification classification) {
-    return classification;
-
-  }
-
-  protected NodeBm getNodeBm() {
-    if (nodeBm == null) {
-      try {
-        NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-        nodeBm = home.create();
-      } catch (Exception ex) {
-        throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-            ex);
-      }
-    }
-    return nodeBm;
-  }
-
-  protected void setNodeBm(final NodeBm nodeBm) {
-    this.nodeBm = nodeBm;
-  }
-
-  private boolean isFound(ClassifyPosition aPosition,
-      List<ClassifyPosition> newPositions) {
-    for (ClassifyPosition aNewPosition : newPositions) {
-      if (aNewPosition.getPositionId() == aPosition.getPositionId()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * This method is called to find all the children of a given node. It is used in order to find all
-   * the children of a node that is going to be deleted. Nevertheless, as this wor
-   * @param node
-   * @return
-   */
-  private Collection<NodeDetail> getRecursivelyAllChildren(final NodePK node) {
-    try {
-      Collection<NodeDetail> children = getNodeBm().getChildrenDetails(node);
-      Collection<NodeDetail> allChildren = new ArrayList<NodeDetail>(children);
-      for (NodeDetail aChildNode : children) {
-        allChildren.addAll(getRecursivelyAllChildren(aChildNode.getNodePK()));
-      }
-      return allChildren;
-    } catch (RemoteException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
-          ex.getMessage(), ex);
-    }
-  }
+  public void axisDeleted(String axisId);
 }

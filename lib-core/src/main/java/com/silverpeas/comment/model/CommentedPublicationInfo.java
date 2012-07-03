@@ -34,17 +34,21 @@ public class CommentedPublicationInfo implements Serializable {
   private static final long serialVersionUID = 4433090666272026427L;
   private int commentCount;
   private String componentId;
+  private String elementType;
   private String elementId;
 
   /**
    * Constructs a new CommentedPublicationInfo instance.
+   * @param publicationType type of the commented publication.
    * @param publicationId identifier of the commented publication.
    * @param componentId identifier of the Silverpeas component to which the publication belongs.
    * @param commentCount number of comments on the publucation.
    */
-  public CommentedPublicationInfo(String publicationId, String componentId, int commentCount) {
+  public CommentedPublicationInfo(String publicationType, String publicationId, String componentId,
+      int commentCount) {
     this.commentCount = commentCount;
     this.componentId = componentId;
+    this.elementType = publicationType;
     this.elementId = publicationId;
   }
 
@@ -62,6 +66,14 @@ public class CommentedPublicationInfo implements Serializable {
    */
   public String getComponentId() {
     return componentId;
+  }
+
+  /**
+   * Gets the type of the publication.
+   * @return the publication identifier.
+   */
+  public String getPublicationType() {
+    return elementType;
   }
 
   /**

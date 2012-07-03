@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class SocialNetworkAuthorizationException extends SilverpeasException {
 
+  private static final long serialVersionUID = -7964169729516682237L;
+
   @Override
   public String getModule() {
     return "socialNetwork";

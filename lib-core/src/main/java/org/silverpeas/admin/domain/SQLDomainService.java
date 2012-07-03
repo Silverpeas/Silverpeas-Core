@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -40,8 +39,6 @@ import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.repository.SQLDomainRepository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -57,8 +54,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class SQLDomainService extends AbstractDomainService {
   ResourceLocator templateSettings;
   ResourceLocator adminSettings;
-  String templatePath = "";
-  String customersTemplatePath = "";
 
   @Inject
   @Named("sqlInternalDomainRepository")
@@ -69,9 +64,6 @@ public class SQLDomainService extends AbstractDomainService {
     templateSettings =
         new ResourceLocator("com.stratelia.silverpeas.domains.templateDomainSQL", "");
     adminSettings = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
-
-    templatePath = adminSettings.getString("sqlDomainTemplate.path");
-    customersTemplatePath = adminSettings.getString("sqlDomainTemplate.customersPath");
   }
 
   @Override
@@ -312,11 +304,7 @@ public class SQLDomainService extends AbstractDomainService {
    * @return
    */
   private SilverpeasTemplate getNewTemplate() {
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, templatePath);
-    templateConfiguration
-        .setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, customersTemplatePath);
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/sqlDomain");
   }
 
 }

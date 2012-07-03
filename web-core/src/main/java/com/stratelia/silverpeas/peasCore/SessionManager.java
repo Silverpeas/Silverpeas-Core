@@ -571,6 +571,16 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
+  public synchronized boolean isUserConnected(UserDetail user) {
+    for (SessionInfo session : userDataSessions.values()) {
+      if (user.getId().equals(session.getUserDetail().getId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private long convertMinuteInMilliseconds(long minutes) {
     return minutes * 60000L;
   }

@@ -69,6 +69,11 @@ public class Classified implements SilverpeasContent {
     return title;
   }
   
+  @Override
+  public String getDescription() {
+    return "";
+  }
+
   public Classified entitled(String title) {
     this.title = title;
     return this;

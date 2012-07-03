@@ -25,12 +25,15 @@ package com.silverpeas.profile.web;
 
 import com.silverpeas.personalization.UserPreferences;
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-import com.silverpeas.web.Exposable;
 import com.silverpeas.ui.DisplayI18NHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -79,14 +82,20 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private UserDetail user = null;
   @XmlElement(required=true)
   private URI uri;
-  @XmlElement(required=true)
+  @XmlElement
+  private String webPage;
+  @XmlElement
+  private String tchatPage;
+  @XmlElement(required=true) @NotNull @Size(min=1)
   private String avatar;
   @XmlElement
   private String domainName;
-  @XmlElement(required=true, defaultValue="")
+  @XmlElement(required=true, defaultValue="") @NotNull
   private String fullName = "";
   @XmlElement(defaultValue="")
   private String language = "";
+  @XmlElement(defaultValue="false")
+  private boolean connected = false;
 
   private UserProfileEntity(UserDetail user) {
     this.user = user;
@@ -100,6 +109,9 @@ public class UserProfileEntity extends UserDetail implements Exposable {
             getName();
     this.fullName = user.getDisplayedName();
     this.avatar = getAvatarURI();
+    this.connected = this.user.isConnected();
+    this.webPage = getUserProfileWebPageURI();
+    this.tchatPage = getTchatWebPageURI();
   }
 
   @Override
@@ -181,6 +193,28 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     }
     return avatar;
   }
+  
+  /**
+   * Gets the URL of the WEB page in which is presented the profile of this user.
+   * @return the URL of the user profile WEB page.
+   */
+  public String getWebPage() {
+    if (!isDefined(webPage)) {
+      webPage = getUserProfileWebPageURI();
+    }
+    return webPage;
+  }
+  
+  /**
+   * Gets the URL of the tchat WEB page opened to discuss with this user.
+   * @return the URL of the user tchat page.
+   */
+  public String getTchatPage() {
+    if (!isDefined(tchatPage)) {
+      tchatPage = getUserProfileWebPageURI();
+    }
+    return tchatPage;
+  }
 
   /**
    * Gets the full name of the user. The full name is made up of its firstname and of its lastname.
@@ -188,6 +222,15 @@ public class UserProfileEntity extends UserDetail implements Exposable {
    */
   public String getFullName() {
     return fullName;
+  }
+  
+  /**
+   * Is this user connected to Silverpeas?
+   * @return true if the user is connected, false otherwise.
+   */
+  @Override
+  public boolean isConnected() {
+    return this.connected;
   }
 
   @Override
@@ -210,6 +253,16 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   @Override
   public void setLogin(String sLogin) {
     this.user.setLogin(sLogin);
+  }
+
+  @Override
+  @XmlElement(defaultValue="")
+  public String getStatus() {
+    return user.getStatus();
+  }
+  
+  public void setStatus(String newStatus) {
+    
   }
 
   public String getDomainName() {
@@ -260,5 +313,27 @@ public class UserProfileEntity extends UserDetail implements Exposable {
       avatarURI =  context.getServletContext().getContextPath() + avatarURI;
     }
     return avatarURI;
+  }
+  
+  private String getUserProfileWebPageURI() {
+    String pageUri = "/Rprofil/jsp/Main?userId=" + this.user.getId();
+    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
+    if (context != null) {
+      pageUri =  context.getServletContext().getContextPath() + pageUri;
+    } else {
+      pageUri = URLManager.getApplicationURL() + pageUri;
+    }
+    return pageUri;
+  }
+  
+  private String getTchatWebPageURI() {
+    String pageUri = "/RcommunicationUser/jsp/OpenDiscussion?userId=" + this.user.getId();
+    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
+    if (context != null) {
+      pageUri =  context.getServletContext().getContextPath() + pageUri;
+    } else {
+      pageUri = URLManager.getApplicationURL() + pageUri;
+    }
+    return pageUri;
   }
 }

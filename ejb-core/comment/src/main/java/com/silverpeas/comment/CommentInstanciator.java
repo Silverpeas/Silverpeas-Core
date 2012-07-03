@@ -29,19 +29,16 @@
 package com.silverpeas.comment;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 
-import com.silverpeas.admin.components.InstanciationException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.util.DBUtil;
+import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.comment.service.CommentServiceFactory;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * @author neysseri
  */
 public class CommentInstanciator implements ComponentsInstanciatorIntf {
-
-  private static final String COMMENT_TABLENAME = "SB_COMMENT_COMMENT";
 
   public CommentInstanciator() {
   }
@@ -59,18 +56,12 @@ public class CommentInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace.info("comment", "CommentInstanciator.delete()",
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
 
-    String delete_query = "delete from " + COMMENT_TABLENAME
-        + " where instanceId = ? ";
-    PreparedStatement prepStmt = null;
     try {
-      prepStmt = con.prepareStatement(delete_query);
-      prepStmt.setString(1, componentId);
-      prepStmt.executeUpdate();
+      CommentServiceFactory.getFactory().getCommentService()
+          .deleteAllCommentsByComponentInstanceId(componentId);
     } catch (Exception e) {
       throw new InstanciationException("CommentInstanciator.delete()",
           InstanciationException.ERROR, "root.EX_RECORD_DELETION_FAILED", e);
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 }

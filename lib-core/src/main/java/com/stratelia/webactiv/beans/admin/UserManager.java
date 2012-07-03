@@ -20,6 +20,11 @@
 */
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.X509Factory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -30,9 +35,6 @@ import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserManager {
 
@@ -590,6 +592,16 @@ public class UserManager {
           throws AdminException {
     try {
       ddManager.getOrganizationSchema();
+
+      // Send the delayed notifications of the user to delete
+      try {
+        DelayedNotificationDelegate.executeUserDeleting(Integer.valueOf(user.getId()));
+      } catch (Exception e) {
+        SynchroReport.warn("UserManager.deleteUser()", "problème d'envoi des notifications journalisées "
+            + user.getFirstName() + " " + user.getLastName() + "(specificId:"
+            + user.getSpecificId() + ") - " + e.getMessage(), null);
+      }
+
       // Delete user from specific domain
       if (!onlyInSilverpeas) {
         ddManager.deleteUser(user.getId());

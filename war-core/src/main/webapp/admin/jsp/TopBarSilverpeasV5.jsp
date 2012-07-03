@@ -192,23 +192,16 @@ function reloadTopBar()
 		</div>
         </div>
 
-    <% if (topItems.size() > 0) { %>
+    <% if (!topItems.isEmpty()) { %>
     <div id="shortcuts">
         <table border="0" cellspacing="0" cellpadding="0">
         	<tr>
               <td class="gaucheShortcuts">&nbsp;</td>
               <td nowrap="nowrap" align="center"><img src="icons/silverpeasV5/px.gif" width="40" height="1" border="0"/></td>
               <%
-            	TopItem item 		= null; 
-            	String 	cssStyle 	= "";
-            	String	componentId	= "";
-            	String	spaceId		= "";
-            	String 	subSpaceId	= "";
-            	for (int c=0; c<topItems.size(); c++) {
-            		item = (TopItem) topItems.get(c);
-            		
-            		//le composant est-il celui selectionne
-            		cssStyle = "";
+            	for ( TopItem item :topItems) {
+            		//le composant est-il celui selectionne ?
+                String cssStyle = "";
             		if (item.getId().equals(currentComponentId) || item.getId().equals(currentSpaceId))
             			cssStyle = "activeShortcut";
             	%>

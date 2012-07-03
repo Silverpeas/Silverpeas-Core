@@ -25,16 +25,13 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.*;
 import static com.stratelia.webactiv.util.viewGenerator.html.SupportedJavaScriptPlugins.*;
 import java.io.IOException;
-import java.text.MessageFormat;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.link;
-import org.apache.ecs.xhtml.script;
 
 /**
 * This tag is for including javascript plugins with their stylesheets.
@@ -42,20 +39,7 @@ import org.apache.ecs.xhtml.script;
 public class IncludeJSPluginTag extends SimpleTagSupport {
 
   private static final String MAIN_SESSION_CONTROLLER = "SilverSessionController";
-  private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
-  private static final String jqueryPath = javascriptPath + "jquery/";
-  private static final String jqueryCssPath = stylesheetPath + "jquery/";
-  private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
-  private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
-  private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
-  private static final String SILVERPEAS_DATEPICKER = "silverpeas-defaultDatePicker.js";
-  private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
-  private static final String PAGINATION_TOOL = "smartpaginator";
-  private static final String JQUERY_BREADCRUMB = "silverpeas-breadcrumb.js";
-  private static final String JAVASCRIPT_TYPE = "text/javascript";
-  private static final String STYLESHEET_TYPE = "text/css";
-  private static final String STYLESHEET_REL = "stylesheet";
+  
   private String plugin;
 
   public String getName() {
@@ -70,31 +54,21 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   public void doTag() throws JspException, IOException {
     ElementContainer xhtml = new ElementContainer();
     if (qtip.name().equals(getName())) {
-      script qtip = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_QTIP);
-      script silverpeasQtip = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
-              + SILVERPEAS_QTIP);
-      xhtml.addElement(qtip);
-      xhtml.addElement(silverpeasQtip);
+      includeQTip(xhtml);
     } else if (datepicker.name().equals(getName())) {
-      script datePicker = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
-              + MessageFormat.format(JQUERY_DATEPICKER, getLanguage()));
-      script silverpeasDatePicker = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-              + SILVERPEAS_DATEPICKER);
-      script silverpeasDateUtils = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-              + SILVERPEAS_DATE_UTILS);
-      xhtml.addElement(datePicker);
-      xhtml.addElement(silverpeasDatePicker);
-      xhtml.addElement(silverpeasDateUtils);
+      includeDatePicker(xhtml, getLanguage());
     } else if (pagination.name().equals(getName())) {
-      script pagination = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + PAGINATION_TOOL
-              + ".js");
-      link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(jqueryCssPath
-              + PAGINATION_TOOL + ".css");
-      xhtml.addElement(css);
-      xhtml.addElement(pagination);
+      includePagination(xhtml);
     } else if (breadcrumb.name().equals(getName())) {
-      script breadcrumb = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + JQUERY_BREADCRUMB);
-      xhtml.addElement(breadcrumb);
+      includeBreadCrumb(xhtml);
+    } else if (userZoom.name().equals(getName())) {
+      includeUserZoom(xhtml);
+    } else if (invitme.name().equals(getName())) {
+      includeInvitMe(xhtml);
+    } else if (messageme.name().equals(getName())) {
+      includeMessageMe(xhtml);
+    } else if (wysiwyg.name().equals(getName())) {
+      includeWysiwygEditor(xhtml);
     }
     xhtml.output(getJspContext().getOut());
   }

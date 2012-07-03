@@ -24,8 +24,6 @@
 
 package org.silverpeas.admin.domain;
 
-import static com.silverpeas.util.template.SilverpeasTemplate.TEMPLATE_CUSTOM_DIR;
-import static com.silverpeas.util.template.SilverpeasTemplate.TEMPLATE_ROOT_DIR;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -37,7 +35,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -52,10 +49,8 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
@@ -69,8 +64,6 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.silverpeas.util.PathTestUtil;
-import com.silverpeas.util.template.SilverpeasStringTemplate;
-import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
@@ -95,16 +88,6 @@ public class SQLDomainServiceTest {
   private File expectedDomainPropertiesFile;
   private File expectedDomainAuthenticationPropertiesFile;
   File tmpFile = null;
-
-  private static String rootDir = PathTestUtil.TARGET_DIR +
-      "test-classes" + File.separatorChar + "templates" + File.separatorChar;
-  private static Properties templateConfiguration = new Properties();
-
-  @BeforeClass
-  public static void setUp() {
-    templateConfiguration.setProperty(TEMPLATE_ROOT_DIR, rootDir);
-    templateConfiguration.setProperty(TEMPLATE_CUSTOM_DIR, rootDir);
-  }
 
   public SQLDomainServiceTest() {
   }
@@ -191,10 +174,6 @@ public class SQLDomainServiceTest {
     mockStatic(DomainDriverManagerFactory.class);
     when(DomainDriverManagerFactory.getCurrentDomainDriverManager()).thenReturn(
         mockedDomainDriverManager);
-
-    mockStatic(SilverpeasTemplateFactory.class);
-    when(SilverpeasTemplateFactory.createSilverpeasTemplate((Properties) Mockito.anyObject()))
-        .thenReturn(new SilverpeasStringTemplate(templateConfiguration));
   }
 
   @After
@@ -208,7 +187,7 @@ public class SQLDomainServiceTest {
     DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
 
     // remove tmp folder
-    FileUtils.deleteDirectory(tmpFile);
+    FileUtils.deleteQuietly(tmpFile);
   }
 
   @Test
@@ -377,10 +356,6 @@ public class SQLDomainServiceTest {
     dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-  }
-
-  private SilverpeasTemplate getNewTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
 }

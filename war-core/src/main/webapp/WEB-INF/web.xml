@@ -131,6 +131,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
             <param-value>true</param-value>
         </init-param>
+        <init-param>
+            <description>Packages in which are defined both REST resources and mapper providers not managed by Spring</description>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>org.codehaus.jackson.jaxrs;com.silverpeas.web.mappers</param-value>
+        </init-param>
     </servlet>
     <servlet>
         <servlet-name>AuthenticationServlet</servlet-name>
@@ -503,9 +508,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.MyProfilRequestRouter</servlet-class>
     </servlet>
     <servlet>
-      <display-name>GoToMyProfile</display-name>
-      <servlet-name>GoToMyProfile</servlet-name>
-      <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.GoToMyProfile</servlet-class>
+        <servlet-name>GoToMyProfile</servlet-name>
+        <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.GoToMyProfile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MyProfilJSONServlet</servlet-name>

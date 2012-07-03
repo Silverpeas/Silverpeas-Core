@@ -66,6 +66,7 @@
 <view:looknfeel />
 <script type="text/javascript" src="<%=m_context %>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context %>/util/javaScript/checkForm.js"></script>
+<view:includePlugin name="messageme"/>
 <script type="text/javascript">
 function statusPublishFailed() {
 	$("#statusPublishFailedDialog").dialog("open");
@@ -102,7 +103,7 @@ $(document).ready(function(){
             modal: true,
             autoOpen: false,
             height: "auto",
-            width: 300,
+            width: 400,
             title: "<fmt:message key="profil.actions.changeStatus" />",
             buttons: {
 				"<fmt:message key="GML.ok"/>": function() {
@@ -200,8 +201,8 @@ $(document).ready(function(){
             <br />
             <a href="#" class="link updateAvatar" onclick="updateAvatar()"><fmt:message key="profil.actions.changePhoto" /></a>
             <br/>
-			<a href="#" class="link" onclick="logIntoFB();" id="FBloginButton"><fmt:message key="profil.actions.connectTo" /> FACEBOOK</a>
-			<a href="#" class="link" onclick="publishToFB();" id="FBpublishButton"><fmt:message key="profil.actions.publishStatus"/> FACEBOOK</a>
+			<a href="#" class="link" onclick="logIntoFB();" id="FBLoginButton"><fmt:message key="profil.actions.connectTo" /> FACEBOOK</a>
+			<a href="#" class="link" onclick="publishToFB();" id="FBPublishButton"><fmt:message key="profil.actions.publishStatus"/> FACEBOOK</a>
             <br/>
 			<a href="#" class="link" onclick="logIntoLinkedIN();" id="LinkedInLoginButton"><fmt:message key="profil.actions.connectTo" /> LINKEDIN</a>
 			<a href="#" class="link" onclick="publishToLinkedIN();" id="LinkedInPublishButton"><fmt:message key="profil.actions.publishStatus" /> LINKEDIN</a>

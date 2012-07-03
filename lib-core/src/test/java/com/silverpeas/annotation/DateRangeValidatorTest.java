@@ -24,6 +24,7 @@
 
 package com.silverpeas.annotation;
 
+import com.silverpeas.annotation.constraint.DateRange;
 import com.silverpeas.calendar.DateTime;
 import java.util.Set;
 import javax.validation.ConstraintViolation;

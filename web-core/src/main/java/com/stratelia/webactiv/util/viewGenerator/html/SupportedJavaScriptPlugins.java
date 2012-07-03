@@ -29,8 +29,43 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 */
 public enum SupportedJavaScriptPlugins {
   
+  /**
+   * JQuery plugin to print out tooltips.
+   */
   qtip,
+  /**
+   * JQuery plugin to pick up a date in a calendar.
+   */
   datepicker,
+  /**
+   * JQuery plugin to paginate data.
+   */
   pagination,
-  breadcrumb;
+  /**
+   * Silverpeas plugin to print out and manage a breadcrumb.
+   */
+  breadcrumb,
+  /**
+   * Silverpeas plugin to print out a popup with information about a given user and with some
+   * social functions (invitation, messaging,...).
+   * The HTML element on which the plugin is invoked must present the rel attribute valued with the
+   * user identifier.
+   */
+  userZoom,
+  /**
+   * Silverpeas plugin to send a relationship asking to a given user.
+   * The HTML element on which the plugin is invoked must present the rel attribute valued with the
+   * user identifier and optionally the user full name (comma separated).
+   */
+  invitme,
+  /**
+   * Silverpeas plugin to send a message (a user notification) to a given user.
+   * The HTML element on which the plugin is invoked must present the rel attribute valued with the
+   * user identifier and optionally the user full name (comma separated).
+   */
+  messageme,
+  /**
+   * The CKEditor script to write and render WYSIWYG content.
+   */
+  wysiwyg;
 }

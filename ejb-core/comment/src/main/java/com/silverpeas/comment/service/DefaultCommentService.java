@@ -120,20 +120,36 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   }
 
   /**
-   * Deletes all of the comments on the publication identified by the specified identifier. Any
-   * indexes on it are removed. AAll callback interested by the deletion of a comment will be
-   * invoked through the CallBackManager. The callback will recieve as invocation parameters
-   * respectively the identifier of the commented publication, the component instance name, and the
-   * deleted comment. If no such publication exists with the specified identifier, then a
-   * CommentRuntimeException is thrown.
+   * Deletes all of the comments on the publication identified by the resource type and the
+   * specified identifier. Any indexes on it are removed. All callback interested by the deletion of
+   * a comment will be invoked through the CallBackManager. The callback will recieve as invocation
+   * parameters respectively the identifier of the commented publication, the component instance
+   * name, and the deleted comment. If no such publication exists with the specified identifier,
+   * then a CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication the comments are on.
    */
   @Override
-  public void deleteAllCommentsOnPublication(final WAPrimaryKey pk) {
-    List<Comment> comments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
+  public void deleteAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
+    List<Comment> comments =
+        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
     for (Comment comment : comments) {
       deleteComment(comment);
     }
+  }
+
+  /**
+   * Deletes all of the comments by the component instance identifier. Any indexes on it are
+   * removed. All callback interested by the deletion of a comment will be invoked through the
+   * CallBackManager. The callback will recieve as invocation parameters respectively the identifier
+   * of the commented publication, the component instance name, and the deleted comment. If no such
+   * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
+   * @param pk the identifier of the publication the comments are on.
+   */
+  @Override
+  public void deleteAllCommentsByComponentInstanceId(String instanceId) {
+    deleteAllCommentsOnPublication(null, new ForeignPK(null, instanceId));
   }
 
   /**
@@ -156,13 +172,15 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * resulting operation is that the comments will be on the another publication and all the
    * previous indexes on them are removed. If at least one of the publications doesn't exist with
    * the specified identifier, then a CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
    */
   @Override
-  public void moveComments(final WAPrimaryKey fromPK, final WAPrimaryKey toPK) {
-    unindexAllCommentsOnPublication(fromPK);
-    getCommentDAO().moveComments(new ForeignPK(fromPK), new ForeignPK(toPK));
+  public void moveComments(final String resourceType, final WAPrimaryKey fromPK,
+      final WAPrimaryKey toPK) {
+    unindexAllCommentsOnPublication(resourceType, fromPK);
+    getCommentDAO().moveComments(resourceType, new ForeignPK(fromPK), new ForeignPK(toPK));
   }
 
   /**
@@ -171,13 +189,15 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * they are reindexed (or simply indexed if not already) accordingly to the new publication. If at
    * least one of the publications doesn't exist with the specified identifier, then a
    * CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
    */
   @Override
-  public void moveAndReindexComments(final WAPrimaryKey fromPK, final WAPrimaryKey toPK) {
-    moveComments(fromPK, toPK);
-    indexAllCommentsOnPublication(toPK);
+  public void moveAndReindexComments(final String resourceType, final WAPrimaryKey fromPK,
+      final WAPrimaryKey toPK) {
+    moveComments(resourceType, fromPK, toPK);
+    indexAllCommentsOnPublication(resourceType, toPK);
   }
 
   /**
@@ -217,15 +237,18 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   }
 
   /**
-   * Gets all of the comments on the publication identified by the specified identifier. If no such
-   * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
+   * Gets all of the comments on the publication identified by the resource type and the specified
+   * identifier. If no such publication exists with the specified identifier, then a
+   * CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    * @return a list of the comments on the given publication. The list is empty if the publication
    * isn't commented.
    */
   @Override
-  public List<Comment> getAllCommentsOnPublication(final WAPrimaryKey pk) {
-    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
+  public List<Comment> getAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
+    List<Comment> vComments =
+        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
     for (Comment comment : vComments) {
       setOwnerDetail(comment);
     }
@@ -235,15 +258,16 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   /**
    * Gets information about the commented publications among the specified ones. The publication
    * information are returned ordered down to the lesser comment publication.
+   * @param resourceType the type of the commented publication.
    * @param pks a collection of primary keys refering the publications to get information and to
    * order by comments count.
    * @return an ordered list of information about the most commented publication. The list is sorted
    * by their comments count in a descendent order.
    */
   @Override
-  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType,
       final List<WAPrimaryKey> pks) {
-    return getCommentDAO().getMostCommentedPublications(pks);
+    return getCommentDAO().getMostCommentedPublications(resourceType, pks);
   }
 
   /**
@@ -258,37 +282,44 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   }
 
   /**
-   * Gets the count of comments on the publication identified by the specified identifier.
+   * Gets the count of comments on the publication identified by the resource type and the specified
+   * identifier.
+   * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    * @return the number of comments on the publication.
    */
   @Override
-  public int getCommentsCountOnPublication(final WAPrimaryKey pk) {
-    return getCommentDAO().getCommentsCountByForeignKey(new ForeignPK(pk));
+  public int getCommentsCountOnPublication(final String resourceType, final WAPrimaryKey pk) {
+    return getCommentDAO().getCommentsCountByForeignKey(resourceType, new ForeignPK(pk));
   }
 
   /**
-   * Indexes all the comments on the publication identified by the specified identifier. If no such
-   * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
+   * Indexes all the comments on the publication identified by the resource type and the specified
+   * identifier. If no such publication exists with the specified identifier, then a
+   * CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    */
   @Override
-  public void indexAllCommentsOnPublication(final WAPrimaryKey pk) {
-    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
+  public void indexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
+    List<Comment> vComments =
+        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
     for (Comment comment : vComments) {
       createIndex(comment);
     }
   }
 
   /**
-   * Removes the indexes on all the comments of the publication identified by the specified
-   * identifier. If no such publication exists with the specified identifier, then a
+   * Removes the indexes on all the comments of the publication identified by the resource type and
+   * the specified identifier. If no such publication exists with the specified identifier, then a
    * CommentRuntimeException is thrown.
+   * @param resourceType the type of the commented publication.
    * @param pk the identifier of the publication.
    */
   @Override
-  public void unindexAllCommentsOnPublication(final WAPrimaryKey pk) {
-    List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
+  public void unindexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
+    List<Comment> vComments =
+        getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(pk));
     for (Comment comment : vComments) {
       deleteIndex(comment);
     }

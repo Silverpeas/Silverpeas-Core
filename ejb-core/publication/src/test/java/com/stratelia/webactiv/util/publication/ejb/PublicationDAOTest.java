@@ -43,7 +43,7 @@ import javax.naming.Context;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.webactiv.publication.socialnetwork.SocialInformationPublication;
+import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;

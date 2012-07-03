@@ -24,11 +24,10 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -112,6 +111,7 @@ public class GraphicElementFactory {
   private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
   private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
+  private static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
 
   /**
@@ -362,6 +362,8 @@ public class GraphicElementFactory {
         "/util/javaScript/jquery/").append(JQUERYJSON_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_INCLUDE_JS).append("\"></script>\n");
     if (StringUtil.isDefined(specificJS)) {

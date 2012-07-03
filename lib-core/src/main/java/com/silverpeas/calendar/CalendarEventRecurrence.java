@@ -53,6 +53,7 @@ public class CalendarEventRecurrence {
   private int count = NO_RECURRENCE_COUNT;
   private Datable<?> endDate = NO_RECURRENCE_END_DATE;
   private List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
+  private List<Datable<?>> exceptionDates = new ArrayList<Datable<?>>();
 
   /**
    * Creates a new event recurrence from the specified frequency.
@@ -84,6 +85,17 @@ public class CalendarEventRecurrence {
    */
   public static CalendarEventRecurrence anEventRecurrence(final RecurrencePeriod period) {
     return new CalendarEventRecurrence(period);
+  }
+  
+  /**
+   * Excludes from this recurrence rule the occurrences of the event starting at the specified
+   * dates.
+   * @param datables a list of dates at which the occurrences to exclude start.
+   * @return itself.
+   */
+  public CalendarEventRecurrence excludeEventOccurrencesStartingAt(final Datable<?> ... datables) {
+    this.exceptionDates.addAll(Arrays.asList(datables));
+    return this;
   }
 
   /**
@@ -210,6 +222,17 @@ public class CalendarEventRecurrence {
    */
   public List<DayOfWeekOccurrence> getDaysOfWeek() {
     return Collections.unmodifiableList(daysOfWeek);
+  }
+  
+  /**
+   * Gets the date/time exceptions to this recurrence rule.
+   * 
+   * The returned date/datetime are the start date/datetime of the occurrences that are excluded
+   * from this recurrence rule. They are the exception in the application of the recurrence rule.
+   * @return an unmodifiable list of datables.
+   */
+  public List<Datable<?>> getExceptionDates() {
+    return Collections.unmodifiableList(exceptionDates);
   }
 
   /**

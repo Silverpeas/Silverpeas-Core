@@ -53,10 +53,8 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import org.silverpeas.search.SearchEngine;
 import org.silverpeas.search.SearchEngineFactory;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -75,7 +73,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private AdminController myAdminController = null;
   private PublicationBm publicationBm = null;
   private NodeBm nodeBm = null;
-  private SearchEngine search = null;
   private String searchField = null;
   private String category = null;
   private List<SearchResult> listResult = null;
@@ -262,7 +259,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchEngineResultSpace(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
     try {
-      QueryParameters queryParameters = new QueryParameters(getLanguage());
+      QueryParameters queryParameters = new QueryParameters();
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
@@ -300,12 +297,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           listSearchResult.add(searchResult);
         }
       }
-    } catch (NoSuchObjectException nsoe) {
-      // an error occurs on searchEngine statefull EJB
-      // interface is not null but the EJB is !
-      // so we set interface to null and we launch again de search.
-      search = null;
-      listSearchResult = searchEngineResultSpace(searchField);
     } catch (Exception e) {
       throw new PdcException("JobSearchPeasSessionController.searchEngineResultSpace",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
@@ -407,7 +398,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
 
     try {
-      QueryParameters queryParameters = new QueryParameters(getLanguage());
+      QueryParameters queryParameters = new QueryParameters();
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
@@ -431,12 +422,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl("openComponent('" + componentId + "')");
         listSearchResult.add(searchResult);
       }
-    } catch (NoSuchObjectException nsoe) {
-      // an error occurs on searchEngine statefull EJB
-      // interface is not null but the EJB is !
-      // so we set interface to null and we launch again de search.
-      search = null;
-      listSearchResult = searchEngineResultComponent(searchField);
     } catch (Exception e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultComponent",
@@ -597,7 +582,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchEngineResultGroup(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
     try {
-      QueryParameters queryParameters = new QueryParameters(getLanguage());
+      QueryParameters queryParameters = new QueryParameters();
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
@@ -624,12 +609,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (NoSuchObjectException nsoe) {
-      // an error occurs on searchEngine statefull EJB
-      // interface is not null but the EJB is !
-      // so we set interface to null and we launch again de search.
-      search = null;
-      listSearchResult = searchEngineResultGroup(searchField);
     } catch (Exception e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultComponent",
@@ -751,7 +730,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchEngineResultUser(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
     try {
-      QueryParameters queryParameters = new QueryParameters(getLanguage());
+      QueryParameters queryParameters = new QueryParameters();
       queryParameters.setKeywords(searchField);
 
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
@@ -775,12 +754,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (NoSuchObjectException nsoe) {
-      // an error occurs on searchEngine statefull EJB
-      // interface is not null but the EJB is !
-      // so we set interface to null and we launch again de search.
-      search = null;
-      listSearchResult = searchEngineResultUser(searchField);
     } catch (Exception e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultUser",

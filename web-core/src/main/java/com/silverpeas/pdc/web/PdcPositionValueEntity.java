@@ -25,12 +25,13 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcAxisValue;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A PdC position value is a value of a position of a resource content on a given axis of the PdC. A
@@ -49,8 +50,8 @@ import static com.silverpeas.util.StringUtil.*;
 public class PdcPositionValueEntity extends PdcValueEntity {
 
   private static final long serialVersionUID = -6826039385078009600L;
-
-  @XmlElement(defaultValue = "")
+  
+  @XmlElement(defaultValue="") @NotNull
   private String meaning;
 
   /**

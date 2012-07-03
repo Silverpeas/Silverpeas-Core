@@ -32,6 +32,7 @@ import com.silverpeas.util.StringUtil;
 public class ResultFilterVO {
   private String authorId = null;
   private String componentId = null;
+  private String datatype = null;
   private String year = null;
   private Map<String, String> formFieldFacets;
 
@@ -88,7 +89,8 @@ public class ResultFilterVO {
   }
   
   public boolean isEmpty() {
-    return !StringUtil.isDefined(authorId) && !StringUtil.isDefined(componentId) && isSelectedFormFieldFacetsEmpty();
+    return !StringUtil.isDefined(authorId) && !StringUtil.isDefined(componentId) &&
+        !StringUtil.isDefined(datatype) && isSelectedFormFieldFacetsEmpty();
   }
   
   public Map<String, String> getFormFieldSelectedFacetEntries() {
@@ -103,6 +105,9 @@ public class ResultFilterVO {
     if (StringUtil.isDefined(componentId)) {
       str.append(" ComponentId=").append(componentId);
     }
+    if (StringUtil.isDefined(datatype)) {
+      str.append(" DataTye=").append(datatype);
+    }
     if (!isSelectedFormFieldFacetsEmpty()) {
       for (String facetId : formFieldFacets.keySet()) {
         str.append(" ").append(facetId).append("=").append(formFieldFacets.get(facetId));
@@ -112,5 +117,13 @@ public class ResultFilterVO {
       return "Facets filter is empty";
     }
     return str.toString();
+  }
+
+  public void setDatatype(String datatype) {
+    this.datatype = datatype;
+  }
+
+  public String getDatatype() {
+    return datatype;
   }
 }

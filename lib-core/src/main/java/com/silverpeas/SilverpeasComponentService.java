@@ -33,7 +33,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * a bean with business logic transversal methods; the core business logic of the component should
  * be provided by the resources themselves (see the DDD (Domain Driven Development) approach).
  */
-public interface SilverpeasComponentService {
+public interface SilverpeasComponentService<T extends SilverpeasContent> {
 
   /**
    * Gets the content handled by an instance of the component with the specified unique identifier.
@@ -41,7 +41,7 @@ public interface SilverpeasComponentService {
    * @param contentId the unique identifier of the content to get.
    * @return a Silverpeas content.
    */
-  <T extends SilverpeasContent> T getContentById(String contentId);
+  T getContentById(String contentId);
 
   /**
    * Gets the settings of this Silverpeas component.

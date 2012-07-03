@@ -79,6 +79,14 @@ function uriOfPdC( resource ) {
   return uri;
 }
 
+/**
+ * Splits the specified URI in two parts: the first one is the URI authority plus the URI path and
+ * the last one is the URI query.
+ */
+function splitUri( uri ) {
+  return uri.match(/[a-zA-Z0-9:=\/.\-_!\*\~\(\)'&;,\+\$#%@]+/gi);
+}
+
 /**************************************************************************************************/
 
 /**
@@ -248,7 +256,7 @@ function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
   if (confirmationMsg != null && confirmationMsg.length > 0)
     confirmed = window.confirm( confirmationMsg );
   if (confirmed) {
-    var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
+    var uri_parts = splitUri(uri);
     var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
     $.ajax({
       url: uri_position,
@@ -319,7 +327,7 @@ function postPosition( uri, position, onSuccess, onError ) {
  * }
  */
 function updatePosition( uri, position, onSuccess, onError ) {
-  var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
+  var uri_parts = splitUri(uri);
   var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
   $.ajax({
     url: uri_position,
@@ -711,7 +719,7 @@ function removePosition( position, positions ) {
     // only for multiple values of a given single axis
     this.matrix = [];
     if (fromValues != null && fromValues.length > 0) {
-      this.matrix[0] = [];
+      this.matrix[0] = {};
       for (var i = 0; i < fromValues.length; i++) {
         this.matrix[0][axisprefix + fromValues[i].axisId] = fromValues[i];
       }
@@ -719,11 +727,11 @@ function removePosition( position, positions ) {
     
     this.put = function( positionIndex, axisId, value ) {
       if (this.matrix[positionIndex] == null)
-        this.matrix[positionIndex] = [];
+        this.matrix[positionIndex] = {};
       this.matrix[positionIndex][axisprefix + axisId] = value;
       for (var i = 1; i < positionIndex; i++) {
         if (this.matrix[i] == null)
-          this.matrix[i] = [];
+          this.matrix[i] = {};
       }
     }
     
@@ -745,7 +753,7 @@ function removePosition( position, positions ) {
       var positions = [];
       
       function contains(position) {
-        for (var ipos in positions)
+        for (var ipos = 0; ipos < positions.length; ipos++)
           if (position.values.length == positions[ipos].values.length) {
             var ok = true;
             for (var ival = 0; ival < position.values.length && ok; ival++) {

@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.pdc.model.PdcClassification;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPredefinedPdcClassificationForComponentInstance;
@@ -39,8 +40,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
 
 /**
 * A REST Web resource that represents the predefined classifications on the PdC to classify the
@@ -76,7 +76,7 @@ import org.springframework.stereotype.Service;
 * uniquely identified by an URI in the Web.
 */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("pdc/{componentId}/classification")
 @Authorized
 public class PdcPredefinedClassificationResource extends RESTWebService {

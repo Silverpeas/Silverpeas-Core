@@ -652,7 +652,7 @@ else
                   UserDetail user = agenda.getUserDetail(journal.getDelegatorId());
                   if (user != null)
 	      		%>
-                    <span class="txtnav"><%= user.getDisplayedName() %></span>
+                    <span class="txtnav"><view:username userId="<%=user.getId()%>"/></span>
               <% } else { %>
                     <span class="txtnav"><%= agenda.getString("utilisateurInconnu") %></span>
               <% } %>

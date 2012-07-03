@@ -35,6 +35,7 @@ import java.util.Date;
  */
 public class CommentBuilder {
 
+  private String resourceType;
   private String resourceId;
   private String componentId;
   private UserDetail user;
@@ -44,7 +45,8 @@ public class CommentBuilder {
     return this;
   }
 
-  public CommentBuilder commentTheResource(String resourceId) {
+  public CommentBuilder commentTheResource(String resourceType, String resourceId) {
+    this.resourceType = resourceType;
     this.resourceId = resourceId;
     return this;
   }
@@ -56,10 +58,10 @@ public class CommentBuilder {
 
   public Comment withAsText(String theText) {
     Date now = new Date();
-    Comment comment = new Comment(new CommentPK("", componentId), new PublicationPK(
-            resourceId, componentId), Integer.valueOf(user.getId()), user.getDisplayedName(),
-            theText,
-            now, now);
+    Comment comment = new Comment(new CommentPK("", componentId), resourceType, new PublicationPK(
+        resourceId, componentId), Integer.valueOf(user.getId()), user.getDisplayedName(),
+        theText,
+        now, now);
     comment.setOwnerDetail(user);
     return comment;
   }

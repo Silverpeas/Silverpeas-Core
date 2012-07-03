@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.Hashtable;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -41,10 +40,10 @@ public class QueryParameters implements java.io.Serializable {
   private String spaceId = null;
   private String instanceId = null;
   private String creatorId = null;
-  private String afterdate = null;
-  private String beforedate = null;
-  private String afterupdatedate = null;
-  private String beforeupdatedate = null;
+  private Date afterdate = null;
+  private Date beforedate = null;
+  private Date afterupdatedate = null;
+  private Date beforeupdatedate = null;
 
   private Hashtable<String, String> xmlQuery = null;
   private String xmlTitle = null;
@@ -52,15 +51,11 @@ public class QueryParameters implements java.io.Serializable {
   // attributes below are used only to display info in the search page
   private UserDetail creatorDetail = null;
 
-  // private SimpleDateFormat formatter = null;
-  private String language = null;
-
-  public QueryParameters(String language) {
-    this.language = language;
+  public QueryParameters() {
   }
 
   public QueryParameters(String keywords, String spaceId, String instanceId,
-      String creatorId, String afterDate, String beforeDate) {
+      String creatorId, Date afterDate, Date beforeDate) {
     this.keywords = keywords;
     if (spaceId != null && spaceId.length() > 0) {
       this.spaceId = spaceId;
@@ -71,10 +66,10 @@ public class QueryParameters implements java.io.Serializable {
     if (creatorId != null && creatorId.length() > 0) {
       this.creatorId = creatorId;
     }
-    if (afterDate != null && afterDate.length() > 0) {
+    if (afterDate != null) {
       this.afterdate = afterDate;
     }
-    if (beforeDate != null && beforeDate.length() > 0) {
+    if (beforeDate != null) {
       this.beforedate = beforeDate;
     }
   }
@@ -137,52 +132,36 @@ public class QueryParameters implements java.io.Serializable {
     }
   }
 
-  public String getAfterDate() {
+  public Date getAfterDate() {
     return afterdate;
   }
 
-  public void setAfterDate(String afterdate) {
+  public void setAfterDate(Date afterdate) {
     this.afterdate = afterdate;
   }
 
-  public void setAfterDate(Date afterdate) {
-    this.afterdate = date2stringDate(afterdate);
-  }
-
-  public String getBeforeDate() {
+  public Date getBeforeDate() {
     return beforedate;
   }
 
-  public void setBeforeDate(String beforedate) {
+  public void setBeforeDate(Date beforedate) {
     this.beforedate = beforedate;
   }
 
-  public void setBeforeDate(Date beforedate) {
-    this.beforedate = date2stringDate(beforedate);
-  }
-
-  public String getAfterUpdateDate() {
+  public Date getAfterUpdateDate() {
     return afterupdatedate;
   }
 
-  public void setAfterUpdateDate(String afterdate) {
+  public void setAfterUpdateDate(Date afterdate) {
     this.afterupdatedate = afterdate;
   }
 
-  public void setAfterUpdateDate(Date afterdate) {
-    this.afterupdatedate = date2stringDate(afterdate);
-  }
-
-  public String getBeforeUpdateDate() {
+  public Date getBeforeUpdateDate() {
     return beforeupdatedate;
   }
 
-  public void setBeforeUpdateDate(String beforedate) {
-    this.beforeupdatedate = beforedate;
-  }
-
   public void setBeforeUpdateDate(Date beforedate) {
-    this.beforeupdatedate = date2stringDate(beforedate);
+    this.beforeupdatedate = beforedate;
   }
 
   public void addXmlSubQuery(String field, String query) {
@@ -214,30 +193,26 @@ public class QueryParameters implements java.io.Serializable {
       query.setRequestedAuthor(null);
     }
 
-    if (getAfterDate() != null && !getAfterDate().equals("")) {
-      query.setRequestedCreatedAfter(DateUtil.date2SQLDate(getAfterDate(),
-          searchingLanguage));
+    if (getAfterDate() != null) {
+      query.setRequestedCreatedAfter(DateUtil.date2SQLDate(getAfterDate()));
     } else {
       query.setRequestedCreatedAfter(null);
     }
 
-    if (getBeforeDate() != null && !getBeforeDate().equals("")) {
-      query.setRequestedCreatedBefore(DateUtil.date2SQLDate(getBeforeDate(),
-          searchingLanguage));
+    if (getBeforeDate() != null) {
+      query.setRequestedCreatedBefore(DateUtil.date2SQLDate(getBeforeDate()));
     } else {
       query.setRequestedCreatedBefore(null);
     }
 
-    if (StringUtil.isDefined(getAfterUpdateDate())) {
-      query.setRequestedUpdatedAfter(DateUtil.date2SQLDate(getAfterUpdateDate(),
-          searchingLanguage));
+    if (getAfterUpdateDate() != null) {
+      query.setRequestedUpdatedAfter(DateUtil.date2SQLDate(getAfterUpdateDate()));
     } else {
       query.setRequestedUpdatedAfter(null);
     }
 
-    if (StringUtil.isDefined(getBeforeUpdateDate())) {
-      query.setRequestedUpdatedBefore(DateUtil.date2SQLDate(getBeforeUpdateDate(),
-          searchingLanguage));
+    if (getBeforeUpdateDate() != null) {
+      query.setRequestedUpdatedBefore(DateUtil.date2SQLDate(getBeforeUpdateDate()));
     } else {
       query.setRequestedUpdatedBefore(null);
     }
@@ -261,16 +236,6 @@ public class QueryParameters implements java.io.Serializable {
     return this.creatorDetail;
   }
 
-  private String date2stringDate(Date date) {
-    SilverTrace.info("pdcPeas", "QueryParameters.date2stringDate()",
-        "root.MSG_GEN_ENTER_METHOD", "date = " + date);
-    String stringDate = "";
-    if (date != null) {
-      stringDate = DateUtil.getInputDate(date, language);// formatter.format(date);
-    }
-    return stringDate;
-  }
-
   public String getXmlTitle() {
     return xmlTitle;
   }
@@ -280,7 +245,7 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public boolean isDefined() {
-    return StringUtil.isDefined(keywords) || StringUtil.isDefined(afterdate) ||
-        StringUtil.isDefined(beforedate) || StringUtil.isDefined(creatorId);
+    return StringUtil.isDefined(keywords) || afterdate != null ||
+        beforedate != null || StringUtil.isDefined(creatorId);
   }
 }

@@ -68,6 +68,20 @@ public class Facet {
     }
   }
   
+  public boolean isEmpty() {
+    if (entries == null || entries.isEmpty()) {
+      return true;
+    }
+    
+    for (FacetEntryVO entry : entries) {
+      if (entry.getNbElt() > 0) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+  
   
 
 }

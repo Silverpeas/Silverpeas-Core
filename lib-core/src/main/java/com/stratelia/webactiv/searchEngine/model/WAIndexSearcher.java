@@ -88,11 +88,11 @@ public class WAIndexSearcher {
 * Get the primary factor from the IndexEngine.properties file.
 */
   /**
-*
-* @param propertyName
-* @param defaultValue
-* @return
-*/
+   *
+   * @param propertyName
+   * @param defaultValue
+   * @return
+   */
   public static int getFactorFromProperties(String propertyName, int defaultValue) {
     ResourceLocator resource = new ResourceLocator(
             "com.stratelia.webactiv.util.indexEngine.IndexEngine", "");
@@ -200,9 +200,15 @@ public class WAIndexSearcher {
       SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
               "Query = " + booleanQuery.toString());
 
-      QueryWrapperFilter wrappedFilter = new QueryWrapperFilter(rangeClauses);
-
-      topDocs = searcher.search(booleanQuery, wrappedFilter, maxNumberResult);
+      // date range clauses are passed in the filter to optimize search performances
+      // but the query cannot be empty : if so, then pass date range in the query
+      if (booleanQuery.getClauses().length == 0) {
+        topDocs = searcher.search(rangeClauses, null, maxNumberResult);
+      }
+      else {
+        QueryWrapperFilter wrappedFilter = new QueryWrapperFilter(rangeClauses);
+        topDocs = searcher.search(booleanQuery, wrappedFilter, maxNumberResult);
+      }
 
       results = makeList(topDocs, query, searcher);
     } catch (IOException ioe) {
@@ -232,13 +238,12 @@ public class WAIndexSearcher {
   }
 
   private Query getPlainTextQuery(QueryDescription query, String searchField) throws ParseException {
-    Analyzer analyzer = indexManager.getAnalyzer(Locale.getDefault().getLanguage());
-
     if (!StringUtil.isDefined(query.getQuery())) {
       return null;
     }
 
     String language = query.getRequestedLanguage();
+    Analyzer analyzer = indexManager.getAnalyzer(language);
 
     Query parsedQuery;
     if (I18NHelper.isI18N && "*".equals(language)) {
@@ -427,7 +432,7 @@ public class WAIndexSearcher {
       }
       indexEntry.setXMLFormFieldsForFacets(fieldsValueForFacets);
     }
-    
+
     // Set server name
     indexEntry.setServerName(doc.get(IndexManager.SERVER_NAME));
     return indexEntry;

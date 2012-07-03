@@ -29,6 +29,8 @@ package com.stratelia.silverpeas.notificationManager;
 
 import java.util.Date;
 
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
@@ -91,10 +93,15 @@ public class NotificationParameters {
   public String sURL = "";
   public String sSource = "";
   public String sSessionId = "";
+  public String sOriginalExtraMessage = null;
   public boolean bAnswerAllowed = false;
+  public boolean bSendImmediately = false;
 
   public Date dDate = new Date();
   public String sLanguage = null;
+  
+  public NotifAction eAction = null;  
+  public NotificationResourceData nNotificationResourceData = null;
 
   public void traceObject() {
     if (SilverTrace.getTraceLevel("notificationManager", true) <= SilverTrace.TRACE_LEVEL_INFO) {
@@ -209,6 +216,10 @@ public class NotificationParameters {
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Date : "
           + dDate.toString());
+      SilverTrace.info("notificationManager",
+          "NotificationParameters.traceObject",
+          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Action : "
+          + (eAction != null ? eAction.name() : "N/A"));
     }
   }
 }

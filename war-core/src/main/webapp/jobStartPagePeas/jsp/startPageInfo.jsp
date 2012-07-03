@@ -211,7 +211,7 @@ out.println(board.printBefore());
 		<td valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(space.getCreateDate())%>
 			<% if (space.getCreator() != null) { %>  
-				<%=resource.getString("GML.by") %> <%=space.getCreator().getDisplayedName() %>
+				<%=resource.getString("GML.by") %> <view:username userId="<%=space.getCreator().getId()%>" />
 			<% } %>
 		</td>
 	</tr>
@@ -222,7 +222,7 @@ out.println(board.printBefore());
 		<td valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(space.getUpdateDate())%>
 			<% if (space.getUpdater() != null) { %>  
-				<%=resource.getString("GML.by") %> <%=space.getUpdater().getDisplayedName() %>
+				<%=resource.getString("GML.by") %> <view:username userId="<%=space.getUpdater().getId()%>" />
 			<% } %>
 		</td>
 	</tr>

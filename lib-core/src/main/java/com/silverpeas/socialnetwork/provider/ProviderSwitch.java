@@ -254,7 +254,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
-            if (socialInformationType.ALL != type && socialInformationType.EVENT != type) {
+            if (SocialInformationType.ALL != type && SocialInformationType.EVENT != type) {
               List<SocialInformation> listAll = getSocialInformationsListOfMyContacts(type, myId,
                   myContactsIds, begin, end);
               if (!(listAll == null)) {

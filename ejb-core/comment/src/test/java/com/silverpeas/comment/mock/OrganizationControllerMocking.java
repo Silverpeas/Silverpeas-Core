@@ -48,5 +48,7 @@ public class OrganizationControllerMocking extends OrganizationController {
     return mock.getUserDetail(sUserId);
   }
   
-  
+  public OrganizationController getMock() {
+    return mock;
+  }
 }

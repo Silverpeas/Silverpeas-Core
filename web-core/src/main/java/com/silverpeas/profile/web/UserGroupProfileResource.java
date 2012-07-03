@@ -31,12 +31,14 @@ import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a
@@ -48,7 +50,7 @@ import org.springframework.stereotype.Service;
  * or a group of users in a given domain to the others domains in Silverpeas.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path(GROUPS_BASE_URI)
 @Authenticated
 public class UserGroupProfileResource extends RESTWebService {
@@ -68,7 +70,7 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name) {
-    List<String> groupIds = new ArrayList<String>();
+    Set<String> groupIds = new HashSet<String>();
     if (getUserDetail().isDomainRestricted()) {
       String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
               name, "-1"));

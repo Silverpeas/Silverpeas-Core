@@ -25,15 +25,16 @@
 package com.silverpeas.pdc;
 
 import com.silverpeas.pdc.mock.PdcBmMock;
-import com.silverpeas.pdc.service.PdcClassificationService;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import javax.inject.Inject;
-import javax.inject.Named;
 import com.silverpeas.pdc.model.PdcAxisValue;
+import static com.silverpeas.pdc.model.PdcAxisValue.aPdcAxisValueFromTreeNode;
 import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.model.PdcModelHelper.*;
 import com.silverpeas.pdc.model.PdcPosition;
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.silverpeas.treeManager.model.TreeNodePK;
+import com.stratelia.webactiv.node.NodeBmProvider;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -44,14 +45,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import static com.silverpeas.pdc.model.PdcAxisValue.*;
-import static com.silverpeas.pdc.model.PdcModelHelper.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.springframework.test.util.ReflectionTestUtils;
-import static org.mockito.Mockito.*;
-import static com.silverpeas.util.StringUtil.*;
 
 /**
  * It wraps the resources and the parameters to use in the unit tests
@@ -72,14 +73,14 @@ public final class TestResources {
   public static final String UNEXISTING_NODE_ID = "1000";
   
   @Inject
-  private PdcClassificationService service;
-  @Inject
   private PdcBmMock pdcBmMock;
+  @Inject
+  private NodeBmProvider nodeBmProvider;
   private NodeBm nodeBmMock = mock(NodeBm.class);
 
   @PostConstruct
   protected void init() {
-    ReflectionTestUtils.invokeSetterMethod(service, "setNodeBm", nodeBmMock);
+    ReflectionTestUtils.invokeSetterMethod(nodeBmProvider, "setNodeBm", nodeBmMock);
     try {
       when(nodeBmMock.getDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_2_ID, COMPONENT_INSTANCE_1_ID))).
               thenReturn(new NodeDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_2_ID,

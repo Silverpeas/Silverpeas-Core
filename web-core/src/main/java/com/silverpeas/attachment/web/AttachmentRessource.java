@@ -23,40 +23,33 @@
  */
 package com.silverpeas.attachment.web;
 
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.ZipManager;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.StringTokenizer;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.sharing.services.SharingServiceFactory;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.ZipManager;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.silverpeas.annotation.RequestScoped;
 
 @Service
-@Scope("request")
+@RequestScoped
 @Path("attachments/{componentId}/{token}")
 public class AttachmentRessource extends RESTWebService {
 

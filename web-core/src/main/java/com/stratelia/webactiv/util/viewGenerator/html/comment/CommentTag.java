@@ -66,6 +66,7 @@ public class CommentTag extends CommentWidget {
     CommentEditionTag edition = new CommentEditionTag();
     edition.setComponentId(getComponentId());
     edition.setResourceId(getResourceId());
+    edition.setResourceType(getResourceType());
     edition.setUserId(getUserId());
     edition.setIndexed(indexed);
     return edition;

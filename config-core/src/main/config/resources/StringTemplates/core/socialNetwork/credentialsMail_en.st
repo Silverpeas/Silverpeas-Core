@@ -1,3 +1,11 @@
 <div style="font-family:Arial;font-size:11px">
-<b>$senderUser.firstName$ $senderUser.lastName$</b> has accepted your invitation.
-</div>
+Hello $fullName$ <br/>
+<br/>
+Thank you for being registered on Silverpeas. <br/>
+Besides being able to connect from your favorite social network, you can also identify you with the following codes: <br/>
+<br/>
+<b> Username: </ b> $login$
+<b> Password: </ b> $password$
+</ div>
+
+To log on, click <a href="$url$">here</a>

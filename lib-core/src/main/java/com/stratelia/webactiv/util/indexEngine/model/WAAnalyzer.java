@@ -38,6 +38,7 @@ import org.apache.lucene.analysis.ISOLatin1AccentFilter;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -57,11 +58,11 @@ public final class WAAnalyzer extends Analyzer {
    * @return
    */
   static public Analyzer getAnalyzer(String language) {
-    Analyzer analyzer = languageMap.get(language);
+    WAAnalyzer analyzer = languageMap.get(language);
 
     if (analyzer == null) {
       analyzer = new WAAnalyzer(language);
-      languageMap.put(language, analyzer);
+      languageMap.put(analyzer.getLanguage(), analyzer);
     }
 
     return analyzer;
@@ -76,10 +77,14 @@ public final class WAAnalyzer extends Analyzer {
     TokenStream result = new SilverTokenizer(reader);
     result = new StandardFilter(result); // remove 's and . from token
     result = new LowerCaseFilter(result);
-    result = new StopFilter(result, stopWords); // remove some unexplicit terms
-    // according to the language
-    result = new ElisionFilter(result); // remove [cdjlmnst-qu]' from token
+    // remove some unexplicit terms according to the language
+    result = new StopFilter(result, stopWords);
+    // remove [cdjlmnst-qu]' from token
+    result = new ElisionFilter(result);
+    // remove accents
     result = new ISOLatin1AccentFilter(result);
+    // ignoring singular/plural, male/female and conjugated forms
+    result = new SnowballFilter(result, stemmer);  
     return result;
   }
 
@@ -92,21 +97,22 @@ public final class WAAnalyzer extends Analyzer {
    * The constructor is private : use @link #getAnalyzer().
    */
   private WAAnalyzer(String language) {
-    stopWords = getStopWords(language);
+    if (!StringUtil.isDefined(language) || language.length() != 2) {
+      language = settings.getString("analyzer.language.default", "fr");
+    }
+    this.language = language; 
+    stopWords = getStopWords();
+    stemmer = getStemmer();
   }
 
   /**
    * Returns an array of words which are not usually usefull for searching.
    */
-  private String[] getStopWords(String language) {
+  private String[] getStopWords() {
     List<String> wordList = new ArrayList<String>();
-    String currentLanguage = language;
     try {
-      if (!StringUtil.isDefined(currentLanguage)) {
-        currentLanguage = "fr";
-      }
       ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.util.indexEngine.StopWords", currentLanguage);
+          "com.stratelia.webactiv.util.indexEngine.StopWords", language);
 
       Enumeration<String> stopWord = resource.getKeys();
 
@@ -119,10 +125,23 @@ public final class WAAnalyzer extends Analyzer {
     }
     return wordList.toArray(new String[wordList.size()]);
   }
+  
+  private String getStemmer() {
+    return settings.getString("snowball.stemmer."+language, "French");
+  }
+  
+  public String getLanguage() {
+    return language;
+  }
 
-  static private final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
+  static private final Map<String, WAAnalyzer> languageMap = new HashMap<String, WAAnalyzer>();
+  static private final ResourceLocator settings = new ResourceLocator(
+      "com.stratelia.webactiv.util.indexEngine.IndexEngine", "");
   /**
-   * The words which are usually not usefull for searching.
+   * The words which are usually not useful for searching.
    */
   private String[] stopWords = null;
+  private String stemmer = null;
+  private String language = null;
+  
 }

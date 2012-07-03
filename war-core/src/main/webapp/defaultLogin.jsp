@@ -55,47 +55,6 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 <link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 
-<!--[if lt IE 8]>
-<style>
-input{
-	background-color:#FAFAFA;
-	border:1px solid #DAD9D9;
-	width:248px;
-	text-align:left;
-    margin-left:-10px;
-    height:26px;
-    line-height:24px;
-    padding:0px 60px;
-    display:block;
-    padding:0px;
-}
-</style>
-<![endif]-->
-
-<style>
-.titre {
-    left: 375px;
-    top: 15px;
-}
-
-input{
-	width:248px;
-	display: table-cell;
-}
-
-p label{
-	display: table-cell;
-	width: 150px;
-	vertical-align: middle;
-}
-
-#copyright {
-    display: inline-block;
-    margin-top: 10px;
-    text-align: left;
-}
-</style>
-
 <script type="text/javascript">
 <!---
 // Public domain cookie code written by:
@@ -180,11 +139,46 @@ function checkSubmit(ev)
 }
 -->
 </script>
-
 </head>
 <body>
-      <form id="formLogin" action="javascript:checkForm();" method="POST" accept-charset="UTF-8">
-        <div id="top"></div> <!-- Backgroud fonce -->
+      <form id="formLogin" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
+      	<% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
+	        <div id="top">
+				<fmt:message key="authentication.logon.newRegistration.tease" /> 
+				<% if (newRegistrationActive) { %> 
+					<a href="javascript:newRegistration()"><fmt:message key="authentication.logon.newRegistration.create" /></a>
+				<% } %>
+				<% if (facebookEnabled || linkedInEnabled) {
+					if (newRegistrationActive) { %>
+						<fmt:message key="GML.or" />
+					<% } %>
+					<fmt:message key="authentication.logon.newRegistration.connect" />
+					<% if (linkedInEnabled) { %>
+						<a title="LinkedIn" href="<c:url value="/SocialNetworkLogin?networkId=LINKEDIN" />">LinkedIn</a>
+					<% } %>
+					<% if (facebookEnabled) { %>
+						<% if (linkedInEnabled) { %>
+							 <fmt:message key="GML.or" /> 
+						<% } %>
+						<a title="Facebook" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">Facebook</a> 
+					<% } %>
+				<% } %>
+	        </div>
+        <% } %>
+        <% if (facebookEnabled || linkedInEnabled) {%>
+			<div id="login-socialnetwork">
+			   	<% if (linkedInEnabled) { %>
+					<a title="<fmt:message key='authentication.logon.with.linkedin' />" href="<c:url value="/SocialNetworkLogin?networkId=LINKEDIN" />">
+						<img src="util/icons/external/btn-login-linkedin.png"/>
+					</a>
+				<% } %>
+			   	<% if (facebookEnabled) { %>
+					<a title="<fmt:message key='authentication.logon.with.facebook' />" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">
+						<img src="util/icons/external/btn-login-facebook.png"/>
+					</a>
+				<% } %>
+			</div>
+		<% } %>
         <div class="page"> <!-- Centrage horizontal des elements (960px) -->
           <div class="titre"><fmt:message key="authentication.logon.title"/></div>
             <div id="background"> <!-- image de fond du formulaire -->
@@ -202,52 +196,24 @@ function checkSubmit(ev)
                           </c:choose>
                         </p>
                         <div class="clear"></div>
-                    </div>
-
-                    <div style="margin: 0pt; padding: 0pt; width: 460px; float:left">
-						<p style="vertical-align: middle; display: table-row;">
-							<label for="Login"><fmt:message key="authentication.logon.login" /></label>
-							<input autofocus="autofocus" id="Login" type="text" name="Login">
-							<input class="noDisplay" type="hidden" name="cryptedPassword">
-						</p>
-						<p style="display: table-row;">
-							<label for="password"><fmt:message key="authentication.logon.password" /></label>
-							<input autocomplete="on" name="Password" id="Password" type="password" onkeydown="checkSubmit(event)">
-						</p>
-					<c:choose>
+                    </div>   
+                    <p><label><span><fmt:message key="authentication.logon.login" /></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
+                    <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
+                    <c:choose>
                       <c:when test="${!pageScope.multipleDomains}">
                         <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
                       </c:when>
                       <c:otherwise>
-                      	<p style="display: table-row;">
-                        <label for="DomainId"><fmt:message key="authentication.logon.domain" /></label>
-								<select id="DomainId" name="DomainId" size="1">
+                      	<p><label><span><fmt:message key="authentication.logon.domain" /></span>
+							<select id="DomainId" name="DomainId" size="1">
                                   <c:forEach var="domain" items="${pageScope.listDomains}">
                                       <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if> ><c:out value="${domain.name}"/></option>
                                   </c:forEach>
-								</select>
-                          </p>
+							</select>
+                          </label></p> 
                       </c:otherwise>
-                    </c:choose>
-                     <p>&nbsp;</p><p>&nbsp;</p>
-
-                     <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="submit" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
-
-					 <% if (facebookEnabled || linkedInEnabled) {%>
-                     <p>
-						<fmt:message key="authentication.logon.socialNetworkLogin" /> :
-                     	<% if (linkedInEnabled) { %>
-							<a title="LinkedIn" href="/silverpeas/SocialNetworkLogin?networkId=LINKEDIN">
-							<img width="30" border="0" align="middle" src="/weblib/look/icons/LINKEDIN.png">
-							</a>
-						<% } %>
-                     	<% if (facebookEnabled) { %>
-							<a title="Facebook" href="/silverpeas/SocialNetworkLogin?networkId=FACEBOOK">
-							<img width="30" border="0" align="middle" src="/weblib/look/icons/FACEBOOK.png">
-							</a>
-						<% } %>
-					</p>
-					<% } %>
+                    </c:choose>            
+                     <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="<%=submitClass%>" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
 
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
 						 <% if (forgottenPwdActive) { %>
@@ -262,14 +228,6 @@ function checkSubmit(ev)
 						</p>
 						 <% } %>
 
-						<% if (newRegistrationActive) { %>
-						 <p>
-							<span class="forgottenPwd">
-							 	<a href="javascript:newRegistration()"><fmt:message key="authentication.logon.newRegistration" /></a>
-							</span>
-						 </p>
-						<%	} %>
-
 						 <% if (rememberPwdActive) { %>
 						 		<p>
 								<span class="rememberPwd">
@@ -279,7 +237,6 @@ function checkSubmit(ev)
 								<fmt:message key="authentication.logon.passwordRemember" /> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
 								</p>
 						<%	} %>
-						</p>
 					<% } %>
                 </div>
             </div>

@@ -70,8 +70,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         + driverSettings.getGroupsFullFilter() + "("
         + driverSettings.getGroupsMemberField() + "="
         + LDAPUtility.dblBackSlashesForDNInFilters(memberEntry.getDN()) + "))",
-        driverSettings.getGroupsNameField(), driverSettings
-        .getGroupAttributes());
+        driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
     for (i = 0; i < theEntries.length; i++) {
       SilverTrace.info("admin",
           "LDAPGroupUniqueDescriptor.getMemberGroupIds()",
@@ -82,13 +81,13 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
     return groupsVector.toArray(new String[groupsVector.size()]);
   }
 
-  public String[] getGroupMemberGroupIds(String lds, String groupId)
-      throws AdminException {
+  @Override
+  public String[] getGroupMemberGroupIds(String lds, String groupId) throws AdminException {
     return getMemberGroupIds(lds, groupId, true);
   }
 
-  public String[] getUserMemberGroupIds(String lds, String userId)
-      throws AdminException {
+  @Override
+  public String[] getUserMemberGroupIds(String lds, String userId) throws AdminException {
     return getMemberGroupIds(lds, userId, false);
   }
 
@@ -100,6 +99,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
+  @Override
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
       throws AdminException {
     Vector<String> usersVector = new Vector<String>();
@@ -151,6 +151,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
+  @Override
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
       String extraFilter) throws AdminException {
     LDAPEntry theEntry = null;
@@ -173,21 +174,11 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         for (i = 0; i < stringVals.length; i++) {
           try {
             if ((extraFilter != null) && (extraFilter.length() > 0)) {
-              // theFilter = "(&" + extraFilter + "(&" +
-              // driverSettings.getGroupsFullFilter() + "(distinguishedName=" +
-              // LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]) + "))"
-              // + ")";
               theFilter = "(&" + extraFilter
                   + driverSettings.getGroupsFullFilter() + ")";
             } else {
-              // theFilter = "(&" + driverSettings.getGroupsFullFilter() +
-              // "(distinguishedName=" +
-              // LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]) + "))";
               theFilter = driverSettings.getGroupsFullFilter();
             }
-            // childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds,
-            // driverSettings.getGroupsSpecificGroupsBaseDN(),
-            // driverSettings.getScope(), theFilter);
             childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds,
                 stringVals[i], driverSettings.getScope(), theFilter,
                 driverSettings.getGroupAttributes());

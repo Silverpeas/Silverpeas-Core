@@ -25,13 +25,17 @@
 package com.silverpeas.util.template;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.antlr.stringtemplate.AutoIndentWriter;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
+import org.apache.commons.io.IOUtils;
 
 import com.silverpeas.util.template.renderer.DateRenderer;
 
@@ -69,7 +73,16 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
       template.setAttribute(attribute.getKey(), attribute.getValue());
     }
-    return template.toString();
+    StringWriter writer = new StringWriter();
+    AutoIndentWriter out = new AutoIndentWriter(writer, "\n");
+    try {
+      template.write(out);
+    } catch (IOException e) {
+      return template.toString();
+    }finally {
+      IOUtils.closeQuietly(writer);
+    }    
+    return writer.toString();
   }
 
   @Override

@@ -10,9 +10,36 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
-    <description>Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
-    in charge by the tag. If the javascript requires a stylesheet, it is also included with
-    the script.</description>
+    <description>
+      Tag to print out the full name of the current user and to use with it the userzoom silverpeas
+      plugin.
+    </description>
+    <name>username</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.UserNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the user</description>
+      <name>userId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is the userzoom plugin has to be used with this user? By default, it is activated.
+      This attribute is to deactivate it.</description>
+      <name>zoom</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      Tag to print out a javascript plugin inclusion. Versions of the plugin is taken
+      in charge by the tag. If the javascript requires a stylesheet, it is also included with
+      the script. Currently, the supported plugins (JQuery as well Silverpeas ones) are defined in
+      the enum com.stratelia.webactiv.util.viewGenerator.html.SupportedJavaScriptPlugins.
+    </description>
     <name>includePlugin</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.IncludeJSPluginTag</tag-class>
     <body-content>empty</body-content>
@@ -26,8 +53,8 @@
   </tag>
   <tag>
     <description>Tag to print out an HTML/javascript widget with which the predefined classification
-    on the PdC of a component instance or of a node (a topic, a category, ...) can be defined or
-    modified.
+      on the PdC of a component instance or of a node (a topic, a category, ...) can be defined or
+      modified.
     </description>
     <name>pdcPredefinedClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
@@ -42,8 +69,8 @@
     </attribute>
     <attribute>
       <description>The identifier of the node for which the predefined classification on the PdC
-      has to be rendered. If not specified, the predefined classification on the PdC for a parent
-      node or for the whole component instance is taken into account.
+        has to be rendered. If not specified, the predefined classification on the PdC for a parent
+        node or for the whole component instance is taken into account.
       </description>
       <name>nodeId</name>
       <required>false</required>
@@ -53,8 +80,8 @@
   </tag>
   <tag>
     <description>Tag to print out the HTML/javascript widget with which the classification on the PdC
-    of a given resource content is opened and can be edited. If the PdC was parametrized for the
-    given component instance, only the axis used by this later will be loaded.
+      of a given resource content is opened and can be edited. If the PdC was parametrized for the
+      given component instance, only the axis used by this later will be loaded.
     </description>
     <name>pdcClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationTag</tag-class>
@@ -76,7 +103,7 @@
     </attribute>
     <attribute>
       <description>The identifier of the resource content for which the classification on the PdC
-      has to be rendered.
+        has to be rendered.
       </description>
       <name>contentId</name>
       <required>true</required>
@@ -85,7 +112,7 @@
     </attribute>
     <attribute>
       <description>Is this classification on the PdC should be editable? By default, if not set, the
-      classification isn't editable
+        classification isn't editable
       </description>
       <name>editable</name>
       <required>false</required>
@@ -95,7 +122,7 @@
   </tag>
   <tag>
     <description>Tag to print out the HTML/javascript widget within which a preview of the
-    classification on the PdC of a given resource content is rendered.
+      classification on the PdC of a given resource content is rendered.
     </description>
     <name>pdcClassificationPreview</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationPreviewTag</tag-class>
@@ -110,7 +137,7 @@
     </attribute>
     <attribute>
       <description>The identifier of the resource content for which the classification on the PdC
-      has to be rendered.
+        has to be rendered.
       </description>
       <name>contentId</name>
       <required>true</required>
@@ -120,17 +147,17 @@
   </tag>
   <tag>
     <description>Tag to print out an HTML/javascript widget to classify new content that will
-    published into a given component instance. The created classification can be retrieved with the
-    tag pdcPositions and it can be validated with the tag pdcValidateClassification. The widget has
-    no side effect with the Silverpeas collaborative portal.
+      published into a given component instance. The created classification can be retrieved with the
+      tag pdcPositions and it can be validated with the tag pdcValidateClassification. The widget has
+      no side effect with the Silverpeas collaborative portal.
     </description>
     <name>pdcNewContentClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcNewContentClassificationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The identifier of the component instance for which the PdC is configured. If a
-      default classification exists for the specified component instance, then it will be taken into
-      account for classifying the content.
+        default classification exists for the specified component instance, then it will be taken into
+        account for classifying the content.
       </description>
       <name>componentId</name>
       <required>true</required>
@@ -139,8 +166,8 @@
     </attribute>
     <attribute>
       <description>The identifier of the node (if any) to which the new content will belong. If this
-      attribute is set and a predefined classification exists for this node, then it will be taken into
-      account instead of the component's one for classifying the content.
+        attribute is set and a predefined classification exists for this node, then it will be taken into
+        account instead of the component's one for classifying the content.
       </description>
       <name>nodeId</name>
       <required>false</required>
@@ -150,16 +177,16 @@
   </tag>
   <tag>
     <description>Tag to print out javascript code to validate the classification on the PdC that
-    was done through the tag pdcNewContentClassification for a new content. The tag generates javascript
-    instruction that returns the error message if the classification isn't valid, otherwise an empty
-    message.
+      was done through the tag pdcNewContentClassification for a new content. The tag generates javascript
+      instruction that returns the error message if the classification isn't valid, otherwise an empty
+      message.
     </description>
     <name>pdcValidateClassification</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationValidationTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The name of the Javascript variable that will accept the error message when the
-      classification of the content isn't valid. The message is concatenated at the variable'value.
+        classification of the content isn't valid. The message is concatenated at the variable'value.
       </description>
       <name>errorMessager</name>
       <required>true</required>
@@ -168,8 +195,8 @@
     </attribute>
     <attribute>
       <description>The name of the Javascript variable representing the counter of detected errors
-      in the form validation and that will be incremented by one at the classification validation
-      failure.
+        in the form validation and that will be incremented by one at the classification validation
+        failure.
       </description>
       <name>errorCounter</name>
       <required>true</required>
@@ -179,14 +206,14 @@
   </tag>
   <tag>
     <description>Tag to print out javascript code to get the positions of a classification on the PdC
-    of a content.
+      of a content.
     </description>
     <name>pdcPositions</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.pdc.PdcClassificationPositionsTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <description>The name of the Javascript variable that will accept the positions set through the
-      pdcNewClassification tag.
+        pdcNewClassification tag.
       </description>
       <name>setIn</name>
       <required>true</required>
@@ -208,7 +235,7 @@
     </attribute>
     <attribute>
       <description>The language to use for localizing the date. If not set, then the resources wrapper
-      usually carried in the request is used.
+        usually carried in the request is used.
       </description>
       <name>language</name>
       <required>false</required>
@@ -230,7 +257,7 @@
     </attribute>
     <attribute>
       <description>The language to use for localizing the date and time. If not set, then the
-      resources wrapper usually carried in the request is used.
+        resources wrapper usually carried in the request is used.
       </description>
       <name>language</name>
       <required>false</required>
@@ -245,7 +272,7 @@
     <body-content>JSP</body-content>
     <attribute>
       <description>
-         The identifier of the user that request the comments.
+        The identifier of the user that request the comments.
       </description>
       <name>userId</name>
       <required>true</required>
@@ -254,7 +281,7 @@
     </attribute>
     <attribute>
       <description>
-         The identifier of the Silverpeas component instance to which the commented resource belongs
+        The identifier of the Silverpeas component instance to which the commented resource belongs
       </description>
       <name>componentId</name>
       <required>true</required>
@@ -263,8 +290,8 @@
     </attribute>
     <attribute>
       <description>
-         The identifier of the resource in Silverpeas that is commented out and for which the
-         comments must be printed.
+        The identifier of the resource in Silverpeas that is commented out and for which the
+        comments must be printed.
       </description>
       <name>resourceId</name>
       <required>true</required>
@@ -273,10 +300,10 @@
     </attribute>
     <attribute>
       <description>
-         A javascript callback to call at each event on the comments. At event reception, the function
-         will be invoked with as parameter an object having two attributes: the event that occured
-         (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
-         by the event (either a comment or the list of comments for listing).
+        A javascript callback to call at each event on the comments. At event reception, the function
+        will be invoked with as parameter an object having two attributes: the event that occured
+        (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
+        by the event (either a comment or the list of comments for listing).
       </description>
       <name>callback</name>
       <required>false</required>
@@ -286,14 +313,14 @@
   </tag>
   <tag>
     <description>Tag to print out an edition form for adding new comments on a given resource.
-    The edition is printed only for non-guest users.
+      The edition is printed only for non-guest users.
     </description>
     <name>commentEdition</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.comment.CommentEditionTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
-         The identifier of the user that request the adding of a new comment.
+        The identifier of the user that request the adding of a new comment.
       </description>
       <name>userId</name>
       <required>true</required>
@@ -302,7 +329,7 @@
     </attribute>
     <attribute>
       <description>
-         The identifier of the Silverpeas component instance to which the commented resource belongs
+        The identifier of the Silverpeas component instance to which the commented resource belongs
       </description>
       <name>componentId</name>
       <required>true</required>
@@ -311,8 +338,8 @@
     </attribute>
     <attribute>
       <description>
-         The identifier of the resource in Silverpeas that is commented out and for which the
-         comments must be printed.
+        The identifier of the resource in Silverpeas that is commented out and for which the
+        comments must be printed.
       </description>
       <name>resourceId</name>
       <required>true</required>
@@ -321,8 +348,8 @@
     </attribute>
     <attribute>
       <description>
-         New comments should be indexed? If not set or valued with '1', 'yes' or 'true', all new
-         comments will be indexed by Silverpeas.
+        New comments should be indexed? If not set or valued with '1', 'yes' or 'true', all new
+        comments will be indexed by Silverpeas.
       </description>
       <name>indexed</name>
       <required>false</required>
@@ -331,10 +358,10 @@
     </attribute>
     <attribute>
       <description>
-         A javascript callback to call at each event on the comments. At event reception, the function
-         will be invoked with as parameter an object having two attributes: the event that occured
-         (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
-         by the event (either a comment or the list of comments for listing).
+        A javascript callback to call at each event on the comments. At event reception, the function
+        will be invoked with as parameter an object having two attributes: the event that occured
+        (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
+        by the event (either a comment or the list of comments for listing).
       </description>
       <name>callback</name>
       <required>false</required>
@@ -344,14 +371,14 @@
   </tag>
   <tag>
     <description>Tag to print out both a list of comments and an edition form for adding new comments on a given resource/
-    The edition form is printed only for non-guest users.
+      The edition form is printed only for non-guest users.
     </description>
     <name>comments</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.comment.CommentTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
-         The identifier of the user that request the adding of a new comment.
+        The identifier of the user that request the adding of a new comment.
       </description>
       <name>userId</name>
       <required>true</required>
@@ -360,9 +387,20 @@
     </attribute>
     <attribute>
       <description>
-         The identifier of the Silverpeas component instance to which the commented resource belongs
+         The identifier of the Silverpeas component instance or the tool to which the commented resource belongs
       </description>
       <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+         The type of the resource in Silverpeas that is commented out and for which the
+         comments must be printed. Usually this value is that of the getContributionType
+         method from SilverpeasContent interface implemented by the resource.
+      </description>
+      <name>resourceType</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
@@ -379,8 +417,8 @@
     </attribute>
     <attribute>
       <description>
-         New comments should be indexed? If not set or valued with '1', 'yes' or 'true', all new
-         comments will be indexed by Silverpeas.
+        New comments should be indexed? If not set or valued with '1', 'yes' or 'true', all new
+        comments will be indexed by Silverpeas.
       </description>
       <name>indexed</name>
       <required>false</required>
@@ -389,10 +427,10 @@
     </attribute>
     <attribute>
       <description>
-         A javascript callback to call at each event on the comments. At event reception, the function
-         will be invoked with as parameter an object having two attributes: the event that occured
-         (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
-         by the event (either a comment or the list of comments for listing).
+        A javascript callback to call at each event on the comments. At event reception, the function
+        will be invoked with as parameter an object having two attributes: the event that occured
+        (a value among: 'listing', 'addition', 'deletion', or 'udpate'), and the object concerned
+        by the event (either a comment or the list of comments for listing).
       </description>
       <name>callback</name>
       <required>false</required>
@@ -550,7 +588,7 @@
     <description>Simple tag to display a button pane.</description>
     <name>buttonPane</name>
     <tag-class>
-        com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPaneTag
+      com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPaneTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -706,7 +744,7 @@
   </tag>
   <tag>
     <description>Simple tag to define an operationPane: a panel with a list of operations (could be a menu).
-    It should be declared and used before a Window. It contains a list of operation tags.
+      It should be declared and used before a Window. It contains a list of operation tags.
     </description>
     <name>operationPane</name>
     <tag-class>
@@ -973,7 +1011,7 @@
     <description>Tag to highlight some terms contained in his body</description>
     <name>highlight</name>
     <tag-class>
-		com.stratelia.webactiv.util.viewGenerator.html.glossary.HighlightTermTag
+      com.stratelia.webactiv.util.viewGenerator.html.glossary.HighlightTermTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
@@ -1189,5 +1227,48 @@
       com.stratelia.webactiv.util.viewGenerator.html.security.AuthenticatedUserTag
     </tag-class>
     <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Tag that display javascript initialization of Wysiwyg editor</description>
+    <name>wysiwyg</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.wysiwyg.WysiwygTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Id of HTML element to replace by wysiwyg editor</description>
+      <name>replace</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Width of wysiwyg editor</description>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Height of wysiwyg editor</description>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Language of wysiwyg editor UI</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Toolbar used by wysiwyg editor</description>
+      <name>toolbar</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
 </taglib>

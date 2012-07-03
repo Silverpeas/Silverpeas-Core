@@ -81,9 +81,9 @@ public class CommentEditionTag extends CommentWidget {
     if (!user.isAccessGuest() && !user.isAnonymous()) {
       edition =
           "$('#" + COMMENT_WIDGET_DIV_ID + "').comment('edition', function() {"
-          + "return {author: {id: '" + getUserId() + "' }, componentId: '" + getComponentId() +
-          "',"
-          + "resourceId: '" + getResourceId() + "', indexed: " + isCommentsIndexed() + "} });";
+              + "return {author: {id: '" + getUserId() + "' }, componentId: '" + getComponentId() +
+              "', resourceId: '" + getResourceId() + "', resourceType: '" + getResourceType() +
+              "', indexed: " + isCommentsIndexed() + "} });";
     }
     return edition;
   }

@@ -93,6 +93,7 @@ function UserProfile(user) {
    * - optionally the page number or null if all the users must be fetched (by default set at null)
    * - optionally the page size in users count (by default it is set at CountPerPage). The page size
    *   cannot be set without passing the page number.
+   * - optionally a boolean to force the loading of the relationships (reload or not them).
    * - the callback operation to call once the users loaded.
    */
   this.onRelationships = function() {
@@ -104,6 +105,8 @@ function UserProfile(user) {
       if (typeof arguments[arg] == 'number')
         pagesize = arguments[arg++];
     }
+    if (typeof arguments[arg] == 'boolean')
+      toload = arguments[arg++];
     if (arg == arguments.length || arguments[arg] == null) {
       alert('Error in arguments: the callback is mandtory');
       return self;
@@ -178,6 +181,29 @@ function UserGroup(group) {
   this.withRoles = function(roles) {
     subgroupmgt.filter.roles = roles;
     usermgt.filter.roles = roles;
+    return self;
+  }
+  
+  /**
+   * Loads the attributes of this user group.
+   * Whether a callback is passed as argument, invokes the callback with this user group once its
+   * attributes loaded successfully.
+   */
+  this.load = function(callback) {
+    var groupmgt = new UserGroupManagement({
+      id: self.id
+    });
+    groupmgt.get(function(groups) {
+      if (groups.length == 1) {
+        for (var prop in groups[0])
+          self[prop] = groups[0][prop];
+        if (callback)
+          callback(self);
+      } else
+        alert('Error loading the user group of id ' + groupmgt.filter.id +
+          ': several user groups match the parameters!');
+      groupmgt.groups = null;
+    });
     return self;
   }
   
@@ -398,6 +424,7 @@ function UserGroupManagement(params) {
   var self = this;
   
   this.filter = {
+    id: null, // the unique identifier of a user group to get.
     url: null, // the URL at which the groups have to be get. If not set, the URL of the root groups
     // is taken and the other filtering paramaters are parsed. Whatever the url is set or
     // not, the filtering paramater name is always parsed.
@@ -423,8 +450,12 @@ function UserGroupManagement(params) {
    */
   function decorate(groups) {
     var decoratedGroups = [];
-    for (var i = 0; i < groups.length; i++)
-      decoratedGroups.push(new UserGroup(groups[i]));
+    if (groups instanceof Array) {
+      for (var i = 0; i < groups.length; i++)
+        decoratedGroups.push(new UserGroup(groups[i]));
+    } else {
+     decoratedGroups.push(groups);
+    }
     return decoratedGroups;
   }
   
@@ -445,7 +476,9 @@ function UserGroupManagement(params) {
       filter = null;
     }
     setUpFilter(filter);
-    if (self.filter.url)
+    if (self.filter.id)
+      urlOfGroups = groupRootURL + '/' + self.filter.id;
+    else if (self.filter.url)
       urlOfGroups = self.filter.url;
     else if (self.filter.component) {
       urlOfGroups += '/application/' + self.filter.component;
@@ -454,7 +487,7 @@ function UserGroupManagement(params) {
         separator = '&';
       }
     }
-    if (this.filter.name && self.filter.name != '*') {
+    if (self.filter.id == null && self.filter.name && self.filter.name != '*') {
       urlOfGroups += separator + "name=" + this.filter.name;
     }
     $.ajax({

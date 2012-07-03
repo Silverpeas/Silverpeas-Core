@@ -121,6 +121,24 @@ public class DateUtil {
     return getOutputDate(date, language);
   }
 
+  public static String getOutputHour(Date date, String language) {
+    String result = "";
+    if (date == null) {
+      return result;
+    }
+    FastDateFormat formatter = getHourOutputFormat(language);
+    return formatter.format(date);
+  }
+
+  public static String getOutputHour(String dateDB, String language)
+      throws ParseException {
+    if (!StringUtil.isDefined(dateDB)) {
+      return "";
+    }
+    Date date = parse(dateDB);
+    return getOutputHour(date, language);
+  }
+
   public static String getOutputDateAndHour(String dateDB, String language) throws ParseException {
     if (!StringUtil.isDefined(dateDB)) {
       return "";
@@ -251,6 +269,26 @@ public class DateUtil {
   }
 
   /**
+   * Get the hour (from a date) language specific standard output format.
+   *
+   * @param lang The current user's language
+   * @return A SimpleDateFormat initialized with the language specific output format.
+   */
+  public static FastDateFormat getHourOutputFormat(String lang) {
+    return FastDateFormat.getInstance(getMultilangProperties(lang).getString("hourOutputFormat"));
+  }
+
+  /**
+   * Get the hour (from a date) language specific standard input format.
+   *
+   * @param language The current user's language
+   * @return A SimpleDateFormat initialized with the language specific input format.
+   */
+  public static SimpleDateFormat getHourInputFormat(String language) {
+    return new SimpleDateFormat(getMultilangProperties(language).getString("hourInputFormat"));
+  }
+
+  /**
    * Get the date language specific standard input format.
    * @param lang The current user's language
    * @return A SimpleDateFormat initialized with the language specific input format.
@@ -325,7 +363,15 @@ public class DateUtil {
     return date2SQLDate(new Date());
   }
 
+  /**
+   * @param date the date to transform
+   * @return a String representing the given date in a yyyy/MM/dd format or null if given date is
+   * null
+   */
   public static String date2SQLDate(Date date) {
+    if (date == null) {
+      return null;
+    }
     return DATE_FORMATTER.format(date);
   }
 
@@ -702,7 +748,29 @@ public class DateUtil {
     cal.set(Calendar.MILLISECOND,0);    
     return cal.getTime();
   }
-  
+
+  /**
+   * Return the day index of the week from a given date.
+   * This index is that of Calendar monday, tuesday, ...
+   * Use Calendar.MONDAY, Calendar.TUESDAY, ...
+   * @param curDate
+   * @return String
+   */
+  public final static int getDayNumberInWeek(Date curDate) {
+    return DateUtil.convert(curDate).get(Calendar.DAY_OF_WEEK);
+  }
+
+  /**
+   * Convert Date to Calendar
+   * @param curDate
+   * @return Calendar
+   */
+  public static Calendar convert(Date curDate) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(curDate);
+    return cal;
+  }
+
   private DateUtil() {
   }
 }

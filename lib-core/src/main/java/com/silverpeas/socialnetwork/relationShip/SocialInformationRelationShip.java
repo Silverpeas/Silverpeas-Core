@@ -34,7 +34,6 @@ import java.util.Date;
  */
 public class SocialInformationRelationShip implements SocialInformation {
 
-  private SocialInformationType type;
   private String title;
   private String author;
   private String url;
@@ -102,7 +101,7 @@ public class SocialInformationRelationShip implements SocialInformation {
    */
   @Override
   public String getType() {
-    return type.RELATIONSHIP.toString();
+    return SocialInformationType.RELATIONSHIP.toString();
   }
 
   /**

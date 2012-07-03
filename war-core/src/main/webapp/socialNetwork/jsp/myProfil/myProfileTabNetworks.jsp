@@ -39,36 +39,34 @@
 
 <c:set var="availableNetworks" value="<%=SocialNetworkID.values() %>"/>
 
-<div id="socialNetworks">
+<div id="myprofile-socialnetworks">
 <form name="NetworksForm" action="#" method="post">
 	<fmt:message key="myProfile.networks.linkToMySilverpeasAccount" var="linktoSVP" />
 	<fmt:message key="myProfile.networks.unlinkFromMySilverpeasAccount" var="unlinkFromSVP" />
 
 	<c:if test="${not empty errorMessage}">
-		<div id="socialNetworkErrorMessage">
+		<div id="socialNetworkErrorMessage" class="inlineMessage-nok">
 			<fmt:message key="myProfile.networks.error_${errorMessage}"/>
 		</div>
 	</c:if>
 
 	<c:forEach items="${availableNetworks}" var="network">
 		<c:if test="${network.enabled}">
-		<div id="socialNetwork">
-			<div id="socialNetworkLogo">
-				<img border="0" width="70" align="middle" src="/weblib/look/icons/${network}.png">
-			</div>
-			<div id="socialNetworkInfos">
-				<span id="socialNetworkTitle">${network}</span><br/>
+		<div class="a-socialnetwork">
+			<p>
+				<img src="<c:url value="/util/icons/external/${network}.png" />" alt="" />
 				<c:choose>
               		<c:when test="${not empty userNetworks[network]}">
-              			<fmt:message key="myProfile.networks.linkedToSilverpeas"/><br/>
-              			<view:button label="${unlinkFromSVP}" action="javascript:confirmUnlink('${network}')" />
+              			<fmt:message key="myProfile.networks.yourProfile"/> <strong>${network}</strong> <fmt:message key="myProfile.networks.linkedToSilverpeas"/>
+              			<div class="bgDegradeGris switch socialnetwork"><fmt:message key="myProfile.networks.linkToMySilverpeasAccount"/> <a href="#" class="active link-socialNetwork"><fmt:message key="GML.yes"/></a><a href="javascript:confirmUnlink('${network}')" class="no-link-socialNetwork"><fmt:message key="GML.no"/></a></div>
 					</c:when>
 					<c:otherwise>
-              			<fmt:message key="myProfile.networks.notLinkedToSilverpeas"/>
-              			<view:button label="${linktoSVP}" action="javascript:linkToSVP('${network}')"/>
+						<fmt:message key="myProfile.networks.yourProfile"/> <strong>${network}</strong> <fmt:message key="myProfile.networks.notLinkedToSilverpeas"/>
+						<div class="bgDegradeGris switch socialnetwork"><fmt:message key="myProfile.networks.linkToMySilverpeasAccount"/> <a href="javascript:linkToSVP('${network}')" class="no-link-socialNetwork"><fmt:message key="GML.yes"/></a><a href="#" class="active link-socialNetwork"><fmt:message key="GML.no"/></a></div>
 					</c:otherwise>
 				</c:choose>
-			</div>
+			</p>
+			<hr class="sep" />
 		</div>
 		</c:if>
 	</c:forEach>

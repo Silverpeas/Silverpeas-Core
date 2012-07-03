@@ -468,14 +468,12 @@
 				  <% } %>
 				  <%
 				    if (contextualMenuEnabled) {
-				      if (document.getStatus() == Document.STATUS_CHECKOUTED) {
-				        out.println(
-				            "<div class=\"workerInfo\" id=\"worker" + document.getPk().getId() + "\" style=\"visibility:visible\">" + attResources.getString(
-				                "lockedBy") + " " + m_MainSessionCtrl.getOrganizationController().getUserDetail(
-				                Integer.toString(
-				                    document.getOwnerId())).getDisplayedName() + " " + attResources.getString(
-				                "at") + " " + resources.getOutputDate(document.getLastCheckOutDate()) + "</div>");
-				      } else {
+				      if (document.getStatus() == Document.STATUS_CHECKOUTED) { %>
+				      	<div class="workerInfo" id="worker<%=document.getPk().getId() %>" style="visibility:visible">
+			              	<%= attResources.getString("lockedBy")%> <view:username userId="<%=document.getOwnerId()%>"/>
+			              	<%= attResources.getString("at")%> <%=resources.getOutputDate(document.getLastCheckOutDate())%>
+			            </div>
+				  <%    } else {
 				        out.println(
 				            "<div class=\"workerInfo\" id=\"worker" + document.getPk().getId() + "\" style=\"visibility:hidden\"></div>");
 				      }

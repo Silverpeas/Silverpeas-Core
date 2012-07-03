@@ -24,42 +24,32 @@
 
 package com.silverpeas.comment.web;
 
-import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.Authorized;
-import java.util.logging.Logger;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import java.net.URI;
-import java.util.List;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.web.RESTWebService;
+import java.net.URI;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-import static com.silverpeas.util.StringUtil.*;
+import com.silverpeas.annotation.RequestScoped;
 
 /**
  * A REST Web resource representing a given comment. It is a web service that provides an access to
  * a comment referenced by its URL.
  */
 @Service
-@Scope("request")
-@Path("comments/{componentId}/{contentId}")
+@RequestScoped
+@Path("comments/{componentId}/{contentType}/{contentId}")
 @Authorized
 public class CommentResource extends RESTWebService {
 
@@ -67,6 +57,8 @@ public class CommentResource extends RESTWebService {
   private CommentService commentService;
   @PathParam("componentId")
   private String componentId;
+  @PathParam("contentType")
+  private String contentType;
   @PathParam("contentId")
   private String contentId;
 
@@ -105,8 +97,9 @@ public class CommentResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public CommentEntity[] getAllComments() {
     try {
-      List<Comment> theComments = commentService().getAllCommentsOnPublication(
-          byPK(onContentId(), inComponentId()));
+      List<Comment> theComments =
+          commentService().getAllCommentsOnPublication(onContentType(),
+              byPK(onContentId(), inComponentId()));
       return asWebEntities(theComments);
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -130,8 +123,8 @@ public class CommentResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response saveNewComment(final CommentEntity commentToSave) {
     checkIsValid(commentToSave);
-    Comment comment = commentToSave.toComment();
     try {
+      Comment comment = commentToSave.toComment();
       if (commentToSave.isIndexed()) {
         commentService().createAndIndexComment(comment);
       } else {
@@ -140,7 +133,7 @@ public class CommentResource extends RESTWebService {
       Comment savedComment = commentService().getComment(comment.getCommentPK());
       URI commentURI =
           getUriInfo().getRequestUriBuilder().path(savedComment.getCommentPK().getId()).
-          build();
+              build();
       return Response.created(commentURI).
           entity(asWebEntity(savedComment, identifiedBy(commentURI))).build();
     } catch (CommentRuntimeException ex) {
@@ -217,6 +210,14 @@ public class CommentResource extends RESTWebService {
   }
 
   /**
+   * Gets the type of the content that is commentable.
+   * @return the type of the commentable content.
+   */
+  protected String onContentType() {
+    return contentType;
+  }
+
+  /**
    * Gets the identifier of the content that is commentable.
    * @return the identifier of the commentable content.
    */
@@ -266,10 +267,7 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    CommentEntity entity = CommentEntity.fromComment(comment).withURI(commentURI);
-    // CommentAuthorEntity author = entity.getAuthor();
-    // author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
-    return entity;
+    return CommentEntity.fromComment(comment).withURI(commentURI);
   }
 
   protected URI identifiedBy(URI uri) {
@@ -279,6 +277,10 @@ public class CommentResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return this.componentId;
+  }
+
+  protected String getContentType() {
+    return this.contentType;
   }
 
   protected String getContentId() {
@@ -291,13 +293,10 @@ public class CommentResource extends RESTWebService {
    * @param theComment the comment to validate.
    */
   protected void checkIsValid(final CommentEntity theComment) {
-    if (!isDefined(theComment.getComponentId()) || !isDefined(theComment.getResourceId()) ||
-        !isDefined(theComment.getText()) || !isDefined(theComment.getAuthor().getId())) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
     if (!theComment.getComponentId().equals(getComponentId()) ||
-        !theComment.getResourceId().equals(
-        getContentId())) {
+        !theComment.getResourceType().equals(
+            getContentType()) || !theComment.getResourceId().equals(
+            getContentId())) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
   }

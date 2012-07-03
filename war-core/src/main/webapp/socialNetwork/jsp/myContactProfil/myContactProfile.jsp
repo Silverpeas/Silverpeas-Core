@@ -68,6 +68,7 @@
 <html>
 <head>
 <view:looknfeel />
+<view:includePlugin name="messageme"/>
 </head>
 <body id="myProfile">
 <view:window>
@@ -88,7 +89,7 @@
         </p>
         <!-- action  -->
         <div class="action">
-            <a href="#" class="link notification" onclick="initNotification(<%=userFull.getId() %>,'<%=userFull.getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
+            <a href="#" class="link notification" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="GML.notification.send" /></a>
         </div> <!-- /action  -->
         <div class="profilPhoto">
 			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
@@ -108,7 +109,7 @@
         	<div class="profilPhotoContact">
         		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
         	</div>
-	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
+        	<view:username userId="<%=contact.getId() %>" />
 	   	</div> <!-- /unContact  -->
   	<% } %>
     
@@ -167,8 +168,6 @@
               
 </div>
 </view:window>
-
-<%@include file="../notificationDialog.jsp" %>
     
 </body>
 </html>

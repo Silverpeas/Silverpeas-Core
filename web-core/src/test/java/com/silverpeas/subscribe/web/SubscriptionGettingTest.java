@@ -86,15 +86,14 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     UserDetailWithProfiles user = new UserDetailWithProfiles();
     user.setFirstName("Bart");
     user.setLastName("Simpson");
-    user.setId("10");
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
-    ComponentSubscription subscription = new ComponentSubscription("10", COMPONENT_ID);
+    ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
     Collection<ComponentSubscription> subscriptions = Lists.newArrayList(subscription);
     when((Collection<ComponentSubscription>) mockedSubscriptionService.
-            getUserSubscriptionsByComponent("10", COMPONENT_ID)).thenReturn(subscriptions);
+            getUserSubscriptionsByComponent(user.getId(), COMPONENT_ID)).thenReturn(subscriptions);
     getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
     SubscriptionEntity[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).get(SubscriptionEntity[].class);
@@ -111,7 +110,6 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     UserDetailWithProfiles user = new UserDetailWithProfiles();
     user.setFirstName("Bart");
     user.setLastName("Simpson");
-    user.setId("10");
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);

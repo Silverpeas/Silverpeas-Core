@@ -45,6 +45,7 @@
 
   <context:component-scan base-package="com.silverpeas.pdc"/>
   <context:component-scan base-package="com.silverpeas.thesaurus"/>
+  <context:component-scan base-package="com.stratelia.webactiv.node"/>
 
   <jpa:repositories base-package="com.silverpeas.pdc" transaction-manager-ref="jpaTransactionManager"/>
 

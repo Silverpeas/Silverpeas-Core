@@ -23,40 +23,32 @@
  */
 package org.silverpeas.node.web;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-
-import java.net.URI;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
-import com.silverpeas.web.RESTWebService;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import java.net.URI;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import com.silverpeas.annotation.RequestScoped;
 
 /**
  * A REST Web resource representing a given node.
  * It is a web service that provides an access to a node referenced by its URL.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("nodes/{componentId}/{token}")
 public class NodeResource extends RESTWebService {
   
