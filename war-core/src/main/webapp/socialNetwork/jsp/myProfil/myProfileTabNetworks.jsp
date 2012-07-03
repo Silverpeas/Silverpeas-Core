@@ -57,11 +57,11 @@
 				<img src="<c:url value="/util/icons/external/${network}.png" />" alt="" />
 				<c:choose>
               		<c:when test="${not empty userNetworks[network]}">
-              			<fmt:message key="myProfile.networks.yourProfile"/> <strong>${network}</strong> <fmt:message key="myProfile.networks.linkedToSilverpeas"/>
+              			<fmt:message key="myProfile.networks.yourAccount"/> <strong>${network}</strong> <fmt:message key="myProfile.networks.linkedToSilverpeas"/>
               			<div class="bgDegradeGris switch socialnetwork"><fmt:message key="myProfile.networks.linkToMySilverpeasAccount"/> <a href="#" class="active link-socialNetwork"><fmt:message key="GML.yes"/></a><a href="javascript:confirmUnlink('${network}')" class="no-link-socialNetwork"><fmt:message key="GML.no"/></a></div>
 					</c:when>
 					<c:otherwise>
-						<fmt:message key="myProfile.networks.yourProfile"/> <strong>${network}</strong> <fmt:message key="myProfile.networks.notLinkedToSilverpeas"/>
+						<fmt:message key="myProfile.networks.yourAccount"/> <strong>${network}</strong> <fmt:message key="myProfile.networks.notLinkedToSilverpeas"/>
 						<div class="bgDegradeGris switch socialnetwork"><fmt:message key="myProfile.networks.linkToMySilverpeasAccount"/> <a href="javascript:linkToSVP('${network}')" class="no-link-socialNetwork"><fmt:message key="GML.yes"/></a><a href="#" class="active link-socialNetwork"><fmt:message key="GML.no"/></a></div>
 					</c:otherwise>
 				</c:choose>
