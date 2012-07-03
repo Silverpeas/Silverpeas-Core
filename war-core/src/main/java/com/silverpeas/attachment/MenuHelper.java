@@ -26,10 +26,12 @@ package com.silverpeas.attachment;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+import javax.servlet.jsp.JspWriter;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import javax.servlet.jsp.JspWriter;
-import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * @author ehugonnet
@@ -71,47 +73,47 @@ public class MenuHelper {
         resources.getString("checkOut")).append("</a></li>").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload('").
-        append(attachment.getId()).append("',").append(webDavOK).append(")\">").append(
+        append(attachment.getId()).append("',").append(webDavOK).append(");\">").append(
         resources.getString("attachment.checkOutAndDownload")).append("</a></li>").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit('").
-        append(attachment.getId()).append("')\">").
-        append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>");
+        append(attachment.getId()).append("');\">").append(resources.getString(
+        "attachment.checkOutAndEditOnline")).append("</a></li>").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin('").
         append(attachment.getId()).append("',").append(attachment.isOpenOfficeCompatible()).
-        append(", false)\">").append(resources.getString("checkIn")).append("</a></li>");
-    builder.append("</ul>");
-    builder.append("<ul>");
+        append(", false)\">").append(resources.getString("checkIn")).append("</a></li>").append(NEW_LINE);
+    builder.append("</ul>").append(NEW_LINE);
+    builder.append("<ul>").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('").
-        append(attachmentId).append("')\">").append(resources.getString("GML.modify")).append(
-        "</a></li>");
+        append(attachment.getId()).append("');\">").append(resources.getString("GML.modify")).append(
+        "</a></li>").append(NEW_LINE);
     if (useXMLForm) {
       builder.append(
           "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('");
-      builder.append(attachmentId).append("','").append(language).append("')\">");
-      builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>");
+      builder.append(attachmentId).append("','").append(language).append("');\">");
+      builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(NEW_LINE);
     }
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment(").
         append(attachmentId).append(")\">").append(resources.getString("GML.delete")).append(
-        "</a></li>");
-    builder.append("</ul>");
-    builder.append("<ul>");
+        "</a></li>").append(NEW_LINE);
+    builder.append("</ul>").append(NEW_LINE);
+    builder.append("<ul>").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('").
         append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
-        append("</a></li>");
-    builder.append("</ul>");
-    builder.append("<ul>");
+        append("</a></li>").append(NEW_LINE);
+    builder.append("</ul>").append(NEW_LINE);
+    builder.append("<ul>").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:notifyAttachment('");
-    builder.append(attachmentId).append("')\">").append(resources.getString("GML.notify"));
+    builder.append(attachmentId).append("')\">").append(resources.getString("GML.notify")).append(NEW_LINE);
     builder.append("</a></li>");
-    builder.append("</ul>");
-    builder.append("</div>");
-    builder.append("</div>");
+    builder.append("</ul>").append(NEW_LINE);
+    builder.append("</div>").append(NEW_LINE);
+    builder.append("</div>").append(NEW_LINE);
 
     builder.append("<script type=\"text/javascript\">");
     

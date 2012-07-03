@@ -509,14 +509,12 @@
       SP_openWindow("<%=m_Context%>/attachment/jsp/addAttFiles.jsp", "test", "600", "<%=winAddHeight%>","scrollbars=no, resizable, alwaysRaised");
     }
 
-    function deleteAttachment(attachmentId)
-    {
+    function deleteAttachment(attachmentId) {
       var url = "<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?IdAttachment="+attachmentId;
       $("#attachmentModalDialog").dialog("open").load(url);
     }
 
-    function removeAttachment(attachmentId)
-    {
+    function removeAttachment(attachmentId) {
       var sLanguages = "";
       var boxItems = document.removeForm.languagesToDelete;
       if (boxItems != null){
@@ -563,22 +561,15 @@
   <% }%>
     }
 
-    function updateAttachment(attachmentId)
-    {
-  <%
-       String winHeight = "220";
-       if (I18NHelper.isI18N) {
-         winHeight = "240";
-       }
-  %>
-      var url = "<%=m_Context%>/attachment/jsp/toUpdateFile.jsp?IdAttachment="+attachmentId;
-      SP_openWindow(url, "test", "650", "<%=winHeight%>","scrollbars=no, resizable, alwaysRaised");
+    function updateAttachment(attachmentId) {
+      var url = '<c:url value="/attachment/jsp/toUpdateFile.jsp?IdAttachment=" />' + attachmentId;
+      $("#attachmentModalDialog").dialog("open").load(url);
     }
 
   <% if (useXMLForm) {%>
     function EditXmlForm(id, lang)
     {
-      SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm)%>&ReloadOpener=true", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
+      SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm, "UTF-8")%>&ReloadOpener=true", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
     }
   <% }%>
 

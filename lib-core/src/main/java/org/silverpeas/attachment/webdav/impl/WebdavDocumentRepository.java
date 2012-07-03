@@ -22,16 +22,18 @@ package org.silverpeas.attachment.webdav.impl;
 
 import java.util.Calendar;
 
-import com.silverpeas.jcrutil.JcrConstants;
-import com.silverpeas.util.StringUtil;
 import javax.inject.Named;
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.webdav.WebdavRepository;
+
+import com.silverpeas.jcrutil.JcrConstants;
+import com.silverpeas.util.StringUtil;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.*;

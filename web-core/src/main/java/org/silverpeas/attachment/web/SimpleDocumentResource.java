@@ -50,7 +50,7 @@ import com.silverpeas.web.UserPriviledgeValidation;
 
 @Service
 @RequestScoped
-@Path("documents/{componentId}/document/{id}/")
+@Path("documents/{componentId}/document/{id}")
 @Authorized
 public class SimpleDocumentResource extends RESTWebService {
 

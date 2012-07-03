@@ -20,17 +20,20 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 import org.silverpeas.attachment.webdav.WebdavService;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 @Named("webdavService")
 public class WebDavDocumentService implements WebdavService {

@@ -60,6 +60,8 @@
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
+  <ctx:component-scan base-package="org.silverpeas.attachment" />
+  <ctx:component-scan base-package="org.silverpeas.accesscontrol" />
   
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
 

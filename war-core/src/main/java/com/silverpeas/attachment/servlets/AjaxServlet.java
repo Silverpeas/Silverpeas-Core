@@ -37,6 +37,8 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import com.silverpeas.util.StringUtil;
+
 public class AjaxServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
@@ -162,11 +164,18 @@ public class AjaxServlet extends HttpServlet {
     String componentId = getForeignPK(req).getInstanceId();
 
     StringTokenizer tokenizer = new StringTokenizer(orderedList, ",");
-    List<SimpleDocumentPK> attachmentPKs = new ArrayList<SimpleDocumentPK>();
+    List<SimpleDocument> attachments = new ArrayList<SimpleDocument>();
     while (tokenizer.hasMoreTokens()) {
-      attachmentPKs.add(new SimpleDocumentPK(tokenizer.nextToken(), componentId));
+      String id = tokenizer.nextToken();
+      SimpleDocumentPK pk;
+      if (StringUtil.isLong(id)) {
+        pk =  new SimpleDocumentPK(null, componentId).setOldSilverpeasId(Long.valueOf(id));
+      } else {
+       pk = new SimpleDocumentPK(id, componentId);
+      }
+      attachments.add(AttachmentServiceFactory.getAttachmentService().searchAttachmentById(pk, null));
     }
-    AttachmentServiceFactory.getAttachmentService().reorderAttachments(attachmentPKs);
+    AttachmentServiceFactory.getAttachmentService().reorderDocuments(attachments);
     return "ok";
   }
 

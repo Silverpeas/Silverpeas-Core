@@ -38,8 +38,9 @@ public class SimpleDocumentPK extends WAPrimaryKey implements Serializable {
     return oldSilverpeasId;
   }
 
-  public void setOldSilverpeasId(long oldSilverpeasId) {
+  public SimpleDocumentPK setOldSilverpeasId(long oldSilverpeasId) {
     this.oldSilverpeasId = oldSilverpeasId;
+    return this;
   }
 
   public SimpleDocumentPK(String id) {

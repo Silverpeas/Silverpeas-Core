@@ -52,21 +52,21 @@ Iterator languages = attachment.getLanguages();
 					<% if (I18NHelper.isI18N && nbTranslations > 1) { %>
 						<table border="0">
 						<tr><td colspan="2"><%=attResources.getStringWithParam("attachment.suppressionWhichTranslations", attachmentName)%></td></tr>
-						<tr><td><input type="checkbox" id="languagesToDelete" name="languagesToDelete" value="all"/></td><td width="100%"><%=Encode.convertHTMLEntities(attResources.getString("attachment.allTranslations"))%></td></tr>
+						<tr><td><input type="checkbox" id="languagesToDelete" name="languagesToDelete" value="all"/></td><td width="100%"><%=EncodeHelper.convertHTMLEntities(attResources.getString("attachment.allTranslations"))%></td></tr>
 						<%
 							String attLanguage = null;
 							while (languages.hasNext())
 							{
 								attLanguage = (String) languages.next();
 								%>
-									<tr><td><input type="checkbox" id="languagesToDelete" name="languagesToDelete" value="<%=attLanguage%>"/></td><td><%=Encode.convertHTMLEntities(I18NHelper.getLanguageLabel(attLanguage, language))%></td></tr>
+									<tr><td><input type="checkbox" id="languagesToDelete" name="languagesToDelete" value="<%=attLanguage%>"/></td><td><%=EncodeHelper.convertHTMLEntities(I18NHelper.getLanguageLabel(attLanguage, language))%></td></tr>
 								<%
 							}
 						%>
 						</table>
 					<% } else { %>
 						<br/>
-						<%=Encode.convertHTMLEntities(attResources.getStringWithParam("attachment.suppressionConfirmation", attachmentName))%><br/>
+						<%=EncodeHelper.convertHTMLEntities(attResources.getStringWithParam("attachment.suppressionConfirmation", attachmentName))%><br/>
 						<br/>
 					<% } %>
 					<%=buttonPane.print()%>

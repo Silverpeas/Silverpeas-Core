@@ -21,13 +21,15 @@
 */
 package com.silverpeas.util;
 
-import com.stratelia.webactiv.util.DateUtil;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Property;
+
+import com.stratelia.webactiv.util.DateUtil;
 
 public class MetaData {
 
