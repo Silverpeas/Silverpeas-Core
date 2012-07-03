@@ -77,7 +77,7 @@ public abstract class AbstractTool {
    * @return the label
    */
   public String getLabel() {
-    return labelKey;
+    return getMessages().getString(labelKey);
   }
 
   /**

@@ -96,19 +96,9 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
   @SuppressWarnings("unchecked")
   public T withURI(final URI uri) {
     this.uri = uri;
-    withParentURI(buildURI(StringUtil.isDefined(parentId) && !SpaceInstLight.isRoot(parentId)
-        ? getStringParentBaseURI() : null, parentId));
-    return (T) this;
-  }
-
-  /**
-   * Sets a parent URI to this entity. With this URI, it can then be accessed through the Web.
-   * @param uri the parent web entity URI.
-   * @return itself.
-   */
-  @SuppressWarnings("unchecked")
-  public T withParentURI(final URI uri) {
-    parentURI = uri;
+    this.parentURI =
+        buildURI(StringUtil.isDefined(parentId) && !SpaceInstLight.isRoot(parentId)
+            ? getStringParentBaseURI() : null, parentId);
     return (T) this;
   }
 
