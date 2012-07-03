@@ -40,29 +40,9 @@
 <title><fmt:message key="GML.popupTitle" /></title>
 <link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
-
-<!--[if lt IE 8]>
-<style>
-input{
-	background-color:#FAFAFA;
-	border:1px solid #DAD9D9;
-	width:448px;
-	text-align:left;
-    margin-left:-10px;
-    height:26px;
-    line-height:24px;
-    padding:0px 60px;
-    display:block;
-    padding:0px;
-}
-
-</style>
-<![endif]-->
-
 <style>
 .titre {
     left: 375px;
-    top: 15px;
 }
 
 .submit {
@@ -77,8 +57,8 @@ input{
 <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-include.js"/>"></script>
 
-<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen">
-<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.css"/>" media="screen">
+<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen"></link>
+<link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTchaa.jquery.css"/>" media="screen"></link>
 
 <!-- jQuery files -->
 <script src="<c:url value="/util/javaScript/jquery/qaptcha/jquery/jquery.ui.touch.js"/>" type="text/javascript" charset="utf-8"></script>
@@ -256,20 +236,20 @@ $(document).ready(function(){
                 <div class="cadre">
                     <p style="text-align: center">
                     	<span>
-                    		<fmt:message key="registration.noSilverpeasAccount"/><br>
+                    		<fmt:message key="registration.noSilverpeasAccount"/><br/>
                     		<fmt:message key="registration.completeProfile"/>
-                        </span><br><br>
+                        </span><br/><br/>
 					</p>
 
-                    <p><label for="firstName"><span><fmt:message key="registration.firstname" /></span></label><input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/></p>
-                    <p><label for="lastName"><span><fmt:message key="registration.lastname" /></span></label><input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/></p>
-                    <p><label for="email"><span><fmt:message key="registration.email" /></span></label><input type="text" name="email" id="email" value="${userProfile.email}"/></p>
+                    <p><label for="firstName"><span><fmt:message key="registration.firstname" /></span><input type="text" name="firstName" id="firstName" value="${userProfile.firstName}"/></label></p>
+                    <p><label for="lastName"><span><fmt:message key="registration.lastname" /></span><input type="text" name="lastName" id="lastName" value="${userProfile.lastName}"/></label></p>
+                    <p><label for="email"><span><fmt:message key="registration.email" /></span><input type="text" name="email" id="email" value="${userProfile.email}"/></label></p>
 
        				<p>&nbsp;</p>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
 					<div id="QapTcha"></div>
-                    <p><input type="image" class="submit" width="95" src='<c:url value="/images/bt-ok.png" />' alt="register"/></p>
+                    <p><input type="image" class="submit" src='<c:url value="/images/bt-ok.png" />' alt="register"/></p>
 
                 </div>
             </div>

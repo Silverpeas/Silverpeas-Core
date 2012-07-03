@@ -44,29 +44,25 @@
 <style>
 .titre {
     left: 375px;
-    top: 15px;
 }
 </style>
 </head>
 
 <body>
-        <div id="top"></div> <!-- Backgroud fonce -->
-        <div class="page"> <!-- Centrage horizontal des elements (960px) -->
-          <div class="titre"><fmt:message key="registration.succesTitle"/></div>
-            <div id="background"> <!-- image de fond du formulaire -->
-                <div class="cadre">
-                    <p style="text-align: center">
-                    	<span>
-                    		<fmt:message key="registration.success"/>
-                        </span><br><br>
-					</p>
-
-                    <p><a href="<c:url value="/Login.jsp" />" class="submit"><img src='<c:url value="/images/bt-ok.png" />' alt="register"/></a></p>
-
-                </div>
-            </div>
-            <div id="copyright"><fmt:message key="GML.trademark" /></div>
+<div id="top"></div> <!-- Backgroud fonce -->
+<div class="page"> <!-- Centrage horizontal des elements (960px) -->
+  <div class="titre"><fmt:message key="registration.title"/></div>
+    <div id="background"> <!-- image de fond du formulaire -->
+        <div class="cadre">
+            <p style="text-align: center">
+            	<span>
+            		<fmt:message key="registration.success"/>
+                </span><br/><br/>
+			</p>
+            <p><a href="<c:url value="/Login.jsp" />" class="submit"><img src='<c:url value="/images/bt-ok.png" />' alt="register"/></a></p>
         </div>
-
+    </div>
+    <div id="copyright"><fmt:message key="GML.trademark" /></div>
+</div>
 </body>
 </html>
