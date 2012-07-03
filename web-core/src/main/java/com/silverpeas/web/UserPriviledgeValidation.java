@@ -23,20 +23,26 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.codec.binary.Base64;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -55,6 +61,9 @@ public class UserPriviledgeValidation {
   @Inject
   @Named("componentAccessController")
   private AccessController<String> componentAccessController;
+  @Inject
+  @Named("simpleDocumentAccessController")
+  private AccessController<SimpleDocument> documentAccessController;
   /**
    * The HTTP header paremeter in an incoming request that carries the user session key. This
    * parameter isn't mandatory as the session key can be found from an active HTTP session. If
@@ -88,7 +97,7 @@ public class UserPriviledgeValidation {
    * @throws WebApplicationException exception if the validation failed.
    */
   public UserDetail validateUserAuthentication(final HttpServletRequest request) throws
-          WebApplicationException {
+      WebApplicationException {
     UserDetail authenticatedUser;
     String sessionId = getUserSessionKey(request);
     if (isDefined(sessionId)) {
@@ -102,13 +111,28 @@ public class UserPriviledgeValidation {
   /**
    * Validates the authorization of the specified user to access the component instance with the
    * specified unique identifier.
+   *
    * @param user the user for whom the authorization has to be validated.
    * @param instanceId the unique identifier of the accessed component instance.
    * @throws WebApplicationException exception if the validation failed.
    */
   public void validateUserAuthorizationOnComponentInstance(final UserDetail user, String instanceId)
-          throws WebApplicationException {
+      throws WebApplicationException {
     if (!componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
+   * Validates the authorization of the specified user to access the specified attachment.
+   *
+   * @param user the user for whom the authorization has to be validated.
+   * @param doc the document accessed.
+   * @throws WebApplicationException exception if the validation failed.
+   */
+  public void validateUserAuthorizationOnAttachment(final UserDetail user, SimpleDocument doc)
+      throws WebApplicationException {
+    if (!documentAccessController.isUserAuthorized(user.getId(), doc)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -21,28 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.attachment.web;
 
-package com.silverpeas.web.mock;
-
+import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.silverpeas.accesscontrol.AccessController;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper;
+
+import com.silverpeas.web.TestResources;
 
 /**
- * A mock of an user access controller for testing purpose.
+ *
+ * @author ehugonnet
  */
-@Named("componentAccessController")
-public class AccessControllerMock implements AccessController<String> {
+@Named(TestResources.TEST_RESOURCES_NAME)
+public class SimpleDocumentTestResource extends TestResources {
 
-  private boolean authorization = true;
+  public static final String INSTANCE_ID = "kmelia36";
+  public static final String DOCUMENT_ID = "deadbeef-face-babe-cafe-babecafebabe";
+  public static final String RESOURCE_PATH = "documents/" + INSTANCE_ID + "/document/";
+  
+  @Inject
+  AttachmentService attachmentService;
 
-  public void setAuthorization(boolean isUsersAuthorized) {
-    authorization = isUsersAuthorized;
+  public void setAttachmentService(AttachmentService service) {
+    ((SimpleDocumentServiceWrapper)attachmentService).setRealService(service);
   }
-
-  @Override
-  public boolean isUserAuthorized(String userId, String object) {
-    return authorization;
-  }
-
 }

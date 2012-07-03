@@ -268,18 +268,13 @@
   </dependencies>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <excludes>
-          <exclude>**/index/**/*</exclude>
-        </excludes>
-        <filtering>true</filtering>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources/</directory>
+    <testResources>      
+       <testResource>
+        <directory>${basedir}/src/test/resources/</directory>
         <includes>
           <include>**/index/**/*</include>
+          <include>**/*.png</include>
+          <include>**/*.sql</include>
         </includes>
         <excludes>
           <exclude>**/*.properties</exclude>
@@ -287,6 +282,18 @@
         </excludes>
         <filtering>false</filtering>
       </testResource>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+         <includes>
+          <include>**/*.properties</include>
+          <include>**/*.xml</include>
+          <include>**/*.txt</include>
+        </includes>
+        <excludes>
+          <exclude>**/index/**/*</exclude>
+        </excludes>
+        <filtering>true</filtering>
+      </testResource>     
     </testResources>
     <filters>
       <filter>src/test/filters/filters.properties</filter>

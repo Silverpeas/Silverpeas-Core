@@ -115,4 +115,65 @@ public class SimpleDocumentEntity implements Exposable {
   public URI getURI() {
     return this.uri;
   }
+
+  public String getId() {
+    return id;
+  }
+
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public String getContentType() {
+    return contentType;
+  }
+
+  public long getCreationDate() {
+    return creationDate;
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public long getUpdateDate() {
+    return updateDate;
+  }
+
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
+
+  public long getSize() {
+    return size;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getLang() {
+    return lang;
+  }
+
+  public String getIcon() {
+    return icon;
+  }
+
+  public String getPermalink() {
+    return permalink;
+  }
+
+  public String getDownloadUrl() {
+    return downloadUrl;
+  }
+
 }

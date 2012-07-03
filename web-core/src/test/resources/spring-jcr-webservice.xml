@@ -29,27 +29,28 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:ctx="http://www.springframework.org/schema/context"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
-        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.stratelia.webactiv.util.attachment.model"/>
   <ctx:component-scan base-package="com.silverpeas.jcrutil"/>
-  <ctx:component-scan base-package="org.silverpeas.attachment"/>
+  <ctx:component-scan base-package="org.silverpeas.attachment">
+    <ctx:exclude-filter type="regex" expression="org.silverpeas.attachment.SimpleDocumentService" />
+  </ctx:component-scan>
 
-
+  <!-- the notification publisher factory through which a notification publisher is accessed.
+  It bootstraps the actual messaging system backend -->
   <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean">
     <property name="configuration" value="classpath:repository-in-memory.xml" />
-    <property name="homeDir" value="file://${project.basedir}/target/tmp/temp_jackrabbit" />
+    <property name="homeDir" value="file://${basedir}/target/tmp/temp_jackrabbit" />
     <property name="configurationProperties">
       <list>
         <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>
       </list>
     </property>
+    <property name="useSystemProperties" value="true" />
   </bean>
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -71,4 +72,9 @@
   <bean id="jcrAttachmentManager" class="org.mockito.Mockito" factory-method="mock"> 
     <constructor-arg value="com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService" />
   </bean> 
+        
+  <import resource="spring-webservice.xml" />
+  <import resource="spring-personalization.xml" />
+  <import resource="spring-jpa-datasource.xml" />
 </beans>
+

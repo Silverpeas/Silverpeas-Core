@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment;
+package org.silverpeas.attachment.mock;
 
 import java.io.File;
 import java.io.InputStream;
@@ -29,12 +29,18 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.util.Default;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import javax.inject.Named;
+
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import com.silverpeas.util.Default;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentService;
 
 /**
  *

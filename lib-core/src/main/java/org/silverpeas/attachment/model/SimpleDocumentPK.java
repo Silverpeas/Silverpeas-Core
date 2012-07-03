@@ -53,14 +53,24 @@ public class SimpleDocumentPK extends WAPrimaryKey implements Serializable {
   public SimpleDocumentPK(String id, WAPrimaryKey pk) {
     super(id, pk);
   }
-
+  
   @Override
-  public boolean equals(Object other) {
-    if (!(other instanceof SimpleDocumentPK)) {
+  public boolean equals(Object obj) {
+    if (obj == null) {
       return false;
     }
-    return (id.equals(((SimpleDocumentPK) other).getId()))
-        && (componentName.equals(((SimpleDocumentPK) other).getComponentName()));
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final SimpleDocumentPK other = (SimpleDocumentPK) obj;
+    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+      return false;
+    }
+    if ((this.componentName == null) ? (other.componentName != null)
+        : !this.componentName.equals(other.componentName)) {
+      return false;
+    }
+    return true;
   }
 
   @Override

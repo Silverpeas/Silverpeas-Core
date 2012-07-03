@@ -37,10 +37,10 @@
         http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.stratelia.webactiv.util.attachment.model"/>
   <ctx:component-scan base-package="com.silverpeas.jcrutil"/>
   <ctx:component-scan base-package="org.silverpeas.attachment">
-    <ctx:exclude-filter type="regex" expression="org.silverpeas.attachment.*Wrapper" />
+    <ctx:exclude-filter type="regex" expression="org\.silverpeas\.attachment\.web\..*" />
+    <ctx:exclude-filter type="regex" expression="org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper" />
   </ctx:component-scan>
 
 
@@ -52,7 +52,7 @@
         <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>
       </list>
     </property>
-    <property name="useSystemProperties" value="true"/>
+    <property name="useSystemProperties" value="true" />
   </bean>
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -61,7 +61,7 @@
         <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>
       </list>
     </property>
-    <property name="searchSystemEnvironment" value="false" />
+    <property name="searchSystemEnvironment" value="true" />
   </bean>
 
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
@@ -70,4 +70,8 @@
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="jcrAccessManager" scope="prototype" class="com.silverpeas.jcrutil.security.impl.SimpleAccessManager" />
   <bean id="jcrLoginModule" scope="prototype" class="com.silverpeas.jcrutil.security.impl.BasicLoginModule" />
+  
+  <bean id="jcrAttachmentManager" class="org.mockito.Mockito" factory-method="mock"> 
+    <constructor-arg value="com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService" />
+  </bean> 
 </beans>

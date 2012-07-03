@@ -1,0 +1,170 @@
+/**
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.attachment.web;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPriviledgeValidation;
+
+@Service
+@RequestScoped
+@Path("documents/{componentId}/document/{id}/")
+@Authorized
+public class SimpleDocumentResource extends RESTWebService {
+
+  @PathParam("componentId")
+  private String componentId;
+  @PathParam("id")
+  private String simpleDocumentId;
+
+  @Override
+  public String getComponentId() {
+    return componentId;
+  }
+
+  public String getSimpleDocumentId() {
+    return simpleDocumentId;
+  }
+
+  /**
+   * Return the specified document in the specified lang.
+   *
+   * @param lang the wanted language.
+   * @return the specified document in the specified lang.
+   */
+  @GET
+  @Path("{lang}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public SimpleDocumentEntity getDocument(final @PathParam("lang") String lang) {
+    SimpleDocument attachment = getSimpleDocument(lang);
+    if (attachment == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(attachment.
+        getLanguage()).build();
+    return SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri);
+  }
+
+  /**
+   * Returns all the existing translation of a SimpleDocument.
+   *
+   * @return all the existing translation of a SimpleDocument.
+   */
+  @GET
+  @Path("translations")
+  @Produces(MediaType.APPLICATION_JSON)
+  public SimpleDocumentEntity[] getDocumentTanslations() {
+    List<SimpleDocumentEntity> result = new ArrayList<SimpleDocumentEntity>(I18NHelper.getNumberOfLanguages());
+    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+      SimpleDocument attachment = getSimpleDocument(lang);
+      if (attachment == null) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+      if (lang.equals(attachment.getLanguage())) {
+        URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(lang).build();
+        result.add(SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri));
+      }
+    }
+    return result.toArray(new SimpleDocumentEntity[result.size()]);
+  }
+
+  /**
+   * Validates the authorization of the user to request this web service. For doing, the user must
+   * have the rights to access the component instance that manages this web resource. The validation
+   * is actually delegated to the validation service by passing it the required information.
+   *
+   * This method should be invoked for web service requiring an authorized access. For doing, the
+   * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
+   * also used instead at class level for both authentication and authorization.
+   *
+   * @see UserPriviledgeValidation
+   * @param validation the validation instance to use.
+   * @throws WebApplicationException if the rights of the user are not enough to access this web
+   * resource.
+   */
+  @Override
+  public void validateUserAuthorization(final UserPriviledgeValidation validation) throws
+      WebApplicationException {
+    super.validateUserAuthorization(validation);
+    validation.validateUserAuthorizationOnAttachment(getUserDetail(), getSimpleDocument(null));
+  }
+
+  /**
+   * Return the content of the specified document in the specified language.
+   *
+   * @param language
+   * @return the content of the specified document in the specified language.
+   */
+  @GET
+  @Path("content/{lang}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response getFileContent(@PathParam("lang") final String language) {
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
+    if (document == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    StreamingOutput stream = new StreamingOutput() {
+      @Override
+      public void write(OutputStream output) throws IOException, WebApplicationException {
+        try {
+          AttachmentServiceFactory.getAttachmentService().getBinaryContent(output,
+              new SimpleDocumentPK(getSimpleDocumentId()), language);
+        } catch (Exception e) {
+          throw new WebApplicationException(e);
+        }
+      }
+    };
+
+    return Response.ok(stream).type(document.getContentType()).header(HttpHeaders.CONTENT_LENGTH,
+        document.getSize()).header("content-disposition", "attachment;filename=" + document.
+        getFilename()).build();
+  }
+
+  SimpleDocument getSimpleDocument(String lang) {
+    return AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), lang);
+  }
+}

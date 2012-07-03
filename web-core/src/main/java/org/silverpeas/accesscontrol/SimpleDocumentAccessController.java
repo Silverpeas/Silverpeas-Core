@@ -21,14 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.accesscontrol;
+package org.silverpeas.accesscontrol;
 
 import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.silverpeas.attachment.model.SimpleDocument;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.NodeAccessController;
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
 
@@ -45,7 +48,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  *
  * @author ehugonnet
  */
-@Named
+@Named("simpleDocumentAccessController")
 public class SimpleDocumentAccessController implements AccessController<SimpleDocument> {
 
   @Inject
