@@ -54,6 +54,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
+  private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -139,6 +140,13 @@ public class JavascriptPluginInclusion {
     script wysiwyg = new script().setType(JAVASCRIPT_TYPE).setSrc(wysiwygPath
             + JAVASCRIPT_CKEDITOR);
     xhtml.addElement(wysiwyg);
+    return xhtml;
+  }
+  
+  public static ElementContainer includePopup(final ElementContainer xhtml) {
+    script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
+            + SILVERPEAS_POPUP);
+    xhtml.addElement(popup);
     return xhtml;
   }
 }
